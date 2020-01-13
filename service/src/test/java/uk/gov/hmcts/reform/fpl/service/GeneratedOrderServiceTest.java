@@ -84,14 +84,17 @@ class GeneratedOrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build(), null);
+            order,
+            JudgeAndLegalAdvisor.builder().build(),
+            null).getValue();
 
-        assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
+        assertCommonC21Fields(builtOrder);
+        assertThat(builtOrder.getTitle()).isEqualTo("Order");
     }
 
     @Test
@@ -102,14 +105,17 @@ class GeneratedOrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder returnedElement = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build(), null);
+            order,
+            JudgeAndLegalAdvisor.builder().build(),
+            null).getValue();
 
-        assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
+        assertCommonC21Fields(returnedElement);
+        assertThat(returnedElement.getTitle()).isEqualTo("Order");
     }
 
     @Test
@@ -120,14 +126,17 @@ class GeneratedOrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build(), null);
+            order,
+            JudgeAndLegalAdvisor.builder().build(),
+            null).getValue();
 
-        assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
+        assertCommonC21Fields(builtOrder);
+        assertThat(builtOrder.getTitle()).isEqualTo("Order");
     }
 
     @Test
@@ -138,31 +147,37 @@ class GeneratedOrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build(), null);
+            order,
+            JudgeAndLegalAdvisor.builder().build(),
+            null).getValue();
 
-        assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Example Title");
+        assertCommonC21Fields(builtOrder);
+        assertThat(builtOrder.getTitle()).isEqualTo("Example Title");
     }
 
     @Test
     void shouldReturnExpectedOrderWhenJudgeAndLegalAdvisorFullyPopulated() {
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(CARE_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
+            GeneratedOrder.builder().build(),
+            JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build(), null);
+                .build(),
+            null).getValue();
 
-        assertThat(returnedElement.getValue().getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(returnedElement.getValue().getDate()).isNotNull();
-        assertThat(returnedElement.getValue().getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
+        assertThat(builtOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
+        assertThat(builtOrder.getDate()).isNotNull();
+        assertThat(builtOrder.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
             .judgeTitle(HER_HONOUR_JUDGE)
             .judgeLastName("Judy")
             .legalAdvisorName("Peter Parker")
@@ -171,7 +186,7 @@ class GeneratedOrderServiceTest {
 
     @Test
     void shouldReturnExpectedOrderWhenGivenNumberOfMonthsOnSupervisionOrder() {
-        GeneratedOrder order = service.buildCompleteOrder(
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
             OrderTypeAndDocument.builder()
                 .type(SUPERVISION_ORDER)
                 .build(),
@@ -182,7 +197,7 @@ class GeneratedOrderServiceTest {
         String expected = dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(5),
             "h:mma, d MMMM y");
 
-        assertThat(order.getExpiryDate()).isEqualTo(expected);
+        assertThat(builtOrder.getExpiryDate()).isEqualTo(expected);
     }
 
     @ParameterizedTest
