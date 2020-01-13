@@ -89,7 +89,7 @@ public class OthersService {
         Element<Other> firstOther;
 
         if(others.getFirstOther().containsConfidentialDetails()) {
-            firstOther = Element.<Other>builder().value(others.getFirstOther().toBuilder().address(null).build()).build();
+            firstOther = Element.<Other>builder().value(others.getFirstOther().toBuilder().address(null).telephone(null).build()).build();
         }
         else {
             firstOther = Element.<Other>builder().value(others.getFirstOther()).build();
@@ -99,7 +99,7 @@ public class OthersService {
             if (additionalOther.getValue().containsConfidentialDetails()) {
                 othersForPeopleTab.add(Element.<Other>builder()
                     .id(UUID.randomUUID())
-                    .value(additionalOther.getValue().toBuilder().address(null).build())
+                    .value(additionalOther.getValue().toBuilder().address(null).telephone(null).build())
                     .build());
             } else{
                 othersForPeopleTab.add(Element.<Other>builder()
