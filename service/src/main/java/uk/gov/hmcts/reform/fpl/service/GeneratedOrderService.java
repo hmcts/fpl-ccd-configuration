@@ -1,16 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
@@ -27,7 +24,6 @@ import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.UUID.randomUUID;
@@ -134,8 +130,7 @@ public class GeneratedOrderService {
                     .put("childrenDescription", getChildrenDescription(caseData.getEpoChildren()))
                     .put("epoType", caseData.getEpoType())
                     .put("includePhrase", caseData.getEpoPhrase().getIncludePhrase())
-                    .put("removalAddress", caseData.getEpoRemovalAddress() != null
-                        ? formatAddressToString(caseData.getEpoRemovalAddress()) : "")
+                    .put("removalAddress", getFormattedRemovalAddress(caseData))
                     .put("epoEndDateTime", formatEPOEndDateTime(caseData.getEpoEndDate()));
                 break;
             default:
@@ -221,22 +216,9 @@ public class GeneratedOrderService {
         return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy 'at' h:mma");
     }
 
-    private String formatAddressToString(Address address) {
-        if (address != null) {
-            ImmutableList<String> addressAsList = ImmutableList.of(
-                defaultIfNull(address.getAddressLine1(), ""),
-                defaultIfNull(address.getAddressLine2(), ""),
-                defaultIfNull(address.getAddressLine3(), ""),
-                defaultIfNull(address.getPostTown(), ""),
-                defaultIfNull(address.getPostcode(), ""),
-                defaultIfNull(address.getCounty(), ""),
-                defaultIfNull(address.getCountry(), "")
-            );
-
-            return addressAsList.stream()
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(", "));
-
+    private String getFormattedRemovalAddress(CaseData caseData) {
+        if (caseData.getEpoRemovalAddress() != null) {
+            caseData.getEpoRemovalAddress().getAddressAsString();
         }
 
         return "";

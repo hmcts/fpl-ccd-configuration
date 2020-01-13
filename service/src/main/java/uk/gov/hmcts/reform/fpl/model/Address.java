@@ -4,12 +4,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.groups.Default;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data
 @Builder
@@ -41,5 +46,20 @@ public class Address {
         this.county = county;
         this.postcode = postcode;
         this.country = country;
+    }
+
+    public String getAddressAsString() {
+        ImmutableList<String> addressAsList = ImmutableList.of(
+            defaultIfNull(getAddressLine1(), ""),
+            defaultIfNull(getAddressLine2(), ""),
+            defaultIfNull(getAddressLine3(), ""),
+            defaultIfNull(getPostTown(), ""),
+            defaultIfNull(getPostcode(), ""),
+            defaultIfNull(getCounty(), ""),
+            defaultIfNull(getCountry(), ""));
+
+        return addressAsList.stream()
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining(", "));
     }
 }
