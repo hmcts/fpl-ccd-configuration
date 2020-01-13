@@ -3,21 +3,18 @@ package uk.gov.hmcts.reform.fpl.utils;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 public class EmailNotificationHelper {
     private static final HearingBookingService hearingBookingService = new HearingBookingService();
@@ -27,7 +24,7 @@ public class EmailNotificationHelper {
     }
 
     public static String buildSubjectLine(final CaseData caseData) {
-        final String lastName = getFirstRespondentLastName(caseData);
+        final String lastName = getFirstRespondentLastName(caseData.getRespondents1());
         final String familyManCaseNumber = defaultIfNull(caseData.getFamilyManCaseNumber(), "");
 
         return Stream.of(lastName, familyManCaseNumber)
@@ -46,18 +43,6 @@ public class EmailNotificationHelper {
         return Stream.of(subjectLine, hearingDateText)
             .filter(StringUtils::isNotBlank)
             .collect(joining(","));
-    }
-
-    public static String getFirstRespondentLastName(final CaseData caseData) {
-        return isEmpty(caseData.getRespondents1()) ? "" : caseData.getRespondents1()
-            .stream()
-            .filter(Objects::nonNull)
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .findFirst()
-            .map(Respondent::getParty)
-            .map(RespondentParty::getLastName)
-            .orElse("");
     }
 
     private static String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {

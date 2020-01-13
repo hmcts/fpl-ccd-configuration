@@ -2,25 +2,26 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.getFirstRespondentLastName;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 public abstract class AbstractEmailContentProvider {
 
@@ -37,27 +38,27 @@ public abstract class AbstractEmailContentProvider {
     }
 
     @SuppressWarnings("unchecked")
-    ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
-        List<String> ordersAndDirections = buildOrdersAndDirections(
-            (Map<String, Object>) caseDetails.getData().get("orders"));
-
-        Optional<String> timeFrame = Optional.ofNullable((Map<String, Object>) caseDetails.getData().get("hearing"))
-            .map(hearing -> (String) hearing.get("timeFrame"));
+    ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(Long caseDetailsId, CaseData caseData) {
+        List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
+        String timeFrame = "";
+        if (caseData.getHearing() != null) {
+            timeFrame = caseData.getHearing().getTimeFrame();
+        }
 
         return ImmutableMap.<String, Object>builder()
             .put("ordersAndDirections", !ordersAndDirections.isEmpty() ? ordersAndDirections : "")
             .put("dataPresent", !ordersAndDirections.isEmpty() ? "Yes" : "No")
             .put("fullStop", !ordersAndDirections.isEmpty() ? "No" : "Yes")
-            .put("timeFramePresent", timeFrame.isPresent() ? "Yes" : "No")
-            .put("timeFrameValue", uncapitalize(timeFrame.orElse("")))
-            .put("urgentHearing", timeFrame.isPresent() && timeFrame.get().equals("Same day") ? "Yes" : "No")
-            .put("nonUrgentHearing", timeFrame.isPresent() && !timeFrame.get().equals("Same day") ? "Yes" : "No")
-            .put("firstRespondentName", getFirstRespondentLastName(caseData))
-            .put("reference", String.valueOf(caseDetails.getId()))
-            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
+            .put("timeFramePresent", isNotBlank(timeFrame) ? "Yes" : "No")
+            .put("timeFrameValue", uncapitalize(defaultIfBlank(timeFrame, "")))
+            .put("urgentHearing", isNotBlank(timeFrame) && timeFrame.equals("Same day") ? "Yes" : "No")
+            .put("nonUrgentHearing", isNotBlank(timeFrame) && !timeFrame.equals("Same day") ? "Yes" : "No")
+            .put("firstRespondentName", getFirstRespondentLastName(caseData.getRespondents1()))
+            .put("reference", String.valueOf(caseDetailsId))
+            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetailsId);
     }
 
-    ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
+    ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(Long caseDetailsId, CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber",
                 isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
@@ -67,8 +68,8 @@ public abstract class AbstractEmailContentProvider {
                 .getParty()
                 .getLastName()) + ",")
             .put("hearingDate", getHearingBooking(caseData))
-            .put("reference", String.valueOf(caseDetails.getId()))
-            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
+            .put("reference", String.valueOf(caseDetailsId))
+            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetailsId);
     }
 
     private String getHearingBooking(CaseData data) {
@@ -80,38 +81,38 @@ public abstract class AbstractEmailContentProvider {
         return "";
     }
 
-    private List<String> buildOrdersAndDirections(Map<String, Object> optionalOrders) {
+    private List<String> buildOrdersAndDirections(Orders orders) {
         ImmutableList.Builder<String> ordersAndDirectionsBuilder = ImmutableList.builder();
 
-        Optional.ofNullable(optionalOrders).ifPresent(orders -> {
-            appendOrders(orders, ordersAndDirectionsBuilder);
-            appendDirections(orders, ordersAndDirectionsBuilder);
+        Optional.ofNullable(orders).ifPresent(ords -> {
+            appendOrders(ords, ordersAndDirectionsBuilder);
+            appendDirections(ords, ordersAndDirectionsBuilder);
         });
 
         return ordersAndDirectionsBuilder.build();
     }
 
     @SuppressWarnings("unchecked")
-    private void appendOrders(Map<String, Object> orders, ImmutableList.Builder<String> builder) {
-        Optional.ofNullable(orders.get("orderType")).ifPresent(orderTypes -> {
-            for (String typeString : (List<String>) orderTypes) {
-                builder.add(OrderType.valueOf(typeString).getLabel());
+    private void appendOrders(Orders orders, ImmutableList.Builder<String> builder) {
+        Optional.ofNullable(orders.getOrderType()).ifPresent(orderTypes -> {
+            for (OrderType type : orderTypes) {
+                builder.add(type.getLabel());
             }
         });
 
-        Optional.ofNullable(orders.get("emergencyProtectionOrders")).ifPresent(emergencyProtectionOrders -> {
-            for (String typeString : (List<String>) emergencyProtectionOrders) {
-                builder.add(EmergencyProtectionOrdersType.valueOf(typeString).getLabel());
+        Optional.ofNullable(orders.getEmergencyProtectionOrders()).ifPresent(emergencyProtectionOrders -> {
+            for (EmergencyProtectionOrdersType epoType : emergencyProtectionOrders) {
+                builder.add(epoType.getLabel());
             }
         });
     }
 
     @SuppressWarnings("unchecked")
-    private void appendDirections(Map<String, Object> orders, ImmutableList.Builder<String> builder) {
-        Optional.ofNullable(orders.get("emergencyProtectionOrderDirections")).ifPresent(
+    private void appendDirections(Orders orders, ImmutableList.Builder<String> builder) {
+        Optional.ofNullable(orders.getEmergencyProtectionOrderDirections()).ifPresent(
             emergencyProtectionOrderDirections -> {
-                for (String typeString : (List<String>) emergencyProtectionOrderDirections) {
-                    builder.add(EmergencyProtectionOrderDirectionsType.valueOf(typeString).getLabel());
+                for (EmergencyProtectionOrderDirectionsType epoDirectionsType : emergencyProtectionOrderDirections) {
+                    builder.add(epoDirectionsType.getLabel());
                 }
             });
     }
