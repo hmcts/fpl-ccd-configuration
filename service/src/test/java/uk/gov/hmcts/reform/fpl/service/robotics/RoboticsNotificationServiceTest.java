@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
 import uk.gov.hmcts.reform.fpl.exceptions.RoboticsDataException;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Map;
 
 import static ch.qos.logback.classic.Level.ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,6 +51,8 @@ import static uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper.runVe
 public class RoboticsNotificationServiceTest {
     private static final String EMAIL_RECIPIENT = "recipient@example.com";
     private static final String EMAIL_FROM = "no-reply@exaple.com";
+
+    private static final LocalDate NOW = LocalDate.now();
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -82,7 +86,7 @@ public class RoboticsNotificationServiceTest {
             .willReturn(EMAIL_FROM);
 
         roboticsNotificationService = new RoboticsNotificationService(emailService, roboticsDataService,
-            roboticsEmailConfiguration);
+            roboticsEmailConfiguration, objectMapper);
     }
 
     @Test
@@ -95,7 +99,7 @@ public class RoboticsNotificationServiceTest {
         given(roboticsDataService.convertRoboticsDataToJson(expectedRoboticsData))
             .willReturn(expectedRoboticsDataJson);
 
-        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseData()));
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseDetails()));
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 
@@ -138,8 +142,11 @@ public class RoboticsNotificationServiceTest {
         given(roboticsDataService.prepareRoboticsData(caseData))
             .willReturn(invalidRoboticsDataWithZeroOwningCourt());
 
+        CaseDetails caseDetails = prepareCaseDetails();
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(caseDetails));
+
         assertThrows(RoboticsDataException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(caseData)));
+            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(caseDetails)));
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
@@ -154,14 +161,25 @@ public class RoboticsNotificationServiceTest {
 
         assertThrows(RoboticsDataException.class,
             () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(
-                prepareCaseData())));
+                prepareCaseDetails())));
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
 
     private CaseData prepareCaseData() throws IOException {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
-        caseData.setDateSubmitted(LocalDate.now());
+        caseData.setDateSubmitted(NOW);
         return caseData;
+    }
+
+    private CaseDetails prepareCaseDetails() throws IOException {
+        CaseDetails caseDetails = populatedCaseDetails();
+
+        Map<String, Object> caseDataMap = populatedCaseDetails().getData();
+        caseDataMap.put("dateSubmitted", NOW);
+
+        return caseDetails.toBuilder()
+            .data(caseDataMap)
+            .build();
     }
 }

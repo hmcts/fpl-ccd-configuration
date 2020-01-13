@@ -1,15 +1,18 @@
 package uk.gov.hmcts.reform.fpl.service.robotics;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
 import uk.gov.hmcts.reform.fpl.events.robotics.ResendFailedRoboticNotificationEvent;
 import uk.gov.hmcts.reform.fpl.events.robotics.RoboticsNotificationEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
@@ -29,6 +32,7 @@ public class RoboticsNotificationService {
     private final EmailService emailService;
     private final RoboticsDataService roboticsDataService;
     private final RoboticsEmailConfiguration roboticsEmailConfiguration;
+    private final ObjectMapper mapper;
 
     @EventListener
     public void notifyRoboticsOfSubmittedCaseData(final CaseNumberAdded event) {
@@ -41,7 +45,11 @@ public class RoboticsNotificationService {
     }
 
     private void sendSubmittedCaseData(final RoboticsNotificationEvent event) {
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(event.getCaseData());
+        CaseDetails caseDetails = event.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
         EmailData emailData = prepareEmailData(roboticsData);
         emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
