@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -261,6 +262,7 @@ class GeneratedOrderServiceTest {
         }
 
         expectedMap
+            .put("furtherDirections", "Example Directions")
             .put("familyManCaseNumber", "123")
             .put("courtName", "Example Court")
             .put("todaysDate", date)
@@ -288,6 +290,10 @@ class GeneratedOrderServiceTest {
                     .order(GeneratedOrder.builder()
                         .title("Example Title")
                         .details("Example details")
+                        .build())
+                    .orderFurtherDirections(FurtherDirections.builder()
+                        .directionsNeeded("Yes")
+                        .directions("Example Directions")
                         .build());
                 break;
             case CARE_ORDER:
@@ -295,6 +301,10 @@ class GeneratedOrderServiceTest {
                     .orderTypeAndDocument(OrderTypeAndDocument.builder()
                         .type(CARE_ORDER)
                         .document(DocumentReference.builder().build())
+                        .build())
+                    .orderFurtherDirections(FurtherDirections.builder()
+                        .directionsNeeded("Yes")
+                        .directions("Example Directions")
                         .build());
                 break;
             default:
