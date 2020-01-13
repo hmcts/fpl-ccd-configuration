@@ -8,23 +8,33 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TimeRangeValidatorTest extends TimeValidatorTest {
 
-    Bar bar = new Bar();
+    ValidTimeRangeValidation validTimeRangeValidation = new ValidTimeRangeValidation();
+    InvalidTimeRangeValidatorB invalidTimeRangeValidatorB = new InvalidTimeRangeValidatorB();
 
     @Test
-    void foo() {
-        final Set<ConstraintViolation<Bar>> validate = validator.validate(bar);
+    void shouldReturnAnErrorWhenDateTimeExceedsRange() {
+        final Set<ConstraintViolation<InvalidTimeRangeValidatorB>> validate = validator.validate(invalidTimeRangeValidatorB);
         assertThat(validate).size().isEqualTo(1);
     }
 
-    class Bar {
-        @TimeRange(rangeBefore = @TimeDifference(amount = 2, unit = DAYS),
-            rangeAfter = @TimeDifference(amount = 7, unit = MONTHS))
-        public LocalDateTime now = LocalDateTime.now();
+    @Test
+    void shouldNotReturnAnErrorWhenDateTimeDoesNotExceedRange() {
+        final Set<ConstraintViolation<ValidTimeRangeValidation>> validate = validator.validate(validTimeRangeValidation);
+        assertThat(validate).size().isEqualTo(0);
+    }
+
+    class ValidTimeRangeValidation {
+        @TimeRange(rangeAfter = @TimeDifference(amount = 7, unit = MONTHS))
+        public LocalDateTime now = LocalDateTime.now().plusDays(2);
+    }
+
+    class InvalidTimeRangeValidatorB {
+        @TimeRange(rangeAfter = @TimeDifference(amount = 7, unit = MONTHS))
+        public LocalDateTime now = LocalDateTime.now().plusDays(0);
     }
 }
