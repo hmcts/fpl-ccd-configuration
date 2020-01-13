@@ -28,7 +28,7 @@ module.exports = [
       judgeLastName: 'Judy',
       legalAdvisorName: 'Fred Frederickson',
     },
-    childrenDescription: "description",
+    childrenDescription: 'description',
     epoType: 'Prevent removal from an address',
     removalAddress: {
       lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',
@@ -41,6 +41,6 @@ module.exports = [
       postcode: 'RG4 7AA',
       country: 'United Kingdom',
     },
-    includePhrase: 'Yes'
+    includePhrase: 'Yes',
   },
 ];

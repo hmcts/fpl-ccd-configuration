@@ -18,13 +18,15 @@ public class TimeRangeValidatorTest extends TimeValidatorTest {
 
     @Test
     void shouldReturnAnErrorWhenDateTimeExceedsRange() {
-        final Set<ConstraintViolation<InvalidTimeRangeValidatorB>> validate = validator.validate(invalidTimeRangeValidatorB);
+        final Set<ConstraintViolation<InvalidTimeRangeValidatorB>> validate =
+            validator.validate(invalidTimeRangeValidatorB);
         assertThat(validate).size().isEqualTo(1);
     }
 
     @Test
     void shouldNotReturnAnErrorWhenDateTimeDoesNotExceedRange() {
-        final Set<ConstraintViolation<ValidTimeRangeValidation>> validate = validator.validate(validTimeRangeValidation);
+        final Set<ConstraintViolation<ValidTimeRangeValidation>> validate =
+            validator.validate(validTimeRangeValidation);
         assertThat(validate).size().isEqualTo(0);
     }
 

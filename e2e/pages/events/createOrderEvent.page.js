@@ -11,7 +11,7 @@ module.exports = {
     epo: {
       childrenDescription: {
         radioGroup: '#epoChildren_descriptionNeeded',
-        description: '#epoChildren_description'
+        description: '#epoChildren_description',
       },
       type: '#epoType',
       removalAddress: '#epoRemovalAddress_epoRemovalAddress',
