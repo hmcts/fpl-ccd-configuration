@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,9 +25,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(HearingBookingDetailsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class HearingBookingDetailsControllerTest extends AbstractControllerTest {
-
     private static final String ERROR_MESSAGE = "Enter a start date in the future";
-    private static final HearingBooking EMPTY_BOOKING = HearingBooking.builder().build();
+    private static final HearingBooking EMPTY_HEARING_BOOKING = HearingBooking.builder().build();
 
     HearingBookingDetailsControllerTest() {
         super("add-hearing-bookings");
@@ -38,7 +37,7 @@ class HearingBookingDetailsControllerTest extends AbstractControllerTest {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            yesterday, yesterday.plusDays(1)), EMPTY_BOOKING);
+            yesterday, yesterday.plusDays(1)));
 
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
@@ -48,7 +47,7 @@ class HearingBookingDetailsControllerTest extends AbstractControllerTest {
         LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            tomorrow, tomorrow.plusDays(1)), EMPTY_BOOKING);
+            tomorrow, tomorrow.plusDays(1)));
 
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
@@ -58,7 +57,7 @@ class HearingBookingDetailsControllerTest extends AbstractControllerTest {
         LocalDateTime today = LocalDateTime.now();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            today, today.plusDays(1)), EMPTY_BOOKING);
+            today, today.plusDays(1)));
 
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
@@ -68,7 +67,7 @@ class HearingBookingDetailsControllerTest extends AbstractControllerTest {
         LocalDateTime distantPast = LocalDateTime.now().minusYears(10000);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            distantPast, distantPast.plusDays(1)), EMPTY_BOOKING);
+            distantPast, distantPast.plusDays(1)));
 
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
@@ -78,43 +77,51 @@ class HearingBookingDetailsControllerTest extends AbstractControllerTest {
         LocalDateTime distantFuture = LocalDateTime.now().plusYears(1000);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            distantFuture, distantFuture.plusDays(1)), EMPTY_BOOKING);
+            distantFuture, distantFuture.plusDays(1)));
 
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldOnlyValidateNewBookingsWhenBookingAlreadyExists() throws Exception {
-        LocalDateTime distantFuture = LocalDateTime.now().plusYears(1000);
-        LocalDateTime distantPast = LocalDateTime.now().minusYears(10000);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            distantFuture, distantFuture.plusDays(1)), createHearing(distantPast, distantPast.plusDays(1)));
-
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldErrorWhenExistingBookingIsUpdatedToPastDate() {
-        LocalDateTime futureDate = LocalDateTime.now().plusDays(5);
+    void shouldReturnAnErrorWhenExistingBookingIsUpdatedToPastDate() {
+        LocalDateTime date = LocalDateTime.now().plusDays(5);
         UUID hearingId = randomUUID();
 
-        CallbackRequest request = callbackRequestWithEditedBooking(futureDate, hearingId);
+        List<Element<HearingBooking>> newHearingBooking = listBookingWithStartDate(hearingId, date.minusYears(1));
+        List<Element<HearingBooking>> oldHearingBooking = listBookingWithStartDate(hearingId, date);
+
+        CallbackRequest request = callbackRequestWithEditedBooking(newHearingBooking, oldHearingBooking);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
 
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
     }
 
-    private CallbackRequest callbackRequestWithEditedBooking(LocalDateTime futureDate, UUID hearingId) {
+    @Test
+    void shouldReturnOnlySingleErrorWhenNewHearingAndHearingAlreadyExists() {
+        LocalDateTime errorDate = LocalDateTime.now().minusYears(10);
+
+        List<Element<HearingBooking>> oldHearingBooking = listBookingWithStartDate(randomUUID(), errorDate);
+        List<Element<HearingBooking>> newHearingBooking = listBookingWithStartDate(randomUUID(), errorDate);
+        newHearingBooking.addAll(oldHearingBooking);
+
+        CallbackRequest request = callbackRequestWithEditedBooking(newHearingBooking, oldHearingBooking);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
+
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
+    }
+
+    private CallbackRequest callbackRequestWithEditedBooking(List<Element<HearingBooking>> newHearings,
+                                                             List<Element<HearingBooking>> oldHearings) {
         return CallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                    .data(Map.of("hearingDetails", listBookingWithStartDate(hearingId, futureDate.minusDays(10))))
-                    .build())
-                .caseDetailsBefore(CaseDetails.builder()
-                    .data(Map.of("hearingDetails", listBookingWithStartDate(hearingId, futureDate)))
-                    .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .data(Map.of("hearingDetails", newHearings))
+                .build())
+            .caseDetailsBefore(CaseDetails.builder()
+                .data(Map.of("hearingDetails", oldHearings))
+                .build())
+            .build();
     }
 
     private HearingBooking createHearing(LocalDateTime startDate, LocalDateTime endDate) {
@@ -124,23 +131,15 @@ class HearingBookingDetailsControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private AboutToStartOrSubmitCallbackResponse makeRequest(HearingBooking after, HearingBooking before) throws Exception {
-        Map<String, Object> mapAfter = mapper.readValue(mapper.writeValueAsString(after),
-            new TypeReference<>() {
-            });
-
-        Map<String, Object> mapBefore = mapper.readValue(mapper.writeValueAsString(before),
-            new TypeReference<>() {
-            });
-
+    private AboutToStartOrSubmitCallbackResponse makeRequest(HearingBooking after) {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(Map.of("hearingDetails", wrapElements(mapAfter)))
+                .data(Map.of("hearingDetails", wrapElements(after)))
                 .build())
             .caseDetailsBefore(CaseDetails.builder()
                 .id(12345L)
-                .data(Map.of("hearingDetails", wrapElements(mapBefore)))
+                .data(Map.of("hearingDetails", wrapElements(EMPTY_HEARING_BOOKING)))
                 .build())
             .build();
 
@@ -148,6 +147,6 @@ class HearingBookingDetailsControllerTest extends AbstractControllerTest {
     }
 
     private List<Element<HearingBooking>> listBookingWithStartDate(UUID id, LocalDateTime date) {
-        return List.of(element(id, createHearing(date, date.plusDays(1))));
+        return Lists.newArrayList(element(id, createHearing(date, date.plusDays(1))));
     }
 }

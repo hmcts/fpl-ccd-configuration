@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -15,9 +17,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 class HearingBookingServiceTest {
@@ -129,6 +134,97 @@ class HearingBookingServiceTest {
 
         private DynamicListElement createDynamicElement(UUID code) {
             return DynamicListElement.builder().code(code).label("").build();
+        }
+    }
+
+    @Nested
+    class GetChangedHearings {
+        LocalDateTime date = LocalDateTime.now();
+        UUID hearingId = randomUUID();
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearingsEnteredBeforeOrAfter() {
+            List<Element<HearingBooking>> returnedHearings = service.getChangedHearings(emptyList(), emptyList());
+
+            assertThat(returnedHearings).isEmpty();
+        }
+
+        @Test
+        void shouldReturnHearingWhenNoHearingsHaveBeenEnteredPreviously() {
+            List<Element<HearingBooking>> newHearing = List.of(hearingBookingWithIdAndStartDate(randomUUID(), 5));
+
+            List<Element<HearingBooking>> returnedHearings = service.getChangedHearings(emptyList(), newHearing);
+
+            assertThat(returnedHearings).isEqualTo(newHearing);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenSameAsPreviouslyEnteredHearing() {
+            List<Element<HearingBooking>> hearingBooking = List.of(hearingBookingWithIdAndStartDate(randomUUID(), 5));
+
+            List<Element<HearingBooking>> returnedHearings = service.getChangedHearings(hearingBooking, hearingBooking);
+
+            assertThat(returnedHearings).isEmpty();
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1, 10})
+        void shouldReturnNewHearingWhenEditedToBeDifferentDate(int days) {
+            List<Element<HearingBooking>> existingHearing = List.of(hearingBookingWithIdAndStartDate(hearingId, 5));
+
+            List<Element<HearingBooking>> newHearing = List.of(hearingBookingWithIdAndStartDate(hearingId, days));
+
+            List<Element<HearingBooking>> returnedHearings = service.getChangedHearings(existingHearing, newHearing);
+
+            assertThat(returnedHearings).isEqualTo(newHearing);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {-1, 10})
+        void shouldReturnNewHearingWhenEditedToBeDifferentTimeOnSameDay(int hours) {
+            List<Element<HearingBooking>> existingHearing = List.of(hearingBookingWithIdAndStartDate(hearingId, 5));
+
+            List<Element<HearingBooking>> newHearing = List.of(element(hearingId, HearingBooking.builder()
+                .startDate(date.plusDays(5).plusHours(hours))
+                .build()));
+
+            List<Element<HearingBooking>> returnedHearings = service.getChangedHearings(existingHearing, newHearing);
+
+            assertThat(returnedHearings).isEqualTo(newHearing);
+        }
+
+        @Test
+        void shouldReturnManyHearingsWhenEnteringManyNewHearings() {
+            List<Element<HearingBooking>> newHearings = List.of(
+                hearingBookingWithIdAndStartDate(randomUUID(), 5),
+                hearingBookingWithIdAndStartDate(randomUUID(), 5));
+
+            List<Element<HearingBooking>> returnHearings = service.getChangedHearings(emptyList(), newHearings);
+
+            assertThat(returnHearings).isEqualTo(newHearings);
+        }
+
+        @Test
+        void shouldReturnHearingsWhenEditedAndNewHearings() {
+            UUID editedHearingId = randomUUID();
+
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                hearingBookingWithIdAndStartDate(hearingId, 5),
+                hearingBookingWithIdAndStartDate(editedHearingId, 1));
+
+            List<Element<HearingBooking>> existingHearing = List.of(
+                hearingBookingWithIdAndStartDate(editedHearingId, 2));
+
+            List<Element<HearingBooking>> returnedHearings =
+                service.getChangedHearings(existingHearing, hearingBookings);
+
+            assertThat(returnedHearings).isEqualTo(hearingBookings);
+        }
+
+        private Element<HearingBooking> hearingBookingWithIdAndStartDate(UUID hearingId, int i) {
+            return element(hearingId, HearingBooking.builder()
+                .startDate(date.plusDays(i))
+                .build());
         }
     }
 

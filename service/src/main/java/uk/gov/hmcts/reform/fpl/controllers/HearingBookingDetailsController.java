@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 
@@ -28,17 +27,14 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @RestController
 @RequestMapping("/callback/add-hearing-bookings")
 public class HearingBookingDetailsController {
-    private final MapperService mapperService;
     private final HearingBookingService hearingBookingService;
     private final ValidateGroupService validateGroupService;
     private final ObjectMapper mapper;
 
     @Autowired
-    public HearingBookingDetailsController(MapperService mapperService,
-                                           HearingBookingService hearingBookingService,
+    public HearingBookingDetailsController(HearingBookingService hearingBookingService,
                                            ValidateGroupService validateGroupService,
                                            ObjectMapper mapper) {
-        this.mapperService = mapperService;
         this.hearingBookingService = hearingBookingService;
         this.validateGroupService = validateGroupService;
         this.mapper = mapper;
@@ -47,7 +43,7 @@ public class HearingBookingDetailsController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData));
 
@@ -68,9 +64,10 @@ public class HearingBookingDetailsController {
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
-        hearingBookingService.filterPreviousHearings(hearingDetailsBefore, hearingDetails);
+        List<Element<HearingBooking>> changedHearings =
+            hearingBookingService.getChangedHearings(hearingDetailsBefore, hearingDetails);
 
-        final List<String> errors = validateHearingBookings(hearingDetails);
+        final List<String> errors = validateHearingBookings(changedHearings);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
