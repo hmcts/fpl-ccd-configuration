@@ -1,8 +1,8 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const orders = require('../fixtures/orders.js');
-const representatives = require('../fixtures/representatives.js');
 const orderFunctions = require('../helpers/generated_order_helper');
+const representatives = require('../fixtures/representatives.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -37,7 +37,7 @@ Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 });
 
-xScenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
+Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
   async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {}) {
     await caseViewPage.goToNewActions(event);
     I_doActionsOnEditPage();
@@ -69,7 +69,7 @@ xScenario('HMCTS admin amends children, respondents, others, international eleme
     summaryText, descriptionText);
 });
 
-xScenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
+Scenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
   uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
@@ -83,7 +83,7 @@ xScenario('HMCTS admin uploads standard directions with other documents', async 
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
-xScenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
+Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
@@ -99,7 +99,7 @@ xScenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage
   I.seeAnswerInTab('4', 'C2 2', 'Description', 'Jessica Pearson C2');
 });
 
-xScenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
+Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
