@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
 
 @Service
 public class OthersService {
@@ -79,4 +82,26 @@ public class OthersService {
         return  confidentialOthersForCaseData;
     }
 
+    public List<Element<Others>> modifyHiddenValues(List<Element<Others>> others) {
+        return others.stream()
+            .map(element -> {
+                Others.OthersBuilder builder = Others.builder();
+                Other.OtherBuilder builder1 = Other.builder();
+
+                if (element.getValue().getFirstOther().containsConfidentialDetails()) {
+//                    //builder.firstOther(Other.builder().build());
+//                    Other firstOther = element.getValue().getFirstOther();
+//                    builder.firstOther(firstOther);
+//                    builder.firstOther(builder1.address(null).build());
+
+                }
+
+                return Element.<Others>builder()
+                    .id(element.getId())
+                    .value(element.getValue())
+                    .build();
+            })
+            .collect(toList());
+    }
 }
+

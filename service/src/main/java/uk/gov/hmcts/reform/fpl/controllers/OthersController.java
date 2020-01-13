@@ -73,9 +73,13 @@ public class OthersController {
 
         if(!confidentialOthersForCaseData.isEmpty())
         {
-            //puts this into confidentialOthers
+            //puts this into confidentialOthers only if not empty as tab appears if not
             confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersForCaseData, OTHER);
         }
+
+        Others other = confidentialOthersForCaseData.get(0).getValue();
+
+        caseDetails.getData().put("others", Others.builder().firstOther(other.getFirstOther()).build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
