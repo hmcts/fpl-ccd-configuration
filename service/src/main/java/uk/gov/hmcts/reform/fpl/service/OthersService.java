@@ -56,9 +56,6 @@ public class OthersService {
 
         caseData.getAllOthers().forEach(element -> {
 
-            Other other = element;
-
-
             if (element.containsConfidentialDetails()) {
                 confidentialOthers.add(Element.<Other>builder()
                     .id(UUID.randomUUID())
