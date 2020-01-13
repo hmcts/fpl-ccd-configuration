@@ -48,8 +48,9 @@ public class RoboticsNotificationService {
         CaseDetails caseDetails = event.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, caseDetails.getId());
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+        runVerificationsOnRoboticsData(roboticsData);
 
         EmailData emailData = prepareEmailData(roboticsData);
         emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
@@ -58,7 +59,6 @@ public class RoboticsNotificationService {
     private EmailData prepareEmailData(final RoboticsData roboticsData) {
         final String roboticsJsonData = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-        runVerificationsOnRoboticsData(roboticsData);
         verifyRoboticsJsonData(roboticsJsonData);
 
         final String fileNamePrefix = "CaseSubmitted_";

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.exceptions;
+package uk.gov.hmcts.reform.fpl.exceptions.robotics;
 
 public class RoboticsDataException extends RuntimeException {
     public RoboticsDataException(String message) {

@@ -18,18 +18,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
-import uk.gov.hmcts.reform.fpl.exceptions.RoboticsDataException;
+import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
-import uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper;
+import uk.gov.hmcts.reform.fpl.utils.RoboticsLoggerHelper;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
 
 import static ch.qos.logback.classic.Level.ERROR;
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,6 +52,8 @@ import static uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper.runVe
 public class RoboticsNotificationServiceTest {
     private static final String EMAIL_RECIPIENT = "recipient@example.com";
     private static final String EMAIL_FROM = "no-reply@exaple.com";
+
+    private static long CASE_ID = 12345L;
 
     private static final LocalDate NOW = LocalDate.now();
 
@@ -76,7 +79,7 @@ public class RoboticsNotificationServiceTest {
 
     @BeforeEach
     void setup() {
-        Logger logger = (Logger) getLogger(RoboticsDataVerificationHelper.class.getName());
+        Logger logger = (Logger) getLogger(RoboticsLoggerHelper.class.getName());
         logger.addAppender(logAppender);
 
         given(roboticsEmailConfiguration.getRecipient())
@@ -92,7 +95,7 @@ public class RoboticsNotificationServiceTest {
     @Test
     void notifyRoboticsOfSubmittedCaseDataShouldSendNotificationToRobotics() throws IOException {
         RoboticsData expectedRoboticsData = expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel());
-        given(roboticsDataService.prepareRoboticsData(prepareCaseData()))
+        given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
             .willReturn(expectedRoboticsData);
 
         String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData);
@@ -119,34 +122,41 @@ public class RoboticsNotificationServiceTest {
         final String otherTypeLabelValue = "Discharge of care";
 
         RoboticsData expectedRoboticsData = expectedRoboticsData(otherTypeLabelValue);
-        given(roboticsDataService.prepareRoboticsData(prepareCaseData()))
+        given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
             .willReturn(expectedRoboticsData);
 
         runVerificationsOnRoboticsData(expectedRoboticsData);
 
-        verify(logAppender).doAppend(argThat(argument -> {
-            assertThat(argument.getMessage()).isEqualTo("Email notification failed due to "
-                + "sending case submitted notification to Robotics with only Other order type selected");
-            assertThat(argument.getLevel()).isEqualTo(ERROR);
-            return true;
-        }));
+        String expectedErrorMessage = format("Email notification failed for case with id %1$s and "
+                + "family man number %2$s due to sending case submitted notification to Robotics with only "
+                + "Other order type selected", expectedRoboticsData.getCaseNumber(),
+            expectedRoboticsData.getCaseId());
+
+        verifyLoggedErrorMessage(expectedErrorMessage);
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldThrowRoboticsDataExceptionWhenOwningCourtCodeZero()
+    void notifyRoboticsOfSubmittedCaseDataShouldThrowsAndLogsRoboticsDataExceptionWhenOwningCourtCodeZero()
         throws IOException {
         CaseData caseData = prepareCaseData();
 
-        given(roboticsDataService.prepareRoboticsData(caseData))
+        RoboticsData expectedInvalidRoboticsData = invalidRoboticsDataWithZeroOwningCourt();
+
+        given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
             .willReturn(invalidRoboticsDataWithZeroOwningCourt());
 
-        CaseDetails caseDetails = prepareCaseDetails();
-        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(caseDetails));
-
         assertThrows(RoboticsDataException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(caseDetails)));
+            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(
+                new CaseNumberAdded(prepareCaseDetails())));
+
+        String expectedErrorMessage = format("Email notification failed for case with id %1$s and "
+                + "family man number %2$s due to court code with value %3$s is invalid",
+            expectedInvalidRoboticsData.getCaseNumber(), expectedInvalidRoboticsData.getCaseId(),
+            expectedInvalidRoboticsData.getOwningCourt());
+
+        verifyLoggedErrorMessage(expectedErrorMessage);
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
@@ -156,7 +166,7 @@ public class RoboticsNotificationServiceTest {
         throws IOException {
         CaseData caseData = prepareCaseData();
 
-        given(roboticsDataService.prepareRoboticsData(caseData))
+        given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
             .willReturn(expectedRoboticsData(EDUCATION_SUPERVISION_ORDER.getLabel()));
 
         assertThrows(RoboticsDataException.class,
@@ -181,5 +191,13 @@ public class RoboticsNotificationServiceTest {
         return caseDetails.toBuilder()
             .data(caseDataMap)
             .build();
+    }
+
+    private void verifyLoggedErrorMessage(final String expectedErrorMessage) {
+        verify(logAppender).doAppend(argThat(argument -> {
+            assertThat(argument.getMessage()).isEqualTo(expectedErrorMessage);
+            assertThat(argument.getLevel()).isEqualTo(ERROR);
+            return true;
+        }));
     }
 }
