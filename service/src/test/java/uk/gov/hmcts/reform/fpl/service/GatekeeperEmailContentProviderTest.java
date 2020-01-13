@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -22,15 +26,31 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDet
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, GatekeeperEmailContentProvider.class,
+    DateFormatterService.class, HearingBookingService.class})
 class GatekeeperEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
 
-    @Mock
+    @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
-    @InjectMocks
+    @Autowired
+    private ObjectMapper mapper;
+
+    @Autowired
+    private DateFormatterService dateFormatterService;
+
+    @Autowired
+    private HearingBookingService hearingBookingService;
+
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
+
+    @BeforeEach
+    void setup() {
+        this.gatekeeperEmailContentProvider = new GatekeeperEmailContentProvider(localAuthorityNameLookupConfiguration,
+            "null", dateFormatterService, hearingBookingService, mapper);
+    }
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
@@ -42,7 +62,10 @@ class GatekeeperEmailContentProviderTest {
             .put("fullStop", "No")
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", "same day")
+            .put("urgentHearing", "Yes")
+            .put("nonUrgentHearing", "No")
+            .put("firstRespondentName", "Smith")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -63,6 +86,9 @@ class GatekeeperEmailContentProviderTest {
             .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
+            .put("urgentHearing", "No")
+            .put("nonUrgentHearing", "No")
+            .put("firstRespondentName", "")
             .put("reference", "123")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/123")
             .build();
