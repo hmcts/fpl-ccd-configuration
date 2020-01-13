@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
 
 import static java.util.Set.of;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.join;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.json;
 import static uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper.runVerificationsOnRoboticsData;
@@ -45,15 +46,17 @@ public class RoboticsNotificationService {
     }
 
     private void sendSubmittedCaseData(final RoboticsNotificationEvent event) {
-        CaseDetails caseDetails = event.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        if (isNotEmpty(event.getCaseDetails()) && isNotEmpty(event.getCaseDetails().getData())) {
+            CaseDetails caseDetails = event.getCaseDetails();
+            CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, caseDetails.getId());
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, caseDetails.getId());
 
-        runVerificationsOnRoboticsData(roboticsData);
+            runVerificationsOnRoboticsData(roboticsData);
 
-        EmailData emailData = prepareEmailData(roboticsData);
-        emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
+            EmailData emailData = prepareEmailData(roboticsData);
+            emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
+        }
     }
 
     private EmailData prepareEmailData(final RoboticsData roboticsData) {

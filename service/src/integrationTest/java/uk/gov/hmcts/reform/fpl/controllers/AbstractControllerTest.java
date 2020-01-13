@@ -19,6 +19,7 @@ abstract class AbstractControllerTest {
 
     final String userAuthToken = "Bearer token";
     final String userId = "1";
+    final String serviceAuthToken = "Bearer service-token";
 
     @Autowired
     MockMvc mockMvc;
@@ -158,6 +159,14 @@ abstract class AbstractControllerTest {
 
     AboutToStartOrSubmitCallbackResponse postSubmittedEvent(String filename) {
         return postSubmittedEvent(filename, SC_OK);
+    }
+
+    MvcResult postToUrl(String urlPath) throws Exception {
+        return mockMvc
+            .perform(post(String.format("%s/%s", eventName, urlPath))
+                .header("authorization", userAuthToken)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
     }
 
     private AboutToStartOrSubmitCallbackResponse postEvent(String path, byte[] data, int expectedStatus) {
