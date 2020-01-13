@@ -7,8 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 import java.util.Objects;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 public class PeopleInCaseHelper {
 
     private PeopleInCaseHelper() {

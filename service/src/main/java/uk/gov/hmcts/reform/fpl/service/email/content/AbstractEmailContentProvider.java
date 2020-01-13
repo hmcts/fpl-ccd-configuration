@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +39,6 @@ public abstract class AbstractEmailContentProvider {
         this.hearingBookingService = hearingBookingService;
     }
 
-    @SuppressWarnings("unchecked")
     ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(Long caseId, CaseData caseData) {
         List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
         Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing()).map(
@@ -98,7 +96,6 @@ public abstract class AbstractEmailContentProvider {
         return ordersAndDirectionsBuilder.build();
     }
 
-    @SuppressWarnings("unchecked")
     private void appendOrders(Orders orders, ImmutableList.Builder<String> builder) {
         defaultIfNull(orders.getOrderType(), Collections.<OrderType>emptyList()).stream()
             .map(OrderType::getLabel)
@@ -110,13 +107,10 @@ public abstract class AbstractEmailContentProvider {
             .forEach(builder::add);
     }
 
-    @SuppressWarnings("unchecked")
     private void appendDirections(Orders orders, ImmutableList.Builder<String> builder) {
-        Optional.ofNullable(orders.getEmergencyProtectionOrderDirections()).ifPresent(
-            emergencyProtectionOrderDirections -> {
-                for (EmergencyProtectionOrderDirectionsType epoDirectionsType : emergencyProtectionOrderDirections) {
-                    builder.add(epoDirectionsType.getLabel());
-                }
-            });
+        defaultIfNull(orders.getEmergencyProtectionOrderDirections(),
+            Collections.<EmergencyProtectionOrderDirectionsType>emptyList()).stream()
+            .map(EmergencyProtectionOrderDirectionsType::getLabel)
+            .forEach(builder::add);
     }
 }
