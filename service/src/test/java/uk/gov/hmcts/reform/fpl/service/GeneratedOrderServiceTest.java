@@ -299,8 +299,8 @@ class GeneratedOrderServiceTest {
                         .put("orderTitle", "Interim care order")
                         .put("childrenAct", "Section 38 Children Act 1989")
                         .put("orderDetails",
-                            "It is ordered that the child is placed in the care of Example Local Authority" +
-                                " until the end of the proceedings.");
+                            "It is ordered that the child is placed in the care of Example Local Authority"
+                                + " until the end of the proceedings.");
                 } else if (typeAndDoc.getSubtype() == FINAL) {
                     expectedMap
                         .put("orderTitle", "Care order")

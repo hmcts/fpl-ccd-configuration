@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 

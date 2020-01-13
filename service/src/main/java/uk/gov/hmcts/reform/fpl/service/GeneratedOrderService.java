@@ -200,6 +200,7 @@ public class GeneratedOrderService {
     }
 
     private boolean hasInterimSubtype(OrderTypeAndDocument typeAndDoc) {
-        return typeAndDoc.getType() != BLANK_ORDER && typeAndDoc.getSubtype() != null && typeAndDoc.getSubtype() == INTERIM;
+        return typeAndDoc.getType() != BLANK_ORDER && typeAndDoc.getSubtype() != null
+            && typeAndDoc.getSubtype() == INTERIM;
     }
 }
