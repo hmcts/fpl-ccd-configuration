@@ -71,11 +71,8 @@ public class OthersController {
 
         final List <Element<Others>> confidentialOthersForCaseData = othersService.prepareConfidentialOthersForCaseData(confidentialOther);
 
-        if(!confidentialOthersForCaseData.isEmpty())
-        {
-            //puts this into confidentialOthers only if not empty as tab appears if not
-            confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersForCaseData, OTHER);
-        }
+        //puts this into confidentialOthers only if not empty as tab appears if not
+        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersForCaseData, OTHER);
 
         Others others = othersService.modifyHiddenValues(caseData.getOthers());
 
