@@ -23,7 +23,8 @@ public class TimeRangeValidatorTest extends TimeValidatorTest {
     }
 
     class Bar {
-        @TimeRange(rangeBefore = @TimeDifference(amount = 2, unit = DAYS), rangeAfter = @TimeDifference(amount = 7, unit = MONTHS))
+        @TimeRange(rangeBefore = @TimeDifference(amount = 2, unit = DAYS),
+            rangeAfter = @TimeDifference(amount = 7, unit = MONTHS))
         public LocalDateTime now = LocalDateTime.now();
     }
 }

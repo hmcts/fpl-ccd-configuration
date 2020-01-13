@@ -6,22 +6,23 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.validation.groups.EpoOrderGroup.EPOAddressGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.groups.Default;
 
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Address {
-    @NotBlank(message = "Enter a valid address for the contact", groups = { EPOAddressGroup.class })
+    @NotBlank(message = "Enter a valid address for the contact", groups = { Default.class, EPOAddressGroup.class })
     private final String addressLine1;
     private final String addressLine2;
     private final String addressLine3;
     private final String postTown;
     private final String county;
-    @NotBlank(message = "Enter a postcode for the contact", groups = { EPOAddressGroup.class })
+    @NotBlank(message = "Enter a postcode for the contact", groups = { Default.class, EPOAddressGroup.class })
     private final String postcode;
     private final String country;
 

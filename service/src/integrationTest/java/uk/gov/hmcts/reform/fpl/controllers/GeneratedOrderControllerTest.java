@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -39,12 +40,14 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.careOrderRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.createEPORequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -113,7 +116,13 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        GeneratedOrder expectedC21Order = buildExpectedC21Order();
+        GeneratedOrder expectedC21Order = buildExpectedOrder(BLANK_ORDER)
+            .title("Example Order")
+            .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
+            .build();
+
         aboutToSubmitAssertions(caseData, expectedC21Order);
     }
 
@@ -123,7 +132,17 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        GeneratedOrder expectedCareOrder = buildExpectedCareOrder();
+        GeneratedOrder expectedCareOrder = buildExpectedOrder(CARE_ORDER).build();
+        aboutToSubmitAssertions(caseData, expectedCareOrder);
+    }
+
+    @Test
+    void aboutToSubmitShouldAddEPOToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createEPORequest());
+
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        GeneratedOrder expectedCareOrder = buildExpectedOrder(EMERGENCY_PROTECTION_ORDER).build();
         aboutToSubmitAssertions(caseData, expectedCareOrder);
     }
 
@@ -137,28 +156,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
     }
 
-    private GeneratedOrder buildExpectedC21Order() {
+    private GeneratedOrder.GeneratedOrderBuilder buildExpectedOrder(GeneratedOrderType generatedOrderType) {
         return GeneratedOrder.builder()
-            .type(BLANK_ORDER)
-            .document(DocumentReference.builder()
-                .url("some url")
-                .binaryUrl("some binary url")
-                .filename("file.pdf").build())
-            .title("Example Order")
-            .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .legalAdvisorName("Peter Parker")
-                .build())
-            .build();
-    }
-
-    private GeneratedOrder buildExpectedCareOrder() {
-        return GeneratedOrder.builder()
-            .type(CARE_ORDER)
+            .type(generatedOrderType)
             .document(DocumentReference.builder()
                 .url("some url")
                 .binaryUrl("some binary url")
@@ -169,16 +169,19 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build())
-            .build();
+                .build());
     }
 
     private void aboutToSubmitAssertions(CaseData caseData, GeneratedOrder expectedOrder) {
+        assertThat(caseData.getOrderTypeAndDocument()).isNull();
+        assertThat(caseData.getOrder()).isNull();
+        assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
+        assertThat(caseData.getEpoChildren()).isNull();
+        assertThat(caseData.getEpoEndDate()).isNull();
+        assertThat(caseData.getEpoPhrase()).isNull();
+        assertThat(caseData.getEpoType()).isNull();
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
-        assertThat(caseData.getOrderTypeAndDocument()).isEqualTo(null);
-        assertThat(caseData.getOrder()).isEqualTo(null);
-        assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
         assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
     }
 

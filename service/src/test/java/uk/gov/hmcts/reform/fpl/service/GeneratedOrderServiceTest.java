@@ -7,10 +7,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -19,17 +21,22 @@ import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -216,6 +223,16 @@ class GeneratedOrderServiceTest {
 
             assertThat(templateData).isEqualTo(expectedMap);
         }
+
+        @Test
+        void shouldCreateExpectedMapForEmergencyProtectionOrderWhenGivenPopulatedCaseData() {
+            CaseData caseData = createPopulatedCaseData(EMERGENCY_PROTECTION_ORDER, localDate);
+
+            Map<String, Object> expectedMap = createExpectedOrderData(date, EMERGENCY_PROTECTION_ORDER);
+            Map<String, Object> templateData = service.getOrderTemplateData(caseData);
+
+            assertThat(templateData).isEqualTo(expectedMap);
+        }
     }
 
     @Test
@@ -227,6 +244,31 @@ class GeneratedOrderServiceTest {
 
         assertThat(expectedMostRecentUploadedOrderDocumentUrl).isEqualTo(
             returnedMostRecentUploadedOrderDocumentUrl);
+    }
+
+    @Test
+    void shouldRemovePropertiesOnCaseDetailsUsedForBlankOrderCapture() {
+        CaseDetails caseDetails = service.removeOrderProperties(createPopulatedCaseDetails(), BLANK_ORDER);
+        assertRemovalOfCommonOrderFields(caseDetails);
+    }
+
+    @Test
+    void shouldRemovePropertiesOnCaseDetailsUsedForEmergencyProtectionOrderCapture() {
+        CaseDetails caseDetails =
+            service.removeOrderProperties(createPopulatedCaseDetails(), EMERGENCY_PROTECTION_ORDER);
+
+        assertRemovalOfCommonOrderFields(caseDetails);
+
+        assertThat(caseDetails.getData().get("epoChildren")).isNull();
+        assertThat(caseDetails.getData().get("epoEndDate")).isNull();
+        assertThat(caseDetails.getData().get("epoPhrase")).isNull();
+        assertThat(caseDetails.getData().get("epoType")).isNull();
+    }
+
+    private void assertRemovalOfCommonOrderFields(CaseDetails caseDetails) {
+        assertThat(caseDetails.getData().get("orderTypeAndDocument")).isNull();
+        assertThat(caseDetails.getData().get("order")).isNull();
+        assertThat(caseDetails.getData().get("judgeAndLegalAdvisor")).isNull();
     }
 
     private void assertCommonC21Fields(GeneratedOrder order) {
@@ -256,6 +298,17 @@ class GeneratedOrderServiceTest {
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails",
                         "It is ordered that the child is placed in the care of Example Local Authority.");
+                break;
+            case EMERGENCY_PROTECTION_ORDER:
+                expectedMap
+                    .put("orderType", EMERGENCY_PROTECTION_ORDER)
+                    .put("localAuthorityName", "Example Local Authority")
+                    .put("childrenDescription", "Test description")
+                    .put("epoType", REMOVE_TO_ACCOMMODATION)
+                    .put("includePhrase", "Yes")
+                    .put("removalAddress", "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
+                    .put("epoEndDateTime",  dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW,
+                        "d MMMM yyyy 'at' h:mma"));
                 break;
             default:
         }
@@ -297,6 +350,29 @@ class GeneratedOrderServiceTest {
                         .document(DocumentReference.builder().build())
                         .build());
                 break;
+            case EMERGENCY_PROTECTION_ORDER:
+                caseDataBuilder
+                    .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                        .type(EMERGENCY_PROTECTION_ORDER)
+                        .document(DocumentReference.builder().build())
+                        .build())
+                    .epoChildren(EPOChildren.builder()
+                        .descriptionNeeded("Yes")
+                        .description("Test description")
+                        .build())
+                    .epoEndDate(NOW)
+                    .epoPhrase(EPOPhrase.builder()
+                        .includePhrase("Yes")
+                        .build())
+                    .epoType(REMOVE_TO_ACCOMMODATION)
+                    .epoRemovalAddress(Address.builder()
+                        .addressLine1("1 Main Street")
+                        .addressLine2("Lurgan")
+                        .postTown("BT66 7PP")
+                        .county("Armagh")
+                        .country("United Kingdom")
+                        .build());
+                break;
             default:
         }
 
@@ -321,6 +397,19 @@ class GeneratedOrderServiceTest {
             .build();
 
         return caseDataBuilder.build();
+    }
+
+    private CaseDetails createPopulatedCaseDetails() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put("orderTypeAndDocument", "");
+        caseData.put("order", "");
+        caseData.put("judgeAndLegalAdvisor", "");
+        caseData.put("EPOChildren", "");
+        caseData.put("epoEndDate", "");
+        caseData.put("epoPhrase", "");
+        caseData.put("epoType", "");
+
+        return CaseDetails.builder().data(caseData).build();
     }
 
     private String formatTypeToFileName(String type) {

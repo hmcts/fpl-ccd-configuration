@@ -33,4 +33,9 @@ public class CoreCaseDataStoreLoader {
         String response = ResourceReader.readString("core-case-data-store-api/care-order.json");
         return mapper.readValue(response, CallbackRequest.class);
     }
+
+    public static CallbackRequest createEPORequest() throws IOException {
+        String response = ResourceReader.readString("core-case-data-store-api/emergency-protection-order.json");
+        return mapper.readValue(response, CallbackRequest.class);
+    }
 }

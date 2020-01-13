@@ -12,8 +12,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.validation.groups.EpoOrderGroup.EPOAddressGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.EpoOrderGroup.EPOEndDateGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 
 import java.util.List;
 
@@ -34,7 +34,8 @@ public class ValidateEmergencyProtectionOrderController {
     }
 
     @PostMapping("/address/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEventValidateAddress(@RequestBody CallbackRequest callbackrequest) {
+    public AboutToStartOrSubmitCallbackResponse
+        handleMidEventValidateAddress(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -51,7 +52,8 @@ public class ValidateEmergencyProtectionOrderController {
     }
 
     @PostMapping("/date/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handlleMidEventValidateDate(@RequestBody CallbackRequest callbackrequest) {
+    public AboutToStartOrSubmitCallbackResponse
+        handlleMidEventValidateDate(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 

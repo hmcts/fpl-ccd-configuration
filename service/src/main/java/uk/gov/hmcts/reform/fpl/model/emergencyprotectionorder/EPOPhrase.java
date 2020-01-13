@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.emergencyProtectionOrder;
+package uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
