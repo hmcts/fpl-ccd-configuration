@@ -138,5 +138,47 @@
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "jason.po@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "jay.po@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "jason2.po@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "jay2.po@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "jason3.po@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "jay3.po@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
   }
 ]
