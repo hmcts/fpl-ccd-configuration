@@ -221,6 +221,24 @@ class HearingBookingServiceTest {
             assertThat(returnedHearings).isEqualTo(hearingBookings);
         }
 
+        @Test
+        void shouldReturnEmptyListWhenUpdatedHearingButStartDateIsNotChanged() {
+            HearingBooking.HearingBookingBuilder builder = HearingBooking.builder()
+                .startDate(date.plusDays(5));
+
+            List<Element<HearingBooking>> existingHearing = List.of(element(hearingId, builder.build()));
+
+            List<Element<HearingBooking>> newHearing = List.of(element(hearingId, builder
+                .endDate(date.plusDays(10))
+                .type("hearing type")
+                .venue("venue")
+                .build()));
+
+            List<Element<HearingBooking>> returnedHearings = service.getChangedHearings(existingHearing, newHearing);
+
+            assertThat(returnedHearings).isEmpty();
+        }
+
         private Element<HearingBooking> hearingBookingWithIdAndStartDate(UUID hearingId, int i) {
             return element(hearingId, HearingBooking.builder()
                 .startDate(date.plusDays(i))
