@@ -26,6 +26,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
@@ -90,8 +91,7 @@ public class GeneratedOrderService {
         return Element.<GeneratedOrder>builder()
             .id(randomUUID())
             .value(orderBuilder
-                .type(typeAndDocument.getType())
-                .subtypeAndType(getFullTypeAsString(typeAndDocument))
+                .type(getFullTypeAsString(typeAndDocument))
                 .document(typeAndDocument.getDocument())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
@@ -112,17 +112,18 @@ public class GeneratedOrderService {
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", caseData.getOrder().getDetails());
                 break;
+
             case CARE_ORDER:
                 if (caseData.getOrderTypeAndDocument().getSubtype() == INTERIM) {
                     orderTemplateBuilder
                         .put("orderTitle", "Interim care order")
                         .put("childrenAct", "Section 38 Children Act 1989");
-
-                } else {
+                } else if (caseData.getOrderTypeAndDocument().getSubtype() == FINAL) {
                     orderTemplateBuilder
                         .put("orderTitle", "Care order")
                         .put("childrenAct", "Section 31 Children Act 1989");
                 }
+
                 orderTemplateBuilder
                     .put("orderType", CARE_ORDER)
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),

@@ -129,7 +129,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
     private GeneratedOrder buildExpectedC21Order() {
         return GeneratedOrder.builder()
-            .type(BLANK_ORDER)
+            .type(BLANK_ORDER.getLabel())
             .document(DocumentReference.builder()
                 .url("some url")
                 .binaryUrl("some binary url")
@@ -148,7 +148,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
     private GeneratedOrder buildExpectedCareOrder() {
         return GeneratedOrder.builder()
-            .type(CARE_ORDER)
+            .type(CARE_ORDER.getLabel())
             .document(DocumentReference.builder()
                 .url("some url")
                 .binaryUrl("some binary url")
