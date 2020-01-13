@@ -228,6 +228,8 @@ dependencies {
   testCompile group: 'org.mockito', name :'mockito-core', version: '3.0.0'
   testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.18'
 
+  testCompile group:  'org.springframework.security', name: 'spring-security-test'
+
   integrationTestCompile configurations.testRuntime {
     exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
     exclude group: 'io.springfox'
