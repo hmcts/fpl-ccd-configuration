@@ -74,7 +74,7 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
   I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('Judiciary creates multiple orders for the case ', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   await orderFunctions.createOrder(I, createOrderEventPage, orders[0]);
   let orderTime = new Date();
