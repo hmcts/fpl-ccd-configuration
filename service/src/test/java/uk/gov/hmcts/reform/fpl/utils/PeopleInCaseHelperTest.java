@@ -24,14 +24,14 @@ class PeopleInCaseHelperTest {
     void shouldReturnEmptyStringWhenNoRespondents() {
 
         String respondentName = getFirstRespondentLastName(null);
-        assertThat(respondentName).isEqualTo("");
+        assertThat(respondentName).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyStringWhenRespondentWithNoPartyPresent() {
 
         String respondentName = getFirstRespondentLastName(wrapElements(Respondent.builder().build()));
-        assertThat(respondentName).isEqualTo("");
+        assertThat(respondentName).isEmpty();
     }
 
     @Test
@@ -41,6 +41,6 @@ class PeopleInCaseHelperTest {
             .build());
 
         String respondentName = getFirstRespondentLastName(respondents);
-        assertThat(respondentName).isEqualTo("");
+        assertThat(respondentName).isEmpty();
     }
 }

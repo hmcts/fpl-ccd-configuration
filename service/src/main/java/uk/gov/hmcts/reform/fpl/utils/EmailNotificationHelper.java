@@ -24,10 +24,10 @@ public class EmailNotificationHelper {
     }
 
     public static String buildSubjectLine(final CaseData caseData) {
-        final String lastName = getFirstRespondentLastName(caseData.getRespondents1());
+        final String respondentlastName = getFirstRespondentLastName(caseData.getRespondents1());
         final String familyManCaseNumber = defaultIfNull(caseData.getFamilyManCaseNumber(), "");
 
-        return Stream.of(lastName, familyManCaseNumber)
+        return Stream.of(respondentlastName, familyManCaseNumber)
             .filter(StringUtils::isNotBlank)
             .collect(joining(", "));
     }

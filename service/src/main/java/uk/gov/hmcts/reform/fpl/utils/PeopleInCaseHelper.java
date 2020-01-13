@@ -16,10 +16,7 @@ public class PeopleInCaseHelper {
     }
 
     public static String getFirstRespondentLastName(List<Element<Respondent>> respondents) {
-        return isEmpty(respondents) ? "" : respondents
-            .stream()
-            .filter(Objects::nonNull)
-            .map(Element::getValue)
+        return ElementUtils.unwrapElements(respondents).stream()
             .filter(Objects::nonNull)
             .findFirst()
             .map(Respondent::getParty)
