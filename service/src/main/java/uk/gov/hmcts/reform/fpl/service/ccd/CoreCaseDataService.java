@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
-import uk.gov.hmcts.reform.fpl.model.ccd.CoreCaseApiSearchParameter;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 @Service
@@ -61,8 +60,8 @@ public class CoreCaseDataService {
                 caseDataContent);
     }
 
-    public CaseDetails performCaseSearch(final CoreCaseApiSearchParameter searchParameter) {
+    public CaseDetails findCaseDetailsById(final String caseId) {
         String userAuthToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
-        return coreCaseDataApi.getCase(userAuthToken, authTokenGenerator.generate(), searchParameter.getCaseId());
+        return coreCaseDataApi.getCase(userAuthToken, authTokenGenerator.generate(), caseId);
     }
 }
