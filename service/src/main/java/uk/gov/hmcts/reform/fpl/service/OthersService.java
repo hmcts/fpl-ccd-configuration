@@ -88,8 +88,15 @@ public class OthersService {
     }
 
     public Others modifyHiddenValues(Others others) {
-        Others other = others;
         final List<Element<Other>> othersForPeopleTab = new ArrayList<>();
+        Element<Other> firstOther;
+
+        if(others.getFirstOther().containsConfidentialDetails()) {
+            firstOther = Element.<Other>builder().value(others.getFirstOther().toBuilder().address(null).build()).build();
+        }
+        else {
+            firstOther = Element.<Other>builder().value(others.getFirstOther()).build();
+        }
 
         others.getAdditionalOthers().stream().forEach(additionalOther -> {
             if (additionalOther.getValue().containsConfidentialDetails()) {
@@ -107,7 +114,7 @@ public class OthersService {
 
         });
 
-        return other.toBuilder().additionalOthers(othersForPeopleTab).build();
+        return others.toBuilder().additionalOthers(othersForPeopleTab).firstOther(firstOther.getValue()).build();
     }
 }
 
