@@ -2,6 +2,7 @@ const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const orders = require('../fixtures/orders.js');
 const representatives = require('../fixtures/representatives.js');
+const orderFunctions = require('../helpers/generated_order_helper');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -36,7 +37,7 @@ Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 });
 
-Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
+xScenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
   async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {}) {
     await caseViewPage.goToNewActions(event);
     I_doActionsOnEditPage();
@@ -68,7 +69,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     summaryText, descriptionText);
 });
 
-Scenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
+xScenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
   uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
@@ -82,7 +83,7 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
-Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
+xScenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
@@ -98,7 +99,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeAnswerInTab('4', 'C2 2', 'Description', 'Jessica Pearson C2');
 });
 
-Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
+xScenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
@@ -139,41 +140,22 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
 
 Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-  await createOrderEventPage.selectType(orders[0].type);
-  await I.retryUntilExists(() => I.click('Continue'), '#order_title');
-  await createOrderEventPage.enterC21OrderDetails();
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[0].judgeAndLegalAdvisor.judgeLastName, orders[0].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.completeEvent('Save and continue');
+  await orderFunctions.createOrder(I, createOrderEventPage, orders[0]);
   let orderTime = new Date();
-
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-  caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'Order 1', 'Type of order', orders[0].type);
-  I.seeAnswerInTab(2, 'Order 1', 'Order title', orders[0].title);
-  I.seeAnswerInTab(4, 'Order 1', 'Order document', orders[0].document);
-  I.seeAnswerInTab(5, 'Order 1', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[0].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[0].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[0].judgeAndLegalAdvisor.legalAdvisorName);
+  await orderFunctions.assertOrder(I, caseViewPage, orders[0], 1, orderTime);
 
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-  await createOrderEventPage.selectType(orders[1].type);
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[1].judgeAndLegalAdvisor.judgeLastName, orders[1].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.retryUntilExists(() => I.click('Continue'), '#orderFurtherDirections_directionsNeeded');
-  await createOrderEventPage.enterDirections('example directions');
-  await I.completeEvent('Save and continue');
+  await orderFunctions.createOrder(I, createOrderEventPage, orders[1]);
   orderTime = new Date();
-
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-  caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'Order 2', 'Type of order', orders[1].type);
-  I.seeAnswerInTab(2, 'Order 2', 'Order document', orders[1].document);
-  I.seeAnswerInTab(3, 'Order 2', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[1].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[1].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[1].judgeAndLegalAdvisor.legalAdvisorName);
+  await orderFunctions.assertOrder(I, caseViewPage, orders[1], 2, orderTime);
+
+  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+  await orderFunctions.createOrder(I, createOrderEventPage, orders[2]);
+  orderTime = new Date();
+  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+  await orderFunctions.assertOrder(I, caseViewPage, orders[2], 3, orderTime);
 });
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
