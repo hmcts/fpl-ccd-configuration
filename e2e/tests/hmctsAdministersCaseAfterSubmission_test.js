@@ -2,7 +2,7 @@ const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const orders = require('../fixtures/orders.js');
 const representatives = require('../fixtures/representatives.js');
-const orderFunctions = require('../fragments/orderFunctions');
+const orderFunctions = require('../helpers/generated_order_helper');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
