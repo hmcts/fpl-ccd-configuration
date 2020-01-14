@@ -165,10 +165,6 @@ public class GeneratedOrderController {
     }
 
     private DocmosisTemplates getDocmosisTemplateType(GeneratedOrderType type) {
-        if (type.equals(EMERGENCY_PROTECTION_ORDER)) {
-            return EPO;
-        }
-
-        return ORDER;
+        return type == EMERGENCY_PROTECTION_ORDER ? EPO : ORDER;
     }
 }

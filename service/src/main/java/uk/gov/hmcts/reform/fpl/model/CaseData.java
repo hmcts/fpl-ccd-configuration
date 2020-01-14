@@ -234,7 +234,7 @@ public class CaseData {
     private final LocalDateTime epoEndDate;
     private final String epoPhrase;
     private final EPOType epoType;
-    @Valid()
+    @Valid
     private final Address epoRemovalAddress;
 
     @JsonIgnore

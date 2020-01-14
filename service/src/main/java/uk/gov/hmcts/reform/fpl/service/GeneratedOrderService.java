@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.GenerateEPOKeys;
+import uk.gov.hmcts.reform.fpl.enums.GenerateOrderKeys;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.EPOChildren;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -165,15 +168,8 @@ public class GeneratedOrderService {
     }
 
     public CaseDetails removeOrderProperties(CaseDetails caseDetails) {
-        caseDetails.getData().remove("epoRemovalAddress");
-        caseDetails.getData().remove("epoChildren");
-        caseDetails.getData().remove("epoEndDate");
-        caseDetails.getData().remove("epoPhrase");
-        caseDetails.getData().remove("epoType");
-        caseDetails.getData().remove("orderTypeAndDocument");
-        caseDetails.getData().remove("order");
-        caseDetails.getData().remove("judgeAndLegalAdvisor");
-        caseDetails.getData().remove("orderFurtherDirections");
+        Arrays.asList(GenerateOrderKeys.values(), GenerateEPOKeys.values())
+            .forEach(key -> caseDetails.getData().remove(key));
 
         return caseDetails;
     }
@@ -205,7 +201,7 @@ public class GeneratedOrderService {
     }
 
     private String getChildrenDescription(EPOChildren epoChildren) {
-        if (epoChildren.getDescriptionNeeded().equals("Yes")) {
+        if ("Yes".equals(epoChildren.getDescriptionNeeded())) {
             return epoChildren.getDescription();
         }
 

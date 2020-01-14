@@ -18,13 +18,7 @@ class AddressTest {
 
     @Test
     void shouldFormatAddressAsStringWhenProvidedPopulatedAddress() {
-        Address address = getPopulatedAddress();
-        assertThat(address.getAddressAsString()).isEqualTo("Flat 1, Apartment block 2, Lurgan, Craigavon, Armagh,"
-            + " BT66 7RR, UK");
-    }
-
-    private Address getPopulatedAddress() {
-        return Address.builder()
+        Address address = Address.builder()
             .addressLine1("Flat 1")
             .addressLine2("Apartment block 2")
             .addressLine3("Lurgan")
@@ -33,5 +27,8 @@ class AddressTest {
             .postcode("BT66 7RR")
             .country("UK")
             .build();
+
+        assertThat(address.getAddressAsString()).isEqualTo("Flat 1, Apartment block 2, Lurgan, Craigavon, Armagh,"
+            + " BT66 7RR, UK");
     }
 }

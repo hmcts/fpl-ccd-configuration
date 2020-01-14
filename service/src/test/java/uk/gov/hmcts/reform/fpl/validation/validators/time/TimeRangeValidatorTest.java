@@ -14,12 +14,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TimeRangeValidatorTest extends TimeValidatorTest {
 
     ValidTimeRangeValidation validTimeRangeValidation = new ValidTimeRangeValidation();
-    InvalidTimeRangeValidator invalidTimeRangeValidatorB = new InvalidTimeRangeValidator();
+    InvalidTimeRangeValidation invalidTimeRangeValidtion = new InvalidTimeRangeValidation();
 
     @Test
     void shouldReturnAnErrorWhenDateTimeExceedsRange() {
-        final Set<ConstraintViolation<InvalidTimeRangeValidator>> validate =
-            validator.validate(invalidTimeRangeValidatorB);
+        final Set<ConstraintViolation<InvalidTimeRangeValidation>> validate =
+            validator.validate(invalidTimeRangeValidtion);
         assertThat(validate).size().isEqualTo(1);
     }
 
@@ -35,7 +35,7 @@ public class TimeRangeValidatorTest extends TimeValidatorTest {
         public LocalDateTime now = LocalDateTime.now().plusDays(2);
     }
 
-    class InvalidTimeRangeValidator {
+    class InvalidTimeRangeValidation {
         @TimeRange(rangeAfter = @TimeDifference(amount = 7, unit = DAYS))
         public LocalDateTime now = LocalDateTime.now().plusDays(9);
     }

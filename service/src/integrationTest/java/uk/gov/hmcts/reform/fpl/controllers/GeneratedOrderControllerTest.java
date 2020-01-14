@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.GenerateEPOKeys;
+import uk.gov.hmcts.reform.fpl.enums.GenerateOrderKeys;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
@@ -32,6 +34,7 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -101,8 +104,6 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
         GeneratedOrder expectedC21Order = buildExpectedOrder(BLANK_ORDER)
             .title("Example Order")
             .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -110,27 +111,23 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
             .build();
 
-        aboutToSubmitAssertions(caseData, expectedC21Order);
+        aboutToSubmitAssertions(callbackResponse.getData(), expectedC21Order);
     }
 
     @Test
     void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(careOrderRequest());
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
         GeneratedOrder expectedCareOrder = buildExpectedOrder(CARE_ORDER).build();
-        aboutToSubmitAssertions(caseData, expectedCareOrder);
+        aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
     }
 
     @Test
     void aboutToSubmitShouldAddEPOToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createEPORequest());
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
         GeneratedOrder expectedCareOrder = buildExpectedOrder(EMERGENCY_PROTECTION_ORDER).build();
-        aboutToSubmitAssertions(caseData, expectedCareOrder);
+        aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
     }
 
     @Test
@@ -159,16 +156,11 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build());
     }
 
-    private void aboutToSubmitAssertions(CaseData caseData, GeneratedOrder expectedOrder) {
-        assertThat(caseData.getOrderTypeAndDocument()).isNull();
-        assertThat(caseData.getOrder()).isNull();
-        assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
-        assertThat(caseData.getEpoRemovalAddress()).isNull();
-        assertThat(caseData.getEpoChildren()).isNull();
-        assertThat(caseData.getEpoEndDate()).isNull();
-        assertThat(caseData.getEpoPhrase()).isNull();
-        assertThat(caseData.getEpoType()).isNull();
-        assertThat(caseData.getOrderFurtherDirections()).isNull();
+    private void aboutToSubmitAssertions(Map<String, Object> data, GeneratedOrder expectedOrder) {
+        Arrays.asList(GenerateOrderKeys.values(), GenerateEPOKeys.values())
+            .forEach(key -> assertThat(data.get(key)).isNull());
+
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
         assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);

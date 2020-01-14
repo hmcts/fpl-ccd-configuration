@@ -34,14 +34,14 @@ public class ValidateEmergencyProtectionOrderController {
     }
 
     @PostMapping("/address/mid-event")
-    public AboutToStartOrSubmitCallbackResponse
-        handleMidEventValidateAddress(@RequestBody CallbackRequest callbackrequest) {
+    public AboutToStartOrSubmitCallbackResponse handleMidEventValidateAddress(
+        @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<String> errors = List.of();
 
-        if (caseData.getEpoType().equals(PREVENT_REMOVAL)) {
+        if (caseData.getEpoType() == PREVENT_REMOVAL) {
             errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
         }
 
@@ -52,8 +52,8 @@ public class ValidateEmergencyProtectionOrderController {
     }
 
     @PostMapping("/date/mid-event")
-    public AboutToStartOrSubmitCallbackResponse
-        handlleMidEventValidateDate(@RequestBody CallbackRequest callbackrequest) {
+    public AboutToStartOrSubmitCallbackResponse handlleMidEventValidateDate(
+        @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 

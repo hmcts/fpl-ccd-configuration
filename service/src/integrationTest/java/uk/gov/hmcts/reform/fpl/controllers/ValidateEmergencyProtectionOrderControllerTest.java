@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 class ValidateEmergencyProtectionOrderControllerTest extends AbstractControllerTest {
 
     @Autowired
-        private Time time;
+    private Time time;
 
     ValidateEmergencyProtectionOrderControllerTest() {
         super("validate-emergency-protection-order");

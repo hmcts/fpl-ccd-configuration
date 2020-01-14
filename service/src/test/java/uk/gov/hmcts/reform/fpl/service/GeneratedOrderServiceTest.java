@@ -10,6 +10,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.GenerateEPOKeys;
+import uk.gov.hmcts.reform.fpl.enums.GenerateOrderKeys;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -246,18 +249,13 @@ class GeneratedOrderServiceTest {
 
         assertRemovalOfCommonOrderFields(caseDetails);
 
-        assertThat(caseDetails.getData().get("epoRemovalAddress")).isNull();
-        assertThat(caseDetails.getData().get("epoChildren")).isNull();
-        assertThat(caseDetails.getData().get("epoEndDate")).isNull();
-        assertThat(caseDetails.getData().get("epoPhrase")).isNull();
-        assertThat(caseDetails.getData().get("epoType")).isNull();
+        Arrays.asList(GenerateEPOKeys.values())
+            .forEach(key -> assertThat(caseDetails.getData().get(key)).isNull());
     }
 
     private void assertRemovalOfCommonOrderFields(CaseDetails caseDetails) {
-        assertThat(caseDetails.getData().get("orderTypeAndDocument")).isNull();
-        assertThat(caseDetails.getData().get("order")).isNull();
-        assertThat(caseDetails.getData().get("judgeAndLegalAdvisor")).isNull();
-        assertThat(caseDetails.getData().get("orderFurtherDirections")).isNull();
+        Arrays.asList(GenerateOrderKeys.values())
+            .forEach(key -> assertThat(caseDetails.getData().get(key)).isNull());
     }
 
     private void assertCommonC21Fields(GeneratedOrder order) {
