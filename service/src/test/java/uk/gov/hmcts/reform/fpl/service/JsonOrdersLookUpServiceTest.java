@@ -43,7 +43,7 @@ class JsonOrdersLookUpServiceTest {
             .directions(ImmutableList.of(
                 DirectionConfiguration.builder()
                     .title("Test SDO type 1")
-                    .text("• Test body 1 \n\n• Two")
+                    .text("- Test body 1 \n\n- Two")
                     .assignee(ALL_PARTIES)
                     .display(Display.builder()
                         .due(Display.Due.ON)
