@@ -57,10 +57,14 @@ public class OthersController {
 
         //caseDetails.getData().put("others", othersService.prepareOthers(caseData));
 
-        if(!caseData.getConfidentialOthers().isEmpty())
-        {
-            Others others = othersService.prepareOthers(caseData);
-        }
+//        if(!caseData.getConfidentialOthers().isEmpty())
+//        {
+//            List <Element<Other>> prepareOthers = othersService.prepareOthers(caseData);
+//            System.out.println("Prepare others" + prepareOthers);
+//            List <Element<Other>> confidentialOthersVar = caseData.getConfidentialOthers();
+//            System.out.println("Confidential others" + confidentialOthersVar);
+//            //caseDetails.getData().put("others", prepareOthers);
+//        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
