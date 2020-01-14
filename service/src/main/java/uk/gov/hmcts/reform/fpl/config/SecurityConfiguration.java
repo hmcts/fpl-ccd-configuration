@@ -58,7 +58,8 @@ public class SecurityConfiguration {
             http.requestMatchers()
                 .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/**")
                 .and()
-                .addFilter(authCheckerServiceAndUserFilter);
+                .addFilter(authCheckerServiceAndUserFilter)
+                .csrf().disable();
         }
 
     }
