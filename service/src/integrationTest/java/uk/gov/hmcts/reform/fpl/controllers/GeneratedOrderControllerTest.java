@@ -229,7 +229,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         @ParameterizedTest
-        @MethodSource("someMethod")
+        @MethodSource("midEventArgumentSource")
         void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails, String fileName,
                                                                        DocmosisTemplates templateName) {
             final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -255,7 +255,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             reset(uploadDocumentService);
         }
 
-        private Stream<Arguments> someMethod() {
+        private Stream<Arguments> midEventArgumentSource() {
             return Stream.of(
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetailsWithFurtherDirections(), "care_order.pdf", ORDER),
