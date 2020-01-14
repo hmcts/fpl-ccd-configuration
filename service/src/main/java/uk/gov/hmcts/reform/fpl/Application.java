@@ -5,12 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
 @SpringBootApplication
-@EnableFeignClients(basePackages = {
-    "uk.gov.hmcts.reform.idam.client",
-    "uk.gov.hmcts.reform.rd.client"})
+@EnableFeignClients(basePackages = {"uk.gov.hmcts.reform.idam.client", "uk.gov.hmcts.reform.rd.client"})
 @ComponentScan
 @EnableAsync
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
