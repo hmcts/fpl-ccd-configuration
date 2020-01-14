@@ -29,7 +29,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('HMCTS admin enters FamilyMan reference number@f', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
+Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();
   await I.completeEvent('Save and continue');
@@ -137,7 +137,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('HMCTS admin creates multiple orders for the case@f', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   await createOrderEventPage.selectType(orders[0].type);
   await I.retryUntilExists(() => I.click('Continue'), '#order_title');
