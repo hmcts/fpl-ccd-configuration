@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 public class SecurityConfiguration {
     @Configuration
@@ -55,11 +57,19 @@ public class SecurityConfiguration {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers()
+            http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/**")
+                .permitAll()
                 .and()
-                .addFilter(authCheckerServiceAndUserFilter)
-                .csrf().disable();
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS)
+                .and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .addFilter(authCheckerServiceAndUserFilter);
         }
 
     }
