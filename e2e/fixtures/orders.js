@@ -26,7 +26,7 @@ module.exports = [
   {
     type: 'Care order',
     subtype: 'Final',
-    fullType: 'Care order',
+    fullType: 'Final care order',
     document: 'care_order.pdf',
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
