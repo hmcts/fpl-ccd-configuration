@@ -884,7 +884,7 @@
     "ID": "confidentialOthers",
     "Label": "Others",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Person",
+    "FieldTypeParameter": "Others",
     "SecurityClassification": "Public"
   },
   {

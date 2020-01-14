@@ -55,6 +55,8 @@ public class OthersController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        //System.out.println("Confidential others is" + caseData.getConfidentialOthers());
+
         //caseDetails.getData().put("others", childrenService.prepareOthers(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -68,11 +70,12 @@ public class OthersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<Other>> confidentialOther = othersService.getAllConfidentialOther(caseData);
+        caseDetails.getData().put("confidentialOthers", confidentialOther);
 
-        final List <Element<Others>> confidentialOthersForCaseData = othersService.prepareConfidentialOthersForCaseData(confidentialOther);
+        //final List <Element<Others>> confidentialOthersForCaseData = othersService.prepareConfidentialOthersForCaseData(confidentialOther);
 
         //puts this into confidentialOthers only if not empty as tab appears if not
-        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersForCaseData, OTHER);
+        //confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOther, OTHER);
 
         Others others = othersService.modifyHiddenValues(caseData.getOthers());
 

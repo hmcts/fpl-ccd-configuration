@@ -244,6 +244,8 @@ public class CaseData {
         return confidentialChildren != null ? confidentialChildren : new ArrayList<>();
     }
 
+    //private final List<Element<Other>> confidentialOthers;
+
     private final List<Element<Other>> confidentialOthers;
 
     public List<Element<Other>> getConfidentialOthers() {

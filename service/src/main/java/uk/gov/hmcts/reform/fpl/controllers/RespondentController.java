@@ -46,6 +46,8 @@ public class RespondentController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        System.out.println("Confidential respondents is" + respondentService.prepareRespondents(caseData));
+
         caseDetails.getData().put("respondents1", respondentService.prepareRespondents(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()

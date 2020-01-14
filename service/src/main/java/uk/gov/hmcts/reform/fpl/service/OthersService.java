@@ -16,6 +16,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 public class OthersService {
@@ -55,12 +56,11 @@ public class OthersService {
         final List<Element<Other>> confidentialOthers = new ArrayList<>();
 
         caseData.getAllOthers().forEach(element -> {
-
+            System.out.println("element is" + element);
             if (element.containsConfidentialDetails()) {
-                confidentialOthers.add(Element.<Other>builder()
-                    .id(UUID.randomUUID())
-                    .value(element)
-                    .build());
+                System.out.println("element being added" + element);
+                // we will need to persist id of element so that we can place back into others.
+                confidentialOthers.add(element(element));
             }
         });
 
@@ -98,12 +98,12 @@ public class OthersService {
         others.getAdditionalOthers().stream().forEach(additionalOther -> {
             if (additionalOther.getValue().containsConfidentialDetails()) {
                 othersForPeopleTab.add(Element.<Other>builder()
-                    .id(UUID.randomUUID())
+                    .id(additionalOther.getId())
                     .value(additionalOther.getValue().toBuilder().address(null).telephone(null).build())
                     .build());
             } else{
                 othersForPeopleTab.add(Element.<Other>builder()
-                    .id(UUID.randomUUID())
+                    .id(additionalOther.getId())
                     .value(additionalOther.getValue())
                     .build());
 
