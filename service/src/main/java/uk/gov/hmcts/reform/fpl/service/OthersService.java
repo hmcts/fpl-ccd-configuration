@@ -93,5 +93,31 @@ public class OthersService {
 
         return others.toBuilder().additionalOthers(othersForPeopleTab).firstOther(firstOther.getValue()).build();
     }
+
+    public Others prepareOthers(CaseData caseData) {
+        final List <Element<Other>> additionalOthers = new ArrayList<>();
+
+            caseData.getAllOthers().forEach(element -> {
+                if (element.containsConfidentialDetails()) {
+                    additionalOthers.add(getElementToAdd(caseData.getConfidentialOthers(), Element.<Other>builder().value(element).build()));
+                } else {
+                    additionalOthers.add(Element.<Other>builder().value(element).build());
+                }
+            });
+
+            Element<Other> firstOther = Element.<Other>builder().value(additionalOthers.get(0).getValue()).build();
+
+            Others others = caseData.getOthers();
+
+            return  others.toBuilder().additionalOthers(additionalOthers).firstOther(firstOther.getValue()).build();
+        }
+
+    private Element<Other> getElementToAdd(List<Element<Other>> confidentialOthers,
+                                                Element<Other> element) {
+        return confidentialOthers.stream()
+            .filter(confidentialOther -> confidentialOther.getId().equals(element.getId()))
+            .findFirst()
+            .orElse(element);
+    }
 }
 

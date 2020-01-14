@@ -57,7 +57,17 @@ public class OthersController {
 
         //System.out.println("Confidential others is" + caseData.getConfidentialOthers());
 
-        //caseDetails.getData().put("others", childrenService.prepareOthers(caseData));
+        List<Element<Other>> additionalOthers = caseData.getConfidentialOthers();
+
+        if(!caseData.getConfidentialOthers().isEmpty())
+        {
+            Other firstOther = caseData.getConfidentialOthers().get(0).getValue();
+            Others others = new Others(firstOther,additionalOthers);
+
+            caseDetails.getData().put("others", others);
+        }
+
+        //caseDetails.getData().put("others", othersService.prepareOthers(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
