@@ -12,8 +12,8 @@
     "ID": "FurtherDirections",
     "ListElementCode": "directions",
     "FieldType": "TextArea",
-    "ElementLabel": "Enter text",
-    "HintText": "The exact text you enter will be displayed at the bottom of the order.",
+    "ElementLabel": "Enter directions",
+    "HintText": "These will be printed at the bottom of the order.",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directionsNeeded = \"Yes\""
   }
