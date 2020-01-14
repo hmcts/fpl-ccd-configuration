@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -114,13 +116,13 @@ public class GeneratedOrderService {
     public Map<String, Object> getOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
         final GeneratedOrderType orderType = caseData.getOrderTypeAndDocument().getType();
+        String orderTitle = orderType.getLabel();
 
-        orderTemplateBuilder.put("orderTitle", orderType.getLabel());
         //Scalable for future order types
         switch (orderType) {
             case BLANK_ORDER:
+                orderTitle = defaultIfNull(caseData.getOrder().getTitle(), "Order");
                 orderTemplateBuilder
-                    .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", caseData.getOrder().getDetails());
                 break;
@@ -141,6 +143,7 @@ public class GeneratedOrderService {
         }
 
         orderTemplateBuilder
+            .put("orderTitle", orderTitle)
             .put("orderType", orderType)
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
@@ -166,6 +169,10 @@ public class GeneratedOrderService {
             .filter(Objects::nonNull)
             .collect(toList()))
             .getDocument().getBinaryUrl();
+    }
+
+    public void removeOrderProperties(Map<String, Object> data) {
+        Arrays.stream(GeneratedOrderKey.values()).forEach(value -> data.remove(value.getKey()));
     }
 
     private String getCourtName(String courtName) {

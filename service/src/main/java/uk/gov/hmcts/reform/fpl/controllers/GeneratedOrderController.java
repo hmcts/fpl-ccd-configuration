@@ -113,11 +113,7 @@ public class GeneratedOrderController {
             caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths()));
 
         caseDetails.getData().put("orderCollection", orders);
-        caseDetails.getData().remove("orderTypeAndDocument");
-        caseDetails.getData().remove("order");
-        caseDetails.getData().remove("judgeAndLegalAdvisor");
-        caseDetails.getData().remove("orderFurtherDirections");
-        caseDetails.getData().remove("orderMonths");
+        service.removeOrderProperties(caseDetails.getData());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

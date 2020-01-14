@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -29,7 +30,9 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -220,6 +223,16 @@ class GeneratedOrderServiceTest {
 
         assertThat(expectedMostRecentUploadedOrderDocumentUrl).isEqualTo(
             returnedMostRecentUploadedOrderDocumentUrl);
+    }
+
+    @Test
+    void shouldRemoveOrderPropertiesWhenTheyExistInCaseDetails() {
+        Map<String, Object> data = Arrays.stream(GeneratedOrderKey.values())
+            .collect(Collectors.toMap(GeneratedOrderKey::getKey, value -> ""));
+
+        service.removeOrderProperties(data);
+
+        assertThat(data).isEmpty();
     }
 
     private static Stream<Arguments> fileNameSource() {
