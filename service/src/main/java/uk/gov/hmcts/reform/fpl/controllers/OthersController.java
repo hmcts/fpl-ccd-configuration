@@ -70,12 +70,8 @@ public class OthersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<Other>> confidentialOther = othersService.getAllConfidentialOther(caseData);
-        caseDetails.getData().put("confidentialOthers", confidentialOther);
 
-        //final List <Element<Others>> confidentialOthersForCaseData = othersService.prepareConfidentialOthersForCaseData(confidentialOther);
-
-        //puts this into confidentialOthers only if not empty as tab appears if not
-        //confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOther, OTHER);
+        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOther, OTHER);
 
         Others others = othersService.modifyHiddenValues(caseData.getOthers());
 

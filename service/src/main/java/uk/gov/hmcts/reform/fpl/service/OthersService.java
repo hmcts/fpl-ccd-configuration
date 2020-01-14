@@ -52,36 +52,16 @@ public class OthersService {
     }
 
     public List<Element<Other>> getAllConfidentialOther(CaseData caseData) {
-        //Gets all others from case data and returns list of confidential others first other and additional other
         final List<Element<Other>> confidentialOthers = new ArrayList<>();
 
         caseData.getAllOthers().forEach(element -> {
-            System.out.println("element is" + element);
             if (element.containsConfidentialDetails()) {
-                System.out.println("element being added" + element);
                 // we will need to persist id of element so that we can place back into others.
                 confidentialOthers.add(element(element));
             }
         });
 
         return confidentialOthers;
-    }
-
-    public List<Element<Others>> prepareConfidentialOthersForCaseData(List<Element<Other>> confidentialOther) {
-        final List<Element<Others>> confidentialOthersForCaseData = new ArrayList<>();
-        Other firstOther;
-
-        if (!confidentialOther.isEmpty()) {
-            //add the first element to first other and the rest to additional others
-            firstOther = confidentialOther.get(0).getValue();
-            confidentialOther.remove(0);
-
-            Others other = new Others(firstOther, confidentialOther);
-
-            confidentialOthersForCaseData.add(Element.<Others>builder().value(other).build());
-        }
-
-        return confidentialOthersForCaseData;
     }
 
     public Others modifyHiddenValues(Others others) {
