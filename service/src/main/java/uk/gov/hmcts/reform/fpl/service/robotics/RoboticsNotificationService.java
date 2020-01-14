@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
-import uk.gov.hmcts.reform.fpl.events.robotics.ResendFailedRoboticNotificationEvent;
-import uk.gov.hmcts.reform.fpl.events.robotics.RoboticsNotificationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
@@ -37,17 +35,11 @@ public class RoboticsNotificationService {
 
     @EventListener
     public void notifyRoboticsOfSubmittedCaseData(final CaseNumberAdded event) {
-        sendSubmittedCaseData(event);
+        sendSubmittedCaseData(event.getCaseDetails());
     }
 
-    @EventListener
-    public void resendRoboticsOfSubmittedCaseData(final ResendFailedRoboticNotificationEvent event) {
-        sendSubmittedCaseData(event);
-    }
-
-    private void sendSubmittedCaseData(final RoboticsNotificationEvent event) {
-        if (isNotEmpty(event.getCaseDetails()) && isNotEmpty(event.getCaseDetails().getData())) {
-            CaseDetails caseDetails = event.getCaseDetails();
+    public void sendSubmittedCaseData(final CaseDetails caseDetails) {
+        if (isNotEmpty(caseDetails) && isNotEmpty(caseDetails.getData())) {
             CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, caseDetails.getId());
@@ -55,7 +47,14 @@ public class RoboticsNotificationService {
             runVerificationsOnRoboticsData(roboticsData);
 
             EmailData emailData = prepareEmailData(roboticsData);
-            emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
+
+            try {
+                emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
+
+            } catch (Exception exc) {
+                log.error("Robotics email notification failed for case with caseId {} and familyManNumber {}",
+                    caseDetails.getId(), caseData.getFamilyManCaseNumber());
+            }
         }
     }
 

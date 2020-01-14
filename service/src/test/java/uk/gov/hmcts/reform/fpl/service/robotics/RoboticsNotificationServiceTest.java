@@ -18,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
-import uk.gov.hmcts.reform.fpl.events.robotics.ResendFailedRoboticNotificationEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
@@ -120,8 +119,7 @@ public class RoboticsNotificationServiceTest {
         given(roboticsDataService.convertRoboticsDataToJson(expectedRoboticsData))
             .willReturn(expectedRoboticsDataJson);
 
-        roboticsNotificationService.resendRoboticsOfSubmittedCaseData(new ResendFailedRoboticNotificationEvent(
-            prepareCaseDetails()));
+        roboticsNotificationService.sendSubmittedCaseData(prepareCaseDetails());
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 
