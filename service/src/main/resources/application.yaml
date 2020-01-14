@@ -120,6 +120,9 @@ feature:
       case-number:
         notification:
           enabled: true
+      support:
+        api:
+          enabled: true
 
 ---
 
@@ -220,6 +223,10 @@ feature:
       case-number:
         notification:
           enabled: true
+      support:
+        api:
+          enabled: true
+
 
 security:
   anonymousPaths:

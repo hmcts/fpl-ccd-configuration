@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 @Api
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@ConditionalOnProperty(prefix = "feature.toggle", name = "robotics.support.api.enabled", havingValue = "true")
 public class RoboticsController {
     private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
