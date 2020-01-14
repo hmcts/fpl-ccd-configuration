@@ -18,8 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
-import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
@@ -234,7 +232,7 @@ public class CaseData {
     @TimeRange(message = "Date must be within the next 8 days", groups = EPOEndDateGroup.class,
         rangeAfter = @TimeDifference(amount = 8, unit = DAYS))
     private final LocalDateTime epoEndDate;
-    private final EPOPhrase epoPhrase;
+    private final String epoPhrase;
     private final EPOType epoType;
     @Valid()
     private final Address epoRemovalAddress;

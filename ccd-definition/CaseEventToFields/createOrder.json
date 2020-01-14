@@ -75,7 +75,7 @@
     "CaseEventID": "createOrder",
     "CaseFieldID": "epoPhrase",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "COMPLEX",
+    "DisplayContext": "MANDATORY",
     "PageID": "EPOPhrase",
     "PageLabel": " ",
     "PageDisplayOrder": 5,

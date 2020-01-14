@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder;
+package uk.gov.hmcts.reform.fpl.model;
 
 import lombok.Builder;
 import lombok.Data;

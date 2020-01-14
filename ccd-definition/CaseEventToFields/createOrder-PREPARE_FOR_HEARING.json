@@ -75,7 +75,7 @@
     "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "epoPhrase",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "COMPLEX",
+    "DisplayContext": "MANDATORY",
     "PageID": "EPOPhrase",
     "PageLabel": " ",
     "PageDisplayOrder": 5,
