@@ -6,6 +6,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,6 +19,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
@@ -34,8 +39,10 @@ import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -46,6 +53,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -207,6 +215,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             .build();
     }
 
+    @TestInstance(PER_CLASS)
     @Nested
     class MidEvent {
         private final byte[] pdf = {1, 2, 3, 4, 5};
@@ -221,27 +230,16 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
         }
 
-        @Test
-        void shouldGenerateOrderDocumentWhenOrderTypeIsBlankOrder() {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(generateBlankOrderCaseDetails());
+        @ParameterizedTest
+        @MethodSource("midEventArgumentSource")
+        void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails, String fileName,
+                                                                       DocmosisTemplates templateName) {
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, "blank_order_c21.pdf");
-
-            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
-        }
-
-        @Test
-        void shouldGenerateOrderDocumentWhenOrderTypeIsCareOrderWithFurtherDirections() {
-            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                generateCareOrderCaseDetailsWithFurtherDirections());
-
-            verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), any());
-            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, "care_order.pdf");
+            verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), eq(templateName));
+            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
             assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
         }
 
@@ -253,23 +251,18 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
         }
 
-        @Test
-        void shouldGenerateOrderDocumentWhenOrderTypeIsCareOrderWithInterimSubtype() {
-            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                generateCareOrderCaseDetailsWithInterimSubtype());
-
-            verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), any());
-            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, "interim_care_order.pdf");
-
-            final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
-        }
-
         @AfterEach
         void resetInvocations() {
             reset(docmosisDocumentGeneratorService);
             reset(uploadDocumentService);
+        }
+
+        private Stream<Arguments> midEventArgumentSource() {
+            return Stream.of(
+                Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
+                Arguments.of(generateCareOrderCaseDetailsWithInterimSubtype(), "interim_care_order.pdf", ORDER),
+                Arguments.of(generateCareOrderCaseDetailsWithFurtherDirections(), "care_order.pdf", ORDER)
+            );
         }
 
         private CaseDetails generateBlankOrderCaseDetails() {
@@ -280,7 +273,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             generateDefaultValues(dataBuilder);
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
+                }))
                 .build();
         }
 
@@ -293,7 +287,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build());
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
+                }))
                 .build();
         }
 
@@ -301,7 +296,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails(FINAL);
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
+                }))
                 .build();
         }
 
@@ -314,7 +310,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build());
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
+                }))
                 .build();
         }
 

@@ -25,9 +25,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,17 +51,13 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class GeneratedOrderServiceTest {
 
     @Autowired
+    private Time time;
+
+    @Autowired
     private DateFormatterService dateFormatterService;
 
     @Autowired
     private GeneratedOrderService service;
-
-    private static Stream<Arguments> fileNameSource() {
-        return Stream.of(
-            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
-            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).build(), "care_order.pdf")
-        );
-    }
 
     @Nested
     class C21Tests {
@@ -208,58 +206,24 @@ class GeneratedOrderServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource(value = "fileNameSource")
+    @MethodSource("fileNameSource")
     void shouldGenerateCorrectFileNameGivenOrderType(OrderTypeAndDocument typeAndDoc, String expected) {
         final String fileName = service.generateOrderDocumentFileName(typeAndDoc);
         assertThat(fileName).isEqualTo(expected);
     }
 
-    @Nested
-    class TemplateDataTests {
-        LocalDate localDate = LocalDate.now();
-        String date = dateFormatterService.formatLocalDateToString(localDate, FormatStyle.LONG);
+    @ParameterizedTest
+    @MethodSource("docmosisDataGenerationSource")
+    void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType,
+                                                           GeneratedOrderSubtype subtype) {
+        LocalDateTime now = time.now();
+        CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
-        TemplateDataTests() {
-            //NO - OP
-        }
+        Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData);
 
-        @Test
-        void shouldCreateExpectedMapForC21OrderWhenGivenPopulatedCaseData() {
-            CaseData caseData = createPopulatedCaseData(BLANK_ORDER, null, localDate);
+        assertThat(templateData).isEqualTo(expectedMap);
 
-            Map<String, Object> expectedMap = createExpectedOrderData(date, OrderTypeAndDocument.builder()
-                .type(BLANK_ORDER)
-                .build());
-            Map<String, Object> templateData = service.getOrderTemplateData(caseData);
-
-            assertThat(templateData).isEqualTo(expectedMap);
-        }
-
-        @Test
-        void shouldCreateExpectedMapForCareOrderWithFinalSubtypeWhenGivenPopulatedCaseData() {
-            CaseData caseData = createPopulatedCaseData(CARE_ORDER, FINAL, localDate);
-
-            Map<String, Object> expectedMap = createExpectedOrderData(date, OrderTypeAndDocument.builder()
-                .type(CARE_ORDER)
-                .subtype(FINAL)
-                .build());
-            Map<String, Object> templateData = service.getOrderTemplateData(caseData);
-
-            assertThat(templateData).isEqualTo(expectedMap);
-        }
-
-        @Test
-        void shouldCreateExpectedMapForCareOrderWithInterimSubtypeWhenGivenPopulatedCaseData() {
-            CaseData caseData = createPopulatedCaseData(CARE_ORDER, INTERIM, localDate);
-
-            Map<String, Object> expectedMap = createExpectedOrderData(date, OrderTypeAndDocument.builder()
-                .type(CARE_ORDER)
-                .subtype(INTERIM)
-                .build());
-            Map<String, Object> templateData = service.getOrderTemplateData(caseData);
-
-            assertThat(templateData).isEqualTo(expectedMap);
-        }
     }
 
     @Test
@@ -289,11 +253,30 @@ class GeneratedOrderServiceTest {
         assertThat(caseDetails.getData()).isEmpty();
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> createExpectedOrderData(String date, OrderTypeAndDocument typeAndDoc) {
-        ImmutableMap.Builder expectedMap = ImmutableMap.<String, Object>builder();
+    private static Stream<Arguments> fileNameSource() {
+        return Stream.of(
+            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(INTERIM).build(),
+                "interim_care_order.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build(), "care_order.pdf")
+        );
+    }
 
-        switch (typeAndDoc.getType()) {
+    private static Stream<Arguments> docmosisDataGenerationSource() {
+        return Stream.of(
+            Arguments.of(BLANK_ORDER, null),
+            Arguments.of(CARE_ORDER, INTERIM),
+            Arguments.of(CARE_ORDER, FINAL)
+        );
+    }
+
+    private Map<String, Object> createExpectedDocmosisData(GeneratedOrderType type,
+                                                           GeneratedOrderSubtype subtype,
+                                                           LocalDateTime date) {
+        ImmutableMap.Builder<String, Object> expectedMap = ImmutableMap.builder();
+        String formattedDate = dateFormatterService.formatLocalDateToString(date.toLocalDate(), FormatStyle.LONG);
+
+        switch (type) {
             case BLANK_ORDER:
                 expectedMap
                     .put("orderType", BLANK_ORDER)
@@ -303,14 +286,14 @@ class GeneratedOrderServiceTest {
                 break;
 
             case CARE_ORDER:
-                if (typeAndDoc.getSubtype() == INTERIM) {
+                if (subtype == INTERIM) {
                     expectedMap
                         .put("orderTitle", "Interim care order")
                         .put("childrenAct", "Section 38 Children Act 1989")
                         .put("orderDetails",
                             "It is ordered that the child is placed in the care of Example Local Authority"
                                 + " until the end of the proceedings.");
-                } else if (typeAndDoc.getSubtype() == FINAL) {
+                } else if (subtype == FINAL) {
                     expectedMap
                         .put("orderTitle", "Care order")
                         .put("childrenAct", "Section 31 Children Act 1989")
@@ -328,14 +311,14 @@ class GeneratedOrderServiceTest {
             .put("furtherDirections", "Example Directions")
             .put("familyManCaseNumber", "123")
             .put("courtName", "Family Court")
-            .put("todaysDate", date)
+            .put("todaysDate", formattedDate)
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
             .put("children", ImmutableList.of(
                 ImmutableMap.of(
                     "name", "Timmy Jones",
                     "gender", "Boy",
-                    "dateOfBirth", date)));
+                    "dateOfBirth", formattedDate)));
 
         return expectedMap.build();
     }

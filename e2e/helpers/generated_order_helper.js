@@ -31,7 +31,7 @@ module.exports = {
   async assertOrder(I, caseViewPage, order, orderNum) {
     const orderHeading = 'Order ' + orderNum;
     caseViewPage.selectTab(caseViewPage.tabs.orders);
-    I.seeAnswerInTab(1, orderHeading, 'Type of order', order.type);
+    I.seeAnswerInTab(1, orderHeading, 'Type of order', order.fullType);
 
     if (order.type === 'Blank order (C21)') {
       I.seeAnswerInTab(2, orderHeading, 'Order title', order.title);
