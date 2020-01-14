@@ -62,10 +62,6 @@ class GeneratedOrderServiceTest {
     @Nested
     class C21Tests {
 
-        C21Tests() {
-            //NO - OP
-        }
-
         @Test
         void shouldReturnExpectedC21OrderWhenOrderTitleIsNull() {
             GeneratedOrder order = GeneratedOrder.builder()
@@ -149,10 +145,6 @@ class GeneratedOrderServiceTest {
 
     @Nested
     class CareOrderTests {
-
-        CareOrderTests() {
-            //NO - OP
-        }
 
         @Test
         void shouldReturnExpectedTypeOfOrderWhenInterimCareOrderSelected() {
@@ -245,12 +237,8 @@ class GeneratedOrderServiceTest {
         data.put("judgeAndLegalAdvisor", "some data");
         data.put("orderFurtherDirections", "some data");
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(data)
-            .build();
-
-        service.removeOrderProperties(caseDetails);
-        assertThat(caseDetails.getData()).isEmpty();
+        service.removeOrderProperties(data);
+        assertThat(data).isEmpty();
     }
 
     private static Stream<Arguments> fileNameSource() {

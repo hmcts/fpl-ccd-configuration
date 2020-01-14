@@ -12,4 +12,16 @@ public enum GeneratedOrderType {
     GeneratedOrderType(String label) {
         this.label = label;
     }
+
+    public String getFullType() {
+        return getFullType(null);
+    }
+
+    public String getFullType(GeneratedOrderSubtype subtype) {
+        if (this != BLANK_ORDER) {
+            return subtype.getLabel() + " " + this.getLabel().toLowerCase();
+        } else {
+            return this.getLabel();
+        }
+    }
 }

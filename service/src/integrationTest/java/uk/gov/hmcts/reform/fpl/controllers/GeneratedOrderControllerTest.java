@@ -137,7 +137,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
     private GeneratedOrder buildExpectedC21Order() {
         return GeneratedOrder.builder()
-            .type("Blank order (C21)")
+            .type(BLANK_ORDER.getFullType())
             .document(DocumentReference.builder()
                 .url("some url")
                 .binaryUrl("some binary url")
@@ -156,7 +156,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
     private GeneratedOrder buildExpectedCareOrder() {
         return GeneratedOrder.builder()
-            .type("Final care order")
+            .type(CARE_ORDER.getFullType(FINAL))
             .document(DocumentReference.builder()
                 .url("some url")
                 .binaryUrl("some binary url")

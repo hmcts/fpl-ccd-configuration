@@ -139,7 +139,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
 });
 
 Scenario('HMCTS admin creates multiple orders for the case@f', async (I, caseViewPage, createOrderEventPage) => {
-  for(let i = 0; i < orders.length; i++) {
+  for (let i = 0; i < orders.length; i++) {
     await caseViewPage.goToNewActions(config.administrationActions.createOrder);
     await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
     I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);

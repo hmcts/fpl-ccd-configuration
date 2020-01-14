@@ -7,10 +7,10 @@ public enum GeneratedOrderSubtype {
     INTERIM("Interim"),
     FINAL("Final");
 
-
     private final String label;
 
     GeneratedOrderSubtype(String label) {
         this.label = label;
     }
+
 }
