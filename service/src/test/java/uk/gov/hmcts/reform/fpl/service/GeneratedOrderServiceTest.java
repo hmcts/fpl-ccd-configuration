@@ -54,14 +54,6 @@ class GeneratedOrderServiceTest {
     @Autowired
     private GeneratedOrderService service;
 
-    private static Stream<Arguments> fileNameSource() {
-        return Stream.of(
-            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
-            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).build(), "care_order.pdf"),
-            Arguments.of(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build(), "supervision_order.pdf")
-        );
-    }
-
     @Test
     void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() {
         Document document = document();
@@ -213,7 +205,7 @@ class GeneratedOrderServiceTest {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, now.toLocalDate());
 
-        Map<String, Object> expectedMap = createExpectedOrderData(orderType, now);
+        Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, now);
         Map<String, Object> templateData = service.getOrderTemplateData(caseData);
 
         assertThat(templateData).isEqualTo(expectedMap);
@@ -230,6 +222,14 @@ class GeneratedOrderServiceTest {
             returnedMostRecentUploadedOrderDocumentUrl);
     }
 
+    private static Stream<Arguments> fileNameSource() {
+        return Stream.of(
+            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).build(), "care_order.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build(), "supervision_order.pdf")
+        );
+    }
+
     private void assertCommonC21Fields(GeneratedOrder order) {
         assertThat(order.getType()).isEqualTo(BLANK_ORDER);
         assertThat(order.getDocument()).isEqualTo(DocumentReference.builder().build());
@@ -238,7 +238,7 @@ class GeneratedOrderServiceTest {
         assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
     }
 
-    private Map<String, Object> createExpectedOrderData(GeneratedOrderType type, LocalDateTime date) {
+    private Map<String, Object> createExpectedDocmosisData(GeneratedOrderType type, LocalDateTime date) {
         ImmutableMap.Builder<String, Object> expectedMap = ImmutableMap.builder();
         String formattedDate = dateFormatterService.formatLocalDateToString(date.toLocalDate(), FormatStyle.LONG);
 
