@@ -55,20 +55,11 @@ public class OthersController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //caseDetails.getData().put("others", othersService.prepareOthers(caseData));
-
         if(!caseData.getConfidentialOthers().isEmpty())
         {
-            List<Element<Other>> prepareOthers = othersService.prepareOthers(caseData);
-            if(!prepareOthers.isEmpty())
-            {
-                Other firstOther = prepareOthers.get(0).getValue();
-                prepareOthers.remove(0);
-
-                List<Element<Other>> additionalOthers = prepareOthers;
-
-                caseDetails.getData().put("others", Others.builder().firstOther(firstOther).additionalOthers(additionalOthers).build());
-            }
+            Others prepareOthers = othersService.prepareOthers(caseData);
+            caseDetails.getData().put("others", Others.builder().firstOther(prepareOthers.getFirstOther())
+                .additionalOthers(prepareOthers.getAdditionalOthers()).build());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
