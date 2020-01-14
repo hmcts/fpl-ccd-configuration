@@ -181,7 +181,7 @@ class GeneratedOrderServiceTest {
                     .legalAdvisorName("Peter Parker")
                     .build()).getValue();
 
-            assertThat(builtOrder.getType()).isEqualTo("Care order");
+            assertThat(builtOrder.getType()).isEqualTo("Final care order");
             assertThat(builtOrder.getTitle()).isNull();
             assertThat(builtOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
             assertThat(builtOrder.getDate()).isNotNull();
@@ -327,7 +327,7 @@ class GeneratedOrderServiceTest {
         expectedMap
             .put("furtherDirections", "Example Directions")
             .put("familyManCaseNumber", "123")
-            .put("courtName", "Example Court")
+            .put("courtName", "Family Court")
             .put("todaysDate", date)
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")

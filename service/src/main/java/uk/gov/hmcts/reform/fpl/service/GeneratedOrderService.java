@@ -200,7 +200,7 @@ public class GeneratedOrderService {
     }
 
     private String getFullTypeAsString(OrderTypeAndDocument typeAndDocument) {
-        if (typeAndDocument.getType() != BLANK_ORDER && typeAndDocument.getSubtype() == INTERIM) {
+        if (typeAndDocument.getType() != BLANK_ORDER) {
             return typeAndDocument.getSubtype().getLabel() + " " + typeAndDocument.getType().getLabel().toLowerCase();
         } else {
             return typeAndDocument.getType().getLabel();

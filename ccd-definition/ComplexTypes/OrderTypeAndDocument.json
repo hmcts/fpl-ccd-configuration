@@ -5,7 +5,7 @@
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "GeneratedOrderType",
-    "ElementLabel": "Which type of order are you making?",
+    "ElementLabel": "Select the order you want to make",
     "SecurityClassification": "Public"
   },
   {

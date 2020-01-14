@@ -75,21 +75,10 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
 });
 
 Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-  await orderFunctions.createOrder(I, createOrderEventPage, orders[0]);
-  let orderTime = new Date();
-  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-  await orderFunctions.assertOrder(I, caseViewPage, orders[0], 1, orderTime);
-
-  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-  await orderFunctions.createOrder(I, createOrderEventPage, orders[1]);
-  orderTime = new Date();
-  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-  await orderFunctions.assertOrder(I, caseViewPage, orders[1], 2, orderTime);
-
-  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-  await orderFunctions.createOrder(I, createOrderEventPage, orders[2]);
-  orderTime = new Date();
-  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-  await orderFunctions.assertOrder(I, caseViewPage, orders[2], 3, orderTime);
+  for(let i = 0; i < orders.length; i++) {
+    await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+    await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
+    I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+    await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
+  }
 });
