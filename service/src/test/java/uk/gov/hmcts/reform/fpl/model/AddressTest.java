@@ -1,22 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AddressTest {
-
-    private Address.AddressBuilder builder;
-
-    @BeforeEach
-    void setup() {
-        builder = Address.builder();
-    }
-
     @Test
     void shouldFormatAddressAsStringWhenProvidePartiallyPopulatedAddress() {
-        Address address = builder
+        Address address = Address.builder()
             .addressLine1("1 Main Street")
             .addressLine2("Some town")
             .postcode("BT66 RPJ")
@@ -28,18 +19,18 @@ class AddressTest {
     @Test
     void shouldFormatAddressAsStringWhenProvidedPopulatedAddress() {
         Address address = getPopulatedAddress();
-        assertThat(address.getAddressAsString()).isEqualTo("Flat 1, Apartment block 2, Lurgan, BT66 7RR," +
-            " Craigavon, Armagh, UK");
+        assertThat(address.getAddressAsString()).isEqualTo("Flat 1, Apartment block 2, Lurgan, Craigavon, Armagh,"
+            + " BT66 7RR, UK");
     }
 
     private Address getPopulatedAddress() {
-        return builder
+        return Address.builder()
             .addressLine1("Flat 1")
             .addressLine2("Apartment block 2")
             .addressLine3("Lurgan")
-            .postcode("BT66 7RR")
             .postTown("Craigavon")
             .county("Armagh")
+            .postcode("BT66 7RR")
             .country("UK")
             .build();
     }

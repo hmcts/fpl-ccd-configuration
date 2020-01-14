@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,9 +11,9 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.groups.Default;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
@@ -48,14 +49,15 @@ public class Address {
         this.country = country;
     }
 
+    @JsonIgnore
     public String getAddressAsString() {
         ImmutableList<String> addressAsList = ImmutableList.of(
             defaultIfNull(getAddressLine1(), ""),
             defaultIfNull(getAddressLine2(), ""),
             defaultIfNull(getAddressLine3(), ""),
             defaultIfNull(getPostTown(), ""),
-            defaultIfNull(getPostcode(), ""),
             defaultIfNull(getCounty(), ""),
+            defaultIfNull(getPostcode(), ""),
             defaultIfNull(getCountry(), ""));
 
         return addressAsList.stream()

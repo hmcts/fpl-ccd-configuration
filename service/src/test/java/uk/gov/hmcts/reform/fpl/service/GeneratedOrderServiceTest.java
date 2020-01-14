@@ -2,15 +2,14 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -24,11 +23,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,31 +43,18 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {
+    FixedTimeConfiguration.class, LookupTestConfig.class, DateFormatterService.class, GeneratedOrderService.class
+})
 class GeneratedOrderServiceTest {
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
-    private static final String COURT_NAME = "Example Court";
-    private static final String COURT_EMAIL = "example@court.com";
-    private static final String COURT_CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME,
-        COURT_EMAIL);
-    private static final String LA_NAME_CONFIG = String.format("%s=>%s", LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_NAME);
-    private static final LocalDateTime NOW = LocalDateTime.now();
+    @Autowired
+    private Time time;
 
-    private final Time time = () -> NOW;
+    @Autowired
+    private DateFormatterService dateFormatterService;
 
-    private DateFormatterService dateFormatterService = new DateFormatterService();
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(
-        COURT_CONFIG);
-    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration =
-        new LocalAuthorityNameLookupConfiguration(LA_NAME_CONFIG);
-
+    @Autowired
     private GeneratedOrderService service;
-
-    @BeforeEach
-    void setup() {
-        this.service = new GeneratedOrderService(dateFormatterService, hmctsCourtLookupConfiguration,
-            localAuthorityNameLookupConfiguration, time);
-    }
 
     @Test
     void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() throws IOException {
@@ -198,7 +185,7 @@ class GeneratedOrderServiceTest {
 
     @Nested
     class TemplateDataTests {
-        LocalDate localDate = LocalDate.now();
+        LocalDate localDate = time.now().toLocalDate();
         String date = dateFormatterService.formatLocalDateToString(localDate, FormatStyle.LONG);
 
         TemplateDataTests() {
@@ -249,17 +236,18 @@ class GeneratedOrderServiceTest {
 
     @Test
     void shouldRemovePropertiesOnCaseDetailsUsedForBlankOrderCapture() {
-        CaseDetails caseDetails = service.removeOrderProperties(createPopulatedCaseDetails(), BLANK_ORDER);
+        CaseDetails caseDetails = service.removeOrderProperties(createPopulatedCaseDetails());
         assertRemovalOfCommonOrderFields(caseDetails);
     }
 
     @Test
     void shouldRemovePropertiesOnCaseDetailsUsedForEmergencyProtectionOrderCapture() {
         CaseDetails caseDetails =
-            service.removeOrderProperties(createPopulatedCaseDetails(), EMERGENCY_PROTECTION_ORDER);
+            service.removeOrderProperties(createPopulatedCaseDetails());
 
         assertRemovalOfCommonOrderFields(caseDetails);
 
+        assertThat(caseDetails.getData().get("epoRemovalAddress")).isNull();
         assertThat(caseDetails.getData().get("epoChildren")).isNull();
         assertThat(caseDetails.getData().get("epoEndDate")).isNull();
         assertThat(caseDetails.getData().get("epoPhrase")).isNull();
@@ -270,6 +258,7 @@ class GeneratedOrderServiceTest {
         assertThat(caseDetails.getData().get("orderTypeAndDocument")).isNull();
         assertThat(caseDetails.getData().get("order")).isNull();
         assertThat(caseDetails.getData().get("judgeAndLegalAdvisor")).isNull();
+        assertThat(caseDetails.getData().get("orderFurtherDirections")).isNull();
     }
 
     private void assertCommonC21Fields(GeneratedOrder order) {
@@ -308,7 +297,10 @@ class GeneratedOrderServiceTest {
                     .put("epoType", REMOVE_TO_ACCOMMODATION)
                     .put("includePhrase", "Yes")
                     .put("removalAddress", "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
-                    .put("epoEndDateTime",  dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW,
+                    .put("childrenCount", 1)
+                    .put("epoStartDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
+                        "d MMMM yyyy 'at' h:mma"))
+                    .put("epoEndDateTime",  dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
                         "d MMMM yyyy 'at' h:mma"));
                 break;
             default:
@@ -317,7 +309,7 @@ class GeneratedOrderServiceTest {
         expectedMap
             .put("furtherDirections", "Example Directions")
             .put("familyManCaseNumber", "123")
-            .put("courtName", "Example Court")
+            .put("courtName", "Family Court")
             .put("todaysDate", date)
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
@@ -362,7 +354,7 @@ class GeneratedOrderServiceTest {
                         .descriptionNeeded("Yes")
                         .description("Test description")
                         .build())
-                    .epoEndDate(NOW)
+                    .epoEndDate(time.now())
                     .epoPhrase(EPOPhrase.builder()
                         .includePhrase("Yes")
                         .build())

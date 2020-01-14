@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
@@ -131,7 +130,9 @@ public class GeneratedOrderService {
                     .put("epoType", caseData.getEpoType())
                     .put("includePhrase", caseData.getEpoPhrase().getIncludePhrase())
                     .put("removalAddress", getFormattedRemovalAddress(caseData))
-                    .put("epoEndDateTime", formatEPOEndDateTime(caseData.getEpoEndDate()));
+                    .put("childrenCount", caseData.getChildren1().size())
+                    .put("epoStartDateTime", formatEPODateTime(time.now()))
+                    .put("epoEndDateTime", formatEPODateTime(caseData.getEpoEndDate()));
                 break;
             default:
         }
@@ -163,17 +164,16 @@ public class GeneratedOrderService {
             .getDocument().getBinaryUrl();
     }
 
-    public CaseDetails removeOrderProperties(CaseDetails caseDetails, GeneratedOrderType orderType) {
-        if (orderType.equals(EMERGENCY_PROTECTION_ORDER)) {
-            caseDetails.getData().remove("epoChildren");
-            caseDetails.getData().remove("epoEndDate");
-            caseDetails.getData().remove("epoPhrase");
-            caseDetails.getData().remove("epoType");
-        }
-
+    public CaseDetails removeOrderProperties(CaseDetails caseDetails) {
+        caseDetails.getData().remove("epoRemovalAddress");
+        caseDetails.getData().remove("epoChildren");
+        caseDetails.getData().remove("epoEndDate");
+        caseDetails.getData().remove("epoPhrase");
+        caseDetails.getData().remove("epoType");
         caseDetails.getData().remove("orderTypeAndDocument");
         caseDetails.getData().remove("order");
         caseDetails.getData().remove("judgeAndLegalAdvisor");
+        caseDetails.getData().remove("orderFurtherDirections");
 
         return caseDetails;
     }
@@ -212,13 +212,13 @@ public class GeneratedOrderService {
         return "";
     }
 
-    private String formatEPOEndDateTime(LocalDateTime dateTime) {
+    private String formatEPODateTime(LocalDateTime dateTime) {
         return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy 'at' h:mma");
     }
 
     private String getFormattedRemovalAddress(CaseData caseData) {
         if (caseData.getEpoRemovalAddress() != null) {
-            caseData.getEpoRemovalAddress().getAddressAsString();
+            return caseData.getEpoRemovalAddress().getAddressAsString();
         }
 
         return "";

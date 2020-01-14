@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -20,8 +22,9 @@ import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 @WebMvcTest(UploadDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ValidateEmergencyProtectionOrderControllerTest extends AbstractControllerTest {
-    private static final LocalDateTime NOW = LocalDateTime.now();
 
+    @Autowired
+        private Time time;
 
     ValidateEmergencyProtectionOrderControllerTest() {
         super("validate-emergency-protection-order");
@@ -29,7 +32,8 @@ class ValidateEmergencyProtectionOrderControllerTest extends AbstractControllerT
 
     @Test
     void shouldReturnErrorsWhenEPOTypeIsPreventRemovalButAddressIsIncomplete() {
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, NOW);
+        time.now();
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now());
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "address");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(
             "Enter a valid address for the contact",
@@ -38,14 +42,14 @@ class ValidateEmergencyProtectionOrderControllerTest extends AbstractControllerT
 
     @Test
     void shouldNotReturnErrorsWhenEPOTypeIsRemoveToAccommodation() {
-        CaseDetails caseDetails = createCaseDetails(REMOVE_TO_ACCOMMODATION, NOW);
+        CaseDetails caseDetails = createCaseDetails(REMOVE_TO_ACCOMMODATION, time.now());
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "address");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
     void shouldReturnErrorsWhenEndDateIsNotWithinTheNextEightDays() {
-        LocalDateTime nowPlusNineDays = NOW.plusDays(9);
+        LocalDateTime nowPlusNineDays = time.now().plusDays(9);
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusNineDays);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date must be within the next 8 days");
@@ -53,7 +57,7 @@ class ValidateEmergencyProtectionOrderControllerTest extends AbstractControllerT
 
     @Test
     void shouldNotReturnErrorsWhenEndDateIsWithinTheNextEightDays() {
-        LocalDateTime nowPlusSevenDays = NOW.plusDays(7);
+        LocalDateTime nowPlusSevenDays = time.now().plusDays(7);
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusSevenDays);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date");
         assertThat(callbackResponse.getErrors()).isEmpty();

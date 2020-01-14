@@ -116,26 +116,6 @@
     "ID": "EPOPhrase",
     "CaseEventID": "createOrder",
     "CaseFieldID": "epoPhrase",
-    "ListElementCode": "phraseHeading",
-    "EventElementLabel": " ",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "READONLY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EPOPhrase",
-    "CaseEventID": "createOrder",
-    "CaseFieldID": "epoPhrase",
-    "ListElementCode": "phraseLabel",
-    "EventElementLabel": " ",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "READONLY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EPOPhrase",
-    "CaseEventID": "createOrder",
-    "CaseFieldID": "epoPhrase",
     "ListElementCode": "includePhrase",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 3,

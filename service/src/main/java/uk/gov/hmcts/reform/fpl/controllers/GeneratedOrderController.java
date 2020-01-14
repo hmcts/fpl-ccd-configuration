@@ -119,7 +119,7 @@ public class GeneratedOrderController {
 
         caseDetails.getData().put("orderCollection", orders);
 
-        caseDetails = service.removeOrderProperties(caseDetails, caseData.getOrderTypeAndDocument().getType());
+        caseDetails = service.removeOrderProperties(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

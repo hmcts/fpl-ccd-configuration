@@ -906,7 +906,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "epoChildren",
-    "Label": " ",
+    "Label": "Describe the children",
     "FieldType": "EPOChildren",
     "SecurityClassification": "Public"
   },
@@ -924,14 +924,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "epoRemovalAddress",
     "FieldType": "AddressUK",
-    "Label": "Provide the address the child should not be removed from",
+    "Label": "Address",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "epoPhrase",
-    "Label": " ",
+    "Label": "Any person who can produce the child[ren] to the applicant must do so",
     "FieldType": "EPOPhrase",
     "SecurityClassification": "Public"
   },

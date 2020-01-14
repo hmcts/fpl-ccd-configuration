@@ -163,6 +163,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         assertThat(caseData.getOrderTypeAndDocument()).isNull();
         assertThat(caseData.getOrder()).isNull();
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
+        assertThat(caseData.getEpoRemovalAddress()).isNull();
         assertThat(caseData.getEpoChildren()).isNull();
         assertThat(caseData.getEpoEndDate()).isNull();
         assertThat(caseData.getEpoPhrase()).isNull();
