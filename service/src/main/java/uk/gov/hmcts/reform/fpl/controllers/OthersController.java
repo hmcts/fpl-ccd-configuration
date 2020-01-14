@@ -58,8 +58,7 @@ public class OthersController {
         if(!caseData.getConfidentialOthers().isEmpty())
         {
             Others prepareOthers = othersService.prepareOthers(caseData);
-            caseDetails.getData().put("others", Others.builder().firstOther(prepareOthers.getFirstOther())
-                .additionalOthers(prepareOthers.getAdditionalOthers()).build());
+            caseDetails.getData().put("others", prepareOthers);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
