@@ -18,8 +18,9 @@ import java.util.List;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class MethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
 
+    @Override
     protected AccessDecisionManager accessDecisionManager() {
-        List<AccessDecisionVoter<? extends Object>> decisionVoters = new ArrayList<AccessDecisionVoter<? extends Object>>();
+        List<AccessDecisionVoter<? extends Object>> decisionVoters = new ArrayList<>();
         ExpressionBasedPreInvocationAdvice expressionAdvice = new ExpressionBasedPreInvocationAdvice();
         expressionAdvice.setExpressionHandler(getExpressionHandler());
         RoleVoter voter = new RoleVoter();
