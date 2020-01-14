@@ -71,7 +71,7 @@ class DateFormatterServiceTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0, 32})
-    void shouldErrorWhenGivenAValueSmallerThan1AndGreaterThan31(int day) {
+    void shouldThrowErrorWhenDayOfMonthIsInvalid(int day) {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> dateFormatterService.getDayOfMonthSuffix(day));
 

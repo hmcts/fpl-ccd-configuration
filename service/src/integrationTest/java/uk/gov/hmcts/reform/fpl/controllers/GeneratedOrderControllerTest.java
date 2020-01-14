@@ -234,8 +234,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                                                                        DocmosisTemplates templateName) {
             final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-            verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), eq(templateName));
-            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, fileName);
+            verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(), eq(templateName));
+            verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
             assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
@@ -266,8 +266,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         private CaseDetails generateBlankOrderCaseDetails() {
             final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
 
-            dataBuilder.order(GeneratedOrder.builder().details("").build());
-            dataBuilder.orderTypeAndDocument(OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
+            dataBuilder.order(GeneratedOrder.builder().details("").build())
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
+
             generateDefaultValues(dataBuilder);
 
             return CaseDetails.builder()
@@ -308,15 +309,12 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         private CaseDetails generateSupervisionOrderCaseDetails() {
-            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
-
-            dataBuilder.orderTypeAndDocument(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build());
-
-            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
-                .directionsNeeded("No")
-                .build());
-
-            dataBuilder.orderMonths(5);
+            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder()
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build())
+                .orderFurtherDirections(FurtherDirections.builder()
+                    .directionsNeeded("No")
+                    .build())
+                .orderMonths(5);
 
             generateDefaultValues(dataBuilder);
 

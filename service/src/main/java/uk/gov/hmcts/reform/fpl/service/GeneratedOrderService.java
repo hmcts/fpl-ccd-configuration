@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.collect.Iterables.getLast;
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -78,22 +80,21 @@ public class GeneratedOrderService {
         //Scalable for future types of orders which may have additional fields
         switch (typeAndDocument.getType()) {
             case BLANK_ORDER:
-                orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"));
-                orderBuilder.details(generatedOrder.getDetails());
-                orderBuilder.expiryDate(null);
+                orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"))
+                    .details(generatedOrder.getDetails())
+                    .expiryDate(null);
                 break;
             case CARE_ORDER:
-                orderBuilder.title(null);
-                orderBuilder.expiryDate(null);
+                orderBuilder.title(null)
+                    .expiryDate(null);
                 break;
             case SUPERVISION_ORDER:
                 orderBuilder.title(null);
-                String date = null;
-                if (orderMonths != null) {
-                    date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(orderMonths),
-                        "h:mma, d MMMM y");
-                }
-                orderBuilder.expiryDate(date);
+                ofNullable(orderMonths)
+                    .map(i -> time.now().plusMonths(orderMonths))
+                    .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                        dateTime, "h:mma, d MMMM y"))
+                    .ifPresent(orderBuilder::expiryDate);
                 break;
             default:
         }
@@ -112,9 +113,11 @@ public class GeneratedOrderService {
 
     public Map<String, Object> getOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
+        final GeneratedOrderType orderType = caseData.getOrderTypeAndDocument().getType();
 
+        orderTemplateBuilder.put("orderTitle", orderType.getLabel());
         //Scalable for future order types
-        switch (caseData.getOrderTypeAndDocument().getType()) {
+        switch (orderType) {
             case BLANK_ORDER:
                 orderTemplateBuilder
                     .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
@@ -123,24 +126,22 @@ public class GeneratedOrderService {
                 break;
             case CARE_ORDER:
                 orderTemplateBuilder
-                    .put("orderTitle", "Care order")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority()));
                 break;
             case SUPERVISION_ORDER:
                 orderTemplateBuilder
-                    .put("orderTitle", "Supervision order")
                     .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                     .put("orderDetails", supervisionOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + caseData.getOrderTypeAndDocument().getType());
+                throw new UnsupportedOperationException("Unexpected value: " + orderType);
         }
 
         orderTemplateBuilder
-            .put("orderType", caseData.getOrderTypeAndDocument().getType())
+            .put("orderType", orderType)
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("todaysDate", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
@@ -176,14 +177,15 @@ public class GeneratedOrderService {
     }
 
     private String supervisionOrderDetails(int numOfChildren, String caseLocalAuthority, int numOfMonths) {
-        final LocalDateTime date = time.now().plusMonths(numOfMonths);
-        final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
+        final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
+        final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
         return String.format(
             "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
             getLocalAuthorityName(caseLocalAuthority),
             (numOfChildren == 1) ? "child" : "children",
             numOfMonths,
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(date, "h:mma 'on the' d'" + suffix + "' MMMM y"));
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
+                "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y"));
     }
 
     private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {
