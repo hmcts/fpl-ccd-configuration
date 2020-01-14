@@ -42,8 +42,9 @@ public abstract class AbstractEmailContentProvider {
     ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(Long caseId, CaseData caseData) {
         List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
 
-        Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing()).map(
-            Hearing::getTimeFrame).filter(StringUtils::isNotBlank);
+        Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
+            .map(Hearing::getTimeFrame)
+            .filter(StringUtils::isNotBlank);
 
         return ImmutableMap.<String, Object>builder()
             .put("ordersAndDirections", !ordersAndDirections.isEmpty() ? ordersAndDirections : "")
@@ -83,7 +84,6 @@ public abstract class AbstractEmailContentProvider {
 
     private String formatCaseURL(Long caseId) {
         return String.format("%s/case/%s/%s/%s", uiBaseUrl, JURISDICTION, CASE_TYPE, caseId);
-
     }
 
     private List<String> buildOrdersAndDirections(Orders optionalOrders) {
