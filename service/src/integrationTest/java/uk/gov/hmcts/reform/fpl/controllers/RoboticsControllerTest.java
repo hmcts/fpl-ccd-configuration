@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -52,6 +53,9 @@ public class RoboticsControllerTest {
     @MockBean
     private EmailService emailService;
 
+    @MockBean
+    private RequestData requestData;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -67,6 +71,9 @@ public class RoboticsControllerTest {
 
         given(authTokenGenerator.generate())
             .willReturn(SERVICE_AUTH_TOKEN);
+
+        given(requestData.authorisation())
+            .willReturn(USER_AUTH_TOKEN);
     }
 
     @Test
