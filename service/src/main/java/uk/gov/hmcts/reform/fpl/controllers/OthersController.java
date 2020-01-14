@@ -55,18 +55,6 @@ public class OthersController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //System.out.println("Confidential others is" + caseData.getConfidentialOthers());
-
-        List<Element<Other>> additionalOthers = caseData.getConfidentialOthers();
-
-        if(!caseData.getConfidentialOthers().isEmpty())
-        {
-            Other firstOther = caseData.getConfidentialOthers().get(0).getValue();
-            Others others = new Others(firstOther,additionalOthers);
-
-            caseDetails.getData().put("others", others);
-        }
-
         //caseDetails.getData().put("others", othersService.prepareOthers(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()

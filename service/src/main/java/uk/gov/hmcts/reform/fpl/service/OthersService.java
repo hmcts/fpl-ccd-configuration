@@ -55,9 +55,9 @@ public class OthersService {
         final List<Element<Other>> confidentialOthers = new ArrayList<>();
 
         caseData.getAllOthers().forEach(element -> {
-            if (element.containsConfidentialDetails()) {
+            if (element.getValue().containsConfidentialDetails()) {
                 // we will need to persist id of element so that we can place back into others.
-                confidentialOthers.add(element(element));
+                confidentialOthers.add(element);
             }
         });
 
@@ -98,10 +98,10 @@ public class OthersService {
         final List <Element<Other>> additionalOthers = new ArrayList<>();
 
             caseData.getAllOthers().forEach(element -> {
-                if (element.containsConfidentialDetails()) {
-                    additionalOthers.add(getElementToAdd(caseData.getConfidentialOthers(), Element.<Other>builder().value(element).build()));
+                if (element.getValue().containsConfidentialDetails()) {
+                    additionalOthers.add(getElementToAdd(caseData.getConfidentialOthers(), element));
                 } else {
-                    additionalOthers.add(Element.<Other>builder().value(element).build());
+                    additionalOthers.add(element);
                 }
             });
 
@@ -112,7 +112,7 @@ public class OthersService {
             return  others.toBuilder().additionalOthers(additionalOthers).firstOther(firstOther.getValue()).build();
         }
 
-    private Element<Other> getElementToAdd(List<Element<Other>> confidentialOthers,
+    public Element<Other> getElementToAdd(List<Element<Other>> confidentialOthers,
                                                 Element<Other> element) {
         return confidentialOthers.stream()
             .filter(confidentialOther -> confidentialOther.getId().equals(element.getId()))
