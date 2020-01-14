@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
+import uk.gov.hmcts.reform.fpl.events.robotics.ResendFailedRoboticNotificationEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
@@ -106,14 +107,25 @@ public class RoboticsNotificationServiceTest {
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 
-        EmailData capturedEmailData = emailDataArgumentCaptor.getValue();
-        assertThat(capturedEmailData.getSubject()).isEqualTo("CaseSubmitted_12345");
-        assertThat(capturedEmailData.getRecipient()).isEqualTo(EMAIL_RECIPIENT);
-        assertThat(capturedEmailData.getAttachments()).hasSize(1);
-        assertThat(capturedEmailData.getAttachments())
-            .extracting("data", "filename")
-            .containsExactly(tuple(new ByteArrayResource(expectedRoboticsDataJson.getBytes()),
-                "CaseSubmitted_12345.json"));
+        assertEmailData(expectedRoboticsDataJson);
+    }
+
+    @Test
+    void resendRoboticsOfSubmittedCaseDataShouldSendNotificationToRobotics() throws IOException {
+        RoboticsData expectedRoboticsData = expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel());
+        given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
+            .willReturn(expectedRoboticsData);
+
+        String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData);
+        given(roboticsDataService.convertRoboticsDataToJson(expectedRoboticsData))
+            .willReturn(expectedRoboticsDataJson);
+
+        roboticsNotificationService.resendRoboticsOfSubmittedCaseData(new ResendFailedRoboticNotificationEvent(
+            prepareCaseDetails()));
+
+        verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
+
+        assertEmailData(expectedRoboticsDataJson);
     }
 
     @Test
@@ -199,5 +211,16 @@ public class RoboticsNotificationServiceTest {
             assertThat(argument.getLevel()).isEqualTo(ERROR);
             return true;
         }));
+    }
+
+    private void assertEmailData(String expectedRoboticsDataJson) {
+        EmailData capturedEmailData = emailDataArgumentCaptor.getValue();
+        assertThat(capturedEmailData.getSubject()).isEqualTo("CaseSubmitted_12345");
+        assertThat(capturedEmailData.getRecipient()).isEqualTo(EMAIL_RECIPIENT);
+        assertThat(capturedEmailData.getAttachments()).hasSize(1);
+        assertThat(capturedEmailData.getAttachments())
+            .extracting("data", "filename")
+            .containsExactly(tuple(new ByteArrayResource(expectedRoboticsDataJson.getBytes()),
+                "CaseSubmitted_12345.json"));
     }
 }
