@@ -28,18 +28,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
@@ -155,6 +152,10 @@ public class CaseData {
     private final List<Element<HearingBooking>> hearingDetails;
 
     private final List<Element<HearingBooking>> pastHearingDetails;
+
+    public List<Element<HearingBooking>> getPastHearingDetails() {
+        return pastHearingDetails != null ? pastHearingDetails : new ArrayList<>();
+    }
 
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;

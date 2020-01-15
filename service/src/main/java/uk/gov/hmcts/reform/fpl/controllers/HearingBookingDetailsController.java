@@ -19,9 +19,8 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static java.util.Collections.emptyList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.PAST_HEARING_DETAILS;
 
@@ -48,14 +47,11 @@ public class HearingBookingDetailsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
-        List<Element<HearingBooking>> hearingDetailsCopy = List.copyOf(hearingDetails);
 
-        service.filterHearingsInPast(hearingDetails);
+        Map<String, List<Element<HearingBooking>>> splitHearingDetails =
+            service.splitPastAndFutureHearings(hearingDetails);
 
-        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsCopy, hearingDetails);
-
-        caseDetails.getData().put(HEARING_DETAILS.getKey(), hearingDetails);
-        caseDetails.getData().put(PAST_HEARING_DETAILS.getKey(), pastHearings);
+        caseDetails.getData().putAll(splitHearingDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -78,12 +74,10 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-        List<Element<HearingBooking>> pastHearingDetails = defaultIfNull(caseData.getPastHearingDetails(), emptyList());
+        List<Element<HearingBooking>> combinedHearingDetails =
+            service.rebuildHearingDetailsObject(caseData.getHearingDetails(), caseData.getPastHearingDetails());
 
-        service.addHearingsInPastFromBeforeDataState(hearingDetails, pastHearingDetails);
-
-        caseDetails.getData().put(HEARING_DETAILS.getKey(), hearingDetails);
+        caseDetails.getData().put(HEARING_DETAILS.getKey(), combinedHearingDetails);
         caseDetails.getData().remove(PAST_HEARING_DETAILS.getKey());
 
         return AboutToStartOrSubmitCallbackResponse.builder()

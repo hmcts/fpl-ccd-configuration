@@ -98,7 +98,7 @@ public class CaseDataExtractionService {
     }
 
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
-        if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
+        if (caseData.getHearingDetails() == null || isEmpty(caseData.getHearingDetails())) {
             return ImmutableMap.<String, Object>builder()
                 .put("hearingDate", EMPTY_PLACEHOLDER)
                 .put("hearingVenue", EMPTY_PLACEHOLDER)

@@ -8,29 +8,51 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.PAST_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 public class HearingBookingService {
+    private static final List<Element<HearingBooking>> EMPTY_HEARING_BOOKING =
+        newArrayList(element(HearingBooking.builder().build()));
 
     public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData) {
-        return defaultIfNull(caseData.getHearingDetails(), newArrayList(element(HearingBooking.builder().build())));
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+
+        return hearingDetails != null ? hearingDetails : newArrayList(element(HearingBooking.builder().build()));
     }
 
-    public void filterHearingsInPast(List<Element<HearingBooking>> hearingDetails) {
-        hearingDetails.removeIf(x -> x.getValue() != null && x.getValue().getStartDate() != null &&
-            x.getValue().getStartDate().isBefore(LocalDateTime.now()));
+    /**
+     * Creates a map with past and future hearings.
+     *
+     * @param hearingBookingDetails a list of hearing bookings.
+     * @return map of past and future hearings.
+     */
+    public Map<String, List<Element<HearingBooking>>> splitPastAndFutureHearings(
+        List<Element<HearingBooking>> hearingBookingDetails) {
+        List<Element<HearingBooking>> pastHearingsDetails = getPastHearings(hearingBookingDetails);
+        hearingBookingDetails.removeIf(pastHearingsDetails::contains);
+
+        return Map.of(
+            HEARING_DETAILS.getKey(), isNotEmpty(hearingBookingDetails) ? hearingBookingDetails : EMPTY_HEARING_BOOKING,
+            PAST_HEARING_DETAILS.getKey(), pastHearingsDetails);
     }
 
-    public List<Element<HearingBooking>> getPastHearings(List<Element<HearingBooking>> allHearings,
-                                                         List<Element<HearingBooking>> hearingsInFuture) {
-        return allHearings.stream().filter(x -> !hearingsInFuture.contains(x)).collect(toList());
+    private List<Element<HearingBooking>> getPastHearings(List<Element<HearingBooking>> hearingDetails) {
+        return hearingDetails.stream().filter(this::isBeforeToday).collect(toList());
+    }
+
+    private boolean isBeforeToday(Element<HearingBooking> element) {
+        return element.getValue() != null && element.getValue().getStartDate() != null
+            && element.getValue().getStartDate().isBefore(LocalDateTime.now());
     }
 
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingBookings) {
@@ -64,9 +86,22 @@ public class HearingBookingService {
             .orElse(null);
     }
 
-    public void addHearingsInPastFromBeforeDataState(List<Element<HearingBooking>> after,
-                                                     List<Element<HearingBooking>> before) {
-        after.addAll(before);
-        after.sort(comparing(x -> x.getValue().getStartDate()));
+    /**
+     * Combines two lists of hearings into one, ordered by start date.
+     * Implemented due to work around with hearing start date validation.
+     *
+     * @param firstList  the first list of hearing bookings to combine.
+     * @param secondList the second list of hearing bookings to combine.
+     * @return an ordered list of hearing bookings.
+     */
+    public List<Element<HearingBooking>> rebuildHearingDetailsObject(List<Element<HearingBooking>> firstList,
+                                                                     List<Element<HearingBooking>> secondList) {
+        List<Element<HearingBooking>> combinedHearingDetails = newArrayList();
+        combinedHearingDetails.addAll(firstList);
+        combinedHearingDetails.addAll(secondList);
+
+        combinedHearingDetails.sort(comparing(element -> element.getValue().getStartDate()));
+
+        return combinedHearingDetails;
     }
 }
