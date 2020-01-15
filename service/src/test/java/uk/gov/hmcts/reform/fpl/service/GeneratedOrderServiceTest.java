@@ -238,14 +238,16 @@ class GeneratedOrderServiceTest {
 
     @Test
     void shouldRemovePropertiesOnCaseDetailsUsedForBlankOrderCapture() {
-        CaseDetails caseDetails = service.removeOrderProperties(createPopulatedCaseDetails());
+        CaseDetails caseDetails = createPopulatedCaseDetails();
+        service.removeOrderProperties(caseDetails.getData());
+
         assertRemovalOfCommonOrderFields(caseDetails);
     }
 
     @Test
     void shouldRemovePropertiesOnCaseDetailsUsedForEmergencyProtectionOrderCapture() {
-        CaseDetails caseDetails =
-            service.removeOrderProperties(createPopulatedCaseDetails());
+        CaseDetails caseDetails = createPopulatedCaseDetails();
+        service.removeOrderProperties(caseDetails.getData());
 
         assertRemovalOfCommonOrderFields(caseDetails);
 

@@ -32,11 +32,11 @@ public class TimeRangeValidatorTest extends TimeValidatorTest {
 
     class ValidTimeRangeValidation {
         @TimeRange(rangeAfter = @TimeDifference(amount = 7, unit = DAYS))
-        public LocalDateTime now = LocalDateTime.now().plusDays(2);
+        public LocalDateTime nowPlusTwoDays = LocalDateTime.now().plusDays(2);
     }
 
     class InvalidTimeRangeValidation {
         @TimeRange(rangeAfter = @TimeDifference(amount = 7, unit = DAYS))
-        public LocalDateTime now = LocalDateTime.now().plusDays(9);
+        public LocalDateTime nowPlusNineDays = LocalDateTime.now().plusDays(9);
     }
 }

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -167,11 +166,9 @@ public class GeneratedOrderService {
             .getDocument().getBinaryUrl();
     }
 
-    public CaseDetails removeOrderProperties(CaseDetails caseDetails) {
+    public void removeOrderProperties(Map<String, Object> caseData) {
         Arrays.asList(GeneratedOrderKey.values(), GeneratedEPOKey.values())
-            .forEach(key -> caseDetails.getData().remove(key));
-
-        return caseDetails;
+            .forEach(caseData::remove);
     }
 
     private String getCourtName(String courtName) {
