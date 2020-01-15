@@ -46,8 +46,8 @@ module.exports = {
     I.fillField(this.fields.details, orders[0].details);
   },
 
-  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge) {
-    judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle);
+  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
+    judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
