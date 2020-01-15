@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.UUID.nameUUIDFromBytes;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -97,19 +99,33 @@ public class OthersService {
     public Others prepareOthers(CaseData caseData) {
         final List <Element<Other>> additionalOthers = new ArrayList<>();
         Other firstOther = null;
+        Element<Other> firstOtherElement = null;
 
             caseData.getAllOthers().forEach(element -> {
                 if (element.getValue().containsConfidentialDetails()) {
+                    System.out.println("Element to add is" + getElementToAdd(caseData.getConfidentialOthers(),element));
                     additionalOthers.add(getElementToAdd(caseData.getConfidentialOthers(), element));
                 } else {
                     additionalOthers.add(element);
                 }
             });
 
+            List<Element<Other>> confidentialOthers = caseData.getConfidentialOthers();
+
+            confidentialOthers.removeAll(additionalOthers);
+
+            System.out.println("Element to find is" + confidentialOthers);
+
             if(!additionalOthers.isEmpty())
             {
-                firstOther = additionalOthers.get(0).getValue();
-                additionalOthers.remove(0);
+                if(!confidentialOthers.isEmpty()) //this should be if additional others 0 is confidential
+                {
+                    firstOther = confidentialOthers.get(0).getValue();
+                    additionalOthers.remove(0);
+                }else {
+                    firstOther = additionalOthers.get(0).getValue();
+                    additionalOthers.remove(0);
+                }
             }
 
         return Others.builder().firstOther(firstOther).additionalOthers(additionalOthers).build();
