@@ -94,7 +94,7 @@
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyTitle",
-    "EventElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\nIf they can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
+    "EventElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\nIf they can't comply, you need to explain:\n\n- reasons why\n\n- impact on timetable and next hearing\n\n- proposed next actions",
     "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
