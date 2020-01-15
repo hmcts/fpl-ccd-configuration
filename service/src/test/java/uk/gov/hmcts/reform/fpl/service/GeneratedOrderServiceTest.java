@@ -17,13 +17,14 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -339,7 +340,9 @@ class GeneratedOrderServiceTest {
                         .description("Test description")
                         .build())
                     .epoEndDate(time.now())
-                    .epoPhrase("Yes")
+                    .epoPhrase(EPOPhrase.builder()
+                        .includePhrase("Yes")
+                        .build())
                     .epoType(REMOVE_TO_ACCOMMODATION)
                     .epoRemovalAddress(Address.builder()
                         .addressLine1("1 Main Street")

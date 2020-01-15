@@ -10,12 +10,12 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
@@ -130,7 +130,7 @@ public class GeneratedOrderService {
                     .put("localAuthorityName", getLocalAuthorityName(caseData.getCaseLocalAuthority()))
                     .put("childrenDescription", getChildrenDescription(caseData.getEpoChildren()))
                     .put("epoType", caseData.getEpoType())
-                    .put("includePhrase", caseData.getEpoPhrase())
+                    .put("includePhrase", caseData.getEpoPhrase().getIncludePhrase())
                     .put("removalAddress", getFormattedRemovalAddress(caseData))
                     .put("childrenCount", caseData.getChildren1().size())
                     .put("epoStartDateTime", formatEPODateTime(time.now()))

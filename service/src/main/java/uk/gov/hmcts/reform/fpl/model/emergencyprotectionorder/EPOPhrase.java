@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 @Builder
-public class EPOChildren {
-    private String descriptionNeeded;
-    private String description;
+public class EPOPhrase {
+    private String includePhrase;
 }
