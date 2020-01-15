@@ -157,37 +157,64 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         @Test
         void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(
-                buildSubmitEventCaseDetails(BLANK_ORDER));
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(BLANK_ORDER)
+                    .order(GeneratedOrder.builder()
+                        .title("Example Order")
+                        .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                        .build()));
 
-            GeneratedOrder expectedC21Order = buildExpectedC21Order();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+            GeneratedOrder expectedC21Order = commonExpectedOrderComponents(BLANK_ORDER)
+                .title("Example Order")
+                .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                .build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedC21Order);
         }
 
         @Test
         void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(
-                buildSubmitEventCaseDetails(CARE_ORDER));
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(CARE_ORDER)
+                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
 
-            GeneratedOrder expectedCareOrder = buildExpectedCareOrder();
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+            GeneratedOrder expectedCareOrder = commonExpectedOrderComponents(CARE_ORDER).build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
         }
 
         @Test
         void aboutToSubmitShouldAddSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(
-                buildSubmitEventCaseDetails(SUPERVISION_ORDER));
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(SUPERVISION_ORDER)
+                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                    .orderMonths(14));
 
-            GeneratedOrder expectedCareOrder = buildExpectedSupervisionOrder();
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(
+                caseDetails);
+
+            LocalDateTime orderExpiration = time.now().plusMonths(14);
+            GeneratedOrder expectedCareOrder = commonExpectedOrderComponents(SUPERVISION_ORDER)
+                .expiryDate(
+                    dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
+                .build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
         }
 
-        private CaseDetails buildSubmitEventCaseDetails(GeneratedOrderType orderType) {
-            final CaseData.CaseDataBuilder builder = CaseData.builder();
-            builder.orderTypeAndDocument(
+        private CaseDetails buildCaseDetails(CaseData.CaseDataBuilder builder) {
+            return CaseDetails.builder()
+                .data(mapper.convertValue(builder.build(), new TypeReference<>() {}))
+                .build();
+        }
+
+        private CaseData.CaseDataBuilder commonCaseDetailsComponents(GeneratedOrderType orderType) {
+            return CaseData.builder().orderTypeAndDocument(
                 OrderTypeAndDocument.builder()
                     .type(orderType)
                     .document(DocumentReference.builder().build())
@@ -199,48 +226,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                         .legalAdvisorName("Peter Parker")
                         .build())
                 .familyManCaseNumber("12345L");
-
-            switch (orderType) {
-                case BLANK_ORDER:
-                    builder.order(GeneratedOrder.builder()
-                        .title("Example Order")
-                        .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                        .build());
-                    break;
-                case CARE_ORDER:
-                    builder.orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build());
-                    break;
-                case SUPERVISION_ORDER:
-                    builder.orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                        .orderMonths(14);
-                    break;
-            }
-
-            return CaseDetails.builder()
-                .data(mapper.convertValue(builder.build(), new TypeReference<>() {}))
-                .build();
         }
 
-        private GeneratedOrder buildExpectedC21Order() {
-            return commonComponents(BLANK_ORDER)
-                .title("Example Order")
-                .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                .build();
-        }
-
-        private GeneratedOrder buildExpectedCareOrder() {
-            return commonComponents(CARE_ORDER).build();
-        }
-
-        private GeneratedOrder buildExpectedSupervisionOrder() {
-            LocalDateTime orderExpiration = time.now().plusMonths(14);
-            return commonComponents(SUPERVISION_ORDER)
-                .expiryDate(
-                    dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
-                .build();
-        }
-
-        private GeneratedOrder.GeneratedOrderBuilder commonComponents(GeneratedOrderType orderType) {
+        private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(GeneratedOrderType orderType) {
             return GeneratedOrder.builder()
                 .type(orderType)
                 .document(DocumentReference.builder().build())
