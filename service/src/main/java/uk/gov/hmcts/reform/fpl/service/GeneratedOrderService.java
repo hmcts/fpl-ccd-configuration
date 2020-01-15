@@ -82,7 +82,6 @@ public class GeneratedOrderService {
 
         GeneratedOrderType orderType = typeAndDocument.getType();
 
-        //Scalable for future types of orders which may have additional fields
         switch (orderType) {
             case BLANK_ORDER:
                 orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"));
@@ -111,7 +110,6 @@ public class GeneratedOrderService {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
 
-        //Scalable for future order types
         switch (orderType) {
             case BLANK_ORDER:
                 orderTemplateBuilder
@@ -119,10 +117,8 @@ public class GeneratedOrderService {
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", caseData.getOrder().getDetails());
                 break;
-
             case CARE_ORDER:
                 GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
-
                 if (subtype == INTERIM) {
                     orderTemplateBuilder
                         .put("orderTitle", CARE_ORDER.getFullType(INTERIM))
@@ -132,7 +128,6 @@ public class GeneratedOrderService {
                         .put("orderTitle", CARE_ORDER.getFullType())
                         .put("childrenAct", "Section 31 Children Act 1989");
                 }
-
                 orderTemplateBuilder
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument));
@@ -157,8 +152,7 @@ public class GeneratedOrderService {
     }
 
     public String generateOrderDocumentFileName(GeneratedOrderType orderType, GeneratedOrderSubtype orderSubtype) {
-        String type = orderType.getLabel().toLowerCase().replaceAll("[()]", "").replaceAll("[ ]",
-            "_");
+        String type = orderType.getLabel().toLowerCase().replace("(", "").replace(")", "").replace(" ", "_");
         String subtype = (orderSubtype != null) ? orderSubtype.getLabel().toLowerCase() + "_" : "";
 
         return subtype + type + ".pdf";

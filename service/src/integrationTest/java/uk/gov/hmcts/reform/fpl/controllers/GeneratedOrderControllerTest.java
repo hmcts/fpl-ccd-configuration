@@ -48,7 +48,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -130,7 +129,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         String expectedCaseReference = "19898989";
         postSubmittedEvent(buildCallbackRequest());
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
     }
@@ -236,8 +235,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                                                                        DocmosisTemplates templateName) {
             final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-            verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), eq(templateName));
-            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, fileName);
+            verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(), eq(templateName));
+            verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
             assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
@@ -273,8 +272,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             generateDefaultValues(dataBuilder);
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
-                }))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
         }
 
@@ -287,8 +285,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build());
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
-                }))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
         }
 
@@ -296,8 +293,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails(FINAL);
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
-                }))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
         }
 
@@ -310,8 +306,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build());
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
-                }))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
         }
 
