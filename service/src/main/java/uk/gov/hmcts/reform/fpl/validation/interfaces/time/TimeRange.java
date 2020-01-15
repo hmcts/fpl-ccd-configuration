@@ -22,7 +22,5 @@ public @interface TimeRange {
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
-    boolean inclusive() default true;
-    TimeDifference rangeBefore() default @TimeDifference(amount = 0, unit = SECONDS);
     TimeDifference rangeAfter() default @TimeDifference(amount = 0, unit = SECONDS);
 }
