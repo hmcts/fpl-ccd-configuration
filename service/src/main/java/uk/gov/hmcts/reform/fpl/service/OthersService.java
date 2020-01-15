@@ -132,7 +132,6 @@ public class OthersService {
         }
 
         return firstOther;
-
     }
 
     private Element<Other> getElementToAdd(List<Element<Other>> confidentialOthers,
