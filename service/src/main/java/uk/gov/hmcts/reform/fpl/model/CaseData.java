@@ -164,6 +164,7 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final OrderTypeAndDocument orderTypeAndDocument;
+    private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
     private final List<Element<GeneratedOrder>> orderCollection;
 
@@ -241,6 +242,11 @@ public class CaseData {
     public Optional<Respondent> findRespondent(int seqNo) {
         return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+    }
+
+    @JsonIgnore
+    public String getFurtherDirectionsText() {
+        return Optional.ofNullable(orderFurtherDirections).map(FurtherDirections::getDirections).orElse("");
     }
 
     private final List<Element<Child>> confidentialChildren;

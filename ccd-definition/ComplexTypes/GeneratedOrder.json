@@ -52,5 +52,13 @@
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and legal advisor",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "furtherDirections",
+    "FieldType": "FurtherDirections",
+    "ElementLabel": "Directions",
+    "SecurityClassification": "Public"
   }
 ]
