@@ -423,6 +423,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pastHearingDetails",
+    "Label": "Past Hearings",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingBooking",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingDate",
     "Label": "The next hearing is on ${hearingDetails.startDate}.",
     "FieldType": "Label",

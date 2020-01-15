@@ -18,17 +18,18 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(HearingBookingDetailsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class HearingBookingDetailsControllerTest extends AbstractControllerTest {
+class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest {
     private static final String ERROR_MESSAGE = "Enter a start date in the future";
     private static final HearingBooking EMPTY_HEARING_BOOKING = HearingBooking.builder().build();
 
-    HearingBookingDetailsControllerTest() {
+    HearingBookingDetailsControllerMidEventTest() {
         super("add-hearing-bookings");
     }
 
@@ -97,29 +98,14 @@ class HearingBookingDetailsControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
     }
 
-    @Test
-    void shouldReturnOnlySingleErrorWhenNewHearingAndHearingAlreadyExists() {
-        LocalDateTime errorDate = LocalDateTime.now().minusYears(10);
-
-        List<Element<HearingBooking>> oldHearingBooking = listBookingWithStartDate(randomUUID(), errorDate);
-        List<Element<HearingBooking>> newHearingBooking = listBookingWithStartDate(randomUUID(), errorDate);
-        newHearingBooking.addAll(oldHearingBooking);
-
-        CallbackRequest request = callbackRequestWithEditedBooking(newHearingBooking, oldHearingBooking);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
-
-        assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
-    }
-
     private CallbackRequest callbackRequestWithEditedBooking(List<Element<HearingBooking>> newHearings,
                                                              List<Element<HearingBooking>> oldHearings) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(Map.of("hearingDetails", newHearings))
+                .data(Map.of(HEARING_DETAILS.getKey(), newHearings))
                 .build())
             .caseDetailsBefore(CaseDetails.builder()
-                .data(Map.of("hearingDetails", oldHearings))
+                .data(Map.of(HEARING_DETAILS.getKey(), oldHearings))
                 .build())
             .build();
     }
@@ -135,11 +121,11 @@ class HearingBookingDetailsControllerTest extends AbstractControllerTest {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(Map.of("hearingDetails", wrapElements(after)))
+                .data(Map.of(HEARING_DETAILS.getKey(), wrapElements(after)))
                 .build())
             .caseDetailsBefore(CaseDetails.builder()
                 .id(12345L)
-                .data(Map.of("hearingDetails", wrapElements(EMPTY_HEARING_BOOKING)))
+                .data(Map.of(HEARING_DETAILS.getKey(), wrapElements(EMPTY_HEARING_BOOKING)))
                 .build())
             .build();
 

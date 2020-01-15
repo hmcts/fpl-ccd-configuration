@@ -7,29 +7,30 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 public class HearingBookingService {
 
     public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData) {
-        if (caseData.getHearingDetails() == null) {
-            List<Element<HearingBooking>> populatedHearing = new ArrayList<>();
+        return defaultIfNull(caseData.getHearingDetails(), newArrayList(element(HearingBooking.builder().build())));
+    }
 
-            populatedHearing.add(Element.<HearingBooking>builder()
-                .value(HearingBooking.builder().build())
-                .build());
-            return populatedHearing;
-        } else {
-            return caseData.getHearingDetails();
-        }
+    public void filterHearingsInPast(List<Element<HearingBooking>> hearingDetails) {
+        hearingDetails.removeIf(x -> x.getValue() != null && x.getValue().getStartDate() != null &&
+            x.getValue().getStartDate().isBefore(LocalDateTime.now()));
+    }
+
+    public List<Element<HearingBooking>> getPastHearings(List<Element<HearingBooking>> allHearings,
+                                                         List<Element<HearingBooking>> hearingsInFuture) {
+        return allHearings.stream().filter(x -> !hearingsInFuture.contains(x)).collect(toList());
     }
 
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingBookings) {
@@ -43,8 +44,7 @@ public class HearingBookingService {
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
 
-    public HearingBooking getHearingBooking(final List<Element<HearingBooking>> hearingDetails,
-                                            final DynamicList hearingDateList) {
+    public HearingBooking getHearingBooking(List<Element<HearingBooking>> hearingDetails, DynamicList hearingDateList) {
         if (hearingDetails == null || hearingDateList == null || hearingDateList.getValue() == null) {
             return HearingBooking.builder().build();
         }
@@ -64,24 +64,9 @@ public class HearingBookingService {
             .orElse(null);
     }
 
-    public List<Element<HearingBooking>> getChangedHearings(List<Element<HearingBooking>> before,
-                                                            List<Element<HearingBooking>> after) {
-        Map<UUID, LocalDateTime> times = before.stream()
-            .filter(element -> element.getValue() != null && element.getValue().getStartDate() != null)
-            .collect(toMap(Element::getId, element -> element.getValue().getStartDate()));
-
-        return after.stream()
-            .filter(hearing -> isNewHearing(times, hearing) || isExistingHearingWithDifferentStartTime(times, hearing))
-            .collect(toList());
-    }
-
-    private boolean isNewHearing(Map<UUID, LocalDateTime> times, Element<HearingBooking> hearing) {
-        return times.get(hearing.getId()) == null;
-    }
-
-    private boolean isExistingHearingWithDifferentStartTime(Map<UUID, LocalDateTime> times,
-                                                            Element<HearingBooking> hearing) {
-        return times.get(hearing.getId()) != null
-            && !times.get(hearing.getId()).equals(hearing.getValue().getStartDate());
+    public void addHearingsInPastFromBeforeDataState(List<Element<HearingBooking>> after,
+                                                     List<Element<HearingBooking>> before) {
+        after.addAll(before);
+        after.sort(comparing(x -> x.getValue().getStartDate()));
     }
 }
