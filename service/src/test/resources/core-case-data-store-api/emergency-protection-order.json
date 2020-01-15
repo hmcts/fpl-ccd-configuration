@@ -14,7 +14,9 @@
         "description": "Description"
       },
       "epoEndDate": "2020-01-13T11:04:46.042839",
-      "epoPhrase": "Yes",
+      "epoPhrase": {
+        "includePhrase": "Yes"
+      },
       "epoType": "REMOVE_TO_ACCOMMODATION",
       "epoRemovalAddress": {
         "addressLineOne": "Unit 1",
