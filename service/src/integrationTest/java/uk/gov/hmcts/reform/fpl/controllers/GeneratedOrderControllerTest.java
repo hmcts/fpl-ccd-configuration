@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.GenerateEPOKeys;
-import uk.gov.hmcts.reform.fpl.enums.GenerateOrderKeys;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
@@ -157,7 +157,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     }
 
     private void aboutToSubmitAssertions(Map<String, Object> data, GeneratedOrder expectedOrder) {
-        Arrays.asList(GenerateOrderKeys.values(), GenerateEPOKeys.values())
+        Arrays.asList(GeneratedOrderKey.values(), GeneratedEPOKey.values())
             .forEach(key -> assertThat(data.get(key)).isNull());
 
         CaseData caseData = mapper.convertValue(data, CaseData.class);

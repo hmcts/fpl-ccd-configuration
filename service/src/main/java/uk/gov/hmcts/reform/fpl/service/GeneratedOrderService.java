@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.GenerateEPOKeys;
-import uk.gov.hmcts.reform.fpl.enums.GenerateOrderKeys;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.EPOChildren;
@@ -168,7 +168,7 @@ public class GeneratedOrderService {
     }
 
     public CaseDetails removeOrderProperties(CaseDetails caseDetails) {
-        Arrays.asList(GenerateOrderKeys.values(), GenerateEPOKeys.values())
+        Arrays.asList(GeneratedOrderKey.values(), GeneratedEPOKey.values())
             .forEach(key -> caseDetails.getData().remove(key));
 
         return caseDetails;
