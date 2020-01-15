@@ -163,6 +163,7 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final OrderTypeAndDocument orderTypeAndDocument;
+    private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
     private final List<Element<GeneratedOrder>> orderCollection;
 
@@ -242,18 +243,15 @@ public class CaseData {
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
     }
 
+    @JsonIgnore
+    public String getFurtherDirectionsText() {
+        return Optional.ofNullable(orderFurtherDirections).map(FurtherDirections::getDirections).orElse("");
+    }
+
     private final List<Element<Child>> confidentialChildren;
 
     public List<Element<Child>> getConfidentialChildren() {
         return confidentialChildren != null ? confidentialChildren : new ArrayList<>();
-    }
-
-    //private final List<Element<Other>> confidentialOthers;
-
-    private final List<Element<Other>> confidentialOthers;
-
-    public List<Element<Other>> getConfidentialOthers() {
-        return confidentialOthers != null ? confidentialOthers : new ArrayList<>();
     }
 
     private final List<Element<Respondent>> confidentialRespondents;
@@ -261,4 +259,11 @@ public class CaseData {
     public List<Element<Respondent>> getConfidentialRespondents() {
         return confidentialRespondents != null ? confidentialRespondents : new ArrayList<>();
     }
+
+    private final List<Element<Other>> confidentialOthers;
+
+    public List<Element<Other>> getConfidentialOthers() {
+        return confidentialOthers != null ? confidentialOthers : new ArrayList<>();
+    }
+
 }

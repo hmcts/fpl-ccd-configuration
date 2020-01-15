@@ -524,6 +524,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "UserRole": "caseworker-publiclaw-solicitor",
+    "Comment": "definition is valid for SOLICITOR role also",
     "CRUD": "CRUD"
   },
   {

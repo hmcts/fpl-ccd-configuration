@@ -5,9 +5,11 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -24,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -71,9 +74,13 @@ class PopulateStandardDirectionsHandlerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
+    @MockBean
+    private UserDetailsService userDetailsService;
 
-    private DirectionHelperService directionHelperService = new DirectionHelperService();
+    @InjectMocks
+    private DirectionHelperService directionHelperService;
+
+    private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
 
     @BeforeEach
     void before() {
@@ -87,6 +94,8 @@ class PopulateStandardDirectionsHandlerTest {
             .build());
 
         given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
+
+        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn("Emma Taylor");
     }
 
     @Test

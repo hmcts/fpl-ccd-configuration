@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
@@ -37,18 +38,18 @@ public class ChildrenService {
         return childCollection;
     }
 
-    private Element<Child> getElementToAdd(List<Element<Child>> confidentialChildren, Element<Child> element) {
-        return confidentialChildren.stream()
-            .filter(confidentialChild -> confidentialChild.getId().equals(element.getId()))
-            .findFirst()
-            .orElse(element);
-    }
-
     // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.
     private Element<Child> emptyElementWithPartyId() {
         return ElementUtils.element(Child.builder()
             .party(ChildParty.builder().partyId(randomUUID().toString()).build())
             .build());
+    }
+
+    private Element<Child> getElementToAdd(List<Element<Child>> confidentialChildren, Element<Child> element) {
+        return confidentialChildren.stream()
+            .filter(confidentialChild -> confidentialChild.getId().equals(element.getId()))
+            .findFirst()
+            .orElse(element);
     }
 
     public List<Element<Child>> modifyHiddenValues(List<Element<Child>> children) {
