@@ -34,53 +34,48 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
     }
 
     @Test
-    void shouldReturnAnErrorWhenHearingDateIsSetToYesterday() throws Exception {
+    void shouldReturnAnErrorWhenHearingDateIsSetToYesterday() {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            yesterday, yesterday.plusDays(1)));
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(yesterday, yesterday.plusDays(1)));
 
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldNotReturnAnErrorWhenHearingDateIsSetToTomorrow() throws Exception {
+    void shouldNotReturnAnErrorWhenHearingDateIsSetToTomorrow() {
         LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            tomorrow, tomorrow.plusDays(1)));
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(tomorrow, tomorrow.plusDays(1)));
 
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        assertThat(response.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnAnErrorWhenHearingDateIsSetToToday() throws Exception {
+    void shouldReturnAnErrorWhenHearingDateIsSetToToday() {
         LocalDateTime today = LocalDateTime.now();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            today, today.plusDays(1)));
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(today, today.plusDays(1)));
 
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnAnErrorWhenHearingDateIsSetInDistantPast() throws Exception {
-        LocalDateTime distantPast = LocalDateTime.now().minusYears(10000);
+    void shouldReturnAnErrorWhenHearingDateIsSetInDistantPast() {
+        LocalDateTime pastDate = LocalDateTime.now().minusYears(10000);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            distantPast, distantPast.plusDays(1)));
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(pastDate, pastDate.plusDays(1)));
 
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldNotReturnAnErrorWhenHearingDateIsSetInDistantFuture() throws Exception {
-        LocalDateTime distantFuture = LocalDateTime.now().plusYears(1000);
+    void shouldNotReturnAnErrorWhenHearingDateIsSetInDistantFuture() {
+        LocalDateTime futureDate = LocalDateTime.now().plusYears(1000);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(
-            distantFuture, distantFuture.plusDays(1)));
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(futureDate, futureDate.plusDays(1)));
 
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        assertThat(response.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
     @Test

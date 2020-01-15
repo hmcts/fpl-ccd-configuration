@@ -27,22 +27,22 @@ public class HearingBookingService {
     public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData) {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
-        return hearingDetails != null ? hearingDetails : newArrayList(element(HearingBooking.builder().build()));
+        return hearingDetails != null ? hearingDetails : EMPTY_HEARING_BOOKING;
     }
 
     /**
      * Creates a map with past and future hearings.
      *
-     * @param hearingBookingDetails a list of hearing bookings.
+     * @param hearingDetails a list of hearing bookings.
      * @return map of past and future hearings.
      */
     public Map<String, List<Element<HearingBooking>>> splitPastAndFutureHearings(
-        List<Element<HearingBooking>> hearingBookingDetails) {
-        List<Element<HearingBooking>> pastHearingsDetails = getPastHearings(hearingBookingDetails);
-        hearingBookingDetails.removeIf(pastHearingsDetails::contains);
+        List<Element<HearingBooking>> hearingDetails) {
+        List<Element<HearingBooking>> pastHearingsDetails = getPastHearings(hearingDetails);
+        hearingDetails.removeIf(pastHearingsDetails::contains);
 
         return Map.of(
-            HEARING_DETAILS.getKey(), isNotEmpty(hearingBookingDetails) ? hearingBookingDetails : EMPTY_HEARING_BOOKING,
+            HEARING_DETAILS.getKey(), isNotEmpty(hearingDetails) ? hearingDetails : EMPTY_HEARING_BOOKING,
             PAST_HEARING_DETAILS.getKey(), pastHearingsDetails);
     }
 
@@ -55,12 +55,12 @@ public class HearingBookingService {
             && element.getValue().getStartDate().isBefore(LocalDateTime.now());
     }
 
-    public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingBookings) {
-        if (hearingBookings == null) {
+    public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
+        if (hearingDetails == null) {
             throw new IllegalStateException("Hearing booking was not present");
         }
 
-        return hearingBookings.stream()
+        return hearingDetails.stream()
             .map(Element::getValue)
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
@@ -78,8 +78,8 @@ public class HearingBookingService {
             .orElse(HearingBooking.builder().build());
     }
 
-    public HearingBooking getHearingBookingByUUID(List<Element<HearingBooking>> hearingBookings, UUID elementId) {
-        return hearingBookings.stream()
+    public HearingBooking getHearingBookingByUUID(List<Element<HearingBooking>> hearingDetails, UUID elementId) {
+        return hearingDetails.stream()
             .filter(hearingBookingElement -> hearingBookingElement.getId().equals(elementId))
             .map(Element::getValue)
             .findFirst()
