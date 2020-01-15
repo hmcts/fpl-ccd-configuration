@@ -208,7 +208,7 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', respondents[0].address.postcode);
   I.seeAnswerInTab(6, 'Current address', 'Country', respondents[0].address.country);
   I.seeAnswerInTab(1, 'Telephone', 'Telephone', respondents[0].telephone);
-  I.seeAnswerInTab(10, 'Party', 'What is the respondent’s relationship to the child or children in this case?', 'mock reason');
+  I.seeAnswerInTab(10, 'Party', 'What is the respondent\'s relationship to the child or children in this case?', 'mock reason');
   I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from other parties?', 'No');
   I.seeAnswerInTab(12, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
   I.seeAnswerInTab(13, 'Party', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
@@ -218,7 +218,7 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   I.seeAnswerInTab(3, 'Party', 'Date of birth', '1 Jan 1955');
   I.seeAnswerInTab(4, 'Party', 'Gender', respondents[1].gender);
   I.seeAnswerInTab(5, 'Party', 'Place of birth', respondents[1].placeOfBirth);
-  I.seeAnswerInTab(6, 'Party', 'What is the respondent’s relationship to the child or children in this case?', 'mock reason');
+  I.seeAnswerInTab(6, 'Party', 'What is the respondent\'s relationship to the child or children in this case?', 'mock reason');
   I.seeAnswerInTab(7, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(8, 'Party', 'Give reason', 'mock reason');
   I.seeAnswerInTab(9, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
@@ -236,7 +236,7 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', respondents[1].address.postcode);
   I.seeAnswerInTab(6, 'Current address', 'Country', respondents[1].address.country);
   I.seeAnswerInTab(1, 'Telephone', 'Telephone', respondents[1].telephone);
-  I.seeAnswerInTab(8, 'Party', 'What is the respondent’s relationship to the child or children in this case?', 'mock reason');
+  I.seeAnswerInTab(8, 'Party', 'What is the respondent\'s relationship to the child or children in this case?', 'mock reason');
   I.seeAnswerInTab(9, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(10, 'Party', 'Give reason', 'mock reason');
   I.seeAnswerInTab(11, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
@@ -295,7 +295,7 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', 'RG4 7AA');
   I.seeAnswerInTab(6, 'Current address', 'Country', 'United Kingdom');
   I.seeAnswerInTab(6, 'Person 1', 'Telephone number', '07888288288');
-  I.seeAnswerInTab(7, 'Person 1', 'What is this person’s relationship to the child or children in this case?', 'Tim Smith');
+  I.seeAnswerInTab(7, 'Person 1', 'What is this person\'s relationship to the child or children in this case?', 'Tim Smith');
   I.seeAnswerInTab(8, 'Person 1', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(9, 'Person 1', 'Give reason', 'mock reason');
   I.seeAnswerInTab(10, 'Person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
@@ -311,7 +311,7 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', 'TS9 5DQ');
   I.seeAnswerInTab(6, 'Current address', 'Country', 'United Kingdom');
   I.seeAnswerInTab(6, 'Other person 1', 'Telephone number', '07888288288');
-  I.seeAnswerInTab(7, 'Other person 1', 'What is this person’s relationship to the child or children in this case?', 'Tim Smith');
+  I.seeAnswerInTab(7, 'Other person 1', 'What is this person\'s relationship to the child or children in this case?', 'Tim Smith');
   I.seeAnswerInTab(8, 'Other person 1', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(9, 'Other person 1', 'Give reason', 'mock reason');
   I.seeAnswerInTab(10, 'Other person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
