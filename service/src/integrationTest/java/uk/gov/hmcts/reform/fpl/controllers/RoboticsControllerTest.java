@@ -26,6 +26,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
@@ -97,7 +98,7 @@ public class RoboticsControllerTest {
     @WithMockUser(authorities = "caseworker-publiclaw-systemupdate")
     void resendCaseDataNotificationShouldNotResendNotificationWhenWrongCaseIdSentInRequest() throws Exception {
         assertThat(postToUrl("1111111111").getResponse().getStatus())
-            .isEqualTo(SC_OK);
+            .isEqualTo(NOT_FOUND.value());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
