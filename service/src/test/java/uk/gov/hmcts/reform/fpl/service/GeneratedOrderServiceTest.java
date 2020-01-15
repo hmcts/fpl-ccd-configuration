@@ -230,9 +230,11 @@ class GeneratedOrderServiceTest {
         Map<String, Object> data = Arrays.stream(GeneratedOrderKey.values())
             .collect(Collectors.toMap(GeneratedOrderKey::getKey, value -> ""));
 
+        data.put("DO NOT REMOVE", "");
+
         service.removeOrderProperties(data);
 
-        assertThat(data).isEmpty();
+        assertThat(data).containsOnlyKeys("DO NOT REMOVE");
     }
 
     private static Stream<Arguments> fileNameSource() {
