@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingCollection",
+    "ListElementCode": "hearingBookingCollection",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingBooking",
+    "ElementLabel": "Collection",
+    "SecurityClassification": "Public"
+  }
+]

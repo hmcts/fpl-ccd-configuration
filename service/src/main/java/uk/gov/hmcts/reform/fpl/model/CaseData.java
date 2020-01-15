@@ -151,6 +151,7 @@ public class CaseData {
 
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
+    private final List<Element<HearingBooking>> pastHearingDetails;
 
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;

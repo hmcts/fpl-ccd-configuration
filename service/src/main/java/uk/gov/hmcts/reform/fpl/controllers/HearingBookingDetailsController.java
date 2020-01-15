@@ -19,23 +19,23 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static java.util.Collections.emptyList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static java.util.stream.Collectors.toList;
 
 @Api
 @RestController
 @RequestMapping("/callback/add-hearing-bookings")
 public class HearingBookingDetailsController {
-    private final HearingBookingService hearingBookingService;
+    private final HearingBookingService service;
     private final ValidateGroupService validateGroupService;
     private final ObjectMapper mapper;
 
     @Autowired
-    public HearingBookingDetailsController(HearingBookingService hearingBookingService,
+    public HearingBookingDetailsController(HearingBookingService service,
                                            ValidateGroupService validateGroupService,
                                            ObjectMapper mapper) {
-        this.hearingBookingService = hearingBookingService;
+        this.service = service;
         this.validateGroupService = validateGroupService;
         this.mapper = mapper;
     }
@@ -45,7 +45,17 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData));
+        List<Element<HearingBooking>> hearings = List.copyOf(caseData.getHearingDetails());
+
+        List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
+        service.filterHearingsInPast(hearingDetails);
+
+        List<Element<HearingBooking>> pastHearings = hearings.stream()
+            .filter(x -> !hearingDetails.contains(x))
+            .collect(toList());
+
+        caseDetails.getData().put("hearingDetails", hearingDetails);
+        caseDetails.getData().put("pastHearingDetails", Map.of("hearingBookingCollection", pastHearings));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -55,23 +65,29 @@ public class HearingBookingDetailsController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackrequest.getCaseDetailsBefore();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
-
-        List<Element<HearingBooking>> hearingDetailsBefore =
-            defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
-
-        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-
-        List<Element<HearingBooking>> changedHearings =
-            hearingBookingService.getChangedHearings(hearingDetailsBefore, hearingDetails);
-
-        final List<String> errors = validateHearingBookings(changedHearings);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(errors)
+            .errors(validateHearingBookings(caseData.getHearingDetails()))
+            .build();
+    }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+        List<Element<HearingBooking>> pastHearingDetails = caseData.getPastHearingDetails();
+
+        service.addHearingsInPastFromBeforeDataState(hearingDetails, pastHearingDetails);
+
+        caseDetails.getData().put("hearingDetails", hearingDetails);
+        caseDetails.getData().remove("hearingDetailsPast");
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
             .build();
     }
 
