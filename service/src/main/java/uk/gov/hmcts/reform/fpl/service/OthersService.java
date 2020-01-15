@@ -97,41 +97,45 @@ public class OthersService {
     }
 
     public Others prepareOthers(CaseData caseData) {
-        final List <Element<Other>> additionalOthers = new ArrayList<>();
-        Other firstOther = null;
-        Element<Other> firstOtherElement = null;
+        final List <Element<Other>> others = new ArrayList<>();
 
-            caseData.getAllOthers().forEach(element -> {
+        caseData.getAllOthers().forEach(element -> {
                 if (element.getValue().containsConfidentialDetails()) {
-                    System.out.println("Element to add is" + getElementToAdd(caseData.getConfidentialOthers(),element));
-                    additionalOthers.add(getElementToAdd(caseData.getConfidentialOthers(), element));
+                    others.add(getElementToAdd(caseData.getConfidentialOthers(), element));
                 } else {
-                    additionalOthers.add(element);
+                    others.add(element);
                 }
             });
 
-            List<Element<Other>> confidentialOthers = caseData.getConfidentialOthers();
+            Other firstOther = getFirstOther(caseData, others);
 
-            confidentialOthers.removeAll(additionalOthers);
-
-            System.out.println("Element to find is" + confidentialOthers);
-
-            if(!additionalOthers.isEmpty())
-            {
-                if(additionalOthers.get(0).getValue().containsConfidentialDetails()) //this should be if additional others 0 is confidential
-                {
-                    firstOther = confidentialOthers.get(0).getValue();
-                    additionalOthers.remove(0);
-                }else {
-                    firstOther = additionalOthers.get(0).getValue();
-                    additionalOthers.remove(0);
-                }
-            }
-
-        return Others.builder().firstOther(firstOther).additionalOthers(additionalOthers).build();
+        return Others.builder().firstOther(firstOther).additionalOthers(others).build();
     }
 
-    public Element<Other> getElementToAdd(List<Element<Other>> confidentialOthers,
+    private Other getFirstOther(CaseData caseData, List <Element<Other>> others) {
+        // This finds the element id in confidential others that doesn't match which is therefore the first other id
+        // Hacky but only way we can find the first other id as it is not an element
+        List<Element<Other>> confidentialOthers = caseData.getConfidentialOthers();
+        confidentialOthers.removeAll(others);
+        Other firstOther = null;
+
+        if(!others.isEmpty())
+        {
+            if(others.get(0).getValue().containsConfidentialDetails())
+            {
+                firstOther = confidentialOthers.get(0).getValue();
+                others.remove(0);
+            } else {
+                firstOther = others.get(0).getValue();
+                others.remove(0);
+            }
+        }
+
+        return firstOther;
+
+    }
+
+    private Element<Other> getElementToAdd(List<Element<Other>> confidentialOthers,
                                                 Element<Other> element) {
         return confidentialOthers.stream()
             .filter(confidentialOther -> confidentialOther.getId().equals(element.getId()))
