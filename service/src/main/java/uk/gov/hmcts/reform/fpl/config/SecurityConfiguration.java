@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
 @Configuration
 public class SecurityConfiguration {
     @Configuration
@@ -64,10 +62,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests()
                 .anyRequest()
-                .authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(STATELESS);
+                .authenticated();
         }
 
     }
