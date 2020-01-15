@@ -261,7 +261,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             return Stream.of(
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetailsWithInterimSubtype(), "interim_care_order.pdf", ORDER),
-                Arguments.of(generateCareOrderCaseDetailsWithFurtherDirections(), "care_order.pdf", ORDER)
+                Arguments.of(generateCareOrderCaseDetailsWithFurtherDirections(), "final_care_order.pdf", ORDER)
             );
         }
 

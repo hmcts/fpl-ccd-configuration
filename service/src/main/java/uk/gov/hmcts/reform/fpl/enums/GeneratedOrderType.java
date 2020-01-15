@@ -18,7 +18,7 @@ public enum GeneratedOrderType {
     }
 
     public String getFullType(GeneratedOrderSubtype subtype) {
-        if (this != BLANK_ORDER) {
+        if (subtype != null) {
             return subtype.getLabel() + " " + this.getLabel().toLowerCase();
         } else {
             return this.getLabel();

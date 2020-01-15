@@ -11,8 +11,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -31,8 +31,9 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -199,8 +200,10 @@ class GeneratedOrderServiceTest {
 
     @ParameterizedTest
     @MethodSource("fileNameSource")
-    void shouldGenerateCorrectFileNameGivenOrderType(OrderTypeAndDocument typeAndDoc, String expected) {
-        final String fileName = service.generateOrderDocumentFileName(typeAndDoc);
+    void shouldGenerateCorrectFileNameGivenOrderType(GeneratedOrderType type,
+                                                     GeneratedOrderSubtype subtype,
+                                                     String expected) {
+        final String fileName = service.generateOrderDocumentFileName(type, subtype);
         assertThat(fileName).isEqualTo(expected);
     }
 
@@ -231,22 +234,22 @@ class GeneratedOrderServiceTest {
 
     @Test
     void shouldRemoveOrderPropertiesWhenTheyExistInCaseDetails() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("orderTypeAndDocument", "some data");
-        data.put("order", "some data");
-        data.put("judgeAndLegalAdvisor", "some data");
-        data.put("orderFurtherDirections", "some data");
+        Map<String, Object> data = Arrays.stream(GeneratedOrderKey.values())
+            .collect(Collectors.toMap(GeneratedOrderKey::getKey, value -> ""));
+
+        data.put("DO NOT REMOVE", "");
 
         service.removeOrderProperties(data);
-        assertThat(data).isEmpty();
+
+        assertThat(data).containsOnlyKeys("DO NOT REMOVE");
     }
 
     private static Stream<Arguments> fileNameSource() {
         return Stream.of(
-            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
-            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(INTERIM).build(),
-                "interim_care_order.pdf"),
-            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build(), "care_order.pdf")
+            Arguments.of(BLANK_ORDER, null, "blank_order_c21.pdf"),
+            Arguments.of(CARE_ORDER, INTERIM, "interim_care_order.pdf"),
+            Arguments.of(CARE_ORDER, FINAL, "final_care_order.pdf"),
+            Arguments.of(CARE_ORDER, null, "care_order.pdf")
         );
     }
 

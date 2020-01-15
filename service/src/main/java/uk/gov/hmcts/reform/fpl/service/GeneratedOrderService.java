@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -107,10 +108,8 @@ public class GeneratedOrderService {
 
     public Map<String, Object> getOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
-        GeneratedOrderType orderType = caseData.getOrderTypeAndDocument().getType();
-
-        orderTemplateBuilder
-            .put("orderTitle", orderType.getLabel());
+        OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
+        GeneratedOrderType orderType = orderTypeAndDocument.getType();
 
         //Scalable for future order types
         switch (orderType) {
@@ -122,19 +121,21 @@ public class GeneratedOrderService {
                 break;
 
             case CARE_ORDER:
-                GeneratedOrderSubtype subtype = caseData.getOrderTypeAndDocument().getSubtype();
+                GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
+
                 if (subtype == INTERIM) {
                     orderTemplateBuilder
-                        .put("orderTitle", "Interim " +  orderType.getLabel().toLowerCase())
+                        .put("orderTitle", CARE_ORDER.getFullType(INTERIM))
                         .put("childrenAct", "Section 38 Children Act 1989");
                 } else if (subtype == FINAL) {
                     orderTemplateBuilder
+                        .put("orderTitle", CARE_ORDER.getFullType())
                         .put("childrenAct", "Section 31 Children Act 1989");
                 }
 
                 orderTemplateBuilder
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
-                        caseData.getCaseLocalAuthority(), caseData.getOrderTypeAndDocument()));
+                        caseData.getCaseLocalAuthority(), orderTypeAndDocument));
                 break;
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + orderType);
@@ -155,13 +156,11 @@ public class GeneratedOrderService {
         return orderTemplateBuilder.build();
     }
 
-    public String generateOrderDocumentFileName(OrderTypeAndDocument typeAndDoc) {
-        String type = typeAndDoc.getType().getLabel().toLowerCase().replaceAll("[()]", "").replaceAll("[ ]",
+    public String generateOrderDocumentFileName(GeneratedOrderType orderType, GeneratedOrderSubtype orderSubtype) {
+        String type = orderType.getLabel().toLowerCase().replaceAll("[()]", "").replaceAll("[ ]",
             "_");
-        String subtype = "";
-        if (hasInterimSubtype(typeAndDoc)) {
-            subtype = typeAndDoc.getSubtype().getLabel().toLowerCase() + "_";
-        }
+        String subtype = (orderSubtype != null) ? orderSubtype.getLabel().toLowerCase() + "_" : "";
+
         return subtype + type + ".pdf";
     }
 
@@ -175,10 +174,7 @@ public class GeneratedOrderService {
     }
 
     public void removeOrderProperties(Map<String, Object> data) {
-        data.remove("orderTypeAndDocument");
-        data.remove("order");
-        data.remove("judgeAndLegalAdvisor");
-        data.remove("orderFurtherDirections");
+        Arrays.stream(GeneratedOrderKey.values()).forEach(value -> data.remove(value.getKey()));
     }
 
     private String getCourtName(String courtName) {
@@ -190,8 +186,9 @@ public class GeneratedOrderService {
     }
 
     private String careOrderDetails(int numOfChildren, String caseLocalAuthority, OrderTypeAndDocument typeAndDoc) {
+        String childOrChildren = (numOfChildren == 1 ? "child is" : "children are");
         return String.format("It is ordered that the %s placed in the care of %s%s",
-            (numOfChildren == 1) ? "child is" : "children are", getLocalAuthorityName(caseLocalAuthority),
+            childOrChildren, getLocalAuthorityName(caseLocalAuthority),
             hasInterimSubtype(typeAndDoc) ? " until the end of the proceedings." : ".");
     }
 
