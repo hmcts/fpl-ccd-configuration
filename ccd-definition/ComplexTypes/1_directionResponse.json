@@ -85,7 +85,7 @@
     "ID": "DirectionResponse",
     "ListElementCode": "cannotComplyTitle",
     "FieldType": "Label",
-    "ElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\n If you can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
+    "ElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\n If you can't comply, you need to explain:\n\n- reasons why\n\n- impact on timetable and next hearing\n\n- proposed next actions",
     "SecurityClassification": "Public",
     "FieldShowCondition": "complied=\"No\""
   },
