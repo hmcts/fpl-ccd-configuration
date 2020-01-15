@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl;
+package uk.gov.hmcts.reform.fpl.config.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;

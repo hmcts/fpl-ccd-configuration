@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.config;
+package uk.gov.hmcts.reform.fpl.config.security;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;

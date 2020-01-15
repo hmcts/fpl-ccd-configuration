@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.config;
+package uk.gov.hmcts.reform.fpl.config.security;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -41,16 +41,16 @@ public class SecurityConfiguration {
         }
     }
 
-    @Order(3)
+    @Order(2)
     @Configuration
     @ConditionalOnProperty(value = "spring.security.enabled", havingValue = "true")
     static class RoboticsSecurityConfiguration extends WebSecurityConfigurerAdapter {
-        private AuthCheckerUserOnlyFilter<User> authCheckerServiceAndUserFilter;
+        private AuthCheckerUserOnlyFilter<User> authCheckerUserOnlyFilter;
 
         public RoboticsSecurityConfiguration(RequestAuthorizer<User> userRequestAuthorizer,
                                              AuthenticationManager authenticationManager) {
-            authCheckerServiceAndUserFilter = new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
-            authCheckerServiceAndUserFilter.setAuthenticationManager(authenticationManager);
+            authCheckerUserOnlyFilter = new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
+            authCheckerUserOnlyFilter.setAuthenticationManager(authenticationManager);
         }
 
         @Override
@@ -58,7 +58,7 @@ public class SecurityConfiguration {
             http.requestMatchers()
                 .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/*")
                 .and()
-                .addFilter(authCheckerServiceAndUserFilter)
+                .addFilter(authCheckerUserOnlyFilter)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests()
                 .anyRequest()

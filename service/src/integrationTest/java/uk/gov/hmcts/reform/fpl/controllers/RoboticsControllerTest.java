@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -13,11 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,17 +31,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 public class RoboticsControllerTest {
     private static final String CASE_ID = "12345";
     private static final String USER_AUTH_TOKEN = "Bearer token";
-    private static final String USER_ID = "1";
     private static final String SERVICE_AUTH_TOKEN = "Bearer service-token";
 
     @MockBean
-    private SystemUpdateUserConfiguration userConfiguration;
-
-    @MockBean
     private AuthTokenGenerator authTokenGenerator;
-
-    @MockBean
-    private IdamClient idamClient;
 
     @MockBean
     private CoreCaseDataApi coreCaseDataApi;
@@ -54,43 +42,27 @@ public class RoboticsControllerTest {
     @MockBean
     private EmailService emailService;
 
-    @MockBean
-    private RequestData requestData;
-
     @Autowired
     private MockMvc mockMvc;
 
-    @BeforeEach
-    void setup() {
-        given(idamClient.authenticateUser(userConfiguration.getUserName(), userConfiguration.getPassword()))
-            .willReturn(USER_AUTH_TOKEN);
-
-        given(idamClient.getUserDetails(USER_AUTH_TOKEN))
-            .willReturn(UserDetails.builder()
-                .id(USER_ID)
-                .build());
-
-        given(authTokenGenerator.generate())
-            .willReturn(SERVICE_AUTH_TOKEN);
-
-        given(requestData.authorisation())
-            .willReturn(USER_AUTH_TOKEN);
-    }
 
     @Test
     @WithMockUser(authorities = "caseworker-publiclaw-systemupdate")
     void resendCaseDataNotificationShouldResendNotificationWithNoError() throws Exception {
+        given(authTokenGenerator.generate())
+            .willReturn(SERVICE_AUTH_TOKEN);
+
         given(coreCaseDataApi.getCase(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID))
             .willReturn(populatedCaseDetails());
 
-        assertThat(postToUrl(String.format("%s", CASE_ID)).getResponse().getStatus())
+        assertThat(postToUrl(CASE_ID).getResponse().getStatus())
             .isEqualTo(SC_OK);
     }
 
     @Test
     @WithMockUser(authorities = "caseworker-publiclaw-judiciary")
     void resendCaseDataNotificationShouldThrowForbiddenErrorWhenJudiciaryRole() throws Exception {
-        assertThat(postToUrl(String.format("%s", CASE_ID)).getResponse().getStatus())
+        assertThat(postToUrl(CASE_ID).getResponse().getStatus())
             .isEqualTo(FORBIDDEN.value());
     }
 
