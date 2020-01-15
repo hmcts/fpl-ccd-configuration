@@ -118,7 +118,7 @@ public class OthersService {
 
             if(!additionalOthers.isEmpty())
             {
-                if(!confidentialOthers.isEmpty()) //this should be if additional others 0 is confidential
+                if(additionalOthers.get(0).getValue().containsConfidentialDetails()) //this should be if additional others 0 is confidential
                 {
                     firstOther = confidentialOthers.get(0).getValue();
                     additionalOthers.remove(0);
