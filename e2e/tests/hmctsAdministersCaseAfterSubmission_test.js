@@ -138,7 +138,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('HMCTS admin creates multiple orders for the case@f', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
   for (let i = 0; i < orders.length; i++) {
     await caseViewPage.goToNewActions(config.administrationActions.createOrder);
     await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
