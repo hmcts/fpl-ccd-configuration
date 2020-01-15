@@ -32,7 +32,6 @@ class ValidateEmergencyProtectionOrderControllerTest extends AbstractControllerT
 
     @Test
     void shouldReturnErrorsWhenEPOTypeIsPreventRemovalButAddressIsIncomplete() {
-        time.now();
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now());
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "address");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(

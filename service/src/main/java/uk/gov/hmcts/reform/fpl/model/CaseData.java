@@ -230,7 +230,7 @@ public class CaseData {
     @TimeNotMidnight(message = "Enter a valid end time", groups = EPOEndDateGroup.class)
     @Future(message = "Enter an end date in the future", groups = EPOEndDateGroup.class)
     @TimeRange(message = "Date must be within the next 8 days", groups = EPOEndDateGroup.class,
-        rangeAfter = @TimeDifference(amount = 8, unit = DAYS))
+        maxDate = @TimeDifference(amount = 8, unit = DAYS))
     private final LocalDateTime epoEndDate;
     private final String epoPhrase;
     private final EPOType epoType;

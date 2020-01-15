@@ -22,5 +22,5 @@ public @interface TimeRange {
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
-    TimeDifference rangeAfter() default @TimeDifference(amount = 0, unit = SECONDS);
+    TimeDifference maxDate() default @TimeDifference(amount = 0, unit = SECONDS);
 }

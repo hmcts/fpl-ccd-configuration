@@ -25,6 +25,7 @@ module.exports = {
       removalAddress: '#epoRemovalAddress_epoRemovalAddress',
       includePhrase: '#epoPhrase_includePhrase',
       endDate: {
+        id: '#epoEndDate',
         second: '#epoEndDate-second',
         minute: '#epoEndDate-minute',
         hour: '#epoEndDate-hour',
@@ -33,6 +34,7 @@ module.exports = {
         year: '#epoEndDate-year',
       },
     },
+    judgeAndLegalAdvisorTitleId: '#judgeAndLegalAdvisor_judgeTitle',
   },
 
   selectType(type) {

@@ -2,14 +2,14 @@ const createBlankOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.title);
   await createOrderEventPage.enterC21OrderDetails();
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
   await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
   await I.completeEvent('Save and continue');
 };
 
 const createCareOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type);
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
   await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
@@ -20,16 +20,16 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order) =>
   const tomorrow = new Date(Date.now() + (3600 * 1000 * 24));
 
   await createOrderEventPage.selectType(order.type);
-  await I.retryUntilExists(() => I.click('Continue'), '#epoChildren_descriptionNeeded');
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.epo.childrenDescription.radioGroup);
   await createOrderEventPage.enterChildrenDescription(order.childrenDescription);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.epo.type);
   createOrderEventPage.selectEpoType(order.epoType);
   createOrderEventPage.enterRemovalAddress(order.removalAddress);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.epo.includePhrase);
   createOrderEventPage.includePhrase(order.includePhrase);
-  await I.retryUntilExists(() => I.click('Continue'), '#epoEndDate');
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.epo.endDate.id);
   createOrderEventPage.enterEpoEndDate(tomorrow);
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
   await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');

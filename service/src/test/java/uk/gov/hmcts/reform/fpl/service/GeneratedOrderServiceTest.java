@@ -237,26 +237,11 @@ class GeneratedOrderServiceTest {
     }
 
     @Test
-    void shouldRemovePropertiesOnCaseDetailsUsedForBlankOrderCapture() {
+    void shouldRemovePropertiesOnCaseDetailsUsedForOrderCapture() {
         CaseDetails caseDetails = createPopulatedCaseDetails();
         service.removeOrderProperties(caseDetails.getData());
 
-        assertRemovalOfCommonOrderFields(caseDetails);
-    }
-
-    @Test
-    void shouldRemovePropertiesOnCaseDetailsUsedForEmergencyProtectionOrderCapture() {
-        CaseDetails caseDetails = createPopulatedCaseDetails();
-        service.removeOrderProperties(caseDetails.getData());
-
-        assertRemovalOfCommonOrderFields(caseDetails);
-
-        Arrays.asList(GeneratedEPOKey.values())
-            .forEach(key -> assertThat(caseDetails.getData().get(key)).isNull());
-    }
-
-    private void assertRemovalOfCommonOrderFields(CaseDetails caseDetails) {
-        Arrays.asList(GeneratedOrderKey.values())
+        Arrays.asList(GeneratedEPOKey.values(), GeneratedOrderKey.values())
             .forEach(key -> assertThat(caseDetails.getData().get(key)).isNull());
     }
 

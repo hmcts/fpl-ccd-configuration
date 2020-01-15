@@ -35,7 +35,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
+Scenario('Judiciary enters hearing details and submits@f', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
@@ -74,7 +74,7 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
   I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('Judiciary creates multiple orders for the case@f', async (I, caseViewPage, createOrderEventPage) => {
   for(let i = 0; i < orders.length; i++) {
     await caseViewPage.goToNewActions(config.administrationActions.createOrder);
     await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
