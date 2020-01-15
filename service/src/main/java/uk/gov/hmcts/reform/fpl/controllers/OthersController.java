@@ -74,6 +74,8 @@ public class OthersController {
         List<Element<Other>> confidentialOthers =
             confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllOthers());
 
+        List<Element<Other>> confidentialOthersModified = othersService.modifyHiddenValuesConfidentialOthers(confidentialOthers);
+
         confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthers, OTHER);
 
         Others others = othersService.modifyHiddenValues(caseData.getOthers());
