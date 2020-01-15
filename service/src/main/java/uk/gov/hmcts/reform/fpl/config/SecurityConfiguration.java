@@ -57,19 +57,17 @@ public class SecurityConfiguration {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/**")
-                .permitAll()
+            http.requestMatchers()
+                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/*")
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(STATELESS)
-                .and()
+                .addFilter(authCheckerServiceAndUserFilter)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests()
                 .anyRequest()
                 .authenticated()
                 .and()
-                .addFilter(authCheckerServiceAndUserFilter);
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS);
         }
 
     }
