@@ -167,4 +167,23 @@ class OthersServiceTest {
                 .build())
             .build();
     }
+
+    @Test
+    void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
+        List<Element<Other>> additionalOthersList = new ArrayList<>();
+        Element<Other> additionalOther = othersWithRemovedConfidentialFields(ID);
+        additionalOthersList.add(additionalOther);
+
+        List<Element<Other>> confidentialOthers = new ArrayList<>();
+        confidentialOthers.add(othersWithConfidentialFields(randomUUID()));
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder().firstOther(othersWithRemovedConfidentialFields(ID).getValue()).additionalOthers(additionalOthersList).build())
+            .confidentialOthers(confidentialOthers)
+            .build();
+
+        Others others = service.prepareOthers(caseData);
+
+        assertThat(others.getAdditionalOthers()).containsOnly(othersWithRemovedConfidentialFields(ID));
+    }
 }
