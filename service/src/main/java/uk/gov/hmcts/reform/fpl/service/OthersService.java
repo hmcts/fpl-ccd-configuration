@@ -102,7 +102,17 @@ public class OthersService {
         confidentialOthers.stream().forEach(confidentialOther ->{
             confidentialOthersModified.add(Element.<Other>builder()
                 .id(confidentialOther.getId())
-                .value(confidentialOther.getValue().toBuilder().birthPlace(null).build())
+                .value(confidentialOther.getValue().toBuilder()
+                    .DOB(null)
+                    .gender(null)
+                    .birthPlace(null)
+                    .childInformation(null)
+                    .genderIdentification(null)
+                    .litigationIssues(null)
+                    .litigationIssuesDetails(null)
+                    .detailsHidden(null)
+                    .detailsHiddenReason(null)
+                    .build())
                 .build());
         });
 
@@ -121,6 +131,7 @@ public class OthersService {
                         .value(Other.builder()
                             .DOB(element.getValue().getDOB())
                             .name(element.getValue().getName())
+                            .gender(element.getValue().getGender())
                             .birthPlace(element.getValue().getBirthPlace())
                             .childInformation(element.getValue().getChildInformation())
                             .genderIdentification(element.getValue().getGenderIdentification())
@@ -129,6 +140,7 @@ public class OthersService {
                             .detailsHidden(element.getValue().getDetailsHidden())
                             .detailsHiddenReason(element.getValue().getDetailsHiddenReason())
                             .telephone(confidentialElement.getValue().getTelephone())
+                            .address(confidentialElement.getValue().getAddress())
                             .build()).build();
 
                     others.add(other);
