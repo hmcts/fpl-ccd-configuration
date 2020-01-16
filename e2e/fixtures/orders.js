@@ -1,6 +1,7 @@
 module.exports = [
   {
     type: 'Blank order (C21)',
+    fullType: 'Blank order (C21)',
     title: 'Example Order Title',
     details: 'Example order details here - Lorem ipsum dolor sit amet...',
     document: 'blank_order_c21.pdf',
@@ -13,7 +14,20 @@ module.exports = [
   },
   {
     type: 'Care order',
-    document: 'care_order.pdf',
+    subtype: 'Interim',
+    fullType: 'Interim care order',
+    document: 'interim_care_order.pdf',
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Judy',
+      legalAdvisorName: 'Fred Frederickson',
+    },
+  },
+  {
+    type: 'Care order',
+    subtype: 'Final',
+    fullType: 'Final care order',
+    document: 'final_care_order.pdf',
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Judy',
@@ -22,7 +36,22 @@ module.exports = [
   },
   {
     type: 'Supervision order',
-    document: 'supervision_order.pdf',
+    subtype: 'Interim',
+    fullType: 'Interim supervision order',
+    document: 'interim_supervision_order.pdf',
+    months: '5',
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'His Honour Judge',
+      judgeLastName: 'Dredd',
+      legalAdvisorName: 'Frank N. Stein',
+    },
+    directionText: 'Example direction',
+  },
+  {
+    type: 'Supervision order',
+    subtype: 'Final',
+    fullType: 'Final supervision order',
+    document: 'final_supervision_order.pdf',
     months: '5',
     judgeAndLegalAdvisor: {
       judgeTitle: 'His Honour Judge',

@@ -7,6 +7,7 @@ module.exports = {
     title: '#order_title',
     details: '#order_details',
     orderTypeList: '#orderTypeAndDocument_type',
+    orderSubtypeList: '#orderTypeAndDocument_subtype',
     directionsNeeded: {
       id: '#orderFurtherDirections_directionsNeeded',
       options: {
@@ -18,10 +19,14 @@ module.exports = {
     months: '#orderMonths',
   },
 
-  selectType(type) {
+  selectType(type, subtype) {
     within(this.fields.orderTypeList, () => {
       I.click(locate('label').withText(type));
     });
+    if (subtype)
+      within(this.fields.orderSubtypeList, () => {
+        I.click(locate('label').withText(subtype));
+      });
   },
 
   enterC21OrderDetails() {

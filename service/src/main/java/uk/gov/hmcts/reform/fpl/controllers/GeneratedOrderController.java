@@ -138,8 +138,9 @@ public class GeneratedOrderController {
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             service.getOrderTemplateData(caseData), ORDER);
 
+        OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            service.generateOrderDocumentFileName(caseData.getOrderTypeAndDocument().getType().getLabel()));
+            service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
     }
 
     private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(

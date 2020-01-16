@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
@@ -50,12 +52,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
@@ -112,7 +115,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         String expectedCaseReference = "19898989";
         postSubmittedEvent(buildCallbackRequest());
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
     }
@@ -157,17 +160,15 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         @Test
         void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-            final CaseDetails caseDetails = buildCaseDetails(
-                commonCaseDetailsComponents(BLANK_ORDER)
-                    .order(GeneratedOrder.builder()
-                        .title("Example Order")
-                        .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                        .build()));
-
+            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(BLANK_ORDER, null)
+                .order(GeneratedOrder.builder()
+                    .title("Example Order")
+                    .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                    .build()));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-            GeneratedOrder expectedC21Order = commonExpectedOrderComponents(BLANK_ORDER)
+            GeneratedOrder expectedC21Order = commonExpectedOrderComponents(BLANK_ORDER.getFullType())
                 .title("Example Order")
                 .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
                 .build();
@@ -175,48 +176,63 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             aboutToSubmitAssertions(callbackResponse.getData(), expectedC21Order);
         }
 
-        @Test
-        void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-            final CaseDetails caseDetails = buildCaseDetails(
-                commonCaseDetailsComponents(CARE_ORDER)
-                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
+        @ParameterizedTest
+        @EnumSource(GeneratedOrderSubtype.class)
+        void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
+            GeneratedOrderSubtype subtype) {
+            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(CARE_ORDER, subtype)
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-            GeneratedOrder expectedCareOrder = commonExpectedOrderComponents(CARE_ORDER).build();
+            GeneratedOrder expectedCareOrder = commonExpectedOrderComponents(CARE_ORDER.getFullType(subtype)).build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
         }
 
         @Test
-        void aboutToSubmitShouldAddSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-            final CaseDetails caseDetails = buildCaseDetails(
-                commonCaseDetailsComponents(SUPERVISION_ORDER)
-                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                    .orderMonths(14));
+        void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM)
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
 
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(
-                caseDetails);
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+            GeneratedOrder expectedOrder = commonExpectedOrderComponents(
+                SUPERVISION_ORDER.getFullType(INTERIM)).build();
+
+            aboutToSubmitAssertions(callbackResponse.getData(), expectedOrder);
+        }
+
+        @Test
+        void aboutToSubmitShouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL)
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .orderMonths(14));
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
             LocalDateTime orderExpiration = time.now().plusMonths(14);
-            GeneratedOrder expectedCareOrder = commonExpectedOrderComponents(SUPERVISION_ORDER)
+            GeneratedOrder expectedOrder = commonExpectedOrderComponents(SUPERVISION_ORDER.getFullType(FINAL))
                 .expiryDate(
                     dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
                 .build();
 
-            aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
+            aboutToSubmitAssertions(callbackResponse.getData(), expectedOrder);
         }
 
         private CaseDetails buildCaseDetails(CaseData.CaseDataBuilder builder) {
             return CaseDetails.builder()
-                .data(mapper.convertValue(builder.build(), new TypeReference<>() {}))
+                .data(mapper.convertValue(builder.build(), new TypeReference<>() {
+                }))
                 .build();
         }
 
-        private CaseData.CaseDataBuilder commonCaseDetailsComponents(GeneratedOrderType orderType) {
+        private CaseData.CaseDataBuilder commonCaseDetailsComponents(GeneratedOrderType orderType,
+                                                                     GeneratedOrderSubtype subtype) {
             return CaseData.builder().orderTypeAndDocument(
                 OrderTypeAndDocument.builder()
                     .type(orderType)
+                    .subtype(subtype)
                     .document(DocumentReference.builder().build())
                     .build())
                 .judgeAndLegalAdvisor(
@@ -228,9 +244,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .familyManCaseNumber("12345L");
         }
 
-        private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(GeneratedOrderType orderType) {
+        private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
             return GeneratedOrder.builder()
-                .type(orderType)
+                .type(fullType)
                 .document(DocumentReference.builder().build())
                 .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .judgeAndLegalAdvisor(
@@ -269,7 +285,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         @ParameterizedTest
         @MethodSource("midEventArgumentSource")
-        void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails, String fileName,
+        void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails,
+                                                                       String fileName,
                                                                        DocmosisTemplates templateName) {
             final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
@@ -297,8 +314,12 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         private Stream<Arguments> midEventArgumentSource() {
             return Stream.of(
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
-                Arguments.of(generateCareOrderCaseDetailsWithFurtherDirections(), "care_order.pdf", ORDER),
-                Arguments.of(generateSupervisionOrderCaseDetails(), "supervision_order.pdf", ORDER)
+                Arguments.of(generateCareOrderCaseDetailsWithInterimSubtype(), "interim_care_order.pdf", ORDER),
+                Arguments.of(generateCareOrderCaseDetailsWithFinalSubtype(), "final_care_order.pdf", ORDER),
+                Arguments.of(generateSupervisionOrderCaseDetailsWithInterimSubtype(), "interim_supervision_order.pdf",
+                    ORDER),
+                Arguments.of(generateSupervisionOrderCaseDetailsWithFinalSubtype(), "final_supervision_order.pdf",
+                    ORDER)
             );
         }
 
@@ -315,8 +336,17 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build();
         }
 
-        private CaseDetails generateCareOrderCaseDetailsWithFurtherDirections() {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails();
+        private CaseDetails generateCareOrderCaseDetailsWithoutFurtherDirections() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(CARE_ORDER, INTERIM);
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
+                }))
+                .build();
+        }
+
+        private CaseDetails generateCareOrderCaseDetailsWithInterimSubtype() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(CARE_ORDER, INTERIM);
 
             dataBuilder.orderFurtherDirections(FurtherDirections.builder()
                 .directionsNeeded("Yes")
@@ -324,42 +354,68 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build());
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
+                }))
                 .build();
         }
 
-        private CaseDetails generateCareOrderCaseDetailsWithoutFurtherDirections() {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails();
+        private CaseDetails generateCareOrderCaseDetailsWithFinalSubtype() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(CARE_ORDER, FINAL);
+
+            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
+                .directionsNeeded("Yes")
+                .directions("Some directions")
+                .build());
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
+                }))
                 .build();
         }
 
-        private CaseData.CaseDataBuilder generateCommonCareOrderDetails() {
-            final CaseData.CaseDataBuilder builder = CaseData.builder()
-                .orderTypeAndDocument(OrderTypeAndDocument.builder()
-                    .type(CARE_ORDER)
-                    .build());
+        private CaseDetails generateSupervisionOrderCaseDetailsWithInterimSubtype() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(SUPERVISION_ORDER, INTERIM);
 
-            generateDefaultValues(builder);
-
-            return builder;
-        }
-
-        private CaseDetails generateSupervisionOrderCaseDetails() {
-            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder()
-                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build())
-                .orderFurtherDirections(FurtherDirections.builder()
-                    .directionsNeeded("No")
-                    .build())
+            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
+                .directionsNeeded("No")
+                .build())
                 .orderMonths(5);
 
             generateDefaultValues(dataBuilder);
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
+                }))
                 .build();
+        }
+
+        private CaseDetails generateSupervisionOrderCaseDetailsWithFinalSubtype() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(SUPERVISION_ORDER, FINAL);
+
+            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
+                .directionsNeeded("No")
+                .build())
+                .orderMonths(5);
+
+            generateDefaultValues(dataBuilder);
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
+                }))
+                .build();
+        }
+
+        private CaseData.CaseDataBuilder generateCommonOrderDetails(GeneratedOrderType type,
+                                                                    GeneratedOrderSubtype subtype) {
+            final CaseData.CaseDataBuilder builder = CaseData.builder()
+                .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                    .type(type)
+                    .subtype(subtype)
+                    .build());
+
+            generateDefaultValues(builder);
+
+            return builder;
         }
 
         private void generateDefaultValues(CaseData.CaseDataBuilder builder) {
