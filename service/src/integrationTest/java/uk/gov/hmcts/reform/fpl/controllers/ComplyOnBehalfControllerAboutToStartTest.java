@@ -15,9 +15,11 @@ import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +32,15 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
-import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ComplyOnBehalfController.class)
@@ -44,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
     private static final UUID DIRECTION_ID = randomUUID();
     private static final UUID RESPONSE_ID = randomUUID();
+    private static final UUID REPRESENTATIVE_ID = randomUUID();
 
     ComplyOnBehalfControllerAboutToStartTest() {
         super("comply-on-behalf");
@@ -52,14 +57,14 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
     @Test
     void shouldAddPartiesDirectionsIntoSeparateRoleCollectionsAndPopulateLabels() {
         CallbackRequest request = CallbackRequest.builder()
-            .eventId(COMPLY_ON_BEHALF_SDO.toString())
+            .eventId(COMPLY_ON_BEHALF_COURT.toString())
             .caseDetails(CaseDetails.builder()
                 .data(Map.of(
                     "standardDirectionOrder", Order.builder()
                         .directions(directionsForRespondentsCafcassOthersAndAllParties())
                         .build(),
                     "others", firstOther(),
-                    "respondents1", respondents()
+                    "respondents1", respondentWithRepresentative()
                 ))
                 .build())
             .build();
@@ -88,12 +93,12 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
         List<Element<Direction>> directions = getDirectionForRespondentsAllPartiesAndOthers();
 
         CallbackRequest request = CallbackRequest.builder()
-            .eventId(COMPLY_ON_BEHALF_SDO.toString())
+            .eventId(COMPLY_ON_BEHALF_COURT.toString())
             .caseDetails(CaseDetails.builder()
                 .data(Map.of(
                     "standardDirectionOrder", Order.builder().directions(directions).build(),
                     "others", firstOther(),
-                    "respondents1", respondents()
+                    "respondents1", respondentWithRepresentative()
                 ))
                 .build())
             .build();
@@ -123,7 +128,7 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
                     "standardDirectionOrder", Order.builder().directions(directions).build(),
                     SERVED_CASE_MANAGEMENT_ORDERS.getKey(), orders,
                     "others", firstOther(),
-                    "respondents1", respondents()
+                    "respondents1", respondentWithRepresentative()
                 ))
                 .build())
             .build();
@@ -139,15 +144,57 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
         assertThat(response.getData().get("others_label")).isEqualTo("Person 1 - John Smith\n");
     }
 
+    @Test
+    void shouldAddDirectionWithCourtResponsesWhenCourtCompliesOnBehalfOfPartyNotRepresentedOnline() {
+        List<Element<Direction>> directions = directionAssignedToRespondent1();
+
+        List<Element<CaseManagementOrder>> orders = List.of(ElementUtils.element(
+            CaseManagementOrder.builder().directions(directions).build()));
+
+        CallbackRequest request = CallbackRequest.builder()
+            .eventId(COMPLY_ON_BEHALF_COURT.toString())
+            .caseDetails(CaseDetails.builder()
+                .data(Map.of(
+                    SERVED_CASE_MANAGEMENT_ORDERS.getKey(), orders,
+                    "others", firstOther(),
+                    "respondents1", respondentWithRepresentative(),
+                    "representatives", representativeServedByPost()))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(request);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getRespondentDirectionsCustom()).isEqualTo(directions);
+    }
+
+    private List<Element<Direction>> directionAssignedToRespondent1() {
+        return List.of(Element.<Direction>builder()
+            .id(DIRECTION_ID)
+            .value(Direction.builder()
+                .assignee(PARENTS_AND_RESPONDENTS)
+                .parentsAndRespondentsAssignee(RESPONDENT_1)
+                .responses(responsesByCourtFor(PARENTS_AND_RESPONDENTS))
+                .build())
+            .build());
+    }
+
+    private List<Element<Representative>> representativeServedByPost() {
+        return List.of(ElementUtils.element(
+            Representative.builder()
+                .idamId(ComplyOnBehalfControllerAboutToStartTest.REPRESENTATIVE_ID.toString())
+                .servingPreferences(POST)
+                .build()));
+    }
+
     private List<Element<Direction>> directionsForRespondentsCafcassOthersAndAllParties() {
         return Stream.of(new DirectionAssignee[]{PARENTS_AND_RESPONDENTS, CAFCASS, OTHERS, ALL_PARTIES})
-            .map(directionAssignee -> Element.<Direction>builder()
-                .id(DIRECTION_ID)
-                .value(Direction.builder()
+            .map(directionAssignee -> (ElementUtils.element(
+                DIRECTION_ID,
+                Direction.builder()
                     .assignee(directionAssignee)
                     .responses(responsesByCourtFor(directionAssignee))
-                    .build())
-                .build())
+                    .build())))
             .collect(toList());
     }
 
@@ -159,15 +206,18 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
             .build();
     }
 
-    private List<Element<Respondent>> respondents() {
-        return List.of(Element.<Respondent>builder()
-            .value(Respondent.builder()
+    private List<Element<Respondent>> respondentWithRepresentative() {
+        List<Element<Respondent>> respondents = List.of(ElementUtils.element(
+            Respondent.builder()
                 .party(RespondentParty.builder()
                     .firstName("John")
                     .lastName("Doe")
                     .build())
-                .build())
-            .build());
+                .build()));
+
+        respondents.forEach(x -> x.getValue().addRepresentative(REPRESENTATIVE_ID));
+
+        return respondents;
     }
 
     private List<Element<DirectionResponse>> actualResponses(List<Element<Direction>> directions,
@@ -198,80 +248,77 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
             return emptyList();
         }
 
-        return List.of(Element.<DirectionResponse>builder()
-            .id(RESPONSE_ID)
-            .value(DirectionResponse.builder()
+        return List.of(ElementUtils.element(
+            RESPONSE_ID,
+            DirectionResponse.builder()
                 .complied("Yes")
                 .directionId(DIRECTION_ID)
                 .respondingOnBehalfOf(respondingOnBehalfOf)
                 .assignee(COURT)
-                .build())
-            .build());
+                .build()));
     }
 
     private List<Element<DirectionResponse>> expectedResponses(String onBehalfOf) {
-        return List.of(Element.<DirectionResponse>builder()
-            .id(RESPONSE_ID)
-            .value(DirectionResponse.builder()
+        return List.of(ElementUtils.element(
+            RESPONSE_ID,
+            DirectionResponse.builder()
                 .complied("Yes")
                 .directionId(DIRECTION_ID)
                 .respondingOnBehalfOf(onBehalfOf)
                 .assignee(COURT)
-                .build())
-            .build());
+                .build()));
     }
 
     private List<Element<Direction>> getDirectionForRespondentsAllPartiesAndOthers() {
         List<Element<Direction>> directions = new ArrayList<>();
-        directions.add(Element.<Direction>builder()
-            .id(DIRECTION_ID)
-            .value(Direction.builder()
+        directions.add(ElementUtils.element(
+            DIRECTION_ID,
+            Direction.builder()
                 .assignee(ALL_PARTIES)
                 .responses(responsesByCourtFor(PARENTS_AND_RESPONDENTS))
-                .build())
-            .build());
-        directions.add(Element.<Direction>builder()
-            .id(randomUUID())
-            .value(Direction.builder()
+                .build()));
+
+        directions.add(ElementUtils.element(
+            DIRECTION_ID,
+            Direction.builder()
                 .assignee(PARENTS_AND_RESPONDENTS)
-                .build())
-            .build());
-        directions.add(Element.<Direction>builder()
-            .id(randomUUID())
-            .value(Direction.builder()
+                .build()));
+
+        directions.add(ElementUtils.element(
+            DIRECTION_ID,
+            Direction.builder()
                 .assignee(OTHERS)
-                .build())
-            .build());
+                .build()));
+
         return directions;
     }
 
     private List<Element<Direction>> directionsForRespondent() {
         List<Element<Direction>> directions = new ArrayList<>();
-        directions.add(Element.<Direction>builder()
-            .id(DIRECTION_ID)
-            .value(Direction.builder()
+        directions.add(ElementUtils.element(
+            DIRECTION_ID,
+            Direction.builder()
                 .assignee(ALL_PARTIES)
                 .responses(responsesByRespondent())
-                .build())
-            .build());
-        directions.add(Element.<Direction>builder()
-            .id(randomUUID())
-            .value(Direction.builder()
+                .build()));
+
+        directions.add(ElementUtils.element(
+            randomUUID(),
+            Direction.builder()
                 .assignee(PARENTS_AND_RESPONDENTS)
-                .build())
-            .build());
+                .build()));
+
         return directions;
     }
 
     private List<Element<DirectionResponse>> responsesByRespondent() {
-        return List.of(Element.<DirectionResponse>builder()
-            .id(RESPONSE_ID)
-            .value(DirectionResponse.builder()
+        return List.of(ElementUtils.element(
+            RESPONSE_ID,
+            DirectionResponse.builder()
                 .complied("Yes")
                 .directionId(DIRECTION_ID)
                 .assignee(DirectionAssignee.PARENTS_AND_RESPONDENTS)
                 .responder("Emma Taylor")
-                .build())
-            .build());
+                .build()));
     }
 }
