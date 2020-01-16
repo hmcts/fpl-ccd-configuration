@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
@@ -33,7 +32,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -173,8 +171,8 @@ class GeneratedOrderServiceTest {
             .type(BLANK_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
-            formatTypeToFileName(BLANK_ORDER.getLabel()));
+        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel()))
+            .isEqualTo("blank_order_c21.pdf");
     }
 
     @Test
@@ -183,8 +181,8 @@ class GeneratedOrderServiceTest {
             .type(CARE_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
-            formatTypeToFileName(CARE_ORDER.getLabel()));
+        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel()))
+            .isEqualTo("care_order.pdf");
     }
 
     @Nested
@@ -385,22 +383,5 @@ class GeneratedOrderServiceTest {
             .build();
 
         return caseDataBuilder.build();
-    }
-
-    private CaseDetails createPopulatedCaseDetails() {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put("orderTypeAndDocument", "");
-        caseData.put("order", "");
-        caseData.put("judgeAndLegalAdvisor", "");
-        caseData.put("EPOChildren", "");
-        caseData.put("epoEndDate", "");
-        caseData.put("epoPhrase", "");
-        caseData.put("epoType", "");
-
-        return CaseDetails.builder().data(caseData).build();
-    }
-
-    private String formatTypeToFileName(String type) {
-        return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
     }
 }

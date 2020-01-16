@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -232,7 +233,11 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             List<Element<GeneratedOrder>> orders = mapper.convertValue(data.get("orderCollection"),
                 new TypeReference<>() {});
 
-            Arrays.stream(GeneratedOrderKey.values()).forEach(key -> assertThat(data).doesNotContainKey(key.getKey()));
+            Arrays.stream(GeneratedOrderKey.values())
+                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
+
+            Arrays.stream(GeneratedEPOKey.values())
+                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
 
             assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
         }

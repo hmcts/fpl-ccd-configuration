@@ -167,8 +167,8 @@ public class GeneratedOrderService {
     }
 
     public void removeOrderProperties(Map<String, Object> caseData) {
-        Arrays.stream(GeneratedEPOKey.values()).forEach(e -> caseData.remove(e.getKey()));
-        Arrays.stream(GeneratedOrderKey.values()).forEach(e -> caseData.remove(e.getKey()));
+        Arrays.stream(GeneratedEPOKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
+        Arrays.stream(GeneratedOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
     }
 
     private String getCourtName(String courtName) {
