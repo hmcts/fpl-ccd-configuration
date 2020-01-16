@@ -56,5 +56,4 @@ class OrderTypeAndDocumentTest {
             Arguments.of(SUPERVISION_ORDER, FINAL, "Final supervision order")
         );
     }
-
 }
