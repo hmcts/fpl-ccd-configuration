@@ -5,5 +5,5 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 @Value
 public class CaseNumberAdded {
-    private final CaseDetails caseDetails;
+    private CaseDetails caseDetails;
 }
