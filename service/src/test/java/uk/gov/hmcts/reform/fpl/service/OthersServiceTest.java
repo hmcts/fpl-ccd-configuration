@@ -129,21 +129,19 @@ class OthersServiceTest {
         Element<Other> additionalOther = Element.<Other>builder().id(ID).value(Other.builder().build()).build();
         additionalOthersList.add(additionalOther);
 
-        List<Element<Other>> confidentialOthers = new ArrayList<>();
-        confidentialOthers.add(othersWithConfidentialFields(ID));
-
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(othersWithRemovedConfidentialFields(ID).getValue()).additionalOthers(additionalOthersList).build())
-            .confidentialOthers(confidentialOthers)
+            .others(Others.builder().firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue()).additionalOthers(additionalOthersList).build())
+            .confidentialOthers(othersWithConfidentialFields(ID))
             .build();
 
         Others others = service.prepareOthers(caseData);
 
-        assertThat(others.getFirstOther()).isEqualTo(othersWithConfidentialFields(ID).getValue());
+        assertThat(others.getFirstOther()).isEqualTo(othersWithConfidentialFields(ID).get(0).getValue());
     }
 
-    private Element<Other> othersWithConfidentialFields(UUID id) {
-        return Element.<Other>builder()
+    private List<Element<Other>> othersWithConfidentialFields(UUID id) {
+        List<Element<Other>> confidentialOthers = new ArrayList<>();
+        confidentialOthers.add(Element.<Other>builder()
             .id(id)
             .value(Other.builder()
                 .name("Sarah Moley")
@@ -154,36 +152,36 @@ class OthersServiceTest {
                     .build())
                 .telephone("01227 831393")
                 .build())
-            .build();
+            .build());
+
+        return confidentialOthers;
     }
 
-    private Element<Other> othersWithRemovedConfidentialFields(UUID id) {
-        return Element.<Other>builder()
+    private List<Element<Other>> othersWithRemovedConfidentialFields(UUID id) {
+        List<Element<Other>> confidentialOthers = new ArrayList<>();
+        confidentialOthers.add(Element.<Other>builder()
             .id(id)
             .value(Other.builder()
                 .name("Sarah Moley")
                 .gender("Female")
                 .detailsHidden("Yes")
                 .build())
-            .build();
+            .build());
+
+        return confidentialOthers;
     }
 
     @Test
     void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
-        List<Element<Other>> additionalOthersList = new ArrayList<>();
-        Element<Other> additionalOther = othersWithRemovedConfidentialFields(ID);
-        additionalOthersList.add(additionalOther);
-
-        List<Element<Other>> confidentialOthers = new ArrayList<>();
-        confidentialOthers.add(othersWithConfidentialFields(randomUUID()));
-
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(othersWithRemovedConfidentialFields(ID).getValue()).additionalOthers(additionalOthersList).build())
-            .confidentialOthers(confidentialOthers)
+            .others(Others.builder().
+                firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue()).
+                additionalOthers(othersWithRemovedConfidentialFields(ID)).build())
+            .confidentialOthers(othersWithConfidentialFields(randomUUID()))
             .build();
 
         Others others = service.prepareOthers(caseData);
 
-        assertThat(others.getAdditionalOthers()).containsOnly(othersWithRemovedConfidentialFields(ID));
+        assertThat(others.getAdditionalOthers()).containsOnly(othersWithRemovedConfidentialFields(ID).get(0));
     }
 }
