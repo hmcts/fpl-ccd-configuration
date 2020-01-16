@@ -129,12 +129,6 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    private String getOrderTypes(CaseData caseData) {
-        return caseData.getOrders().getOrderType().stream()
-            .map(OrderType::getLabel)
-            .collect(Collectors.joining(", "));
-    }
-
     String getFirstApplicantName(CaseData caseData) {
         return caseData.getAllApplicants().stream()
             .map(Element::getValue)
@@ -211,7 +205,7 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
+    private String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
         @AllArgsConstructor
         @NoArgsConstructor
         @Data

@@ -57,11 +57,11 @@ import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PL
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
-    public static final String REPRESENTED_BY = "representedBy";
-    public static final String NAME = "name";
-    public static final String REPRESENTATIVE_NAME = "representativeName";
-    public static final String REPRESENTATIVE_EMAIL = "representativeEmail";
-    public static final String REPRESENTATIVE_PHONE_NUMBER = "representativePhoneNumber";
+    private static final String REPRESENTED_BY = "representedBy";
+    private static final String NAME = "name";
+    private static final String REPRESENTATIVE_NAME = "representativeName";
+    private static final String REPRESENTATIVE_EMAIL = "representativeEmail";
+    private static final String REPRESENTATIVE_PHONE_NUMBER = "representativePhoneNumber";
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final DateFormatterService dateFormatterService;
