@@ -1,10 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.robotics;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,30 +20,23 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
-import uk.gov.hmcts.reform.fpl.utils.RoboticsLoggerHelper;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
 
-import static ch.qos.logback.classic.Level.ERROR;
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.slf4j.LoggerFactory.getLogger;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.invalidRoboticsDataWithZeroOwningCourt;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
-import static uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper.runVerificationsOnRoboticsData;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -58,8 +47,6 @@ public class RoboticsNotificationServiceTest {
     private static long CASE_ID = 12345L;
 
     private static final LocalDate NOW = LocalDate.now();
-
-    private static Logger logger;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -73,9 +60,6 @@ public class RoboticsNotificationServiceTest {
     @Mock
     private RoboticsDataService roboticsDataService;
 
-    @Mock
-    private Appender<ILoggingEvent> logAppender;
-
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
 
@@ -83,8 +67,6 @@ public class RoboticsNotificationServiceTest {
 
     @BeforeEach
     void setup() {
-        logger.addAppender(logAppender);
-
         given(roboticsEmailConfiguration.getRecipient())
             .willReturn(EMAIL_RECIPIENT);
 
@@ -93,11 +75,6 @@ public class RoboticsNotificationServiceTest {
 
         roboticsNotificationService = new RoboticsNotificationService(emailService, roboticsDataService,
             roboticsEmailConfiguration, objectMapper);
-    }
-
-    @BeforeAll
-    static void init() {
-        logger = (Logger) getLogger(RoboticsLoggerHelper.class.getName());
     }
 
     @Test
@@ -135,32 +112,9 @@ public class RoboticsNotificationServiceTest {
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldLogOtherOrderTypeEmailNotificationException()
-        throws IOException {
-        final String otherTypeLabelValue = "Discharge of care";
-
-        RoboticsData expectedRoboticsData = expectedRoboticsData(otherTypeLabelValue);
-        given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
-            .willReturn(expectedRoboticsData);
-
-        runVerificationsOnRoboticsData(expectedRoboticsData);
-
-        String expectedErrorMessage = format("Robotics email notification failed for case with caseId %1$s and "
-                + "familyManNumber %2$s due to sending case submitted notification to Robotics with only "
-                + "Other order type selected", expectedRoboticsData.getCaseNumber(),
-            expectedRoboticsData.getCaseId());
-
-        verifyLoggedErrorMessage(expectedErrorMessage);
-
-        verify(emailService, never()).sendEmail(any(), any());
-    }
-
-    @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldThrowsAndLogsRoboticsDataExceptionWhenOwningCourtCodeZero()
+    void notifyRoboticsOfSubmittedCaseDataShouldThrowRoboticsDataExceptionWhenOwningCourtCodeZero()
         throws IOException {
         CaseData caseData = prepareCaseData();
-
-        RoboticsData expectedInvalidRoboticsData = invalidRoboticsDataWithZeroOwningCourt();
 
         given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
             .willReturn(invalidRoboticsDataWithZeroOwningCourt());
@@ -168,13 +122,6 @@ public class RoboticsNotificationServiceTest {
         assertThrows(RoboticsDataException.class,
             () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(
                 new CaseNumberAdded(prepareCaseDetails())));
-
-        String expectedErrorMessage = format("Robotics email notification failed for case with caseId %1$s and "
-                + "familyManNumber %2$s due to court code with value %3$s is invalid",
-            expectedInvalidRoboticsData.getCaseNumber(), expectedInvalidRoboticsData.getCaseId(),
-            expectedInvalidRoboticsData.getOwningCourt());
-
-        verifyLoggedErrorMessage(expectedErrorMessage);
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
@@ -209,14 +156,6 @@ public class RoboticsNotificationServiceTest {
         return caseDetails.toBuilder()
             .data(caseDataMap)
             .build();
-    }
-
-    private void verifyLoggedErrorMessage(final String expectedErrorMessage) {
-        verify(logAppender).doAppend(argThat(argument -> {
-            assertThat(argument.getMessage()).isEqualTo(expectedErrorMessage);
-            assertThat(argument.getLevel()).isEqualTo(ERROR);
-            return true;
-        }));
     }
 
     private void assertEmailData(String expectedRoboticsDataJson) {
