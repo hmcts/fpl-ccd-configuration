@@ -55,11 +55,8 @@ public class OthersController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if(!caseData.getConfidentialOthers().isEmpty())
-        {
             Others prepareOthers = othersService.prepareOthers(caseData);
             caseDetails.getData().put("others", prepareOthers);
-        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
