@@ -185,6 +185,16 @@ class GeneratedOrderServiceTest {
             .isEqualTo("care_order.pdf");
     }
 
+    @Test
+    void shouldGenerateCorrectFileNameWhenGivenEmergencyProtectionOrderType() {
+        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
+            .type(EMERGENCY_PROTECTION_ORDER)
+            .document(DocumentReference.builder().build()).build();
+
+        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel()))
+            .isEqualTo("emergency_protection_order.pdf");
+    }
+
     @Nested
     class TemplateDataTests {
         LocalDate localDate = time.now().toLocalDate();
