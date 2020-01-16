@@ -96,11 +96,13 @@ public class GeneratedOrderService {
                 break;
             case SUPERVISION_ORDER:
                 orderBuilder.title(null);
-                ofNullable(orderMonths)
-                    .map(i -> time.now().plusMonths(orderMonths))
-                    .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                        dateTime, "h:mma, d MMMM y"))
-                    .ifPresent(orderBuilder::expiryDate);
+                if (typeAndDocument.getSubtype() == FINAL) {
+                    ofNullable(orderMonths)
+                        .map(i -> time.now().plusMonths(orderMonths))
+                        .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                            dateTime, "h:mma, d MMMM y"))
+                        .ifPresent(orderBuilder::expiryDate);
+                }
                 break;
             default:
         }
@@ -142,14 +144,24 @@ public class GeneratedOrderService {
                 }
                 orderTemplateBuilder
                     .put("orderDetails", getFormattedCareOrderDetails(getChildrenDetails(caseData).size(),
-                        caseData.getCaseLocalAuthority(), orderTypeAndDocument));
+                        caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype()));
                 break;
             case SUPERVISION_ORDER:
-                orderTemplateBuilder
-                    .put("orderTitle", orderTypeAndDocument.getFullType())
-                    .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                    .put("orderDetails", getFormattedFinalSupervisionOrderDetails(getChildrenDetails(caseData).size(),
-                        caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
+                if (subtype == INTERIM) {
+                    orderTemplateBuilder
+                        .put("orderTitle", orderTypeAndDocument.getFullType(INTERIM))
+                        .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                        .put("orderDetails",
+                            getFormattedInterimSupervisionOrderDetails(getChildrenDetails(caseData).size(),
+                                caseData.getCaseLocalAuthority()));
+                } else if (subtype == FINAL) {
+                    orderTemplateBuilder
+                        .put("orderTitle", orderTypeAndDocument.getFullType())
+                        .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                        .put("orderDetails",
+                            getFormattedFinalSupervisionOrderDetails(getChildrenDetails(caseData).size(),
+                                caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + orderType);
@@ -199,11 +211,18 @@ public class GeneratedOrderService {
 
     private String getFormattedCareOrderDetails(int numOfChildren,
                                                 String caseLocalAuthority,
-                                                OrderTypeAndDocument typeAndDoc) {
+                                                boolean isInterim) {
         String childOrChildren = (numOfChildren == 1 ? "child is" : "children are");
         return String.format("It is ordered that the %s placed in the care of %s%s",
             childOrChildren, getLocalAuthorityName(caseLocalAuthority),
-            typeAndDoc.hasInterimSubtype() ? " until the end of the proceedings." : ".");
+            isInterim ? " until the end of the proceedings." : ".");
+    }
+
+    private String getFormattedInterimSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority) {
+        return String.format(
+            "It is ordered that %s supervises the %s until the end of the proceedings",
+            getLocalAuthorityName(caseLocalAuthority),
+            (numOfChildren == 1) ? "child" : "children");
     }
 
     private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,
