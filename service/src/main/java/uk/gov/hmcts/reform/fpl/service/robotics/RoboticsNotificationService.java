@@ -52,7 +52,7 @@ public class RoboticsNotificationService {
                 emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
 
             } catch (Exception exc) {
-                log.error("Robotics email notification failed for case with caseId {} and familyManNumber {} {}",
+                log.error("Robotics email notification failed for case with caseId {} and familyManNumber {} due to {}",
                     caseDetails.getId(), caseData.getFamilyManCaseNumber(), exc.getMessage());
 
                 throw exc;

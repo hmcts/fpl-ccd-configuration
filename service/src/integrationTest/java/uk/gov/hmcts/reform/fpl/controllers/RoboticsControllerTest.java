@@ -45,7 +45,6 @@ public class RoboticsControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-
     @Test
     @WithMockUser(authorities = "caseworker-publiclaw-systemupdate")
     void resendCaseDataNotificationShouldResendNotificationWithNoError() throws Exception {
