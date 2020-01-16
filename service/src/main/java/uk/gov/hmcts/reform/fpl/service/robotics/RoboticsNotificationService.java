@@ -42,18 +42,20 @@ public class RoboticsNotificationService {
         if (isNotEmpty(caseDetails) && isNotEmpty(caseDetails.getData())) {
             CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, caseDetails.getId());
-
-            runVerificationsOnRoboticsData(roboticsData);
-
-            EmailData emailData = prepareEmailData(roboticsData);
-
             try {
+                RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, caseDetails.getId());
+
+                runVerificationsOnRoboticsData(roboticsData);
+
+                EmailData emailData = prepareEmailData(roboticsData);
+
                 emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
 
             } catch (Exception exc) {
-                log.error("Robotics email notification failed for case with caseId {} and familyManNumber {}",
-                    caseDetails.getId(), caseData.getFamilyManCaseNumber());
+                log.error("Robotics email notification failed for case with caseId {} and familyManNumber {} {}",
+                    caseDetails.getId(), caseData.getFamilyManCaseNumber(), exc.getMessage());
+
+                throw exc;
             }
         }
     }

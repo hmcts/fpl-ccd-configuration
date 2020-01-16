@@ -201,7 +201,7 @@ public class RoboticsDataService {
 
     private String deriveApplicationType(final Orders orders) {
         if (isEmpty(orders) || isEmpty(orders.getOrderType())) {
-            throw new RoboticsDataException("No order type(s) to derive Application Type from.");
+            throw new RoboticsDataException("no order type(s) to derive Application Type from.");
         }
 
         List<OrderType> selectedOrderTypes = orders.getOrderType()
@@ -236,6 +236,6 @@ public class RoboticsDataService {
                 return OTHER_TYPE_LABEL_VALUE;
         }
 
-        throw new RoboticsDataException("Unable to derive an appropriate Application Type from " + orderType);
+        throw new RoboticsDataException("unable to derive an appropriate Application Type from " + orderType);
     }
 }

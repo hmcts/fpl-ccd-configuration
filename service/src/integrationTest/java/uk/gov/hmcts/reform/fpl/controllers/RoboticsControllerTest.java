@@ -57,6 +57,8 @@ public class RoboticsControllerTest {
 
         assertThat(postToUrl(CASE_ID).getResponse().getStatus())
             .isEqualTo(SC_OK);
+
+        verify(emailService).sendEmail(any(), any());
     }
 
     @Test
@@ -64,6 +66,8 @@ public class RoboticsControllerTest {
     void resendCaseDataNotificationShouldThrowForbiddenErrorWhenJudiciaryRole() throws Exception {
         assertThat(postToUrl(CASE_ID).getResponse().getStatus())
             .isEqualTo(FORBIDDEN.value());
+
+        verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test

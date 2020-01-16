@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,7 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -57,6 +59,8 @@ public class RoboticsNotificationServiceTest {
 
     private static final LocalDate NOW = LocalDate.now();
 
+    private static Logger logger;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -79,7 +83,6 @@ public class RoboticsNotificationServiceTest {
 
     @BeforeEach
     void setup() {
-        Logger logger = (Logger) getLogger(RoboticsLoggerHelper.class.getName());
         logger.addAppender(logAppender);
 
         given(roboticsEmailConfiguration.getRecipient())
@@ -90,6 +93,11 @@ public class RoboticsNotificationServiceTest {
 
         roboticsNotificationService = new RoboticsNotificationService(emailService, roboticsDataService,
             roboticsEmailConfiguration, objectMapper);
+    }
+
+    @BeforeAll
+    static void init() {
+        logger = (Logger) getLogger(RoboticsLoggerHelper.class.getName());
     }
 
     @Test
@@ -137,14 +145,14 @@ public class RoboticsNotificationServiceTest {
 
         runVerificationsOnRoboticsData(expectedRoboticsData);
 
-        String expectedErrorMessage = format("Email notification failed for case with id %1$s and "
-                + "family man number %2$s due to sending case submitted notification to Robotics with only "
+        String expectedErrorMessage = format("Robotics email notification failed for case with caseId %1$s and "
+                + "familyManNumber %2$s due to sending case submitted notification to Robotics with only "
                 + "Other order type selected", expectedRoboticsData.getCaseNumber(),
             expectedRoboticsData.getCaseId());
 
         verifyLoggedErrorMessage(expectedErrorMessage);
 
-        verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
+        verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
@@ -161,8 +169,8 @@ public class RoboticsNotificationServiceTest {
             () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(
                 new CaseNumberAdded(prepareCaseDetails())));
 
-        String expectedErrorMessage = format("Email notification failed for case with id %1$s and "
-                + "family man number %2$s due to court code with value %3$s is invalid",
+        String expectedErrorMessage = format("Robotics email notification failed for case with caseId %1$s and "
+                + "familyManNumber %2$s due to court code with value %3$s is invalid",
             expectedInvalidRoboticsData.getCaseNumber(), expectedInvalidRoboticsData.getCaseId(),
             expectedInvalidRoboticsData.getOwningCourt());
 
