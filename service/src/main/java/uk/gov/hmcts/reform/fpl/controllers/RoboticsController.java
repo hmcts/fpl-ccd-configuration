@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.robotics.RoboticsNotificationService;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-
 @Api
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,7 +27,7 @@ public class RoboticsController {
     public void resendCaseDataNotification(@PathVariable ("caseId") String caseId) {
         CaseDetails caseDetails = coreCaseDataService.findCaseDetailsById(caseId);
 
-        if (isEmpty(caseDetails)) {
+        if (caseDetails == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                 String.format("No case found for case with id %s", caseId));
 
