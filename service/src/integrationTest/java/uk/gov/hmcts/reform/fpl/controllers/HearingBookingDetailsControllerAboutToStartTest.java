@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -28,9 +26,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class HearingBookingDetailsControllerAboutToStartTest extends AbstractControllerTest {
     private static final LocalDateTime TODAY = LocalDateTime.now();
-
-    @Autowired
-    private ObjectMapper mapper;
 
     HearingBookingDetailsControllerAboutToStartTest() {
         super("add-hearing-bookings");
