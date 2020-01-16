@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.isNull;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseManagementOrderKey.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseManagementOrderKey.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseManagementOrderKey.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement.getHearingDynamicElement;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 

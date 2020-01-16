@@ -48,9 +48,9 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseManagementOrderKey.RECITALS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 // REFACTOR: 02/12/2019 Refactor this with CaseDataExtractionService and NotifyOfProceedingService to try and
@@ -72,9 +72,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final ObjectMapper mapper;
 
-    @SuppressWarnings("unchecked")
     public Map<String, Object> getTemplateData(CaseData caseData, boolean draft) throws IOException {
-        ImmutableMap.Builder cmoTemplateData = ImmutableMap.<String, Object>builder();
+        ImmutableMap.Builder<String, Object> cmoTemplateData = ImmutableMap.builder();
         final DynamicList hearingDateList = caseData.getCmoHearingDateList();
         final String localAuthorityCode = caseData.getCaseLocalAuthority();
 
