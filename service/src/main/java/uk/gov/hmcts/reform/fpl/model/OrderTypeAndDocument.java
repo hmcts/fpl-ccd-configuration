@@ -21,10 +21,7 @@ public class OrderTypeAndDocument {
     }
 
     public String getFullType(GeneratedOrderSubtype subtype) {
-        if (subtype != null) {
-            return subtype.getLabel() + " " + this.type.getLabel().toLowerCase();
-        }
-        return this.type.getLabel();
+        return (subtype != null) ? subtype.getLabel() + " " + this.type.getLabel().toLowerCase() : this.type.getLabel();
     }
 
     public boolean hasInterimSubtype() {

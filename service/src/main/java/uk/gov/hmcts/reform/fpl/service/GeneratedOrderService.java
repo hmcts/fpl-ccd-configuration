@@ -65,7 +65,7 @@ public class GeneratedOrderService {
 
     /**
      * Method to populate the order based on type of order selected
-     * Adds/formats the order title and details for C21
+     * Adds/formats the order title/details for C21 and the expiry date for supervision order
      * Always adds order type, document, {@link JudgeAndLegalAdvisor} object and a formatted order date.
      *
      * @param typeAndDocument      the type of the order and the order document (document only shown in check answers)
@@ -73,7 +73,7 @@ public class GeneratedOrderService {
      *                             values.
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
      * @param orderMonths          the number of months the supervision order is valid
-     * @return Element containing randomUUID and a fully populated order.
+     * @return Element containing randomUUID and a fully populated order, ready to be added to orderCollection.
      */
     public Element<GeneratedOrder> buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
                                                       GeneratedOrder order,
