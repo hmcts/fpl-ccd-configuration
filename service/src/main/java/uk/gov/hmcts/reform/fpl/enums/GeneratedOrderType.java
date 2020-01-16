@@ -6,21 +6,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum GeneratedOrderType {
-    BLANK_ORDER("Blank order (C21)"),
-    CARE_ORDER("Care order"),
-    SUPERVISION_ORDER("Supervision order");
+    BLANK_ORDER("Blank order (C21)", "blank_order_c21.pdf"),
+    CARE_ORDER("Care order", "care_order.pdf"),
+    SUPERVISION_ORDER("Supervision order", "supervision_order.pdf");
 
     private final String label;
-
-    public String getFullType() {
-        return getFullType(null);
-    }
-
-    public String getFullType(GeneratedOrderSubtype subtype) {
-        if (subtype != null) {
-            return subtype.getLabel() + " " + this.getLabel().toLowerCase();
-        }
-        return this.getLabel();
-
-    }
+    private final String fileName;
 }

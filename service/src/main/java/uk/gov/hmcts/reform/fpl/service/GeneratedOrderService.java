@@ -34,9 +34,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 
 @Slf4j
 @Service
@@ -111,7 +108,7 @@ public class GeneratedOrderService {
         return Element.<GeneratedOrder>builder()
             .id(randomUUID())
             .value(orderBuilder
-                .type(orderType.getFullType(typeAndDocument.getSubtype()))
+                .type(typeAndDocument.getFullType(typeAndDocument.getSubtype()))
                 .document(typeAndDocument.getDocument())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
@@ -136,22 +133,22 @@ public class GeneratedOrderService {
             case CARE_ORDER:
                 if (subtype == INTERIM) {
                     orderTemplateBuilder
-                        .put("orderTitle", CARE_ORDER.getFullType(INTERIM))
+                        .put("orderTitle", orderTypeAndDocument.getFullType(INTERIM))
                         .put("childrenAct", "Section 38 Children Act 1989");
                 } else if (subtype == FINAL) {
                     orderTemplateBuilder
-                        .put("orderTitle", CARE_ORDER.getFullType())
+                        .put("orderTitle", orderTypeAndDocument.getFullType())
                         .put("childrenAct", "Section 31 Children Act 1989");
                 }
                 orderTemplateBuilder
-                    .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
+                    .put("orderDetails", getFormattedCareOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument));
                 break;
             case SUPERVISION_ORDER:
                 orderTemplateBuilder
-                    .put("orderTitle", SUPERVISION_ORDER.getFullType())
+                    .put("orderTitle", orderTypeAndDocument.getFullType())
                     .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                    .put("orderDetails", finalSupervisionOrderDetails(getChildrenDetails(caseData).size(),
+                    .put("orderDetails", getFormattedFinalSupervisionOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
                 break;
             default:
@@ -174,10 +171,9 @@ public class GeneratedOrderService {
     }
 
     public String generateOrderDocumentFileName(GeneratedOrderType orderType, GeneratedOrderSubtype orderSubtype) {
-        String type = orderType.getLabel().toLowerCase().replace("(", "").replace(")", "").replace(" ", "_");
         String subtype = (orderSubtype != null) ? orderSubtype.getLabel().toLowerCase() + "_" : "";
 
-        return subtype + type + ".pdf";
+        return subtype + orderType.getFileName();
     }
 
     public String getMostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
@@ -201,14 +197,18 @@ public class GeneratedOrderService {
         return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
     }
 
-    private String careOrderDetails(int numOfChildren, String caseLocalAuthority, OrderTypeAndDocument typeAndDoc) {
+    private String getFormattedCareOrderDetails(int numOfChildren,
+                                                String caseLocalAuthority,
+                                                OrderTypeAndDocument typeAndDoc) {
         String childOrChildren = (numOfChildren == 1 ? "child is" : "children are");
         return String.format("It is ordered that the %s placed in the care of %s%s",
             childOrChildren, getLocalAuthorityName(caseLocalAuthority),
-            hasInterimSubtype(typeAndDoc) ? " until the end of the proceedings." : ".");
+            typeAndDoc.hasInterimSubtype() ? " until the end of the proceedings." : ".");
     }
 
-    private String finalSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority, int numOfMonths) {
+    private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,
+                                                            String caseLocalAuthority,
+                                                            int numOfMonths) {
         final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
         final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
         return String.format(
@@ -230,10 +230,5 @@ public class GeneratedOrderService {
                 "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
                     .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
-    }
-
-    private boolean hasInterimSubtype(OrderTypeAndDocument typeAndDoc) {
-        return typeAndDoc.getType() != BLANK_ORDER && typeAndDoc.getSubtype() != null
-            && typeAndDoc.getSubtype() == INTERIM;
     }
 }
