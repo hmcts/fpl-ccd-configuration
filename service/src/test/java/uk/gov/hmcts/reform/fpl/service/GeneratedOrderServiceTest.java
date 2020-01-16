@@ -170,10 +170,9 @@ class GeneratedOrderServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedSupervisionOrderWhenFinalSubtypeSelected() {
+    void shouldReturnExpectedSupervisionOrderWhenFieldsFullyPopulated() {
         GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
                 .type(SUPERVISION_ORDER)
-                .subtype(FINAL)
                 .document(DocumentReference.builder().build())
                 .build(),
             GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
@@ -186,7 +185,7 @@ class GeneratedOrderServiceTest {
         final String expectedExpiryDate = dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
             "h:mma, d MMMM y");
 
-        assertThat(builtOrder.getType()).isEqualTo("Final supervision order");
+        assertThat(builtOrder.getType()).isEqualTo("Supervision order");
         assertThat(builtOrder.getExpiryDate()).isEqualTo(expectedExpiryDate);
     }
 
@@ -255,6 +254,7 @@ class GeneratedOrderServiceTest {
             Arguments.of(BLANK_ORDER, null, "blank_order_c21.pdf"),
             Arguments.of(CARE_ORDER, INTERIM, "interim_care_order.pdf"),
             Arguments.of(CARE_ORDER, FINAL, "final_care_order.pdf"),
+            Arguments.of(SUPERVISION_ORDER, null, "supervision_order.pdf"),
             Arguments.of(CARE_ORDER, null, "care_order.pdf")
         );
     }
@@ -300,28 +300,18 @@ class GeneratedOrderServiceTest {
                 }
                 break;
             case SUPERVISION_ORDER:
+                final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
+                final String formattedDateTime =
+                    dateFormatterService.formatLocalDateTimeBaseUsingFormat(date.plusMonths(5),
+                        "h:mma 'on the' d'" + suffix + "' MMMM y");
                 expectedMap
-                    .put("orderType", SUPERVISION_ORDER);
-                if (subtype == INTERIM) {
-                    expectedMap
-                        .put("orderTitle", "Interim supervision order")
-                        .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails",
-                            "It is ordered that Example Local Authority supervises the child until the end of the "
-                                + "proceedings");
-                } else if (subtype == FINAL) {
-                    final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
-                    final String formattedDateTime =
-                        dateFormatterService.formatLocalDateTimeBaseUsingFormat(date.plusMonths(5),
-                            "h:mma 'on the' d'" + suffix + "' MMMM y");
-                    expectedMap
-                        .put("orderTitle", "Supervision order")
-                        .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails",
-                            String.format(
-                                "It is ordered that Example Local Authority supervises the child for 5 months from the "
-                                    + "date of this order until %s.", formattedDateTime));
-                }
+                    .put("orderType", SUPERVISION_ORDER)
+                    .put("orderTitle", "Supervision order")
+                    .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                    .put("orderDetails",
+                        String.format(
+                            "It is ordered that Example Local Authority supervises the child for 5 months from the "
+                                + "date of this order until %s.", formattedDateTime));
                 break;
             default:
         }
@@ -375,7 +365,6 @@ class GeneratedOrderServiceTest {
                 caseDataBuilder
                     .orderTypeAndDocument(OrderTypeAndDocument.builder()
                         .type(SUPERVISION_ORDER)
-                        .subtype(subtype)
                         .document(DocumentReference.builder().build())
                         .build())
                     .orderFurtherDirections(FurtherDirections.builder()

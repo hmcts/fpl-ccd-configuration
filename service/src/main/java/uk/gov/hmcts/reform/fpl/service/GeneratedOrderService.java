@@ -99,13 +99,11 @@ public class GeneratedOrderService {
                 break;
             case SUPERVISION_ORDER:
                 orderBuilder.title(null);
-                if (typeAndDocument.getSubtype() == FINAL) {
-                    ofNullable(orderMonths)
-                        .map(i -> time.now().plusMonths(orderMonths))
-                        .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                            dateTime, "h:mma, d MMMM y"))
-                        .ifPresent(orderBuilder::expiryDate);
-                }
+                ofNullable(orderMonths)
+                    .map(i -> time.now().plusMonths(orderMonths))
+                    .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                        dateTime, "h:mma, d MMMM y"))
+                    .ifPresent(orderBuilder::expiryDate);
                 break;
             default:
         }
@@ -150,19 +148,11 @@ public class GeneratedOrderService {
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument));
                 break;
             case SUPERVISION_ORDER:
-                if (subtype == INTERIM) {
-                    orderTemplateBuilder
-                        .put("orderTitle", SUPERVISION_ORDER.getFullType(INTERIM))
-                        .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails", interimSupervisionOrderDetails(getChildrenDetails(caseData).size(),
-                            caseData.getCaseLocalAuthority()));
-                } else if (subtype == FINAL) {
-                    orderTemplateBuilder
-                        .put("orderTitle", SUPERVISION_ORDER.getFullType())
-                        .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails", finalSupervisionOrderDetails(getChildrenDetails(caseData).size(),
-                            caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
-                }
+                orderTemplateBuilder
+                    .put("orderTitle", SUPERVISION_ORDER.getFullType())
+                    .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                    .put("orderDetails", finalSupervisionOrderDetails(getChildrenDetails(caseData).size(),
+                        caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
                 break;
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + orderType);
@@ -218,13 +208,6 @@ public class GeneratedOrderService {
             hasInterimSubtype(typeAndDoc) ? " until the end of the proceedings." : ".");
     }
 
-    private Object interimSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority) {
-        return String.format(
-            "It is ordered that %s supervises the %s until the end of the proceedings",
-            getLocalAuthorityName(caseLocalAuthority),
-            (numOfChildren == 1) ? "child" : "children");
-    }
-
     private String finalSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority, int numOfMonths) {
         final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
         final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
@@ -234,7 +217,7 @@ public class GeneratedOrderService {
             (numOfChildren == 1) ? "child" : "children",
             numOfMonths,
             dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
-            "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y"));
+                "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y"));
     }
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {

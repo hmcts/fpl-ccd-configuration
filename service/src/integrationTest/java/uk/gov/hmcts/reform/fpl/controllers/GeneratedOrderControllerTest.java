@@ -316,9 +316,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetailsWithInterimSubtype(), "interim_care_order.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetailsWithFinalSubtype(), "final_care_order.pdf", ORDER),
-                Arguments.of(generateSupervisionOrderCaseDetailsWithInterimSubtype(), "interim_supervision_order.pdf",
-                    ORDER),
-                Arguments.of(generateSupervisionOrderCaseDetailsWithFinalSubtype(), "final_supervision_order.pdf",
+                Arguments.of(generateSupervisionOrderCaseDetails(), "supervision_order.pdf",
                     ORDER)
             );
         }
@@ -340,8 +338,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(CARE_ORDER, INTERIM);
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
-                }))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
         }
 
@@ -354,8 +351,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build());
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
-                }))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
         }
 
@@ -368,13 +364,12 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build());
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
-                }))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
         }
 
-        private CaseDetails generateSupervisionOrderCaseDetailsWithInterimSubtype() {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(SUPERVISION_ORDER, INTERIM);
+        private CaseDetails generateSupervisionOrderCaseDetails() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(SUPERVISION_ORDER, null);
 
             dataBuilder.orderFurtherDirections(FurtherDirections.builder()
                 .directionsNeeded("No")
@@ -384,24 +379,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             generateDefaultValues(dataBuilder);
 
             return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
-                }))
-                .build();
-        }
-
-        private CaseDetails generateSupervisionOrderCaseDetailsWithFinalSubtype() {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(SUPERVISION_ORDER, FINAL);
-
-            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
-                .directionsNeeded("No")
-                .build())
-                .orderMonths(5);
-
-            generateDefaultValues(dataBuilder);
-
-            return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {
-                }))
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
         }
 

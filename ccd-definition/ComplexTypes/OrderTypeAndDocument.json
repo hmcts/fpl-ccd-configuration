@@ -15,7 +15,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "GeneratedOrderSubtype",
     "ElementLabel": " ",
-    "FieldShowCondition": "type=\"CARE_ORDER\" OR type=\"SUPERVISION_ORDER\"",
+    "FieldShowCondition": "type=\"CARE_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
