@@ -67,24 +67,32 @@ public class OthersService {
     }
 
     public Others modifyHiddenValues(Others others) {
-        final List<Element<Other>> othersForPeopleTab = new ArrayList<>();
+        final List<Element<Other>> othersList = new ArrayList<>();
         Element<Other> firstOther;
 
         if(others.getFirstOther().containsConfidentialDetails()) {
-            firstOther = Element.<Other>builder().value(others.getFirstOther().toBuilder().address(null).telephone(null).build()).build();
+            firstOther = Element.<Other>builder()
+                .value(others.
+                    getFirstOther()
+                    .toBuilder().
+                        address(null).
+                        telephone(null).
+                        build()).
+                build();
         }
         else {
-            firstOther = Element.<Other>builder().value(others.getFirstOther()).build();
+            firstOther = Element.<Other>builder()
+                .value(others.getFirstOther()).build();
         }
 
         others.getAdditionalOthers().stream().forEach(additionalOther -> {
             if (additionalOther.getValue().containsConfidentialDetails()) {
-                othersForPeopleTab.add(Element.<Other>builder()
+                othersList.add(Element.<Other>builder()
                     .id(additionalOther.getId())
                     .value(additionalOther.getValue().toBuilder().address(null).telephone(null).build())
                     .build());
             } else{
-                othersForPeopleTab.add(Element.<Other>builder()
+                othersList.add(Element.<Other>builder()
                     .id(additionalOther.getId())
                     .value(additionalOther.getValue())
                     .build());
@@ -93,7 +101,7 @@ public class OthersService {
 
         });
 
-        return others.toBuilder().additionalOthers(othersForPeopleTab).firstOther(firstOther.getValue()).build();
+        return others.toBuilder().additionalOthers(othersList).firstOther(firstOther.getValue()).build();
     }
 
     public List<Element<Other>> modifyHiddenValuesConfidentialOthers(List<Element<Other>> confidentialOthers) {
@@ -125,23 +133,12 @@ public class OthersService {
         caseData.getAllOthers().forEach(element -> {
                 if (element.getValue().containsConfidentialDetails()) {
 
-                    Element<Other> confidentialElement = getElementToAdd(caseData.getConfidentialOthers(), element);
+                    Element<Other> confidentialOther = getElementToAdd(caseData.getConfidentialOthers(), element);
 
-                    Element<Other> other = Element.<Other>builder().id(element.getId())
-                        .value(Other.builder()
-                            .DOB(element.getValue().getDOB())
-                            .name(element.getValue().getName())
-                            .gender(element.getValue().getGender())
-                            .birthPlace(element.getValue().getBirthPlace())
-                            .childInformation(element.getValue().getChildInformation())
-                            .genderIdentification(element.getValue().getGenderIdentification())
-                            .litigationIssues(element.getValue().getLitigationIssues())
-                            .litigationIssuesDetails(element.getValue().getLitigationIssuesDetails())
-                            .detailsHidden(element.getValue().getDetailsHidden())
-                            .detailsHiddenReason(element.getValue().getDetailsHiddenReason())
-                            .telephone(confidentialElement.getValue().getTelephone())
-                            .address(confidentialElement.getValue().getAddress())
-                            .build()).build();
+                    Element<Other> other = Element.<Other>builder().
+                        id(element.getId())
+                        .value(buildOtherElement(confidentialOther, element))
+                        .build();
 
                     others.add(other);
 
@@ -166,23 +163,10 @@ public class OthersService {
         {
             if(others.get(0).getValue().containsConfidentialDetails())
             {
-                Other confidentialOther = confidentialOthers.get(0).getValue();
-                Other other = others.get(0).getValue();
+                Element<Other> confidentialOther = confidentialOthers.get(0);
+                Element<Other> other = others.get(0);
 
-                firstOther = Other.builder()
-                    .DOB(other.getDOB())
-                    .name(other.getName())
-                    .gender(other.getGender())
-                    .birthPlace(other.getBirthPlace())
-                    .childInformation(other.getChildInformation())
-                    .genderIdentification(other.getGenderIdentification())
-                    .litigationIssues(other.getLitigationIssues())
-                    .litigationIssuesDetails(other.getLitigationIssuesDetails())
-                    .detailsHidden(other.getDetailsHidden())
-                    .detailsHiddenReason(other.getDetailsHiddenReason())
-                    .address(confidentialOther.getAddress())
-                    .telephone(confidentialOther.getTelephone())
-                    .build();
+                firstOther = buildOtherElement(confidentialOther,other);
                 others.remove(0);
             } else {
                 firstOther = others.get(0).getValue();
@@ -191,6 +175,23 @@ public class OthersService {
         }
 
         return firstOther;
+    }
+
+    private Other buildOtherElement(Element<Other> confidentialOther, Element<Other> other) {
+        return  Other.builder()
+            .DOB(other.getValue().getDOB())
+            .name(other.getValue().getName())
+            .gender(other.getValue().getGender())
+            .birthPlace(other.getValue().getBirthPlace())
+            .childInformation(other.getValue().getChildInformation())
+            .genderIdentification(other.getValue().getGenderIdentification())
+            .litigationIssues(other.getValue().getLitigationIssues())
+            .litigationIssuesDetails(other.getValue().getLitigationIssuesDetails())
+            .detailsHidden(other.getValue().getDetailsHidden())
+            .detailsHiddenReason(other.getValue().getDetailsHiddenReason())
+            .telephone(confidentialOther.getValue().getTelephone())
+            .address(confidentialOther.getValue().getAddress())
+            .build();
     }
 
     private Element<Other> getElementToAdd(List<Element<Other>> confidentialOthers,
