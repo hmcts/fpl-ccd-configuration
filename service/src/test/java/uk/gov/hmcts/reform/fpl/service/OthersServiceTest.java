@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
@@ -124,32 +125,46 @@ class OthersServiceTest {
 
     @Test
     void shouldPrepareOthersWithConfidentialValuesWhenConfidentialOthersIsNotEmpty() {
-        List<Element<Other>> additionalOthers = new ArrayList<>();
+        List<Element<Other>> additionalOthersList = new ArrayList<>();
+        Element<Other> additionalOther = Element.<Other>builder().id(ID).value(Other.builder().build()).build();
+        additionalOthersList.add(additionalOther);
+
+        List<Element<Other>> confidentialOthers = new ArrayList<>();
+        confidentialOthers.add(othersWithConfidentialFields(ID));
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(othersWithConfidentialFields2(ID_2).getValue()).additionalOthers(additionalOthers).build())
-            .confidentialOthers
-                (List.of(othersWithConfidentialFields(ID)))
+            .others(Others.builder().firstOther(othersWithRemovedConfidentialFields(ID).getValue()).additionalOthers(additionalOthersList).build())
+            .confidentialOthers(confidentialOthers)
             .build();
-
-        List<Element<Other>> confOthers = caseData.getConfidentialOthers();
 
         Others others = service.prepareOthers(caseData);
 
-        assertThat(others.getFirstOther()).isEqualTo(othersWithConfidentialFields(ID));
+        assertThat(others.getFirstOther()).isEqualTo(othersWithConfidentialFields(ID).getValue());
     }
 
     private Element<Other> othersWithConfidentialFields(UUID id) {
         return Element.<Other>builder()
             .id(id)
             .value(Other.builder()
-                    .name("James")
-                    .detailsHidden("Yes")
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephone("01227 831393")
+                .name("Sarah Moley")
+                .gender("Female")
+                .detailsHidden("Yes")
+                .address(Address.builder()
+                    .addressLine1("Address Line 1")
                     .build())
+                .telephone("01227 831393")
+                .build())
+            .build();
+    }
+
+    private Element<Other> othersWithRemovedConfidentialFields(UUID id) {
+        return Element.<Other>builder()
+            .id(id)
+            .value(Other.builder()
+                .name("Sarah Moley")
+                .gender("Female")
+                .detailsHidden("Yes")
+                .build())
             .build();
     }
 
