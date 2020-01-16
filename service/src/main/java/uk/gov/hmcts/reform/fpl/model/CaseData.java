@@ -151,12 +151,6 @@ public class CaseData {
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
 
-    private final List<Element<HearingBooking>> pastHearingDetails;
-
-    public List<Element<HearingBooking>> getPastHearingDetails() {
-        return pastHearingDetails != null ? pastHearingDetails : new ArrayList<>();
-    }
-
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;

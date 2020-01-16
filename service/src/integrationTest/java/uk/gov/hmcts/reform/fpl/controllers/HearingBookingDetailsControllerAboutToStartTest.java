@@ -38,8 +38,7 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
 
     @Test
     void shouldReturnPopulatedHearingWhenNoOtherHearingsExist() {
-        AboutToStartOrSubmitCallbackResponse response =
-            postAboutToStartEvent(callbackRequestWithHearingDetails(new HashMap<>()));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(callbackRequest(new HashMap<>()));
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -52,17 +51,15 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
             bookingWithStartDate(TODAY.plusDays(5)), bookingWithStartDate(TODAY.minusDays(5)));
 
         AboutToStartOrSubmitCallbackResponse response =
-            postAboutToStartEvent(callbackRequestWithHearingDetails(Map.of(HEARING_DETAILS.getKey(), hearingDetails)));
+            postAboutToStartEvent(callbackRequest(Map.of(HEARING_DETAILS.getKey(), hearingDetails)));
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(caseData.getHearingDetails()).hasSize(1);
         assertThat(caseData.getHearingDetails().get(0).getValue().getStartDate()).isAfter(TODAY);
-        assertThat(caseData.getPastHearingDetails()).hasSize(1);
-        assertThat(caseData.getPastHearingDetails().get(0).getValue().getStartDate()).isBefore(TODAY);
     }
 
-    private CallbackRequest callbackRequestWithHearingDetails(Map<String, Object> data) {
+    private CallbackRequest callbackRequest(Map<String, Object> data) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(data)

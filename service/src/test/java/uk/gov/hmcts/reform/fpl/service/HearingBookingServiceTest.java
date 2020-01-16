@@ -13,15 +13,12 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
-import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.PAST_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -127,47 +124,35 @@ class HearingBookingServiceTest {
     }
 
     @Nested
-    class SplitPastAndFutureHearings {
+    class GetPastHearings {
 
         @Test
-        void shouldReturnMapWhenNoHearingsHaveBeenCreated() {
-            //getter method in caseData populates hearingBookingDetails as empty builder.
-            List<Element<HearingBooking>> hearingBooking = emptyHearingBooking();
-
-            assertThat(service.splitPastAndFutureHearings(hearingBooking))
-                .isEqualTo(
-                    Map.of(HEARING_DETAILS.getKey(), hearingBooking, PAST_HEARING_DETAILS.getKey(), emptyList()));
+        void shouldReturnEmptyListWhenNoHearingsHaveBeenCreated() {
+            assertThat(service.getPastHearings(emptyList())).isEqualTo(emptyList());
         }
 
         @Test
-        void shouldReturnMapWhenNoPastHearingsExist() {
+        void shouldReturnEmptyListWhenNoPastHearingsExist() {
             List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(+5));
 
-            assertThat(service.splitPastAndFutureHearings(hearingBooking))
-                .isEqualTo(
-                    Map.of(HEARING_DETAILS.getKey(), hearingBooking, PAST_HEARING_DETAILS.getKey(), emptyList()));
+            assertThat(service.getPastHearings(hearingBooking)).isEqualTo(emptyList());
         }
 
         @Test
-        void shouldReturnMapWhenNoFutureHearingsExist() {
+        void shouldReturnPopulateListWhenOnlyPastHearingsExist() {
             List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(-5));
 
-            assertThat(service.splitPastAndFutureHearings(hearingBooking).get(HEARING_DETAILS.getKey())).isNotEmpty();
-            assertThat(service.splitPastAndFutureHearings(hearingBooking).get(PAST_HEARING_DETAILS.getKey()))
-                .isEqualTo(hearingBooking);
+            assertThat(service.getPastHearings(hearingBooking)).isEqualTo(hearingBooking);
         }
 
         @Test
-        void shouldReturnMapWhenPastHearingsAndFutureHearingsExist() {
+        void shouldReturnOnlyPastHearingsWhenPastAndFutureHearingsExist() {
             Element<HearingBooking> futureHearingBooking = hearingElementWithStartDate(+5);
             Element<HearingBooking> pastHearingBooking = hearingElementWithStartDate(-5);
 
             List<Element<HearingBooking>> hearingBookings = newArrayList(futureHearingBooking, pastHearingBooking);
 
-            assertThat(service.splitPastAndFutureHearings(hearingBookings))
-                .isEqualTo(Map.of(
-                    HEARING_DETAILS.getKey(), List.of(futureHearingBooking),
-                    PAST_HEARING_DETAILS.getKey(), List.of(pastHearingBooking)));
+            assertThat(service.getPastHearings(hearingBookings)).isEqualTo(List.of(pastHearingBooking));
         }
 
         private ArrayList<Element<HearingBooking>> emptyHearingBooking() {

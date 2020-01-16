@@ -8,15 +8,11 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
-import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.PAST_HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -30,23 +26,7 @@ public class HearingBookingService {
         return hearingDetails != null ? hearingDetails : EMPTY_HEARING_BOOKING;
     }
 
-    /**
-     * Creates a map with past and future hearings.
-     *
-     * @param hearingDetails a list of hearing bookings.
-     * @return map of past and future hearings.
-     */
-    public Map<String, List<Element<HearingBooking>>> splitPastAndFutureHearings(
-        List<Element<HearingBooking>> hearingDetails) {
-        List<Element<HearingBooking>> pastHearingsDetails = getPastHearings(hearingDetails);
-        hearingDetails.removeIf(pastHearingsDetails::contains);
-
-        return Map.of(
-            HEARING_DETAILS.getKey(), isNotEmpty(hearingDetails) ? hearingDetails : EMPTY_HEARING_BOOKING,
-            PAST_HEARING_DETAILS.getKey(), pastHearingsDetails);
-    }
-
-    private List<Element<HearingBooking>> getPastHearings(List<Element<HearingBooking>> hearingDetails) {
+    public List<Element<HearingBooking>> getPastHearings(List<Element<HearingBooking>> hearingDetails) {
         return hearingDetails.stream().filter(this::isBeforeToday).collect(toList());
     }
 

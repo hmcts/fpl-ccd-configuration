@@ -6,8 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum HearingBookingKeys {
-    HEARING_DETAILS("hearingDetails"),
-    PAST_HEARING_DETAILS("pastHearingDetails");
+    HEARING_DETAILS("hearingDetails");
 
     private final String key;
 }
