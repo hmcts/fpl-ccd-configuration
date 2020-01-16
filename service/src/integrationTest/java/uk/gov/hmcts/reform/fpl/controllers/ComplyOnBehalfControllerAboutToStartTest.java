@@ -180,9 +180,8 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     private List<Element<Representative>> representativeServedByPost() {
-        return List.of(ElementUtils.element(
+        return List.of(ElementUtils.element(ComplyOnBehalfControllerAboutToStartTest.REPRESENTATIVE_ID,
             Representative.builder()
-                .idamId(ComplyOnBehalfControllerAboutToStartTest.REPRESENTATIVE_ID.toString())
                 .servingPreferences(POST)
                 .build()));
     }
