@@ -132,7 +132,7 @@ public class GeneratedOrderService {
                     .put("epoType", caseData.getEpoType())
                     .put("includePhrase", caseData.getEpoPhrase().getIncludePhrase())
                     .put("removalAddress", getFormattedRemovalAddress(caseData))
-                    .put("childrenCount", caseData.getChildren1().size())
+                    .put("childrenCount", caseData.getChildren1() != null ? caseData.getChildren1().size() : 0)
                     .put("epoStartDateTime", formatEPODateTime(time.now()))
                     .put("epoEndDateTime", formatEPODateTime(caseData.getEpoEndDate()));
                 break;
@@ -167,8 +167,8 @@ public class GeneratedOrderService {
     }
 
     public void removeOrderProperties(Map<String, Object> caseData) {
-        Arrays.asList(GeneratedOrderKey.values(), GeneratedEPOKey.values())
-            .forEach(caseData::remove);
+        Arrays.stream(GeneratedEPOKey.values()).forEach(e -> caseData.remove(e.getKey()));
+        Arrays.stream(GeneratedOrderKey.values()).forEach(e -> caseData.remove(e.getKey()));
     }
 
     private String getCourtName(String courtName) {

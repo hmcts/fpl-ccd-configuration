@@ -35,6 +35,7 @@ import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
@@ -239,11 +240,15 @@ class GeneratedOrderServiceTest {
 
     @Test
     void shouldRemovePropertiesOnCaseDetailsUsedForOrderCapture() {
-        CaseDetails caseDetails = createPopulatedCaseDetails();
-        service.removeOrderProperties(caseDetails.getData());
+        Map<String, Object> data = Arrays.stream(GeneratedOrderKey.values())
+            .collect(Collectors.toMap(GeneratedOrderKey::getKey, value -> ""));
+        data.putAll(Arrays.stream(GeneratedEPOKey.values())
+            .collect(Collectors.toMap(GeneratedEPOKey::getKey, value -> "")));
 
-        Arrays.asList(GeneratedEPOKey.values(), GeneratedOrderKey.values())
-            .forEach(key -> assertThat(caseDetails.getData().get(key)).isNull());
+        data.put("DO NOT REMOVE", "");
+        service.removeOrderProperties(data);
+
+        assertThat(data).containsOnlyKeys("DO NOT REMOVE");
     }
 
     private void assertCommonC21Fields(GeneratedOrder order) {

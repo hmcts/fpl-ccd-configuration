@@ -33,9 +33,9 @@ public class TimeRangeValidatorTest extends TimeValidatorTest {
 
     @Test
     void shouldReturnAnErrorWhenDateTimeExceedsRange() {
-        InvalidTimeRangeValidation invalidTimeRangeValidtion = new InvalidTimeRangeValidation(time);
+        InvalidTimeRangeValidation invalidTimeRangeValidation = new InvalidTimeRangeValidation(time);
         final Set<ConstraintViolation<InvalidTimeRangeValidation>> validate =
-            validator.validate(invalidTimeRangeValidtion);
+            validator.validate(invalidTimeRangeValidation);
         assertThat(validate).size().isEqualTo(1);
     }
 
