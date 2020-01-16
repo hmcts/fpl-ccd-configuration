@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,7 +18,7 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -29,17 +27,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final LocalDateTime TODAY = LocalDateTime.now();
 
-    @Autowired
-    private ObjectMapper mapper;
-
     HearingBookingDetailsControllerAboutToSubmitTest() {
         super("add-hearing-bookings");
     }
 
     @Test
-    void shouldReturnEmptyListWhenSubmittingEmptyEvent() {
+    void shouldReturnEmptyHearingListWhenNoHearingInCase() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
-            Map.of(HEARING_DETAILS.getKey(), emptyList()), Map.of(HEARING_DETAILS.getKey(), emptyList())));
+            Map.of(HEARING_DETAILS_KEY, emptyList()), Map.of(HEARING_DETAILS_KEY, emptyList())));
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -51,11 +46,10 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
         List<Element<HearingBooking>> hearingDetails = newArrayList(bookingWithStartDate(TODAY.plusDays(5)));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
-            Map.of(HEARING_DETAILS.getKey(), hearingDetails), Map.of(HEARING_DETAILS.getKey(), hearingDetails)));
+            Map.of(HEARING_DETAILS_KEY, hearingDetails), Map.of(HEARING_DETAILS_KEY, hearingDetails)));
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getHearingDetails()).hasSize(1);
         assertThat(caseData.getHearingDetails()).isEqualTo(hearingDetails);
     }
 
@@ -64,11 +58,10 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
         List<Element<HearingBooking>> hearingDetails = newArrayList(bookingWithStartDate(TODAY.plusDays(-5)));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
-            Map.of(HEARING_DETAILS.getKey(), emptyList()), Map.of(HEARING_DETAILS.getKey(), hearingDetails)));
+            Map.of(HEARING_DETAILS_KEY, emptyList()), Map.of(HEARING_DETAILS_KEY, hearingDetails)));
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getHearingDetails()).hasSize(1);
         assertThat(caseData.getHearingDetails()).isEqualTo(hearingDetails);
     }
 
@@ -78,14 +71,12 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
         Element<HearingBooking> hearingDetailPast = bookingWithStartDate(TODAY.minusDays(5));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
-            Map.of(HEARING_DETAILS.getKey(), newArrayList(hearingDetail)),
-            Map.of(HEARING_DETAILS.getKey(), newArrayList(hearingDetail, hearingDetailPast))));
+            Map.of(HEARING_DETAILS_KEY, newArrayList(hearingDetail)),
+            Map.of(HEARING_DETAILS_KEY, newArrayList(hearingDetail, hearingDetailPast))));
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getHearingDetails()).hasSize(2);
-        assertThat(caseData.getHearingDetails().get(0)).isEqualTo(hearingDetailPast);
-        assertThat(caseData.getHearingDetails().get(1)).isEqualTo(hearingDetail);
+        assertThat(caseData.getHearingDetails()).containsExactly(hearingDetailPast, hearingDetail);
     }
 
     private CallbackRequest callbackRequest(Map<String, Object> data, Map<String, Object> dataBefore) {

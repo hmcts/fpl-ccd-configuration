@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEM
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseManagementOrderProgressionController.class)
@@ -74,13 +74,13 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCallbackRequest(caseDetails));
 
         assertThat(response.getData())
-            .containsOnlyKeys(SERVED_CASE_MANAGEMENT_ORDERS.getKey(), HEARING_DETAILS.getKey());
+            .containsOnlyKeys(SERVED_CASE_MANAGEMENT_ORDERS.getKey(), HEARING_DETAILS_KEY);
     }
 
     private Map<String, Object> caseDataMap(CaseManagementOrder order, LocalDateTime localDateTime) {
         return ImmutableMap.of(
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
-            HEARING_DETAILS.getKey(), List.of(Element.<HearingBooking>builder()
+            HEARING_DETAILS_KEY, List.of(Element.<HearingBooking>builder()
                 .id(uuid)
                 .value(HearingBooking.builder()
                     .startDate(localDateTime)

@@ -6,33 +6,34 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.time.LocalDateTime.now;
 import static java.util.Comparator.comparing;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 public class HearingBookingService {
-    private static final List<Element<HearingBooking>> EMPTY_HEARING_BOOKING =
-        newArrayList(element(HearingBooking.builder().build()));
+    public static final String HEARING_DETAILS_KEY = "hearingDetails";
 
     public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData) {
-        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-
-        return hearingDetails != null ? hearingDetails : EMPTY_HEARING_BOOKING;
+        return ofNullable(caseData.getHearingDetails())
+            .orElse(newArrayList(element(HearingBooking.builder().build())));
     }
 
     public List<Element<HearingBooking>> getPastHearings(List<Element<HearingBooking>> hearingDetails) {
-        return hearingDetails.stream().filter(this::isBeforeToday).collect(toList());
+        return hearingDetails.stream().filter(this::isPastHearing).collect(toList());
     }
 
-    private boolean isBeforeToday(Element<HearingBooking> element) {
-        return element.getValue() != null && element.getValue().getStartDate() != null
-            && element.getValue().getStartDate().isBefore(LocalDateTime.now());
+    private boolean isPastHearing(Element<HearingBooking> element) {
+        return ofNullable(element.getValue())
+            .map(HearingBooking::getStartDate)
+            .filter(hearingDate -> hearingDate.isBefore(now()))
+            .isPresent();
     }
 
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
@@ -74,8 +75,8 @@ public class HearingBookingService {
      * @param secondList the second list of hearing bookings to combine.
      * @return an ordered list of hearing bookings.
      */
-    public List<Element<HearingBooking>> rebuildHearingDetailsObject(List<Element<HearingBooking>> firstList,
-                                                                     List<Element<HearingBooking>> secondList) {
+    public List<Element<HearingBooking>> combineHearingDetails(List<Element<HearingBooking>> firstList,
+                                                               List<Element<HearingBooking>> secondList) {
         List<Element<HearingBooking>> combinedHearingDetails = newArrayList();
         combinedHearingDetails.addAll(firstList);
         combinedHearingDetails.addAll(secondList);

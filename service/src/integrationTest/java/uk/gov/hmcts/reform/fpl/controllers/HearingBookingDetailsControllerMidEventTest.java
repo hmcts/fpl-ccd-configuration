@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -97,10 +97,10 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
                                                              List<Element<HearingBooking>> oldHearings) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(Map.of(HEARING_DETAILS.getKey(), newHearings))
+                .data(Map.of(HEARING_DETAILS_KEY, newHearings))
                 .build())
             .caseDetailsBefore(CaseDetails.builder()
-                .data(Map.of(HEARING_DETAILS.getKey(), oldHearings))
+                .data(Map.of(HEARING_DETAILS_KEY, oldHearings))
                 .build())
             .build();
     }
@@ -116,11 +116,11 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(Map.of(HEARING_DETAILS.getKey(), wrapElements(after)))
+                .data(Map.of(HEARING_DETAILS_KEY, wrapElements(after)))
                 .build())
             .caseDetailsBefore(CaseDetails.builder()
                 .id(12345L)
-                .data(Map.of(HEARING_DETAILS.getKey(), wrapElements(EMPTY_HEARING_BOOKING)))
+                .data(Map.of(HEARING_DETAILS_KEY, wrapElements(EMPTY_HEARING_BOOKING)))
                 .build())
             .build();
 

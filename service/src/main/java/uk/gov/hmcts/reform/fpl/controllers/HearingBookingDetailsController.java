@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 
 @Api
 @RestController
@@ -50,7 +50,7 @@ public class HearingBookingDetailsController {
 
         hearingDetails.removeAll(pastHearings);
 
-        caseDetails.getData().put(HEARING_DETAILS.getKey(), hearingDetails);
+        caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -79,9 +79,9 @@ public class HearingBookingDetailsController {
         List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
 
         List<Element<HearingBooking>> combinedHearingDetails =
-            service.rebuildHearingDetailsObject(caseData.getHearingDetails(), pastHearings);
+            service.combineHearingDetails(caseData.getHearingDetails(), pastHearings);
 
-        caseDetails.getData().put(HEARING_DETAILS.getKey(), combinedHearingDetails);
+        caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

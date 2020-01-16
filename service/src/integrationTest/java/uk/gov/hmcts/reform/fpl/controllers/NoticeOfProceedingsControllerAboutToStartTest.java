@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.HearingBookingKeys.HEARING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ActiveProfiles("integration-test")
@@ -38,7 +38,7 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
     void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(12345L)
-            .data(Map.of(HEARING_DETAILS.getKey(), createHearingBookings()))
+            .data(Map.of(HEARING_DETAILS_KEY, createHearingBookings()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
@@ -51,7 +51,7 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
         CaseDetails caseDetails = CaseDetails.builder()
             .id(12345L)
             .data(Map.of(
-                HEARING_DETAILS.getKey(), createHearingBookings(),
+                HEARING_DETAILS_KEY, createHearingBookings(),
                 "familyManCaseNumber", "123"
             ))
             .build();
