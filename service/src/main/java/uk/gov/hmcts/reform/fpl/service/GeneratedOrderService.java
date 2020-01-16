@@ -142,7 +142,7 @@ public class GeneratedOrderService {
                 }
                 orderTemplateBuilder
                     .put("orderDetails", getFormattedCareOrderDetails(getChildrenDetails(caseData).size(),
-                        caseData.getCaseLocalAuthority(), orderTypeAndDocument));
+                        caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype()));
                 break;
             case SUPERVISION_ORDER:
                 orderTemplateBuilder
@@ -199,11 +199,11 @@ public class GeneratedOrderService {
 
     private String getFormattedCareOrderDetails(int numOfChildren,
                                                 String caseLocalAuthority,
-                                                OrderTypeAndDocument typeAndDoc) {
+                                                boolean isInterim) {
         String childOrChildren = (numOfChildren == 1 ? "child is" : "children are");
         return String.format("It is ordered that the %s placed in the care of %s%s",
             childOrChildren, getLocalAuthorityName(caseLocalAuthority),
-            typeAndDoc.hasInterimSubtype() ? " until the end of the proceedings." : ".");
+            isInterim ? " until the end of the proceedings." : ".");
     }
 
     private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,

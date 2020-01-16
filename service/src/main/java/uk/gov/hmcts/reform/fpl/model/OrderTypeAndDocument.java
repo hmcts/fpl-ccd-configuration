@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
@@ -16,10 +17,12 @@ public class OrderTypeAndDocument {
     private final GeneratedOrderSubtype subtype;
     private final DocumentReference document;
 
+    @JsonIgnore
     public String getFullType() {
         return getFullType(null);
     }
 
+    @JsonIgnore
     public String getFullType(GeneratedOrderSubtype subtype) {
         return (subtype != null) ? subtype.getLabel() + " " + this.type.getLabel().toLowerCase() : this.type.getLabel();
     }
