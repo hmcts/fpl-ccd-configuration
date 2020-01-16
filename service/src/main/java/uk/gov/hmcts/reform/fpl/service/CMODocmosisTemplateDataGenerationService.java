@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.interfaces.LabelledAssignee;
+import uk.gov.hmcts.reform.fpl.enums.interfaces.Assignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -274,11 +274,11 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         List<Element<Direction>> otherParties = defaultIfNull(directions.remove(OTHERS), emptyList());
         ImmutableMap.Builder<String, Object> formattedDirections = ImmutableMap.builder();
 
-        final Map<LabelledAssignee, List<Element<Direction>>> respondentDirections =
+        final Map<Assignee, List<Element<Direction>>> respondentDirections =
             respondents.stream()
                 .collect(groupingBy(element -> element.getValue().getParentsAndRespondentsAssignee()));
 
-        final Map<LabelledAssignee, List<Element<Direction>>> otherPartyDirections = otherParties.stream()
+        final Map<Assignee, List<Element<Direction>>> otherPartyDirections = otherParties.stream()
             .collect(groupingBy(element -> element.getValue().getOtherPartiesAssignee()));
 
         formattedDirections.put(PARENTS_AND_RESPONDENTS.getValue(),
@@ -295,14 +295,14 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     }
 
     private List<Map<String, Object>> getFormattedDirections(
-        Map<LabelledAssignee, List<Element<Direction>>> groupedDirections) {
+        Map<Assignee, List<Element<Direction>>> groupedDirections) {
 
         List<Map<String, Object>> directions = new ArrayList<>();
-        groupedDirections.forEach((key, value) -> {
+        groupedDirections.forEach((assignee, assigneeDirection) -> {
             Map<String, Object> direction = new HashMap<>();
-            direction.put("header", "For " + key.getLabel());
+            direction.put("header", "For " + assignee.getLabel());
             List<Map<String, String>> directionsList = buildFormattedDirectionList(
-                value);
+                assigneeDirection);
             direction.put("directions", directionsList);
             directions.add(direction);
         });

@@ -1,5 +1,5 @@
 package uk.gov.hmcts.reform.fpl.enums.interfaces;
 
-public interface LabelledAssignee {
+public interface Assignee {
     String getLabel();
 }

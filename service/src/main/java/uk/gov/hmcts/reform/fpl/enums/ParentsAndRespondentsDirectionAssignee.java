@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 import lombok.Getter;
-import uk.gov.hmcts.reform.fpl.enums.interfaces.LabelledAssignee;
+import uk.gov.hmcts.reform.fpl.enums.interfaces.Assignee;
 
 @Getter
-public enum ParentsAndRespondentsDirectionAssignee implements LabelledAssignee {
+public enum ParentsAndRespondentsDirectionAssignee implements Assignee {
     RESPONDENT_1("Respondent 1"),
     RESPONDENT_2("Respondent 2"),
     RESPONDENT_3("Respondent 3"),
