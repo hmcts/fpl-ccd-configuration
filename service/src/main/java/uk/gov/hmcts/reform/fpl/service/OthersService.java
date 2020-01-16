@@ -114,7 +114,25 @@ public class OthersService {
 
         caseData.getAllOthers().forEach(element -> {
                 if (element.getValue().containsConfidentialDetails()) {
-                    others.add(getElementToAdd(caseData.getConfidentialOthers(), element));
+
+                    Element<Other> confidentialElement = getElementToAdd(caseData.getConfidentialOthers(), element);
+
+                    Element<Other> other = Element.<Other>builder().id(element.getId())
+                        .value(Other.builder()
+                            .DOB(element.getValue().getDOB())
+                            .name(element.getValue().getName())
+                            .birthPlace(element.getValue().getBirthPlace())
+                            .childInformation(element.getValue().getChildInformation())
+                            .genderIdentification(element.getValue().getGenderIdentification())
+                            .litigationIssues(element.getValue().getLitigationIssues())
+                            .litigationIssuesDetails(element.getValue().getLitigationIssuesDetails())
+                            .detailsHidden(element.getValue().getDetailsHidden())
+                            .detailsHiddenReason(element.getValue().getDetailsHiddenReason())
+                            .telephone(confidentialElement.getValue().getTelephone())
+                            .build()).build();
+
+                    others.add(other);
+
                 } else {
                     others.add(element);
                 }
@@ -136,7 +154,23 @@ public class OthersService {
         {
             if(others.get(0).getValue().containsConfidentialDetails())
             {
-                firstOther = confidentialOthers.get(0).getValue();
+                Other confidentialOther = confidentialOthers.get(0).getValue();
+                Other other = others.get(0).getValue();
+
+                firstOther = Other.builder()
+                    .DOB(other.getDOB())
+                    .name(other.getName())
+                    .gender(other.getGender())
+                    .birthPlace(other.getBirthPlace())
+                    .childInformation(other.getChildInformation())
+                    .genderIdentification(other.getGenderIdentification())
+                    .litigationIssues(other.getLitigationIssues())
+                    .litigationIssuesDetails(other.getLitigationIssuesDetails())
+                    .detailsHidden(other.getDetailsHidden())
+                    .detailsHiddenReason(other.getDetailsHiddenReason())
+                    .address(confidentialOther.getAddress())
+                    .telephone(confidentialOther.getTelephone())
+                    .build();
                 others.remove(0);
             } else {
                 firstOther = others.get(0).getValue();
