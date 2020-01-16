@@ -167,14 +167,4 @@ class OthersServiceTest {
                 .build())
             .build();
     }
-
-    private Element<Other> othersWithConfidentialFields2(UUID id) {
-        return Element.<Other>builder()
-            .id(id)
-            .value(Other.builder()
-                .name("James")
-                .detailsHidden("Yes")
-                .build())
-            .build();
-    }
 }
