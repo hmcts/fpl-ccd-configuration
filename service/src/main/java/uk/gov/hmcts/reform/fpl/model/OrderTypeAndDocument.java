@@ -25,6 +25,6 @@ public class OrderTypeAndDocument {
     }
 
     public boolean hasInterimSubtype() {
-        return (subtype == INTERIM);
+        return subtype == INTERIM;
     }
 }
