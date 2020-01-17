@@ -179,7 +179,7 @@ class OthersServiceTest {
     }
 
     private CaseData buildCaseDataWithOthers(Other firstOther, List<Element<Other>> additionalOthers,
-                                             List<Element<Other>> confidentialOthers){
+                                             List<Element<Other>> confidentialOthers) {
         return CaseData.builder()
             .others(Others.builder().firstOther(firstOther).additionalOthers(additionalOthers).build())
             .confidentialOthers(confidentialOthers)
@@ -235,7 +235,7 @@ class OthersServiceTest {
             .build();
     }
 
-    private List<Element<Other>> buildAdditionalOther(){
+    private List<Element<Other>> buildAdditionalOther() {
         List<Element<Other>> additionalOthersList = new ArrayList<>();
         Element<Other> additionalOther = Element.<Other>builder().id(ID).value(Other.builder().build()).build();
         additionalOthersList.add(additionalOther);
