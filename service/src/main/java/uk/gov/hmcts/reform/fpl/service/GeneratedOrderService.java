@@ -129,6 +129,7 @@ public class GeneratedOrderService {
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
                 caseData.getJudgeAndLegalAdvisor()))
             .put("children", getChildrenDetails(caseData))
+            .put("furtherDirections", caseData.getFurtherDirectionsText())
             .build();
 
         return orderTemplateBuilder.build();

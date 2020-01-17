@@ -371,7 +371,7 @@ class NotificationHandlerTest {
             .put("orders4", "")
             .put("directionsAndInterim", "^Information on the whereabouts of the child")
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", "same day")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -439,7 +439,7 @@ class NotificationHandlerTest {
             .put("orders4", "")
             .put("directionsAndInterim", "^Information on the whereabouts of the child")
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", "same day")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();

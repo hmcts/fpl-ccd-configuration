@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -12,7 +16,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -32,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -84,27 +92,6 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
-    }
-
-    @Test
-    void midEventShouldGenerateOrderDocument() throws Exception {
-        byte[] pdf = {1, 2, 3, 4, 5};
-        Document document = document();
-        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
-
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, "blank_order_c21.pdf"))
-            .willReturn(document);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest());
-
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(DocumentReference.builder()
-            .binaryUrl(document.links.binary.href)
-            .filename(document.originalDocumentName)
-            .url(document.links.self.href)
-            .build());
     }
 
     @Test
@@ -174,11 +161,11 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     }
 
     private void aboutToSubmitAssertions(CaseData caseData, GeneratedOrder expectedOrder) {
-
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
         assertThat(caseData.getOrderTypeAndDocument()).isEqualTo(null);
         assertThat(caseData.getOrder()).isEqualTo(null);
         assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
+        assertThat(caseData.getOrderFurtherDirections()).isEqualTo(null);
         assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
     }
 
@@ -215,5 +202,116 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
             .build();
+    }
+
+    @Nested
+    class MidEvent {
+        private final byte[] pdf = {1, 2, 3, 4, 5};
+        private Document document;
+
+        @BeforeEach
+        void setUp() {
+            document = document();
+            DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
+
+            given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+            given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
+        }
+
+        @Test
+        void shouldGenerateOrderDocumentWhenOrderTypeIsBlankOrder() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(generateBlankOrderCaseDetails());
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, "blank_order_c21.pdf");
+
+            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
+        }
+
+        @Test
+        void shouldGenerateOrderDocumentWhenOrderTypeIsCareOrderWithFurtherDirections() {
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                generateCareOrderCaseDetailsWithFurtherDirections());
+
+            verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), any());
+            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, "care_order.pdf");
+
+            final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
+        }
+
+        @Test
+        void shouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
+            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections());
+
+            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
+            verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
+        }
+
+        @AfterEach
+        void resetInvocations() {
+            reset(docmosisDocumentGeneratorService);
+            reset(uploadDocumentService);
+        }
+
+        private CaseDetails generateBlankOrderCaseDetails() {
+            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
+
+            dataBuilder.order(GeneratedOrder.builder().details("").build());
+            dataBuilder.orderTypeAndDocument(OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
+            generateDefaultValues(dataBuilder);
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .build();
+        }
+
+        private CaseDetails generateCareOrderCaseDetailsWithFurtherDirections() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails();
+
+            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
+                .directionsNeeded("Yes")
+                .directions("Some directions")
+                .build());
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .build();
+        }
+
+        private CaseDetails generateCareOrderCaseDetailsWithoutFurtherDirections() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails();
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .build();
+        }
+
+        private CaseData.CaseDataBuilder generateCommonCareOrderDetails() {
+            final CaseData.CaseDataBuilder builder = CaseData.builder()
+                .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                    .type(CARE_ORDER)
+                    .build());
+
+            generateDefaultValues(builder);
+
+            return builder;
+        }
+
+        private void generateDefaultValues(CaseData.CaseDataBuilder builder) {
+            builder.caseLocalAuthority(LOCAL_AUTHORITY_CODE);
+            builder.familyManCaseNumber(FAMILY_MAN_CASE_NUMBER);
+            builder.judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build());
+        }
+
+        private DocumentReference expectedDocument() {
+            return DocumentReference.builder()
+                .binaryUrl(document.links.binary.href)
+                .filename(document.originalDocumentName)
+                .url(document.links.self.href)
+                .build();
+        }
     }
 }

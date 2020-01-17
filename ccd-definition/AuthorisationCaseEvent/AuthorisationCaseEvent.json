@@ -814,7 +814,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   }
