@@ -116,13 +116,6 @@ class OthersServiceTest {
        assertThat(caseData.getOthers()).isEqualTo(others);
     }
 
-    private Other buildFirstOther(){
-        return Other.builder()
-            .name("Sarah Moley")
-            .gender("Female")
-            .build();
-    }
-
     @Test
     void shouldPrepareOthersWithConfidentialValuesWhenConfidentialOthersIsNotEmpty() {
         List<Element<Other>> additionalOthersList = new ArrayList<>();
@@ -137,6 +130,33 @@ class OthersServiceTest {
         Others others = service.prepareOthers(caseData);
 
         assertThat(others.getFirstOther()).isEqualTo(othersWithConfidentialFields(ID).get(0).getValue());
+    }
+
+    @Test
+    void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder().
+                firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue()).
+                additionalOthers(othersWithRemovedConfidentialFields(ID)).build())
+            .confidentialOthers(othersWithConfidentialFields(randomUUID()))
+            .build();
+
+        Others others = service.prepareOthers(caseData);
+
+        assertThat(others.getAdditionalOthers()).containsOnly(othersWithRemovedConfidentialFields(ID).get(0));
+    }
+
+    @Test
+    void shouldAddExpectedRespondentWhenHiddenDetailsMarkedAsNo() {
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder().firstOther
+                (otherWithDetailsHiddenNo(ID)).build())
+            .confidentialOthers(othersWithConfidentialFields(ID)).build();
+
+        Others others = service.prepareOthers(caseData);
+
+        assertThat(others.getFirstOther()).isEqualTo(otherWithDetailsHiddenNo(ID));
+        assertThat(others.getAdditionalOthers()).isEqualTo(new ArrayList<>());
     }
 
     private List<Element<Other>> othersWithConfidentialFields(UUID id) {
@@ -171,17 +191,22 @@ class OthersServiceTest {
         return confidentialOthers;
     }
 
-    @Test
-    void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder().
-                firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue()).
-                additionalOthers(othersWithRemovedConfidentialFields(ID)).build())
-            .confidentialOthers(othersWithConfidentialFields(randomUUID()))
+    private Other buildFirstOther(){
+        return Other.builder()
+            .name("Sarah Moley")
+            .gender("Female")
             .build();
+    }
 
-        Others others = service.prepareOthers(caseData);
-
-        assertThat(others.getAdditionalOthers()).containsOnly(othersWithRemovedConfidentialFields(ID).get(0));
+    private Other otherWithDetailsHiddenNo(UUID id) {
+        return Other.builder()
+                    .name("Sarah Moley")
+                    .gender("Female")
+                    .detailsHidden("No")
+                    .address(Address.builder()
+                        .addressLine1("Address Line 1")
+                        .build())
+                    .telephone("01227 831393")
+                    .build();
     }
 }
