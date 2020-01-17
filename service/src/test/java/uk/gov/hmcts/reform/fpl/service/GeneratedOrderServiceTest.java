@@ -41,8 +41,9 @@ class GeneratedOrderServiceTest {
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String COURT_NAME = "Example Court";
     private static final String COURT_EMAIL = "example@court.com";
-    private static final String COURT_CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME,
-        COURT_EMAIL);
+    private static final String COURT_CODE = "example@court.com";
+    private static final String COURT_CONFIG = String.format("%s=>%s:%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME,
+        COURT_EMAIL, COURT_CODE);
     private static final String LA_NAME_CONFIG = String.format("%s=>%s", LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_NAME);
     private static final LocalDateTime NOW = LocalDateTime.now();
 
