@@ -14,6 +14,10 @@ public class DateFormatterService {
         return date.format(DateTimeFormatter.ofLocalizedDate(style).localizedBy(Locale.UK));
     }
 
+    public String formatLocalDateToString(LocalDate date, String format) {
+        return date.format(DateTimeFormatter.ofPattern(format, Locale.UK));
+    }
+
     public String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {
         return dateTime.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
