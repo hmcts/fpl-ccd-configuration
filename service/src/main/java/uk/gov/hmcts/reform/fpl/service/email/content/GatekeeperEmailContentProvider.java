@@ -32,7 +32,7 @@ public class GatekeeperEmailContentProvider extends AbstractEmailContentProvider
     public Map<String, Object> buildGatekeeperNotification(CaseDetails caseDetails, String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getCasePersonalisationBuilder(caseDetails, caseData)
+        return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();
     }

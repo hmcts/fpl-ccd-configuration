@@ -275,11 +275,10 @@ public class DirectionHelperService {
     }
 
     // if representative left in list, where serving pref = DIGITAL_SERVICE -> keep direction.
-    // could be improved with a call to idam? return directions that belong to representative??
     private boolean isDirectionForUnrepresentedParty(List<Element<Representative>> representatives,
                                                      List<Element<UUID>> finalIds) {
         return representatives.stream()
-            .filter(x -> unwrapElements(finalIds).contains(UUID.fromString(x.getValue().getIdamId())))
+            .filter(x -> unwrapElements(finalIds).contains(x.getId()))
             .anyMatch(x -> x.getValue().getServingPreferences() != DIGITAL_SERVICE);
     }
 

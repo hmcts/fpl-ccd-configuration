@@ -11,4 +11,8 @@ java:
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
     CCD_UI_BASE_URL: https://ccd-case-management-web-aat.service.core-compute-aat.internal
     DOCMOSIS_TORNADO_URL: https://docmosis-development.platform.hmcts.net
+    SPRING_MAIL_HOST: mta.reform.hmcts.net
+    SPRING_MAIL_PORT: 25
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
   applicationPort: 4000

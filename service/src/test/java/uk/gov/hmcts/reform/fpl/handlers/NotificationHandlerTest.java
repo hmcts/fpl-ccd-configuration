@@ -89,6 +89,7 @@ class NotificationHandlerTest {
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
+    private static final String COURT_CODE = "11";
 
     @Mock
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -179,7 +180,7 @@ class NotificationHandlerTest {
                     DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK)));
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
+                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
@@ -214,7 +215,7 @@ class NotificationHandlerTest {
                 UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-                .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com"));
+                .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com", COURT_CODE));
 
             notificationHandler.sendNotificationForC2Upload(
                 new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
@@ -376,7 +377,7 @@ class NotificationHandlerTest {
             .build();
 
         given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
+            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");

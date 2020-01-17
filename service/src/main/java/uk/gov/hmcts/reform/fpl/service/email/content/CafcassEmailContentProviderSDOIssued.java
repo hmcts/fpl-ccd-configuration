@@ -32,7 +32,7 @@ public class CafcassEmailContentProviderSDOIssued extends AbstractEmailContentPr
                                                                                     String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getSDOPersonalisationBuilder(caseDetails, caseData)
+        return super.getSDOPersonalisationBuilder(caseDetails.getId(), caseData)
             .put("title", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .build();
     }
