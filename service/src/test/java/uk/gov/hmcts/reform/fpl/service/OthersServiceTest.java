@@ -157,6 +157,63 @@ class OthersServiceTest {
         assertThat(others.getAdditionalOthers()).isEqualTo(new ArrayList<>());
     }
 
+    @Test
+    void shouldHideOtherContactDetailsWhenConfidentialityFlagSet() {
+
+        List<Element<Other>> additionalOthers = new ArrayList<>();
+        additionalOthers.add(Element.<Other>builder()
+            .id(ID)
+            .value(Other.builder()
+                .build())
+            .build());
+
+        List<Element<Other>> others = otherElementWithDetailsHiddenValue("Yes");
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder().firstOther(others.get(0).getValue()).additionalOthers(additionalOthers)
+            .build()).build();
+
+        Others updatedOthers = service.modifyHiddenValues(caseData.getOthers());
+
+        assertThat(updatedOthers.getFirstOther().getTelephone()).isNull();
+        assertThat(updatedOthers.getFirstOther().getAddress()).isNull();
+
+    }
+
+    @Test
+    void shouldNotHideOtherContactDetailsWhenConfidentialityFlagSet() {
+        List<Element<Other>> additionalOthers = new ArrayList<>();
+        additionalOthers.add(Element.<Other>builder()
+            .id(ID)
+            .value(Other.builder()
+                .build())
+            .build());
+
+        List<Element<Other>> others = otherElementWithDetailsHiddenValue("No");
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder().firstOther(others.get(0).getValue()).additionalOthers(additionalOthers)
+                .build()).build();
+
+        Others updatedOthers = service.modifyHiddenValues(caseData.getOthers());
+
+        assertThat(updatedOthers.getFirstOther().getTelephone()).isNotNull();
+        assertThat(updatedOthers.getFirstOther().getAddress()).isNotNull();
+    }
+
+    private List<Element<Other>> otherElementWithDetailsHiddenValue(String hidden) {
+        return ImmutableList.of(Element.<Other>builder()
+            .id(randomUUID())
+            .value(Other.builder()
+                    .name("James")
+                    .detailsHidden(hidden)
+                    .address(Address.builder()
+                        .addressLine1("Address Line 1").build())
+                    .telephone("01227 831393")
+                        .build())
+                    .build());
+    }
+
     private List<Element<Other>> othersWithConfidentialFields(UUID id) {
         List<Element<Other>> confidentialOthers = new ArrayList<>();
         confidentialOthers.add(Element.<Other>builder()
