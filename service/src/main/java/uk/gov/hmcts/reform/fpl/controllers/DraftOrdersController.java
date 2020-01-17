@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
@@ -49,7 +49,7 @@ public class DraftOrdersController {
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseDataExtractionService caseDataExtractionService;
-    private final DirectionHelperService directionHelperService;
+    private final CommonDirectionService commonDirectionService;
     private final OrdersLookupService ordersLookupService;
     private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -60,7 +60,7 @@ public class DraftOrdersController {
                                  DocmosisDocumentGeneratorService docmosisService,
                                  UploadDocumentService uploadDocumentService,
                                  CaseDataExtractionService caseDataExtractionService,
-                                 DirectionHelperService directionHelperService,
+                                 CommonDirectionService commonDirectionService,
                                  OrdersLookupService ordersLookupService,
                                  CoreCaseDataService coreCaseDataService,
                                  ApplicationEventPublisher applicationEventPublisher,
@@ -69,7 +69,7 @@ public class DraftOrdersController {
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.caseDataExtractionService = caseDataExtractionService;
-        this.directionHelperService = directionHelperService;
+        this.commonDirectionService = commonDirectionService;
         this.ordersLookupService = ordersLookupService;
         this.coreCaseDataService = coreCaseDataService;
         this.applicationEventPublisher = applicationEventPublisher;
@@ -96,10 +96,10 @@ public class DraftOrdersController {
     }
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {
-        List<Element<Direction>> nonCustomDirections = directionHelperService
+        List<Element<Direction>> nonCustomDirections = commonDirectionService
             .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
 
-        return directionHelperService.sortDirectionsByAssignee(nonCustomDirections);
+        return commonDirectionService.sortDirectionsByAssignee(nonCustomDirections);
     }
 
     @PostMapping("/mid-event")
@@ -112,7 +112,7 @@ public class DraftOrdersController {
 
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(directionHelperService.combineAllDirections(caseData))
+                .directions(commonDirectionService.combineAllDirections(caseData))
                 .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
                 .build())
             .build();
@@ -151,7 +151,7 @@ public class DraftOrdersController {
 
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(directionHelperService.combineAllDirections(caseData))
+                .directions(commonDirectionService.combineAllDirections(caseData))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
                 .build())
@@ -211,7 +211,7 @@ public class DraftOrdersController {
         // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
         return ordersLookupService.getStandardDirectionOrder().getDirections()
             .stream()
-            .map(direction -> directionHelperService.constructDirectionForCCD(direction, LocalDateTime.now()))
+            .map(direction -> commonDirectionService.constructDirectionForCCD(direction, LocalDateTime.now()))
             .collect(Collectors.toList());
     }
 

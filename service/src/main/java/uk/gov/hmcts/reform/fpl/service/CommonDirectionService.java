@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,12 +26,13 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 /**
  * A service that helps with the sorting and editing of directions.
  */
 @Service
-public class DirectionHelperService {
+public class CommonDirectionService {
 
     /**
      * Combines role directions into a single List of directions.
@@ -80,7 +81,7 @@ public class DirectionHelperService {
                                                     DirectionAssignee assignee) {
         if (!isNull(directions)) {
             return directions.stream()
-                .map(element -> ElementUtils.element(element.getId(), element.getValue().toBuilder()
+                .map(element -> element(element.getId(), element.getValue().toBuilder()
                     .assignee(assignee)
                     .custom("Yes")
                     .readOnly("No")
@@ -95,8 +96,7 @@ public class DirectionHelperService {
      * Collects directions for all parties and places them into single map, where the key is the role direction,
      * and the value is the list of directions associated.
      *
-     * <p></p>
-     * courtDirectionsCustom is used due to a CCD permissions workaround.
+     * <p>courtDirectionsCustom is used due to a CCD permissions workaround.</p>
      *
      * @param caseData data from case.
      * @return Map of roles and directions.
@@ -189,7 +189,7 @@ public class DirectionHelperService {
             .map(direction -> {
                 Direction.DirectionBuilder directionBuilder = direction.getValue().toBuilder();
 
-                return ElementUtils.element(direction.getId(), directionBuilder
+                return element(direction.getId(), directionBuilder
                     .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
                     .build());
             })
@@ -204,7 +204,7 @@ public class DirectionHelperService {
      * @return Direction to be stored in CCD.
      */
     public Element<Direction> constructDirectionForCCD(DirectionConfiguration direction, LocalDateTime completeBy) {
-        return ElementUtils.element(Direction.builder()
+        return element(Direction.builder()
             .directionType(direction.getTitle())
             .directionText(direction.getText())
             .assignee(direction.getAssignee())
@@ -226,6 +226,23 @@ public class DirectionHelperService {
         } else {
             return caseData.getServedCaseManagementOrders().get(0).getValue().getDirections();
         }
+    }
+
+    /**
+     * Gets all single responses from a map of directions and their assignee.
+     *
+     * @param map a map of directions where assignee is key and value is a list of directions.
+     * @return a list of responses.
+     */
+    public List<DirectionResponse> getResponses(Map<DirectionAssignee, List<Element<Direction>>> map) {
+        return map.values()
+            .stream()
+            .map(elements -> elements.stream()
+                .filter(element -> element.getValue().getResponse() != null)
+                .map(element -> element.getValue().getResponse())
+                .collect(toList()))
+            .flatMap(List::stream)
+            .collect(toList());
     }
 
     private String booleanToYesOrNo(boolean value) {

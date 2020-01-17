@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForUsersService;
@@ -34,7 +34,7 @@ import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.
 @RequestMapping("/callback/comply-on-behalf")
 public class ComplyOnBehalfController {
     private final ObjectMapper mapper;
-    private final DirectionHelperService directionHelperService;
+    private final CommonDirectionService commonDirectionService;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
     private final RespondentService respondentService;
@@ -42,13 +42,13 @@ public class ComplyOnBehalfController {
 
     @Autowired
     public ComplyOnBehalfController(ObjectMapper mapper,
-                                    DirectionHelperService directionHelperService,
+                                    CommonDirectionService commonDirectionService,
                                     PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService,
                                     PrepareDirectionsForUsersService prepareDirectionsForUsersService,
                                     RespondentService respondentService,
                                     OthersService othersService) {
         this.mapper = mapper;
-        this.directionHelperService = directionHelperService;
+        this.commonDirectionService = commonDirectionService;
         this.prepareDirectionsForDataStoreService = prepareDirectionsForDataStoreService;
         this.prepareDirectionsForUsersService = prepareDirectionsForUsersService;
         this.respondentService = respondentService;
@@ -63,12 +63,12 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Direction>> directionsToComplyWith = directionHelperService.getDirectionsToComplyWith(caseData);
+        List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
 
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
-            directionHelperService.sortDirectionsByAssignee(directionsToComplyWith);
+            commonDirectionService.sortDirectionsByAssignee(directionsToComplyWith);
 
-        directionHelperService.addEmptyDirectionsForAssigneeNotInMap(sortedDirections);
+        commonDirectionService.addEmptyDirectionsForAssigneeNotInMap(sortedDirections);
 
         prepareDirectionsForUsersService.addDirectionsToCaseDetails(
             caseDetails, sortedDirections, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));

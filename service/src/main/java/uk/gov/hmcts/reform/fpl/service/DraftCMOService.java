@@ -44,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
     private final DateFormatterService dateFormatterService;
-    private final DirectionHelperService directionHelperService;
+    private final CommonDirectionService commonDirectionService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder,
@@ -111,7 +111,7 @@ public class DraftCMOService {
 
     public void prepareCustomDirections(CaseDetails caseDetails, CaseManagementOrder order) {
         if (!isNull(order)) {
-            directionHelperService.sortDirectionsByAssignee(order.getDirections())
+            commonDirectionService.sortDirectionsByAssignee(order.getDirections())
                 .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
         } else {
             removeExistingCustomDirections(caseDetails);
@@ -150,21 +150,21 @@ public class DraftCMOService {
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(),
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(),
             LOCAL_AUTHORITY));
 
-        directions.addAll(orderByParentsAndRespondentAssignee(directionHelperService.assignCustomDirections(
+        directions.addAll(orderByParentsAndRespondentAssignee(commonDirectionService.assignCustomDirections(
             caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS)));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCafcassDirectionsCustom(),
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getCafcassDirectionsCustom(),
             CAFCASS));
 
-        directions.addAll(orderByOtherPartiesAssignee(directionHelperService.assignCustomDirections(
+        directions.addAll(orderByOtherPartiesAssignee(commonDirectionService.assignCustomDirections(
             caseData.getOtherPartiesDirectionsCustom(), OTHERS)));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
 
         return directions;
     }

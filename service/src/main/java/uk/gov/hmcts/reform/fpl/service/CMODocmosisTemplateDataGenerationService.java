@@ -66,7 +66,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final DateFormatterService dateFormatterService;
-    private final DirectionHelperService directionHelperService;
+    private final CommonDirectionService commonDirectionService;
     private final DraftCMOService draftCMOService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -268,7 +268,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         }
 
         Map<DirectionAssignee, List<Element<Direction>>> directions =
-            directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
+            commonDirectionService.sortDirectionsByAssignee(commonDirectionService.numberDirections(
                 caseManagementOrder.getDirections()));
 
         List<Element<Direction>> respondents = defaultIfNull(directions.remove(PARENTS_AND_RESPONDENTS), emptyList());

@@ -43,10 +43,10 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
 @ExtendWith(SpringExtension.class)
-class DirectionHelperServiceTest {
+class CommonDirectionServiceTest {
     private static final UUID DIRECTION_ID = randomUUID();
 
-    private DirectionHelperService service = new DirectionHelperService();
+    private CommonDirectionService service = new CommonDirectionService();
 
     @Test
     void combineAllDirections_shouldAddRoleDirectionsIntoOneList() {
@@ -189,7 +189,7 @@ class DirectionHelperServiceTest {
 
             Map<DirectionAssignee, List<Element<Direction>>> expectedMap = Stream.of(DirectionAssignee.values())
                 .collect(toMap(directionAssignee ->
-                    directionAssignee, DirectionHelperServiceTest.this::buildDirections));
+                    directionAssignee, CommonDirectionServiceTest.this::buildDirections));
 
             AtomicReference<List<Direction>> directionsFromMap = new AtomicReference<>();
             AtomicReference<List<Direction>> expectedDirections = new AtomicReference<>();

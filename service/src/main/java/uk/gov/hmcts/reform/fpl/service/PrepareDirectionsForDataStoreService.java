@@ -8,12 +8,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -23,14 +21,18 @@ import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+/**
+ * Contains methods for persisting hidden values and adding responses to directions.
+ */
 @Service
 public class PrepareDirectionsForDataStoreService {
     private final UserDetailsService userDetailsService;
-    private final DirectionHelperService directionService;
+    private final CommonDirectionService directionService;
 
     public PrepareDirectionsForDataStoreService(UserDetailsService userDetailsService,
-                                                DirectionHelperService directionService) {
+                                                CommonDirectionService directionService) {
         this.userDetailsService = userDetailsService;
         this.directionService = directionService;
     }
@@ -75,7 +77,7 @@ public class PrepareDirectionsForDataStoreService {
             .filter(response -> response.getDirectionId().equals(direction.getId()))
             .forEach(response -> {
                 direction.getValue().getResponses().removeIf(element -> responseExists(response, element));
-                direction.getValue().getResponses().add(ElementUtils.element(response));
+                direction.getValue().getResponses().add(element(response));
             }));
     }
 
@@ -105,7 +107,10 @@ public class PrepareDirectionsForDataStoreService {
         customDirectionsMap.forEach((assignee, directions) -> {
             switch (assignee) {
                 case CAFCASS:
-                    List<DirectionResponse> responses = getResponses(ImmutableMap.of(COURT, directions)).stream()
+                    Map<DirectionAssignee, List<Element<Direction>>> directionsMap = ImmutableMap.of(COURT, directions);
+                    directionsMap.forEach(this::addHiddenValuesToResponseForAssignee);
+
+                    List<DirectionResponse> responses = directionService.getResponses(directionsMap).stream()
                         .map(response -> response.toBuilder().respondingOnBehalfOf("CAFCASS").build())
                         .collect(toList());
 
@@ -163,7 +168,7 @@ public class PrepareDirectionsForDataStoreService {
 
     //TODO: if name of user complying for court is added then this can be merged with logic from method below.
     private Element<DirectionResponse> addCourtAssigneeAndDirectionId(UUID id, Element<DirectionResponse> element) {
-        return ElementUtils.element(element.getId(), element.getValue().toBuilder()
+        return element(element.getId(), element.getValue().toBuilder()
             .assignee(COURT)
             .directionId(id)
             .build());
@@ -173,7 +178,7 @@ public class PrepareDirectionsForDataStoreService {
                                                                           String authorisation,
                                                                           DirectionAssignee assignee,
                                                                           UUID id) {
-        return ElementUtils.element(response.getId(), response.getValue().toBuilder()
+        return element(response.getId(), response.getValue().toBuilder()
             .assignee(assignee)
             .responder(getUsername(response, authorisation))
             .directionId(id)
@@ -204,36 +209,24 @@ public class PrepareDirectionsForDataStoreService {
             }));
     }
 
+    //TODO
+
     /**
-     * Gets responses with populated directionId and assignee wherever a response is present within a direction.
+     * Adds assignee and directionId values to response.
      *
-     * @param directionMap a map of directions where assignee is key and value is a list of directions.
-     * @return a list of responses with hidden variables added.
+     * @param assignee   the assignee of the direction and the assignee complying.
+     * @param directions the directions belonging to the assignee.
      */
-    public List<DirectionResponse> getResponses(Map<DirectionAssignee, List<Element<Direction>>> directionMap) {
-        return directionMap.entrySet()
-            .stream()
-            .map(entry -> addHiddenVariablesToResponseForAssignee(entry.getKey(), entry.getValue()))
-            .flatMap(List::stream)
-            .map(element -> element.getValue().getResponse())
-            .collect(toList());
+    public void addHiddenValuesToResponseForAssignee(DirectionAssignee assignee, List<Element<Direction>> directions) {
+        directions.forEach(element -> {
+            if (isDirectionCompliedWith(element)) {
+                element.getValue().getResponse().setAssignee(assignee);
+                element.getValue().getResponse().setDirectionId(element.getId());
+            }
+        });
     }
 
-    private List<Element<Direction>> addHiddenVariablesToResponseForAssignee(DirectionAssignee assignee,
-                                                                             List<Element<Direction>> directions) {
-        return directions.stream()
-            .filter(elementsWithInvalidResponse())
-            .map(element -> ElementUtils.element(element.getId(), element.getValue().toBuilder()
-                .response(element.getValue().getResponse().toBuilder()
-                    .assignee(assignee)
-                    .directionId(element.getId())
-                    .build())
-                .build()))
-            .collect(toList());
-    }
-
-    private Predicate<Element<Direction>> elementsWithInvalidResponse() {
-        return element -> isNotEmpty(element.getValue().getResponse())
-            && isNotEmpty(element.getValue().getResponse().getComplied());
+    private boolean isDirectionCompliedWith(Element<Direction> element) {
+        return element.getValue().getResponse() != null && element.getValue().getResponse().getComplied() != null;
     }
 }

@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -20,14 +19,18 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+/**
+ * Contains methods for putting directions into a state to be complied with.
+ */
 @Service
 public class PrepareDirectionsForUsersService {
 
     /**
-     * <b>To be used when court is complying on behalf of other parties</b>
-     * <p></p>
-     * Adds directions to case data for an assignee.
+     * <b>To be used when court is complying on behalf of other parties.</b>
+     *
+     * <p>Adds directions to case data for an assignee.</p>
      *
      * @param caseDetails   the caseDetails to add the directions to.
      * @param directionsMap a map where the DirectionAssignee key corresponds to a list of directions elements.
@@ -78,7 +81,7 @@ public class PrepareDirectionsForUsersService {
     private List<Element<Direction>> getClone(List<Element<Direction>> elements) {
         return elements.stream()
             .map(directionElement ->
-                ElementUtils.element(directionElement.getId(), directionElement.getValue().deepCopy()))
+                element(directionElement.getId(), directionElement.getValue().deepCopy()))
             .collect(toList());
     }
 
@@ -115,7 +118,7 @@ public class PrepareDirectionsForUsersService {
     public List<Element<Direction>> extractPartyResponse(DirectionAssignee assignee,
                                                          List<Element<Direction>> directions) {
         return directions.stream()
-            .map(element -> ElementUtils.element(element.getId(), element.getValue().toBuilder()
+            .map(element -> element(element.getId(), element.getValue().toBuilder()
                 .response(element.getValue().getResponses().stream()
                     .filter(response -> response.getValue().getDirectionId().equals(element.getId()))
                     .filter(response -> response.getValue().getAssignee().equals(assignee))
@@ -130,9 +133,8 @@ public class PrepareDirectionsForUsersService {
     /**
      * Adds assignee directions key value pairs to caseDetails.
      *
-     * <p></p>
-     * courtDirectionsCustom is used here to stop giving C and D permissions on the CourtDirections object
-     * in draft standard direction order for gatekeeper user when they also have the court admin role.
+     * <p>courtDirectionsCustom is used here to stop giving C and D permissions on the CourtDirections object
+     * in draft standard direction order for gatekeeper user when they also have the court admin role.</p>
      *
      * @param assignee    the string value of the map key.
      * @param directions  a list of directions.

@@ -62,7 +62,7 @@ class CaseDataExtractionServiceTest {
     private UserDetailsService userDetailsService;
 
     @InjectMocks
-    private DirectionHelperService directionHelperService;
+    private CommonDirectionService commonDirectionService;
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -81,7 +81,7 @@ class CaseDataExtractionServiceTest {
         given(userDetailsService.getUserName(any())).willReturn("Emma Taylor");
 
         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
-            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
+            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, commonDirectionService,
             hearingVenueLookUpService, commonCaseDataExtraction);
     }
 
