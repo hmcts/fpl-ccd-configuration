@@ -34,7 +34,7 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order) =>
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
-}
+};
 
 const createSupervisionOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type);
