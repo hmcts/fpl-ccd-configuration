@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +16,10 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
 class OthersServiceTest {
     private static final UUID ID = randomUUID();
-    private static final UUID ID_2 = randomUUID();
 
     private final OthersService service = new OthersService();
 
@@ -111,9 +107,9 @@ class OthersServiceTest {
             .others(Others.builder().firstOther(buildFirstOther()).additionalOthers(additionalOthers).build())
             .build();
 
-       Others others = service.prepareOthers(caseData);
+        Others others = service.prepareOthers(caseData);
 
-       assertThat(caseData.getOthers()).isEqualTo(others);
+        assertThat(caseData.getOthers()).isEqualTo(others);
     }
 
     @Test
@@ -123,7 +119,9 @@ class OthersServiceTest {
         additionalOthersList.add(additionalOther);
 
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue()).additionalOthers(additionalOthersList).build())
+            .others(Others.builder()
+                .firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue())
+                .additionalOthers(additionalOthersList).build())
             .confidentialOthers(othersWithConfidentialFields(ID))
             .build();
 
@@ -135,9 +133,9 @@ class OthersServiceTest {
     @Test
     void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().
-                firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue()).
-                additionalOthers(othersWithRemovedConfidentialFields(ID)).build())
+            .others(Others.builder()
+                .firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue())
+                .additionalOthers(othersWithRemovedConfidentialFields(ID)).build())
             .confidentialOthers(othersWithConfidentialFields(randomUUID()))
             .build();
 
@@ -149,8 +147,8 @@ class OthersServiceTest {
     @Test
     void shouldAddExpectedRespondentWhenHiddenDetailsMarkedAsNo() {
         CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther
-                (otherWithDetailsHiddenNo(ID)).build())
+            .others(Others.builder().firstOther(
+                otherWithDetailsHiddenNo(ID)).build())
             .confidentialOthers(othersWithConfidentialFields(ID)).build();
 
         Others others = service.prepareOthers(caseData);
@@ -191,7 +189,7 @@ class OthersServiceTest {
         return confidentialOthers;
     }
 
-    private Other buildFirstOther(){
+    private Other buildFirstOther() {
         return Other.builder()
             .name("Sarah Moley")
             .gender("Female")

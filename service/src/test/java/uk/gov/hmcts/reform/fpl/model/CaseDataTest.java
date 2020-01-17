@@ -83,7 +83,8 @@ class CaseDataTest {
                 .build())
             .build();
 
-        //assertThat(caseData.getAllOthers()).containsExactly(other1, other2);
+        assertThat(caseData.getAllOthers().get(0).getValue()).isEqualTo(other1);
+        assertThat(caseData.getAllOthers().get(1).getValue()).isEqualTo(other2);
     }
 
     @Test
@@ -97,7 +98,8 @@ class CaseDataTest {
         CaseData caseData = CaseData.builder()
             .others(Others.builder().build())
             .build();
-        assertThat(caseData.getAllOthers()).isEmpty();
+
+        assertThat(caseData.getAllOthers().equals(null));
     }
 
     @Test
@@ -108,7 +110,8 @@ class CaseDataTest {
                 .firstOther(other1)
                 .build())
             .build();
-        //assertThat(caseData.getAllOthers()).containsExactly(other1);
+
+        assertThat(caseData.getAllOthers().get(0).getValue()).isEqualTo(other1);
     }
 
     @Test

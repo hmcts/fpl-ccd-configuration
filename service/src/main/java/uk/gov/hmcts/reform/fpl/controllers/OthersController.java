@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,22 +11,15 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 
 @Api
@@ -55,8 +47,8 @@ public class OthersController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-            Others prepareOthers = othersService.prepareOthers(caseData);
-            caseDetails.getData().put("others", prepareOthers);
+        Others prepareOthers = othersService.prepareOthers(caseData);
+        caseDetails.getData().put("others", prepareOthers);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -71,7 +63,8 @@ public class OthersController {
         List<Element<Other>> confidentialOthers =
             confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllOthers());
 
-        List<Element<Other>> confidentialOthersModified = othersService.modifyHiddenValuesConfidentialOthers(confidentialOthers);
+        List<Element<Other>> confidentialOthersModified = othersService
+            .modifyHiddenValuesConfidentialOthers(confidentialOthers);
 
         confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersModified, OTHER);
 
