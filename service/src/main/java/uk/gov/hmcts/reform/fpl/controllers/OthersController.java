@@ -27,17 +27,14 @@ import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 @RequestMapping("/callback/enter-others")
 public class OthersController {
     private final ObjectMapper mapper;
-    private final ChildrenService childrenService;
     private final OthersService othersService;
     private final ConfidentialDetailsService confidentialDetailsService;
 
     @Autowired
     public OthersController(ObjectMapper mapper,
-                            ChildrenService childrenService,
                             ConfidentialDetailsService confidentialDetailsService,
                             OthersService othersService) {
         this.mapper = mapper;
-        this.childrenService = childrenService;
         this.confidentialDetailsService = confidentialDetailsService;
         this.othersService = othersService;
     }
