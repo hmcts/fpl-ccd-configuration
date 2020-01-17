@@ -156,11 +156,11 @@ idam:
 auth:
   idam:
     client:
-      baseUrl: "http://localhost:5000"
+      baseUrl: http://localhost:5000
   provider:
     service:
       client:
-        baseUrl: "http://localhost:4502"
+        baseUrl: http://localhost:4502
 
 
 core_case_data:
@@ -223,8 +223,3 @@ feature:
       support:
         api:
           enabled: true
-
-
-security:
-  anonymousPaths:
-  authorisedServices:

@@ -91,7 +91,7 @@ public class RoboticsNotificationServiceTest {
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 
-        assertEmailData(expectedRoboticsDataJson);
+        assertEmailDataAndAttachedJsonData(emailDataArgumentCaptor.getValue(), expectedRoboticsDataJson);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class RoboticsNotificationServiceTest {
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 
-        assertEmailData(expectedRoboticsDataJson);
+        assertEmailDataAndAttachedJsonData(emailDataArgumentCaptor.getValue(), expectedRoboticsDataJson);
     }
 
     @Test
@@ -158,8 +158,8 @@ public class RoboticsNotificationServiceTest {
             .build();
     }
 
-    private void assertEmailData(String expectedRoboticsDataJson) {
-        EmailData capturedEmailData = emailDataArgumentCaptor.getValue();
+    private void assertEmailDataAndAttachedJsonData(final EmailData capturedEmailData,
+                                                    final String expectedRoboticsDataJson) {
         assertThat(capturedEmailData.getSubject()).isEqualTo("CaseSubmitted_12345");
         assertThat(capturedEmailData.getRecipient()).isEqualTo(EMAIL_RECIPIENT);
         assertThat(capturedEmailData.getAttachments()).hasSize(1);

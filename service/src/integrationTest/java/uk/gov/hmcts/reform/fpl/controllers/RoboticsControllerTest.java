@@ -12,7 +12,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
+
+import java.io.IOException;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,7 +56,7 @@ public class RoboticsControllerTest {
             .willReturn(SERVICE_AUTH_TOKEN);
 
         given(coreCaseDataApi.getCase(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID))
-            .willReturn(populatedCaseDetails());
+            .willReturn(expectedCaseDetailsWithState("Submitted"));
 
         assertThat(postToUrl(CASE_ID).getResponse().getStatus())
             .isEqualTo(SC_OK);
@@ -76,6 +80,27 @@ public class RoboticsControllerTest {
             .isEqualTo(NOT_FOUND.value());
 
         verify(emailService, never()).sendEmail(any(), any());
+    }
+
+    @Test
+    @WithMockUser(authorities = "caseworker-publiclaw-systemupdate")
+    void resendCaseDataNotificationShouldResendNotificationWhenCaseFoundIsInOpenState() throws Exception {
+        given(authTokenGenerator.generate())
+            .willReturn(SERVICE_AUTH_TOKEN);
+
+        given(coreCaseDataApi.getCase(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID))
+            .willReturn(expectedCaseDetailsWithState("Open"));
+
+        assertThat(postToUrl(CASE_ID).getResponse().getStatus())
+            .isEqualTo(BAD_REQUEST.value());
+
+        verify(emailService, never()).sendEmail(any(), any());
+    }
+
+    private CaseDetails expectedCaseDetailsWithState(final String state) throws IOException {
+        CaseDetails caseDetails = populatedCaseDetails();
+        caseDetails.setState(state);
+        return caseDetails;
     }
 
     private MvcResult postToUrl(final String caseId) throws Exception {

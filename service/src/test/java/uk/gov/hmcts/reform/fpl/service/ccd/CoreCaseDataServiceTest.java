@@ -83,8 +83,8 @@ class CoreCaseDataServiceTest {
 
         CaseDetails returnedCaseDetails = service.findCaseDetailsById(Long.toString(caseId));
 
-        assertThat(expectedCaseDetails.getId())
-            .isEqualTo(returnedCaseDetails.getId());
+        assertThat(expectedCaseDetails)
+            .isEqualTo(returnedCaseDetails);
     }
 
     @Test

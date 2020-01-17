@@ -17,11 +17,8 @@ public class RoboticsDataVerificationHelper {
 
     public static void verifyRoboticsJsonData(final String roboticsJsonData) {
         if (isBlank(roboticsJsonData)) {
-            RoboticsDataException roboticsDataException = new RoboticsDataException(
+            throw new RoboticsDataException(
                 "Robotics email notification failed to proceed as Json data is empty/null");
-
-            log.error("", roboticsDataException);
-            throw roboticsDataException;
         }
     }
 

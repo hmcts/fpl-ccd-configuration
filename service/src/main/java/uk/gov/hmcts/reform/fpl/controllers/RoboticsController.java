@@ -24,15 +24,22 @@ public class RoboticsController {
 
     @PostMapping("/sendRPAEmailByID/{caseId}")
     @Secured("caseworker-publiclaw-systemupdate")
-    public void resendCaseDataNotification(@PathVariable ("caseId") String caseId) {
+    public void resendCaseDataNotification(@PathVariable("caseId") String caseId) {
         CaseDetails caseDetails = coreCaseDataService.findCaseDetailsById(caseId);
 
-        if (caseDetails == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                String.format("No case found for case with id %s", caseId));
+        performVerification(caseId, caseDetails);
 
-        } else {
-            roboticsNotificationService.sendSubmittedCaseData(caseDetails);
+        roboticsNotificationService.sendSubmittedCaseData(caseDetails);
+    }
+
+    private void performVerification(final String caseId, final CaseDetails caseDetails) {
+        if (caseDetails == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No case found with id %s", caseId));
+        }
+
+        if (!caseDetails.getState().equals("Submitted")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                String.format("Unable to proceed as case  with id %s has not been submitted", caseId));
         }
     }
 }
