@@ -51,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class GeneratedOrderServiceTest {
     @Autowired
     private Time time;
-
+    
     @Autowired
     private DateFormatterService dateFormatterService;
 

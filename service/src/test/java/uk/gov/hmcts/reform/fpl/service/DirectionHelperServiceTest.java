@@ -1666,8 +1666,7 @@ class DirectionHelperServiceTest {
         }
 
         private List<Element<Representative>> representativeWithServingPreference(RepresentativeServingPreferences x) {
-            return List.of(ElementUtils.element(Representative.builder()
-                .idamId(representativeId.toString())
+            return List.of(ElementUtils.element(representativeId, Representative.builder()
                 .servingPreferences(x)
                 .build()));
         }
