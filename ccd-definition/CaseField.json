@@ -931,7 +931,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "epoPhrase",
-    "Label": "Any person who can produce the child[ren] to the applicant must do so",
+    "Label": "Do you want to include this phrase in the order?",
     "FieldType": "EPOPhrase",
     "SecurityClassification": "Public"
   },
