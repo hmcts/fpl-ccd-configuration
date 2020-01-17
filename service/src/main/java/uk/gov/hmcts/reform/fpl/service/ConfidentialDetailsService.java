@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Service
-public class    ConfidentialDetailsService {
+public class ConfidentialDetailsService {
 
     public <T extends ConfidentialParty> List<Element<T>> addPartyMarkedConfidentialToList(List<Element<T>> details) {
         return details.stream()
