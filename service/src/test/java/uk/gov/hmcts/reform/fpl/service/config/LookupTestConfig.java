@@ -18,10 +18,4 @@ public class LookupTestConfig {
     public LocalAuthorityNameLookupConfiguration nameLookupConfiguration() {
         return new LocalAuthorityNameLookupConfiguration("example=>Example Local Authority");
     }
-
-    @ConditionalOnMissingBean
-    @Bean
-    public LocalAuthorityNameLookupConfiguration nameLookupConfiguration() {
-        return new LocalAuthorityNameLookupConfiguration("example=>Example Local Authority");
-    }
 }
