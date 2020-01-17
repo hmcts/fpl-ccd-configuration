@@ -103,9 +103,7 @@ class OthersServiceTest {
     void shouldReturnOthersIfOthersIsPrePopulated() {
         List<Element<Other>> additionalOthers = new ArrayList<>();
 
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(buildFirstOther()).additionalOthers(additionalOthers).build())
-            .build();
+        CaseData caseData = buildCaseDataWithOthers(buildFirstOther(), additionalOthers, null);
 
         Others others = service.prepareOthers(caseData);
 
@@ -118,38 +116,35 @@ class OthersServiceTest {
         Element<Other> additionalOther = Element.<Other>builder().id(ID).value(Other.builder().build()).build();
         additionalOthersList.add(additionalOther);
 
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue())
-                .additionalOthers(additionalOthersList).build())
-            .confidentialOthers(othersWithConfidentialFields(ID))
-            .build();
+        Other firstOther = othersWithRemovedConfidentialFields(ID).get(0).getValue();
+        List<Element<Other>> confidentialOthers = othersWithConfidentialFields(ID);
+
+        CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOthersList, confidentialOthers);
 
         Others others = service.prepareOthers(caseData);
 
-        assertThat(others.getFirstOther()).isEqualTo(othersWithConfidentialFields(ID).get(0).getValue());
+        assertThat(others.getFirstOther()).isEqualTo(confidentialOthers.get(0).getValue());
     }
 
     @Test
     void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(othersWithRemovedConfidentialFields(ID).get(0).getValue())
-                .additionalOthers(othersWithRemovedConfidentialFields(ID)).build())
-            .confidentialOthers(othersWithConfidentialFields(randomUUID()))
-            .build();
+        Other firstOther = othersWithRemovedConfidentialFields(ID).get(0).getValue();
+        List<Element<Other>> additionalOther = othersWithRemovedConfidentialFields(ID);
+        List<Element<Other>> confidentialOther = othersWithConfidentialFields(randomUUID());
+
+        CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOther, confidentialOther);
 
         Others others = service.prepareOthers(caseData);
 
-        assertThat(others.getAdditionalOthers()).containsOnly(othersWithRemovedConfidentialFields(ID).get(0));
+        assertThat(others.getAdditionalOthers()).containsOnly(additionalOther.get(0));
     }
 
     @Test
     void shouldAddExpectedRespondentWhenHiddenDetailsMarkedAsNo() {
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(
-                otherWithDetailsHiddenNo(ID)).build())
-            .confidentialOthers(othersWithConfidentialFields(ID)).build();
+        Other firstOther =  otherWithDetailsHiddenNo(ID);
+        List<Element<Other>> confidentialOther = othersWithConfidentialFields(ID);
+
+        CaseData caseData = buildCaseDataWithOthers(firstOther, null, confidentialOther);
 
         Others others = service.prepareOthers(caseData);
 
@@ -159,7 +154,6 @@ class OthersServiceTest {
 
     @Test
     void shouldHideOtherContactDetailsWhenConfidentialityFlagSet() {
-
         List<Element<Other>> additionalOthers = new ArrayList<>();
         additionalOthers.add(Element.<Other>builder()
             .id(ID)
@@ -167,11 +161,9 @@ class OthersServiceTest {
                 .build())
             .build());
 
-        List<Element<Other>> others = otherElementWithDetailsHiddenValue("Yes");
+        Other others = otherElementWithDetailsHiddenValue("Yes").get(0).getValue();
 
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(others.get(0).getValue()).additionalOthers(additionalOthers)
-            .build()).build();
+        CaseData caseData = buildCaseDataWithOthers(others, additionalOthers, null);
 
         Others updatedOthers = service.modifyHiddenValues(caseData.getOthers());
 
@@ -189,16 +181,22 @@ class OthersServiceTest {
                 .build())
             .build());
 
-        List<Element<Other>> others = otherElementWithDetailsHiddenValue("No");
+        Other others = otherElementWithDetailsHiddenValue("No").get(0).getValue();
 
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(others.get(0).getValue()).additionalOthers(additionalOthers)
-                .build()).build();
+        CaseData caseData = buildCaseDataWithOthers(others, additionalOthers, null);
 
         Others updatedOthers = service.modifyHiddenValues(caseData.getOthers());
 
         assertThat(updatedOthers.getFirstOther().getTelephone()).isNotNull();
         assertThat(updatedOthers.getFirstOther().getAddress()).isNotNull();
+    }
+
+    private CaseData buildCaseDataWithOthers(Other firstOther, List<Element<Other>> additionalOthers,
+                                             List<Element<Other>> confidentialOthers){
+        return CaseData.builder()
+            .others(Others.builder().firstOther(firstOther).additionalOthers(additionalOthers).build())
+            .confidentialOthers(confidentialOthers)
+            .build();
     }
 
     private List<Element<Other>> otherElementWithDetailsHiddenValue(String hidden) {
