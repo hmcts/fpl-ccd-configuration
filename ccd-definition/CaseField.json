@@ -901,5 +901,15 @@
     "Label": "The judge is reviewing this order. You can only edit it if the judge asks for changes.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderMonths",
+    "Label": "How many months will this order remain in place",
+    "FieldType": "Number",
+    "SecurityClassification": "Public",
+    "Max": "99",
+    "Min": "1"
   }
 ]

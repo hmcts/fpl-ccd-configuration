@@ -110,13 +110,10 @@ public class GeneratedOrderController {
 
         //Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(caseData.getOrderTypeAndDocument(), caseData.getOrder(),
-            caseData.getJudgeAndLegalAdvisor()));
+            caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths()));
 
         caseDetails.getData().put("orderCollection", orders);
-        caseDetails.getData().remove("orderTypeAndDocument");
-        caseDetails.getData().remove("order");
-        caseDetails.getData().remove("judgeAndLegalAdvisor");
-        caseDetails.getData().remove("orderFurtherDirections");
+        service.removeOrderProperties(caseDetails.getData());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
