@@ -15,10 +15,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.getFirstRespondentLastName;
 
 class EmailNotificationHelperTest {
     private final DateFormatterService dateFormatterService = new DateFormatterService();
@@ -127,45 +125,5 @@ class EmailNotificationHelperTest {
         String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
             caseData.getHearingDetails());
         assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
-    }
-
-    @Test
-    void shouldReturnFirstRespondentSurnameWhenFirstRespondentWithNamePresent() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(createRespondents())
-            .build();
-
-        String respondentName = getFirstRespondentLastName(caseData);
-        assertThat(respondentName).isEqualTo("Jones");
-    }
-
-    @Test
-    void shouldReturnEmptyStringWhenNoRespondents() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(null)
-            .build();
-
-        String respondentName = getFirstRespondentLastName(caseData);
-        assertThat(respondentName).isEqualTo("");
-    }
-
-    @Test
-    void shouldReturnEmptyStringWhenRespondentWithNoPartyPresent() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(wrapElements(Respondent.builder().build()))
-            .build();
-
-        String respondentName = getFirstRespondentLastName(caseData);
-        assertThat(respondentName).isEqualTo("");
-    }
-
-    @Test
-    void shouldReturnEmptyStringWhenRespondentWithNoNamePresent() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(wrapElements(Respondent.builder().party(RespondentParty.builder().build()).build()))
-            .build();
-
-        String respondentName = getFirstRespondentLastName(caseData);
-        assertThat(respondentName).isEqualTo("");
     }
 }

@@ -197,7 +197,7 @@ class PopulateStandardDirectionsHandlerTest {
                 DirectionConfiguration.builder()
                     .assignee(LOCAL_AUTHORITY)
                     .title("Direction")
-                    .text("• Test body's 1 \n\n• Two")
+                    .text("- Test body's 1 \n\n- Two")
                     .display(Display.builder()
                         .delta("0")
                         .due(Display.Due.BY)
@@ -216,7 +216,7 @@ class PopulateStandardDirectionsHandlerTest {
             .extracting("value")
             .isEqualTo(Map.of(
                 "assignee", "LOCAL_AUTHORITY",
-                "directionText", "• Test body's 1 \n\n• Two",
+                "directionText", "- Test body's 1 \n\n- Two",
                 "directionType", "Direction",
                 "directionRemovable", "No",
                 "readOnly", "No",

@@ -5,7 +5,7 @@
   "directions": [
     {
       "title": "Test SDO type 1",
-      "text": "• Test body 1 \n\n• Two",
+      "text": "- Test body 1 \n\n- Two",
       "assignee": "ALL_PARTIES",
       "display": {
         "due": "ON",

@@ -31,7 +31,7 @@ public class LocalAuthorityEmailContentProvider extends AbstractEmailContentProv
                                                                                            String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getSDOPersonalisationBuilder(caseDetails, caseData)
+        return super.getSDOPersonalisationBuilder(caseDetails.getId(), caseData)
             .put("title", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();
     }
