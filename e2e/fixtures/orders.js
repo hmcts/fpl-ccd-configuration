@@ -54,5 +54,5 @@ module.exports = [
       legalAdvisorName: 'Frank N. Stein',
     },
     directionText: 'Example direction',
-  }
+  },
 ];
