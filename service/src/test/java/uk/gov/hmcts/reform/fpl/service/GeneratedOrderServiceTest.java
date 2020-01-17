@@ -2,9 +2,12 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,18 +31,20 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -59,7 +64,7 @@ class GeneratedOrderServiceTest {
     private GeneratedOrderService service;
 
     @Test
-    void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() throws IOException {
+    void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() {
         Document document = document();
 
         OrderTypeAndDocument returnedTypeAndDoc = service.buildOrderTypeAndDocument(OrderTypeAndDocument.builder()
@@ -80,14 +85,17 @@ class GeneratedOrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build());
+            order,
+            JudgeAndLegalAdvisor.builder().build(),
+            null).getValue();
 
-        assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
+        assertCommonC21Fields(builtOrder);
+        assertThat(builtOrder.getTitle()).isEqualTo("Order");
     }
 
     @Test
@@ -98,14 +106,17 @@ class GeneratedOrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder returnedElement = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build());
+            order,
+            JudgeAndLegalAdvisor.builder().build(),
+            null).getValue();
 
-        assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
+        assertCommonC21Fields(returnedElement);
+        assertThat(returnedElement.getTitle()).isEqualTo("Order");
     }
 
     @Test
@@ -116,14 +127,17 @@ class GeneratedOrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build());
+            order,
+            JudgeAndLegalAdvisor.builder().build(),
+            null).getValue();
 
-        assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
+        assertCommonC21Fields(builtOrder);
+        assertThat(builtOrder.getTitle()).isEqualTo("Order");
     }
 
     @Test
@@ -134,31 +148,37 @@ class GeneratedOrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build());
+            order,
+            JudgeAndLegalAdvisor.builder().build(),
+            null).getValue();
 
-        assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Example Title");
+        assertCommonC21Fields(builtOrder);
+        assertThat(builtOrder.getTitle()).isEqualTo("Example Title");
     }
 
     @Test
     void shouldReturnExpectedOrderWhenJudgeAndLegalAdvisorFullyPopulated() {
-        Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
                 .type(CARE_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
+            GeneratedOrder.builder().build(),
+            JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build());
+                .build(),
+            null).getValue();
 
-        assertThat(returnedElement.getValue().getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(returnedElement.getValue().getDate()).isNotNull();
-        assertThat(returnedElement.getValue().getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
+        assertThat(builtOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
+        assertThat(builtOrder.getDate()).isNotNull();
+        assertThat(builtOrder.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
             .judgeTitle(HER_HONOUR_JUDGE)
             .judgeLastName("Judy")
             .legalAdvisorName("Peter Parker")
@@ -166,73 +186,38 @@ class GeneratedOrderServiceTest {
     }
 
     @Test
-    void shouldGenerateCorrectFileNameWhenGivenC21OrderType() {
-        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .type(BLANK_ORDER)
-            .document(DocumentReference.builder().build()).build();
+    void shouldReturnExpectedOrderWhenGivenNumberOfMonthsOnSupervisionOrder() {
+        GeneratedOrder builtOrder = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
+                .type(SUPERVISION_ORDER)
+                .build(),
+            GeneratedOrder.builder().build(),
+            JudgeAndLegalAdvisor.builder().build(),
+            5).getValue();
 
-        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel()))
-            .isEqualTo("blank_order_c21.pdf");
+        String expected = dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(5),
+            "h:mma, d MMMM y");
+
+        assertThat(builtOrder.getExpiryDate()).isEqualTo(expected);
     }
 
-    @Test
-    void shouldGenerateCorrectFileNameWhenGivenCareOrderType() {
-        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .type(CARE_ORDER)
-            .document(DocumentReference.builder().build()).build();
-
-        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel()))
-            .isEqualTo("care_order.pdf");
+    @ParameterizedTest
+    @MethodSource(value = "fileNameSource")
+    void shouldGenerateCorrectFileNameGivenOrderType(OrderTypeAndDocument typeAndDoc, String expected) {
+        final String fileName = service.generateOrderDocumentFileName(typeAndDoc.getType().getLabel());
+        assertThat(fileName).isEqualTo(expected);
     }
 
-    @Test
-    void shouldGenerateCorrectFileNameWhenGivenEmergencyProtectionOrderType() {
-        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .type(EMERGENCY_PROTECTION_ORDER)
-            .document(DocumentReference.builder().build()).build();
+    @ParameterizedTest
+    @EnumSource(value = GeneratedOrderType.class, names = {"BLANK_ORDER", "CARE_ORDER", "SUPERVISION_ORDER"})
+    void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType) {
+        LocalDateTime now = time.now();
+        CaseData caseData = createPopulatedCaseData(orderType, now.toLocalDate());
 
-        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel()))
-            .isEqualTo("emergency_protection_order.pdf");
-    }
+        Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, now);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData);
 
-    @Nested
-    class TemplateDataTests {
-        LocalDate localDate = time.now().toLocalDate();
-        String date = dateFormatterService.formatLocalDateToString(localDate, FormatStyle.LONG);
-
-        TemplateDataTests() {
-            //NO - OP
-        }
-
-        @Test
-        void shouldCreateExpectedMapForC21OrderWhenGivenPopulatedCaseData() {
-            CaseData caseData = createPopulatedCaseData(BLANK_ORDER, localDate);
-
-            Map<String, Object> expectedMap = createExpectedOrderData(date, BLANK_ORDER);
-            Map<String, Object> templateData = service.getOrderTemplateData(caseData);
-
-            assertThat(templateData).isEqualTo(expectedMap);
-        }
-
-        @Test
-        void shouldCreateExpectedMapForCareOrderWhenGivenPopulatedCaseData() {
-            CaseData caseData = createPopulatedCaseData(CARE_ORDER, localDate);
-
-            Map<String, Object> expectedMap = createExpectedOrderData(date, CARE_ORDER);
-            Map<String, Object> templateData = service.getOrderTemplateData(caseData);
-
-            assertThat(templateData).isEqualTo(expectedMap);
-        }
-
-        @Test
-        void shouldCreateExpectedMapForEmergencyProtectionOrderWhenGivenPopulatedCaseData() {
-            CaseData caseData = createPopulatedCaseData(EMERGENCY_PROTECTION_ORDER, localDate);
-
-            Map<String, Object> expectedMap = createExpectedOrderData(date, EMERGENCY_PROTECTION_ORDER);
-            Map<String, Object> templateData = service.getOrderTemplateData(caseData);
-
-            assertThat(templateData).isEqualTo(expectedMap);
-        }
+        assertThat(templateData).isEqualTo(expectedMap);
     }
 
     @Test
@@ -259,6 +244,17 @@ class GeneratedOrderServiceTest {
         assertThat(data).containsOnlyKeys("DO NOT REMOVE");
     }
 
+    private static Stream<Arguments> fileNameSource() {
+        return Stream.of(
+            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).build(), "care_order.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build(), "supervision_order.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build(),
+                "emergency_protection_order.pdf")
+
+        );
+    }
+
     private void assertCommonC21Fields(GeneratedOrder order) {
         assertThat(order.getType()).isEqualTo(BLANK_ORDER);
         assertThat(order.getDocument()).isEqualTo(DocumentReference.builder().build());
@@ -267,21 +263,19 @@ class GeneratedOrderServiceTest {
         assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> createExpectedOrderData(String date, GeneratedOrderType type) {
-        ImmutableMap.Builder expectedMap = ImmutableMap.<String, Object>builder();
+    private Map<String, Object> createExpectedDocmosisData(GeneratedOrderType type, LocalDateTime date) {
+        ImmutableMap.Builder<String, Object> expectedMap = ImmutableMap.builder();
+        String formattedDate = dateFormatterService.formatLocalDateToString(date.toLocalDate(), FormatStyle.LONG);
 
         switch (type) {
             case BLANK_ORDER:
                 expectedMap
-                    .put("orderType", BLANK_ORDER)
                     .put("orderTitle", "Example Title")
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", "Example details");
                 break;
             case CARE_ORDER:
                 expectedMap
-                    .put("orderType", CARE_ORDER)
                     .put("orderTitle", "Care order")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails",
@@ -289,7 +283,6 @@ class GeneratedOrderServiceTest {
                 break;
             case EMERGENCY_PROTECTION_ORDER:
                 expectedMap
-                    .put("orderType", EMERGENCY_PROTECTION_ORDER)
                     .put("localAuthorityName", "Example Local Authority")
                     .put("childrenDescription", "Test description")
                     .put("epoType", REMOVE_TO_ACCOMMODATION)
@@ -301,21 +294,35 @@ class GeneratedOrderServiceTest {
                     .put("epoEndDateTime",  dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
                         "d MMMM yyyy 'at' h:mma"));
                 break;
+            case SUPERVISION_ORDER:
+                final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
+                final String formattedDateTime =
+                    dateFormatterService.formatLocalDateTimeBaseUsingFormat(date.plusMonths(5),
+                        "h:mma 'on the' d'" + suffix + "' MMMM y");
+                expectedMap
+                    .put("orderTitle", "Supervision order")
+                    .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                    .put("orderDetails",
+                        String.format(
+                            "It is ordered that Example Local Authority supervises the child for 5 months from the "
+                                + "date of this order until %s.", formattedDateTime));
+                break;
             default:
         }
 
         expectedMap
-            .put("furtherDirections", "Example Directions")
+            .put("orderType", type)
+            .put("furtherDirections", (type != BLANK_ORDER) ? "Example Directions" : "")
             .put("familyManCaseNumber", "123")
             .put("courtName", "Family Court")
-            .put("todaysDate", date)
+            .put("todaysDate", formattedDate)
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
             .put("children", ImmutableList.of(
                 ImmutableMap.of(
                     "name", "Timmy Jones",
                     "gender", "Boy",
-                    "dateOfBirth", date)));
+                    "dateOfBirth", formattedDate)));
 
         return expectedMap.build();
     }
@@ -340,7 +347,23 @@ class GeneratedOrderServiceTest {
                     .orderTypeAndDocument(OrderTypeAndDocument.builder()
                         .type(CARE_ORDER)
                         .document(DocumentReference.builder().build())
+                        .build())
+                    .orderFurtherDirections(FurtherDirections.builder()
+                        .directionsNeeded("Yes")
+                        .directions("Example Directions")
                         .build());
+                break;
+            case SUPERVISION_ORDER:
+                caseDataBuilder
+                    .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                        .type(SUPERVISION_ORDER)
+                        .document(DocumentReference.builder().build())
+                        .build())
+                    .orderFurtherDirections(FurtherDirections.builder()
+                        .directionsNeeded("Yes")
+                        .directions("Example Directions")
+                        .build())
+                    .orderMonths(5);
                 break;
             case EMERGENCY_PROTECTION_ORDER:
                 caseDataBuilder
@@ -357,6 +380,10 @@ class GeneratedOrderServiceTest {
                         .includePhrase("Yes")
                         .build())
                     .epoType(REMOVE_TO_ACCOMMODATION)
+                    .orderFurtherDirections(FurtherDirections.builder()
+                        .directionsNeeded("Yes")
+                        .directions("Example Directions")
+                        .build())
                     .epoRemovalAddress(Address.builder()
                         .addressLine1("1 Main Street")
                         .addressLine2("Lurgan")
@@ -386,10 +413,6 @@ class GeneratedOrderServiceTest {
                         .build())
                     .build())
                 .build()))
-            .orderFurtherDirections(FurtherDirections.builder()
-                .directionsNeeded("Yes")
-                .directions("Example Directions")
-                .build())
             .build();
 
         return caseDataBuilder.build();

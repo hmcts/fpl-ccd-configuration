@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum GeneratedOrderType {
     BLANK_ORDER("Blank order (C21)"),
     CARE_ORDER("Care order"),
+    SUPERVISION_ORDER("Supervision order"),
     EMERGENCY_PROTECTION_ORDER("Emergency protection order");
 
     private final String label;

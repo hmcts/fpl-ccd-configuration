@@ -65,6 +65,7 @@ import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
@@ -194,6 +195,25 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
         }
 
+        @Test
+        void aboutToSubmitShouldAddSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(SUPERVISION_ORDER)
+                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                    .orderMonths(14));
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(
+                caseDetails);
+
+            LocalDateTime orderExpiration = time.now().plusMonths(14);
+            GeneratedOrder expectedCareOrder = commonExpectedOrderComponents(SUPERVISION_ORDER)
+                .expiryDate(
+                    dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
+                .build();
+
+            aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
+        }
+
         private CaseDetails buildCaseDetails(CaseData.CaseDataBuilder builder) {
             return CaseDetails.builder()
                 .data(mapper.convertValue(builder.build(), new TypeReference<>() {}))
@@ -268,6 +288,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
             assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
         }
 
@@ -289,7 +310,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             return Stream.of(
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetailsWithFurtherDirections(), "care_order.pdf", ORDER),
-                Arguments.of(generateEmergencyProtectionOrderCaseDetails(), "emergency_protection_order.pdf", EPO)
+                Arguments.of(generateEmergencyProtectionOrderCaseDetails(), "emergency_protection_order.pdf", EPO),
+                Arguments.of(generateSupervisionOrderCaseDetails(), "supervision_order.pdf", ORDER)
             );
         }
 
@@ -355,6 +377,21 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             generateDefaultValues(builder);
 
             return builder;
+        }
+
+        private CaseDetails generateSupervisionOrderCaseDetails() {
+            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder()
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build())
+                .orderFurtherDirections(FurtherDirections.builder()
+                    .directionsNeeded("No")
+                    .build())
+                .orderMonths(5);
+
+            generateDefaultValues(dataBuilder);
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .build();
         }
 
         private void generateEpoValues(CaseData.CaseDataBuilder builder) {

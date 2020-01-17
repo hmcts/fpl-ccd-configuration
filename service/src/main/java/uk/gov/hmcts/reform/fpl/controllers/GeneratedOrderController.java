@@ -108,14 +108,13 @@ public class GeneratedOrderController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
         // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(caseData.getOrderTypeAndDocument(), caseData.getOrder(),
-            caseData.getJudgeAndLegalAdvisor()));
+            caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths()));
 
         caseDetails.getData().put("orderCollection", orders);
 

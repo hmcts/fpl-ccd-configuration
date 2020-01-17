@@ -21,6 +21,17 @@ module.exports = [
     },
   },
   {
+    type: 'Supervision order',
+    document: 'supervision_order.pdf',
+    months: '5',
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'His Honour Judge',
+      judgeLastName: 'Dredd',
+      legalAdvisorName: 'Frank N. Stein',
+    },
+    directionText: 'Example direction',
+  },
+  {
     type: 'Emergency protection order',
     document: 'emergency_protection_order.pdf',
     judgeAndLegalAdvisor: {
@@ -41,6 +52,7 @@ module.exports = [
       postcode: 'RG4 7AA',
       country: 'United Kingdom',
     },
+    directionText: 'Example direction',
     includePhrase: 'Yes',
   },
 ];

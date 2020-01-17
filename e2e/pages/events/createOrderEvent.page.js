@@ -16,6 +16,7 @@ module.exports = {
       },
     },
     directions: '#orderFurtherDirections_directions',
+    months: '#orderMonths',
     epo: {
       childrenDescription: {
         radioGroup: '#epoChildren_descriptionNeeded',
@@ -48,8 +49,8 @@ module.exports = {
     I.fillField(this.fields.details, orders[0].details);
   },
 
-  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
-    judgeAndLegalAdvisor.selectJudgeTitle();
+  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge) {
+    judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
@@ -57,6 +58,10 @@ module.exports = {
   enterDirections(directions) {
     I.click(this.fields.directionsNeeded.options.yes);
     I.fillField(this.fields.directions, directions);
+  },
+
+  enterNumberOfMonths(numOfMonths) {
+    I.fillField(this.fields.months, numOfMonths);
   },
 
   async enterChildrenDescription(description) {

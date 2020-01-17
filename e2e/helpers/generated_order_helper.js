@@ -34,6 +34,17 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order) =>
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
+}
+
+const createSupervisionOrder = async (I, createOrderEventPage, order) => {
+  await createOrderEventPage.selectType(order.type);
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.months);
+  await createOrderEventPage.enterNumberOfMonths(order.months);
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
+  await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
+  await createOrderEventPage.enterDirections('example directions');
+  await I.completeEvent('Save and continue');
 };
 
 module.exports = {
@@ -44,6 +55,9 @@ module.exports = {
         break;
       case 'Care order':
         await createCareOrder(I, createOrderEventPage, order);
+        break;
+      case 'Supervision order':
+        await createSupervisionOrder(I, createOrderEventPage, order);
         break;
       case 'Emergency protection order':
         await createEmergencyProtectionOrder(I, createOrderEventPage, order);
