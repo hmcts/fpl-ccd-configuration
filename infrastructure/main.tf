@@ -102,12 +102,12 @@ data "azurerm_key_vault_secret" "system_update_user_password" {
 
 data "azurerm_key_vault_secret" "robotics-notification-recipient" {
   name          = "robotics-notification-recipient"
-  key_vault_id  = module.key-vault.key_vault_uri
+  vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "robotics-notification-sender" {
   name          = "robotics-notification-sender"
-  key_vault_id  = module.key-vault.key_vault_uri
+  vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 module "key-vault" {
