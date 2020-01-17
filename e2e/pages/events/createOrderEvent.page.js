@@ -8,10 +8,14 @@ module.exports = {
     details: '#order_details',
     orderTypeList: '#orderTypeAndDocument_type',
     directionsNeeded: {
-      yes: '#orderFurtherDirections_directionsNeeded-Yes',
-      no: '#orderFurtherDirections_directionsNeeded-No',
+      id: '#orderFurtherDirections_directionsNeeded',
+      options: {
+        yes: '#orderFurtherDirections_directionsNeeded-Yes',
+        no: '#orderFurtherDirections_directionsNeeded-No',
+      },
     },
     directions: '#orderFurtherDirections_directions',
+    months: '#orderMonths',
   },
 
   selectType(type) {
@@ -25,14 +29,18 @@ module.exports = {
     I.fillField(this.fields.details, orders[0].details);
   },
 
-  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
-    judgeAndLegalAdvisor.selectJudgeTitle();
+  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge) {
+    judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
   enterDirections(directions) {
-    I.click(this.fields.directionsNeeded.yes);
+    I.click(this.fields.directionsNeeded.options.yes);
     I.fillField(this.fields.directions, directions);
+  },
+
+  enterNumberOfMonths(numOfMonths) {
+    I.fillField(this.fields.months, numOfMonths);
   },
 };

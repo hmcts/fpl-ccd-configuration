@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
@@ -16,18 +18,19 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.collect.Iterables.getLast;
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 
 @Slf4j
 @Service
@@ -66,22 +69,34 @@ public class GeneratedOrderService {
      * @param order                this value will contain fixed details and document values as well as customisable
      *                             values.
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
+     * @param orderMonths          the number of months the supervision order is valid
      * @return Element containing randomUUID and a fully populated order.
      */
     public Element<GeneratedOrder> buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
                                                       GeneratedOrder order,
-                                                      JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+                                                      JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                      Integer orderMonths) {
         GeneratedOrder generatedOrder = defaultIfNull(order, GeneratedOrder.builder().build());
         GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
 
         //Scalable for future types of orders which may have additional fields
         switch (typeAndDocument.getType()) {
             case BLANK_ORDER:
-                orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"));
-                orderBuilder.details(generatedOrder.getDetails());
+                orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"))
+                    .details(generatedOrder.getDetails())
+                    .expiryDate(null);
                 break;
             case CARE_ORDER:
+                orderBuilder.title(null)
+                    .expiryDate(null);
+                break;
+            case SUPERVISION_ORDER:
                 orderBuilder.title(null);
+                ofNullable(orderMonths)
+                    .map(i -> time.now().plusMonths(orderMonths))
+                    .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                        dateTime, "h:mma, d MMMM y"))
+                    .ifPresent(orderBuilder::expiryDate);
                 break;
             default:
         }
@@ -100,34 +115,42 @@ public class GeneratedOrderService {
 
     public Map<String, Object> getOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
+        final GeneratedOrderType orderType = caseData.getOrderTypeAndDocument().getType();
+        String orderTitle = orderType.getLabel();
 
         //Scalable for future order types
-        switch (caseData.getOrderTypeAndDocument().getType()) {
+        switch (orderType) {
             case BLANK_ORDER:
+                orderTitle = defaultIfNull(caseData.getOrder().getTitle(), "Order");
                 orderTemplateBuilder
-                    .put("orderType", BLANK_ORDER)
-                    .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", caseData.getOrder().getDetails());
                 break;
             case CARE_ORDER:
                 orderTemplateBuilder
-                    .put("orderType", CARE_ORDER)
-                    .put("orderTitle", "Care order")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority()));
                 break;
+            case SUPERVISION_ORDER:
+                orderTemplateBuilder
+                    .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                    .put("orderDetails", supervisionOrderDetails(getChildrenDetails(caseData).size(),
+                        caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
+                break;
             default:
+                throw new UnsupportedOperationException("Unexpected value: " + orderType);
         }
+
         orderTemplateBuilder
+            .put("orderTitle", orderTitle)
+            .put("orderType", orderType)
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("todaysDate", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
-            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-                caseData.getJudgeAndLegalAdvisor()))
+            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .put("children", getChildrenDetails(caseData))
             .put("furtherDirections", caseData.getFurtherDirectionsText())
             .build();
@@ -148,12 +171,28 @@ public class GeneratedOrderService {
             .getDocument().getBinaryUrl();
     }
 
+    public void removeOrderProperties(Map<String, Object> data) {
+        Arrays.stream(GeneratedOrderKey.values()).forEach(value -> data.remove(value.getKey()));
+    }
+
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
 
     private String getLocalAuthorityName(String caseLocalAuthority) {
         return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
+    }
+
+    private String supervisionOrderDetails(int numOfChildren, String caseLocalAuthority, int numOfMonths) {
+        final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
+        final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
+        return String.format(
+            "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
+            getLocalAuthorityName(caseLocalAuthority),
+            (numOfChildren == 1) ? "child" : "children",
+            numOfMonths,
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
+                "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y"));
     }
 
     private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {
