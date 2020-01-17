@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -8,6 +10,9 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
@@ -29,13 +34,15 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 /**
  * A service that helps with the sorting and editing of directions.
@@ -160,8 +167,10 @@ public class DirectionHelperService {
                 case PARENTS_AND_RESPONDENTS:
                     directions.addAll(clone);
 
-                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                    if (eventId == COMPLY_ON_BEHALF_COURT) {
                         filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
+
+                        directions = getDirectionsForUnrepresentedParties(caseDetails, directions);
                     } else {
                         filterResponsesNotCompliedBySolicitor(directions, PARENTS_AND_RESPONDENTS);
                     }
@@ -172,8 +181,10 @@ public class DirectionHelperService {
                 case OTHERS:
                     directions.addAll(clone);
 
-                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                    if (eventId == COMPLY_ON_BEHALF_COURT) {
                         filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
+
+                        directions = getDirectionsForUnrepresentedParties(caseDetails, directions);
                     } else {
                         filterResponsesNotCompliedBySolicitor(directions, OTHERS);
                     }
@@ -191,6 +202,89 @@ public class DirectionHelperService {
                     break;
             }
         });
+    }
+
+    /**
+     * Returns a list of directions where assignees are not represented online through the digital service.
+     *
+     * @param caseDetails the details of the case.
+     * @param directions  the directions to be filtered.
+     * @return a filtered list of directions that need to be complied with by the court on behalf of parties.
+     */
+    public List<Element<Direction>> getDirectionsForUnrepresentedParties(CaseDetails caseDetails,
+                                                                         List<Element<Direction>> directions) {
+        // TODO: remove during refactoring of directionHelperService
+        ObjectMapper mapper = new ObjectMapper()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .findAndRegisterModules();
+
+        CaseData data = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return directions.stream()
+            .filter(element -> {
+                    List<Element<UUID>> ids = new ArrayList<>();
+                    List<Element<Representative>> representatives =
+                        defaultIfNull(data.getRepresentatives(), emptyList());
+
+                    if (representatives.isEmpty()) {
+                        return true;
+                    }
+
+                    // if assigned to specific person -> find representative ids
+                    // else -> add direction to filtered list.
+                    if (directionIsValidForFiltering(element)) {
+                        if (element.getValue().getParentsAndRespondentsAssignee() != null) {
+                            int assigneeValue = element.getValue().getParentsAndRespondentsAssignee().ordinal();
+
+                            List<Element<Respondent>> respondents = data.getRespondents1();
+
+                            // if respondent exists -> set ids.
+                            // else -> add direction to filtered list.
+                            if (assigneeValue < respondents.size()) {
+                                ids = respondents.get(assigneeValue).getValue().getRepresentedBy();
+                            } else {
+                                return true;
+                            }
+                        } else if (element.getValue().getOtherPartiesAssignee() != null) {
+                            int assigneeValue = element.getValue().getOtherPartiesAssignee().ordinal();
+
+                            List<Element<Other>> listOthers = data.getAllOthers();
+
+                            // if other exists -> set ids.
+                            // else -> add direction to filtered list.
+                            if (assigneeValue < listOthers.size()) {
+                                ids = listOthers.get(assigneeValue).getValue().getRepresentedBy();
+                            } else {
+                                return true;
+                            }
+                        }
+                    } else {
+                        return true;
+                    }
+
+                    List<Element<UUID>> finalIds = ids;
+
+                    if (ids.isEmpty()) {
+                        return true;
+                    }
+
+                    return isDirectionForUnrepresentedParty(representatives, finalIds);
+                }
+            )
+            .collect(toList());
+    }
+
+    // if representative left in list, where serving pref = DIGITAL_SERVICE -> keep direction.
+    private boolean isDirectionForUnrepresentedParty(List<Element<Representative>> representatives,
+                                                     List<Element<UUID>> finalIds) {
+        return representatives.stream()
+            .filter(x -> unwrapElements(finalIds).contains(x.getId()))
+            .anyMatch(x -> x.getValue().getServingPreferences() != DIGITAL_SERVICE);
+    }
+
+    private boolean directionIsValidForFiltering(Element<Direction> element) {
+        return element.getValue().getParentsAndRespondentsAssignee() != null
+            || element.getValue().getOtherPartiesAssignee() != null;
     }
 
     private List<Element<Direction>> getClone(List<Element<Direction>> elements) {
@@ -371,7 +465,7 @@ public class DirectionHelperService {
                                                             UUID id,
                                                             Element<DirectionResponse> response,
                                                             DirectionAssignee assignee) {
-        if (event == COMPLY_ON_BEHALF_SDO) {
+        if (event == COMPLY_ON_BEHALF_COURT) {
             return addCourtAssigneeAndDirectionId(id, response);
         } else {
             return addResponderAssigneeAndDirectionId(response, authorisation, assignee, id);

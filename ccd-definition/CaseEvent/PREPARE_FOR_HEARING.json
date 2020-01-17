@@ -265,7 +265,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "COMPLY_ON_BEHALF_SDO",
+    "ID": "COMPLY_ON_BEHALF_COURT",
     "Name": "Comply on behalf of others",
     "Description": "Event gives Court user access to comply with all directions on behalf of others",
     "DisplayOrder": 11,
