@@ -44,19 +44,6 @@ public class OthersService {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
     }
 
-    public List<Element<Other>> getAllConfidentialOther(CaseData caseData) {
-        final List<Element<Other>> confidentialOthers = new ArrayList<>();
-
-        caseData.getAllOthers().forEach(element -> {
-            if (element.getValue().containsConfidentialDetails()) {
-                // we will need to persist id of element so that we can place back into others.
-                confidentialOthers.add(element);
-            }
-        });
-
-        return confidentialOthers;
-    }
-
     public Others modifyHiddenValues(Others others) {
         final List<Element<Other>> othersList = new ArrayList<>();
         Element<Other> firstOther;
@@ -190,4 +177,3 @@ public class OthersService {
             .orElse(element);
     }
 }
-
