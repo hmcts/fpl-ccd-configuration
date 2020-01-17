@@ -21,17 +21,6 @@ module.exports = [
     },
   },
   {
-    type: 'Supervision order',
-    document: 'supervision_order.pdf',
-    months: '5',
-    judgeAndLegalAdvisor: {
-      judgeTitle: 'His Honour Judge',
-      judgeLastName: 'Dredd',
-      legalAdvisorName: 'Frank N. Stein',
-    },
-    directionText: 'Example direction',
-  },
-  {
     type: 'Emergency protection order',
     document: 'emergency_protection_order.pdf',
     judgeAndLegalAdvisor: {
@@ -55,4 +44,15 @@ module.exports = [
     directionText: 'Example direction',
     includePhrase: 'Yes',
   },
+  {
+    type: 'Supervision order',
+    document: 'supervision_order.pdf',
+    months: '5',
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'His Honour Judge',
+      judgeLastName: 'Dredd',
+      legalAdvisorName: 'Frank N. Stein',
+    },
+    directionText: 'Example direction',
+  }
 ];
