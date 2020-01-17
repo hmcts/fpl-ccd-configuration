@@ -84,7 +84,7 @@ public class RoboticsControllerTest {
 
     @Test
     @WithMockUser(authorities = "caseworker-publiclaw-systemupdate")
-    void resendCaseDataNotificationShouldResendNotificationWhenCaseFoundIsInOpenState() throws Exception {
+    void resendCaseDataNotificationShouldNotResendNotificationWhenCaseFoundInOpenState() throws Exception {
         given(authTokenGenerator.generate())
             .willReturn(SERVICE_AUTH_TOKEN);
 
