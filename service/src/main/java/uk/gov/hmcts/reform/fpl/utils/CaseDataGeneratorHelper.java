@@ -374,14 +374,14 @@ public class CaseDataGeneratorHelper {
         );
     }
 
-    public static Direction createDirection(DirectionAssignee assignee) {
+    private static Direction createDirection(DirectionAssignee assignee) {
         return Direction.builder()
             .directionText("Mock direction text")
             .assignee(assignee)
             .build();
     }
 
-    public static Direction createCustomDirection(DirectionAssignee assignee) {
+    private static Direction createCustomDirection(DirectionAssignee assignee) {
         return Direction.builder()
             .directionText("Mock direction text")
             .assignee(assignee)
@@ -581,7 +581,7 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static CaseManagementOrder createApprovedCMO() {
+    private static CaseManagementOrder createApprovedCMO() {
         return CaseManagementOrder.builder()
             .action(OrderAction.builder()
                 .type(SEND_TO_ALL_PARTIES)
