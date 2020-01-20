@@ -160,7 +160,8 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         Map<String, Object> data = new HashMap<>();
 
         Stream.of(DirectionAssignee.values()).forEach(direction ->
-            data.put(direction.toCustomDirectionField().concat("CMO"), createElementCollection(createUnassignedDirection()))
+            data.put(direction.toCustomDirectionField().concat("CMO"),
+                createElementCollection(createUnassignedDirection()))
         );
 
 

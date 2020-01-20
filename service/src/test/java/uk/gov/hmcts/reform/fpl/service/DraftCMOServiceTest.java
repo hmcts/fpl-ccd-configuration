@@ -159,7 +159,8 @@ class DraftCMOServiceTest {
         Map<String, Object> caseData = new HashMap<>();
 
         Stream.of(values()).forEach(direction ->
-            caseData.put(direction.toCustomDirectionField().concat("CMO"), createElementCollection(createUnassignedDirection()))
+            caseData.put(direction.toCustomDirectionField().concat("CMO"),
+                createElementCollection(createUnassignedDirection()))
         );
 
         caseData.put(HEARING_DATE_LIST.getKey(), getDynamicList());
@@ -220,7 +221,8 @@ class DraftCMOServiceTest {
         Map<String, Object> caseData = new HashMap<>();
 
         Stream.of(values()).forEach(direction ->
-            caseData.put(direction.toCustomDirectionField().concat("CMO"), createElementCollection(createUnassignedDirection()))
+            caseData.put(direction.toCustomDirectionField().concat("CMO"),
+                createElementCollection(createUnassignedDirection()))
         );
 
         draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build(), null);

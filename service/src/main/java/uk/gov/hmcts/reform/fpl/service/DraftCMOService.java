@@ -150,7 +150,8 @@ public class DraftCMOService {
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustomCMO(), ALL_PARTIES));
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustomCMO(),
+            ALL_PARTIES));
 
         directions.addAll(directionHelperService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustomCMO(),
             LOCAL_AUTHORITY));
