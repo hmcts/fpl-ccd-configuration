@@ -150,21 +150,21 @@ public class DraftCMOService {
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustomCMO(), ALL_PARTIES));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(),
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustomCMO(),
             LOCAL_AUTHORITY));
 
         directions.addAll(orderByParentsAndRespondentAssignee(directionHelperService.assignCustomDirections(
-            caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS)));
+            caseData.getRespondentDirectionsCustomCMO(), PARENTS_AND_RESPONDENTS)));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCafcassDirectionsCustom(),
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCafcassDirectionsCustomCMO(),
             CAFCASS));
 
         directions.addAll(orderByOtherPartiesAssignee(directionHelperService.assignCustomDirections(
-            caseData.getOtherPartiesDirectionsCustom(), OTHERS)));
+            caseData.getOtherPartiesDirectionsCustomCMO(), OTHERS)));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCourtDirectionsCustomCMO(), COURT));
 
         return directions;
     }
