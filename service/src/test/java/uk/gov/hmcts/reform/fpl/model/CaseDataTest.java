@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.Optional;
 
@@ -19,6 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -73,13 +73,14 @@ class CaseDataTest {
     }
 
     @Test
-    public void shouldGetAllOthers() {
-        Other other1 = Other.builder().build();
-        Other other2 = Other.builder().build();
+    void shouldGetAllOthersWhenFirstAndAdditionalOthersExist() {
+        Other other1 = otherWithName("John");
+        Other other2 = otherWithName("Sam");
+
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
                 .firstOther(other1)
-                .additionalOthers(ElementUtils.wrapElements(other2))
+                .additionalOthers(wrapElements(other2))
                 .build())
             .build();
 
@@ -88,85 +89,76 @@ class CaseDataTest {
     }
 
     @Test
-    public void shouldGetEmptyListOfOthersWhenOthersIsNull() {
+    void shouldGetEmptyListOfOthersWhenOthersIsNull() {
         CaseData caseData = CaseData.builder().build();
+
         assertThat(caseData.getAllOthers()).isEmpty();
     }
 
     @Test
-    public void shouldGetEmptyListOfOthersWhenOthersAreEmpty() {
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder().build())
-            .build();
+    void shouldGetEmptyListOfOthersWhenOthersAreEmpty() {
+        CaseData caseData = CaseData.builder().others(Others.builder().build()).build();
 
-        assertThat(caseData.getAllOthers().equals(null));
+        assertThat(caseData.getAllOthers().get(0).getValue()).isNull();
     }
 
     @Test
-    public void shouldGetFirstOtherWhenNoAdditionalOthers() {
-        Other other1 = Other.builder().build();
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other1)
-                .build())
-            .build();
+    void shouldGetFirstOtherWhenNoAdditionalOthers() {
+        Other other1 = otherWithName("John");
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other1).build()).build();
 
         assertThat(caseData.getAllOthers().get(0).getValue()).isEqualTo(other1);
     }
 
     @Test
-    public void shouldFindFirstOther() {
-        Other other1 = Other.builder().build();
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other1)
-                .build())
-            .build();
+    void shouldFindFirstOther() {
+        Other other1 = otherWithName("John");
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other1).build()).build();
+
         assertThat(caseData.findOther(0)).isEqualTo(Optional.of(other1));
     }
 
     @Test
-    public void shouldNotFindNonExistingOther() {
-        Other other1 = Other.builder().build();
+    void shouldNotFindNonExistingOther() {
+        Other other1 = otherWithName("John");
         CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other1)
-                .build())
+            .others(Others.builder().firstOther(other1).build())
             .build();
+
         assertThat(caseData.findOther(1)).isEqualTo(Optional.empty());
     }
 
     @Test
-    public void shouldFindExistingOther() {
-        Other other1 = Other.builder().build();
-        Other other2 = Other.builder().build();
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
+    void shouldFindExistingOther() {
+        Other other1 = otherWithName("John");
+        Other other2 = otherWithName("Sam");
+        CaseData caseData = CaseData.builder().others(Others.builder()
                 .firstOther(other1)
-                .additionalOthers(ElementUtils.wrapElements(other2))
+                .additionalOthers(wrapElements(other2))
                 .build())
             .build();
+
         assertThat(caseData.findOther(1)).isEqualTo(Optional.of(other2));
     }
 
     @Test
-    public void shouldFindExistingRespondent() {
+    void shouldFindExistingRespondent() {
         Respondent respondent = Respondent.builder().build();
-        CaseData caseData = CaseData.builder()
-            .respondents1(ElementUtils.wrapElements(respondent))
-            .build();
+        CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
         assertThat(caseData.findRespondent(0)).isEqualTo(Optional.of(respondent));
     }
 
     @Test
-    public void shouldNotFindNonExistingRespondent() {
+    void shouldNotFindNonExistingRespondent() {
         Respondent respondent = Respondent.builder().build();
-        CaseData caseData = CaseData.builder()
-            .respondents1(ElementUtils.wrapElements(respondent))
-            .build();
+        CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
         assertThat(caseData.findRespondent(1)).isEqualTo(Optional.empty());
+    }
+
+    private Other otherWithName(String name) {
+        return Other.builder().name(name).build();
     }
 
     @Nested

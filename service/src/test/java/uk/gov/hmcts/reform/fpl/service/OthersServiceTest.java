@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -10,12 +9,14 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class OthersServiceTest {
@@ -38,11 +39,7 @@ class OthersServiceTest {
 
     @Test
     void shouldBuildExpectedLabelWhenSingleElementInListWithEmptyName() {
-        Others others = Others.builder()
-            .firstOther(Other.builder()
-                .birthPlace("birth place")
-                .build())
-            .build();
+        Others others = Others.builder().firstOther(Other.builder().birthPlace("birth place").build()).build();
 
         String result = service.buildOthersLabel(others);
 
@@ -52,14 +49,8 @@ class OthersServiceTest {
     @Test
     void shouldBuildExpectedLabelWhenManyElementsInList() {
         Others others = Others.builder()
-            .firstOther(Other.builder()
-                .name("James Daniels")
-                .build())
-            .additionalOthers(ImmutableList.of(Element.<Other>builder()
-                .value(Other.builder()
-                    .name("Bob Martyn")
-                    .build())
-                .build()))
+            .firstOther(Other.builder().name("James Daniels").build())
+            .additionalOthers(wrapElements((Other.builder().name("Bob Martyn").build())))
             .build();
 
         String result = service.buildOthersLabel(others);
@@ -70,14 +61,8 @@ class OthersServiceTest {
     @Test
     void shouldBuildExpectedLabelWhenManyElementsInListWithEmptyName() {
         Others others = Others.builder()
-            .firstOther(Other.builder()
-                .birthPlace("birth place")
-                .build())
-            .additionalOthers(ImmutableList.of(Element.<Other>builder()
-                .value(Other.builder()
-                    .birthPlace("birth place")
-                    .build())
-                .build()))
+            .firstOther(Other.builder().birthPlace("birth place").build())
+            .additionalOthers(wrapElements(Other.builder().birthPlace("birth place").build()))
             .build();
 
         String result = service.buildOthersLabel(others);
@@ -100,10 +85,10 @@ class OthersServiceTest {
     }
 
     @Test
-    void shouldReturnOthersIfOthersIsPrePopulated() {
-        List<Element<Other>> additionalOthers = buildAdditionalOther();
+    void shouldReturnOthersWhenOthersIsPrePopulated() {
+        List<Element<Other>> additionalOthers = othersWithRemovedConfidentialFields();
 
-        CaseData caseData = buildCaseDataWithOthers(buildFirstOther(), additionalOthers, null);
+        CaseData caseData = buildCaseDataWithOthers(otherWithDetailsHiddenValue("No"), additionalOthers, null);
 
         Others others = service.prepareOthers(caseData);
 
@@ -112,9 +97,9 @@ class OthersServiceTest {
 
     @Test
     void shouldPrepareOthersWithConfidentialValuesWhenConfidentialOthersIsNotEmpty() {
-        List<Element<Other>> additionalOthersList = buildAdditionalOther();
+        List<Element<Other>> additionalOthersList = othersWithConfidentialFields(randomUUID());
 
-        Other firstOther = othersWithRemovedConfidentialFields(ID).get(0).getValue();
+        Other firstOther = othersWithRemovedConfidentialFields().get(0).getValue();
         List<Element<Other>> confidentialOthers = othersWithConfidentialFields(ID);
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOthersList, confidentialOthers);
@@ -126,8 +111,8 @@ class OthersServiceTest {
 
     @Test
     void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
-        Other firstOther = othersWithRemovedConfidentialFields(ID).get(0).getValue();
-        List<Element<Other>> additionalOther = othersWithRemovedConfidentialFields(ID);
+        Other firstOther = othersWithRemovedConfidentialFields().get(0).getValue();
+        List<Element<Other>> additionalOther = othersWithRemovedConfidentialFields();
         List<Element<Other>> confidentialOther = othersWithConfidentialFields(randomUUID());
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, additionalOther, confidentialOther);
@@ -139,25 +124,25 @@ class OthersServiceTest {
 
     @Test
     void shouldAddExpectedRespondentWhenHiddenDetailsMarkedAsNo() {
-        Other firstOther =  otherWithDetailsHiddenNo(ID);
+        Other firstOther = otherWithDetailsHiddenValue("No");
         List<Element<Other>> confidentialOther = othersWithConfidentialFields(ID);
 
         CaseData caseData = buildCaseDataWithOthers(firstOther, null, confidentialOther);
 
         Others others = service.prepareOthers(caseData);
 
-        assertThat(others.getFirstOther()).isEqualTo(otherWithDetailsHiddenNo(ID));
-        assertThat(others.getAdditionalOthers()).isEqualTo(new ArrayList<>());
+        assertThat(others.getFirstOther()).isEqualTo(otherWithDetailsHiddenValue("No"));
+        assertThat(others.getAdditionalOthers()).isEmpty();
     }
 
     @Test
     void shouldHideOtherContactDetailsWhenConfidentialityFlagSet() {
-        List<Element<Other>> additionalOthers = buildAdditionalOther();
-        Other others = otherElementWithDetailsHiddenValue("Yes");
+        List<Element<Other>> additionalOthers = othersWithRemovedConfidentialFields();
+        Other others = otherWithDetailsHiddenValue("Yes");
 
         CaseData caseData = buildCaseDataWithOthers(others, additionalOthers, null);
 
-        Others updatedOthers = service.modifyHiddenValues(caseData.getOthers());
+        Others updatedOthers = service.modifyHiddenValues(caseData.getAllOthers());
 
         assertThat(updatedOthers.getFirstOther().getTelephone()).isNull();
         assertThat(updatedOthers.getFirstOther().getAddress()).isNull();
@@ -166,19 +151,20 @@ class OthersServiceTest {
 
     @Test
     void shouldNotHideOtherContactDetailsWhenConfidentialityFlagSet() {
-        List<Element<Other>> additionalOthers = buildAdditionalOther();
+        List<Element<Other>> additionalOthers = othersWithRemovedConfidentialFields();
 
-        Other others = otherElementWithDetailsHiddenValue("No");
+        Other others = otherWithDetailsHiddenValue("No");
 
         CaseData caseData = buildCaseDataWithOthers(others, additionalOthers, null);
 
-        Others updatedOthers = service.modifyHiddenValues(caseData.getOthers());
+        Others updatedOthers = service.modifyHiddenValues(caseData.getAllOthers());
 
         assertThat(updatedOthers.getFirstOther().getTelephone()).isNotNull();
         assertThat(updatedOthers.getFirstOther().getAddress()).isNotNull();
     }
 
-    private CaseData buildCaseDataWithOthers(Other firstOther, List<Element<Other>> additionalOthers,
+    private CaseData buildCaseDataWithOthers(Other firstOther,
+                                             List<Element<Other>> additionalOthers,
                                              List<Element<Other>> confidentialOthers) {
         return CaseData.builder()
             .others(Others.builder().firstOther(firstOther).additionalOthers(additionalOthers).build())
@@ -186,71 +172,31 @@ class OthersServiceTest {
             .build();
     }
 
-    private Other otherElementWithDetailsHiddenValue(String hidden) {
+    private Other otherWithDetailsHiddenValue(String hidden) {
         return Other.builder()
-                    .name("James")
-                    .detailsHidden(hidden)
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1").build())
-                    .telephone("01227 831393")
-                        .build();
-    }
-
-    private List<Element<Other>> othersWithConfidentialFields(UUID id) {
-        List<Element<Other>> confidentialOthers = new ArrayList<>();
-        confidentialOthers.add(Element.<Other>builder()
-            .id(id)
-            .value(Other.builder()
-                .name("Sarah Moley")
-                .gender("Female")
-                .detailsHidden("Yes")
-                .address(Address.builder()
-                    .addressLine1("Address Line 1")
-                    .build())
-                .telephone("01227 831393")
-                .build())
-            .build());
-
-        return confidentialOthers;
-    }
-
-    private List<Element<Other>> othersWithRemovedConfidentialFields(UUID id) {
-        List<Element<Other>> confidentialOthers = new ArrayList<>();
-        confidentialOthers.add(Element.<Other>builder()
-            .id(id)
-            .value(Other.builder()
-                .name("Sarah Moley")
-                .gender("Female")
-                .detailsHidden("Yes")
-                .build())
-            .build());
-
-        return confidentialOthers;
-    }
-
-    private Other buildFirstOther() {
-        return Other.builder()
-            .name("Sarah Moley")
+            .name("James")
             .gender("Female")
+            .detailsHidden(hidden)
+            .address(Address.builder().addressLine1("Address Line 1").build())
+            .telephone("01227 831393")
             .build();
     }
 
-    private List<Element<Other>> buildAdditionalOther() {
-        List<Element<Other>> additionalOthersList = new ArrayList<>();
-        Element<Other> additionalOther = Element.<Other>builder().id(ID).value(Other.builder().build()).build();
-        additionalOthersList.add(additionalOther);
-        return  additionalOthersList;
+    private List<Element<Other>> othersWithConfidentialFields(UUID id) {
+        return newArrayList(element(id, Other.builder()
+            .name("James")
+            .gender("Female")
+            .detailsHidden("Yes")
+            .address(Address.builder().addressLine1("Address Line 1").build())
+            .telephone("01227 831393")
+            .build()));
     }
 
-    private Other otherWithDetailsHiddenNo(UUID id) {
-        return Other.builder()
-                    .name("Sarah Moley")
-                    .gender("Female")
-                    .detailsHidden("No")
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephone("01227 831393")
-                    .build();
+    private List<Element<Other>> othersWithRemovedConfidentialFields() {
+        return newArrayList(element(ID, Other.builder()
+            .name("James")
+            .gender("Female")
+            .detailsHidden("Yes")
+            .build()));
     }
 }

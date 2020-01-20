@@ -224,8 +224,7 @@ public class CaseData {
         final List<Element<Other>> othersList = new ArrayList<>();
 
         ofNullable(this.getOthers()).map(others -> element(others.getFirstOther())).ifPresent(othersList::add);
-        ofNullable(this.getOthers()).map(Others::getAdditionalOthers)
-            .ifPresent(othersList::addAll);
+        ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
 
         return Collections.unmodifiableList(othersList);
     }

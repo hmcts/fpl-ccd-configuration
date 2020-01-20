@@ -8,8 +8,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 public class OthersService {
@@ -44,133 +48,83 @@ public class OthersService {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
     }
 
-    public Others modifyHiddenValues(Others others) {
-        final List<Element<Other>> othersList = new ArrayList<>();
-        Element<Other> firstOther;
+    public Others modifyHiddenValues(List<Element<Other>> others) {
+        List<Element<Other>> othersList = new ArrayList<>();
 
-        if (others.getFirstOther().containsConfidentialDetails()) {
-            firstOther = Element.<Other>builder()
-                .value(others
-                    .getFirstOther()
-                    .toBuilder()
-                    .address(null)
-                    .telephone(null)
-                    .build())
-                .build();
-        } else {
-            firstOther = Element.<Other>builder()
-                .value(others.getFirstOther()).build();
-        }
-
-        others.getAdditionalOthers().stream().forEach(additionalOther -> {
-            if (additionalOther.getValue().containsConfidentialDetails()) {
-                othersList.add(Element.<Other>builder()
-                    .id(additionalOther.getId())
-                    .value(additionalOther.getValue().toBuilder().address(null).telephone(null).build())
-                    .build());
+        others.forEach(other -> {
+            if (other.getValue().containsConfidentialDetails()) {
+                othersList.add(
+                    element(other.getId(), other.getValue().toBuilder()
+                        .address(null)
+                        .telephone(null)
+                        .build()));
             } else {
-                othersList.add(Element.<Other>builder()
-                    .id(additionalOther.getId())
-                    .value(additionalOther.getValue())
-                    .build());
-
+                othersList.add(other);
             }
-
         });
 
-        return others.toBuilder().additionalOthers(othersList).firstOther(firstOther.getValue()).build();
+        return new Others(othersList.get(0).getValue(), othersList.subList(1, othersList.size()));
     }
 
-    public List<Element<Other>> modifyHiddenValuesConfidentialOthers(List<Element<Other>> confidentialOthers) {
+    public List<Element<Other>> retainConfidentialDetails(List<Element<Other>> confidentialOthers) {
         final List<Element<Other>> confidentialOthersModified = new ArrayList<>();
 
-        confidentialOthers.stream().forEach(confidentialOther -> {
-            confidentialOthersModified.add(Element.<Other>builder()
-                .id(confidentialOther.getId())
-                .value(confidentialOther.getValue().toBuilder()
-                    .DOB(null)
-                    .gender(null)
-                    .birthPlace(null)
-                    .childInformation(null)
-                    .genderIdentification(null)
-                    .litigationIssues(null)
-                    .litigationIssuesDetails(null)
-                    .detailsHidden(null)
-                    .detailsHiddenReason(null)
-                    .build())
-                .build());
-        });
+        confidentialOthers.forEach(element -> confidentialOthersModified.add(
+            element(element.getId(), Other.builder()
+                .address(element.getValue().getAddress())
+                .telephone(element.getValue().getTelephone())
+                .build())));
 
         return confidentialOthersModified;
     }
 
     public Others prepareOthers(CaseData caseData) {
-        final List<Element<Other>> others = new ArrayList<>();
+        List<Element<Other>> others = new ArrayList<>();
 
         caseData.getAllOthers().forEach(element -> {
             if (element.getValue().containsConfidentialDetails()) {
+                Element<Other> confidentialOther = findConfidentialOther(caseData.getConfidentialOthers(), element);
 
-                Element<Other> confidentialOther = getElementToAdd(caseData.getConfidentialOthers(), element);
-
-                Element<Other> other = Element.<Other>builder()
-                     .id(element.getId())
-                     .value(buildOtherElement(confidentialOther, element))
-                     .build();
-
-                others.add(other);
-
+                others.add(element(element.getId(), addConfidentialDetails(confidentialOther, element)));
             } else {
                 others.add(element);
             }
         });
 
-        Other firstOther = getFirstOther(caseData, others);
+        Other firstOther = getFirstOther(caseData.getConfidentialOthers(), others);
+
+        if (isNotEmpty(others)) {
+            others.remove(0);
+        }
 
         return Others.builder().firstOther(firstOther).additionalOthers(others).build();
     }
 
-    private Other getFirstOther(CaseData caseData, List<Element<Other>> others) {
-        // This finds the element id in confidential others that doesn't match which is therefore the first other id
-        // Hacky but only way we can find the first other id as it is not an element
-        List<Element<Other>> confidentialOthers = caseData.getConfidentialOthers();
-        confidentialOthers.removeAll(others);
+    // This finds the element id in confidential others that doesn't match which is therefore the first other id
+    // Hacky but only way we can find the first other id as it is not an element
+    private Other getFirstOther(List<Element<Other>> confidentialOthers, List<Element<Other>> others) {
+        List<UUID> ids = others.stream().map(Element::getId).collect(toList());
         Other firstOther = null;
 
         if (!others.isEmpty()) {
-            if (others.get(0).getValue().containsConfidentialDetails()) {
-                Element<Other> confidentialOther = confidentialOthers.get(0);
-                Element<Other> other = others.get(0);
-
-                firstOther = buildOtherElement(confidentialOther,other);
-                others.remove(0);
-            } else {
-                firstOther = others.get(0).getValue();
-                others.remove(0);
-            }
+            firstOther = confidentialOthers.stream()
+                .filter(other -> !ids.contains(other.getId()))
+                .map(other -> addConfidentialDetails(other, others.get(0)))
+                .findFirst()
+                .orElse(others.get(0).getValue());
         }
 
         return firstOther;
     }
 
-    private Other buildOtherElement(Element<Other> confidentialOther, Element<Other> other) {
-        return  Other.builder()
-            .DOB(other.getValue().getDOB())
-            .name(other.getValue().getName())
-            .gender(other.getValue().getGender())
-            .birthPlace(other.getValue().getBirthPlace())
-            .childInformation(other.getValue().getChildInformation())
-            .genderIdentification(other.getValue().getGenderIdentification())
-            .litigationIssues(other.getValue().getLitigationIssues())
-            .litigationIssuesDetails(other.getValue().getLitigationIssuesDetails())
-            .detailsHidden(other.getValue().getDetailsHidden())
-            .detailsHiddenReason(other.getValue().getDetailsHiddenReason())
+    private Other addConfidentialDetails(Element<Other> confidentialOther, Element<Other> other) {
+        return other.getValue().toBuilder()
             .telephone(confidentialOther.getValue().getTelephone())
             .address(confidentialOther.getValue().getAddress())
             .build();
     }
 
-    private Element<Other> getElementToAdd(List<Element<Other>> confidentialOthers,
-                                                Element<Other> element) {
+    private Element<Other> findConfidentialOther(List<Element<Other>> confidentialOthers, Element<Other> element) {
         return confidentialOthers.stream()
             .filter(confidentialOther -> confidentialOther.getId().equals(element.getId()))
             .findFirst()

@@ -27,14 +27,14 @@ import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 public class OthersController {
     private final ObjectMapper mapper;
     private final OthersService othersService;
-    private final ConfidentialDetailsService confidentialDetailsService;
+    private final ConfidentialDetailsService confidentialService;
 
     @Autowired
     public OthersController(ObjectMapper mapper,
-                            ConfidentialDetailsService confidentialDetailsService,
+                            ConfidentialDetailsService confidentialService,
                             OthersService othersService) {
         this.mapper = mapper;
-        this.confidentialDetailsService = confidentialDetailsService;
+        this.confidentialService = confidentialService;
         this.othersService = othersService;
     }
 
@@ -56,14 +56,13 @@ public class OthersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<Other>> confidentialOthers =
-            confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllOthers());
+            confidentialService.addPartyMarkedConfidentialToList(caseData.getAllOthers());
 
-        List<Element<Other>> confidentialOthersModified = othersService
-            .modifyHiddenValuesConfidentialOthers(confidentialOthers);
+        List<Element<Other>> confidentialOthersModified = othersService.retainConfidentialDetails(confidentialOthers);
 
-        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersModified, OTHER);
+        confidentialService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersModified, OTHER);
 
-        Others others = othersService.modifyHiddenValues(caseData.getOthers());
+        Others others = othersService.modifyHiddenValues(caseData.getAllOthers());
 
         caseDetails.getData().put("others", others);
 
