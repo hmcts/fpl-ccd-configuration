@@ -119,12 +119,12 @@ public class DraftCMOService {
     }
 
     private void removeExistingCustomDirections(CaseDetails caseDetails) {
-        caseDetails.getData().remove("allPartiesCustom");
-        caseDetails.getData().remove("localAuthorityDirectionsCustom");
-        caseDetails.getData().remove("cafcassDirectionsCustom");
-        caseDetails.getData().remove("courtDirectionsCustom");
-        caseDetails.getData().remove("respondentDirectionsCustom");
-        caseDetails.getData().remove("otherPartiesDirectionsCustom");
+        caseDetails.getData().remove("allPartiesCustomCMO");
+        caseDetails.getData().remove("localAuthorityDirectionsCustomCMO");
+        caseDetails.getData().remove("cafcassDirectionsCustomCMO");
+        caseDetails.getData().remove("courtDirectionsCustomCMO");
+        caseDetails.getData().remove("respondentDirectionsCustomCMO");
+        caseDetails.getData().remove("otherPartiesDirectionsCustomCMO");
     }
 
     private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
