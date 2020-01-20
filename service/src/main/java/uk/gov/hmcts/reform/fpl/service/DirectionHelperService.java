@@ -32,8 +32,10 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.stripAll;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.stripAccents;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -110,13 +112,15 @@ public class DirectionHelperService {
                     directionToAddValue.getValue().getAssignee(), direction.getValue().getAssignee()));
 
                 if (!direction.getValue().getReadOnly().equals("No")) {
-                    directionToAddValue.getValue().setDirectionText(direction.getValue().getDirectionText());
+                    directionToAddValue.getValue().setDirectionText(
+                        direction.getValue().getDirectionText().replace("’", "'"));
                 }
             }));
     }
 
     private boolean hasSameDirectionType(Element<Direction> directionToAddValue, Element<Direction> direction) {
-        return direction.getValue().getDirectionType().equals(directionToAddValue.getValue().getDirectionType());
+        return direction.getValue().getDirectionType()
+            .equals(directionToAddValue.getValue().getDirectionType().replace("’", "'"));
     }
 
     /**
