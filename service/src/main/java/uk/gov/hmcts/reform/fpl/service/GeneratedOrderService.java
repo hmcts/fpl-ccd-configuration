@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseField;
 import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.GeneratedOrderKey;
@@ -215,6 +215,7 @@ public class GeneratedOrderService {
             .map(CaseField::getKey)
             .forEach(caseData::remove);
     }
+
 
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
