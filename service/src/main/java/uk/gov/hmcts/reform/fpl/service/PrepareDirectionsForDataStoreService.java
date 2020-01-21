@@ -41,24 +41,25 @@ public class PrepareDirectionsForDataStoreService {
      * Adds values that would otherwise be lost in CCD to directions.
      * Values include readOnly, directionRemovable and directionText.
      *
-     * @param directionWithValues  an order object that should be generated using original case data.
-     * @param directionToAddValues an order object that should be generated using case data edited through a ccd event.
+     * @param directionsWithValues  an order object that should be generated using original case data.
+     * @param directionsToAddValues an order object that should be generated using case data edited through a ccd event.
      */
-    public void persistHiddenDirectionValues(List<Element<Direction>> directionWithValues,
-                                             List<Element<Direction>> directionToAddValues) {
-        directionToAddValues.forEach(directionToAddValue -> directionWithValues
-            .stream()
-            .filter(direction -> hasSameDirectionType(directionToAddValue, direction))
-            .forEach(direction -> {
-                directionToAddValue.getValue().setReadOnly(direction.getValue().getReadOnly());
-                directionToAddValue.getValue().setDirectionRemovable(direction.getValue().getDirectionRemovable());
-                directionToAddValue.getValue().setAssignee(defaultIfNull(
-                    directionToAddValue.getValue().getAssignee(), direction.getValue().getAssignee()));
+    public void persistHiddenDirectionValues(List<Element<Direction>> directionsWithValues,
+                                             List<Element<Direction>> directionsToAddValues) {
+        directionsToAddValues.forEach(elementToAddValue ->
+            directionsWithValues.stream()
+                .filter(element -> hasSameDirectionType(elementToAddValue, element))
+                .forEach(element -> {
+                    Direction direction = elementToAddValue.getValue();
 
-                if (!direction.getValue().getReadOnly().equals("No")) {
-                    directionToAddValue.getValue().setDirectionText(direction.getValue().getDirectionText());
-                }
-            }));
+                    direction.setReadOnly(element.getValue().getReadOnly());
+                    direction.setDirectionRemovable(element.getValue().getDirectionRemovable());
+                    direction.setAssignee(defaultIfNull(direction.getAssignee(), element.getValue().getAssignee()));
+
+                    if (!element.getValue().getReadOnly().equals("No")) {
+                        direction.setDirectionText(element.getValue().getDirectionText());
+                    }
+                }));
     }
 
     private boolean hasSameDirectionType(Element<Direction> directionToAddValue, Element<Direction> direction) {
@@ -161,9 +162,8 @@ public class PrepareDirectionsForDataStoreService {
                                                             DirectionAssignee assignee) {
         if (event == COMPLY_ON_BEHALF_SDO) {
             return addCourtAssigneeAndDirectionId(id, response);
-        } else {
-            return addResponderAssigneeAndDirectionId(response, authorisation, assignee, id);
         }
+        return addResponderAssigneeAndDirectionId(response, authorisation, assignee, id);
     }
 
     //TODO: if name of user complying for court is added then this can be merged with logic from method below.
@@ -188,9 +188,8 @@ public class PrepareDirectionsForDataStoreService {
     private String getUsername(Element<DirectionResponse> element, String authorisation) {
         if (isEmpty(element.getValue().getResponder())) {
             return userDetailsService.getUserName(authorisation);
-        } else {
-            return element.getValue().getResponder();
         }
+        return element.getValue().getResponder();
     }
 
     /**

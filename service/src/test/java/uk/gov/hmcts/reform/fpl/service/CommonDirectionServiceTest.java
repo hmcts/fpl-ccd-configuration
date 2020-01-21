@@ -13,11 +13,11 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,6 +41,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class CommonDirectionServiceTest {
@@ -278,7 +280,7 @@ class CommonDirectionServiceTest {
         @ValueSource(strings = {"No"})
         void shouldNotRemoveDirectionFromListWhenCustomFlagIsNo(String custom) {
             List<Element<Direction>> filteredDirections = service.removeCustomDirections(List.of(
-                ElementUtils.element(Direction.builder()
+                element(Direction.builder()
                     .custom(custom)
                     .build())));
 
@@ -358,9 +360,43 @@ class CommonDirectionServiceTest {
         }
 
         private List<Element<CaseManagementOrder>> servedCaseManagementOrder(List<Element<Direction>> cmoDirections) {
-            return List.of(ElementUtils.element(CaseManagementOrder.builder()
+            return List.of(element(CaseManagementOrder.builder()
                 .directions(cmoDirections)
                 .build()));
+        }
+    }
+
+    @Nested
+    class GetResponses {
+
+        @Test
+        void shouldAddCorrectAssigneeAndDirectionToResponseWhenResponseExists() {
+            DirectionResponse response = DirectionResponse.builder()
+                .complied("Yes")
+                .documentDetails("Details")
+                .build();
+
+            List<DirectionResponse> responses = service.getResponses(
+                Map.of(LOCAL_AUTHORITY, buildDirection(response)));
+
+            assertThat(responses).containsOnly(response);
+        }
+
+        @Test
+        void shouldNotReturnResponseWhenNoResponseExists() {
+            List<DirectionResponse> responses = service.getResponses(
+                Map.of(LOCAL_AUTHORITY, buildDirection(null)));
+
+            assertThat(responses).isEmpty();
+        }
+
+        private List<Element<Direction>> buildDirection(DirectionResponse response) {
+            return wrapElements(Direction.builder()
+                .directionType("direction")
+                .directionText("example direction text")
+                .assignee(LOCAL_AUTHORITY)
+                .response(response)
+                .build());
         }
     }
 
@@ -375,7 +411,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee) {
-        return Lists.newArrayList(ElementUtils.element(Direction.builder()
+        return Lists.newArrayList(element(Direction.builder()
             .directionType("direction")
             .directionText("example direction text")
             .assignee(assignee)
@@ -383,7 +419,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee, UUID directionId) {
-        return Lists.newArrayList(ElementUtils.element(directionId, Direction.builder()
+        return Lists.newArrayList(element(directionId, Direction.builder()
             .directionType("direction")
             .directionText("example direction text")
             .assignee(assignee)
@@ -391,7 +427,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildCustomDirections() {
-        return Lists.newArrayList(ElementUtils.element(
+        return Lists.newArrayList(element(
             Direction.builder()
                 .directionType("direction")
                 .directionText("example direction text")

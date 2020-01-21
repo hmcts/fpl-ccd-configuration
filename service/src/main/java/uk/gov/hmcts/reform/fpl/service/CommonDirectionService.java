@@ -10,13 +10,16 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -41,33 +44,21 @@ public class CommonDirectionService {
      * @return directions.
      **/
     public List<Element<Direction>> combineAllDirections(CaseData caseData) {
-        List<Element<Direction>> directions = new ArrayList<>();
-
-        directions.addAll(caseData.getAllParties());
-
-        directions.addAll(assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
-
-        directions.addAll(caseData.getLocalAuthorityDirections());
-
-        directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY));
-
-        directions.addAll(caseData.getRespondentDirections());
-
-        directions.addAll(assignCustomDirections(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS));
-
-        directions.addAll(caseData.getCafcassDirections());
-
-        directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustom(), CAFCASS));
-
-        directions.addAll(caseData.getOtherPartiesDirections());
-
-        directions.addAll(assignCustomDirections(caseData.getOtherPartiesDirectionsCustom(), OTHERS));
-
-        directions.addAll(caseData.getCourtDirections());
-
-        directions.addAll(assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
-
-        return directions;
+        return
+            Stream.of(caseData.getAllParties(),
+                getElements(caseData.getAllPartiesCustom(), ALL_PARTIES),
+                caseData.getLocalAuthorityDirections(),
+                getElements(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY),
+                caseData.getRespondentDirections(),
+                getElements(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS),
+                caseData.getCafcassDirections(),
+                getElements(caseData.getCafcassDirectionsCustom(), CAFCASS),
+                caseData.getOtherPartiesDirections(),
+                getElements(caseData.getOtherPartiesDirectionsCustom(), OTHERS),
+                caseData.getCourtDirections(),
+                getElements(caseData.getCourtDirectionsCustom(), COURT))
+                .flatMap(Collection::stream)
+                .collect(toList());
     }
 
     /**
@@ -79,17 +70,19 @@ public class CommonDirectionService {
      */
     List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
                                                     DirectionAssignee assignee) {
-        if (!isNull(directions)) {
-            return directions.stream()
+        return getElements(directions, assignee);
+    }
+
+    private List<Element<Direction>> getElements(List<Element<Direction>> directions, DirectionAssignee assignee) {
+        return Optional.ofNullable(directions)
+            .map(values -> values.stream()
                 .map(element -> element(element.getId(), element.getValue().toBuilder()
                     .assignee(assignee)
                     .custom("Yes")
                     .readOnly("No")
                     .build()))
-                .collect(toList());
-        } else {
-            return emptyList();
-        }
+                .collect(toList()))
+            .orElseGet(Collections::emptyList);
     }
 
     /**
@@ -186,13 +179,9 @@ public class CommonDirectionService {
         AtomicInteger at = new AtomicInteger(2);
 
         return directions.stream()
-            .map(direction -> {
-                Direction.DirectionBuilder directionBuilder = direction.getValue().toBuilder();
-
-                return element(direction.getId(), directionBuilder
-                    .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
-                    .build());
-            })
+            .map(direction -> element(direction.getId(), direction.getValue().toBuilder()
+                .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
+                .build()))
             .collect(toList());
     }
 
@@ -223,9 +212,8 @@ public class CommonDirectionService {
     public List<Element<Direction>> getDirectionsToComplyWith(CaseData caseData) {
         if (caseData.getServedCaseManagementOrders().isEmpty()) {
             return caseData.getStandardDirectionOrder().getDirections();
-        } else {
-            return caseData.getServedCaseManagementOrders().get(0).getValue().getDirections();
         }
+        return caseData.getServedCaseManagementOrders().get(0).getValue().getDirections();
     }
 
     /**

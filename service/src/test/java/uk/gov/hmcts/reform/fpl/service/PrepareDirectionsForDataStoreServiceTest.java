@@ -15,12 +15,12 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 class PrepareDirectionsForDataStoreServiceTest {
@@ -51,7 +52,7 @@ class PrepareDirectionsForDataStoreServiceTest {
         UUID uuid = randomUUID();
 
         List<Element<Direction>> withHiddenValues = List.of(
-            ElementUtils.element(uuid, Direction.builder()
+            element(uuid, Direction.builder()
                 .directionType("direction type")
                 .directionText("hidden text")
                 .readOnly("Yes")
@@ -59,7 +60,7 @@ class PrepareDirectionsForDataStoreServiceTest {
                 .build()));
 
         List<Element<Direction>> toAddValues = List.of(
-            ElementUtils.element(uuid, Direction.builder()
+            element(uuid, Direction.builder()
                 .directionType("direction type")
                 .build()));
 
@@ -73,7 +74,7 @@ class PrepareDirectionsForDataStoreServiceTest {
         UUID uuid = randomUUID();
 
         List<Element<Direction>> withHiddenValues = List.of(
-            ElementUtils.element(uuid, Direction.builder()
+            element(uuid, Direction.builder()
                 .directionType("direction type")
                 .directionText("hidden text")
                 .readOnly("No")
@@ -81,7 +82,7 @@ class PrepareDirectionsForDataStoreServiceTest {
                 .build()));
 
         List<Element<Direction>> toAddValues = List.of(
-            ElementUtils.element(uuid, Direction.builder()
+            element(uuid, Direction.builder()
                 .directionType("direction type")
                 .directionText("the expected text")
                 .build()));
@@ -123,7 +124,7 @@ class PrepareDirectionsForDataStoreServiceTest {
                 .directionId(uuid)
                 .build();
 
-            List<Element<DirectionResponse>> responses = Lists.newArrayList(ElementUtils.element(response));
+            List<Element<DirectionResponse>> responses = newArrayList(element(response));
 
             List<Element<Direction>> directionWithNoResponse = getDirectionsWithResponses(responses);
 
@@ -135,7 +136,7 @@ class PrepareDirectionsForDataStoreServiceTest {
         @Test
         void shouldBeAbleToUpdateAnExistingResponseWhenAPartyChangesTheirResponse() {
             List<Element<DirectionResponse>> responses = Lists.newArrayList(
-                ElementUtils.element(DirectionResponse.builder()
+                element(DirectionResponse.builder()
                     .assignee(LOCAL_AUTHORITY)
                     .complied("No")
                     .directionId(uuid)
@@ -179,13 +180,13 @@ class PrepareDirectionsForDataStoreServiceTest {
         @Test
         void shouldBeAbleToUpdateAnExistingResponseWhenMultipleResponsesExist() {
             List<Element<DirectionResponse>> responses = Lists.newArrayList(
-                ElementUtils.element(
+                element(
                     DirectionResponse.builder()
                         .assignee(LOCAL_AUTHORITY)
                         .complied("No")
                         .directionId(uuid)
                         .build()),
-                ElementUtils.element(
+                element(
                     DirectionResponse.builder()
                         .assignee(CAFCASS)
                         .complied("No")
@@ -210,12 +211,12 @@ class PrepareDirectionsForDataStoreServiceTest {
         @Test
         void shouldUpdateCorrectResponseWhenMultipleResponses() {
             List<Element<DirectionResponse>> responses = Lists.newArrayList(
-                ElementUtils.element(DirectionResponse.builder()
+                element(DirectionResponse.builder()
                     .assignee(LOCAL_AUTHORITY)
                     .complied("No")
                     .directionId(uuid)
                     .build()),
-                ElementUtils.element(
+                element(
                     DirectionResponse.builder()
                         .assignee(CAFCASS)
                         .complied("No")
@@ -245,13 +246,12 @@ class PrepareDirectionsForDataStoreServiceTest {
         @Test
         void shouldAddAnotherResponseWhenDifferentRespondingOnBehalfOfValue() {
             List<Element<DirectionResponse>> responses = Lists.newArrayList(
-                ElementUtils.element(
-                    DirectionResponse.builder()
-                        .assignee(COURT)
-                        .respondingOnBehalfOf("CAFCASS")
-                        .complied("No")
-                        .directionId(uuid)
-                        .build()));
+                element(DirectionResponse.builder()
+                    .assignee(COURT)
+                    .respondingOnBehalfOf("CAFCASS")
+                    .complied("No")
+                    .directionId(uuid)
+                    .build()));
 
             List<Element<Direction>> directions = getDirectionsWithResponses(responses);
 
@@ -269,14 +269,13 @@ class PrepareDirectionsForDataStoreServiceTest {
 
         @Test
         void shouldUpdateResponseWhenSameRespondingOnBehalfOfValue() {
-            List<Element<DirectionResponse>> responses = Lists.newArrayList(
-                ElementUtils.element(
-                    DirectionResponse.builder()
-                        .assignee(COURT)
-                        .respondingOnBehalfOf("CAFCASS")
-                        .complied("No")
-                        .directionId(uuid)
-                        .build()));
+            List<Element<DirectionResponse>> responses = newArrayList(
+                element(DirectionResponse.builder()
+                    .assignee(COURT)
+                    .respondingOnBehalfOf("CAFCASS")
+                    .complied("No")
+                    .directionId(uuid)
+                    .build()));
 
             List<Element<Direction>> directions = getDirectionsWithResponses(responses);
 
@@ -294,7 +293,7 @@ class PrepareDirectionsForDataStoreServiceTest {
         }
 
         private List<Element<Direction>> getDirectionsWithResponses(List<Element<DirectionResponse>> responses) {
-            return List.of(ElementUtils.element(uuid, Direction.builder()
+            return List.of(element(uuid, Direction.builder()
                 .responses(responses)
                 .build()));
         }
@@ -353,7 +352,7 @@ class PrepareDirectionsForDataStoreServiceTest {
 
             CaseData caseData = prepareCaseData(direction, createResponses(response));
 
-            List<Element<DirectionResponse>> expectedResponses = List.of(ElementUtils.element(responseId,
+            List<Element<DirectionResponse>> expectedResponses = List.of(element(responseId,
                 response.directionId(directionId)
                     .assignee(COURT)
                     .build()));
@@ -400,7 +399,7 @@ class PrepareDirectionsForDataStoreServiceTest {
         }
 
         private List<Element<Direction>> directionWithCafcassResponse() {
-            return List.of(ElementUtils.element(directionId, Direction.builder()
+            return List.of(element(directionId, Direction.builder()
                 .response(DirectionResponse.builder()
                     .directionId(directionId)
                     .assignee(CAFCASS)
@@ -410,7 +409,7 @@ class PrepareDirectionsForDataStoreServiceTest {
         }
 
         private List<Element<DirectionResponse>> expectedResponse(DirectionAssignee others) {
-            return List.of(ElementUtils.element(responseId, DirectionResponse.builder()
+            return List.of(element(responseId, DirectionResponse.builder()
                 .directionId(directionId)
                 .assignee(others)
                 .responder("Emma Taylor")
@@ -421,7 +420,7 @@ class PrepareDirectionsForDataStoreServiceTest {
 
         private Order orderWithCafcassDirection() {
             return Order.builder()
-                .directions(List.of(ElementUtils.element(directionId, Direction.builder()
+                .directions(List.of(element(directionId, Direction.builder()
                     .directionType("example direction")
                     .assignee(CAFCASS)
                     .build())))
@@ -433,10 +432,10 @@ class PrepareDirectionsForDataStoreServiceTest {
                                          List<Element<DirectionResponse>> responses) {
             return CaseData.builder()
                 .standardDirectionOrder(Order.builder()
-                    .directions(List.of(ElementUtils.element(directionId, direction.build())))
+                    .directions(List.of(element(directionId, direction.build())))
                     .build())
                 .otherPartiesDirectionsCustom(
-                    List.of(ElementUtils.element(directionId, direction.responses(responses).build())))
+                    List.of(element(directionId, direction.responses(responses).build())))
                 .build();
         }
 
@@ -447,7 +446,7 @@ class PrepareDirectionsForDataStoreServiceTest {
             return CaseData.builder()
                 .servedCaseManagementOrders(cmo)
                 .otherPartiesDirectionsCustom(
-                    List.of(ElementUtils.element(directionId, direction.responses(responses).build())))
+                    List.of(element(directionId, direction.responses(responses).build())))
                 .build();
         }
 
@@ -458,19 +457,19 @@ class PrepareDirectionsForDataStoreServiceTest {
             return CaseData.builder()
                 .servedCaseManagementOrders(cmo)
                 .respondentDirectionsCustom(
-                    List.of(ElementUtils.element(directionId, direction.responses(responses).build())))
+                    List.of(element(directionId, direction.responses(responses).build())))
                 .build();
         }
 
         private List<Element<CaseManagementOrder>> getCmo(Direction.DirectionBuilder direction) {
-            return Lists.newArrayList(ElementUtils.element(
+            return Lists.newArrayList(element(
                 CaseManagementOrder.builder()
-                    .directions(List.of(ElementUtils.element(directionId, direction.build())))
+                    .directions(List.of(element(directionId, direction.build())))
                     .build()));
         }
 
         private List<Element<DirectionResponse>> createResponses(DirectionResponse.DirectionResponseBuilder response) {
-            return Lists.newArrayList(ElementUtils.element(responseId, response.build()));
+            return Lists.newArrayList(element(responseId, response.build()));
         }
 
         private List<Element<DirectionResponse>> getResponsesSdo(CaseData caseData) {
@@ -535,93 +534,15 @@ class PrepareDirectionsForDataStoreServiceTest {
         }
 
         private List<Element<Direction>> createDirections(UUID id, List<Element<DirectionResponse>> responses) {
-            return Lists.newArrayList(ElementUtils.element(id, Direction.builder()
+            return Lists.newArrayList(element(id, Direction.builder()
                 .responses(responses)
                 .build()));
         }
 
         private List<Element<DirectionResponse>> createDirectionResponses(UUID responseId, UUID directionId) {
-            return Lists.newArrayList(ElementUtils.element(responseId, DirectionResponse.builder()
+            return Lists.newArrayList(element(responseId, DirectionResponse.builder()
                 .directionId(directionId)
                 .build()));
         }
     }
-
-    //    @Nested
-    //    class GetResponses {
-    //        final UUID uuid = randomUUID();
-    //
-    //        @Test
-    //        void shouldAddCorrectAssigneeAndDirectionToResponseWhenResponseExists() {
-    //            String complied = "Yes";
-    //
-    //            List<DirectionResponse> responses = service.extractResponsesFromMap(
-    //                Map.of(LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, complied)));
-    //
-    //            assertThat(responses.get(0).getAssignee()).isEqualTo(LOCAL_AUTHORITY);
-    //            assertThat(responses.get(0).getDirectionId()).isEqualTo(uuid);
-    //        }
-    //
-    //        @Test
-    //        void shouldNotReturnResponseWhenCompliedHasNotBeenAnswered() {
-    //            List<DirectionResponse> responses = service.extractResponsesFromMap(
-    //                Map.of(LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, null)));
-    //
-    //            assertThat(responses).isEmpty();
-    //        }
-    //
-    //        @Test
-    //        void shouldNotReturnResponseWhenNoResponseExists() {
-    //            List<DirectionResponse> responses = service.extractResponsesFromMap(
-    //                Map.of(LOCAL_AUTHORITY, List.of(ElementUtils.element(Direction.builder()
-    //                    .directionText("Direction")
-    //                    .build()))));
-    //
-    //            assertThat(responses).isEmpty();
-    //        }
-    //
-    //        @Test
-    //        void shouldAddCorrectAssigneeAndDirectionWhenMultipleDifferentResponsesExist() {
-    //            String complied = "Yes";
-    //            UUID otherUuid = randomUUID();
-    //
-    //            List<DirectionResponse> responses = service.extractResponsesFromMap(
-    //                ImmutableMap.of(
-    //                    LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, complied),
-    //                    CAFCASS, buildDirection(CAFCASS, otherUuid, complied)
-    //                ));
-    //
-    //            assertThat(responses.get(0).getAssignee()).isEqualTo(LOCAL_AUTHORITY);
-    //            assertThat(responses.get(0).getDirectionId()).isEqualTo(uuid);
-    //            assertThat(responses.get(1).getAssignee()).isEqualTo(CAFCASS);
-    //            assertThat(responses.get(1).getDirectionId()).isEqualTo(otherUuid);
-    //        }
-    //
-    //        @Test
-    //        void shouldAddCorrectAssigneeAndDirectionWhenSameDirectionWithValidResponses() {
-    //            String complied = "Yes";
-    //
-    //            List<DirectionResponse> responses = service.extractResponsesFromMap(
-    //                ImmutableMap.of(
-    //                    LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, complied),
-    //                    CAFCASS, buildDirection(CAFCASS, uuid, complied)
-    //                ));
-    //
-    //            assertThat(responses.get(0).getAssignee()).isEqualTo(LOCAL_AUTHORITY);
-    //            assertThat(responses.get(0).getDirectionId()).isEqualTo(uuid);
-    //            assertThat(responses.get(1).getAssignee()).isEqualTo(CAFCASS);
-    //            assertThat(responses.get(1).getDirectionId()).isEqualTo(uuid);
-    //        }
-    //
-    //        private List<Element<Direction>> buildDirection(DirectionAssignee assignee, UUID id, String complied) {
-    //            return Lists.newArrayList(ElementUtils.element(id, Direction.builder()
-    //                .directionType("direction")
-    //                .directionText("example direction text")
-    //                .assignee(assignee)
-    //                .response(DirectionResponse.builder()
-    //                    .complied(complied)
-    //                    .build())
-    //                .build()));
-    //        }
-    //    }
 }

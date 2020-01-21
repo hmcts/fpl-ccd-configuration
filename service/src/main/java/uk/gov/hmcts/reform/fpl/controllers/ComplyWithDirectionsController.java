@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,22 +28,12 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 @Api
 @RestController
 @RequestMapping("/callback/comply-with-directions")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ComplyWithDirectionsController {
     private final ObjectMapper mapper;
     private final CommonDirectionService commonDirectionService;
     private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
-
-    @Autowired
-    public ComplyWithDirectionsController(ObjectMapper mapper,
-                                          CommonDirectionService commonDirectionService,
-                                          PrepareDirectionsForUsersService prepareDirectionsForUsersService,
-                                          PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService) {
-        this.mapper = mapper;
-        this.commonDirectionService = commonDirectionService;
-        this.prepareDirectionsForUsersService = prepareDirectionsForUsersService;
-        this.prepareDirectionsForDataStoreService = prepareDirectionsForDataStoreService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {

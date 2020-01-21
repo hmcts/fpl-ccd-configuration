@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.
 @Api
 @RestController
 @RequestMapping("/callback/comply-on-behalf")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ComplyOnBehalfController {
     private final ObjectMapper mapper;
     private final CommonDirectionService commonDirectionService;
@@ -39,21 +41,6 @@ public class ComplyOnBehalfController {
     private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
     private final RespondentService respondentService;
     private final OthersService othersService;
-
-    @Autowired
-    public ComplyOnBehalfController(ObjectMapper mapper,
-                                    CommonDirectionService commonDirectionService,
-                                    PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService,
-                                    PrepareDirectionsForUsersService prepareDirectionsForUsersService,
-                                    RespondentService respondentService,
-                                    OthersService othersService) {
-        this.mapper = mapper;
-        this.commonDirectionService = commonDirectionService;
-        this.prepareDirectionsForDataStoreService = prepareDirectionsForDataStoreService;
-        this.prepareDirectionsForUsersService = prepareDirectionsForUsersService;
-        this.respondentService = respondentService;
-        this.othersService = othersService;
-    }
 
     //TODO: filter responses with different userName in aboutToStart. Code below makes the assumption that only
     // the same responder will be able edit a response. Currently any solicitor can amend a response but the

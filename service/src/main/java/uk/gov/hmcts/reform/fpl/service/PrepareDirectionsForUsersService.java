@@ -91,7 +91,7 @@ public class PrepareDirectionsForUsersService {
      * @param onBehalfOf a string matching part of the respondingOnBehalfOf variable.
      * @param directions a list of directions.
      */
-    public void filterResponsesNotCompliedOnBehalfOfByTheCourt(String onBehalfOf, List<Element<Direction>> directions) {
+    void filterResponsesNotCompliedOnBehalfOfByTheCourt(String onBehalfOf, List<Element<Direction>> directions) {
         directions.forEach(directionElement -> directionElement.getValue().getResponses()
             .removeIf(element -> notCompliedWithByCourt(onBehalfOf, element)));
     }
@@ -115,8 +115,8 @@ public class PrepareDirectionsForUsersService {
      * @param directions a list of directions.
      * @return a list of directions with the correct response associated.
      */
-    public List<Element<Direction>> extractPartyResponse(DirectionAssignee assignee,
-                                                         List<Element<Direction>> directions) {
+    List<Element<Direction>> extractPartyResponse(DirectionAssignee assignee,
+                                                  List<Element<Direction>> directions) {
         return directions.stream()
             .map(element -> element(element.getId(), element.getValue().toBuilder()
                 .response(element.getValue().getResponses().stream()
