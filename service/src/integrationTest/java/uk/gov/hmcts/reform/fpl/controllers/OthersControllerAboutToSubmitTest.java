@@ -34,7 +34,7 @@ class OthersControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final UUID ADDITIONAL_OTHER_ID = randomUUID();
 
     @Test
-    void shouldRemoveConfidentialDetailsWhenOtherIsMarkedAsConfidential() {
+    void shouldOnlyRemoveConfidentialDetailsWhenOtherIsMarkedAsConfidential() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("others", Others.builder()
                 .firstOther(other())
