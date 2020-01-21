@@ -96,6 +96,40 @@ abstract class AbstractControllerTest {
         return postMidEvent(filename, SC_OK);
     }
 
+    AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, int expectedStatus, String additionalPath) {
+        return postEvent(String.format("/callback/%s/%s/mid-event", eventName, additionalPath), data, expectedStatus);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, String additionalPath) {
+        return postMidEvent(data, SC_OK, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CallbackRequest callbackRequest, int expectedStatus,
+                                                      String additionalPath) {
+        return postMidEvent(toBytes(callbackRequest), expectedStatus, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CallbackRequest callbackRequest, String additionalPath) {
+        return postMidEvent(callbackRequest, SC_OK, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, int expectedStatus,
+                                                      String additionalPath) {
+        return postMidEvent(toCallbackRequest(caseDetails), expectedStatus, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, String additionalPath) {
+        return postMidEvent(caseDetails, SC_OK, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(String filename, int expectedStatus, String additionalPath) {
+        return postMidEvent(readBytes(filename), expectedStatus, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(String filename, String additionalPath) {
+        return postMidEvent(filename, SC_OK, additionalPath);
+    }
+
     AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(byte[] data, int expectedStatus) {
         return postEvent(String.format("/callback/%s/about-to-submit", eventName), data, expectedStatus);
     }
