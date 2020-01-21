@@ -911,5 +911,46 @@
     "SecurityClassification": "Public",
     "Max": "99",
     "Min": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoChildren",
+    "Label": "Describe the children",
+    "FieldType": "EPOChildren",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "EPOTypes",
+    "Label": "What type of EPO are you requesting?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoRemovalAddress",
+    "FieldType": "AddressUK",
+    "Label": "Address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoPhrase",
+    "Label": "Do you want to include this phrase in the order?",
+    "FieldType": "EPOPhrase",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoEndDate",
+    "Label": "When does the order end",
+    "FieldType": "DateTime",
+    "SecurityClassification": "Public"
   }
 ]
