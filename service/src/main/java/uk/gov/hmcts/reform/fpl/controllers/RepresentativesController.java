@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -49,13 +48,11 @@ public class RepresentativesController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestHeader(value = "authorization") String authorisation,
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        final List<String> validationErrors = representativeService.validateRepresentatives(caseData, authorisation);
+        final List<String> validationErrors = representativeService.validateRepresentatives(caseData);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -64,20 +61,20 @@ public class RepresentativesController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleSubmitted(
-        @RequestHeader(value = "authorization") String authorisation,
-        @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public AboutToStartOrSubmitCallbackResponse handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails updatedCaseDetails = callbackRequest.getCaseDetails();
+        CaseDetails originalCaseDetails = callbackRequest.getCaseDetailsBefore();
+        CaseData updatedCaseData = mapper.convertValue(updatedCaseDetails.getData(), CaseData.class);
+        CaseData originalCaseData = mapper.convertValue(originalCaseDetails.getData(), CaseData.class);
 
-        representativeService.addRepresentatives(caseData, caseDetails.getId(), authorisation);
+        representativeService.updateRepresentatives(updatedCaseDetails.getId(), updatedCaseData, originalCaseData);
 
-        caseDetails.getData().put("representatives", caseData.getRepresentatives());
-        caseDetails.getData().put("others", caseData.getOthers());
-        caseDetails.getData().put("respondents1", caseData.getRespondents1());
+        updatedCaseDetails.getData().put("representatives", updatedCaseData.getRepresentatives());
+        updatedCaseDetails.getData().put("others", updatedCaseData.getOthers());
+        updatedCaseDetails.getData().put("respondents1", updatedCaseData.getRespondents1());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(updatedCaseDetails.getData())
             .build();
     }
 

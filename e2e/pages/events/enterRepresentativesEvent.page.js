@@ -32,7 +32,15 @@ module.exports = {
       postcodeLookup.enterAddressManually(representative.address);
     });
 
-    switch (representative.servingPreferences.toLowerCase()) {
+    this.setServingPreferences(representative.servingPreferences.toLowerCase());
+
+    I.selectOption(this.fields(elementIndex).representative.role, representative.role);
+  },
+
+  async setServingPreferences(servingPreferences) {
+    const elementIndex = await this.getActiveElementIndex();
+
+    switch (servingPreferences) {
       case 'email':
         I.checkOption(this.fields(elementIndex).representative.servingPreferences.email);
         break;
@@ -43,10 +51,8 @@ module.exports = {
         I.checkOption(this.fields(elementIndex).representative.servingPreferences.digitalService);
         break;
       default:
-        throw new Error('Unsupported representative serving preferences ' + representative.servingPreferences);
+        throw new Error(`Unsupported representative serving preferences ${servingPreferences}`);
     }
-
-    I.selectOption(this.fields(elementIndex).representative.role, representative.role);
   },
 
   async getActiveElementIndex() {
