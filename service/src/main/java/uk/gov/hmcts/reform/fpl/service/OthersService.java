@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -71,6 +72,7 @@ public class OthersService {
 
         confidentialOthers.forEach(element -> confidentialOthersModified.add(
             element(element.getId(), Other.builder()
+                .name(element.getValue().getName())
                 .address(element.getValue().getAddress())
                 .telephone(element.getValue().getTelephone())
                 .build())));
