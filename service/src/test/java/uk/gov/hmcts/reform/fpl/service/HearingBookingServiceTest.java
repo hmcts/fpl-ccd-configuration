@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,22 +13,23 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
-import static java.util.UUID.fromString;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class HearingBookingServiceTest {
-
-    private static final UUID[] UUIDS = {
-        fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
-        fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"),
-        fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31")
-    };
+    private static final LocalDateTime TODAY = LocalDateTime.now();
+    private static final UUID[] HEARING_IDS = {randomUUID(), randomUUID(), randomUUID()};
 
     private final HearingBookingService service = new HearingBookingService();
-    private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
 
     @Test
     void shouldReturnAnEmptyHearingBookingIfHearingDetailsIsNull() {
@@ -42,18 +42,13 @@ class HearingBookingServiceTest {
 
     @Test
     void shouldReturnHearingBookingIfHearingBookingIsPrePopulated() {
-        LocalDateTime now = LocalDateTime.now();
         CaseData caseData = CaseData.builder()
-            .hearingDetails(
-                ImmutableList.of(Element.<HearingBooking>builder()
-                    .value(
-                        HearingBooking.builder().startDate(now).build())
-                    .build()))
+            .hearingDetails(wrapElements(HearingBooking.builder().startDate(TODAY).build()))
             .build();
 
         List<Element<HearingBooking>> hearingList = service.expandHearingBookingCollection(caseData);
 
-        assertThat(hearingList.get(0).getValue().getStartDate()).isEqualTo(now);
+        assertThat(hearingList.get(0).getValue().getStartDate()).isEqualTo(TODAY);
     }
 
     @Test
@@ -62,21 +57,20 @@ class HearingBookingServiceTest {
 
         HearingBooking sortedHearingBooking = service.getMostUrgentHearingBooking(hearingBookings);
 
-        assertThat(sortedHearingBooking.getStartDate()).isEqualTo(TODAYS_DATE);
+        assertThat(sortedHearingBooking.getStartDate()).isEqualTo(TODAY);
     }
 
     @Test
     void shouldGetHearingBookingWhenKeyMatchesHearingBookingElementUUID() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings();
-        HearingBooking hearingBooking = service.getHearingBookingByUUID(hearingBookings, UUIDS[2]);
-        assertThat(hearingBooking.getStartDate()).isEqualTo(TODAYS_DATE);
+        HearingBooking hearingBooking = service.getHearingBookingByUUID(hearingBookings, HEARING_IDS[2]);
+        assertThat(hearingBooking.getStartDate()).isEqualTo(TODAY);
     }
 
     @Test
     void shouldReturnNullWhenKeyDoesNotMatchHearingBookingElementUUID() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings();
-        HearingBooking hearingBooking =
-            service.getHearingBookingByUUID(hearingBookings, fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2606"));
+        HearingBooking hearingBooking = service.getHearingBookingByUUID(hearingBookings, randomUUID());
 
         assertThat(hearingBooking).isNull();
     }
@@ -118,12 +112,10 @@ class HearingBookingServiceTest {
 
         private DynamicList createDynamicList() {
             return DynamicList.builder()
-                .value(createDynamicElement(UUIDS[0]))
-                .listItems(List.of(
-                    createDynamicElement(UUIDS[0]),
-                    createDynamicElement(UUIDS[1]),
-                    createDynamicElement(UUIDS[2])
-                ))
+                .value(createDynamicElement(HEARING_IDS[0]))
+                .listItems(Stream.of(HEARING_IDS)
+                    .map(this::createDynamicElement)
+                    .collect(toList()))
                 .build();
         }
 
@@ -132,29 +124,82 @@ class HearingBookingServiceTest {
         }
     }
 
+    @Nested
+    class GetPastHearings {
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearingsHaveBeenCreated() {
+            assertThat(service.getPastHearings(emptyList())).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyHearingListWhenNoPastHearingsExist() {
+            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(+5));
+
+            assertThat(service.getPastHearings(hearingBooking)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnPopulatedHearingListWhenOnlyPastHearingsExist() {
+            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(-5));
+
+            assertThat(service.getPastHearings(hearingBooking)).isEqualTo(hearingBooking);
+        }
+
+        @Test
+        void shouldReturnOnlyPastHearingsWhenPastAndFutureHearingsExist() {
+            Element<HearingBooking> futureHearingBooking = hearingElementWithStartDate(+5);
+            Element<HearingBooking> pastHearingBooking = hearingElementWithStartDate(-5);
+
+            List<Element<HearingBooking>> hearingBookings = newArrayList(futureHearingBooking, pastHearingBooking);
+
+            assertThat(service.getPastHearings(hearingBookings)).isEqualTo(List.of(pastHearingBooking));
+        }
+
+        @Test
+        void shouldReturnListHearingsWhenDateIsToday() {
+            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(0));
+
+            assertThat(service.getPastHearings(hearingBooking)).isEqualTo(hearingBooking);
+        }
+    }
+
+    @Nested
+    class RebuildHearingDetailsObject {
+
+        @Test
+        void shouldReturnListWhenOnlyFutureHearings() {
+            List<Element<HearingBooking>> futureHearingBooking = List.of(hearingElementWithStartDate(+5));
+
+            assertThat(service.combineHearingDetails(futureHearingBooking, emptyList()))
+                .isEqualTo(futureHearingBooking);
+        }
+
+        @Test
+        void shouldReturnOrderedListWhenPastAndFutureHearings() {
+            List<Element<HearingBooking>> futureHearingBooking = List.of(hearingElementWithStartDate(+5));
+            List<Element<HearingBooking>> pastHearingBooking = List.of(hearingElementWithStartDate(-5));
+
+            List<Element<HearingBooking>> expectedHearingBooking = newArrayList();
+            expectedHearingBooking.addAll(pastHearingBooking);
+            expectedHearingBooking.addAll(futureHearingBooking);
+
+            assertThat(service.combineHearingDetails(futureHearingBooking, pastHearingBooking))
+                .isEqualTo(expectedHearingBooking);
+        }
+    }
+
     private List<Element<HearingBooking>> createHearingBookings() {
-        return ImmutableList.of(
-            Element.<HearingBooking>builder()
-                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2601"))
-                .value(createHearingBooking(TODAYS_DATE.plusDays(5), TODAYS_DATE.plusDays(6)))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2602"))
-                .value(createHearingBooking(TODAYS_DATE.plusDays(2), TODAYS_DATE.plusDays(3)))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2603"))
-                .id(UUIDS[0])
-                .value(createHearingBooking(TODAYS_DATE.plusDays(5), TODAYS_DATE.plusDays(6)))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(UUIDS[1])
-                .value(createHearingBooking(TODAYS_DATE.plusDays(2), TODAYS_DATE.plusDays(3)))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(UUIDS[2])
-                .value(createHearingBooking(TODAYS_DATE, TODAYS_DATE.plusDays(1)))
-                .build()
+        return List.of(
+            element(HEARING_IDS[0], createHearingBooking(TODAY.plusDays(5), TODAY.plusDays(6))),
+            element(HEARING_IDS[1], createHearingBooking(TODAY.plusDays(2), TODAY.plusDays(3))),
+            element(HEARING_IDS[2], createHearingBooking(TODAY, TODAY.plusDays(1)))
         );
+    }
+
+    private Element<HearingBooking> hearingElementWithStartDate(int daysFromToday) {
+        return element(HearingBooking.builder()
+            .startDate(TODAY.plusDays(daysFromToday))
+            .build());
     }
 }
