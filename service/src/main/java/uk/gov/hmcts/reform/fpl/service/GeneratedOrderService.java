@@ -122,6 +122,7 @@ public class GeneratedOrderService {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
+        List<Map<String, String>> childrenDetails = getChildrenDetails(caseData);
 
         switch (orderType) {
             case BLANK_ORDER:
@@ -145,11 +146,21 @@ public class GeneratedOrderService {
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype()));
                 break;
             case SUPERVISION_ORDER:
-                orderTemplateBuilder
-                    .put("orderTitle", orderTypeAndDocument.getFullType())
-                    .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                    .put("orderDetails", getFormattedFinalSupervisionOrderDetails(getChildrenDetails(caseData).size(),
-                        caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
+                if (subtype == INTERIM) {
+                    orderTemplateBuilder
+                        .put("orderTitle", orderTypeAndDocument.getFullType(INTERIM))
+                        .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                        .put("orderDetails",
+                            getFormattedInterimSupervisionOrderDetails(childrenDetails.size(),
+                                caseData.getCaseLocalAuthority()));
+                } else {
+                    orderTemplateBuilder
+                        .put("orderTitle", orderTypeAndDocument.getFullType())
+                        .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                        .put("orderDetails",
+                            getFormattedFinalSupervisionOrderDetails(childrenDetails.size(),
+                                caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + orderType);
@@ -163,7 +174,7 @@ public class GeneratedOrderService {
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
-            .put("children", getChildrenDetails(caseData))
+            .put("children", childrenDetails)
             .put("furtherDirections", caseData.getFurtherDirectionsText())
             .build();
 
@@ -204,6 +215,13 @@ public class GeneratedOrderService {
         return String.format("It is ordered that the %s placed in the care of %s%s",
             childOrChildren, getLocalAuthorityName(caseLocalAuthority),
             isInterim ? " until the end of the proceedings." : ".");
+    }
+
+    private String getFormattedInterimSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority) {
+        return String.format(
+            "It is ordered that %s supervises the %s until the end of the proceedings",
+            getLocalAuthorityName(caseLocalAuthority),
+            (numOfChildren == 1) ? "child" : "children");
     }
 
     private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,

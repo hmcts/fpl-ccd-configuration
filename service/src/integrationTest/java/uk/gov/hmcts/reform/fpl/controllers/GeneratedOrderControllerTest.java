@@ -192,20 +192,34 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void aboutToSubmitShouldAddSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, null)
+        void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM)
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+            GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
+                "Interim supervision order").build();
+
+            aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
+        }
+
+        @Test
+        void aboutToSubmitShouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
                 .orderMonths(14));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
             LocalDateTime orderExpiration = time.now().plusMonths(14);
-            GeneratedOrder expectedOrder = commonExpectedOrderComponents(SUPERVISION_ORDER.getLabel())
+            GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
+                "Final supervision order")
                 .expiryDate(
                     dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
                 .build();
 
-            aboutToSubmitAssertions(callbackResponse.getData(), expectedOrder);
+            aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
         }
 
         private CaseDetails buildCaseDetails(CaseData.CaseDataBuilder builder) {
@@ -303,7 +317,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetails(INTERIM), "interim_care_order.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetails(FINAL), "final_care_order.pdf", ORDER),
-                Arguments.of(generateSupervisionOrderCaseDetails(), "supervision_order.pdf", ORDER)
+                Arguments.of(generateSupervisionOrderCaseDetails(INTERIM), "interim_supervision_order.pdf", ORDER),
+                Arguments.of(generateSupervisionOrderCaseDetails(FINAL), "final_supervision_order.pdf", ORDER)
             );
         }
 
@@ -338,8 +353,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build();
         }
 
-        private CaseDetails generateSupervisionOrderCaseDetails() {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(SUPERVISION_ORDER, null);
+        private CaseDetails generateSupervisionOrderCaseDetails(GeneratedOrderSubtype subtype) {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(SUPERVISION_ORDER, subtype);
 
             dataBuilder.orderFurtherDirections(generateOrderFurtherDirections())
                 .orderMonths(5);
