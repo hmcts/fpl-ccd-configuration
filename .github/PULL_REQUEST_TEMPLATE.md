@@ -1,6 +1,6 @@
 **Before creating a pull request make sure that:**
 
-- [ ] commit messages are meaningful and follow good commit message guidelines
+- [ ] PR's title includes JIRA ticket number and follow [Conventional Commits](https://www.conventionalcommits.org/) specification
 - [ ] README and other documentation has been updated / added (if needed)
 - [ ] tests have been updated / new tests has been added (if needed)
 

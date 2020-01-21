@@ -69,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -137,7 +138,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         final CaseManagementOrder order = createCaseManagementOrder(SEND_TO_JUDGE);
 
         data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
-        data.put("hearingDetails", createHearingBookings(LocalDateTime.now()));
+        data.put(HEARING_DETAILS_KEY, createHearingBookings(LocalDateTime.now()));
 
         CaseDetails caseDetails = buildCaseDetails(data);
         List<String> expected = List.of(
@@ -185,7 +186,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     @Test
     void aboutToSubmitShouldReturnCaseManagementOrderWithFinalDocumentWhenSendToAllParties() {
         Map<String, Object> data = Map.of(
-            "hearingDetails", hearingBookingWithStartDatePlus(-1),
+            HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(-1),
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
             ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
             NEXT_HEARING_DATE_LIST.getKey(), hearingDateList());
@@ -201,7 +202,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     @Test
     void aboutToSubmitShouldErrorIfHearingDateInFutureWhenSendToAllParties() {
         Map<String, Object> data = ImmutableMap.of(
-            "hearingDetails", hearingBookingWithStartDatePlus(1),
+            HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(1),
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
             ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES));
 
