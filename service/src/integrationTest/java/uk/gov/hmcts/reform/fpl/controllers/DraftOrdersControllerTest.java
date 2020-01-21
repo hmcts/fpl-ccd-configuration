@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -186,7 +187,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
                 .data(Map.of(
-                    "hearingDetails", List.of(
+                    HEARING_DETAILS_KEY, List.of(
                         Element.builder()
                             .value(HearingBooking.builder()
                                 .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
