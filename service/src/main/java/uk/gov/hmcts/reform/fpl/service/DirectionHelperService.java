@@ -110,13 +110,15 @@ public class DirectionHelperService {
                     directionToAddValue.getValue().getAssignee(), direction.getValue().getAssignee()));
 
                 if (!direction.getValue().getReadOnly().equals("No")) {
-                    directionToAddValue.getValue().setDirectionText(direction.getValue().getDirectionText());
+                    directionToAddValue.getValue().setDirectionText(
+                        direction.getValue().getDirectionText().replace("’", "'"));
                 }
             }));
     }
 
     private boolean hasSameDirectionType(Element<Direction> directionToAddValue, Element<Direction> direction) {
-        return direction.getValue().getDirectionType().equals(directionToAddValue.getValue().getDirectionType());
+        return direction.getValue().getDirectionType()
+            .equals(directionToAddValue.getValue().getDirectionType().replace("’", "'"));
     }
 
     /**
@@ -392,7 +394,8 @@ public class DirectionHelperService {
      * @param caseData data from case.
      * @return Map of roles and directions.
      */
-    public Map<DirectionAssignee, List<Element<Direction>>> collectCustomDirectionsToMap(CaseData caseData) {
+    private Map<DirectionAssignee, List<Element<Direction>>> collectCustomDirectionsToMap(
+        CaseData caseData) {
         return Map.of(
             ALL_PARTIES, defaultIfNull(caseData.getAllPartiesCustom(), emptyList()),
             LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirectionsCustom(), emptyList()),

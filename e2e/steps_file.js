@@ -170,6 +170,20 @@ module.exports = function () {
       this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
     },
 
+    async removeElementFromCollection(collectionName, index = 1) {
+      if(collectionName) {
+        await this.click(locate('button')
+          .inside(locate('div').withChild(locate('h2').withText(collectionName)))
+          .withText('Remove')
+          .at(index));
+      } else {
+        await this.click('Remove');
+      }
+      this.click(locate('button')
+        .inside('.mat-dialog-container')
+        .withText('Remove'));
+    },
+
     /**
      * Retries defined action util element described by the locator is present. If element is not present
      * after 4 tries (run + 3 retries) this step throws an error.

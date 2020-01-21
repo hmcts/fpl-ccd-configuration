@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.interfaces.Assignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -58,11 +57,11 @@ import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PL
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
-    public static final String REPRESENTED_BY = "representedBy";
-    public static final String NAME = "name";
-    public static final String REPRESENTATIVE_NAME = "representativeName";
-    public static final String REPRESENTATIVE_EMAIL = "representativeEmail";
-    public static final String REPRESENTATIVE_PHONE_NUMBER = "representativePhoneNumber";
+    private static final String REPRESENTED_BY = "representedBy";
+    private static final String NAME = "name";
+    private static final String REPRESENTATIVE_NAME = "representativeName";
+    private static final String REPRESENTATIVE_EMAIL = "representativeEmail";
+    private static final String REPRESENTATIVE_PHONE_NUMBER = "representativePhoneNumber";
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final DateFormatterService dateFormatterService;
@@ -276,17 +275,17 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         List<Element<Direction>> otherParties = defaultIfNull(directions.remove(OTHERS), emptyList());
         ImmutableMap.Builder<String, Object> formattedDirections = ImmutableMap.builder();
 
-        final Map<ParentsAndRespondentsDirectionAssignee, List<Element<Direction>>> respondentDirections =
+        final Map<Assignee, List<Element<Direction>>> respondentDirections =
             respondents.stream()
                 .collect(groupingBy(element -> element.getValue().getParentsAndRespondentsAssignee()));
 
-        final Map<OtherPartiesDirectionAssignee, List<Element<Direction>>> otherPartyDirections = otherParties.stream()
+        final Map<Assignee, List<Element<Direction>>> otherPartyDirections = otherParties.stream()
             .collect(groupingBy(element -> element.getValue().getOtherPartiesAssignee()));
 
         formattedDirections.put(PARENTS_AND_RESPONDENTS.getValue(),
-            getFormattedParentsAndRespondentsDirections(respondentDirections));
+            getFormattedDirections(respondentDirections));
 
-        formattedDirections.put(OTHERS.getValue(), getFormattedOtherPartiesDirections(otherPartyDirections));
+        formattedDirections.put(OTHERS.getValue(), getFormattedDirections(otherPartyDirections));
 
         directions.forEach((key, value) -> {
             List<Map<String, String>> directionsList = buildFormattedDirectionList(value);
@@ -296,36 +295,20 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         return formattedDirections.build();
     }
 
-    private List<Map<String, Object>> getFormattedOtherPartiesDirections(
-        Map<OtherPartiesDirectionAssignee, List<Element<Direction>>> groupedOtherParties) {
+    private List<Map<String, Object>> getFormattedDirections(
+        Map<Assignee, List<Element<Direction>>> groupedDirections) {
 
-        List<Map<String, Object>> directionsToOthers = new ArrayList<>();
-        groupedOtherParties.forEach((key, value) -> {
-            Map<String, Object> directionForOthers = new HashMap<>();
-            directionForOthers.put("header", "For " + key.getLabel());
+        List<Map<String, Object>> directions = new ArrayList<>();
+        groupedDirections.forEach((assignee, assigneeDirection) -> {
+            Map<String, Object> direction = new HashMap<>();
+            direction.put("header", "For " + assignee.getLabel());
             List<Map<String, String>> directionsList = buildFormattedDirectionList(
-                value);
-            directionForOthers.put("directions", directionsList);
-            directionsToOthers.add(directionForOthers);
+                assigneeDirection);
+            direction.put("directions", directionsList);
+            directions.add(direction);
         });
 
-        return directionsToOthers;
-    }
-
-    private List<Map<String, Object>> getFormattedParentsAndRespondentsDirections(
-        Map<ParentsAndRespondentsDirectionAssignee, List<Element<Direction>>> groupedParentsAndRespondents) {
-
-        List<Map<String, Object>> directionsToRespondents = new ArrayList<>();
-        groupedParentsAndRespondents.forEach((key, value) -> {
-            Map<String, Object> directionForRespondent = new HashMap<>();
-            directionForRespondent.put("header", "For " + key.getLabel());
-            List<Map<String, String>> directionsList = buildFormattedDirectionList(
-                value);
-            directionForRespondent.put("directions", directionsList);
-            directionsToRespondents.add(directionForRespondent);
-        });
-
-        return directionsToRespondents;
+        return directions;
     }
 
     private List<Map<String, String>> buildFormattedDirectionList(List<Element<Direction>> directions) {
