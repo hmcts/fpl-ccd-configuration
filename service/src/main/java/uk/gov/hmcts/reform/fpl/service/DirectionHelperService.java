@@ -392,7 +392,8 @@ public class DirectionHelperService {
      * @param caseData data from case.
      * @return Map of roles and directions.
      */
-    public Map<DirectionAssignee, List<Element<Direction>>> collectCustomDirectionsToMap(CaseData caseData) {
+    private Map<DirectionAssignee, List<Element<Direction>>> collectCustomDirectionsToMap(
+        CaseData caseData) {
         return Map.of(
             ALL_PARTIES, defaultIfNull(caseData.getAllPartiesCustom(), emptyList()),
             LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirectionsCustom(), emptyList()),
