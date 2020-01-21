@@ -60,4 +60,29 @@ module.exports = [
     },
     directionText: 'Example direction',
   },
+  {
+    type: 'Emergency protection order',
+    fullType: 'Emergency protection order',
+    document: 'emergency_protection_order.pdf',
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Judy',
+      legalAdvisorName: 'Fred Frederickson',
+    },
+    childrenDescription: 'description',
+    epoType: 'Prevent removal from an address',
+    removalAddress: {
+      lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',
+      buildingAndStreet: {
+        lineOne: 'Flat 2',
+        lineTwo: 'Caversham House 15-17',
+        lineThree: 'Church Road',
+      },
+      town: 'Reading',
+      postcode: 'RG4 7AA',
+      country: 'United Kingdom',
+    },
+    directionText: 'Example direction',
+    includePhrase: 'Yes',
+  },
 ];

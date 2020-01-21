@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
@@ -162,6 +164,17 @@ public class GeneratedOrderService {
                                 caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
                 }
                 break;
+            case EMERGENCY_PROTECTION_ORDER:
+                orderTemplateBuilder
+                    .put("localAuthorityName", getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+                    .put("childrenDescription", getChildrenDescription(caseData.getEpoChildren()))
+                    .put("epoType", caseData.getEpoType())
+                    .put("includePhrase", caseData.getEpoPhrase().getIncludePhrase())
+                    .put("removalAddress", getFormattedRemovalAddress(caseData))
+                    .put("childrenCount", caseData.getChildren1() != null ? caseData.getChildren1().size() : 0)
+                    .put("epoStartDateTime", formatEPODateTime(time.now()))
+                    .put("epoEndDateTime", formatEPODateTime(caseData.getEpoEndDate()));
+                break;
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + orderType);
         }
@@ -196,8 +209,9 @@ public class GeneratedOrderService {
             .getDocument().getBinaryUrl();
     }
 
-    public void removeOrderProperties(Map<String, Object> data) {
-        Arrays.stream(GeneratedOrderKey.values()).forEach(value -> data.remove(value.getKey()));
+    public void removeOrderProperties(Map<String, Object> caseData) {
+        Arrays.stream(GeneratedEPOKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
+        Arrays.stream(GeneratedOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
     }
 
     private String getCourtName(String courtName) {
@@ -248,5 +262,25 @@ public class GeneratedOrderService {
                 "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
                     .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
+    }
+
+    private String getChildrenDescription(EPOChildren epoChildren) {
+        if ("Yes".equals(epoChildren.getDescriptionNeeded())) {
+            return epoChildren.getDescription();
+        }
+
+        return "";
+    }
+
+    private String formatEPODateTime(LocalDateTime dateTime) {
+        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy 'at' h:mma");
+    }
+
+    private String getFormattedRemovalAddress(CaseData caseData) {
+        if (caseData.getEpoRemovalAddress() != null) {
+            return caseData.getEpoRemovalAddress().getAddressAsString();
+        }
+
+        return "";
     }
 }

@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -24,6 +26,8 @@ import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -37,10 +41,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -239,12 +245,13 @@ class GeneratedOrderServiceTest {
     }
 
     @Test
-    void shouldRemoveOrderPropertiesWhenTheyExistInCaseDetails() {
+    void shouldRemovePropertiesOnCaseDetailsUsedForOrderCapture() {
         Map<String, Object> data = Arrays.stream(GeneratedOrderKey.values())
             .collect(Collectors.toMap(GeneratedOrderKey::getKey, value -> ""));
+        data.putAll(Arrays.stream(GeneratedEPOKey.values())
+            .collect(Collectors.toMap(GeneratedEPOKey::getKey, value -> "")));
 
         data.put("DO NOT REMOVE", "");
-
         service.removeOrderProperties(data);
 
         assertThat(data).containsOnlyKeys("DO NOT REMOVE");
@@ -257,6 +264,7 @@ class GeneratedOrderServiceTest {
             Arguments.of(CARE_ORDER, FINAL, "final_care_order.pdf"),
             Arguments.of(SUPERVISION_ORDER, INTERIM, "interim_supervision_order.pdf"),
             Arguments.of(SUPERVISION_ORDER, FINAL, "final_supervision_order.pdf"),
+            Arguments.of(EMERGENCY_PROTECTION_ORDER, null, "emergency_protection_order.pdf"),
             Arguments.of(SUPERVISION_ORDER, null, "supervision_order.pdf"),
             Arguments.of(CARE_ORDER, null, "care_order.pdf")
         );
@@ -268,7 +276,8 @@ class GeneratedOrderServiceTest {
             Arguments.of(CARE_ORDER, INTERIM),
             Arguments.of(CARE_ORDER, FINAL),
             Arguments.of(SUPERVISION_ORDER, INTERIM),
-            Arguments.of(SUPERVISION_ORDER, FINAL)
+            Arguments.of(SUPERVISION_ORDER, FINAL),
+            Arguments.of(EMERGENCY_PROTECTION_ORDER, null)
         );
     }
 
@@ -327,6 +336,20 @@ class GeneratedOrderServiceTest {
                                 "It is ordered that Example Local Authority supervises the child for 5 months from the "
                                     + "date of this order until %s.", formattedDateTime));
                 }
+                break;
+            case EMERGENCY_PROTECTION_ORDER:
+                expectedMap
+                    .put("orderType", EMERGENCY_PROTECTION_ORDER)
+                    .put("localAuthorityName", "Example Local Authority")
+                    .put("childrenDescription", "Test description")
+                    .put("epoType", REMOVE_TO_ACCOMMODATION)
+                    .put("includePhrase", "Yes")
+                    .put("removalAddress", "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
+                    .put("childrenCount", 1)
+                    .put("epoStartDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
+                        "d MMMM yyyy 'at' h:mma"))
+                    .put("epoEndDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
+                        "d MMMM yyyy 'at' h:mma"));
                 break;
             default:
         }
@@ -388,6 +411,33 @@ class GeneratedOrderServiceTest {
                         .directions("Example Directions")
                         .build())
                     .orderMonths(5);
+                break;
+            case EMERGENCY_PROTECTION_ORDER:
+                caseDataBuilder
+                    .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                        .type(EMERGENCY_PROTECTION_ORDER)
+                        .document(DocumentReference.builder().build())
+                        .build())
+                    .epoChildren(EPOChildren.builder()
+                        .descriptionNeeded("Yes")
+                        .description("Test description")
+                        .build())
+                    .epoEndDate(time.now())
+                    .epoPhrase(EPOPhrase.builder()
+                        .includePhrase("Yes")
+                        .build())
+                    .epoType(REMOVE_TO_ACCOMMODATION)
+                    .orderFurtherDirections(FurtherDirections.builder()
+                        .directionsNeeded("Yes")
+                        .directions("Example Directions")
+                        .build())
+                    .epoRemovalAddress(Address.builder()
+                        .addressLine1("1 Main Street")
+                        .addressLine2("Lurgan")
+                        .postTown("BT66 7PP")
+                        .county("Armagh")
+                        .country("United Kingdom")
+                        .build());
                 break;
             default:
         }

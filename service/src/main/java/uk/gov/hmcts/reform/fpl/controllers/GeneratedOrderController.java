@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
@@ -32,8 +34,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 
 @Slf4j
 @Api
@@ -108,11 +112,12 @@ public class GeneratedOrderController {
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
-        //Builds an order with custom values based on order type and adds it to list of orders
+        // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(caseData.getOrderTypeAndDocument(), caseData.getOrder(),
             caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths()));
 
         caseDetails.getData().put("orderCollection", orders);
+
         service.removeOrderProperties(caseDetails.getData());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -135,8 +140,11 @@ public class GeneratedOrderController {
     private Document getDocument(String authorization,
                                  String userId,
                                  CaseData caseData) {
+
+        DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
+
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            service.getOrderTemplateData(caseData), ORDER);
+                service.getOrderTemplateData(caseData), templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
@@ -154,5 +162,9 @@ public class GeneratedOrderController {
             log.error(mostRecentUploadedOrderDocumentUrl + " url incorrect.", e);
         }
         return "";
+    }
+
+    private DocmosisTemplates getDocmosisTemplateType(GeneratedOrderType type) {
+        return type == EMERGENCY_PROTECTION_ORDER ? EPO : ORDER;
     }
 }

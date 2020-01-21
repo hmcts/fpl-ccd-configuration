@@ -21,9 +21,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
@@ -32,6 +34,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -56,11 +60,14 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -263,7 +270,11 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             List<Element<GeneratedOrder>> orders = mapper.convertValue(data.get("orderCollection"),
                 new TypeReference<>() {});
 
-            Arrays.stream(GeneratedOrderKey.values()).forEach(key -> assertThat(data).doesNotContainKey(key.getKey()));
+            Arrays.stream(GeneratedOrderKey.values())
+                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
+
+            Arrays.stream(GeneratedEPOKey.values())
+                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
 
             assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
         }
@@ -295,6 +306,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
             assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
         }
 
@@ -318,8 +330,28 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 Arguments.of(generateCareOrderCaseDetails(INTERIM), "interim_care_order.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetails(FINAL), "final_care_order.pdf", ORDER),
                 Arguments.of(generateSupervisionOrderCaseDetails(INTERIM), "interim_supervision_order.pdf", ORDER),
-                Arguments.of(generateSupervisionOrderCaseDetails(FINAL), "final_supervision_order.pdf", ORDER)
+                Arguments.of(generateSupervisionOrderCaseDetails(FINAL), "final_supervision_order.pdf", ORDER),
+                Arguments.of(generateEmergencyProtectionOrderCaseDetails(), "emergency_protection_order.pdf", EPO)
             );
+        }
+
+        private CaseDetails generateEmergencyProtectionOrderCaseDetails() {
+            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
+
+            dataBuilder.order(GeneratedOrder.builder().details("").build())
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build());
+
+            generateDefaultValues(dataBuilder);
+            generateEpoValues(dataBuilder);
+
+            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
+                .directionsNeeded("Yes")
+                .directions("Some directions")
+                .build());
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .build();
         }
 
         private CaseDetails generateBlankOrderCaseDetails() {
@@ -375,6 +407,25 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             generateDefaultValues(builder);
 
             return builder;
+        }
+
+        private void generateEpoValues(CaseData.CaseDataBuilder builder) {
+            builder
+                .epoChildren(EPOChildren.builder()
+                    .description("Description")
+                    .descriptionNeeded("Yes")
+                    .build())
+                .epoPhrase(EPOPhrase.builder()
+                    .includePhrase("Yes")
+                    .build())
+                .epoEndDate(time.now())
+                .epoType(REMOVE_TO_ACCOMMODATION)
+                .epoRemovalAddress(Address.builder()
+                    .addressLine1("Unit 1")
+                    .addressLine2("Petty France")
+                    .postTown("Lurgan")
+                    .postcode("BT66 7RR")
+                    .build());
         }
 
         private void generateDefaultValues(CaseData.CaseDataBuilder builder) {

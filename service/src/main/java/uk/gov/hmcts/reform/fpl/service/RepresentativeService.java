@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -13,8 +14,10 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -35,8 +38,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepresentativeService {
 
-    private final OrganisationService organisationService;
     private final CaseService caseService;
+    private final OrganisationService organisationService;
+    private final RepresentativeCaseRoleService representativeCaseRoleService;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -46,7 +50,7 @@ public class RepresentativeService {
         }
     }
 
-    public List<String> validateRepresentatives(CaseData caseData, String authorisation) {
+    public List<String> validateRepresentatives(CaseData caseData) {
         List<String> validationErrors = new ArrayList<>();
 
         List<Representative> representatives = unwrapElements(caseData.getRepresentatives());
@@ -77,7 +81,7 @@ public class RepresentativeService {
             }
 
             if (DIGITAL_SERVICE.equals(servingPreferences)) {
-                validateDigitalServicePreference(authorisation, validationErrors, representative, representativeLabel);
+                validateDigitalServicePreference(validationErrors, representative, representativeLabel);
             }
         }
 
@@ -130,13 +134,12 @@ public class RepresentativeService {
         }
     }
 
-    private void validateDigitalServicePreference(String authorisation, List<String> validationErrors,
+    private void validateDigitalServicePreference(List<String> validationErrors,
                                                   Representative representative, String representativeLabel) {
         if (isEmpty(representative.getEmail())) {
             validationErrors.add(format("Enter an email address for %s", representativeLabel));
         } else {
-            Optional<String> userId = organisationService
-                .findUserByEmail(authorisation, representative.getEmail());
+            Optional<String> userId = organisationService.findUserByEmail(representative.getEmail());
 
             if (userId.isEmpty()) {
                 validationErrors.add(
@@ -155,25 +158,19 @@ public class RepresentativeService {
         }
     }
 
-    public void addRepresentatives(CaseData caseData, Long caseId, String auth) {
-        caseData.getRepresentatives()
-            .forEach(representative -> {
-                addToCase(representative, caseId, auth);
-                linkWithRepresentable(caseData, representative);
-            });
+    public void updateRepresentatives(Long caseId, CaseData updatedCaseData, CaseData originalCaseData) {
+        associatedRepresentativesWithParties(updatedCaseData);
+        updateRepresentativesCaseRoles(updatedCaseData, originalCaseData, caseId);
     }
 
-    private void addToCase(Element<Representative> representativeWithId, Long caseId, String auth) {
-        Representative representative = representativeWithId.getValue();
-        if (DIGITAL_SERVICE.equals(representative.getServingPreferences()) && isNull(representative.getIdamId())) {
-            organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
-                userId -> {
-                    caseService.addUser(auth, Long.toString(caseId), userId,
-                        representative.getRole().getCaseRoles());
-                    representative.setIdamId(userId);
-                }
-            );
-        }
+    private void updateRepresentativesCaseRoles(CaseData newCase, CaseData oldCase, Long caseId) {
+        Map<String, Set<CaseRole>> caseRolesToBeUpdated = representativeCaseRoleService.calculateCaseRoleUpdates(
+            unwrapElements(newCase.getRepresentatives()),
+            unwrapElements(oldCase.getRepresentatives()));
+
+        caseRolesToBeUpdated.forEach((email, roles) ->
+            organisationService.findUserByEmail(email)
+                .ifPresent(userId -> caseService.addUser(Long.toString(caseId), userId, roles)));
     }
 
     public List<Representative> getRepresentativesByServedPreference(List<Element<Representative>> representatives,
@@ -182,13 +179,24 @@ public class RepresentativeService {
             return representatives.stream()
                 .filter(Objects::nonNull)
                 .map(Element::getValue)
-                .filter(representative ->  preference == representative.getServingPreferences())
+                .filter(representative -> preference == representative.getServingPreferences())
                 .collect(toList());
         }
         return emptyList();
     }
 
-    private void linkWithRepresentable(CaseData caseData, Element<Representative> representative) {
+    private void associatedRepresentativesWithParties(CaseData caseData) {
+        caseData.getRespondents1().stream()
+            .map(Element::getValue)
+            .map(Representable::getRepresentedBy)
+            .forEach(List::clear);
+        caseData.getAllOthers().forEach(o -> o.getRepresentedBy().clear());
+
+        caseData.getRepresentatives()
+            .forEach(representative -> associatedRepresentativeWithParty(caseData, representative));
+    }
+
+    private void associatedRepresentativeWithParty(CaseData caseData, Element<Representative> representative) {
         findRepresentable(caseData, representative.getValue())
             .ifPresent(representable -> representable.addRepresentative(representative.getId()));
     }
@@ -203,6 +211,4 @@ public class RepresentativeService {
                 return Optional.empty();
         }
     }
-
-
 }
