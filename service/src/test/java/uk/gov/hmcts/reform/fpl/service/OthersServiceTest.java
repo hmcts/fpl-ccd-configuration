@@ -13,9 +13,11 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -146,7 +148,6 @@ class OthersServiceTest {
 
         assertThat(updatedOthers.getFirstOther().getTelephone()).isNull();
         assertThat(updatedOthers.getFirstOther().getAddress()).isNull();
-
     }
 
     @Test
@@ -163,6 +164,21 @@ class OthersServiceTest {
         assertThat(updatedOthers.getFirstOther().getAddress()).isNotNull();
     }
 
+    @Test
+    void shouldRetainConfidentialDetailsWhenConfidentialOtherExists() {
+        List<Element<Other>> confidentialOthers =
+            service.retainConfidentialDetails(wrapElements(otherWithDetailsHiddenValue("Yes")));
+
+        assertThat(unwrapElements(confidentialOthers)).containsOnly(confidentialOther());
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoConfidentialOthers() {
+        List<Element<Other>> confidentialOthers = service.retainConfidentialDetails(emptyList());
+
+        assertThat(confidentialOthers).isEmpty();
+    }
+
     private CaseData buildCaseDataWithOthers(Other firstOther,
                                              List<Element<Other>> additionalOthers,
                                              List<Element<Other>> confidentialOthers) {
@@ -177,6 +193,14 @@ class OthersServiceTest {
             .name("James")
             .gender("Female")
             .detailsHidden(hidden)
+            .address(Address.builder().addressLine1("Address Line 1").build())
+            .telephone("01227 831393")
+            .build();
+    }
+
+    private Other confidentialOther() {
+        return Other.builder()
+            .name("James")
             .address(Address.builder().addressLine1("Address Line 1").build())
             .telephone("01227 831393")
             .build();

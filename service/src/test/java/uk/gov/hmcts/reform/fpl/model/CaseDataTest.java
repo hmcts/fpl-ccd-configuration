@@ -77,12 +77,7 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         Other other2 = otherWithName("Sam");
 
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other1)
-                .additionalOthers(wrapElements(other2))
-                .build())
-            .build();
+        CaseData caseData = caseData(Others.builder().firstOther(other1).additionalOthers(wrapElements(other2)));
 
         assertThat(caseData.getAllOthers().get(0).getValue()).isEqualTo(other1);
         assertThat(caseData.getAllOthers().get(1).getValue()).isEqualTo(other2);
@@ -97,7 +92,7 @@ class CaseDataTest {
 
     @Test
     void shouldGetEmptyListOfOthersWhenOthersAreEmpty() {
-        CaseData caseData = CaseData.builder().others(Others.builder().build()).build();
+        CaseData caseData = caseData(Others.builder());
 
         assertThat(caseData.getAllOthers().get(0).getValue()).isNull();
     }
@@ -105,7 +100,7 @@ class CaseDataTest {
     @Test
     void shouldGetFirstOtherWhenNoAdditionalOthers() {
         Other other1 = otherWithName("John");
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other1).build()).build();
+        CaseData caseData = caseData(Others.builder().firstOther(other1));
 
         assertThat(caseData.getAllOthers().get(0).getValue()).isEqualTo(other1);
     }
@@ -113,7 +108,7 @@ class CaseDataTest {
     @Test
     void shouldFindFirstOther() {
         Other other1 = otherWithName("John");
-        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(other1).build()).build();
+        CaseData caseData = caseData(Others.builder().firstOther(other1));
 
         assertThat(caseData.findOther(0)).isEqualTo(Optional.of(other1));
     }
@@ -121,9 +116,7 @@ class CaseDataTest {
     @Test
     void shouldNotFindNonExistingOther() {
         Other other1 = otherWithName("John");
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder().firstOther(other1).build())
-            .build();
+        CaseData caseData = caseData(Others.builder().firstOther(other1));
 
         assertThat(caseData.findOther(1)).isEqualTo(Optional.empty());
     }
@@ -155,6 +148,10 @@ class CaseDataTest {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
         assertThat(caseData.findRespondent(1)).isEqualTo(Optional.empty());
+    }
+
+    private CaseData caseData(Others.OthersBuilder othersBuilder) {
+        return CaseData.builder().others(othersBuilder.build()).build();
     }
 
     private Other otherWithName(String name) {

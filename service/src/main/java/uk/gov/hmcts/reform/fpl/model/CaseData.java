@@ -221,7 +221,7 @@ public class CaseData {
 
     @JsonIgnore
     public List<Element<Other>> getAllOthers() {
-        final List<Element<Other>> othersList = new ArrayList<>();
+        List<Element<Other>> othersList = new ArrayList<>();
 
         ofNullable(this.getOthers()).map(others -> element(others.getFirstOther())).ifPresent(othersList::add);
         ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
@@ -260,7 +260,6 @@ public class CaseData {
     private final List<Element<Other>> confidentialOthers;
 
     public List<Element<Other>> getConfidentialOthers() {
-        return confidentialOthers != null ? confidentialOthers : new ArrayList<>();
+        return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
     }
-
 }
