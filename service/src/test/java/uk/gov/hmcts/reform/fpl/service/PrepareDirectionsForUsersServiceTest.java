@@ -22,7 +22,7 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -44,7 +44,7 @@ class PrepareDirectionsForUsersServiceTest {
             Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
             directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_COURT);
 
             assertThat(caseDetails).isEqualTo(CaseDetails.builder().build());
             assertThat(directionsMap).isEqualTo(ImmutableMap.of(ALL_PARTIES, buildDirections(ALL_PARTIES)));
@@ -57,7 +57,7 @@ class PrepareDirectionsForUsersServiceTest {
             directionsMap.put(COURT, buildDirections(COURT));
             directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_COURT);
 
             assertThat(caseDetails).isEqualTo(CaseDetails.builder().build());
             assertThat(directionsMap).isEqualTo(ImmutableMap.of(
@@ -73,7 +73,7 @@ class PrepareDirectionsForUsersServiceTest {
             directionsMap.put(assignee, buildDirections(assignee));
             directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_COURT);
 
             List<Element<Direction>> expectedDirections = buildDirections(assignee);
             expectedDirections.addAll(buildDirections(ALL_PARTIES));
@@ -92,7 +92,7 @@ class PrepareDirectionsForUsersServiceTest {
             directionsMap.put(assignee, buildDirections(assignee));
             directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_COURT);
 
             List<Element<Direction>> expectedDirections = buildDirections(assignee);
             expectedDirections.addAll(buildDirections(ALL_PARTIES));
@@ -110,7 +110,7 @@ class PrepareDirectionsForUsersServiceTest {
             directionsMap.put(PARENTS_AND_RESPONDENTS, buildDirections(PARENTS_AND_RESPONDENTS));
             directionsMap.put(ALL_PARTIES, allPartyDirections());
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_COURT);
 
             List<Element<Direction>> expectedDirections = new ArrayList<>();
             expectedDirections.addAll(buildDirections(PARENTS_AND_RESPONDENTS));

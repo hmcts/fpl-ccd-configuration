@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -17,22 +18,30 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import javax.validation.Valid;
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -159,7 +168,9 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final OrderTypeAndDocument orderTypeAndDocument;
+    private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
+    private final Integer orderMonths;
     private final List<Element<GeneratedOrder>> orderCollection;
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
@@ -216,6 +227,18 @@ public class CaseData {
 
     private final List<Element<Representative>> representatives;
 
+    // EPO Order
+    private final EPOChildren epoChildren;
+    @TimeNotMidnight(message = "Enter a valid end time", groups = EPOEndDateGroup.class)
+    @Future(message = "Enter an end date in the future", groups = EPOEndDateGroup.class)
+    @TimeRange(message = "Date must be within the next 8 days", groups = EPOEndDateGroup.class,
+        maxDate = @TimeDifference(amount = 8, unit = DAYS))
+    private final LocalDateTime epoEndDate;
+    private final EPOPhrase epoPhrase;
+    private final EPOType epoType;
+    @Valid
+    private final Address epoRemovalAddress;
+
     @JsonIgnore
     public List<Other> getAllOthers() {
         final List<Other> othersList = new ArrayList<>();
@@ -236,6 +259,11 @@ public class CaseData {
     public Optional<Respondent> findRespondent(int seqNo) {
         return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+    }
+
+    @JsonIgnore
+    public String getFurtherDirectionsText() {
+        return Optional.ofNullable(orderFurtherDirections).map(FurtherDirections::getDirections).orElse("");
     }
 
     private final List<Element<Child>> confidentialChildren;

@@ -293,6 +293,7 @@ declare namespace CodeceptJS {
     retryStep(opts: string) : void,
     enterMandatoryFields() : void,
     addAnotherElementToCollection(): void,
+    removeElementFromCollection(): void,
     retryUntilExists(action: Function, locator: string) : void,
   }
 

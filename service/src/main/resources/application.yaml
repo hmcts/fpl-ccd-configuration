@@ -12,9 +12,6 @@ management:
 spring:
   application:
     name: fpl-service
-  jackson:
-    deserialization:
-      ACCEPT_EMPTY_STRING_AS_NULL_OBJECT: true
 
 idam:
   s2s-auth:
@@ -27,6 +24,16 @@ fpl:
 
 spring:
   profiles: integration-test
+  mail:
+    host: 127.0.0.1
+    port: 1025
+    test-connection:
+    properties:
+      mail-smtp:
+        starttls:
+          enable:
+        ssl:
+          trust:
 
 management:
   endpoints:
@@ -74,7 +81,7 @@ fpl:
   local_authority_code_to_name:
     mapping: 'example=>Example Local Authority'
   local_authority_code_to_hmcts_court:
-    mapping: 'example=>Family Court:admin@family-court.com'
+    mapping: 'example=>Family Court:admin@family-court.com:11'
   local_authority_code_to_cafcass:
     mapping: 'example=>cafcass:cafcass@cafcass.com'
   local_authority_code_to_shared_inbox:
@@ -85,6 +92,18 @@ fpl:
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
+
+robotics:
+  notification:
+    sender: sender@example.com
+    recipient: FamilyPublicLaw+robotics-test@gmail.com
+
+feature:
+  toggle:
+    robotics:
+      case-number:
+        notification:
+          enabled: true
 
 ---
 
@@ -97,6 +116,15 @@ spring:
         jwt:
           issuer-uri: http://fr-am:8080/openam/oauth2/hmcts
           jwk-set-uri: http://localhost:5000/o/jwks
+  mail:
+    host: 127.0.0.1
+    port: 1025
+    properties:
+      mail-smtp:
+        starttls:
+          enable:
+        ssl:
+          trust:
 
 idam:
   api:
@@ -145,7 +173,7 @@ fpl:
   local_authority_code_to_name:
     mapping: 'SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council;SN=>Swindon County Council;SNW=>Wiltshire County Council'
   local_authority_code_to_hmcts_court:
-    mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com;HN=>Family Court sitting at West London:FamilyPublicLaw+hn@gmail.com;SN=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com;SNW=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com'
+    mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com:344;HN=>Family Court sitting at West London:FamilyPublicLaw+hn@gmail.com:332;SN=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com:345;SNW=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com:345'
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SNW=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
   local_authority_code_to_shared_inbox:
@@ -154,3 +182,15 @@ fpl:
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
+
+robotics:
+  notification:
+    sender: sender@example.com
+    recipient: FamilyPublicLaw+robotics@gmail.com
+
+feature:
+  toggle:
+    robotics:
+      case-number:
+        notification:
+          enabled: true

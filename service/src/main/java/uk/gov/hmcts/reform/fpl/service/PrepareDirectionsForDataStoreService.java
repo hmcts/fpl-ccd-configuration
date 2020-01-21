@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
@@ -160,7 +160,7 @@ public class PrepareDirectionsForDataStoreService {
                                                             UUID id,
                                                             Element<DirectionResponse> response,
                                                             DirectionAssignee assignee) {
-        if (event == COMPLY_ON_BEHALF_SDO) {
+        if (event == COMPLY_ON_BEHALF_COURT) {
             return addCourtAssigneeAndDirectionId(id, response);
         }
         return addResponderAssigneeAndDirectionId(response, authorisation, assignee, id);

@@ -32,6 +32,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createJudgeAndLegalAdvisor;
@@ -93,7 +94,7 @@ class GeneratedOrderEmailContentProviderTest {
         final LocalDateTime now = LocalDateTime.now();
         return CaseDetails.builder()
             .id(167888L)
-            .data(ImmutableMap.of("hearingDetails", createHearingBookings(now, now.plusDays(1)),
+            .data(ImmutableMap.of(HEARING_DETAILS_KEY, createHearingBookings(now, now.plusDays(1)),
                 "orderCollection", ImmutableList.of(
                     Element.<GeneratedOrder>builder()
                         .value(GeneratedOrder.builder()

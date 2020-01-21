@@ -52,7 +52,7 @@ class EmailNotificationHelperTest {
 
     @Test
     void subjectLineShouldReturnFirstRespondentElementAlwaysWhenMultipleRespondentsGiven() {
-        List<Element<Respondent>> respondents =  ImmutableList.of(
+        List<Element<Respondent>> respondents = ImmutableList.of(
             Element.<Respondent>builder()
                 .id(UUID.randomUUID())
                 .value(Respondent.builder().party(

@@ -15,7 +15,7 @@ locals {
   IDAM_S2S_AUTH_URL       = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
   DOCUMENT_MANAGEMENT_URL = "http://dm-store-${local.local_env}.service.${local.local_ase}.internal"
   CORE_CASE_DATA_API_URL  = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
-  RD_PROFESSIONAL_API_URL  = "http://rd-professional-api-${local.local_env}.service.core-compute-${local.local_ase}.internal"
+  RD_PROFESSIONAL_API_URL  = "http://rd-professional-api-${local.local_env}.service.${local.local_ase}.internal"
   DOCMOSIS_API_URL        = "https://docmosis-development.platform.hmcts.net"
 }
 
@@ -100,6 +100,16 @@ data "azurerm_key_vault_secret" "system_update_user_password" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "robotics-notification-recipient" {
+  name          = "robotics-notification-recipient"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "robotics-notification-sender" {
+  name          = "robotics-notification-sender"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
 module "key-vault" {
   source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   name                    = "fpl-${var.env}"
@@ -152,10 +162,17 @@ module "case-service" {
     NOTIFY_API_KEY                                      = "${data.azurerm_key_vault_secret.notify_api_key.value}"
     FPL_SYSTEM_UPDATE_USERNAME                          = "${data.azurerm_key_vault_secret.system_update_user_username.value}"
     FPL_SYSTEM_UPDATE_PASSWORD                          = "${data.azurerm_key_vault_secret.system_update_user_password.value}"
+    ROBOTICS_NOTIFICATION_SENDER                        = "${data.azurerm_key_vault_secret.robotics-notification-sender.value}"
+    ROBOTICS_NOTIFICATION_RECIPIENT                     = "${data.azurerm_key_vault_secret.robotics-notification-recipient.value}"
     SPRING_SECURITY_ENABLED                             = "${var.security_enabled}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI = "${var.idam_token_issuer_uri}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI = "${var.idam_token_jwk_set_uri}"
+    SPRING_MAIL_HOST                                    = "${var.mail_host}"
+    SPRING_MAIL_PORT                                    = "${var.mail_port}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE    = "${var.mail_properties_smtp_starttls_enable}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST          = "${var.mail_host}"
     GATEWAY_URL                                         = "${var.gateway_url}"
+    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED    = "${var.feature_toggle_robotics_case_number_notification_enabled}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false

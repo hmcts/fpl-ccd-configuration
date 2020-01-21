@@ -25,7 +25,7 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -337,7 +337,7 @@ class PrepareDirectionsForDataStoreServiceTest {
                 .complied("Yes")
                 .build();
 
-            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_SDO, "auth");
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_COURT, "auth");
 
             assertThat(getResponsesSdo(caseData).get(0).getValue()).isEqualTo(expectedResponse);
         }
@@ -357,7 +357,7 @@ class PrepareDirectionsForDataStoreServiceTest {
                     .assignee(COURT)
                     .build()));
 
-            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_SDO, "auth");
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_COURT, "auth");
 
             assertThat(getResponsesSdo(caseData)).containsAll(expectedResponses);
         }

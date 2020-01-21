@@ -99,3 +99,21 @@ variable "gateway_url" {
   type    = "string"
   default = ""
 }
+
+variable "mail_host" {
+  type = "string"
+  default = "mta.reform.hmcts.net"
+}
+
+variable "mail_port" {
+  type = "string"
+  default = "25"
+}
+
+variable "mail_properties_smtp_starttls_enable" {
+  default = true
+}
+
+variable "feature_toggle_robotics_case_number_notification_enabled" {
+  default = false
+}

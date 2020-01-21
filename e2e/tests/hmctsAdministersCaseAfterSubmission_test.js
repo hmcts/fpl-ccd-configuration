@@ -2,6 +2,7 @@ const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const orders = require('../fixtures/orders.js');
 const representatives = require('../fixtures/representatives.js');
+const orderFunctions = require('../helpers/generated_order_helper');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -138,39 +139,12 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
 });
 
 Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-  await createOrderEventPage.selectType(orders[0].type);
-  await I.retryUntilExists(() => I.click('Continue'), '#order_title');
-  await createOrderEventPage.enterC21OrderDetails();
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[0].judgeAndLegalAdvisor.judgeLastName, orders[0].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.completeEvent('Save and continue');
-  let orderTime = new Date();
-
-  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-  caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'Order 1', 'Type of order', orders[0].type);
-  I.seeAnswerInTab(2, 'Order 1', 'Order title', orders[0].title);
-  I.seeAnswerInTab(4, 'Order 1', 'Order document', orders[0].document);
-  I.seeAnswerInTab(5, 'Order 1', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[0].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[0].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[0].judgeAndLegalAdvisor.legalAdvisorName);
-
-  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-  await createOrderEventPage.selectType(orders[1].type);
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[1].judgeAndLegalAdvisor.judgeLastName, orders[1].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.completeEvent('Save and continue');
-  orderTime = new Date();
-  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-  caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'Order 2', 'Type of order', orders[1].type);
-  I.seeAnswerInTab(2, 'Order 2', 'Order document', orders[1].document);
-  I.seeAnswerInTab(3, 'Order 2', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[1].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[1].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[1].judgeAndLegalAdvisor.legalAdvisorName);
+  for(let i = 0; i < orders.length; i++) {
+    await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+    await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
+    I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+    await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
+  }
 });
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
@@ -208,6 +182,24 @@ Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, 
   await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   await I.navigateToCaseDetails(caseId);
   I.see(caseId);
+  I.signOut();
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+});
+
+Scenario('HMCTS admin revoke case access from representative', async (I, caseViewPage) => {
+  await I.navigateToCaseDetails(caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
+
+  await I.removeElementFromCollection('Representatives');
+
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
+
+  I.signOut();
+  await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  await I.navigateToCaseDetails(caseId);
+  I.seeInCurrentUrl('error');
+
   I.signOut();
   await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
 });

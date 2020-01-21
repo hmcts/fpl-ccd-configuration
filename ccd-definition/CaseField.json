@@ -12,7 +12,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
     "Label": "Case name",
-    "HintText": "Include the Local Authority name and respondent’s last name. For example, Endley Council v Smith/Tate/Jones",
+    "HintText": "Include the Local Authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -86,7 +86,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadDocuments_paragraph_1",
-    "Label": "You must upload these documents if possible. Give the reason and date you expect to provide it if you don’t have a document yet.",
+    "Label": "You must upload these documents if possible. Give the reason and date you expect to provide it if you don't have a document yet.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
@@ -642,6 +642,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderFurtherDirections",
+    "Label": "Further directions",
+    "FieldType": "FurtherDirections",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orderCollection",
     "Label": "Order",
     "FieldType": "Collection",
@@ -892,6 +900,57 @@
     "ID": "cmoDraftInReviewHint",
     "Label": "The judge is reviewing this order. You can only edit it if the judge asks for changes.",
     "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderMonths",
+    "Label": "How many months will this order remain in place",
+    "FieldType": "Number",
+    "SecurityClassification": "Public",
+    "Max": "99",
+    "Min": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoChildren",
+    "Label": "Describe the children",
+    "FieldType": "EPOChildren",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "EPOTypes",
+    "Label": "What type of EPO are you requesting?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoRemovalAddress",
+    "FieldType": "AddressUK",
+    "Label": "Address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoPhrase",
+    "Label": "Do you want to include this phrase in the order?",
+    "FieldType": "EPOPhrase",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoEndDate",
+    "Label": "When does the order end",
+    "FieldType": "DateTime",
     "SecurityClassification": "Public"
   }
 ]

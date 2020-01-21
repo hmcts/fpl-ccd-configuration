@@ -14,7 +14,7 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
@@ -45,7 +45,7 @@ public class PrepareDirectionsForUsersService {
                 case PARENTS_AND_RESPONDENTS:
                     directions.addAll(clone);
 
-                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                    if (eventId == COMPLY_ON_BEHALF_COURT) {
                         filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
                     } else {
                         filterResponsesNotCompliedBySolicitor(directions, PARENTS_AND_RESPONDENTS);
@@ -57,7 +57,7 @@ public class PrepareDirectionsForUsersService {
                 case OTHERS:
                     directions.addAll(clone);
 
-                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                    if (eventId == COMPLY_ON_BEHALF_COURT) {
                         filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
                     } else {
                         filterResponsesNotCompliedBySolicitor(directions, OTHERS);
