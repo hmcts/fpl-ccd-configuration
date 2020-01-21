@@ -92,13 +92,10 @@ public class OthersService {
             }
         });
 
-        Other firstOther = getFirstOther(caseData.getConfidentialOthers(), others);
-
-        if (isNotEmpty(others)) {
-            others.remove(0);
-        }
-
-        return Others.builder().firstOther(firstOther).additionalOthers(others).build();
+        return Others.builder()
+            .firstOther(getFirstOther(caseData.getConfidentialOthers(), others))
+            .additionalOthers(getAdditionalOthers(others))
+            .build();
     }
 
     private Element<Other> findConfidentialOther(List<Element<Other>> confidentialOthers, Element<Other> element) {
@@ -115,8 +112,7 @@ public class OthersService {
             .build();
     }
 
-    // This finds the element id in confidential others that doesn't match which is therefore the first other id
-    // Hacky but only way we can find the first other id as it is not an element
+    // This finds firstOther element id in confidential others that doesn't match.
     private Other getFirstOther(List<Element<Other>> confidentialOthers, List<Element<Other>> others) {
         List<UUID> ids = others.stream().map(Element::getId).collect(toList());
 
@@ -128,5 +124,13 @@ public class OthersService {
                 .orElse(others.get(0).getValue());
         }
         return null;
+    }
+
+    // This removes firstOther element in others.
+    private List<Element<Other>> getAdditionalOthers(List<Element<Other>> others) {
+        if (isNotEmpty(others)) {
+            others.remove(0);
+        }
+        return others;
     }
 }

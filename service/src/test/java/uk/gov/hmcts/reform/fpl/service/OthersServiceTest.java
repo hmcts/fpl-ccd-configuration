@@ -87,6 +87,15 @@ class OthersServiceTest {
     }
 
     @Test
+    void shouldReturnEmptyOthersWhenNoOthersInCaseData() {
+        CaseData caseData = CaseData.builder().build();
+
+        Others others = service.prepareOthers(caseData);
+
+        assertThat(others).isEqualTo(Others.builder().additionalOthers(emptyList()).build());
+    }
+
+    @Test
     void shouldReturnOthersWhenOthersIsPrePopulated() {
         List<Element<Other>> additionalOthers = othersWithRemovedConfidentialFields();
 
