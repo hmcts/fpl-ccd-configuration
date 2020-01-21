@@ -110,13 +110,15 @@ public class DirectionHelperService {
                     directionToAddValue.getValue().getAssignee(), direction.getValue().getAssignee()));
 
                 if (!direction.getValue().getReadOnly().equals("No")) {
-                    directionToAddValue.getValue().setDirectionText(direction.getValue().getDirectionText());
+                    directionToAddValue.getValue().setDirectionText(
+                        direction.getValue().getDirectionText().replace("’", "'"));
                 }
             }));
     }
 
     private boolean hasSameDirectionType(Element<Direction> directionToAddValue, Element<Direction> direction) {
-        return direction.getValue().getDirectionType().equals(directionToAddValue.getValue().getDirectionType());
+        return direction.getValue().getDirectionType()
+            .equals(directionToAddValue.getValue().getDirectionType().replace("’", "'"));
     }
 
     /**
