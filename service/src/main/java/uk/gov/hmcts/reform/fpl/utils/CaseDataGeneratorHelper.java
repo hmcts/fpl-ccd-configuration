@@ -66,6 +66,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -453,7 +454,7 @@ public class CaseDataGeneratorHelper {
             .put("applicants", createPopulatedApplicants())
             .put("solicitor", createSolicitor())
             .put("children1", createPopulatedChildren())
-            .put("hearingDetails", createHearingBookings(localDateTime))
+            .put(HEARING_DETAILS_KEY, createHearingBookings(localDateTime))
             .put("dateSubmitted", LocalDate.now())
             .put("respondents1", respondents)
             .put("others", others)
