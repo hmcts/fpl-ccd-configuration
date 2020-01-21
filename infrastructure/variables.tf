@@ -121,5 +121,6 @@ variable "feature_toggle_robotics_case_number_notification_enabled" {
 }
 
 variable "feature_toggle_robotics_support_api_enabled" {
-  default = false
+  type = "string"
+  default = "true"
 }

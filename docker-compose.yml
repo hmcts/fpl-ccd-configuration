@@ -26,10 +26,10 @@ services:
       - default
       - ccd-network
   docmosis-tornado:
-    image: skeneventures/docmosis-tornado
+    image: mikehodgson/tornado
     environment:
       # not supported in current version of Tornado
-      - DOCMOSIS_KEY
+      - DOCMOSIS_KEY=0OAD-KLTK-JALO-DLIA-EBBH-1ELH-YBKQ-GS91-23ED-8-E499
       - DOCMOSIS_SITE="Free Trial License"
     volumes:
       - ./docker/docmosis/templates:/home/docmosis/templates:rw
@@ -41,6 +41,24 @@ services:
       - ./docker/wiremock:/home/wiremock:rw
     ports:
       - 8765:8080
+  send-letter-service:
+    image: hmctspublic.azurecr.io/rpe/send-letter-service:latest
+    container_name: send-letter-service
+    environment:
+      - APPINSIGHTS_INSTRUMENTATIONKEY=
+      - LETTER_TRACKING_DB_PASSWORD=password
+      - FLYWAY_NOOP_STRATEGY=false
+      - FTP_HOSTNAME=localhost
+      - FTP_PORT=22
+      - FTP_TARGET_FOLDER=TARGET
+      - FTP_REPORTS_FOLDER=REPORTS
+      - FTP_FINGERPRINT=fingerprint
+      - FTP_USER=user
+      - FTP_PRIVATE_KEY=private
+      - FTP_PUBLIC_KEY=public
+      - S2S_URL=false
+    ports:
+    - 8485:8485
 networks:
   ccd-network:
       external: true
