@@ -14,4 +14,3 @@ public enum GeneratedOrderKey implements CaseField {
 
     private final String key;
 }
-

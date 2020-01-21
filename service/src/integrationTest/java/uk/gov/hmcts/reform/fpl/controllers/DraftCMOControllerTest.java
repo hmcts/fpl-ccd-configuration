@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseManagementOrderKey.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseManagementOrderKey.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -87,7 +88,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() {
         Map<String, Object> data = ImmutableMap.of(
-            "hearingDetails", hearingDetails,
+            HEARING_DETAILS_KEY, hearingDetails,
             "respondents1", createRespondents(),
             "others", createOthers());
 

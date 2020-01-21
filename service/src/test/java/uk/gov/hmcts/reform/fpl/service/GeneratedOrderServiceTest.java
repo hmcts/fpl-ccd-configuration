@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.GeneratedOrderKey;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -23,6 +25,8 @@ import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -36,8 +40,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
@@ -226,12 +232,13 @@ class GeneratedOrderServiceTest {
     }
 
     @Test
-    void shouldRemoveOrderPropertiesWhenTheyExistInCaseDetails() {
+    void shouldRemovePropertiesOnCaseDetailsUsedForOrderCapture() {
         Map<String, Object> data = Arrays.stream(GeneratedOrderKey.values())
             .collect(Collectors.toMap(GeneratedOrderKey::getKey, value -> ""));
+        data.putAll(Arrays.stream(GeneratedEPOKey.values())
+            .collect(Collectors.toMap(GeneratedEPOKey::getKey, value -> "")));
 
         data.put("DO NOT REMOVE", "");
-
         service.removeOrderProperties(data);
 
         assertThat(data).containsOnlyKeys("DO NOT REMOVE");
@@ -241,7 +248,10 @@ class GeneratedOrderServiceTest {
         return Stream.of(
             Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
             Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).build(), "care_order.pdf"),
-            Arguments.of(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build(), "supervision_order.pdf")
+            Arguments.of(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build(), "supervision_order.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build(),
+                "emergency_protection_order.pdf")
+
         );
     }
 
@@ -270,6 +280,19 @@ class GeneratedOrderServiceTest {
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails",
                         "It is ordered that the child is placed in the care of Example Local Authority.");
+                break;
+            case EMERGENCY_PROTECTION_ORDER:
+                expectedMap
+                    .put("localAuthorityName", "Example Local Authority")
+                    .put("childrenDescription", "Test description")
+                    .put("epoType", REMOVE_TO_ACCOMMODATION)
+                    .put("includePhrase", "Yes")
+                    .put("removalAddress", "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
+                    .put("childrenCount", 1)
+                    .put("epoStartDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
+                        "d MMMM yyyy 'at' h:mma"))
+                    .put("epoEndDateTime",  dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
+                        "d MMMM yyyy 'at' h:mma"));
                 break;
             case SUPERVISION_ORDER:
                 final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
@@ -341,6 +364,33 @@ class GeneratedOrderServiceTest {
                         .directions("Example Directions")
                         .build())
                     .orderMonths(5);
+                break;
+            case EMERGENCY_PROTECTION_ORDER:
+                caseDataBuilder
+                    .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                        .type(EMERGENCY_PROTECTION_ORDER)
+                        .document(DocumentReference.builder().build())
+                        .build())
+                    .epoChildren(EPOChildren.builder()
+                        .descriptionNeeded("Yes")
+                        .description("Test description")
+                        .build())
+                    .epoEndDate(time.now())
+                    .epoPhrase(EPOPhrase.builder()
+                        .includePhrase("Yes")
+                        .build())
+                    .epoType(REMOVE_TO_ACCOMMODATION)
+                    .orderFurtherDirections(FurtherDirections.builder()
+                        .directionsNeeded("Yes")
+                        .directions("Example Directions")
+                        .build())
+                    .epoRemovalAddress(Address.builder()
+                        .addressLine1("1 Main Street")
+                        .addressLine2("Lurgan")
+                        .postTown("BT66 7PP")
+                        .county("Armagh")
+                        .country("United Kingdom")
+                        .build());
                 break;
             default:
         }

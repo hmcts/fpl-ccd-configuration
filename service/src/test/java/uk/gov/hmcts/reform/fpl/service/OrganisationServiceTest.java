@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
@@ -30,8 +31,13 @@ class OrganisationServiceTest {
 
     @MockBean
     private OrganisationApi organisationApi;
+
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
+
+    @MockBean
+    private RequestData requestData;
+
     private OrganisationService organisationService;
 
     private static final String AUTH_TOKEN_ID = "Bearer authorisedBearer";
@@ -42,8 +48,10 @@ class OrganisationServiceTest {
     void setup() {
         LocalAuthorityUserLookupConfiguration laUserLookupConfig =
             new LocalAuthorityUserLookupConfiguration("SA=>1,2,3");
-        organisationService = new OrganisationService(laUserLookupConfig, organisationApi, authTokenGenerator);
+        organisationService = new OrganisationService(laUserLookupConfig, organisationApi,
+            authTokenGenerator, requestData);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN_ID);
+        when(requestData.authorisation()).thenReturn(AUTH_TOKEN_ID);
     }
 
     @Test
@@ -99,7 +107,7 @@ class OrganisationServiceTest {
 
         when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenReturn(user);
 
-        Optional<String> actualUserId = organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL);
+        Optional<String> actualUserId = organisationService.findUserByEmail(USER_EMAIL);
 
         assertThat(actualUserId).isEqualTo(Optional.of(user.getUserIdentifier()));
     }
@@ -110,7 +118,7 @@ class OrganisationServiceTest {
 
         when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
 
-        Optional<String> actualUserId = organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL);
+        Optional<String> actualUserId = organisationService.findUserByEmail(USER_EMAIL);
 
         assertThat(actualUserId.isPresent()).isFalse();
     }
@@ -122,7 +130,7 @@ class OrganisationServiceTest {
         when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
 
         Exception actualException = assertThrows(FeignException.InternalServerError.class,
-            () -> organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL));
+            () -> organisationService.findUserByEmail(USER_EMAIL));
         assertThat(actualException).isEqualTo(exception);
     }
 }
