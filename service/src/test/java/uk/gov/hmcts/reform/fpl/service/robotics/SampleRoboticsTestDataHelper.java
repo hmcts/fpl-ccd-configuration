@@ -38,6 +38,7 @@ public class SampleRoboticsTestDataHelper {
             .issueDate(dateFormatterService.formatLocalDateToString(NOW, "dd-MM-yyyy"))
             .applicant(expectedApplicant())
             .owningCourt(11)
+            .caseId(12345L)
             .build();
     }
 
