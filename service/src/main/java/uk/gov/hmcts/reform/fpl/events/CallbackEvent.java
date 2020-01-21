@@ -8,7 +8,7 @@ public class CallbackEvent {
     private final String authorization;
     private final String userId;
 
-    public CallbackEvent(CallbackRequest callbackRequest, String authorization, String userId) {
+    CallbackEvent(CallbackRequest callbackRequest, String authorization, String userId) {
         this.callbackRequest = callbackRequest;
         this.authorization = authorization;
         this.userId = userId;

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,12 +16,16 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Map.entry;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
@@ -45,7 +50,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 class RepresentativesServiceTest {
 
-    private final String authentication = RandomStringUtils.randomAlphanumeric(10);
+    private final String authorisation = RandomStringUtils.randomAlphanumeric(10);
 
     @Mock
     private CaseService caseService;
@@ -54,10 +59,18 @@ class RepresentativesServiceTest {
     private OrganisationService organisationService;
 
     @Mock
-    private CaseDataExtractionService caseDataExtractionService;
+    private RequestData requestData;
+
+    @Mock
+    private RepresentativeCaseRoleService representativesCaseRoleService;
 
     @InjectMocks
     private RepresentativeService representativesService;
+
+    @BeforeEach
+    private void init() {
+        when(requestData.authorisation()).thenReturn(authorisation);
+    }
 
     @AfterEach
     private void verifyNoUnexpectedInteractions() {
@@ -70,7 +83,7 @@ class RepresentativesServiceTest {
         Representative representative = Representative.builder().build();
         CaseData caseData = caseWithRepresentatives(representative);
 
-        List<String> validationErrors = representativesService.validateRepresentatives(caseData, authentication);
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
         assertThat(validationErrors).containsExactly(
             "Enter a full name for Representative",
@@ -85,7 +98,7 @@ class RepresentativesServiceTest {
         Representative representative2 = Representative.builder().build();
         CaseData caseData = caseWithRepresentatives(representative1, representative2);
 
-        List<String> validationErrors = representativesService.validateRepresentatives(caseData, authentication);
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
         assertThat(validationErrors).containsExactly(
             "Enter a full name for Representative 1",
@@ -109,7 +122,7 @@ class RepresentativesServiceTest {
 
         CaseData caseData = caseWithRepresentatives(representative);
 
-        List<String> validationErrors = representativesService.validateRepresentatives(caseData, authentication);
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
         assertThat(validationErrors).containsExactly("Enter an email address for Representative");
     }
@@ -125,7 +138,7 @@ class RepresentativesServiceTest {
 
         CaseData caseData = caseWithRepresentatives(representative);
 
-        List<String> validationErrors = representativesService.validateRepresentatives(caseData, authentication);
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
         assertThat(validationErrors).containsExactly(
             "Enter a postcode for Representative",
@@ -143,7 +156,7 @@ class RepresentativesServiceTest {
 
         CaseData caseData = caseWithRepresentatives(representative);
 
-        List<String> validationErrors = representativesService.validateRepresentatives(caseData, authentication);
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
         assertThat(validationErrors).containsExactly("Enter an email address for Representative");
     }
@@ -160,14 +173,14 @@ class RepresentativesServiceTest {
 
         CaseData caseData = caseWithRepresentatives(representative);
 
-        when(organisationService.findUserByEmail(any(), any())).thenReturn(Optional.empty());
+        when(organisationService.findUserByEmail(any())).thenReturn(Optional.empty());
 
-        List<String> validationErrors = representativesService.validateRepresentatives(caseData, authentication);
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
         assertThat(validationErrors)
             .containsExactly("Representative must already have an account with the digital service");
 
-        verify(organisationService).findUserByEmail(authentication, representative.getEmail());
+        verify(organisationService).findUserByEmail(representative.getEmail());
     }
 
     @Test
@@ -182,10 +195,10 @@ class RepresentativesServiceTest {
 
         CaseData caseData = caseWithRepresentatives(representative);
 
-        when(organisationService.findUserByEmail(authentication, representative.getEmail()))
+        when(organisationService.findUserByEmail(representative.getEmail()))
             .thenReturn(Optional.of(RandomStringUtils.randomAlphanumeric(10)));
 
-        List<String> validationErrors = representativesService.validateRepresentatives(caseData, authentication);
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
         assertThat(validationErrors).isEmpty();
     }
@@ -253,7 +266,8 @@ class RepresentativesServiceTest {
         Element<Representative> representative3Element = element(representative3);
         Element<Representative> representative4Element = element(representative4);
 
-        CaseData caseData = CaseData.builder()
+        CaseData updatedCaseData = CaseData.builder()
+            .respondents1(emptyList())
             .representatives(asList(
                 representative1Element,
                 representative2Element,
@@ -262,21 +276,35 @@ class RepresentativesServiceTest {
             .others(Others.builder().firstOther(other).build())
             .build();
 
-        when(organisationService.findUserByEmail(authentication, representative1.getEmail()))
+        CaseData originalCaseData = CaseData.builder()
+            .respondents1(emptyList())
+            .representatives(asList(
+                representative1Element,
+                representative2Element,
+                representative3Element))
+            .others(Others.builder().firstOther(other).build())
+            .build();
+
+        when(representativesCaseRoleService.calculateCaseRoleUpdates(
+            unwrapElements(updatedCaseData.getRepresentatives()),
+            unwrapElements(originalCaseData.getRepresentatives())
+        )).thenReturn(Map.ofEntries(
+            entry(representative1.getEmail(), Set.of(SOLICITOR)),
+            entry(representative2.getEmail(), Set.of(LASOLICITOR))
+        ));
+
+        when(organisationService.findUserByEmail(representative1.getEmail()))
             .thenReturn(ofNullable(representative1UserId));
-        when(organisationService.findUserByEmail(authentication, representative2.getEmail()))
+        when(organisationService.findUserByEmail(representative2.getEmail()))
             .thenReturn(ofNullable(representative2UserId));
 
-        representativesService.addRepresentatives(caseData, caseId, authentication);
+        representativesService.updateRepresentatives(caseId, updatedCaseData, originalCaseData);
 
-        verify(organisationService).findUserByEmail(authentication, representative1.getEmail());
-        verify(organisationService).findUserByEmail(authentication, representative2.getEmail());
+        verify(organisationService).findUserByEmail(representative1.getEmail());
+        verify(organisationService).findUserByEmail(representative2.getEmail());
 
-        verify(caseService).addUser(authentication, caseId.toString(), representative1UserId, Set.of(SOLICITOR));
-        verify(caseService).addUser(authentication, caseId.toString(), representative2UserId, Set.of(LASOLICITOR));
-
-        assertThat(representative1.getIdamId()).isEqualTo(representative1UserId);
-        assertThat(representative2.getIdamId()).isEqualTo(representative2UserId);
+        verify(caseService).addUser(caseId.toString(), representative1UserId, Set.of(SOLICITOR));
+        verify(caseService).addUser(caseId.toString(), representative2UserId, Set.of(LASOLICITOR));
     }
 
     @Test
@@ -310,7 +338,7 @@ class RepresentativesServiceTest {
             .respondents1(wrapElements(respondent1, respondent2))
             .build();
 
-        representativesService.addRepresentatives(caseData, caseId, authentication);
+        representativesService.updateRepresentatives(caseId, caseData, caseData);
 
         assertThat(unwrapElements(otherPerson1.getRepresentedBy()))
             .containsExactly(person1Representative1.getId(), person1Representative2.getId());
