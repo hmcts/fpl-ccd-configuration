@@ -26,7 +26,7 @@ public class AddCaseNumberControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldReturnErrorWhenFamilymanCaseNumberNotAlphanumeric() {
-        CallbackRequest callbackRequest = buildCallbackRequest(randomAscii(10));
+        CallbackRequest callbackRequest = buildCallbackRequest(randomAscii(9) + "+");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest.getCaseDetails(),
             SC_OK);
