@@ -1,13 +1,15 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Streams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseField;
+import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -22,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -190,8 +191,9 @@ public class GeneratedOrderService {
     }
 
     public void removeOrderProperties(Map<String, Object> caseData) {
-        Arrays.stream(GeneratedEPOKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
-        Arrays.stream(GeneratedOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
+        Streams.concat(GeneratedOrderKey.asStream(), GeneratedEPOKey.asStream())
+            .map(CaseField::getKey)
+            .forEach(caseData::remove);
     }
 
     private String getCourtName(String courtName) {

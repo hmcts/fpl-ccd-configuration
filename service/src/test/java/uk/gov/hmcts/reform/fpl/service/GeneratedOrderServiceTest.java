@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Streams;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseField;
+import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -34,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -233,10 +234,8 @@ class GeneratedOrderServiceTest {
 
     @Test
     void shouldRemovePropertiesOnCaseDetailsUsedForOrderCapture() {
-        Map<String, Object> data = Arrays.stream(GeneratedOrderKey.values())
-            .collect(Collectors.toMap(GeneratedOrderKey::getKey, value -> ""));
-        data.putAll(Arrays.stream(GeneratedEPOKey.values())
-            .collect(Collectors.toMap(GeneratedEPOKey::getKey, value -> "")));
+        Map<String, Object> data = Streams.concat(GeneratedOrderKey.asStream(), GeneratedEPOKey.asStream())
+            .collect(Collectors.toMap(CaseField::getKey, value -> ""));
 
         data.put("DO NOT REMOVE", "");
         service.removeOrderProperties(data);

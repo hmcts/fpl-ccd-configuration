@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Streams;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -20,8 +21,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.CaseField;
+import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.ccd.casefields.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -42,7 +44,6 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -254,11 +255,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             List<Element<GeneratedOrder>> orders = mapper.convertValue(data.get("orderCollection"),
                 new TypeReference<>() {});
 
-            Arrays.stream(GeneratedOrderKey.values())
-                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
-
-            Arrays.stream(GeneratedEPOKey.values())
-                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
+            Streams.concat(GeneratedOrderKey.asStream(), GeneratedEPOKey.asStream()).map(CaseField::getKey)
+                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField));
 
             assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
         }

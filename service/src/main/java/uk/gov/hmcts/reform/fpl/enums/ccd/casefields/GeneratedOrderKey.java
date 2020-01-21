@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.fpl.enums.ccd.casefields;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 @Getter
 @RequiredArgsConstructor
 public enum GeneratedOrderKey implements CaseField {
@@ -13,4 +16,8 @@ public enum GeneratedOrderKey implements CaseField {
     ORDER_MONTHS("orderMonths");
 
     private final String key;
+
+    public static Stream<GeneratedOrderKey> asStream() {
+        return Arrays.stream(GeneratedOrderKey.values());
+    }
 }
