@@ -8,9 +8,22 @@ const createBlankOrder = async (I, createOrderEventPage, order) => {
 };
 
 const createCareOrder = async (I, createOrderEventPage, order) => {
-  await createOrderEventPage.selectType(order.type);
-  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
+  await createOrderEventPage.selectType(order.type, order.subtype);
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
+  await createOrderEventPage.enterDirections('example directions');
+  await I.completeEvent('Save and continue');
+};
+
+const createSupervisionOrder = async (I, createOrderEventPage, order) => {
+  await createOrderEventPage.selectType(order.type, order.subtype);
+  if (order.subtype === 'Final') {
+    await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.months);
+    await createOrderEventPage.enterNumberOfMonths(order.months);
+  }
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
@@ -31,17 +44,6 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order) =>
   createOrderEventPage.enterEpoEndDate(tomorrow);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
   await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
-  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
-  await createOrderEventPage.enterDirections('example directions');
-  await I.completeEvent('Save and continue');
-};
-
-const createSupervisionOrder = async (I, createOrderEventPage, order) => {
-  await createOrderEventPage.selectType(order.type);
-  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.months);
-  await createOrderEventPage.enterNumberOfMonths(order.months);
-  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
@@ -68,7 +70,7 @@ module.exports = {
   async assertOrder(I, caseViewPage, order, orderNum) {
     const orderHeading = 'Order ' + orderNum;
     caseViewPage.selectTab(caseViewPage.tabs.orders);
-    I.seeAnswerInTab(1, orderHeading, 'Type of order', order.type);
+    I.seeAnswerInTab(1, orderHeading, 'Type of order', order.fullType);
 
     if (order.type === 'Blank order (C21)') {
       I.seeAnswerInTab(2, orderHeading, 'Order title', order.title);
@@ -79,6 +81,6 @@ module.exports = {
 
     I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', order.judgeAndLegalAdvisor.judgeTitle);
     I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', order.judgeAndLegalAdvisor.judgeLastName);
-    I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  order.judgeAndLegalAdvisor.legalAdvisorName);
+    I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', order.judgeAndLegalAdvisor.legalAdvisorName);
   },
 };

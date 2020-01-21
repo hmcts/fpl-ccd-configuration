@@ -1,8 +1,8 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const orders = require('../fixtures/orders.js');
-const representatives = require('../fixtures/representatives.js');
 const orderFunctions = require('../helpers/generated_order_helper');
+const representatives = require('../fixtures/representatives.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -139,7 +139,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
 });
 
 Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
-  for(let i = 0; i < orders.length; i++) {
+  for (let i = 0; i < orders.length; i++) {
     await caseViewPage.goToNewActions(config.administrationActions.createOrder);
     await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
     I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
