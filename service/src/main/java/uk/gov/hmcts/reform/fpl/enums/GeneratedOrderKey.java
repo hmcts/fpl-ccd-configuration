@@ -14,4 +14,3 @@ public enum GeneratedOrderKey {
 
     private final String key;
 }
-
