@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -25,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.apache.http.HttpStatus.SC_OK;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -55,15 +56,6 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
         super("manage-representatives");
     }
 
-    private static CaseDetails buildCaseData(Respondent respondent, Element<Representative> representative) {
-        return CaseDetails.builder()
-            .id(RandomUtils.nextLong())
-            .data(Map.of(
-                "representatives", List.of(representative),
-                "respondents1", wrapElements(respondent)))
-            .build();
-    }
-
     @Test
     void shouldAddUsersToCaseAndAssociateRepresentativesWithPerson() {
         final UUID representativeId = UUID.randomUUID();
@@ -79,13 +71,19 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
             .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
             .build();
 
-        CaseDetails caseDetails = buildCaseData(respondent, element(representativeId, representative));
+        CaseDetails originalCaseDetails = buildCaseData(respondent, emptyList());
+        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)));
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetailsBefore(originalCaseDetails)
+            .caseDetails(caseDetails)
+            .build();
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
         given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representative.getEmail()))
             .willReturn(new User(userId));
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails, SC_OK);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
         verify(organisationApi).findUserByEmail(userAuthToken, serviceAuthToken, representative.getEmail());
 
@@ -98,4 +96,14 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
         assertThat(unwrapElements(updatedResponded.getRepresentedBy())).containsExactly(representativeId);
         assertThat(callbackResponse.getErrors()).isNullOrEmpty();
     }
+
+    private static CaseDetails buildCaseData(Respondent respondent, List<Element<Representative>> representatives) {
+        return CaseDetails.builder()
+            .id(RandomUtils.nextLong())
+            .data(Map.of(
+                "representatives", representatives,
+                "respondents1", wrapElements(respondent)))
+            .build();
+    }
+
 }

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
@@ -27,6 +28,7 @@ public class OrganisationService {
     private final LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
     private final OrganisationApi organisationApi;
     private final AuthTokenGenerator authTokenGenerator;
+    private final RequestData requestData;
 
     public List<String> findUserIdsInSameOrganisation(String authorisation, String localAuthorityCode) {
 
@@ -59,10 +61,10 @@ public class OrganisationService {
             .collect(toList());
     }
 
-    public Optional<String> findUserByEmail(String authorisation, String email) {
+    public Optional<String> findUserByEmail(String email) {
         try {
-            return Optional.of(organisationApi.findUserByEmail(authorisation, authTokenGenerator.generate(), email)
-                .getUserIdentifier());
+            return Optional.of(organisationApi.findUserByEmail(requestData.authorisation(),
+                authTokenGenerator.generate(), email).getUserIdentifier());
         } catch (FeignException.NotFound notFoundException) {
             log.debug("User with email {} not found", email);
             return Optional.empty();
