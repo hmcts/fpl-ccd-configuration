@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.robotics;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;
@@ -23,4 +24,7 @@ public class RoboticsData {
     private final String issueDate;
     private final Applicant applicant;
     private final int owningCourt;
+
+    @JsonIgnore
+    private final Long caseId;
 }

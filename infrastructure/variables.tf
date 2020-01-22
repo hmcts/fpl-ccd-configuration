@@ -111,9 +111,16 @@ variable "mail_port" {
 }
 
 variable "mail_properties_smtp_starttls_enable" {
-  default = true
+  type = "string"
+  default = "true"
 }
 
 variable "feature_toggle_robotics_case_number_notification_enabled" {
-  default = false
+  type = "string"
+  default = "false"
+}
+
+variable "feature_toggle_robotics_support_api_enabled" {
+  type = "string"
+  default = "false"
 }

@@ -3,8 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
     "ListElementCode": "type",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "GeneratedOrderType",
+    "FieldType": "Text",
     "ElementLabel": "Type of order",
     "SecurityClassification": "Public"
   },

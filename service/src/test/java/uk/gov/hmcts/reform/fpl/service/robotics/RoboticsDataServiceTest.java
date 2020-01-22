@@ -44,6 +44,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 public class RoboticsDataServiceTest {
     private static LocalDate NOW = LocalDate.now();
 
+    private static long CASE_ID = 12345L;
+
     @Autowired
     private RoboticsDataService roboticsDataService;
 
@@ -56,7 +58,7 @@ public class RoboticsDataServiceTest {
             .solicitor(null)
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
         String returnedRoboticsDataJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
         Map<String, Object> roboticsDataMap = objectMapper.reader()
@@ -72,7 +74,7 @@ public class RoboticsDataServiceTest {
             .allocationProposal(null)
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
         assertThat(roboticsData.getAllocation()).isNull();
     }
@@ -87,7 +89,7 @@ public class RoboticsDataServiceTest {
                 .build())
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
         assertThat(roboticsData.getAllocation()).isEqualTo(expectedAllocation);
     }
@@ -96,7 +98,7 @@ public class RoboticsDataServiceTest {
     void shouldReturnEmergencySupervisionOrderLabelWhenOrderTypeEmergencySupervisionOrder() throws IOException {
         CaseData caseData = prepareCaseData(NOW);
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
         assertThat(roboticsData).isEqualTo(expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel()));
     }
@@ -107,7 +109,7 @@ public class RoboticsDataServiceTest {
         void shouldReturnCareOrderLabelAsApplicationTypeWhenInterimCareOrderSelected() throws IOException {
             CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER);
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
             assertThat(roboticsData.getApplicationType()).isEqualTo(CARE_ORDER.getLabel());
         }
@@ -116,7 +118,7 @@ public class RoboticsDataServiceTest {
         void shouldReturnCareOrderLabelAsApplicationTypeWhenCareOrderSelected() throws IOException {
             CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER);
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
             assertThat(roboticsData.getApplicationType()).isEqualTo(CARE_ORDER.getLabel());
         }
@@ -126,7 +128,7 @@ public class RoboticsDataServiceTest {
             throws IOException {
             CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
             assertThat(roboticsData.getApplicationType()).isEqualTo(SUPERVISION_ORDER.getLabel());
         }
@@ -136,7 +138,7 @@ public class RoboticsDataServiceTest {
             throws IOException {
             CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER);
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
             assertThat(roboticsData.getApplicationType()).isEqualTo(SUPERVISION_ORDER.getLabel());
         }
@@ -146,7 +148,7 @@ public class RoboticsDataServiceTest {
             throws IOException {
             CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION_ORDER);
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
             assertThat(roboticsData.getApplicationType()).isEqualTo(EDUCATION_SUPERVISION_ORDER.getLabel());
         }
@@ -157,7 +159,7 @@ public class RoboticsDataServiceTest {
             CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
                 EMERGENCY_PROTECTION_ORDER, OTHER);
 
-            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
             assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
                 "Care order,Education supervision order,Emergency protection order,"
@@ -170,7 +172,7 @@ public class RoboticsDataServiceTest {
             CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, INTERIM_CARE_ORDER,
                 INTERIM_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER, EMERGENCY_PROTECTION_ORDER, OTHER);
 
-            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
             assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
                 "Care order,Supervision order,Education supervision order,Emergency protection order,"
@@ -192,7 +194,7 @@ public class RoboticsDataServiceTest {
         void shouldNotReturnEmptyRoboticsJsonWhenNoError() throws IOException {
             CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
             assertNotEquals(new JSONObject().toString(), returnedRoboticsJson, true);
@@ -202,7 +204,7 @@ public class RoboticsDataServiceTest {
         void shouldReturnExpectedJsonStringWhenOrderTypeInterimSupervisionOrderType() throws IOException {
             CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
             assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, true);
@@ -218,10 +220,24 @@ public class RoboticsDataServiceTest {
             CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER, CARE_ORDER,
                 EMERGENCY_PROTECTION_ORDER);
 
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
             assertEquals(returnedRoboticsJson, expectedJsonWithCommaSeparatedApplicationType, true);
+        }
+
+        @Test
+        void shouldNotHaveCaseIdPropertyWhenRoboticsDataDeserializes() throws IOException {
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(prepareCaseData(NOW), CASE_ID);
+            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+
+            assertThat(returnedRoboticsJson).isNotEmpty();
+
+            Map<String, Object> returnedRoboticsDataMap = objectMapper.reader()
+                .forType(new TypeReference<Map<String, Object>>() {})
+                .readValue(returnedRoboticsJson);
+
+            assertThat(returnedRoboticsDataMap).doesNotContainKey("caseId");
         }
     }
 
