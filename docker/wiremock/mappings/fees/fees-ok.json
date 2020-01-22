@@ -1,0 +1,31 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "GET",
+    "urlPath": "/fees-register/fees/lookup",
+    "queryParameters": {
+      "channel": {
+        "equalTo": "default"
+      },
+      "event": {
+        "equalTo": "application"
+      },
+      "jurisdiction1": {
+        "equalTo": "family"
+      },
+      "jurisdiction2": {
+        "equalTo": "family-court"
+      },
+      "service": {
+        "equalTo": "fpl"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "fee-lookup.json"
+  }
+}

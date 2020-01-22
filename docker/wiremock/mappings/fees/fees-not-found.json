@@ -1,0 +1,31 @@
+{
+  "priority": 2,
+  "request": {
+    "method": "GET",
+    "urlPath": "/fees-register/fees/lookup",
+    "queryParameters": {
+      "channel": {
+        "matches": ".*"
+      },
+      "event": {
+        "matches": ".*"
+      },
+      "jurisdiction1": {
+        "matches": ".*"
+      },
+      "jurisdiction2": {
+        "matches": ".*"
+      },
+      "service": {
+        "matches": ".*"
+      }
+    }
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "fee-lookup-2.json"
+  }
+}
