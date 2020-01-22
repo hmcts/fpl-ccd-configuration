@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.exceptions.RoboticsDataException;
+import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -52,7 +52,7 @@ public class RoboticsDataService {
     private final ObjectMapper objectMapper;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    public RoboticsData prepareRoboticsData(final CaseData caseData) {
+    public RoboticsData prepareRoboticsData(final CaseData caseData, final Long caseId) {
         return RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
@@ -69,6 +69,7 @@ public class RoboticsDataService {
                 ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted(), "dd-MM-yyyy") : "")
             .applicant(populateApplicant(caseData.getAllApplicants()))
             .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
+            .caseId(caseId)
             .build();
     }
 
@@ -199,8 +200,8 @@ public class RoboticsDataService {
     }
 
     private String deriveApplicationType(final Orders orders) {
-        if (isEmpty(orders) && isEmpty(orders.getOrderType())) {
-            throw new RoboticsDataException("No order type(s) to derive Application Type from.");
+        if (isEmpty(orders) || isEmpty(orders.getOrderType())) {
+            throw new RoboticsDataException("no order type(s) to derive Application Type from.");
         }
 
         List<OrderType> selectedOrderTypes = orders.getOrderType()
@@ -235,6 +236,6 @@ public class RoboticsDataService {
                 return OTHER_TYPE_LABEL_VALUE;
         }
 
-        throw new RoboticsDataException("Unable to derive an appropriate Application Type from " + orderType);
+        throw new RoboticsDataException("unable to derive an appropriate Application Type from " + orderType);
     }
 }
