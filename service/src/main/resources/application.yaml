@@ -46,6 +46,15 @@ idam:
     url: http://fake-service-auth-provider-api
     totp_secret: AABBCCDDEEFFGGHH
 
+auth:
+  idam:
+    client:
+      baseUrl: http://fake-idam-api
+  provider:
+    service:
+      client:
+        baseUrl: http://fake-service-api
+
 core_case_data:
   api:
     url: http://fake-ccd-data-store-api
@@ -98,11 +107,18 @@ robotics:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics-test@gmail.com
 
+security:
+  anonymousPaths:
+  authorisedServices:
+
 feature:
   toggle:
     robotics:
       case-number:
         notification:
+          enabled: true
+      support:
+        api:
           enabled: true
 
 ---
@@ -136,6 +152,16 @@ idam:
     id: fpl
     redirect_uri: https://localhost:9000/oauth2/callback
     secret: OOOOOOOOOOOOOOOO
+
+auth:
+  idam:
+    client:
+      baseUrl: http://localhost:5000
+  provider:
+    service:
+      client:
+        baseUrl: http://localhost:4502
+
 
 core_case_data:
   api:
@@ -193,4 +219,7 @@ feature:
     robotics:
       case-number:
         notification:
+          enabled: true
+      support:
+        api:
           enabled: true

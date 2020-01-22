@@ -16,6 +16,7 @@ java:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     GATEWAY_URL: https://gateway-${SERVICE_FQDN}
     FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
+    FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
   keyVaults:
     fpl:
       resourceGroup: fpl-case-service

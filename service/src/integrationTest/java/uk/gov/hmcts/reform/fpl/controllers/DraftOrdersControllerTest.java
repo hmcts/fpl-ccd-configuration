@@ -170,7 +170,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
     private List<Element<Direction>> buildDirections(Direction direction) {
         return List.of(Element.<Direction>builder()
             .id(UUID.randomUUID())
-            .value(direction)
+            .value(direction.toBuilder().directionType("Direction").build())
             .build());
     }
 
@@ -278,6 +278,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
             List<Element<Direction>> directions = buildDirections(
                 List.of(Direction.builder()
+                    .directionType("direction 1")
                     .directionText("example")
                     .assignee(LOCAL_AUTHORITY)
                     .readOnly("No")
