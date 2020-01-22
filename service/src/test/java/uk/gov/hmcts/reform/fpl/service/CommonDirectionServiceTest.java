@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -168,6 +169,30 @@ class CommonDirectionServiceTest {
                 .showDateOnly(false)
                 .build())
             .build();
+    }
+
+    @Nested
+    class AssignCustomDirections {
+
+        @Test
+        void shouldAddCorrectPropertiesToDirectionWhenDirectionExists() {
+            List<Element<Direction>> directions = wrapElements(Direction.builder().build());
+
+            List<Element<Direction>> updatedDirections = service.assignCustomDirections(directions, LOCAL_AUTHORITY);
+
+            assertThat(unwrapElements(updatedDirections)).containsOnly(Direction.builder()
+                .assignee(LOCAL_AUTHORITY)
+                .custom("Yes")
+                .readOnly("No")
+                .build());
+        }
+
+        @Test
+        void shouldReturnEmptyListDirectionsWhenNoDirectionExists() {
+            List<Element<Direction>> updatedDirections = service.assignCustomDirections(emptyList(), LOCAL_AUTHORITY);
+
+            assertThat(updatedDirections).isEmpty();
+        }
     }
 
     @Nested

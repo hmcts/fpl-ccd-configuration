@@ -14,12 +14,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -74,7 +74,7 @@ public class CommonDirectionService {
     }
 
     private List<Element<Direction>> getElements(List<Element<Direction>> directions, DirectionAssignee assignee) {
-        return Optional.ofNullable(directions)
+        return ofNullable(directions)
             .map(values -> values.stream()
                 .map(element -> element(element.getId(), element.getValue().toBuilder()
                     .assignee(assignee)
