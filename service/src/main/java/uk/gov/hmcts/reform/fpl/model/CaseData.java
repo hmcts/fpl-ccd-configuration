@@ -44,10 +44,11 @@ import javax.validation.constraints.NotNull;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
 @Builder(toBuilder = true)
@@ -250,18 +251,17 @@ public class CaseData {
     private final Address epoRemovalAddress;
 
     @JsonIgnore
-    public List<Other> getAllOthers() {
-        final List<Other> othersList = new ArrayList<>();
+    public List<Element<Other>> getAllOthers() {
+        List<Element<Other>> othersList = new ArrayList<>();
 
-        ofNullable(this.getOthers()).map(Others::getFirstOther).ifPresent(othersList::add);
-        ofNullable(this.getOthers()).map(Others::getAdditionalOthers)
-            .ifPresent(additionalOthers -> othersList.addAll(unwrapElements(additionalOthers)));
+        ofNullable(this.getOthers()).map(others -> element(others.getFirstOther())).ifPresent(othersList::add);
+        ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
 
         return Collections.unmodifiableList(othersList);
     }
 
     public Optional<Other> findOther(int sequenceNo) {
-        List<Other> allOthers = this.getAllOthers();
+        List<Other> allOthers = this.getAllOthers().stream().map(Element::getValue).collect(toList());
 
         return allOthers.size() <= sequenceNo ? empty() : Optional.of(allOthers.get(sequenceNo));
     }
@@ -286,5 +286,11 @@ public class CaseData {
 
     public List<Element<Respondent>> getConfidentialRespondents() {
         return confidentialRespondents != null ? confidentialRespondents : new ArrayList<>();
+    }
+
+    private final List<Element<Other>> confidentialOthers;
+
+    public List<Element<Other>> getConfidentialOthers() {
+        return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
     }
 }

@@ -4,7 +4,8 @@ import lombok.Getter;
 
 public enum ConfidentialPartyType {
     RESPONDENT("confidentialRespondents"),
-    CHILD("confidentialChildren");
+    CHILD("confidentialChildren"),
+    OTHER("confidentialOthers");
 
     @Getter
     private final String caseDataKey;
