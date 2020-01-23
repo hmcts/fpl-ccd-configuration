@@ -21,13 +21,13 @@ import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ValidateEmergencyProtectionOrderControllerTest extends AbstractControllerTest {
+class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Autowired
     private Time time;
 
-    ValidateEmergencyProtectionOrderControllerTest() {
-        super("validate-emergency-protection-order");
+    ValidateOrderControllerTest() {
+        super("validate-order");
     }
 
     @Test
@@ -47,18 +47,18 @@ class ValidateEmergencyProtectionOrderControllerTest extends AbstractControllerT
     }
 
     @Test
-    void shouldReturnErrorsWhenEndDateIsNotWithinTheNextEightDays() {
+    void shouldReturnErrorsWhenTheEPOEndDateIsNotWithinTheNextEightDays() {
         LocalDateTime nowPlusNineDays = time.now().plusDays(9);
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusNineDays);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epoEndDate");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date must be within the next 8 days");
     }
 
     @Test
-    void shouldNotReturnErrorsWhenEndDateIsWithinTheNextEightDays() {
+    void shouldNotReturnErrorsWhenTheEPOEndDateIsWithinTheNextEightDays() {
         LocalDateTime nowPlusSevenDays = time.now().plusDays(7);
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusSevenDays);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epoEndDate");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 

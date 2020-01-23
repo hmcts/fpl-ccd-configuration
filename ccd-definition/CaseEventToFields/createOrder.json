@@ -52,6 +52,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.subtype=\"INTERIM\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/interimEndDate/mid-event",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -80,7 +81,7 @@
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-emergency-protection-order/address/mid-event",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/address/mid-event",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -123,8 +124,8 @@
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
-    "ShowSummaryChangeOption": "Y",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-emergency-protection-order/date/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/epoEndDate/mid-event",
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",

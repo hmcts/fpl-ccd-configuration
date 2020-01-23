@@ -21,14 +21,13 @@ import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 
 @Api
 @RestController
-@RequestMapping("/callback/validate-emergency-protection-order")
-public class ValidateEmergencyProtectionOrderController {
+@RequestMapping("/callback/validate-order")
+public class ValidateOrderController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
 
     @Autowired
-    public ValidateEmergencyProtectionOrderController(ObjectMapper mapper,
-                                                      ValidateGroupService validateGroupService) {
+    public ValidateOrderController(ObjectMapper mapper, ValidateGroupService validateGroupService) {
         this.mapper = mapper;
         this.validateGroupService = validateGroupService;
     }
@@ -51,8 +50,8 @@ public class ValidateEmergencyProtectionOrderController {
             .build();
     }
 
-    @PostMapping("/date/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handlleMidEventValidateDate(
+    @PostMapping("/epoEndDate/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventValidateDate(
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
