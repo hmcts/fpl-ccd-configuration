@@ -20,6 +20,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.generatedorder.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.model.generatedorder.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.generatedorder.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
@@ -171,6 +174,7 @@ public class CaseData {
     private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
     private final Integer orderMonths;
+    private final InterimEndDate interimEndDate;
     private final List<Element<GeneratedOrder>> orderCollection;
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
