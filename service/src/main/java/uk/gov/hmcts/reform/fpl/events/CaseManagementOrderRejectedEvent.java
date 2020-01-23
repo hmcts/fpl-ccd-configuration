@@ -6,7 +6,6 @@ import lombok.Value;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 @Value
-@Generated
 @EqualsAndHashCode(callSuper = true) //NOSONAR
 public class CaseManagementOrderRejectedEvent extends CallbackEvent {
     public CaseManagementOrderRejectedEvent(CallbackRequest callbackRequest, String authorization, String userId) {
