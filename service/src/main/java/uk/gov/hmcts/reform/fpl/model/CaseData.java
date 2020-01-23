@@ -90,16 +90,22 @@ public class CaseData {
     private final Allocation allocationDecision;
     private final List<Element<Direction>> allParties;
     private final List<Element<Direction>> allPartiesCustom;
+    private final List<Element<Direction>> allPartiesCustomCMO;
     private final List<Element<Direction>> localAuthorityDirections;
     private final List<Element<Direction>> localAuthorityDirectionsCustom;
+    private final List<Element<Direction>> localAuthorityDirectionsCustomCMO;
     private final List<Element<Direction>> courtDirections;
     private final List<Element<Direction>> courtDirectionsCustom;
+    private final List<Element<Direction>> courtDirectionsCustomCMO;
     private final List<Element<Direction>> cafcassDirections;
     private final List<Element<Direction>> cafcassDirectionsCustom;
+    private final List<Element<Direction>> cafcassDirectionsCustomCMO;
     private final List<Element<Direction>> otherPartiesDirections;
     private final List<Element<Direction>> otherPartiesDirectionsCustom;
+    private final List<Element<Direction>> otherPartiesDirectionsCustomCMO;
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
+    private final List<Element<Direction>> respondentDirectionsCustomCMO;
     private final Order standardDirectionOrder;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
