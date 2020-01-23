@@ -438,6 +438,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "allPartiesCustomCMO",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "localAuthorityDirectionsLabelCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
@@ -446,6 +453,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "localAuthorityDirectionsCustom",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthorityDirectionsCustomCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
   },
@@ -466,6 +480,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "cafcassDirectionsCustomCMO",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtDirectionsLabelCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
@@ -474,6 +495,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtDirectionsCustom",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtDirectionsCustomCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
   },
@@ -508,6 +536,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentDirectionsCustomCMO",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "others_label",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
@@ -523,6 +558,14 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherPartiesDirectionsCustom",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "Comment": "definition is valid for SOLICITOR role also",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherPartiesDirectionsCustomCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "Comment": "definition is valid for SOLICITOR role also",
     "CRUD": "CRUD"
