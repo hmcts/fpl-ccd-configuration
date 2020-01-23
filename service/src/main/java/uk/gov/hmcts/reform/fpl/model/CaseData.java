@@ -86,7 +86,11 @@ public class CaseData {
     @Valid
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
+
+    @NotNull(message = "You need to add details to allocation proposal")
+    @Valid
     private final Allocation allocationProposal;
+
     private final Allocation allocationDecision;
     private final List<Element<Direction>> allParties;
     private final List<Element<Direction>> allPartiesCustom;
