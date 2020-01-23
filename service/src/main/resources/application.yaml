@@ -102,6 +102,9 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
 
+ld:
+  sdk_key: testKey
+
 robotics:
   notification:
     sender: sender@example.com
