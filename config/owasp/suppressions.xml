@@ -79,5 +79,12 @@
     <cve>CVE-2019-17563</cve>
     <cve>CVE-2019-12418</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: launchdarkly-java-server-sdk-4.11.1.jar (shaded: com.squareup.okhttp3:okhttp:3.8.1)
+   ]]></notes>
+    <sha1>fb78f48ceb52df1ca8eea576716c34c99a5890d0</sha1>
+    <cve>CVE-2018-20200</cve>
+  </suppress>
 
 </suppressions>
