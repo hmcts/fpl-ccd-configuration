@@ -13,10 +13,9 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseURL;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 @Slf4j
@@ -51,6 +50,15 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .build();
     }
 
+    public Map<String, Object> buildCMORejectedByJudgeNotificationParameters(final CaseDetails caseDetails) {
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonCMONotificationParameters(caseDetails))
+            .put("requestedChanges", caseData.getCaseManagementOrder().getAction().getChangeRequestedByJudge())
+            .build();
+    }
+
     private Map<String, Object> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
@@ -59,8 +67,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             "subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
                 caseData.getHearingDetails()),
             "reference", String.valueOf(caseDetails.getId()),
-            "caseUrl", String.format("%1$s/case/%2$s/%3$s/%4$s",
-                uiBaseUrl, JURISDICTION, CASE_TYPE, caseDetails.getId())
+            "caseUrl", formatCaseURL(uiBaseUrl, caseDetails.getId())
         );
     }
 

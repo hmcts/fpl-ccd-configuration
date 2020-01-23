@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -50,11 +52,15 @@ class CaseManagementOrderProgressionServiceTest {
     @Autowired
     private ObjectMapper mapper;
 
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    private RequestData requestData;
+
     private CaseManagementOrderProgressionService service;
 
     @BeforeEach
     void setUp() {
-        this.service = new CaseManagementOrderProgressionService(mapper);
+        this.service = new CaseManagementOrderProgressionService(mapper, applicationEventPublisher, requestData);
     }
 
     @Test

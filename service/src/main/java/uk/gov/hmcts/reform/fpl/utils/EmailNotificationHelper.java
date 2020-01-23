@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 public class EmailNotificationHelper {
@@ -43,6 +45,10 @@ public class EmailNotificationHelper {
         return Stream.of(subjectLine, hearingDateText)
             .filter(StringUtils::isNotBlank)
             .collect(joining(","));
+    }
+
+    public static String formatCaseURL(String uiBaseUrl, Long caseId) {
+        return String.format("%s/case/%s/%s/%s", uiBaseUrl, JURISDICTION, CASE_TYPE, caseId);
     }
 
     private static String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {

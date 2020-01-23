@@ -2,11 +2,15 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.util.List;
 
@@ -28,9 +32,17 @@ public class CaseManagementOrderProgressionService {
 
     private final ObjectMapper mapper;
 
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    private final RequestData requestData;
+
     @Autowired
-    public CaseManagementOrderProgressionService(ObjectMapper mapper) {
+    public CaseManagementOrderProgressionService(ObjectMapper mapper,
+                                                 ApplicationEventPublisher applicationEventPublisher,
+                                                 RequestData requestData) {
         this.mapper = mapper;
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.requestData = requestData;
     }
 
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
@@ -58,7 +70,8 @@ public class CaseManagementOrderProgressionService {
         }
     }
 
-    private void progressActionCaseManagementOrder(CaseDetails caseDetails, CaseData caseData) {
+    private void progressActionCaseManagementOrder(CaseDetails caseDetails,
+                                                   CaseData caseData) {
         switch (caseData.getCaseManagementOrder().getAction().getType()) {
             case SEND_TO_ALL_PARTIES:
                 List<Element<CaseManagementOrder>> orders = addOrderToList(caseData);
@@ -73,6 +86,8 @@ public class CaseManagementOrderProgressionService {
 
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), updatedOrder);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
+
+                sendChangesRequestedNotificationToLocalAuthority(caseDetails);
                 break;
             case SELF_REVIEW:
                 break;
@@ -87,5 +102,12 @@ public class CaseManagementOrderProgressionService {
             .build());
 
         return orders;
+    }
+
+    private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {
+        applicationEventPublisher.publishEvent(
+            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build(),
+                requestData.authorisation(),
+                requestData.userId()));
     }
 }
