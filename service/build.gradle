@@ -158,7 +158,7 @@ sonarqube {
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.coverage.exclusions", "**/model/**, **/config/*Configuration.java"
     // Excludes sonar cloud testing to avoid duplication of code warning
-    property "sonar.exclusions", "**/model/OldChild.java, **/model/ChildParty.java"
+    property "sonar.exclusions", "**/model/OldChild.java, **/model/ChildParty.java, **/controllers/CaseInitiationController.java, **/service/LDTestService.java"
   }
 }
 
