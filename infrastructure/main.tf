@@ -164,6 +164,7 @@ module "case-service" {
     FPL_SYSTEM_UPDATE_PASSWORD                                  = "${data.azurerm_key_vault_secret.system_update_user_password.value}"
     ROBOTICS_NOTIFICATION_SENDER                                = "${data.azurerm_key_vault_secret.robotics-notification-sender.value}"
     ROBOTICS_NOTIFICATION_RECIPIENT                             = "${data.azurerm_key_vault_secret.robotics-notification-recipient.value}"
+    LD_SDK_KEY                                                  = "${data.azurerm_key_vault_secret.ld-sdk-key.value}"
     SPRING_SECURITY_ENABLED                                     = "${var.security_enabled}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI         = "${var.idam_token_issuer_uri}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI         = "${var.idam_token_jwk_set_uri}"

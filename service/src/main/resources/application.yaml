@@ -223,3 +223,6 @@ feature:
       support:
         api:
           enabled: true
+
+ld:
+  sdk_key:

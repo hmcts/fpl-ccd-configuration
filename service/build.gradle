@@ -186,11 +186,11 @@ dependencies {
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
   compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot)
-
   compile group: 'org.springframework.security', name: 'spring-security-config'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
   compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.4' // override to fix vulnerability issue (CVE-2019-17195)
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.11.1'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
