@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,6 +31,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
@@ -52,15 +54,19 @@ class CaseManagementOrderProgressionServiceTest {
     @Autowired
     private ObjectMapper mapper;
 
+    @Mock
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Mock
     private RequestData requestData;
 
     private CaseManagementOrderProgressionService service;
 
     @BeforeEach
     void setUp() {
-        this.service = new CaseManagementOrderProgressionService(mapper, applicationEventPublisher, requestData);
+        given(requestData.authorisation()).willReturn("Bearer");
+        given(requestData.userId()).willReturn("123");
+        service = new CaseManagementOrderProgressionService(mapper, applicationEventPublisher, requestData);
     }
 
     @Test

@@ -17,7 +17,6 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -38,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 
 @ActiveProfiles("integration-test")
@@ -50,7 +48,6 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private final LocalDateTime testDate = LocalDateTime.of(2020, 2, 1, 12, 30);
-
 
     @MockBean
     private NotificationClient notificationClient;

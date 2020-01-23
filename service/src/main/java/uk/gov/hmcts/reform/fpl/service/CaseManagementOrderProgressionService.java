@@ -70,8 +70,7 @@ public class CaseManagementOrderProgressionService {
         }
     }
 
-    private void progressActionCaseManagementOrder(CaseDetails caseDetails,
-                                                   CaseData caseData) {
+    private void progressActionCaseManagementOrder(CaseDetails caseDetails, CaseData caseData) {
         switch (caseData.getCaseManagementOrder().getAction().getType()) {
             case SEND_TO_ALL_PARTIES:
                 List<Element<CaseManagementOrder>> orders = addOrderToList(caseData);
