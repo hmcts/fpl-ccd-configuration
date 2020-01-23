@@ -23,10 +23,9 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
@@ -38,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseURL;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseManagementOrderProgressionController.class)
@@ -47,6 +47,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
+
+    private static final Long caseId = 12345L;
     private final LocalDateTime testDate = LocalDateTime.of(2020, 2, 1, 12, 30);
 
     @MockBean
@@ -59,7 +61,6 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     @Test
     void aboutToSubmitReturnsCaseManagementOrdersToLocalAuthorityWhenChangesAreRequested()
         throws NotificationClientException {
-        String expectedCaseReference = "19898989";
 
         CaseManagementOrder order = CaseManagementOrder.builder()
             .status(SEND_TO_JUDGE)
@@ -70,7 +71,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .build();
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(19898989L)
+            .id(12345L)
             .data(Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
                 "hearingDetails", createHearingBookings(testDate, testDate.plusHours(4)),
                 "respondents1", createRespondents(),
@@ -85,7 +86,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedNotificationParameters()), eq(expectedCaseReference));
+            eq(expectedNotificationParameters()), eq(caseId.toString()));
     }
 
     @Test
@@ -119,8 +120,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         final String subjectLine = "Jones, SACCCCCCCC5676576567," + " hearing 1 Feb 2020";
         return ImmutableMap.<String, Object>builder()
             .put("subjectLineWithHearingDate", subjectLine)
-            .put("reference", "19898989")
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/19898989")
+            .put("reference", caseId.toString())
+            .put("caseUrl", formatCaseURL("http://fake-url", caseId))
             .build();
     }
 
