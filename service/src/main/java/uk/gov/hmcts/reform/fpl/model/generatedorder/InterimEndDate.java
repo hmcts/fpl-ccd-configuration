@@ -13,7 +13,7 @@ import javax.validation.constraints.Future;
 @Builder
 public class InterimEndDate {
     private final InterimEndDateType endDateType;
-    @Future
+    @Future(message = "Enter an end date in the future")
     private final LocalDate endDate;
 
     public LocalDateTime toLocalDateTime() {

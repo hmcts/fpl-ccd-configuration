@@ -8,7 +8,9 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.generatedorder.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,8 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadDocumentsController.class)
@@ -62,12 +66,49 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    private CaseDetails createCaseDetails(EPOType epoType, LocalDateTime localDateTime) {
+    @Test
+    void shouldReturnErrorsWhenTheInterimEndDateIsNotInTheFuture() {
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), NAMED_DATE);
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interimEndDate");
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
+    }
+
+    @Test
+    void shouldReturnErrorsWhenTheInterimEndDateIsToday() {
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now(), NAMED_DATE);
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interimEndDate");
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenTheInterimEndDateIsInTheFuture() {
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().plusDays(1), NAMED_DATE);
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interimEndDate");
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenTheInterimEndDateTypeIsEndOfProceedings() {
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), END_OF_PROCEEDINGS);
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interimEndDate");
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    private CaseDetails createCaseDetails(EPOType preventRemoval, LocalDateTime now) {
+        return createCaseDetails(preventRemoval, now, END_OF_PROCEEDINGS);
+    }
+
+    private CaseDetails createCaseDetails(EPOType epoType, LocalDateTime localDateTime,
+                                          InterimEndDateType interimEndDateType) {
         return CaseDetails.builder()
             .data(Map.of(
                 "epoType", epoType,
                 "epoRemovalAddress", Address.builder().build(),
-                "epoEndDate", localDateTime
+                "epoEndDate", localDateTime,
+                "interimEndDate", InterimEndDate.builder()
+                    .endDateType(interimEndDateType)
+                    .endDate(localDateTime.toLocalDate())
+                    .build()
             )).build();
     }
 }
