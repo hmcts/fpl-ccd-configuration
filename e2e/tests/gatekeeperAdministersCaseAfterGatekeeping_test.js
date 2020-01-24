@@ -38,16 +38,16 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('gatekeeper enters allocation decision without proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+Scenario('gatekeeper make allocation decision based on proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
-  enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');
-  enterAllocationDecisionEventPage.enterProposalReason('test');
+  enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
 Scenario('gatekeeper enters allocation decision', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
+  enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
   enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');
   enterAllocationDecisionEventPage.enterProposalReason('test');
   await I.completeEvent('Save and continue');
