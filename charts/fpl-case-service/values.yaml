@@ -17,4 +17,6 @@ java:
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
     AUTH_IDAM_CLIENT_BASEURL: https://idam-api.aat.platform.hmcts.net
     AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
+    FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
   applicationPort: 4000
