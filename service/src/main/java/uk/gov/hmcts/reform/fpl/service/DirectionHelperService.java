@@ -250,12 +250,12 @@ public class DirectionHelperService {
                         } else if (element.getValue().getOtherPartiesAssignee() != null) {
                             int assigneeValue = element.getValue().getOtherPartiesAssignee().ordinal();
 
-                            List<Other> listOthers = data.getAllOthers();
+                            List<Element<Other>> listOthers = data.getAllOthers();
 
                             // if other exists -> set ids.
                             // else -> add direction to filtered list.
                             if (assigneeValue < listOthers.size()) {
-                                ids = listOthers.get(assigneeValue).getRepresentedBy();
+                                ids = listOthers.get(assigneeValue).getValue().getRepresentedBy();
                             } else {
                                 return true;
                             }
