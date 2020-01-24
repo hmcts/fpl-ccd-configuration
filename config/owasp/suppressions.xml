@@ -86,5 +86,61 @@
     <sha1>fb78f48ceb52df1ca8eea576716c34c99a5890d0</sha1>
     <cve>CVE-2018-20200</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-webmvc-5.2.1.RELEASE.jar
+   ]]></notes>
+    <sha1>9c118e3a551fe4bf31eb9e395b5f8ef42cf14f42</sha1>
+    <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-context-support-5.2.1.RELEASE.jar
+   ]]></notes>
+    <sha1>22fedda999e1b443be19bc3fb7ec326a6e0caf05</sha1>
+    <cve>CVE-2020-5397</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-context-5.2.1.RELEASE.jar
+   ]]></notes>
+    <sha1>1d3e142adbdbd0810b19462fbd88d94cc51cce01</sha1>
+    <cve>CVE-2020-5397</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-aop-5.2.1.RELEASE.jar
+   ]]></notes>
+    <sha1>34c11ad92e06753e592865c7c403b09ab884d862</sha1>
+    <cve>CVE-2020-5397</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-beans-5.2.1.RELEASE.jar
+   ]]></notes>
+    <sha1>d05690257d8e8034b180db3893d5baf8250fb9d3</sha1>
+    <cve>CVE-2020-5397</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-expression-5.2.1.RELEASE.jar
+   ]]></notes>
+    <sha1>499e91096320f7e6fcfd6920e66d5ed5f0ecfee9</sha1>
+    <cve>CVE-2020-5397</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-core-5.2.1.RELEASE.jar
+   ]]></notes>
+    <sha1>32b265ff5c7c35257b5a242b9628dcd321a2b010</sha1>
+    <cve>CVE-2020-5397</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: spring-jcl-5.2.1.RELEASE.jar
+   ]]></notes>
+    <sha1>0a9f6e0b98cd3980b25ab6ead1e59ced0d294d67</sha1>
+    <cve>CVE-2020-5397</cve>
+  </suppress>
 
 </suppressions>
