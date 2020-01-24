@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.generatedorder.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.generatedorder.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.generatedorder.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -70,6 +71,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -187,13 +189,18 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         @EnumSource(GeneratedOrderSubtype.class)
         void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
             GeneratedOrderSubtype subtype) {
-            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(CARE_ORDER, subtype)
-                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
+
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(CARE_ORDER, subtype)
+                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                    .interimEndDate(InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build())
+            );
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
+            final String expiryDate = subtype == INTERIM ? "End of the proceedings" : null;
             GeneratedOrder expectedCareOrder = commonExpectedOrderComponents(
-                subtype.getLabel() + " " + "care order").build();
+                subtype.getLabel() + " " + "care order").expiryDate(expiryDate).build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
         }
@@ -201,12 +208,14 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         @Test
         void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM)
-                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .interimEndDate(InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build())
+            );
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
             GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
-                "Interim supervision order").build();
+                "Interim supervision order").expiryDate("End of the proceedings").build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
         }
@@ -380,6 +389,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
             dataBuilder.orderFurtherDirections(generateOrderFurtherDirections());
 
+            if (subtype == INTERIM) {
+                dataBuilder.interimEndDate(generateInterimEndDate());
+            }
+
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
@@ -390,6 +403,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
             dataBuilder.orderFurtherDirections(generateOrderFurtherDirections())
                 .orderMonths(5);
+
+            if (subtype == INTERIM) {
+                dataBuilder.interimEndDate(generateInterimEndDate());
+            }
 
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
@@ -407,6 +424,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             generateDefaultValues(builder);
 
             return builder;
+        }
+
+        private InterimEndDate generateInterimEndDate() {
+            return InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build();
         }
 
         private void generateEpoValues(CaseData.CaseDataBuilder builder) {
