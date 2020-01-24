@@ -79,5 +79,8 @@
     <cve>CVE-2019-17563</cve>
     <cve>CVE-2019-12418</cve>
   </suppress>
-
+  <suppress>
+    <gav regex="true">^org\.springframework:.*:.*$</gav>
+    <cve>CVE-2020-5397</cve>
+  </suppress>
 </suppressions>
