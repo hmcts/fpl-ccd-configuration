@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import ccd.sdk.types.ComplexType;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-import ccd.sdk.types.Role;
+import uk.gov.hmcts.ccd.sdk.types.Role;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
