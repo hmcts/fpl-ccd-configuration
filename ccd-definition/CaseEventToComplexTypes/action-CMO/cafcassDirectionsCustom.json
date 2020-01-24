@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "CafcassDirectionsCustom",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "cafcassDirectionsCustom",
+    "CaseFieldID": "cafcassDirectionsCustomCMO",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
@@ -13,7 +13,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "CafcassDirectionsCustom",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "cafcassDirectionsCustom",
+    "CaseFieldID": "cafcassDirectionsCustomCMO",
     "ListElementCode": "directionText",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
@@ -22,7 +22,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "CafcassDirectionsCustom",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "cafcassDirectionsCustom",
+    "CaseFieldID": "cafcassDirectionsCustomCMO",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
