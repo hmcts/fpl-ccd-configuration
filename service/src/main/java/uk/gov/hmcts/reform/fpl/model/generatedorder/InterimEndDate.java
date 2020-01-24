@@ -14,7 +14,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NA
 @Data
 @Builder
 public class InterimEndDate {
-    private final InterimEndDateType endDateType;
+    private final InterimEndDateType type;
     @Future(message = "Enter an end date in the future")
     private final LocalDate endDate;
 
@@ -23,6 +23,6 @@ public class InterimEndDate {
     }
 
     public boolean hasEndDate() {
-        return endDateType == NAMED_DATE && endDate != null;
+        return type == NAMED_DATE && endDate != null;
     }
 }

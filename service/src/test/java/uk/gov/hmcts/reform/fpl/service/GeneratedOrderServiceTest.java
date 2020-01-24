@@ -191,7 +191,7 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build(), null, InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build()).getValue();
+                .build(), null, InterimEndDate.builder().type(END_OF_PROCEEDINGS).build()).getValue();
 
         assertThat(builtOrder.getExpiryDate()).isEqualTo("End of the proceedings");
     }
@@ -212,7 +212,7 @@ class GeneratedOrderServiceTest {
                 .build(),
             null,
             InterimEndDate.builder()
-                .endDateType(NAMED_DATE)
+                .type(NAMED_DATE)
                 .endDate(time.now().toLocalDate())
                 .build())
             .getValue();
@@ -451,7 +451,7 @@ class GeneratedOrderServiceTest {
                         .build());
 
                 if (subtype == INTERIM) {
-                    caseDataBuilder.interimEndDate(InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build());
+                    caseDataBuilder.interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build());
                 }
 
                 break;
@@ -470,7 +470,7 @@ class GeneratedOrderServiceTest {
 
                 if (subtype == INTERIM) {
                     caseDataBuilder.interimEndDate(InterimEndDate.builder()
-                        .endDateType(NAMED_DATE)
+                        .type(NAMED_DATE)
                         .endDate(localDate)
                         .build());
                 }

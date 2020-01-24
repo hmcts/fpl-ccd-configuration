@@ -63,7 +63,7 @@ public class ValidateOrderController {
 
         List<String> errors = List.of();
 
-        if (interimEndDate.getEndDateType() == NAMED_DATE) {
+        if (interimEndDate.getType() == NAMED_DATE) {
             errors = validateGroupService.validateGroup(interimEndDate, Default.class);
         }
 

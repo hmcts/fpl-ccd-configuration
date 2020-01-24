@@ -193,7 +193,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             final CaseDetails caseDetails = buildCaseDetails(
                 commonCaseDetailsComponents(CARE_ORDER, subtype)
                     .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                    .interimEndDate(InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build())
+                    .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
             );
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -209,7 +209,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                .interimEndDate(InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build())
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
             );
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -427,7 +427,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         private InterimEndDate generateInterimEndDate() {
-            return InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build();
+            return InterimEndDate.builder().type(END_OF_PROCEEDINGS).build();
         }
 
         private void generateEpoValues(CaseData.CaseDataBuilder builder) {

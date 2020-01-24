@@ -58,7 +58,7 @@ class InterimEndDateTest {
 
     private InterimEndDate buildInterimEndDate(InterimEndDateType type, LocalDate localDate) {
         return InterimEndDate.builder()
-            .endDateType(type)
+            .type(type)
             .endDate(localDate)
             .build();
     }

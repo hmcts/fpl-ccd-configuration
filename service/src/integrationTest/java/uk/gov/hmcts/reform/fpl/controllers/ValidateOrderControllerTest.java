@@ -106,7 +106,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
                 "epoRemovalAddress", Address.builder().build(),
                 "epoEndDate", localDateTime,
                 "interimEndDate", InterimEndDate.builder()
-                    .endDateType(interimEndDateType)
+                    .type(interimEndDateType)
                     .endDate(localDateTime.toLocalDate())
                     .build()
             )).build();
