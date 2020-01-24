@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.generatedorder.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.generatedorder.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.collect.Iterables.getLast;
-import static java.util.Optional.ofNullable;
+import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -75,50 +76,64 @@ public class GeneratedOrderService {
      *                             values.
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
      * @param orderMonths          the number of months the supervision order is valid
+     * @param interimEndDate       the end date wrapper for an interim order
      * @return Element containing randomUUID and a fully populated order, ready to be added to orderCollection.
      */
     public Element<GeneratedOrder> buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
                                                       GeneratedOrder order,
                                                       JudgeAndLegalAdvisor judgeAndLegalAdvisor,
-                                                      Integer orderMonths) {
+                                                      Integer orderMonths,
+                                                      InterimEndDate interimEndDate) {
         GeneratedOrder generatedOrder = defaultIfNull(order, GeneratedOrder.builder().build());
         GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
 
         GeneratedOrderType orderType = typeAndDocument.getType();
 
+        String expiryDate = null;
+
         switch (orderType) {
             case BLANK_ORDER:
                 orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"))
-                    .details(generatedOrder.getDetails())
-                    .expiryDate(null);
+                    .details(generatedOrder.getDetails());
                 break;
             case CARE_ORDER:
-                orderBuilder.title(null)
-                    .expiryDate(null);
+                orderBuilder.title(null);
+                if (typeAndDocument.getSubtype() == INTERIM) {
+                    requireNonNull(interimEndDate);
+                    expiryDate = getInterimExpiryDate(interimEndDate);
+                }
                 break;
             case SUPERVISION_ORDER:
                 orderBuilder.title(null);
-                ofNullable(orderMonths)
-                    .map(i -> time.now().plusMonths(orderMonths))
-                    .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                        dateTime, "h:mma, d MMMM y"))
-                    .ifPresent(orderBuilder::expiryDate);
+
+                switch (typeAndDocument.getSubtype()) {
+                    case INTERIM:
+                        requireNonNull(interimEndDate);
+                        expiryDate = getInterimExpiryDate(interimEndDate);
+                        break;
+                    case FINAL:
+                        requireNonNull(orderMonths);
+                        expiryDate = dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                            time.now().plusMonths(orderMonths), "h:mma, d MMMM y");
+                        break;
+                }
                 break;
             default:
         }
 
+        orderBuilder.expiryDate(expiryDate)
+            .type(typeAndDocument.getFullType(typeAndDocument.getSubtype()))
+            .document(typeAndDocument.getDocument())
+            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"));
+
         return Element.<GeneratedOrder>builder()
             .id(randomUUID())
-            .value(orderBuilder
-                .type(typeAndDocument.getFullType(typeAndDocument.getSubtype()))
-                .document(typeAndDocument.getDocument())
-                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-                .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
-                    "h:mma, d MMMM yyyy"))
-                .build())
+            .value(orderBuilder.build())
             .build();
     }
 
+    // TODO: 23/01/2020 Fill in the correct template data
     public Map<String, Object> getOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
@@ -212,6 +227,15 @@ public class GeneratedOrderService {
     public void removeOrderProperties(Map<String, Object> caseData) {
         Arrays.stream(GeneratedEPOKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
         Arrays.stream(GeneratedOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
+    }
+
+    private String getInterimExpiryDate(InterimEndDate interimEndDate) {
+        if (interimEndDate.hasEndDate()) {
+            return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                interimEndDate.toLocalDateTime(), "h:mma, d MMMM y");
+        } else {
+            return "End of proceedings";
+        }
     }
 
     private String getCourtName(String courtName) {

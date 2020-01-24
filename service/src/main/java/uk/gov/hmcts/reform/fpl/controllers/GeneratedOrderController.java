@@ -114,7 +114,7 @@ public class GeneratedOrderController {
 
         // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(caseData.getOrderTypeAndDocument(), caseData.getOrder(),
-            caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths()));
+            caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths(), caseData.getInterimEndDate()));
 
         caseDetails.getData().put("orderCollection", orders);
 

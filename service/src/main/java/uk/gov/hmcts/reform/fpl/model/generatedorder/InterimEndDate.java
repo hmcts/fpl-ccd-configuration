@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import javax.validation.constraints.Future;
 
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
+
 @Data
 @Builder
 public class InterimEndDate {
@@ -17,6 +19,10 @@ public class InterimEndDate {
     private final LocalDate endDate;
 
     public LocalDateTime toLocalDateTime() {
-        return LocalDateTime.of(endDate, LocalTime.of(23,59,59));
+        return endDate == null ? null : LocalDateTime.of(endDate, LocalTime.of(23,59,59));
+    }
+
+    public boolean hasEndDate() {
+        return endDateType == NAMED_DATE && endDate != null;
     }
 }
