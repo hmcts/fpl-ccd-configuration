@@ -17,6 +17,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 @Slf4j
@@ -48,6 +50,17 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .putAll(buildCommonCMONotificationParameters(caseDetails))
             .putAll(buildCMODocumentLinkNotificationParameters(documentContents))
             .put("cafcassOrRespondentName", recipientName)
+            .build();
+    }
+
+    public Map<String, Object> buildCMOReadyForJudgeReviewNotificationParameters(final CaseDetails caseDetails) {
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonCMONotificationParameters(caseDetails))
+            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
+            .put("judgeTitleAndName", caseData.getJudgeAndLegalAdvisor() != null
+                ? formatJudgeTitleAndName(caseData.getJudgeAndLegalAdvisor()) : "")
             .build();
     }
 

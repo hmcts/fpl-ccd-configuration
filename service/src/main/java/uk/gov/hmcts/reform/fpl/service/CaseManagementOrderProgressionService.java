@@ -2,11 +2,15 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.util.List;
 
@@ -27,10 +31,16 @@ public class CaseManagementOrderProgressionService {
     // requires changes in CCD definition. Decided not in scope of 24.
 
     private final ObjectMapper mapper;
+    private final RequestData requestData;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    public CaseManagementOrderProgressionService(ObjectMapper mapper) {
+    public CaseManagementOrderProgressionService(ObjectMapper mapper,
+                                                RequestData requestData,
+                                                ApplicationEventPublisher applicationEventPublisher) {
         this.mapper = mapper;
+        this.requestData = requestData;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
@@ -48,6 +58,7 @@ public class CaseManagementOrderProgressionService {
             case SEND_TO_JUDGE:
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
+                publishReadyForJudgeReviewEvent(caseDetails, requestData);
                 break;
             case PARTIES_REVIEW:
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_SHARED.getKey(), order.getOrderDoc());
@@ -87,5 +98,12 @@ public class CaseManagementOrderProgressionService {
             .build());
 
         return orders;
+    }
+
+    private void publishReadyForJudgeReviewEvent(CaseDetails caseDetails, RequestData requestData) {
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
+
+        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest,
+                requestData.authorisation(), requestData.userId()));
     }
 }
