@@ -137,6 +137,7 @@ public class GeneratedOrderService {
     public Map<String, Object> getOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
+        InterimEndDate interimEndDate = caseData.getInterimEndDate();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
         List<Map<String, String>> childrenDetails = getChildrenDetails(caseData);
@@ -160,7 +161,7 @@ public class GeneratedOrderService {
                 }
                 orderTemplateBuilder
                     .put("orderDetails", getFormattedCareOrderDetails(getChildrenDetails(caseData).size(),
-                        caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype()));
+                        caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
                 break;
             case SUPERVISION_ORDER:
                 if (subtype == INTERIM) {
@@ -169,7 +170,7 @@ public class GeneratedOrderService {
                         .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                         .put("orderDetails",
                             getFormattedInterimSupervisionOrderDetails(childrenDetails.size(),
-                                caseData.getCaseLocalAuthority()));
+                                caseData.getCaseLocalAuthority(), interimEndDate));
                 } else {
                     orderTemplateBuilder
                         .put("orderTitle", orderTypeAndDocument.getFullType())
@@ -248,18 +249,31 @@ public class GeneratedOrderService {
 
     private String getFormattedCareOrderDetails(int numOfChildren,
                                                 String caseLocalAuthority,
-                                                boolean isInterim) {
+                                                boolean isInterim,
+                                                InterimEndDate interimEndDate) {
         String childOrChildren = (numOfChildren == 1 ? "child is" : "children are");
-        return String.format("It is ordered that the %s placed in the care of %s%s",
+        return String.format("It is ordered that the %s placed in the care of %s until %s.",
             childOrChildren, getLocalAuthorityName(caseLocalAuthority),
-            isInterim ? " until the end of the proceedings." : ".");
+            isInterim ? getInterimEndDateString(interimEndDate) : "");
     }
 
-    private String getFormattedInterimSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority) {
-        return String.format(
-            "It is ordered that %s supervises the %s until the end of the proceedings",
+    private String getFormattedInterimSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority,
+                                                              InterimEndDate interimEndDate) {
+        return String.format("It is ordered that %s supervises the %s until %s.",
             getLocalAuthorityName(caseLocalAuthority),
-            (numOfChildren == 1) ? "child" : "children");
+            (numOfChildren == 1) ? "child" : "children",
+            getInterimEndDateString(interimEndDate));
+    }
+
+    private String getInterimEndDateString(InterimEndDate interimEndDate) {
+        if (interimEndDate.hasEndDate()) {
+            final LocalDateTime dateTime = interimEndDate.toLocalDateTime();
+            final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(dateTime.getDayOfMonth());
+            return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                dateTime, "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y");
+        } else {
+            return "the end of the proceedings";
+        }
     }
 
     private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,
