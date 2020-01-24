@@ -182,7 +182,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeAnswerInTab(18, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
 });
 
-Scenario('local authority enters respondents', async (I, caseViewPage, enterRespondentsEventPage) => {
+Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterRespondentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
