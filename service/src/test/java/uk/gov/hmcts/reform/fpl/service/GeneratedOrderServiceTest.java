@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.generatedorder.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.generatedorder.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.generatedorder.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -50,6 +52,8 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -82,7 +86,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Order");
@@ -100,7 +104,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Order");
@@ -118,7 +122,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Order");
@@ -136,7 +140,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Example Title");
@@ -162,7 +166,7 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build(), null).getValue();
+                .build(), null, null).getValue();
 
         assertThat(builtOrder.getType()).isEqualTo("Final care order");
         assertThat(builtOrder.getTitle()).isNull();
@@ -175,6 +179,49 @@ class GeneratedOrderServiceTest {
             .build());
     }
 
+    @ParameterizedTest
+    @EnumSource(value = GeneratedOrderType.class, names = {"CARE_ORDER", "SUPERVISION_ORDER"})
+    void shouldReturnEndOfProceedingsExpiryDateWhenInterimSubtypeAndEndOfProceedingsSelected(GeneratedOrderType type) {
+        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                .type(type)
+                .subtype(INTERIM)
+                .document(DocumentReference.builder().build())
+                .build(),
+            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .legalAdvisorName("Peter Parker")
+                .build(), null, InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build()).getValue();
+
+        assertThat(builtOrder.getExpiryDate()).isEqualTo("End of the proceedings");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = GeneratedOrderType.class, names = {"CARE_ORDER", "SUPERVISION_ORDER"})
+    void shouldReturnFormattedExpiryDateWhenInterimSubtypeAndNamedDateSelected(GeneratedOrderType type) {
+        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                .type(type)
+                .subtype(INTERIM)
+                .document(DocumentReference.builder().build())
+                .build(),
+            GeneratedOrder.builder().build(),
+            JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .legalAdvisorName("Peter Parker")
+                .build(),
+            null,
+            InterimEndDate.builder()
+                .endDateType(NAMED_DATE)
+                .endDate(time.now().toLocalDate())
+                .build())
+            .getValue();
+
+        assertThat(builtOrder.getExpiryDate()).isEqualTo(dateFormatterService.formatLocalDateToString(
+            time.now().toLocalDate(), "'11:59pm', d MMMM y"));
+    }
+
+
     @Test
     void shouldReturnExpectedSupervisionOrderWhenFinalSubtypeSelected() {
         GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
@@ -186,7 +233,7 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HIS_HONOUR_JUDGE)
                 .judgeLastName("Dredd")
                 .legalAdvisorName("Frank N. Stein")
-                .build(), 5).getValue();
+                .build(), 5, null).getValue();
 
         final LocalDateTime orderExpiration = time.now().plusMonths(5);
         final String expectedExpiryDate = dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
@@ -283,9 +330,10 @@ class GeneratedOrderServiceTest {
 
     private Map<String, Object> createExpectedDocmosisData(GeneratedOrderType type,
                                                            GeneratedOrderSubtype subtype,
-                                                           LocalDateTime date) {
+                                                           LocalDateTime dateTime) {
         ImmutableMap.Builder<String, Object> expectedMap = ImmutableMap.builder();
-        String formattedDate = dateFormatterService.formatLocalDateToString(date.toLocalDate(), FormatStyle.LONG);
+        final LocalDate date = dateTime.toLocalDate();
+        String formattedDate = dateFormatterService.formatLocalDateToString(date, FormatStyle.LONG);
 
         switch (type) {
             case BLANK_ORDER:
@@ -317,24 +365,27 @@ class GeneratedOrderServiceTest {
                 expectedMap
                     .put("orderType", SUPERVISION_ORDER);
                 if (subtype == INTERIM) {
+                    String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
+                    String detailsDate = dateFormatterService.formatLocalDateToString(
+                        date, "d'" + dayOrdinalSuffix + "' MMMM y");
+
                     expectedMap
                         .put("orderTitle", "Interim supervision order")
                         .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails",
-                            "It is ordered that Example Local Authority supervises the child until the end of the "
-                                + "proceedings");
+                        .put("orderDetails", String.format("It is ordered that Example Local Authority supervises" +
+                            " the child until 11:59pm on the %s.", detailsDate));
                 } else if (subtype == FINAL) {
-                    final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
-                    final String formattedDateTime =
-                        dateFormatterService.formatLocalDateTimeBaseUsingFormat(date.plusMonths(5),
-                            "h:mma 'on the' d'" + suffix + "' MMMM y");
+                    final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(dateTime.getDayOfMonth());
+                    final String detailsDateTime = dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                        dateTime.plusMonths(5), "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y");
+
                     expectedMap
                         .put("orderTitle", "Supervision order")
                         .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                         .put("orderDetails",
                             String.format(
                                 "It is ordered that Example Local Authority supervises the child for 5 months from the "
-                                    + "date of this order until %s.", formattedDateTime));
+                                    + "date of this order until %s.", detailsDateTime));
                 }
                 break;
             case EMERGENCY_PROTECTION_ORDER:
@@ -398,6 +449,11 @@ class GeneratedOrderServiceTest {
                         .directionsNeeded("Yes")
                         .directions("Example Directions")
                         .build());
+
+                if (subtype == INTERIM) {
+                    caseDataBuilder.interimEndDate(InterimEndDate.builder().endDateType(END_OF_PROCEEDINGS).build());
+                }
+
                 break;
             case SUPERVISION_ORDER:
                 caseDataBuilder
@@ -411,6 +467,14 @@ class GeneratedOrderServiceTest {
                         .directions("Example Directions")
                         .build())
                     .orderMonths(5);
+
+                if (subtype == INTERIM) {
+                    caseDataBuilder.interimEndDate(InterimEndDate.builder()
+                        .endDateType(NAMED_DATE)
+                        .endDate(localDate)
+                        .build());
+                }
+
                 break;
             case EMERGENCY_PROTECTION_ORDER:
                 caseDataBuilder

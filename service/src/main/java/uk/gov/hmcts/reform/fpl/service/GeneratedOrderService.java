@@ -235,7 +235,7 @@ public class GeneratedOrderService {
             return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
                 interimEndDate.toLocalDateTime(), "h:mma, d MMMM y");
         } else {
-            return "End of proceedings";
+            return "End of the proceedings";
         }
     }
 
@@ -252,9 +252,9 @@ public class GeneratedOrderService {
                                                 boolean isInterim,
                                                 InterimEndDate interimEndDate) {
         String childOrChildren = (numOfChildren == 1 ? "child is" : "children are");
-        return String.format("It is ordered that the %s placed in the care of %s until %s.",
+        return String.format("It is ordered that the %s placed in the care of %s%s.",
             childOrChildren, getLocalAuthorityName(caseLocalAuthority),
-            isInterim ? getInterimEndDateString(interimEndDate) : "");
+            isInterim ? " until " + getInterimEndDateString(interimEndDate) : "");
     }
 
     private String getFormattedInterimSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority,
