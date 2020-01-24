@@ -28,11 +28,6 @@ public class Display {
     private String relativeToDateType;
 
     /**
-     * What unit is used to shift from to prepopulate due date.
-     */
-    private Enum timeframe;
-
-    /**
      * How many units due date is shifted by.
      */
     private String delta;
