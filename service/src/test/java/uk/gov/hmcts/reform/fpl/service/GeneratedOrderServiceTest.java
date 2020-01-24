@@ -372,8 +372,8 @@ class GeneratedOrderServiceTest {
                     expectedMap
                         .put("orderTitle", "Interim supervision order")
                         .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails", String.format("It is ordered that Example Local Authority supervises" +
-                            " the child until 11:59pm on the %s.", detailsDate));
+                        .put("orderDetails", String.format("It is ordered that Example Local Authority supervises"
+                            + " the child until 11:59pm on the %s.", detailsDate));
                 } else if (subtype == FINAL) {
                     final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(dateTime.getDayOfMonth());
                     final String detailsDateTime = dateFormatterService.formatLocalDateTimeBaseUsingFormat(
