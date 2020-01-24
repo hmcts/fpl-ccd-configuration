@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.service.notify.NotificationClient;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -150,7 +149,6 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", ImmutableList.of(
                     ImmutableMap.of(
-                    "id", "",
                     "value", Respondent.builder()
                         .party(RespondentParty.builder()
                             .lastName(RESPONDENT_SURNAME)
