@@ -21,7 +21,7 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseURL;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 public abstract class AbstractEmailContentProvider {
@@ -55,7 +55,7 @@ public abstract class AbstractEmailContentProvider {
             .put("nonUrgentHearing", timeFrame.isPresent() && !timeFrame.get().equals("Same day") ? "Yes" : "No")
             .put("firstRespondentName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("reference", String.valueOf(caseId))
-            .put("caseUrl", formatCaseURL(uiBaseUrl, caseId));
+            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseId));
     }
 
     ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(Long caseId, CaseData caseData) {
@@ -69,7 +69,7 @@ public abstract class AbstractEmailContentProvider {
                 .getLastName()) + ",")
             .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseId))
-            .put("caseUrl", formatCaseURL(uiBaseUrl, caseId));
+            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseId));
     }
 
     private String getHearingBooking(CaseData data) {

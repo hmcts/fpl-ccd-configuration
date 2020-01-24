@@ -47,7 +47,7 @@ public class EmailNotificationHelper {
             .collect(joining(","));
     }
 
-    public static String formatCaseURL(String uiBaseUrl, Long caseId) {
+    public static String formatCaseUrl(String uiBaseUrl, Long caseId) {
         return String.format("%s/case/%s/%s/%s", uiBaseUrl, JURISDICTION, CASE_TYPE, caseId);
     }
 

@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseURL;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 @Slf4j
@@ -67,7 +67,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             "subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
                 caseData.getHearingDetails()),
             "reference", String.valueOf(caseDetails.getId()),
-            "caseUrl", formatCaseURL(uiBaseUrl, caseDetails.getId())
+            "caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId())
         );
     }
 
