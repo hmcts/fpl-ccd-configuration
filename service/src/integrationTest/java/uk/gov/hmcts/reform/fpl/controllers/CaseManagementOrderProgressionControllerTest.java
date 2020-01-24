@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.service.notify.NotificationClient;
 
@@ -44,7 +43,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEM
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 
 @ActiveProfiles("integration-test")
@@ -155,16 +153,10 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                     "id", "",
                     "value", Respondent.builder()
                         .party(RespondentParty.builder()
-                            .firstName("Mark")
                             .lastName(RESPONDENT_SURNAME)
-                            .dateOfBirth(LocalDate.now().minusDays(1))
                             .build())
                         .build()
-                    )),
-            "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
-                .judgeLastName("Dodds")
-                .judgeTitle(HIS_HONOUR_JUDGE)
-                .build()
+                    ))
         );
     }
 
@@ -180,7 +172,6 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .put("subjectLineWithHearingDate", buildSubjectLine())
             .put("reference", CASE_REFERENCE)
             .put("respondentLastName", RESPONDENT_SURNAME)
-            .put("judgeTitleAndName", "His Honour Judge Dodds")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
     }

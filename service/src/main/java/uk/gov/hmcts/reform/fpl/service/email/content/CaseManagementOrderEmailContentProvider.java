@@ -17,7 +17,6 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
@@ -59,8 +58,6 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
-            .put("judgeTitleAndName", caseData.getJudgeAndLegalAdvisor() != null
-                ? formatJudgeTitleAndName(caseData.getJudgeAndLegalAdvisor()) : "")
             .build();
     }
 
