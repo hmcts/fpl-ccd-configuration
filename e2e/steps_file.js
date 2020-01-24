@@ -155,6 +155,9 @@ module.exports = function () {
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
       await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
+      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
+      await this.completeEvent('Save and continue');
     },
 
     async addAnotherElementToCollection(collectionName) {

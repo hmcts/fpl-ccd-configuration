@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -26,12 +27,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
 import java.util.List;
-import java.util.UUID;
 import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class CaseValidatorServiceTest {
@@ -49,7 +50,7 @@ class CaseValidatorServiceTest {
         CaseData caseData = CaseData.builder().build();
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
 
-        assertThat(errors).containsOnlyOnce(
+        assertThat(errors).containsOnly(
             "In the case name section:",
             "• Enter a case name",
             "In the orders and directions needed section:",
@@ -64,7 +65,11 @@ class CaseValidatorServiceTest {
             "In the documents section:",
             "• Tell us the status of all documents including those that you haven't uploaded",
             "In the grounds for the application section:",
-            "• You need to add details to grounds for the application"
+            "• You need to add details to grounds for the application",
+            "In the respondents section:",
+            "• You need to add details to respondents",
+            "In the allocation proposal section:",
+            "• You need to add details to allocation proposal"
         );
     }
 
@@ -73,7 +78,7 @@ class CaseValidatorServiceTest {
         CaseData caseData = emptyMandatoryCaseData();
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
 
-        assertThat(errors).containsOnlyOnce(
+        assertThat(errors).containsOnly(
             "In the orders and directions needed section:",
             "• You need to add details to orders and directions needed",
             "• Select an option for when you need a hearing",
@@ -91,7 +96,13 @@ class CaseValidatorServiceTest {
             "In the documents section:",
             "• Tell us the status of all documents including those that you haven't uploaded",
             "In the hearing needed section:",
-            "• Select an option for when you need a hearing"
+            "• Select an option for when you need a hearing",
+            "In the respondents section:",
+            "• You need to add details to respondents",
+            "In the allocation proposal section:",
+            "• You need to add details to allocation proposal",
+            "In the grounds for the application section:",
+            "• You need to add details to grounds for the application"
         );
     }
 
@@ -114,6 +125,7 @@ class CaseValidatorServiceTest {
             .applicants(applicants(true))
             .solicitor(solicitor())
             .grounds(grounds())
+            .allocationProposal(allocationProposal())
             .build();
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
@@ -129,6 +141,7 @@ class CaseValidatorServiceTest {
             .groundsForEPO(GroundsForEPO.builder()
                 .reason(ImmutableList.of("reason"))
                 .build())
+            .allocationProposal(allocationProposal())
             .build();
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
@@ -182,6 +195,7 @@ class CaseValidatorServiceTest {
             .applicants(applicants(true))
             .solicitor(solicitor())
             .respondents1(respondents())
+            .allocationProposal(allocationProposal())
             .build();
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
@@ -191,18 +205,12 @@ class CaseValidatorServiceTest {
     private CaseData emptyMandatoryCaseData() {
         return CaseData.builder()
             .caseName("Test case")
-            .children1(List.of(Element.<Child>builder()
-                .id(UUID.randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder().build())
-                    .build())
+            .children1(wrapElements(Child.builder()
+                .party(ChildParty.builder().build())
                 .build()))
             .hearing(Hearing.builder().build())
-            .applicants(List.of(Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder().build())
-                    .build())
+            .applicants(wrapElements(Applicant.builder()
+                .party(ApplicantParty.builder().build())
                 .build()))
             .solicitor(Solicitor.builder().build())
             .build();
@@ -243,24 +251,24 @@ class CaseValidatorServiceTest {
     }
 
     private List<Element<Respondent>> respondents() {
-        return ImmutableList.of(
-            Element.<Respondent>builder()
-                .id(UUID.randomUUID())
-                .value(Respondent.builder().party(
-                    RespondentParty.builder()
-                        .firstName("Timothy")
-                        .lastName("Jones")
-                        .build())
+        return wrapElements(
+            Respondent.builder().party(
+                RespondentParty.builder()
+                    .firstName("Timothy")
+                    .lastName("Jones")
                     .build())
                 .build(),
-            Element.<Respondent>builder()
-                .id(UUID.randomUUID())
-                .value(Respondent.builder().party(
-                    RespondentParty.builder()
-                        .firstName("Sarah")
-                        .build())
+            Respondent.builder().party(
+                RespondentParty.builder()
+                    .firstName("Sarah")
                     .build())
                 .build());
+    }
+
+    private Allocation allocationProposal() {
+        return Allocation.builder()
+            .proposal("proposal")
+            .build();
     }
 
     private List<Element<Applicant>> applicants(boolean hasCompletedAddress) {
@@ -276,25 +284,21 @@ class CaseValidatorServiceTest {
                 .country("UK");
         }
 
-        return List.of(Element.<Applicant>builder()
-            .id(UUID.randomUUID())
-            .value(Applicant.builder()
-                .leadApplicantIndicator("Yes")
-                .party(ApplicantParty.builder()
-                    .organisationName("Harry Kane")
-                    .jobTitle("Judge")
-                    .address(addressBuilder.build())
-                    .email(EmailAddress.builder()
-                        .email("Harrykane@hMCTS.net")
-                        .build())
-                    .telephoneNumber(Telephone.builder()
-                        .telephoneNumber("02838882404")
-                        .contactDirection("Harry Kane")
-                        .build())
+        return wrapElements(Applicant.builder()
+            .leadApplicantIndicator("Yes")
+            .party(ApplicantParty.builder()
+                .organisationName("Harry Kane")
+                .jobTitle("Judge")
+                .address(addressBuilder.build())
+                .email(EmailAddress.builder()
+                    .email("Harrykane@hMCTS.net")
+                    .build())
+                .telephoneNumber(Telephone.builder()
+                    .telephoneNumber("02838882404")
+                    .contactDirection("Harry Kane")
                     .build())
                 .build())
-            .build()
-        );
+            .build());
     }
 
     private Solicitor solicitor() {
@@ -303,7 +307,7 @@ class CaseValidatorServiceTest {
 
     private Orders orders() {
         return Orders.builder()
-            .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+            .orderType(List.of(OrderType.EMERGENCY_PROTECTION_ORDER))
             .build();
     }
 
