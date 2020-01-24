@@ -182,7 +182,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeAnswerInTab(18, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
 });
 
-Scenario('local authority enters respondents', async (I, caseViewPage, enterRespondentsEventPage) => {
+Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterRespondentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
@@ -274,7 +274,7 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   await caseViewPage.goToNewActions(config.applicationActions.enterOthers);
   await enterOthersEventPage.enterOtherDetails(others[0]);
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
-  await enterOthersEventPage.enterContactDetailsHidden('Yes');
+  await enterOthersEventPage.enterContactDetailsHidden('No');
   await enterOthersEventPage.enterLitigationIssues('No');
   await I.addAnotherElementToCollection('Other person');
   await enterOthersEventPage.enterOtherDetails(others[1]);
@@ -296,26 +296,28 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   I.seeAnswerInTab(6, 'Current address', 'Country', 'United Kingdom');
   I.seeAnswerInTab(6, 'Person 1', 'Telephone number', '07888288288');
   I.seeAnswerInTab(7, 'Person 1', 'What is this person\'s relationship to the child or children in this case?', 'Tim Smith');
-  I.seeAnswerInTab(8, 'Person 1', 'Do you need contact details hidden from other parties?', 'Yes');
-  I.seeAnswerInTab(9, 'Person 1', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(10, 'Person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
+  I.seeAnswerInTab(8, 'Person 1', 'Do you need contact details hidden from other parties?', 'No');
+  I.seeAnswerInTab(9, 'Person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 
   I.seeAnswerInTab(1, 'Other person 1', 'Full name', 'Paul Wilsdon');
   I.seeAnswerInTab(2, 'Other person 1', 'Date of birth', '1 Jan 1984');
   I.seeAnswerInTab(3, 'Other person 1', 'Gender', 'Male');
   I.seeAnswerInTab(4, 'Other person 1', 'Place of birth', 'Wales');
+  I.seeAnswerInTab(5, 'Other person 1', 'What is this person\'s relationship to the child or children in this case?', 'Tim Smith');
+  I.seeAnswerInTab(6, 'Other person 1', 'Do you need contact details hidden from other parties?', 'Yes');
+  I.seeAnswerInTab(7, 'Other person 1', 'Give reason', 'mock reason');
+  I.seeAnswerInTab(8, 'Other person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
+  I.seeAnswerInTab(9, 'Other person 1', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
+
+  caseViewPage.selectTab(caseViewPage.tabs.confidential);
+  I.seeAnswerInTab(1, 'Others 1', 'Full name', 'Paul Wilsdon');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', '2 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
   I.seeAnswerInTab(3, 'Current address', '', 'Stokesley');
   I.seeAnswerInTab(4, 'Current address', 'Town or City', 'Middlesbrough');
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', 'TS9 5DQ');
   I.seeAnswerInTab(6, 'Current address', 'Country', 'United Kingdom');
-  I.seeAnswerInTab(6, 'Other person 1', 'Telephone number', '07888288288');
-  I.seeAnswerInTab(7, 'Other person 1', 'What is this person\'s relationship to the child or children in this case?', 'Tim Smith');
-  I.seeAnswerInTab(8, 'Other person 1', 'Do you need contact details hidden from other parties?', 'Yes');
-  I.seeAnswerInTab(9, 'Other person 1', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(10, 'Other person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
-  I.seeAnswerInTab(11, 'Other person 1', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
+  I.seeAnswerInTab(3, 'Others 1', 'Telephone number', '07888288288');
 });
 
 Scenario('local authority enters grounds for non EPO application @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterGroundsForApplicationEventPage) => {
