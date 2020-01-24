@@ -9,8 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.apache.commons.lang3.RandomStringUtils.randomAscii;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +24,7 @@ public class AddCaseNumberControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldReturnErrorWhenFamilymanCaseNumberNotAlphanumeric() {
-        CallbackRequest callbackRequest = buildCallbackRequest(randomAscii(10));
+        CallbackRequest callbackRequest = buildCallbackRequest("NOT ALPHANUMERIC");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest.getCaseDetails(),
             SC_OK);
@@ -36,7 +34,7 @@ public class AddCaseNumberControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldNotReturnErrorWhenFamilymanCaseNumberAlphanumeric() {
-        final String expectedFamilymanCaseNumber = randomAlphabetic(10);
+        final String expectedFamilymanCaseNumber = "ALPHANUM3RIC";
         CallbackRequest callbackRequest = buildCallbackRequest(expectedFamilymanCaseNumber);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest.getCaseDetails(),

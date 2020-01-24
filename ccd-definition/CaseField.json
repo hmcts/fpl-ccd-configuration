@@ -509,6 +509,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "allPartiesCustomCMO",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorityDirections",
     "Label": "Local Authority Directions",
     "FieldType": "Collection",
@@ -519,6 +528,15 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorityDirectionsCustom",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityDirectionsCustomCMO",
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
@@ -545,6 +563,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cafcassDirectionsCustomCMO",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondentDirections",
     "Label": "Parents and respondents directions",
     "FieldType": "Collection",
@@ -555,6 +582,15 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondentDirectionsCustom",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentDirectionsCustomCMO",
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
@@ -581,6 +617,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherPartiesDirectionsCustomCMO",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "courtDirections",
     "Label": "Court directions",
     "FieldType": "Collection",
@@ -591,6 +636,15 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "courtDirectionsCustom",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtDirectionsCustomCMO",
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
@@ -884,6 +938,15 @@
     "Label": "Respondents",
     "FieldType": "Collection",
     "FieldTypeParameter": "RespondentNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confidentialOthers",
+    "Label": "Others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
     "SecurityClassification": "Public"
   },
   {
