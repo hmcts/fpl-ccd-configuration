@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -37,11 +38,11 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
@@ -293,10 +294,10 @@ class GeneratedOrderServiceTest {
 
     @Test
     void shouldRemovePropertiesOnCaseDetailsUsedForOrderCapture() {
-        Map<String, Object> data = Arrays.stream(GeneratedOrderKey.values())
-            .collect(Collectors.toMap(GeneratedOrderKey::getKey, value -> ""));
-        data.putAll(Arrays.stream(GeneratedEPOKey.values())
-            .collect(Collectors.toMap(GeneratedEPOKey::getKey, value -> "")));
+        Map<String, Object> data = stream(GeneratedOrderKey.values())
+            .collect(toMap(GeneratedOrderKey::getKey, value -> ""));
+        data.putAll(stream(GeneratedEPOKey.values()).collect(toMap(GeneratedEPOKey::getKey, value -> "")));
+        data.putAll(stream(InterimOrderKey.values()).collect(toMap(InterimOrderKey::getKey, value -> "")));
 
         data.put("DO NOT REMOVE", "");
         service.removeOrderProperties(data);

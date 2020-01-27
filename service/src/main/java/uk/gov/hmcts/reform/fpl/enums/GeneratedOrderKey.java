@@ -10,8 +10,7 @@ public enum GeneratedOrderKey {
     ORDER("order"),
     JUDGE_AND_LEGAL_ADVISOR("judgeAndLegalAdvisor"),
     ORDER_FURTHER_DIRECTIONS("orderFurtherDirections"),
-    ORDER_MONTHS("orderMonths"),
-    INTERIM_END_DATE("interimEndDate");
+    ORDER_MONTHS("orderMonths");
 
     private final String key;
 }

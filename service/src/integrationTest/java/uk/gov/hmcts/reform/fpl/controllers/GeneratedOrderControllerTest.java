@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
@@ -45,11 +46,12 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
@@ -276,14 +278,14 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         private void aboutToSubmitAssertions(Map<String, Object> data, GeneratedOrder expectedOrder) {
+            List<String> keys = stream(GeneratedOrderKey.values()).map(GeneratedOrderKey::getKey).collect(toList());
+            keys.addAll(stream(GeneratedEPOKey.values()).map(GeneratedEPOKey::getKey).collect(toList()));
+            keys.addAll(stream(InterimOrderKey.values()).map(InterimOrderKey::getKey).collect(toList()));
+
+            assertThat(data).doesNotContainKeys(keys.toArray(String[]::new));
+
             List<Element<GeneratedOrder>> orders = mapper.convertValue(data.get("orderCollection"),
                 new TypeReference<>() {});
-
-            Arrays.stream(GeneratedOrderKey.values())
-                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
-
-            Arrays.stream(GeneratedEPOKey.values())
-                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
 
             assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
         }
