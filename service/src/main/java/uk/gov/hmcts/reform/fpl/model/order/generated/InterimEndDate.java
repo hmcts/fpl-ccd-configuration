@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model.order.generated;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType;
+import uk.gov.hmcts.reform.fpl.validation.groups.InterimEndDateGroup;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ import javax.validation.constraints.Future;
 @Builder
 public class InterimEndDate {
     private final InterimEndDateType type;
-    @Future(message = "Enter an end date in the future")
+    @Future(message = "Enter an end date in the future", groups = InterimEndDateGroup.class)
     private final LocalDate endDate;
 
     public Optional<LocalDateTime> toLocalDateTime() {

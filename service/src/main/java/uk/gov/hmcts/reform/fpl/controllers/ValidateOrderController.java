@@ -13,11 +13,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.InterimEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 
 import java.util.List;
-import javax.validation.groups.Default;
 
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
@@ -64,7 +64,7 @@ public class ValidateOrderController {
         List<String> errors = List.of();
 
         if (interimEndDate.getType() == NAMED_DATE) {
-            errors = validateGroupService.validateGroup(interimEndDate, Default.class);
+            errors = validateGroupService.validateGroup(interimEndDate, InterimEndDateGroup.class);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
