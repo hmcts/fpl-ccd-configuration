@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.generatedorder;
+package uk.gov.hmcts.reform.fpl.model.order.generated;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
