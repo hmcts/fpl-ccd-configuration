@@ -37,6 +37,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 
 @Slf4j
 @Service
@@ -234,7 +235,7 @@ public class GeneratedOrderService {
             return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
                 interimEndDate.toLocalDateTime(), "h:mma, d MMMM y");
         } else {
-            return "End of the proceedings";
+            return END_OF_PROCEEDINGS.getLabel();
         }
     }
 
