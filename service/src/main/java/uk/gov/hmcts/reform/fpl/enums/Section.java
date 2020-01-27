@@ -14,7 +14,8 @@ public enum Section {
     GROUNDS("grounds", "grounds for the application"),
     HEARING("hearing", "hearing needed"),
     DOCUMENTS("document", "documents"),
-    CASENAME("casename", "case name");
+    CASENAME("casename", "case name"),
+    ALLOCATION_PROPOSAL("allocationproposal", "allocation proposal");
 
     private final String[] errorKeys;
     private final String sectionHeaderName;
