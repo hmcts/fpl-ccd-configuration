@@ -17,7 +17,7 @@ class InterimEndDateTest {
     private static final LocalDate now = LocalDate.now();
 
     @Test
-    void shouldReturnDateTimeWithSameDateAndTimeAtEndOfDay() {
+    void shouldReturnDateTimeWhenEndDateIsPopulated() {
         interimEndDate = buildInterimEndDate(NAMED_DATE, now);
         final LocalDateTime expected = LocalDateTime.of(now, LocalTime.of(23,59,59));
         final Optional<LocalDateTime> actual = interimEndDate.toLocalDateTime();
