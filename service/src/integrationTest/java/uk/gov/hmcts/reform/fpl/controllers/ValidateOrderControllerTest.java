@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.EN
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(UploadDocumentsController.class)
+@WebMvcTest(ValidateOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ValidateOrderControllerTest extends AbstractControllerTest {
 
