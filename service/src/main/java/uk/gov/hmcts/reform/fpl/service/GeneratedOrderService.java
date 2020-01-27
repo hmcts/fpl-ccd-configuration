@@ -39,6 +39,8 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 
+// REFACTOR: 27/01/2020 Extract docmosis logic into a new service that extends DocmosisTemplateDataGeneration
+
 @Slf4j
 @Service
 public class GeneratedOrderService {
@@ -106,18 +108,7 @@ public class GeneratedOrderService {
                 break;
             case SUPERVISION_ORDER:
                 orderBuilder.title(null);
-
-                switch (typeAndDocument.getSubtype()) {
-                    case INTERIM:
-                        requireNonNull(interimEndDate);
-                        expiryDate = getInterimExpiryDate(interimEndDate);
-                        break;
-                    case FINAL:
-                        requireNonNull(orderMonths);
-                        expiryDate = dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                            time.now().plusMonths(orderMonths), "h:mma, d MMMM y");
-                        break;
-                }
+                expiryDate = getSupervisionOrderExpiryDate(typeAndDocument, orderMonths, interimEndDate);
                 break;
             default:
         }
@@ -228,6 +219,21 @@ public class GeneratedOrderService {
     public void removeOrderProperties(Map<String, Object> caseData) {
         Arrays.stream(GeneratedEPOKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
         Arrays.stream(GeneratedOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
+    }
+
+    private String getSupervisionOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,
+                                                 InterimEndDate interimEndDate) {
+        switch (typeAndDocument.getSubtype()) {
+            case INTERIM:
+                requireNonNull(interimEndDate);
+                return getInterimExpiryDate(interimEndDate);
+            case FINAL:
+                requireNonNull(orderMonths);
+                return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                    time.now().plusMonths(orderMonths), "h:mma, d MMMM y");
+            default:
+                throw new UnsupportedOperationException("Unexpected value: " + typeAndDocument.getSubtype());
+        }
     }
 
     private String getInterimExpiryDate(InterimEndDate interimEndDate) {
