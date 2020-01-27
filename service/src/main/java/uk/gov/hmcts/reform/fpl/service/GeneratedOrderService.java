@@ -133,7 +133,6 @@ public class GeneratedOrderService {
             .build();
     }
 
-    // TODO: 23/01/2020 Fill in the correct template data
     public Map<String, Object> getOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
