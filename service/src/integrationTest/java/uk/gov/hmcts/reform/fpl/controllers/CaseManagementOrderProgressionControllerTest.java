@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
@@ -95,6 +97,29 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         assertThat(responseData.getFamilyManCaseNumber()).isEqualTo(caseDataBefore.getFamilyManCaseNumber());
 
         verify(notificationClient).sendEmail(
+            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(expectedNotificationParameters()), eq(caseId.toString()));
+    }
+
+    @Test
+    void aboutToSubmitShouldNotNotifyLocalAuthorityWhenChangesAreNotRequested()
+        throws NotificationClientException {
+
+        CaseManagementOrder order = CaseManagementOrder.builder()
+            .status(SEND_TO_JUDGE)
+            .action(OrderAction.builder()
+                .type(ActionType.SELF_REVIEW)
+                .build())
+            .build();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order))
+            .build();
+
+        postAboutToSubmitEvent(buildCallbackRequest(caseDetails));
+
+        verify(notificationClient, never()).sendEmail(
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eq(expectedNotificationParameters()), eq(caseId.toString()));
     }
