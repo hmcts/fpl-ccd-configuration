@@ -54,7 +54,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     void shouldReturnErrorsWhenTheEPOEndDateIsNotWithinTheNextEightDays() {
         LocalDateTime nowPlusNineDays = time.now().plusDays(9);
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusNineDays);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epoEndDate");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epo-end-date");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date must be within the next 8 days");
     }
 
@@ -62,35 +62,35 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     void shouldNotReturnErrorsWhenTheEPOEndDateIsWithinTheNextEightDays() {
         LocalDateTime nowPlusSevenDays = time.now().plusDays(7);
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusSevenDays);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epoEndDate");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epo-end-date");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
     void shouldReturnErrorsWhenTheInterimEndDateIsNotInTheFuture() {
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), NAMED_DATE);
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interimEndDate");
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
     }
 
     @Test
     void shouldReturnErrorsWhenTheInterimEndDateIsToday() {
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now(), NAMED_DATE);
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interimEndDate");
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
     }
 
     @Test
     void shouldNotReturnErrorsWhenTheInterimEndDateIsInTheFuture() {
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().plusDays(1), NAMED_DATE);
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interimEndDate");
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
     void shouldNotReturnErrorsWhenTheInterimEndDateTypeIsEndOfProceedings() {
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), END_OF_PROCEEDINGS);
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interimEndDate");
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 

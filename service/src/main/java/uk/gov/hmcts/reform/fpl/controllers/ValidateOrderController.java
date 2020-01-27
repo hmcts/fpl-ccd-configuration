@@ -53,7 +53,7 @@ public class ValidateOrderController {
             .build();
     }
 
-    @PostMapping("/interimEndDate/mid-event")
+    @PostMapping("/interim-end-date/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateInterimEndDate(
         @RequestBody CallbackRequest callbackRequest) {
 
@@ -73,7 +73,7 @@ public class ValidateOrderController {
             .build();
     }
 
-    @PostMapping("/epoEndDate/mid-event")
+    @PostMapping("/epo-end-date/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateEPOEndDate(
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
