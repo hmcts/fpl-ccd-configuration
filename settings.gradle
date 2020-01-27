@@ -12,6 +12,6 @@ rootProject.name = 'FPL'
 include 'service'
 includeBuild ('../../ccd-sdk-types') {
   dependencySubstitution {
-    substitute module('ccd-sdk-types:types') with project(':')
+    substitute module('uk.gov.hmcts:ccd-sdk-types') with project(':')
   }
 }
