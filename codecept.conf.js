@@ -11,7 +11,8 @@ exports.config = {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
-      waitForTimeout: 7500,
+      keepCookies: true,
+      waitForTimeout: 10000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
@@ -46,6 +47,7 @@ exports.config = {
     enterHearingNeededEventPage: './e2e/pages/events/enterHearingNeededEvent.page.js',
     enterChildrenEventPage: './e2e/pages/events/enterChildrenEvent.page.js',
     enterRespondentsEventPage: './e2e/pages/events/enterRespondentsEvent.page.js',
+    enterRepresentativesEventPage: './e2e/pages/events/enterRepresentativesEvent.page.js',
     enterApplicantEventPage: './e2e/pages/events/enterApplicantEvent.page.js',
     enterOthersEventPage: './e2e/pages/events/enterOthersEvent.page.js',
     enterGroundsForApplicationEventPage: './e2e/pages/events/enterGroundsForApplicationEvent.page.js',
@@ -60,8 +62,16 @@ exports.config = {
     enterFamilyManCaseNumberEventPage: './e2e/pages/events/enterFamilyManCaseNumberEvent.page.js',
     uploadStandardDirectionsDocumentEventPage: './e2e/pages/events/uploadStandardDirectionsDocumentEvent.page.js',
     sendCaseToGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
+    createNoticeOfProceedingsEventPage: './e2e/pages/events/createNoticeOfProceedingsEvent.page.js',
     addHearingBookingDetailsEventPage: './e2e/pages/events/addHearingBookingDetailsEvent.page.js',
     addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
+    uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
+    draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
+    createOrderEventPage: './e2e/pages/events/createOrderEvent.page.js',
+    draftCaseManagementOrderEventPage: './e2e/pages/events/draftCaseManagementOrderEvent.page.js',
+    complyWithDirectionsEventPage: './e2e/pages/events/complyWithDirectionsEvent.page.js',
+    complyOnBehalfOfOthersEventPage: './e2e/pages/events/complyOnBehalfOfOthersEvent.page.js',
+    actionCaseManagementOrderEventPage: './e2e/pages/events/actionCaseManagementOrderEvent.page.js',
   },
   plugins: {
     autoDelay: {
@@ -85,6 +95,7 @@ exports.config = {
     },
   },
   tests: './e2e/tests/*_test.js',
+  teardownAll: require('./e2e/hooks/aggregate-metrics'),
   mocha: {
     reporterOptions: {
       'codeceptjs-cli-reporter': {
@@ -106,6 +117,9 @@ exports.config = {
           inlineAssets: true,
           json: false,
         },
+      },
+      '../../e2e/reporters/json-file-reporter/reporter': {
+        stdout: '-',
       },
     },
   },

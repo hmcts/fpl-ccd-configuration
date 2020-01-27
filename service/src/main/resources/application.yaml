@@ -17,10 +17,23 @@ idam:
   s2s-auth:
     microservice: fpl_case_service
 
+fpl:
+  local_authority_codes_forbidden_case_submission:
+
 ---
 
 spring:
   profiles: integration-test
+  mail:
+    host: 127.0.0.1
+    port: 1025
+    test-connection:
+    properties:
+      mail-smtp:
+        starttls:
+          enable:
+        ssl:
+          trust:
 
 management:
   endpoints:
@@ -33,15 +46,37 @@ idam:
     url: http://fake-service-auth-provider-api
     totp_secret: AABBCCDDEEFFGGHH
 
+auth:
+  idam:
+    client:
+      baseUrl: http://fake-idam-api
+  provider:
+    service:
+      client:
+        baseUrl: http://fake-service-api
+
 core_case_data:
   api:
     url: http://fake-ccd-data-store-api
 
+docmosis:
+  tornado:
+    url: http://fake-docmosis-url
+    key: fake-key
+
 document_management:
   url: http://fake-document-management-store-api
 
+gateway:
+  url: http://fake-document-gateway
+
 notify:
   api_key: testApiKey
+
+
+rd_professional:
+  api:
+    url: http://fake-rd-professional-api
 
 ccd:
   ui:
@@ -49,21 +84,63 @@ ccd:
       url: http://fake-url
 
 fpl:
+  local_authority_codes_forbidden_case_submission: FPLA
   local_authority_email_to_code:
     mapping: 'example.gov.uk=>example'
   local_authority_code_to_name:
     mapping: 'example=>Example Local Authority'
   local_authority_code_to_hmcts_court:
-    mapping: 'example=>Family Court:admin@family-court.com'
+    mapping: 'example=>Family Court:admin@family-court.com:11'
   local_authority_code_to_cafcass:
     mapping: 'example=>cafcass:cafcass@cafcass.com'
+  local_authority_code_to_shared_inbox:
+    mapping: 'example=>local-authority@local-authority.com'
+  local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
   local_authority_user:
     mapping: 'example=>1,2,3'
+  system_update:
+    username: 'fpl-system-update@mailnesia.com'
+    password: 'Password12'
+
+robotics:
+  notification:
+    sender: sender@example.com
+    recipient: FamilyPublicLaw+robotics-test@gmail.com
+
+security:
+  anonymousPaths:
+  authorisedServices:
+
+feature:
+  toggle:
+    robotics:
+      case-number:
+        notification:
+          enabled: true
+      support:
+        api:
+          enabled: true
 
 ---
 
 spring:
   profiles: local
+  security:
+    enabled: true
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://fr-am:8080/openam/oauth2/hmcts
+          jwk-set-uri: http://localhost:5000/o/jwks
+  mail:
+    host: 127.0.0.1
+    port: 1025
+    properties:
+      mail-smtp:
+        starttls:
+          enable:
+        ssl:
+          trust:
 
 idam:
   api:
@@ -71,16 +148,42 @@ idam:
   s2s-auth:
     url: http://localhost:4502
     totp_secret: AABBCCDDEEFFGGHH
+  client:
+    id: fpl
+    redirect_uri: https://localhost:9000/oauth2/callback
+    secret: OOOOOOOOOOOOOOOO
+
+auth:
+  idam:
+    client:
+      baseUrl: http://localhost:5000
+  provider:
+    service:
+      client:
+        baseUrl: http://localhost:4502
+
 
 core_case_data:
   api:
     url: http://localhost:4452
 
+docmosis:
+  tornado:
+    url: http://localhost:5433
+    key: ACCESS_KEY
+
 document_management:
-  url: http://localhost:4506
+  url: http://localhost:3453
+
+gateway:
+  url: http://localhost:3453
 
 notify:
   api_key: fake-key
+
+rd_professional:
+  api:
+    url: http://localhost:8765
 
 ccd:
   ui:
@@ -92,12 +195,31 @@ appinsights:
 
 fpl:
   local_authority_email_to_code:
-    mapping: 'fpla.local=>FPLA;swansea.gov.uk=>SA;hillingdon.gov.uk=>HN'
+    mapping: 'fpla.local=>FPLA;swansea.gov.uk=>SA;hillingdon.gov.uk=>HN;swindon.gov.uk=>SN;wiltshire.gov.uk=>SNW'
   local_authority_code_to_name:
-    mapping: 'SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council'
+    mapping: 'SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council;SN=>Swindon County Council;SNW=>Wiltshire County Council'
   local_authority_code_to_hmcts_court:
-    mapping: 'SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com'
+    mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com:344;HN=>Family Court sitting at West London:FamilyPublicLaw+hn@gmail.com:332;SN=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com:345;SNW=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com:345'
   local_authority_code_to_cafcass:
-    mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
-  local_authority_user:
-    mapping: 'FPLA=>0;SA=>31,32,33;HN=>34,35'
+    mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SNW=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
+  local_authority_code_to_shared_inbox:
+    mapping: 'SA=>FamilyPublicLaw+sa@gmail.com;HN=>FamilyPublicLaw+hn@gmail.com;SN=>FamilyPublicLaw+sn@gmail.com;SNW=>FamilyPublicLaw+sn@gmail.com'
+  local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
+  system_update:
+    username: 'fpl-system-update@mailnesia.com'
+    password: 'Password12'
+
+robotics:
+  notification:
+    sender: sender@example.com
+    recipient: FamilyPublicLaw+robotics@gmail.com
+
+feature:
+  toggle:
+    robotics:
+      case-number:
+        notification:
+          enabled: true
+      support:
+        api:
+          enabled: true

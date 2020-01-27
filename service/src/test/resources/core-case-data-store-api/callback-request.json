@@ -66,7 +66,8 @@
           "detailsHidden": "No",
           "childInformation": "Cousin",
           "litigationIssues": "NO",
-          "genderIdentification": "Unknown"
+          "genderIdentification": "Unknown",
+          "representedBy" : []
         },
         "additionalOthers": [
           {
@@ -90,7 +91,8 @@
               "childInformation": "Friend of family",
               "litigationIssues": "YES",
               "detailsHiddenReason": "Other two hide from parties",
-              "litigationIssuesDetails": "Other two inability to take part in proceedings"
+              "litigationIssuesDetails": "Other two inability to take part in proceedings",
+              "representedBy": []
             }
           }
         ]
@@ -151,7 +153,7 @@
               "detailsHiddenReason": "History of domestic violence with relatives",
               "fathersResponsibility": "Yes",
               "additionalNeedsDetails": "Autism",
-              "childGenderIdentification": "Boy",
+              "genderIdentification": "Boy",
               "placementOrderApplication": "Yes"
             }
           }
@@ -258,7 +260,7 @@
             "party": {
               "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
               "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
-              "partyType": "Individual",
+              "partyType": "INDIVIDUAL",
               "title": "Mr",
               "firstName": "Paul",
               "lastName": "Smith",
@@ -269,14 +271,15 @@
               "litigationIssues": "YES",
               "litigationIssuesDetails": "respondent one test litigation reason",
               "relationshipToChild": "Uncle",
-              "contactDetailsHidden": "No",
+              "contactDetailsHidden": "Yes",
               "contactDetailsHiddenReason": "Hide from all",
               "address": {},
               "telephoneNumber": {
                 "telephoneNumber": "07712345678"
               }
             },
-            "leadRespondentIndicator": "Y"
+            "leadRespondentIndicator": "Y",
+            "representedBy": []
           }
         },
         {
@@ -285,7 +288,7 @@
             "party": {
               "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
               "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
-              "partyType": "Individual",
+              "partyType": "INDIVIDUAL",
               "title": "Mr",
               "firstName": "James",
               "lastName": "Smith",
@@ -311,7 +314,8 @@
                 "telephoneNumber": "02892611016"
               }
             },
-            "leadRespondentIndicator": "Y"
+            "leadRespondentIndicator": "Y",
+            "representedBy": []
           }
         },
         {
@@ -320,7 +324,7 @@
             "party": {
               "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
               "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
-              "partyType": "Individual",
+              "partyType": "INDIVIDUAL",
               "title": "Mr",
               "firstName": "An",
               "lastName": "Other",
@@ -341,7 +345,8 @@
                 "telephoneNumber": "0987654321"
               }
             },
-            "leadRespondentIndicator": "Y"
+            "leadRespondentIndicator": "Y",
+            "representedBy": []
           }
         }
       ],
@@ -446,9 +451,55 @@
           "document_filename": "form.pdf",
           "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
         }
-      }
+      },
+      "noticeOfProceedings": {
+        "proceedingTypes": [
+          "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
+        ]
+      },
+      "temporaryC2Document": {
+        "document": {
+          "document_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+          "document_binary_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+          "document_filename": "file.pdf"
+        },
+        "description": "C2 document two"
+      },
+      "c2DocumentBundle": [
+        {
+          "id": "76d8cc29-9085-4e22-a6f7-f86bfb77f020",
+          "value": {
+            "document": {
+              "document_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+              "document_binary_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+              "document_filename": "file.pdf"
+            },
+            "description": "C2 document one"
+          }
+        }
+      ],
+      "orderTypeAndDocument": {
+        "type": "BLANK_ORDER",
+        "document": {
+          "document_url": "some url",
+          "document_binary_url": "some binary url",
+          "document_filename": "file.pdf"
+        }
+      },
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "Judy",
+        "legalAdvisorName": "Peter Parker"
+      },
+      "order": {
+        "title": "Example Order",
+        "details": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+      },
+      "familyManCaseNumber": "12345L"
     }
   },
-  "case_details_before": {},
+  "case_details_before": {
+    "case_data": {}
+  },
   "eventId": {}
 }

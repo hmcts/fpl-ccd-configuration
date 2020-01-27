@@ -3,8 +3,9 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 /**
  * Gets a Local Authority name.
@@ -14,23 +15,25 @@ public class LocalAuthorityService {
 
     private final IdamApi idamApi;
     private final LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration;
+    private final RequestData requestData;
 
     @Autowired
     public LocalAuthorityService(IdamApi idamApi,
-                                 LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration) {
+                                 LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration,
+                                 RequestData requestData) {
         this.idamApi = idamApi;
         this.localAuthorityCodeLookupConfiguration = localAuthorityCodeLookupConfiguration;
+        this.requestData = requestData;
     }
 
     /**
      * Returns a value for email domain to be stored in Case Data.
      *
-     * @param authorization IDAM authorisation token.
      * @return caseLocalAuthority for user.
      */
-    public String getLocalAuthorityCode(String authorization) {
-        UserDetails userDetails = idamApi.retrieveUserDetails(authorization);
-        String email = userDetails.getEmail();
+    public String getLocalAuthorityCode() {
+        UserInfo userInfo = idamApi.retrieveUserInfo(requestData.authorisation());
+        String email = userInfo.getSub();
         String domain = extractEmailDomain(email);
 
         return localAuthorityCodeLookupConfiguration.getLocalAuthorityCode(domain);

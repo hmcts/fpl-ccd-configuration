@@ -13,6 +13,7 @@ yarn-error.log
 # test output
 output/
 test-results/
+src/gatling/results
 
 .DS_Store
 ~*
@@ -33,3 +34,10 @@ service/out
 # helm charts
 requirements.lock
 charts/*/charts/*.tgz
+
+# user mappings file
+application-user-mappings.yaml
+
+# wiremock response
+docker/wiremock/__files/mockResponse.json
+docker/wiremock/mappings/user-by-email/*

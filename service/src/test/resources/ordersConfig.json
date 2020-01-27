@@ -1,0 +1,40 @@
+{
+  "type": "standardDirectionOrder",
+  "language": "ENGLISH",
+  "service": "FPL",
+  "directions": [
+    {
+      "title": "Test SDO type 1",
+      "text": "- Test body 1 \n\n- Two",
+      "assignee": "ALL_PARTIES",
+      "display": {
+        "due": "ON",
+        "templateDateFormat": "d MMMM yyyy 'at' h:mma",
+        "directionRemovable": false,
+        "showDateOnly": true
+      }
+    },
+    {
+      "title": "Test SDO type 2",
+      "text": "Test body 2",
+      "assignee": "LOCAL_AUTHORITY",
+      "display": {
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
+        "directionRemovable": false,
+        "showDateOnly": false
+      }
+    },
+    {
+      "title": "Test SDO type 3",
+      "text": "Test body 3",
+      "assignee": "LOCAL_AUTHORITY",
+      "display": {
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
+        "directionRemovable": true,
+        "showDateOnly": false
+      }
+    }
+  ]
+}

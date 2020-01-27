@@ -1,0 +1,51 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingNeedsBooked",
+    "ListElementCode": "INTERPRETER",
+    "ListElement": "Interpreter",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingNeedsBooked",
+    "ListElementCode": "SPOKEN_OR_WRITTEN_WELSH",
+    "ListElement": "Spoken or written Welsh",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingNeedsBooked",
+    "ListElementCode": "INTERMEDIARY",
+    "ListElement": "Intermediary",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingNeedsBooked",
+    "ListElementCode": "FACILITIES_OR_ASSISTANCE",
+    "ListElement": "Facilities or assistance for a disability",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingNeedsBooked",
+    "ListElementCode": "SEPARATE_WAITING_OR_SECURITY_MEASURES",
+    "ListElement": "Separate waiting room or other security measures",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingNeedsBooked",
+    "ListElementCode": "SOMETHING_ELSE",
+    "ListElement": "Something else",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingNeedsBooked",
+    "ListElementCode": "NONE",
+    "ListElement": "None",
+    "DisplayOrder": 7
+  }
+]

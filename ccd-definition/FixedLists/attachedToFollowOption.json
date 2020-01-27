@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "attachedToFollowOption",
+    "ListElementCode": "Attached",
+    "ListElement": "Attached",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "attachedToFollowOption",
+    "ListElementCode": "Included in social work evidence template (SWET)",
+    "ListElement": "Included in social work evidence template (SWET)",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "attachedToFollowOption",
+    "ListElementCode": "To follow",
+    "ListElement": "To follow",
+    "DisplayOrder": 3
+  }
+]

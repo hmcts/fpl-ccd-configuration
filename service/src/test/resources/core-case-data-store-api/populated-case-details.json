@@ -198,7 +198,7 @@
         "id": "8a22519a-1625-4667-a0c4-c939b44d5069",
         "value": {
           "party": {
-            "partyType": "Individual",
+            "partyType": "INDIVIDUAL",
             "organisationName": "London Borough of Southwark",
             "address": {
               "County": "Galway",
@@ -267,12 +267,12 @@
     },
     "respondents1": [
       {
-        "id": "randomID",
+        "id": "f683a361-f1a4-4f44-b49f-154a54a27900",
         "value": {
           "party": {
             "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
             "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
-            "partyType": "Individual",
+            "partyType": "INDIVIDUAL",
             "title": "Mr",
             "firstName": "Paul",
             "lastName": "Smith",
@@ -299,7 +299,7 @@
           "party": {
             "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
             "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
-            "partyType": "Individual",
+            "partyType": "INDIVIDUAL",
             "title": "Mr",
             "firstName": "James",
             "lastName": "Smith",
@@ -334,7 +334,7 @@
           "party": {
             "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
             "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
-            "partyType": "Individual",
+            "partyType": "INDIVIDUAL",
             "title": "Mr",
             "firstName": "An",
             "lastName": "Other",
@@ -469,6 +469,20 @@
           "documentTitle": "document_two"
         }
       }
-    ]
+    ],
+    "hearingDetails": [{
+      "id": "51d02c7f-2a51-424b-b299-a90b98bb1774",
+      "value": {
+        "startDate": "2020-01-01T15:30:00.000",
+        "endDate": "2020-01-02T14:30:00.000",
+        "type": "CASE_MANAGEMENT",
+        "venue": "1",
+        "judgeName": "1",
+        "judgeTitle": "1",
+        "hearingNeedsBooked": ["INTERMEDIARY"],
+        "hearingNeedsDetails": "ok"
+      }
+    }],
+    "familyManCaseNumber": "12345"
   }
 }

@@ -23,7 +23,9 @@ public class DocumentGeneratorService {
     private final ObjectMapper mapper;
 
     @Autowired
-    public DocumentGeneratorService(HTMLToPDFConverter converter, DocumentTemplates templates, ObjectMapper mapper) {
+    public DocumentGeneratorService(HTMLToPDFConverter converter,
+                                    DocumentTemplates templates,
+                                    ObjectMapper mapper) {
         this.converter = converter;
         this.templates = templates;
         this.mapper = mapper;
@@ -32,11 +34,12 @@ public class DocumentGeneratorService {
     @SafeVarargs
     public final byte[] generateSubmittedFormPDF(CaseDetails caseDetails, Map.Entry<String, ?>... extraContextEntries) {
         Map<String, Object> context = mapper.convertValue(populateEmptyCollections(caseDetails),
-            new TypeReference<Map<String, Object>>() {});
+            new TypeReference<>() {});
 
         for (Map.Entry<String, ?> entry : extraContextEntries) {
             context.put(entry.getKey(), entry.getValue());
         }
+
         byte[] template = templates.getHtmlTemplate();
 
         return converter.convert(template, context);

@@ -24,9 +24,11 @@ def otherSecrets = [
   ],
   'ccd-${env}': [
     secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
-    secret('ccd-as-a-pr-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
-    secret('ccd-as-a-pr-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
     secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
+  ],
+  'fpl-${env}': [
+    secret('ccd-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
+    secret('ccd-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
   ]
 ]
 
@@ -41,6 +43,22 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 def archiveCoreCaseDataDefinitions(env) {
   sh "./bin/build-release-ccd-definition.sh ${env}"
   steps.archiveArtifacts artifacts: "build/ccd-release-config/ccd-fpl-${env}.xlsx"
+}
+
+/**
+ * Imports CCD definitions into specified environment. Import XLSX file is archived when process completed.
+ *
+ * NOTE: It requires `bin/variables/load-${env}-environment-variables.sh` file to define environment specific URLs.
+ *
+ * @param env target environment
+ */
+def importCoreCaseDataDefinitions(env) {
+  sh """
+    eval \$(./bin/variables/load-${env}-environment-variables.sh)
+
+    ./bin/configurer/import-ccd-definition.sh
+  """
+  steps.archiveArtifacts artifacts: "build/ccd-development-config/ccd-fpl-dev.xlsx"
 }
 
 withPipeline(type, product, component) {
@@ -95,7 +113,7 @@ withPipeline(type, product, component) {
 
   before('smoketest:demo-staging') {
     env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
-    archiveCoreCaseDataDefinitions('demo')
+    importCoreCaseDataDefinitions('demo')
   }
 
   before('smoketest:perftest-staging') {
@@ -160,5 +178,6 @@ withPipeline(type, product, component) {
 
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    publishToCosmosDb(this, params, 'dbs/jenkins/colls/fpl-test-metrics', "${WORKSPACE}/output", 'metrics')
   }
 }

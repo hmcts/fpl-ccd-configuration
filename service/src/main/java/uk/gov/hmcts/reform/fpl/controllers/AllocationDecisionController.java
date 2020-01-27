@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -9,34 +11,54 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Api
 @RestController
 @RequestMapping("/callback/allocation-decision")
 public class AllocationDecisionController {
+    private final ObjectMapper mapper;
+    private final CourtLevelAllocationService service;
+
+    @Autowired
+    public AllocationDecisionController(ObjectMapper mapper, CourtLevelAllocationService service) {
+        this.mapper = mapper;
+        this.service = service;
+    }
 
     @PostMapping("/about-to-start")
-    @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse checkIfAllocationProposalIsMissing(
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        Allocation allocationDecision = service.createDecision(caseData);
 
         Map<String, Object> data = caseDetails.getData();
-
-        Map<String, Object> allocationDecision = (Map<String, Object>) data
-            .computeIfAbsent("allocationDecision", (key) -> new HashMap<>());
-        allocationDecision.put("allocationProposalPresent", checkProposal(data));
+        data.put("allocationDecision", allocationDecision);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
     }
 
-    private String checkProposal(Map<String, Object> data) {
-        return data.containsKey("allocationProposal") ? "Yes" : "No";
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        Allocation allocationDecision = service.setAllocationDecisionIfNull(caseData);
+
+        Map<String, Object> data = caseDetails.getData();
+        data.put("allocationDecision", allocationDecision);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
     }
 }

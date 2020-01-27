@@ -13,8 +13,12 @@ const enterChildrenEventPage = require('./pages/events/enterChildrenEvent.page')
 const enterApplicantEventPage  = require('./pages/events/enterApplicantEvent.page');
 const enterGroundsEventPage = require('./pages/events/enterGroundsForApplicationEvent.page');
 const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
+const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
+const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.page');
 
 const applicant = require('./fixtures/applicant');
+const solicitor = require('./fixtures/solicitor');
+const respondent = require('./fixtures/respondents');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -55,6 +59,13 @@ module.exports = function () {
         eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
       await eventSummaryPage.submit(button);
+    },
+
+    seeCheckAnswers(checkAnswerTitle) {
+      this.click('Continue');
+      this.waitForElement('.check-your-answers');
+      this.see(checkAnswerTitle);
+      eventSummaryPage.submit('Save and continue');
     },
 
     seeEventSubmissionConfirmation(event) {
@@ -109,6 +120,12 @@ module.exports = function () {
       }
     },
 
+    async enterAllocationProposal () {
+      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
+      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
+      await this.completeEvent('Save and continue');
+    },
+
     async enterMandatoryFields () {
       await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
       ordersAndDirectionsNeededEventPage.checkCareOrder();
@@ -118,28 +135,53 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
       enterApplicantEventPage.enterApplicantDetails(applicant);
+      enterApplicantEventPage.enterSolicitorDetails(solicitor);
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
+      await enterRespondentsEventPage.enterRespondent(respondent[0]);
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
       enterGroundsEventPage.enterThresholdCriteriaDetails();
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
-      uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
+      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow();
+      uploadDocumentsEventPage.selectSocialWorkStatementIncludedInSWET();
       uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
       uploadDocumentsEventPage.uploadCarePlan(config.testFile);
+      uploadDocumentsEventPage.uploadSWET(config.testFile);
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
       await this.completeEvent('Save and continue');
     },
 
-    async addAnotherElementToCollection() {
+    async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
-      this.click('Add new');
+      if(collectionName) {
+        this.click(locate('button')
+          .inside(locate('div').withChild(locate('h2').withText(collectionName)))
+          .withText('Add new'));
+      } else {
+        this.click('Add new');
+      }
       this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
       this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
+    },
+
+    async removeElementFromCollection(collectionName, index = 1) {
+      if(collectionName) {
+        await this.click(locate('button')
+          .inside(locate('div').withChild(locate('h2').withText(collectionName)))
+          .withText('Remove')
+          .at(index));
+      } else {
+        await this.click('Remove');
+      }
+      this.click(locate('button')
+        .inside('.mat-dialog-container')
+        .withText('Remove'));
     },
 
     /**

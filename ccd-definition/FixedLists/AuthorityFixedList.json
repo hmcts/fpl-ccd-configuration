@@ -1,0 +1,92 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SA",
+    "ListElement": "Swansea City Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HN",
+    "ListElement": "London Borough Hillingdon"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "STF",
+    "ListElement": "Staffordshire County Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SCC",
+    "ListElement": "Southampton City Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "PCC",
+    "ListElement": "Portsmouth City Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SN",
+    "ListElement": "Swindon Borough Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SNW",
+    "ListElement": "Wiltshire Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "RCC",
+    "ListElement": "Reading Borough Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NLC",
+    "ListElement": "North Lincolnshire Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NELC",
+    "ListElement": "North East Lincolnshire Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LCC",
+    "ListElement": "Liverpool County Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "KBC",
+    "ListElement": "Knowsley Borough Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CDF",
+    "ListElement": "Cardiff Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "ERY",
+    "ListElement": "East Riding of Yorkshire Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "FPLA",
+    "ListElement": "FPLA team"
+  }
+]

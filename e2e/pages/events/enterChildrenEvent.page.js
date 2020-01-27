@@ -35,6 +35,7 @@ module.exports = {
         socialWorkerTel: `#children1_${index}_party_socialWorkerTelephoneNumber_telephoneNumber`,
         additionalNeedsNo: `#children1_${index}_party_additionalNeeds-No`,
         contactHiddenNo: `#children1_${index}_party_detailsHidden-No`,
+        contactHiddenYes: `#children1_${index}_party_detailsHidden-Yes`,
         litigationIssues: {
           yes: `#children1_${index}_party_litigationIssues-YES`,
           no: `#children1_${index}_party_litigationIssues-NO`,
@@ -71,11 +72,8 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
 
     within(this.fields(elementIndex).child.situation.addressOfChild, () => {
-      if (elementIndex === 0) {
-        postcodeLookup.lookupPostcode(address);
-      } else {
-        postcodeLookup.enterAddressManually(address);
-      }
+      //XXX removed postcode lookup due to instability
+      postcodeLookup.enterAddressManually(address);
     });
   },
 
@@ -118,10 +116,17 @@ module.exports = {
     I.click(this.fields(elementIndex).child.additionalNeedsNo);
   },
 
-  async defineContactDetailsVisibility() {
+  async enterContactDetailsHidden(hideContactDetails) {
     const elementIndex = await this.getActiveElementIndex();
 
-    I.click(this.fields(elementIndex).child.contactHiddenNo);
+    switch (hideContactDetails) {
+      case 'Yes':
+        I.click(this.fields(elementIndex).child.contactHiddenYes);
+        break;
+      case 'No':
+        I.click(this.fields(elementIndex).child.contactHiddenNo);
+        break;
+    }
   },
 
   async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {

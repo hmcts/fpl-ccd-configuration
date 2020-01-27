@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "swetDocumentOptions",
+    "ListElementCode": "Attached",
+    "ListElement": "Attached",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "swetDocumentOptions",
+    "ListElementCode": "To follow",
+    "ListElement": "To follow",
+    "DisplayOrder": 2
+  }
+]

@@ -5,7 +5,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import uk.gov.hmcts.reform.fpl.pebble.OrderMappingFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +34,6 @@ public class OrderMappingFilterTest {
 
         Assertions.assertThatThrownBy(() -> filter.apply(incorrectEnum, NO_ARGS))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("No enum constant uk.gov.hmcts.reform.fpl.config.utils.OrderType." + incorrectEnum);
+            .hasMessage("No enum constant uk.gov.hmcts.reform.fpl.enums.OrderType." + incorrectEnum);
     }
 }

@@ -1,11 +1,17 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
+const orders = require('../fixtures/orders.js');
+const orderFunctions = require('../helpers/generated_order_helper');
+const representatives = require('../fixtures/representatives.js');
+const dateFormat = require('dateformat');
+const dateToString = require('../helpers/date_to_string_helper');
 
 let caseId;
 
 Feature('Case administration after submission');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
+
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -20,6 +26,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     I.signOut();
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   }
+
   await I.navigateToCaseDetails(caseId);
 });
 
@@ -76,11 +83,20 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
-Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  sendCaseToGatekeeperEventPage.enterEmail();
+Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeAnswerInTab('1', 'C2 1', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('4', 'C2 1', 'Description', 'Rachel Zane C2');
+  I.seeAnswerInTab('1', 'C2 2', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('4', 'C2 2', 'Description', 'Jessica Pearson C2');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
@@ -88,30 +104,109 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
+  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
+
+  let startDate = dateToString(hearingDetails[0].startDate);
+  let endDate = dateToString(hearingDetails[0].endDate);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 1', 'Venue', hearingDetails[0].venue);
-  I.seeAnswerInTab(3, 'Hearing 1', 'Date', '1 Jan 2050');
-  I.seeAnswerInTab(4, 'Hearing 1', 'Pre-hearing attendance', hearingDetails[0].preHearingAttendance);
-  I.seeAnswerInTab(5, 'Hearing 1', 'Hearing time', hearingDetails[0].time);
-  I.seeAnswerInTab(6, 'Hearing 1', 'Hearing needs booked', hearingDetails[0].type.interpreter);
-  I.seeAnswerInTab(6, 'Hearing 1', '', hearingDetails[0].type.welsh);
-  I.seeAnswerInTab(6, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
-  I.seeAnswerInTab(7, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
-  I.seeAnswerInTab(8, 'Hearing 1', 'Judge or magistrate\'s title', hearingDetails[0].judgeTitle);
-  I.seeAnswerInTab(9, 'Hearing 1', 'Judge or magistrate\'s last name', hearingDetails[0].lastName);
+  I.seeAnswerInTab(3, 'Hearing 1', 'Start date and time', dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeAnswerInTab(4, 'Hearing 1', 'End date and time', dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeAnswerInTab(5, 'Hearing 1', 'Hearing needs booked', hearingDetails[0].type.interpreter);
+  I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.welsh);
+  I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
+  I.seeAnswerInTab(6, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
+  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
 
+  startDate = dateToString(hearingDetails[1].startDate);
+  endDate = dateToString(hearingDetails[1].endDate);
   I.seeAnswerInTab(1, 'Hearing 2', 'Type of hearing', hearingDetails[1].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 2', 'Venue', hearingDetails[1].venue);
-  I.seeAnswerInTab(3, 'Hearing 2', 'Date', '2 Feb 2060');
-  I.seeAnswerInTab(4, 'Hearing 2', 'Pre-hearing attendance', hearingDetails[1].preHearingAttendance);
-  I.seeAnswerInTab(5, 'Hearing 2', 'Hearing time', hearingDetails[1].time);
-  I.seeAnswerInTab(6, 'Hearing 2', 'Hearing needs booked', hearingDetails[1].type.interpreter);
-  I.seeAnswerInTab(6, 'Hearing 2', '', hearingDetails[1].type.welsh);
-  I.seeAnswerInTab(6, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
-  I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
-  I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
-  I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
+  I.seeAnswerInTab(3, 'Hearing 2', 'Start date and time', dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeAnswerInTab(4, 'Hearing 2', 'End date and time', dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeAnswerInTab(5, 'Hearing 2', 'Hearing needs booked', hearingDetails[1].type.interpreter);
+  I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.welsh);
+  I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
+  I.seeAnswerInTab(6, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
+  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Title', hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
+  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Last name', hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
+});
+
+Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
+  for (let i = 0; i < orders.length; i++) {
+    await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+    await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
+    I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+    await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
+  }
+});
+
+Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  await createNoticeOfProceedingsEventPage.checkC6();
+  await createNoticeOfProceedingsEventPage.checkC6A();
+  await createNoticeOfProceedingsEventPage.selectJudgeTitle();
+  await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');
+  I.seeAnswerInTab('1', 'Notice of proceedings 2', 'File name', 'Notice_of_proceedings_c6a.pdf');
+});
+
+Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
+  await I.navigateToCaseDetails(caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
+  const representative = {...representatives[0], email: config.hillingdonLocalAuthorityEmailUserOne};
+  await enterRepresentativesEventPage.enterRepresentative(representative);
+
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeAnswerInTab(1, 'Representatives 1', 'Full name', representative.fullName);
+  I.seeAnswerInTab(2, 'Representatives 1', 'Position in a case', representative.positionInACase);
+  I.seeAnswerInTab(3, 'Representatives 1', 'Email address', representative.email);
+  I.seeAnswerInTab(4, 'Representatives 1', 'Phone number', representative.telephone);
+  I.seeAnswerInTab(6, 'Representatives 1', 'How do they want to get case information?', representative.servingPreferences);
+  I.seeAnswerInTab(7, 'Representatives 1', 'Who are they?', representative.role);
+
+  I.signOut();
+  await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  await I.navigateToCaseDetails(caseId);
+  I.see(caseId);
+  I.signOut();
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+});
+
+Scenario('HMCTS admin revoke case access from representative', async (I, caseViewPage) => {
+  await I.navigateToCaseDetails(caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
+
+  await I.removeElementFromCollection('Representatives');
+
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
+
+  I.signOut();
+  await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  await I.navigateToCaseDetails(caseId);
+  I.seeInCurrentUrl('error');
+
+  I.signOut();
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+});
+
+Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+  sendCaseToGatekeeperEventPage.enterEmail();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
