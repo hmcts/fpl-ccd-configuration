@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Others {
     private final Other firstOther;

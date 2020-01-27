@@ -37,7 +37,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "PageShowCondition": "orderTypeAndDocument.type=\"SUPERVISION_ORDER\"",
+    "PageShowCondition": "orderTypeAndDocument.type=\"SUPERVISION_ORDER\" AND orderTypeAndDocument.subtype=\"FINAL\"",
     "ShowSummaryChangeOption": "Y"
   },
   {

@@ -161,6 +161,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
 
         caseData.getAllOthers().stream()
+            .map(Element::getValue)
             .filter(other -> isNotEmpty(other.getRepresentedBy()))
             .forEach(other -> representativesInfo.add(Map.of(
                 NAME, defaultIfNull(other.getName(), EMPTY),

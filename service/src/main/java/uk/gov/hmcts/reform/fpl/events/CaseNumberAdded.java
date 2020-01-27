@@ -1,13 +1,9 @@
 package uk.gov.hmcts.reform.fpl.events;
 
 import lombok.Value;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 @Value
 public class CaseNumberAdded {
-    private final CaseData caseData;
-
-    public CaseNumberAdded(CaseData caseData) {
-        this.caseData = caseData;
-    }
+    private CaseDetails caseDetails;
 }

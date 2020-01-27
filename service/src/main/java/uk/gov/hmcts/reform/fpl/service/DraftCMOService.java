@@ -119,12 +119,12 @@ public class DraftCMOService {
     }
 
     private void removeExistingCustomDirections(CaseDetails caseDetails) {
-        caseDetails.getData().remove("allPartiesCustom");
-        caseDetails.getData().remove("localAuthorityDirectionsCustom");
-        caseDetails.getData().remove("cafcassDirectionsCustom");
-        caseDetails.getData().remove("courtDirectionsCustom");
-        caseDetails.getData().remove("respondentDirectionsCustom");
-        caseDetails.getData().remove("otherPartiesDirectionsCustom");
+        caseDetails.getData().remove("allPartiesCustomCMO");
+        caseDetails.getData().remove("localAuthorityDirectionsCustomCMO");
+        caseDetails.getData().remove("cafcassDirectionsCustomCMO");
+        caseDetails.getData().remove("courtDirectionsCustomCMO");
+        caseDetails.getData().remove("respondentDirectionsCustomCMO");
+        caseDetails.getData().remove("otherPartiesDirectionsCustomCMO");
     }
 
     private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
@@ -150,21 +150,22 @@ public class DraftCMOService {
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
-        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getAllPartiesCustomCMO(),
+            ALL_PARTIES));
 
-        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(),
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustomCMO(),
             LOCAL_AUTHORITY));
 
         directions.addAll(orderByParentsAndRespondentAssignee(commonDirectionService.assignCustomDirections(
-            caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS)));
+            caseData.getRespondentDirectionsCustomCMO(), PARENTS_AND_RESPONDENTS)));
 
-        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getCafcassDirectionsCustom(),
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getCafcassDirectionsCustomCMO(),
             CAFCASS));
 
         directions.addAll(orderByOtherPartiesAssignee(commonDirectionService.assignCustomDirections(
-            caseData.getOtherPartiesDirectionsCustom(), OTHERS)));
+            caseData.getOtherPartiesDirectionsCustomCMO(), OTHERS)));
 
-        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getCourtDirectionsCustomCMO(), COURT));
 
         return directions;
     }

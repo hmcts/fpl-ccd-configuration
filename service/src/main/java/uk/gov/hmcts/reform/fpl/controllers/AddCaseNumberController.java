@@ -41,8 +41,7 @@ public class AddCaseNumberController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        applicationEventPublisher.publishEvent(new CaseNumberAdded(caseData));
+        applicationEventPublisher.publishEvent(new CaseNumberAdded(callbackRequest.getCaseDetails()));
     }
 
     private List<String> validationErrors(final CaseDetails caseDetails) {
