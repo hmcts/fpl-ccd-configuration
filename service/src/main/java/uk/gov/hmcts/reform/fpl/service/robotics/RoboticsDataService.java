@@ -34,7 +34,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -86,7 +85,7 @@ public class RoboticsDataService {
         if (isNotEmpty(allApplicants)) {
             uk.gov.hmcts.reform.fpl.model.ApplicantParty applicantParty = allApplicants.get(0).getValue().getParty();
             return Applicant.builder()
-                .name(isBlank(applicantParty.getFullName()) ? null : applicantParty.getFullName())
+                .name(applicantParty.getOrganisationName())
                 .contactName(getApplicantContactName(applicantParty.getTelephoneNumber()))
                 .jobTitle(applicantParty.getJobTitle())
                 .address(convertAddress(applicantParty.getAddress()).orElse(null))
