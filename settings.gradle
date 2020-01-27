@@ -1,12 +1,3 @@
-pluginManagement {
-  repositories {
-    maven {
-      url '../../repository'
-    }
-    gradlePluginPortal()
-  }
-}
-
 rootProject.name = 'FPL'
 
 include 'service'
