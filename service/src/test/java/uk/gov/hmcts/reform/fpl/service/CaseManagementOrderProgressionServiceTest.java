@@ -31,7 +31,6 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
@@ -64,8 +63,6 @@ class CaseManagementOrderProgressionServiceTest {
 
     @BeforeEach
     void setUp() {
-        given(requestData.authorisation()).willReturn("Bearer");
-        given(requestData.userId()).willReturn("123");
         service = new CaseManagementOrderProgressionService(mapper, applicationEventPublisher, requestData);
     }
 
@@ -84,7 +81,7 @@ class CaseManagementOrderProgressionServiceTest {
     }
 
     @Test
-    void shouldPopulateSharedDocumentWhenOrderIsReadyForPartiesReview() throws IOException {
+    void shouldPopulateSharedDocumentWhenOrderIsReadyForPartiesReview() {
         CaseData caseData = caseDataWithCaseManagementOrder(PARTIES_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
@@ -98,7 +95,7 @@ class CaseManagementOrderProgressionServiceTest {
     }
 
     @Test
-    void shouldRemoveSharedDraftDocumentWhenStatusIsSelfReview() throws IOException {
+    void shouldRemoveSharedDraftDocumentWhenStatusIsSelfReview() {
         CaseData caseData = caseDataWithCaseManagementOrder(CMOStatus.SELF_REVIEW)
             .sharedDraftCMODocument(DocumentReference.builder().build())
             .build();
@@ -180,7 +177,7 @@ class CaseManagementOrderProgressionServiceTest {
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
-    private CaseData.CaseDataBuilder caseDataWithCaseManagementOrder(CMOStatus status) throws IOException {
+    private CaseData.CaseDataBuilder caseDataWithCaseManagementOrder(CMOStatus status) {
         return CaseData.builder().caseManagementOrder(
             CaseManagementOrder.builder()
                 .status(status)

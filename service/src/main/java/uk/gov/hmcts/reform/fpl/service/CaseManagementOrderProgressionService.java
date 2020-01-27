@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderProgressionService {
     //TODO: better CCD ids for the below:
     // sharedDraftCMODocument -> sharedCaseManagementOrderDocument
@@ -31,19 +33,8 @@ public class CaseManagementOrderProgressionService {
     // requires changes in CCD definition. Decided not in scope of 24.
 
     private final ObjectMapper mapper;
-
     private final ApplicationEventPublisher applicationEventPublisher;
-
     private final RequestData requestData;
-
-    @Autowired
-    public CaseManagementOrderProgressionService(ObjectMapper mapper,
-                                                 ApplicationEventPublisher applicationEventPublisher,
-                                                 RequestData requestData) {
-        this.mapper = mapper;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.requestData = requestData;
-    }
 
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
