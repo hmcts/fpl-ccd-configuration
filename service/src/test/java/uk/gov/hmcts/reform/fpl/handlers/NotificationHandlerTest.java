@@ -318,9 +318,6 @@ class NotificationHandlerTest {
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
-            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-                .willReturn("Example Local Authority");
-
             given(caseManagementOrderEmailContentProvider.buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
                 .willReturn(expectedCMOReadyForJudgeNotificationParameters);
 

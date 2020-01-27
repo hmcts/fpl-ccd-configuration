@@ -29,7 +29,6 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -107,7 +106,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     }
 
     @Test
-    void aboutToSubmitShouldBuildNotificationTemplateWhenSentToJudge() throws Exception {
+    void aboutToSubmitShouldSendNotificationWhenStatusIsSendToJudge() throws Exception {
         CaseManagementOrder order = CaseManagementOrder.builder()
             .status(SEND_TO_JUDGE)
             .id(uuid)
@@ -126,7 +125,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
     }
