@@ -11,6 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.ActionType;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -29,12 +31,14 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
@@ -67,12 +71,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
     @Test
     void aboutToSubmitReturnCaseManagementOrdersToLocalAuthorityWhenChangesAreRequested() {
-        CaseManagementOrder order = CaseManagementOrder.builder()
-            .status(SEND_TO_JUDGE)
-            .action(OrderAction.builder()
-                .type(JUDGE_REQUESTED_CHANGE)
-                .build())
-            .build();
+        CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, JUDGE_REQUESTED_CHANGE);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order))
@@ -86,13 +85,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
     @Test
     void aboutToSubmitShouldPopulateListServedCaseManagementOrdersWhenSendsToAllParties() {
-        CaseManagementOrder order = CaseManagementOrder.builder()
-            .status(SEND_TO_JUDGE)
-            .id(uuid)
-            .action(OrderAction.builder()
-                .type(SEND_TO_ALL_PARTIES)
-                .build())
-            .build();
+        CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, SEND_TO_ALL_PARTIES);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(caseDataMap(order))
@@ -107,13 +100,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
     @Test
     void aboutToSubmitShouldSendNotificationWhenStatusIsSendToJudge() throws Exception {
-        CaseManagementOrder order = CaseManagementOrder.builder()
-            .status(SEND_TO_JUDGE)
-            .id(uuid)
-            .action(OrderAction.builder()
-                .type(SEND_TO_ALL_PARTIES)
-                .build())
-            .build();
+        CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, SEND_TO_ALL_PARTIES);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
@@ -128,6 +115,33 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         verify(notificationClient).sendEmail(
             eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
+    }
+
+    @Test
+    void aboutToSubmitShouldNotSendNotificationWhenStatusIsNotSendToJudge() throws Exception {
+        CaseManagementOrder order = buildOrder(SELF_REVIEW, SEND_TO_ALL_PARTIES);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .putAll(caseDataMap(order))
+                .build())
+            .build();
+
+        postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
+            eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
+    }
+
+    private CaseManagementOrder buildOrder(CMOStatus status, ActionType actionType) {
+        return CaseManagementOrder.builder()
+            .status(status)
+            .id(uuid)
+            .action(OrderAction.builder()
+                .type(actionType)
+                .build())
+            .build();
     }
 
     private Map<String, Object> caseDataMap(CaseManagementOrder order) {
