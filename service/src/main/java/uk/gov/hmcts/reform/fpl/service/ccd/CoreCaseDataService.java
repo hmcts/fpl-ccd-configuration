@@ -13,6 +13,10 @@ import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.util.Map;
+
+import static java.util.Collections.emptyMap;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CoreCaseDataService {
@@ -23,34 +27,39 @@ public class CoreCaseDataService {
     private final RequestData requestData;
 
     public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
+        triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());
+    }
+
+    public void triggerEvent(String jurisdiction, String caseType, Long caseId, String eventName, Map<String, Object> eventData) {
         String userToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
         String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
-                userToken,
-                authTokenGenerator.generate(),
-                systemUpdateUserId,
-                jurisdiction,
-                caseType,
-                caseId.toString(),
-                event);
+            userToken,
+            authTokenGenerator.generate(),
+            systemUpdateUserId,
+            jurisdiction,
+            caseType,
+            caseId.toString(),
+            eventName);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
-                .eventToken(startEventResponse.getToken())
-                .event(Event.builder()
-                        .id(startEventResponse.getEventId())
-                        .build())
-                .build();
+            .eventToken(startEventResponse.getToken())
+            .event(Event.builder()
+                .id(startEventResponse.getEventId())
+                .build())
+            .data(eventData)
+            .build();
 
         coreCaseDataApi.submitEventForCaseWorker(
-                userToken,
-                authTokenGenerator.generate(),
-                systemUpdateUserId,
-                jurisdiction,
-                caseType,
-                caseId.toString(),
-                true,
-                caseDataContent);
+            userToken,
+            authTokenGenerator.generate(),
+            systemUpdateUserId,
+            jurisdiction,
+            caseType,
+            caseId.toString(),
+            true,
+            caseDataContent);
     }
 
     public CaseDetails findCaseDetailsById(final String caseId) {

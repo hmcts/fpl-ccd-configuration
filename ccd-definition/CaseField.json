@@ -1023,5 +1023,22 @@
     "Label": "When will this order end?",
     "FieldType": "InterimEndDate",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentToBeSent",
+    "Label": "Party",
+    "FieldType": "Document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsSentToParties",
+    "Label": "Party",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsSentToParty",
+    "SecurityClassification": "Public"
   }
 ]

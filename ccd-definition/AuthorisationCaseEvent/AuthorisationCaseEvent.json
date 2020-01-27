@@ -873,5 +873,12 @@
     "CaseEventID": "manageRepresentatives-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "internal-change:SEND-DOCUMENT",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
   }
 ]
