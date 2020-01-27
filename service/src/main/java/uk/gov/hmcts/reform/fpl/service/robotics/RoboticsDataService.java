@@ -105,6 +105,7 @@ public class RoboticsDataService {
                 .addressLine2(address.getAddressLine2())
                 .addressLine3(address.getAddressLine3())
                 .postTown(address.getPostTown())
+                .postcode(address.getPostcode())
                 .county(address.getCounty())
                 .country(address.getCountry())
                 .build());
