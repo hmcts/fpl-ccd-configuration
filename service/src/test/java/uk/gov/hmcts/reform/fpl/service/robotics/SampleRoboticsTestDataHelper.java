@@ -118,7 +118,7 @@ public class SampleRoboticsTestDataHelper {
 
     public static Applicant expectedApplicant() {
         return Applicant.builder()
-            .name(null)
+            .name("London Borough of Southwark")
             .contactName("Jane Smith")
             .jobTitle("Legal adviser")
             .address(Address.builder()
