@@ -231,12 +231,9 @@ public class GeneratedOrderService {
     }
 
     private String getInterimExpiryDate(InterimEndDate interimEndDate) {
-        if (interimEndDate.hasEndDate()) {
-            return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                interimEndDate.toLocalDateTime(), "h:mma, d MMMM y");
-        } else {
-            return END_OF_PROCEEDINGS.getLabel();
-        }
+        return interimEndDate.toLocalDateTime()
+            .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma, d MMMM y"))
+            .orElse(END_OF_PROCEEDINGS.getLabel());
     }
 
     private String getCourtName(String courtName) {
@@ -266,14 +263,13 @@ public class GeneratedOrderService {
     }
 
     private String getInterimEndDateString(InterimEndDate interimEndDate) {
-        if (interimEndDate.hasEndDate()) {
-            final LocalDateTime dateTime = interimEndDate.toLocalDateTime();
-            final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(dateTime.getDayOfMonth());
-            return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                dateTime, "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y");
-        } else {
-            return "the end of the proceedings";
-        }
+        return interimEndDate.toLocalDateTime()
+            .map(dateTime -> {
+                final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(dateTime.getDayOfMonth());
+                return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                    dateTime, "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y");
+            })
+            .orElse("the end of the proceedings");
     }
 
     private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,
