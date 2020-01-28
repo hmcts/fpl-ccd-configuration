@@ -278,7 +278,7 @@ public class GeneratedOrderService {
 
     private String getFormattedRemovalAddress(CaseData caseData) {
         if (caseData.getEpoRemovalAddress() != null) {
-            return caseData.getEpoRemovalAddress().getAddressAsString();
+            return caseData.getEpoRemovalAddress().getAddressAsString(", ");
         }
 
         return "";
