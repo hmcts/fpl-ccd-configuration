@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
+import uk.gov.hmcts.reform.fpl.service.PrepareDocumentsForPostService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
@@ -51,6 +52,8 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
+    private final PrepareDocumentsForPostService documentsForPostService;
+    private Document document;
 
     @Autowired
     public GeneratedOrderController(ObjectMapper mapper,
@@ -59,7 +62,8 @@ public class GeneratedOrderController {
                                     DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                     UploadDocumentService uploadDocumentService,
                                     ApplicationEventPublisher applicationEventPublisher,
-                                    GatewayConfiguration gatewayConfiguration) {
+                                    GatewayConfiguration gatewayConfiguration,
+                                    PrepareDocumentsForPostService documentsForPostService) {
         this.mapper = mapper;
         this.service = service;
         this.validateGroupService = validateGroupService;
@@ -67,6 +71,7 @@ public class GeneratedOrderController {
         this.uploadDocumentService = uploadDocumentService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.gatewayConfiguration = gatewayConfiguration;
+        this.documentsForPostService = documentsForPostService;
     }
 
     @PostMapping("/about-to-start")
@@ -92,7 +97,7 @@ public class GeneratedOrderController {
 
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
-            Document document = getDocument(authorization, userId, caseData);
+            document = getDocument(authorization, userId, caseData);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
@@ -135,6 +140,10 @@ public class GeneratedOrderController {
 
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
+
+        documentsForPostService.getPostDocumentsAsSinglePdf(caseData, document);
+        documentsForPostService.getPostDocumentsAsSinglePdf(caseData, document);
+        document = null;
     }
 
     private Document getDocument(String authorization,
