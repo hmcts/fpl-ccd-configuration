@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
-import uk.gov.hmcts.reform.fpl.service.PrepareDocumentsForPostService;
+import uk.gov.hmcts.reform.fpl.service.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
@@ -52,7 +52,7 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
-    private final PrepareDocumentsForPostService documentsForPostService;
+    private final DocmosisCoverDocumentsService documentsForPostService;
     private Document document;
 
     @Autowired
@@ -63,7 +63,7 @@ public class GeneratedOrderController {
                                     UploadDocumentService uploadDocumentService,
                                     ApplicationEventPublisher applicationEventPublisher,
                                     GatewayConfiguration gatewayConfiguration,
-                                    PrepareDocumentsForPostService documentsForPostService) {
+                                    DocmosisCoverDocumentsService documentsForPostService) {
         this.mapper = mapper;
         this.service = service;
         this.validateGroupService = validateGroupService;
@@ -141,9 +141,7 @@ public class GeneratedOrderController {
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
 
-        documentsForPostService.getPostDocumentsAsSinglePdf(caseData, document);
-        documentsForPostService.getPostDocumentsAsSinglePdf(caseData, document);
-        document = null;
+        //pass document into internal event PRINT
     }
 
     private Document getDocument(String authorization,
