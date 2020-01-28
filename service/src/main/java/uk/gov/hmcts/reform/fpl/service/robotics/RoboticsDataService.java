@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -83,7 +84,7 @@ public class RoboticsDataService {
 
     private Applicant populateApplicant(final List<Element<uk.gov.hmcts.reform.fpl.model.Applicant>> allApplicants) {
         if (isNotEmpty(allApplicants)) {
-            uk.gov.hmcts.reform.fpl.model.ApplicantParty applicantParty = allApplicants.get(0).getValue().getParty();
+            ApplicantParty applicantParty = allApplicants.get(0).getValue().getParty();
             return Applicant.builder()
                 .name(applicantParty.getOrganisationName())
                 .contactName(getApplicantContactName(applicantParty.getTelephoneNumber()))
