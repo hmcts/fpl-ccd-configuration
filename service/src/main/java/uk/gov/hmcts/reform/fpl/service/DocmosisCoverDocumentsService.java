@@ -23,13 +23,6 @@ public class DocmosisCoverDocumentsService {
         return docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, COVER_SHEET);
     }
 
-    Map<String, Object> buildGeneralLetterData(String familyManCaseNumber, Representative representative) {
-        return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", familyManCaseNumber)
-            .putAll(getRepresentativeData(representative))
-            .build();
-    }
-
     Map<String, Object> buildCoverSheetData(Long caseNumber, Representative representative) {
         return ImmutableMap.<String, Object>builder()
             .put("ccdCaseNumber", formatCCDCaseNumber(caseNumber))
