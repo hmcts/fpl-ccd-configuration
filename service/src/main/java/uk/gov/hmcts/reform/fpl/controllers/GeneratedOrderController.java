@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -34,6 +35,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.COVER_SHEET;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -51,6 +53,7 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
+    private final DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
     @Autowired
     public GeneratedOrderController(ObjectMapper mapper,
@@ -59,6 +62,7 @@ public class GeneratedOrderController {
                                     DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                     UploadDocumentService uploadDocumentService,
                                     ApplicationEventPublisher applicationEventPublisher,
+                                    DocmosisCoverDocumentsService docmosisCoverDocumentsService,
                                     GatewayConfiguration gatewayConfiguration) {
         this.mapper = mapper;
         this.service = service;
@@ -67,6 +71,7 @@ public class GeneratedOrderController {
         this.uploadDocumentService = uploadDocumentService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.gatewayConfiguration = gatewayConfiguration;
+        this.docmosisCoverDocumentsService = docmosisCoverDocumentsService;
     }
 
     @PostMapping("/about-to-start")
@@ -92,7 +97,7 @@ public class GeneratedOrderController {
 
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
-            Document document = getDocument(authorization, userId, caseData);
+            Document document = getDocument(authorization, userId, caseDetails);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
@@ -139,12 +144,11 @@ public class GeneratedOrderController {
 
     private Document getDocument(String authorization,
                                  String userId,
-                                 CaseData caseData) {
+                                 CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
-
-        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-                service.getOrderTemplateData(caseData), templateType);
+        DocmosisDocument document = docmosisCoverDocumentsService.createCoverSheet(caseDetails.getId(),
+            caseData.getRepresentatives().get(0).getValue());
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
@@ -165,6 +169,6 @@ public class GeneratedOrderController {
     }
 
     private DocmosisTemplates getDocmosisTemplateType(GeneratedOrderType type) {
-        return type == EMERGENCY_PROTECTION_ORDER ? EPO : ORDER;
+        return type == EMERGENCY_PROTECTION_ORDER ? EPO : COVER_SHEET;
     }
 }

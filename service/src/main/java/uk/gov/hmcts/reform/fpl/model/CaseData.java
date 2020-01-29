@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
@@ -254,7 +255,7 @@ public class CaseData {
     public List<Element<Other>> getAllOthers() {
         List<Element<Other>> othersList = new ArrayList<>();
 
-        ofNullable(this.getOthers()).map(others -> element(others.getFirstOther())).ifPresent(othersList::add);
+        ofNullable(this.getOthers()).map(Others::getFirstOther).map(ElementUtils::element).ifPresent(othersList::add);
         ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
 
         return Collections.unmodifiableList(othersList);
