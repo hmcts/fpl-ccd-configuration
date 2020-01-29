@@ -56,21 +56,6 @@ class DocmosisCoverDocumentsServiceTest {
         assertThat(generalLetterData).isEqualTo(expectedMap);
     }
 
-    @Test
-    void shouldBuildCoverSheetWhenCCDCaseNumberAndRepresentativeDataProvided() {
-        Long ccdCaseNumber = 12345L;
-        Representative testRepresentative = buildRepresentative();
-        Map<String, Object> coverLetterData = documentsService.buildCoverSheetData(ccdCaseNumber, testRepresentative);
-
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("ccdCaseNumber", "12345")
-            .put("representativeName", "Mark Jones")
-            .put("representativeAddress", "1 Petty France\nSt James's Park\nLondon")
-            .build();
-
-        assertThat(coverLetterData).isEqualTo(expectedMap);
-    }
-
     private Representative buildRepresentative() {
         return Representative.builder()
             .fullName("Mark Jones")
