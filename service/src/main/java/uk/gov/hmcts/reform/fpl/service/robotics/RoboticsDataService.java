@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.robotics;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -11,8 +12,10 @@ import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.robotics.Address;
@@ -33,6 +36,7 @@ import static com.google.common.collect.ImmutableSet.of;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang.WordUtils.capitalize;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -41,27 +45,30 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.robotics.Gender.convertStringToGender;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoboticsDataService {
     private static final String OTHER_TYPE_LABEL_VALUE = "Discharge of care";
+    private static final char[] EMPTY_CHAR = {' '};
 
     private final DateFormatterService dateFormatterService;
     private final ObjectMapper objectMapper;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final RoboticsDataValidatorService validatorService;
 
     public RoboticsData prepareRoboticsData(final CaseData caseData, final Long caseId) {
-        return RoboticsData.builder()
+        final RoboticsData roboticsData = RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
             .feePaid(2055.00)
             .children(populateChildren(caseData.getAllChildren()))
             .respondents(populateRespondents(caseData.getRespondents1()))
             .solicitor(populateSolicitor(caseData.getSolicitor()))
-            .harmAlleged(isNotEmpty(caseData.getRisks()))
-            .internationalElement(isNotEmpty(caseData.getInternationalElement()))
+            .harmAlleged(hasRisks(caseData.getRisks()))
+            .internationalElement(hasInternationalElement(caseData.getInternationalElement()))
             .allocation(isNotEmpty(caseData.getAllocationProposal())
                 && isNotBlank(caseData.getAllocationProposal().getProposal())
                 ? caseData.getAllocationProposal().getProposal() :  null)
@@ -71,6 +78,13 @@ public class RoboticsDataService {
             .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
             .caseId(caseId)
             .build();
+
+        if (!validRoboticsData(roboticsData)) {
+            throw new RoboticsDataException(String.format("failed validation with these error(s) %s",
+                validatorService.validationErrors(roboticsData)));
+        }
+
+        return roboticsData;
     }
 
     public String convertRoboticsDataToJson(final RoboticsData roboticsData) {
@@ -148,8 +162,6 @@ public class RoboticsDataService {
                 .filter(Objects::nonNull)
                 .map(Element::getValue)
                 .filter(respondent -> isNotEmpty(respondent.getParty()))
-                .map(uk.gov.hmcts.reform.fpl.model.Respondent::getParty)
-                .filter(Objects::nonNull)
                 .map(this::buildRespondent)
                 .collect(toSet());
         }
@@ -157,7 +169,9 @@ public class RoboticsDataService {
         return of();
     }
 
-    private Respondent buildRespondent(final RespondentParty respondentParty) {
+    private Respondent buildRespondent(final uk.gov.hmcts.reform.fpl.model.Respondent respondent) {
+        final RespondentParty respondentParty = respondent.getParty();
+
         return Respondent.builder()
             .firstName(respondentParty.getFirstName())
             .lastName(respondentParty.getLastName())
@@ -165,8 +179,7 @@ public class RoboticsDataService {
             .address(convertAddress(respondentParty.getAddress()).orElse(null))
             .relationshipToChild(respondentParty.getRelationshipToChild())
             .dob(formatDob(respondentParty.getDateOfBirth()))
-            // TODO: 19/12/2019 verify if this should always be true ???
-            .confidential(true)
+            .confidential(respondent.containsConfidentialDetails())
             .build();
     }
 
@@ -191,7 +204,6 @@ public class RoboticsDataService {
             .lastName(childParty.getLastName())
             .gender(convertStringToGender(childParty.getGender()))
             .dob(formatDob(childParty.getDateOfBirth()))
-            // TODO: 19/12/2019 verify if this should always be true ???
             .isParty(true)
             .build();
     }
@@ -201,7 +213,7 @@ public class RoboticsDataService {
     }
 
     private String deriveApplicationType(final Orders orders) {
-        if (isEmpty(orders) || isEmpty(orders.getOrderType())) {
+        if (isEmpty(orders) || ObjectUtils.isEmpty(orders.getOrderType())) {
             throw new RoboticsDataException("no order type(s) to derive Application Type from.");
         }
 
@@ -212,12 +224,12 @@ public class RoboticsDataService {
 
         if (selectedOrderTypes.size() > 1) {
             return selectedOrderTypes.stream()
-                .map(this::getOrderTypeLabelValue)
+                .map(selectedOrderType -> capitalize(getOrderTypeLabelValue(selectedOrderType), EMPTY_CHAR))
                 .distinct()
                 .collect(joining(","));
 
         } else {
-            return getOrderTypeLabelValue(selectedOrderTypes.get(0));
+            return capitalize(getOrderTypeLabelValue(selectedOrderTypes.get(0)), EMPTY_CHAR);
         }
     }
 
@@ -238,5 +250,32 @@ public class RoboticsDataService {
         }
 
         throw new RoboticsDataException("unable to derive an appropriate Application Type from " + orderType);
+    }
+
+    private boolean hasInternationalElement(final InternationalElement internationalElement) {
+        if (internationalElement == null) {
+            return false;
+        }
+
+        return (YES.name().equalsIgnoreCase(internationalElement.getPossibleCarer())
+            || YES.name().equalsIgnoreCase(internationalElement.getSignificantEvents())
+            || YES.name().equalsIgnoreCase(internationalElement.getIssues())
+            || YES.name().equalsIgnoreCase(internationalElement.getProceedings())
+            || YES.name().equalsIgnoreCase(internationalElement.getInternationalAuthorityInvolvement()));
+    }
+
+    private boolean hasRisks(final Risks risks) {
+        if (risks == null) {
+            return false;
+        }
+
+        return (YES.name().equalsIgnoreCase(risks.getPhysicalHarm())
+            || YES.name().equalsIgnoreCase(risks.getEmotionalHarm())
+            || YES.name().equalsIgnoreCase(risks.getSexualAbuse())
+            || YES.name().equalsIgnoreCase(risks.getNeglect()));
+    }
+
+    private boolean validRoboticsData(final RoboticsData roboticsData) {
+        return isEmpty(validatorService.validationErrors(roboticsData));
     }
 }

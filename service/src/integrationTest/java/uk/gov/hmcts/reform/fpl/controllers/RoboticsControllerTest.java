@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,6 +101,7 @@ public class RoboticsControllerTest {
     private CaseDetails expectedCaseDetailsWithState(final String state) throws IOException {
         CaseDetails caseDetails = populatedCaseDetails();
         caseDetails.setState(state);
+        caseDetails.getData().put("dateSubmitted", LocalDate.now());
         return caseDetails;
     }
 

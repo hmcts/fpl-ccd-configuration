@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -25,7 +27,9 @@ import java.util.Map;
 
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang.WordUtils.capitalize;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONAssert.assertNotEquals;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -40,11 +44,13 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
-    DateFormatterService.class})
+    DateFormatterService.class, RoboticsDataValidatorService.class, ValidationAutoConfiguration.class})
 public class RoboticsDataServiceTest {
     private static LocalDate NOW = LocalDate.now();
 
     private static long CASE_ID = 12345L;
+
+    private static char[] EMPTY_CHAR = {' '};
 
     @Autowired
     private RoboticsDataService roboticsDataService;
@@ -69,14 +75,12 @@ public class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnRoboticsDataWithNullAllocationWhenAllocationProposalNull() throws IOException {
+    void shouldThrowRoboticsDataExceptionWhenWhenAllocationProposalNull() throws IOException {
         CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER).toBuilder()
             .allocationProposal(null)
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-        assertThat(roboticsData.getAllocation()).isNull();
+        assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
     }
 
     @Test
@@ -100,7 +104,9 @@ public class RoboticsDataServiceTest {
 
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-        assertThat(roboticsData).isEqualTo(expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel()));
+        String expectedApplicationType = capitalize(EMERGENCY_PROTECTION_ORDER.getLabel(), EMPTY_CHAR);
+
+        assertThat(roboticsData).isEqualTo(expectedRoboticsData(expectedApplicationType));
     }
 
     @Nested
@@ -111,7 +117,9 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            assertThat(roboticsData.getApplicationType()).isEqualTo(CARE_ORDER.getLabel());
+            String expectedApplicationType = capitalize(CARE_ORDER.getLabel(), EMPTY_CHAR);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
         }
 
         @Test
@@ -120,7 +128,9 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            assertThat(roboticsData.getApplicationType()).isEqualTo(CARE_ORDER.getLabel());
+            String expectedApplicationType = capitalize(CARE_ORDER.getLabel(), EMPTY_CHAR);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
         }
 
         @Test
@@ -130,7 +140,9 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            assertThat(roboticsData.getApplicationType()).isEqualTo(SUPERVISION_ORDER.getLabel());
+            String expectedApplicationType = capitalize(SUPERVISION_ORDER.getLabel(), EMPTY_CHAR);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
         }
 
         @Test
@@ -140,7 +152,9 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            assertThat(roboticsData.getApplicationType()).isEqualTo(SUPERVISION_ORDER.getLabel());
+            String expectedApplicationType = capitalize(SUPERVISION_ORDER.getLabel(), EMPTY_CHAR);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
         }
 
         @Test
@@ -150,7 +164,9 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            assertThat(roboticsData.getApplicationType()).isEqualTo(EDUCATION_SUPERVISION_ORDER.getLabel());
+            String expectedApplicationType = capitalize(EDUCATION_SUPERVISION_ORDER.getLabel(), EMPTY_CHAR);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
         }
 
         @Test
@@ -162,8 +178,8 @@ public class RoboticsDataServiceTest {
             RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
             assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
-                "Care order,Education supervision order,Emergency protection order,"
-                    + "Discharge of care");
+                "Care Order,Education Supervision Order,Emergency Protection Order,"
+                    + "Discharge Of Care");
         }
 
         @Test
@@ -175,8 +191,8 @@ public class RoboticsDataServiceTest {
             RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
             assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
-                "Care order,Supervision order,Education supervision order,Emergency protection order,"
-                    + "Discharge of care");
+                "Care Order,Supervision Order,Education Supervision Order,Emergency Protection Order,"
+                    + "Discharge Of Care");
         }
     }
 

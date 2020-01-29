@@ -15,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
-import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
@@ -27,7 +26,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -60,6 +58,9 @@ public class RoboticsNotificationServiceTest {
     @Mock
     private RoboticsDataService roboticsDataService;
 
+    @Mock
+    private RoboticsDataValidatorService validatorService;
+
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
 
@@ -74,7 +75,7 @@ public class RoboticsNotificationServiceTest {
             .willReturn(EMAIL_FROM);
 
         roboticsNotificationService = new RoboticsNotificationService(emailService, roboticsDataService,
-            roboticsEmailConfiguration, objectMapper);
+            roboticsEmailConfiguration, objectMapper, validatorService);
     }
 
     @Test
@@ -112,31 +113,23 @@ public class RoboticsNotificationServiceTest {
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldThrowRoboticsDataExceptionWhenOwningCourtCodeZero()
+    void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenOwningCourtCodeZero()
         throws IOException {
         CaseData caseData = prepareCaseData();
 
         given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
             .willReturn(invalidRoboticsDataWithZeroOwningCourt());
 
-        assertThrows(RoboticsDataException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(
-                new CaseNumberAdded(prepareCaseDetails())));
-
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldThrowRoboticsDataExceptionWhenRoboticsJsonDataNull()
+    void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenRoboticsJsonDataNull()
         throws IOException {
         CaseData caseData = prepareCaseData();
 
         given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
             .willReturn(expectedRoboticsData(EDUCATION_SUPERVISION_ORDER.getLabel()));
-
-        assertThrows(RoboticsDataException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(
-                prepareCaseDetails())));
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
