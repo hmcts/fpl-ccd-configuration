@@ -257,11 +257,11 @@ public class RoboticsDataService {
             return false;
         }
 
-        return (YES.name().equalsIgnoreCase(internationalElement.getPossibleCarer())
-            || YES.name().equalsIgnoreCase(internationalElement.getSignificantEvents())
-            || YES.name().equalsIgnoreCase(internationalElement.getIssues())
-            || YES.name().equalsIgnoreCase(internationalElement.getProceedings())
-            || YES.name().equalsIgnoreCase(internationalElement.getInternationalAuthorityInvolvement()));
+        return (YES.getValue().equals(internationalElement.getPossibleCarer())
+            || YES.getValue().equals(internationalElement.getSignificantEvents())
+            || YES.getValue().equals(internationalElement.getIssues())
+            || YES.getValue().equals(internationalElement.getProceedings())
+            || YES.getValue().equals(internationalElement.getInternationalAuthorityInvolvement()));
     }
 
     private boolean hasRisks(final Risks risks) {
@@ -269,10 +269,10 @@ public class RoboticsDataService {
             return false;
         }
 
-        return (YES.name().equalsIgnoreCase(risks.getPhysicalHarm())
-            || YES.name().equalsIgnoreCase(risks.getEmotionalHarm())
-            || YES.name().equalsIgnoreCase(risks.getSexualAbuse())
-            || YES.name().equalsIgnoreCase(risks.getNeglect()));
+        return (YES.getValue().equals(risks.getPhysicalHarm())
+            || YES.getValue().equals(risks.getEmotionalHarm())
+            || YES.getValue().equals(risks.getSexualAbuse())
+            || YES.getValue().equals(risks.getNeglect()));
     }
 
     private boolean validRoboticsData(final RoboticsData roboticsData) {

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -111,6 +112,64 @@ public class RoboticsDataServiceTest {
     }
 
     @Test
+    void shouldReturnFalseForHarmAllegedWhenRisksIsNull() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseDataWithRisks = caseData.toBuilder()
+            .risks(null)
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks, CASE_ID);
+
+        assertThat(roboticsData.isHarmAlleged()).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenOneOfTheOptionsForRisksIsYes() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseDataWithRisks = caseData.toBuilder()
+            .risks(Risks.builder()
+                .physicalHarm("Yes")
+                .emotionalHarm("No")
+                .sexualAbuse("No")
+                .neglect("No")
+                .build())
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks, CASE_ID);
+
+        assertThat(roboticsData.isHarmAlleged()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenAllOfTheOptionsForRisksIsNo() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseDataWithRisks = caseData.toBuilder()
+            .risks(Risks.builder()
+                .physicalHarm("No")
+                .emotionalHarm("No")
+                .sexualAbuse("No")
+                .neglect("No")
+                .build())
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks, CASE_ID);
+
+        assertThat(roboticsData.isHarmAlleged()).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenInternationalElementIsNull() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseDataWithInternationalElement = caseData.toBuilder()
+            .internationalElement(null)
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
+
+        assertThat(roboticsData.isInternationalElement()).isFalse();
+    }
+
+    @Test
     void shouldReturnTrueWhenOneOfTheOptionsForInternationalElementIsYes() throws IOException {
         CaseData caseData = prepareCaseData(NOW);
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
@@ -144,24 +203,6 @@ public class RoboticsDataServiceTest {
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
 
         assertThat(roboticsData.isInternationalElement()).isFalse();
-    }
-
-    @Test
-    void shouldReturnTrueWhenAllOfTheOptionsForInternationalElementIsYes() throws IOException {
-        CaseData caseData = prepareCaseData(NOW);
-        CaseData caseDataWithInternationalElement = caseData.toBuilder()
-            .internationalElement(InternationalElement.builder()
-                .possibleCarer("Yes")
-                .significantEvents("Yes")
-                .issues("Yes")
-                .proceedings("Yes")
-                .internationalAuthorityInvolvement("Yes")
-                .build())
-            .build();
-
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
-
-        assertThat(roboticsData.isInternationalElement()).isTrue();
     }
 
     @Nested

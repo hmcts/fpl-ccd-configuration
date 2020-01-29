@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
@@ -62,5 +64,11 @@ public class RoboticsDataValidatorServiceTest {
 
         assertThat(returnedViolations).contains("- issueDate value should not be null/empty",
             "- owningCourt value should be greater than 0");
+    }
+
+    @Test
+    void shouldThrowRoboticsDataExceptionWhenRoboticsJsonStringEmpty() {
+        assertThrows(RoboticsDataException.class,
+            () -> roboticsDataValidatorService.verifyRoboticsJsonData(""));
     }
 }
