@@ -8,7 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DocumentSent {
-    String sentAt;
+public class PrintedDocument {
+    String representativeName;
     DocumentReference document;
+    String sentAt;
 }

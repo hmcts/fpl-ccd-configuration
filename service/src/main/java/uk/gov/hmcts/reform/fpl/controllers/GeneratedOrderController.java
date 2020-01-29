@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
-import uk.gov.hmcts.reform.fpl.service.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
@@ -52,7 +51,6 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
-    private final DocmosisCoverDocumentsService documentsForPostService;
     private Document document;
 
     @Autowired
@@ -62,8 +60,7 @@ public class GeneratedOrderController {
                                     DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                     UploadDocumentService uploadDocumentService,
                                     ApplicationEventPublisher applicationEventPublisher,
-                                    GatewayConfiguration gatewayConfiguration,
-                                    DocmosisCoverDocumentsService documentsForPostService) {
+                                    GatewayConfiguration gatewayConfiguration) {
         this.mapper = mapper;
         this.service = service;
         this.validateGroupService = validateGroupService;
@@ -71,7 +68,6 @@ public class GeneratedOrderController {
         this.uploadDocumentService = uploadDocumentService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.gatewayConfiguration = gatewayConfiguration;
-        this.documentsForPostService = documentsForPostService;
     }
 
     @PostMapping("/about-to-start")
@@ -141,7 +137,7 @@ public class GeneratedOrderController {
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
 
-        //pass document into internal event PRINT
+        //pass document to SendDocumentController
     }
 
     private Document getDocument(String authorization,

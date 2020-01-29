@@ -297,4 +297,6 @@ public class CaseData {
     public List<Element<Other>> getConfidentialOthers() {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
     }
+
+    private final DocumentsSentToParty documentsSentToPartyCollection;
 }

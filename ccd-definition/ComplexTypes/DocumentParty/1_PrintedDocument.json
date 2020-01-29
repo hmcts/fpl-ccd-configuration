@@ -1,7 +1,15 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DocumentSentToParty",
+    "ID": "PrintedDocument",
+    "ListElementCode": "partyName",
+    "FieldType": "Text",
+    "ElementLabel": "Representative name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PrintedDocument",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
@@ -9,7 +17,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DocumentSentToParty",
+    "ID": "PrintedDocument",
     "ListElementCode": "sentAt",
     "FieldType": "Text",
     "ElementLabel": "Date and time sent",

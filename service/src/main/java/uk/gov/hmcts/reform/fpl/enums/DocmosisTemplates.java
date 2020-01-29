@@ -7,9 +7,7 @@ public enum DocmosisTemplates {
     //fallback title 'order.pdf' - file name is generated in GeneratedOrderService based on type of order
     ORDER("FL-PLW-GOR-ENG-00218.docx", "order.pdf"),
     EPO("FL-PLW-GOR-ENG-00228.docx", "emergency_protection_order.pdf"),
-    CMO("FL-PLW-GOR-ENG-00225.doc", "case_management_order.pdf"),
-    GENERAL("FL-PLW-LET-ENG-00232.docx", "general_letter.pdf"),
-    COVER("FL-PLW-LET-ENG-00233.docx", "cover_sheet.pdf"),;
+    CMO("FL-PLW-GOR-ENG-00225.doc", "case_management_order.pdf");
 
     private final String template;
     private final String documentTitle;

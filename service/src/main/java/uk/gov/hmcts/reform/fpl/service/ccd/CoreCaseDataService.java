@@ -30,7 +30,12 @@ public class CoreCaseDataService {
         triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());
     }
 
-    public void triggerEvent(String jurisdiction, String caseType, Long caseId, String eventName, Map<String, Object> eventData) {
+    //TODO fix text shouldMakeAppropriateApiCalls()
+    public void triggerEvent(String jurisdiction,
+                             String caseType,
+                             Long caseId,
+                             String eventName,
+                             Map<String, Object> eventData) {
         String userToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
         String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
 

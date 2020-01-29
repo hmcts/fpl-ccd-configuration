@@ -1,40 +1,49 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.DocumentSent;
-import uk.gov.hmcts.reform.fpl.model.DocumentSentToParties;
 import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
+import uk.gov.hmcts.reform.fpl.model.PrintedDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Service
 public class DocumentHistoryService {
 
-    public List<Element<DocumentsSentToParty>> addDocumentSentToParties(DocumentSentToParties documentSentToParties, List<Element<DocumentsSentToParty>> documentsSent) {
-        List<Element<DocumentsSentToParty>> updatedDocumentsSent = defaultIfNull(documentsSent, new ArrayList<>());
+    public List<Element<DocumentsSentToParty>> updateDocumentsSentToPartyCollection(
+        List<PrintedDocument> printedDocuments, List<Element<DocumentsSentToParty>> documentsSentToPartyCollection) {
+        List<Element<DocumentsSentToParty>> updatedDocumentsSent = defaultIfNull(documentsSentToPartyCollection,
+            new ArrayList<>());
 
-        documentSentToParties.getParties().forEach(partyName ->
-            updatedDocumentsSent.stream()
-                .map(Element::getValue)
-                .filter(document -> document.getPartyName().equals(partyName))
-                .findFirst()
-                .ifPresentOrElse(
-                    partyDocuments -> partyDocuments.addDocument(documentSentToParties.getDocument()),
-                    () -> updatedDocumentsSent.add(partyDocuments(partyName, documentSentToParties.getDocument()))));
+        for (PrintedDocument printedDocument : printedDocuments) {
+            Optional<Element<DocumentsSentToParty>> documentSentToParty = getDocumentSentToParty(updatedDocumentsSent,
+                printedDocument.getRepresentativeName());
+            Element<DocumentsSentToParty> documentsSentToPartyElement = documentSentToParty
+                .orElse(partyDocuments(printedDocument.getRepresentativeName()));
+            documentsSentToPartyElement.getValue().addDocument(printedDocument);
+            if (documentSentToParty.isEmpty()) {
+                updatedDocumentsSent.add(documentsSentToPartyElement);
+            }
+        }
 
         return updatedDocumentsSent;
     }
 
-    private Element<DocumentsSentToParty> partyDocuments(String partyName, DocumentSent documentSent) {
+    private Optional<Element<DocumentsSentToParty>> getDocumentSentToParty(
+        List<Element<DocumentsSentToParty>> documentsSentToPartyCollection, String representativeName) {
+        return documentsSentToPartyCollection.stream().filter(
+            documentsSentToPartyElement -> documentsSentToPartyElement.getValue().getPartyName().equals(
+                representativeName)).findFirst();
+    }
+
+    private Element<DocumentsSentToParty> partyDocuments(String partyName) {
         return element(DocumentsSentToParty.builder()
             .partyName(partyName)
-            .documentsSentToParty(wrapElements(documentSent))
             .build());
     }
 

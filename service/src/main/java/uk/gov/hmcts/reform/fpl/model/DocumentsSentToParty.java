@@ -13,9 +13,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocumentsSentToParty {
     private String partyName;
-    private List<Element<DocumentSent>> documentsSentToParty;
+    private List<Element<PrintedDocument>> documentsSentToParty;
 
-    public void addDocument(DocumentSent documentSent) {
-        this.documentsSentToParty.add(ElementUtils.element(documentSent));
+    public void addDocument(PrintedDocument printedDocument) {
+        this.documentsSentToParty.add(ElementUtils.element(printedDocument));
     }
 }

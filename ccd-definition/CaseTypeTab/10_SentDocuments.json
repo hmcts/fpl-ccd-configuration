@@ -6,7 +6,7 @@
     "TabID": "SentDocumentsTab",
     "TabLabel": "Documents sent to parties",
     "TabDisplayOrder": 10,
-    "CaseFieldID": "documentsSentToParties",
+    "CaseFieldID": "documentsSentToPartyCollection",
     "TabFieldDisplayOrder": 1
   }
 ]
