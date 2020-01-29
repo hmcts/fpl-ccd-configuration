@@ -51,7 +51,6 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
-    private Document document;
 
     @Autowired
     public GeneratedOrderController(ObjectMapper mapper,
@@ -93,7 +92,7 @@ public class GeneratedOrderController {
 
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
-            document = getDocument(authorization, userId, caseData);
+            Document document = getDocument(authorization, userId, caseData);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
@@ -137,7 +136,7 @@ public class GeneratedOrderController {
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
 
-        //pass document to SendDocumentController
+        //TODO pass document to SendDocumentController
     }
 
     private Document getDocument(String authorization,
