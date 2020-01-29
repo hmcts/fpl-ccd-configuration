@@ -204,7 +204,7 @@ public class RoboticsDataService {
             .lastName(childParty.getLastName())
             .gender(convertStringToGender(childParty.getGender()))
             .dob(formatDob(childParty.getDateOfBirth()))
-            .isParty(true)
+            .isParty(false)
             .build();
     }
 

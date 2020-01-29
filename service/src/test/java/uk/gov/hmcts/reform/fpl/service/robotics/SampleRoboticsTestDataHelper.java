@@ -103,17 +103,17 @@ public class SampleRoboticsTestDataHelper {
 
     public static Set<Child> expectedChildren() {
         return ImmutableSet.of(Child.builder()
-            .firstName("Tom")
-            .lastName("Reeves")
-            .gender("MALE")
-            .dob("15-JUN-2018")
-            .isParty(true)
-            .build(), Child.builder()
             .firstName("Sarah")
             .lastName("Reeves")
             .gender("FEMALE")
             .dob("2-FEB-2002")
-            .isParty(true)
+            .isParty(false)
+            .build(), Child.builder()
+            .firstName("Tom")
+            .lastName("Reeves")
+            .gender("MALE")
+            .dob("15-JUN-2018")
+            .isParty(false)
             .build());
     }
 

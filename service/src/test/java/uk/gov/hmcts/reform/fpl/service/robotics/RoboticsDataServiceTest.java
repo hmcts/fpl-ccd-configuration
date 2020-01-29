@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
@@ -107,6 +108,60 @@ public class RoboticsDataServiceTest {
         String expectedApplicationType = capitalize(EMERGENCY_PROTECTION_ORDER.getLabel(), EMPTY_CHAR);
 
         assertThat(roboticsData).isEqualTo(expectedRoboticsData(expectedApplicationType));
+    }
+
+    @Test
+    void shouldReturnTrueWhenOneOfTheOptionsForInternationalElementIsYes() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseDataWithInternationalElement = caseData.toBuilder()
+            .internationalElement(InternationalElement.builder()
+                .possibleCarer("Yes")
+                .significantEvents("No")
+                .issues("No")
+                .proceedings("No")
+                .internationalAuthorityInvolvement("No")
+                .build())
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
+
+        assertThat(roboticsData.isInternationalElement()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenAllOfTheOptionsForInternationalElementIsNo() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseDataWithInternationalElement = caseData.toBuilder()
+            .internationalElement(InternationalElement.builder()
+                .possibleCarer("No")
+                .significantEvents("No")
+                .issues("No")
+                .proceedings("No")
+                .internationalAuthorityInvolvement("No")
+                .build())
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
+
+        assertThat(roboticsData.isInternationalElement()).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenAllOfTheOptionsForInternationalElementIsYes() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseDataWithInternationalElement = caseData.toBuilder()
+            .internationalElement(InternationalElement.builder()
+                .possibleCarer("Yes")
+                .significantEvents("Yes")
+                .issues("Yes")
+                .proceedings("Yes")
+                .internationalAuthorityInvolvement("Yes")
+                .build())
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
+
+        assertThat(roboticsData.isInternationalElement()).isTrue();
     }
 
     @Nested
