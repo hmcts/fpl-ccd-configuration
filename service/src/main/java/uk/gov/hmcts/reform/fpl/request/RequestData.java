@@ -18,8 +18,4 @@ public class RequestData {
     public String authorisation() {
         return httpServletRequest.getHeader("authorization");
     }
-
-    public String userId() {
-        return httpServletRequest.getHeader("user-id");
-    }
 }

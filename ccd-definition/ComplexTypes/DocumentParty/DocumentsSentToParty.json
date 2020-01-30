@@ -12,7 +12,7 @@
     "ID": "DocumentsSentToParty",
     "ListElementCode": "documentsSentToParty",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PrintedDocument",
+    "FieldTypeParameter": "DocumentSentToParty",
     "ElementLabel": "Document ",
     "SecurityClassification": "Public"
   }

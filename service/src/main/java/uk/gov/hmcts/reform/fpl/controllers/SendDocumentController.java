@@ -14,13 +14,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
-import uk.gov.hmcts.reform.fpl.model.PrintedDocument;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DocumentHistoryService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSenderService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
+import uk.gov.hmcts.reform.fpl.service.SentDocumentHistoryService;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class SendDocumentController {
     private final ObjectMapper mapper;
 
     private final DocumentSenderService documentSenderService;
-    private final DocumentHistoryService documentHistoryService;
+    private final SentDocumentHistoryService documentHistoryService;
     private final RepresentativeService representativeService;
 
     @PostMapping("/about-to-submit")
@@ -50,7 +50,7 @@ public class SendDocumentController {
         if (!representativesServedByPost.isEmpty()) {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData().remove("documentToBeSent"),
                 DocumentReference.class);
-            List<PrintedDocument> printedDocuments =
+            List<SentDocument> printedDocuments =
                 printDocuments(documentToBeSent, caseDetails.getId(), familyManCaseNumber, representativesServedByPost);
             updateSentDocumentsHistory(caseDetails, printedDocuments);
         }
@@ -60,20 +60,20 @@ public class SendDocumentController {
             .build();
     }
 
-    private List<PrintedDocument> printDocuments(DocumentReference documentToBeSent,
-                                                 Long ccdCaseNumber,
-                                                 String familyManCaseNumber,
-                                                 List<Representative> representativesServedByPost) {
+    private List<SentDocument> printDocuments(DocumentReference documentToBeSent,
+                                              Long ccdCaseNumber,
+                                              String familyManCaseNumber,
+                                              List<Representative> representativesServedByPost) {
         return documentSenderService.send(documentToBeSent, ccdCaseNumber, familyManCaseNumber,
             representativesServedByPost);
     }
 
-    private void updateSentDocumentsHistory(CaseDetails caseDetails, List<PrintedDocument> printedDocuments) {
-        List<Element<DocumentsSentToParty>> documentsPreviouslySentToParty = mapper.convertValue(
-            caseDetails.getData().get("documentsSentToPartyCollection"), new TypeReference<>() {});
-        List<Element<DocumentsSentToParty>> updatedDocumentsSentToParty =
-            documentHistoryService.updateDocumentsSentToPartyCollection(
-                printedDocuments, documentsPreviouslySentToParty);
-        caseDetails.getData().put("documentsSentToPartyCollection", updatedDocumentsSentToParty);
+    private void updateSentDocumentsHistory(CaseDetails caseDetails, List<SentDocument> sentDocuments) {
+        List<Element<DocumentsSentToParty>> sentDocumentsHistory = mapper
+            .convertValue(caseDetails.getData().get("documentsSentToParties"), new TypeReference<>() {
+            });
+
+        caseDetails.getData().put("documentsSentToParties",
+            documentHistoryService.addToHistory(sentDocumentsHistory, sentDocuments));
     }
 }

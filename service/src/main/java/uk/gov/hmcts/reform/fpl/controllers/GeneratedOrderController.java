@@ -135,8 +135,6 @@ public class GeneratedOrderController {
 
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
-
-        //TODO pass document to SendDocumentController
     }
 
     private Document getDocument(String authorization,

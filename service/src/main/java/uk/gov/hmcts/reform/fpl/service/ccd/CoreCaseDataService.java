@@ -30,7 +30,6 @@ public class CoreCaseDataService {
         triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());
     }
 
-    //TODO fix text shouldMakeAppropriateApiCalls()
     public void triggerEvent(String jurisdiction,
                              String caseType,
                              Long caseId,
