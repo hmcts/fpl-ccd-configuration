@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.robotics;
 
 import com.google.common.collect.ImmutableSet;
-import org.apache.commons.lang.WordUtils;
 import uk.gov.hmcts.reform.fpl.model.robotics.Address;
 import uk.gov.hmcts.reform.fpl.model.robotics.Applicant;
 import uk.gov.hmcts.reform.fpl.model.robotics.Child;
@@ -25,7 +24,7 @@ public class SampleRoboticsTestDataHelper {
     public static RoboticsData expectedRoboticsData(final String applicationType) {
         return RoboticsData.builder()
             .caseNumber("12345")
-            .applicationType(WordUtils.capitalize(applicationType, new char[] {' '}))
+            .applicationType(applicationType)
             .feePaid(2055.00)
             .children(expectedChildren())
             .respondents(expectedRespondents())
