@@ -226,7 +226,7 @@ public class CommonDirectionService {
         return map.values()
             .stream()
             .map(elements -> elements.stream()
-                .filter(element -> element.getValue().getResponse() != null)
+                .filter(element -> element.getValue().isCompliedWith())
                 .map(element -> element.getValue().getResponse())
                 .collect(toList()))
             .flatMap(List::stream)

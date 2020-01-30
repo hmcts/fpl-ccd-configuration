@@ -218,14 +218,10 @@ public class PrepareDirectionsForDataStoreService {
      */
     public void addHiddenValuesToResponseForAssignee(DirectionAssignee assignee, List<Element<Direction>> directions) {
         directions.forEach(element -> {
-            if (isDirectionCompliedWith(element)) {
+            if (element.getValue().isCompliedWith()) {
                 element.getValue().getResponse().setAssignee(assignee);
                 element.getValue().getResponse().setDirectionId(element.getId());
             }
         });
-    }
-
-    private boolean isDirectionCompliedWith(Element<Direction> element) {
-        return element.getValue().getResponse() != null && element.getValue().getResponse().getComplied() != null;
     }
 }
