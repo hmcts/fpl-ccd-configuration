@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.Optional.ofNullable;
@@ -277,10 +278,7 @@ public class GeneratedOrderService {
     }
 
     private String getFormattedRemovalAddress(CaseData caseData) {
-        if (caseData.getEpoRemovalAddress() != null) {
-            return caseData.getEpoRemovalAddress().getAddressAsString(", ");
-        }
-
-        return "";
+        return Optional.ofNullable(caseData.getEpoRemovalAddress())
+            .map(address -> address.getAddressAsString(", ")).orElse("");
     }
 }

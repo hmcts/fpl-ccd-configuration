@@ -66,5 +66,4 @@ class DocmosisCoverDocumentsServiceTest {
                 .build())
             .build();
     }
-
 }
