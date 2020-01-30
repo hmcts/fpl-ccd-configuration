@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -34,7 +35,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -84,9 +84,9 @@ public class RoboticsDataService {
 
     private Applicant populateApplicant(final List<Element<uk.gov.hmcts.reform.fpl.model.Applicant>> allApplicants) {
         if (isNotEmpty(allApplicants)) {
-            uk.gov.hmcts.reform.fpl.model.ApplicantParty applicantParty = allApplicants.get(0).getValue().getParty();
+            ApplicantParty applicantParty = allApplicants.get(0).getValue().getParty();
             return Applicant.builder()
-                .name(isBlank(applicantParty.getFullName()) ? null : applicantParty.getFullName())
+                .name(applicantParty.getOrganisationName())
                 .contactName(getApplicantContactName(applicantParty.getTelephoneNumber()))
                 .jobTitle(applicantParty.getJobTitle())
                 .address(convertAddress(applicantParty.getAddress()).orElse(null))
@@ -106,6 +106,7 @@ public class RoboticsDataService {
                 .addressLine2(address.getAddressLine2())
                 .addressLine3(address.getAddressLine3())
                 .postTown(address.getPostTown())
+                .postcode(address.getPostcode())
                 .county(address.getCounty())
                 .country(address.getCountry())
                 .build());
