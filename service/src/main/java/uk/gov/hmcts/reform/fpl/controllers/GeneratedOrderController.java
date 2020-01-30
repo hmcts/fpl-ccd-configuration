@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGrou
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
@@ -41,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 
 @Slf4j
 @Api
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping("/callback/create-order")
 @RestController
 public class GeneratedOrderController {
@@ -52,31 +55,24 @@ public class GeneratedOrderController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
 
-    @Autowired
-    public GeneratedOrderController(ObjectMapper mapper,
-                                    GeneratedOrderService service,
-                                    ValidateGroupService validateGroupService,
-                                    DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                                    UploadDocumentService uploadDocumentService,
-                                    ApplicationEventPublisher applicationEventPublisher,
-                                    GatewayConfiguration gatewayConfiguration) {
-        this.mapper = mapper;
-        this.service = service;
-        this.validateGroupService = validateGroupService;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.gatewayConfiguration = gatewayConfiguration;
-    }
-
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        final List<String> errors = validateGroupService.validateGroup(caseData,
+            ValidateFamilyManCaseNumberGroup.class);
+
+        if (errors.isEmpty()) {
+            final int size = caseData.getAllChildren().size();
+            final String show = size == 1 ? "No" : "Yes";
+            log.info(String.format("%d=%s", size, show));
+            caseDetails.getData().put("pageShow", Map.of("showMe", "Yes"));
+        }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class))
+            .errors(errors)
             .build();
     }
 
