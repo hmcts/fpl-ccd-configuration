@@ -36,24 +36,16 @@ import static com.google.common.collect.ImmutableSet.of;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.lang.WordUtils.capitalize;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.robotics.Gender.convertStringToGender;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoboticsDataService {
-    private static final String OTHER_TYPE_LABEL_VALUE = "Discharge of care";
-    private static final char[] EMPTY_CHAR = {' '};
-
     private final DateFormatterService dateFormatterService;
     private final ObjectMapper objectMapper;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -224,12 +216,12 @@ public class RoboticsDataService {
 
         if (selectedOrderTypes.size() > 1) {
             return selectedOrderTypes.stream()
-                .map(selectedOrderType -> capitalize(getOrderTypeLabelValue(selectedOrderType), EMPTY_CHAR))
+                .map(this::getOrderTypeLabelValue)
                 .distinct()
                 .collect(joining(","));
 
         } else {
-            return capitalize(getOrderTypeLabelValue(selectedOrderTypes.get(0)), EMPTY_CHAR);
+            return getOrderTypeLabelValue(selectedOrderTypes.get(0));
         }
     }
 
@@ -237,16 +229,16 @@ public class RoboticsDataService {
         switch (orderType) {
             case CARE_ORDER:
             case INTERIM_CARE_ORDER:
-                return CARE_ORDER.getLabel();
+                return "Care Order";
             case SUPERVISION_ORDER:
             case INTERIM_SUPERVISION_ORDER:
-                return SUPERVISION_ORDER.getLabel();
+                return "Supervision Order";
             case EMERGENCY_PROTECTION_ORDER:
-                return EMERGENCY_PROTECTION_ORDER.getLabel();
+                return "Emergency Protection Order";
             case EDUCATION_SUPERVISION_ORDER:
-                return EDUCATION_SUPERVISION_ORDER.getLabel();
+                return "Education Supervision Order";
             case OTHER:
-                return OTHER_TYPE_LABEL_VALUE;
+                return "Discharge of a Care Order";
         }
 
         throw new RoboticsDataException("unable to derive an appropriate Application Type from " + orderType);

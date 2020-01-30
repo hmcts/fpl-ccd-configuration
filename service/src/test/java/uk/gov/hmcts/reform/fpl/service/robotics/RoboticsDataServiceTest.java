@@ -29,7 +29,6 @@ import java.util.Map;
 
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
-import static org.apache.commons.lang.WordUtils.capitalize;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
@@ -51,8 +50,6 @@ public class RoboticsDataServiceTest {
     private static LocalDate NOW = LocalDate.now();
 
     private static long CASE_ID = 12345L;
-
-    private static char[] EMPTY_CHAR = {' '};
 
     @Autowired
     private RoboticsDataService roboticsDataService;
@@ -106,9 +103,7 @@ public class RoboticsDataServiceTest {
 
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-        String expectedApplicationType = capitalize(EMERGENCY_PROTECTION_ORDER.getLabel(), EMPTY_CHAR);
-
-        assertThat(roboticsData).isEqualTo(expectedRoboticsData(expectedApplicationType));
+        assertThat(roboticsData).isEqualTo(expectedRoboticsData("Emergency Protection Order"));
     }
 
     @Test
@@ -213,9 +208,7 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            String expectedApplicationType = capitalize(CARE_ORDER.getLabel(), EMPTY_CHAR);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Care Order");
         }
 
         @Test
@@ -224,9 +217,7 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            String expectedApplicationType = capitalize(CARE_ORDER.getLabel(), EMPTY_CHAR);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Care Order");
         }
 
         @Test
@@ -236,9 +227,7 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            String expectedApplicationType = capitalize(SUPERVISION_ORDER.getLabel(), EMPTY_CHAR);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Supervision Order");
         }
 
         @Test
@@ -248,9 +237,7 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            String expectedApplicationType = capitalize(SUPERVISION_ORDER.getLabel(), EMPTY_CHAR);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Supervision Order");
         }
 
         @Test
@@ -260,9 +247,7 @@ public class RoboticsDataServiceTest {
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-            String expectedApplicationType = capitalize(EDUCATION_SUPERVISION_ORDER.getLabel(), EMPTY_CHAR);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo(expectedApplicationType);
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Education Supervision Order");
         }
 
         @Test
@@ -275,7 +260,7 @@ public class RoboticsDataServiceTest {
 
             assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
                 "Care Order,Education Supervision Order,Emergency Protection Order,"
-                    + "Discharge Of Care");
+                    + "Discharge of a Care Order");
         }
 
         @Test
@@ -288,7 +273,7 @@ public class RoboticsDataServiceTest {
 
             assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
                 "Care Order,Supervision Order,Education Supervision Order,Emergency Protection Order,"
-                    + "Discharge Of Care");
+                    + "Discharge of a Care Order");
         }
     }
 
