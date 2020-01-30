@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.of;
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -71,9 +72,10 @@ public class RoboticsDataService {
             .caseId(caseId)
             .build();
 
-        if (!validRoboticsData(roboticsData)) {
+        List<String> validationErrors = validatorService.validate(roboticsData);
+        if (isNotEmpty(validationErrors)) {
             throw new RoboticsDataException(String.format("failed validation with these error(s) %s",
-                validatorService.validationErrors(roboticsData)));
+                validationErrors));
         }
 
         return roboticsData;
@@ -249,11 +251,9 @@ public class RoboticsDataService {
             return false;
         }
 
-        return (YES.getValue().equals(internationalElement.getPossibleCarer())
-            || YES.getValue().equals(internationalElement.getSignificantEvents())
-            || YES.getValue().equals(internationalElement.getIssues())
-            || YES.getValue().equals(internationalElement.getProceedings())
-            || YES.getValue().equals(internationalElement.getInternationalAuthorityInvolvement()));
+        return isAnyConfirmed(internationalElement.getPossibleCarer(), internationalElement.getSignificantEvents(),
+            internationalElement.getIssues(), internationalElement.getProceedings(),
+            internationalElement.getInternationalAuthorityInvolvement());
     }
 
     private boolean hasRisks(final Risks risks) {
@@ -261,13 +261,11 @@ public class RoboticsDataService {
             return false;
         }
 
-        return (YES.getValue().equals(risks.getPhysicalHarm())
-            || YES.getValue().equals(risks.getEmotionalHarm())
-            || YES.getValue().equals(risks.getSexualAbuse())
-            || YES.getValue().equals(risks.getNeglect()));
+        return isAnyConfirmed(risks.getPhysicalHarm(), risks.getEmotionalHarm(), risks.getSexualAbuse(),
+            risks.getNeglect());
     }
 
-    private boolean validRoboticsData(final RoboticsData roboticsData) {
-        return isEmpty(validatorService.validationErrors(roboticsData));
+    private boolean isAnyConfirmed(final String... values) {
+        return asList(values).contains(YES.getValue());
     }
 }

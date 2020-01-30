@@ -14,10 +14,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
@@ -28,6 +31,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static java.lang.String.join;
+import static java.time.Month.APRIL;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
@@ -119,7 +124,19 @@ public class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnTrueWhenOneOfTheOptionsForRisksIsYes() throws IOException {
+    void shouldReturnFalseForHarmAllegedWhenNoSelectionForRisks() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseDataWithRisks = caseData.toBuilder()
+            .risks(Risks.builder().build())
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks, CASE_ID);
+
+        assertThat(roboticsData.isHarmAlleged()).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueForHarmAllegedWhenOneOfTheOptionsForRisksIsYes() throws IOException {
         CaseData caseData = prepareCaseData(NOW);
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder()
@@ -136,7 +153,7 @@ public class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnFalseWhenAllOfTheOptionsForRisksIsNo() throws IOException {
+    void shouldReturnFalseForHarmAllegedWhenAllOfTheOptionsForRisksIsNo() throws IOException {
         CaseData caseData = prepareCaseData(NOW);
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder()
@@ -157,6 +174,18 @@ public class RoboticsDataServiceTest {
         CaseData caseData = prepareCaseData(NOW);
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
             .internationalElement(null)
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
+
+        assertThat(roboticsData.isInternationalElement()).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenNoSelectionForInternationalElement() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseDataWithInternationalElement = caseData.toBuilder()
+            .internationalElement(InternationalElement.builder().build())
             .build();
 
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
@@ -341,6 +370,30 @@ public class RoboticsDataServiceTest {
     private CaseData prepareCaseData(LocalDate date) throws IOException {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
         caseData.setDateSubmitted(date);
+
+        RespondentParty respondentPartyWithConfidentialDetails = RespondentParty.builder()
+            .firstName("Billy")
+            .lastName("Grant")
+            .gender("Male")
+            .dateOfBirth(LocalDate.of(1933, APRIL, 2))
+            .contactDetailsHidden("Yes")
+            .address(Address.builder()
+                .addressLine1("Flat 90")
+                .addressLine2("Surrey street")
+                .addressLine3("Surrey road")
+                .postTown("Surrey")
+                .county("Croydon")
+                .postcode("BT22 2345")
+                .country("UK")
+                .build())
+            .build();
+
+        Respondent respondent = Respondent.builder()
+            .party(respondentPartyWithConfidentialDetails)
+            .build();
+
+        caseData.getRespondents1().add(element(respondent));
+
         return caseData;
     }
 

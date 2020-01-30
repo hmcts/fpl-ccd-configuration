@@ -58,9 +58,6 @@ public class RoboticsNotificationServiceTest {
     @Mock
     private RoboticsDataService roboticsDataService;
 
-    @Mock
-    private RoboticsDataValidatorService validatorService;
-
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
 
@@ -75,7 +72,7 @@ public class RoboticsNotificationServiceTest {
             .willReturn(EMAIL_FROM);
 
         roboticsNotificationService = new RoboticsNotificationService(emailService, roboticsDataService,
-            roboticsEmailConfiguration, objectMapper, validatorService);
+            roboticsEmailConfiguration, objectMapper);
     }
 
     @Test

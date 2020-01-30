@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
+import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.EmailService;
 
 import static java.util.Set.of;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.join;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.json;
 
@@ -30,7 +32,6 @@ public class RoboticsNotificationService {
     private final RoboticsDataService roboticsDataService;
     private final RoboticsEmailConfiguration roboticsEmailConfiguration;
     private final ObjectMapper mapper;
-    private final RoboticsDataValidatorService validatorService;
 
     @EventListener
     public void notifyRoboticsOfSubmittedCaseData(final CaseNumberAdded event) {
@@ -60,7 +61,7 @@ public class RoboticsNotificationService {
     private EmailData prepareEmailData(final RoboticsData roboticsData) {
         final String roboticsJsonData = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-        validatorService.verifyRoboticsJsonData(roboticsJsonData);
+        verifyRoboticsJsonData(roboticsJsonData);
 
         final String fileNamePrefix = "CaseSubmitted_";
         final String fileName = join(fileNamePrefix, roboticsData.getCaseNumber());
@@ -72,5 +73,12 @@ public class RoboticsNotificationService {
             .recipient(roboticsEmailConfiguration.getRecipient())
             .attachments(of(json(roboticsJsonData.getBytes(), fileNameAndExtension)))
             .build();
+    }
+
+    private void verifyRoboticsJsonData(final String roboticsJsonData) {
+        if (isBlank(roboticsJsonData)) {
+            throw new RoboticsDataException(
+                "Robotics email notification failed to proceed as Json data is empty/null");
+        }
     }
 }
