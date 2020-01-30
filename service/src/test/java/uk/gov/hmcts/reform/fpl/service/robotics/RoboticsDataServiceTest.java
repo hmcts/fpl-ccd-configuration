@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
 
-import static java.lang.String.join;
 import static java.time.Month.APRIL;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -313,7 +312,7 @@ public class RoboticsDataServiceTest {
         @BeforeEach
         void setup() throws IOException {
             expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData(
-                SUPERVISION_ORDER.getLabel()));
+                "Supervision Order"));
         }
 
         @Test
@@ -340,8 +339,7 @@ public class RoboticsDataServiceTest {
         void shouldReturnRoboticsJsonWithCommaSeparatedApplicationTypeWhenMultipleOrderTypeSelected()
             throws IOException {
             String expectedJsonWithCommaSeparatedApplicationType = objectMapper.writeValueAsString(
-                expectedRoboticsData(join(",", SUPERVISION_ORDER.getLabel(), CARE_ORDER.getLabel(),
-                    EMERGENCY_PROTECTION_ORDER.getLabel())));
+                expectedRoboticsData("Supervision Order,Care Order,Emergency Protection Order"));
 
             CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER, CARE_ORDER,
                 EMERGENCY_PROTECTION_ORDER);
