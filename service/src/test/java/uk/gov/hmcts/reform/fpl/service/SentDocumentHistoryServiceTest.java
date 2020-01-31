@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.DocumentSentToParty;
 import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
@@ -22,11 +22,11 @@ public class SentDocumentHistoryServiceTest {
 
     @Test
     void shouldCreateHistoricalRecordIfAbsent() {
-        SentDocument documentSentToParty1 = sentDocument(PARTY_1);
-        SentDocument documentSentToParty2 = sentDocument(PARTY_2);
+        DocumentSentToParty documentSentToParty1 = sentDocument(PARTY_1);
+        DocumentSentToParty documentSentToParty2 = sentDocument(PARTY_2);
 
         List<Element<DocumentsSentToParty>> history = new ArrayList<>();
-        List<SentDocument> sentDocuments = List.of(documentSentToParty1, documentSentToParty2);
+        List<DocumentSentToParty> sentDocuments = List.of(documentSentToParty1, documentSentToParty2);
 
         List<DocumentsSentToParty> updatedHistory = unwrapElements(sentDocumentHistoryService
             .addToHistory(history, sentDocuments));
@@ -44,11 +44,11 @@ public class SentDocumentHistoryServiceTest {
 
     @Test
     void shouldCreateHistoricalRecordWithMultipleDocuments() {
-        SentDocument document1SentToParty = sentDocument(PARTY_1);
-        SentDocument document2SentToParty = sentDocument(PARTY_1);
+        DocumentSentToParty document1SentToParty = sentDocument(PARTY_1);
+        DocumentSentToParty document2SentToParty = sentDocument(PARTY_1);
 
         List<Element<DocumentsSentToParty>> history = new ArrayList<>();
-        List<SentDocument> sentDocuments = List.of(document1SentToParty, document2SentToParty);
+        List<DocumentSentToParty> sentDocuments = List.of(document1SentToParty, document2SentToParty);
 
         List<DocumentsSentToParty> updatedHistory = unwrapElements(sentDocumentHistoryService
             .addToHistory(history, sentDocuments));
@@ -62,15 +62,15 @@ public class SentDocumentHistoryServiceTest {
 
     @Test
     void shouldUpdateHistoricalRecordIfPresent() {
-        SentDocument document1SentToParty1 = sentDocument(PARTY_1);
-        SentDocument document2SentToParty1 = sentDocument(PARTY_1);
-        SentDocument document1SentToParty2 = sentDocument(PARTY_2);
+        DocumentSentToParty document1SentToParty1 = sentDocument(PARTY_1);
+        DocumentSentToParty document2SentToParty1 = sentDocument(PARTY_1);
+        DocumentSentToParty document1SentToParty2 = sentDocument(PARTY_2);
 
         DocumentsSentToParty documentsSentToParty1 = sentDocumentsHistory(PARTY_1, document1SentToParty1);
         DocumentsSentToParty documentsSentToParty2 = sentDocumentsHistory(PARTY_2, document1SentToParty2);
 
         List<Element<DocumentsSentToParty>> history = wrapElements(documentsSentToParty1, documentsSentToParty2);
-        List<SentDocument> sentDocuments = List.of(document2SentToParty1);
+        List<DocumentSentToParty> sentDocuments = List.of(document2SentToParty1);
 
         List<DocumentsSentToParty> updatedHistory = unwrapElements(sentDocumentHistoryService
             .addToHistory(history, sentDocuments));
@@ -84,14 +84,14 @@ public class SentDocumentHistoryServiceTest {
         assertThat(updatedHistory.get(1)).isEqualTo(documentsSentToParty2);
     }
 
-    private static SentDocument sentDocument(String partyName) {
-        return SentDocument.builder()
+    private static DocumentSentToParty sentDocument(String partyName) {
+        return DocumentSentToParty.builder()
             .partyName(partyName)
             .document(testDocument())
             .build();
     }
 
-    private static DocumentsSentToParty sentDocumentsHistory(String partyName, SentDocument... sentDocuments) {
+    private static DocumentsSentToParty sentDocumentsHistory(String partyName, DocumentSentToParty... sentDocuments) {
         return DocumentsSentToParty.builder()
             .partyName(partyName)
             .documentsSentToParty(wrapElements(sentDocuments))

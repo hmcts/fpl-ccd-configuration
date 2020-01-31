@@ -16,9 +16,9 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocumentsSentToParty {
     private String partyName;
-    private final List<Element<SentDocument>> documentsSentToParty;
+    private final List<Element<DocumentSentToParty>> documentsSentToParty;
 
-    public DocumentsSentToParty(String partyName, List<Element<SentDocument>> documentsSentToParty) {
+    public DocumentsSentToParty(String partyName, List<Element<DocumentSentToParty>> documentsSentToParty) {
         this.partyName = partyName;
         this.documentsSentToParty = defaultIfNull(documentsSentToParty, new ArrayList<>());
     }
@@ -27,7 +27,7 @@ public class DocumentsSentToParty {
         this(partyName, new ArrayList<>());
     }
 
-    public DocumentsSentToParty addDocument(SentDocument printedDocument) {
+    public DocumentsSentToParty addDocument(DocumentSentToParty printedDocument) {
         this.documentsSentToParty.add(ElementUtils.element(printedDocument));
         return this;
     }

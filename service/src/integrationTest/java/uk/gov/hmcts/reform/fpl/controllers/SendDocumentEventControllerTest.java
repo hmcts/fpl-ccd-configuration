@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.model.DocumentSentToParty;
 import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -57,9 +57,9 @@ class SendDocumentEventControllerTest extends AbstractControllerTest {
         Representative representative2 = representative("Alex Brown", EMAIL);
         Representative representative3 = representative("Emma White", DIGITAL_SERVICE);
 
-        DocumentReference documentToBeSend = testDocument();
+        DocumentReference documentToBeSent = testDocument();
 
-        CaseDetails caseDetails = buildCaseData(documentToBeSend, representative1, representative2, representative3);
+        CaseDetails caseDetails = buildCaseData(documentToBeSent, representative1, representative2, representative3);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -70,9 +70,9 @@ class SendDocumentEventControllerTest extends AbstractControllerTest {
         assertThat(outgoingCaseData).hasSize(1);
         assertThat(outgoingCaseData.get(0).getPartyName()).isEqualTo("John Smith");
         assertThat(unwrapElements(outgoingCaseData.get(0).getDocumentsSentToParty()))
-            .containsExactly(SentDocument.builder()
+            .containsExactly(DocumentSentToParty.builder()
                 .partyName(representative1.getFullName())
-                .document(documentToBeSend)
+                .document(documentToBeSent)
                 .sentAt("12:10pm, 5 January 2020")
                 .build());
     }

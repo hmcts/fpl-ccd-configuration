@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.DocumentSentToParty;
 import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
@@ -15,17 +15,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class SentDocumentHistoryService {
 
     public List<Element<DocumentsSentToParty>> addToHistory(List<Element<DocumentsSentToParty>> sentDocumentsHistory,
-                                                            List<SentDocument> printedDocuments) {
+                                                            List<DocumentSentToParty> documentSentToParty) {
 
         List<Element<DocumentsSentToParty>> historicalRecords = defaultIfNull(sentDocumentsHistory, new ArrayList<>());
 
-        printedDocuments.forEach(printedDocument -> addToHistory(historicalRecords, printedDocument));
+        documentSentToParty.forEach(printedDocument -> addToHistory(historicalRecords, printedDocument));
 
         return historicalRecords;
     }
 
     private void addToHistory(List<Element<DocumentsSentToParty>> documentsSentToPartyCollection,
-                              SentDocument printedDocument) {
+                              DocumentSentToParty printedDocument) {
         DocumentsSentToParty documentsSentToParty = documentsSentToPartyCollection.stream()
             .map(Element::getValue)
             .filter(documentsSent -> documentsSent.getPartyName().equals(printedDocument.getPartyName()))

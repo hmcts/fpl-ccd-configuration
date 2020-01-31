@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SentDocument {
+public class DocumentSentToParty {
     String partyName;
     DocumentReference document;
     String sentAt;
