@@ -75,6 +75,7 @@ module.exports = {
     uploadC2Documents: 'Upload a C2',
     draftStandardDirections: 'Draft standard directions',
     createOrder: 'Create an order',
+    placement: 'Placement',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
