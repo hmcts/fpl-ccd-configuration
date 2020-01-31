@@ -20,11 +20,11 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
-import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -110,7 +110,7 @@ public class GeneratedOrderController {
 
         // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(caseData.getOrderTypeAndDocument(), caseData.getOrder(),
-            caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths()));
+            caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths(), caseData.getInterimEndDate()));
 
         caseDetails.getData().put("orderCollection", orders);
 

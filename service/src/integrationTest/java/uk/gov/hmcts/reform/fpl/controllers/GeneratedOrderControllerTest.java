@@ -25,10 +25,9 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
-import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -36,6 +35,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -44,11 +46,12 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,6 +73,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -187,13 +191,18 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         @EnumSource(GeneratedOrderSubtype.class)
         void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
             GeneratedOrderSubtype subtype) {
-            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(CARE_ORDER, subtype)
-                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
+
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(CARE_ORDER, subtype)
+                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                    .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+            );
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
+            final String expiryDate = subtype == INTERIM ? "End of the proceedings" : null;
             GeneratedOrder expectedCareOrder = commonExpectedOrderComponents(
-                subtype.getLabel() + " " + "care order").build();
+                subtype.getLabel() + " " + "care order").expiryDate(expiryDate).build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
         }
@@ -201,12 +210,14 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         @Test
         void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM)
-                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+            );
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
             GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
-                "Interim supervision order").build();
+                "Interim supervision order").expiryDate("End of the proceedings").build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
         }
@@ -267,14 +278,14 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         private void aboutToSubmitAssertions(Map<String, Object> data, GeneratedOrder expectedOrder) {
+            List<String> keys = stream(GeneratedOrderKey.values()).map(GeneratedOrderKey::getKey).collect(toList());
+            keys.addAll(stream(GeneratedEPOKey.values()).map(GeneratedEPOKey::getKey).collect(toList()));
+            keys.addAll(stream(InterimOrderKey.values()).map(InterimOrderKey::getKey).collect(toList()));
+
+            assertThat(data).doesNotContainKeys(keys.toArray(String[]::new));
+
             List<Element<GeneratedOrder>> orders = mapper.convertValue(data.get("orderCollection"),
                 new TypeReference<>() {});
-
-            Arrays.stream(GeneratedOrderKey.values())
-                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
-
-            Arrays.stream(GeneratedEPOKey.values())
-                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
 
             assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
         }
@@ -380,6 +391,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
             dataBuilder.orderFurtherDirections(generateOrderFurtherDirections());
 
+            if (subtype == INTERIM) {
+                dataBuilder.interimEndDate(generateInterimEndDate());
+            }
+
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
@@ -390,6 +405,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
             dataBuilder.orderFurtherDirections(generateOrderFurtherDirections())
                 .orderMonths(5);
+
+            if (subtype == INTERIM) {
+                dataBuilder.interimEndDate(generateInterimEndDate());
+            }
 
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
@@ -407,6 +426,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             generateDefaultValues(builder);
 
             return builder;
+        }
+
+        private InterimEndDate generateInterimEndDate() {
+            return InterimEndDate.builder().type(END_OF_PROCEEDINGS).build();
         }
 
         private void generateEpoValues(CaseData.CaseDataBuilder builder) {
