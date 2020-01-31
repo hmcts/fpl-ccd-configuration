@@ -8,7 +8,7 @@ const dateToString = require('../helpers/date_to_string_helper');
 
 let caseId;
 
-Feature('Case administration after submission');
+Feature('§');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
 
@@ -24,8 +24,8 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     console.log(`Case ${caseId} has been submitted`);
 
     I.signOut();
-    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   }
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
 
   await I.navigateToCaseDetails(caseId);
 });
@@ -138,12 +138,18 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
-  for (let i = 0; i < orders.length; i++) {
-    await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-    await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
-    I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-    await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
+Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage, enterRepresentativesEventPage) => {
+   await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
+   const representative = representatives[1];
+   await enterRepresentativesEventPage.enterRepresentative(representative);
+   await I.completeEvent('Save and continue');
+
+   for (let i = 0; i < orders.length; i++) {
+     await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+     await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
+     I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+     await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
+     await orderFunctions.assertOrderSentToParty(I, caseViewPage,  representative.fullName, orders[i], i + 1);
   }
 });
 

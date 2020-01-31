@@ -28,11 +28,13 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
@@ -51,6 +53,7 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
+    private final CoreCaseDataService caseDataService;
 
     @Autowired
     public GeneratedOrderController(ObjectMapper mapper,
@@ -59,7 +62,8 @@ public class GeneratedOrderController {
                                     DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                     UploadDocumentService uploadDocumentService,
                                     ApplicationEventPublisher applicationEventPublisher,
-                                    GatewayConfiguration gatewayConfiguration) {
+                                    GatewayConfiguration gatewayConfiguration,
+                                    CoreCaseDataService caseDataService) {
         this.mapper = mapper;
         this.service = service;
         this.validateGroupService = validateGroupService;
@@ -67,6 +71,7 @@ public class GeneratedOrderController {
         this.uploadDocumentService = uploadDocumentService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.gatewayConfiguration = gatewayConfiguration;
+        this.caseDataService = caseDataService;
     }
 
     @PostMapping("/about-to-start")
@@ -132,6 +137,14 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         String mostRecentUploadedDocumentUrl = service.getMostRecentUploadedOrderDocumentUrl(
             caseData.getOrderCollection());
+
+        caseDataService.triggerEvent(
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId(),
+            "internal-change:SEND-DOCUMENT",
+            Map.of("documentToBeSent", caseData.getOrderCollection().get(caseData.getOrderCollection().size()-1).getValue().getDocument())
+        );
 
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
