@@ -324,9 +324,10 @@ class GeneratedOrderServiceTest {
                             "It is ordered that Example Local Authority supervises the child until the end of the "
                                 + "proceedings");
                 } else if (subtype == FINAL) {
-                    final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
+                    LocalDateTime expiryDate = date.plusMonths(5);
+                    final String suffix = dateFormatterService.getDayOfMonthSuffix(expiryDate.getDayOfMonth());
                     final String formattedDateTime =
-                        dateFormatterService.formatLocalDateTimeBaseUsingFormat(date.plusMonths(5),
+                        dateFormatterService.formatLocalDateTimeBaseUsingFormat(expiryDate,
                             "h:mma 'on the' d'" + suffix + "' MMMM y");
                     expectedMap
                         .put("orderTitle", "Supervision order")
