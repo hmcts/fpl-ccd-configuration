@@ -7,6 +7,7 @@ java:
   environment:
     IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    RD_PROFESSIONAL_API_URL: http://rd-professional-api-aat.service.core-compute-aat.internal
     CORE_CASE_DATA_API_URL: http://ccd-data-store-api-aat.service.core-compute-aat.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
     CCD_UI_BASE_URL: https://ccd-case-management-web-aat.service.core-compute-aat.internal
