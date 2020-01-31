@@ -7,8 +7,20 @@ const createBlankOrder = async (I, createOrderEventPage, order) => {
   await I.completeEvent('Save and continue');
 };
 
+const fillInterimEndDate = async (I, createOrderEventPage, order) => {
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.interimEndDate.id);
+  if (order.interimEndDate.isNamedDate) {
+    await createOrderEventPage.selectAndEnterNamedDate(order.interimEndDate.endDate);
+  } else {
+    await createOrderEventPage.selectEndOfProceedings();
+  }
+};
+
 const createCareOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type, order.subtype);
+  if (order.subtype === 'Interim') {
+    await fillInterimEndDate(I, createOrderEventPage, order);
+  }
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
@@ -21,6 +33,8 @@ const createSupervisionOrder = async (I, createOrderEventPage, order) => {
   if (order.subtype === 'Final') {
     await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.months);
     await createOrderEventPage.enterNumberOfMonths(order.months);
+  } else {
+    await fillInterimEndDate(I, createOrderEventPage, order);
   }
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
