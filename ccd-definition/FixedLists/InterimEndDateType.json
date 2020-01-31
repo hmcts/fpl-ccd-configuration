@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InterimEndDateType",
+    "ListElementCode": "END_OF_PROCEEDINGS",
+    "ListElement": "At the end of the proceedings",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InterimEndDateType",
+    "ListElementCode": "NAMED_DATE",
+    "ListElement": "On a named date",
+    "DisplayOrder": 2
+  }
+]
