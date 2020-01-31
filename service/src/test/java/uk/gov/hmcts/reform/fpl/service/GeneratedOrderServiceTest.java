@@ -376,17 +376,18 @@ class GeneratedOrderServiceTest {
                         .put("orderDetails", String.format("It is ordered that Example Local Authority supervises"
                             + " the child until 11:59pm on the %s.", detailsDate));
                 } else if (subtype == FINAL) {
-                    final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(dateTime.getDayOfMonth());
-                    final String detailsDateTime = dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                        dateTime.plusMonths(5), "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y");
-
+                    LocalDateTime expiryDate = dateTime.plusMonths(5);
+                    final String suffix = dateFormatterService.getDayOfMonthSuffix(expiryDate.getDayOfMonth());
+                    final String formattedDateTime =
+                        dateFormatterService.formatLocalDateTimeBaseUsingFormat(expiryDate,
+                            "h:mma 'on the' d'" + suffix + "' MMMM y");
                     expectedMap
                         .put("orderTitle", "Supervision order")
                         .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                         .put("orderDetails",
                             String.format(
                                 "It is ordered that Example Local Authority supervises the child for 5 months from the "
-                                    + "date of this order until %s.", detailsDateTime));
+                                    + "date of this order until %s.", formattedDateTime));
                 }
                 break;
             case EMERGENCY_PROTECTION_ORDER:
