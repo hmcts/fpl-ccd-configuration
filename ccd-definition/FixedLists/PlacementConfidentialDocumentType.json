@@ -16,7 +16,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "PlacementConfidentialDocumentType",
-    "ListElementCode": "OTHER_DOCUMENTS",
+    "ListElementCode": "OTHER_CONFIDENTIAL_DOCUMENTS",
     "ListElement": "Other confidential documents",
     "DisplayOrder": 3
   }
