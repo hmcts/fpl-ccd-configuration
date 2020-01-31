@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.service.notify.NotificationClient;
 
@@ -101,6 +102,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
     @Autowired
     private DateFormatterService dateFormatterService;
+
+    //TODO temporary until FPLA-1096
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Autowired
     private Time time;

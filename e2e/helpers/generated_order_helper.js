@@ -100,7 +100,6 @@ module.exports = {
 
   async assertOrderSentToParty(I, caseViewPage, partyName, order, orderNum) {
     caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
-    console.log("partyNameXXXXXX "+partyName)
     I.seeAnswerInTab(1, 'Party 1', 'Representative name', partyName);
     I.seeNestedAnswerInTab(2, 'Party 1', `Document ${orderNum}`, 'File', order.document);
   },

@@ -138,12 +138,14 @@ public class GeneratedOrderController {
         String mostRecentUploadedDocumentUrl = service.getMostRecentUploadedOrderDocumentUrl(
             caseData.getOrderCollection());
 
+        //TODO temporary until FPLA-1096
         caseDataService.triggerEvent(
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
             "internal-change:SEND-DOCUMENT",
-            Map.of("documentToBeSent", caseData.getOrderCollection().get(caseData.getOrderCollection().size()-1).getValue().getDocument())
+            Map.of("documentToBeSent", caseData.getOrderCollection().get(caseData.getOrderCollection().size() - 1)
+                .getValue().getDocument())
         );
 
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
