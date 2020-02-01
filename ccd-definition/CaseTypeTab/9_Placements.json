@@ -8,5 +8,25 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "placements",
     "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "PlacementTab",
+    "TabLabel": "Placement",
+    "TabDisplayOrder": 9,
+    "CaseFieldID": "confidentialPlacements",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "PlacementTab",
+    "TabLabel": "Placement",
+    "TabDisplayOrder": 9,
+    "CaseFieldID": "placementWithoutPlacementOrder",
+    "TabFieldDisplayOrder": 1
   }
 ]
