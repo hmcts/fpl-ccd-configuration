@@ -47,8 +47,8 @@ public class PlacementService {
     }
 
     private List<Element<Placement>> getPlacements(CaseData caseData) {
-        return caseData.getConfidentialPlacements().isEmpty() ?
-                caseData.getPlacements() : caseData.getConfidentialPlacements();
+        return caseData.getConfidentialPlacements().isEmpty()
+                ? caseData.getPlacements() : caseData.getConfidentialPlacements();
     }
 
     public List<Element<Placement>> setPlacement(CaseData caseData, Placement placement) {

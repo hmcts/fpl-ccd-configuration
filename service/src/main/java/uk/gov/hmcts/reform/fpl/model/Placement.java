@@ -8,10 +8,12 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Stream.ofNullable;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
 
 @Data
@@ -51,18 +53,20 @@ public class Placement {
 
     @JsonIgnore
     public boolean hasPlacementOrder() {
-        return this.getOrderAndNotices().stream()
+        return ofNullable(this.getOrderAndNotices())
+                .flatMap(Collection::stream)
                 .filter(x -> x.getValue() != null && x.getValue().getType() != null)
                 .anyMatch(x -> x.getValue().getType() == PLACEMENT_ORDER);
     }
 
     @JsonIgnore
     public Placement removePlacementOrder() {
-        List<Element<PlacementOrderAndNotices>> filteredOrders = this.getOrderAndNotices().stream()
+        List<Element<PlacementOrderAndNotices>> filteredOrders = ofNullable(this.getOrderAndNotices())
+                .flatMap(Collection::stream)
                 .filter(x -> x.getValue().getType() != PLACEMENT_ORDER)
                 .collect(Collectors.toList());
 
-        return this.toBuilder().orderAndNotices(filteredOrders).build();
+        return this.toBuilder().orderAndNotices(filteredOrders.isEmpty() ? null : filteredOrders).build();
     }
 
     @JsonIgnore

@@ -87,17 +87,17 @@ public class PlacementController {
 
         // add placement with confidential details but no placementOrder.
         if (placement.hasPlacementOrder()) {
-            caseProperties.put("placementWithoutPlacementOrder", setPlacement(caseData, placement.removePlacementOrder()));
+            caseProperties
+                    .put("placementWithoutPlacementOrder", setPlacement(caseData, placement.removePlacementOrder()));
         }
 
         // add placement with confidential details and placementOrder
-        if (placement.hasConfidentialDocuments() ) {
+        if (placement.hasConfidentialDocuments()) {
             caseProperties.put("confidentialPlacements", setPlacement(caseData, placement));
         }
 
         // add placement with no confidential docs and no placement order
         caseProperties.put("placements", setPlacement(caseData, removeDocuments(placement)));
-
 
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 

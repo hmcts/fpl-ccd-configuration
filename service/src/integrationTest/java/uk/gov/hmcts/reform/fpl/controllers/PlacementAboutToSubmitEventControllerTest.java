@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.PlacementDocumentType.ANNEX_B;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -65,6 +67,7 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
         assertThat(updatedCaseDetails).doesNotContainKey("placementChildName");
         assertThat(updatedCaseDetails).doesNotContainKey("singleChild");
         assertThat(updatedCaseDetails).doesNotContainKey("confidentialPlacements");
+        assertThat(updatedCaseDetails).doesNotContainKey("placementWithoutPlacementOrder");
 
         assertThat(updatedCaseDetails.get("placements")).isEqualTo(List.of(
                 expectedPlacement(child1Placement, child1Application),
@@ -73,10 +76,10 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddConfidentialPlacementAndRemoveConfidentialDocumentsFromPlacementsWhenConfidentialDocumentPresent() {
+    void shouldAddConfidentialPlacementAndPlacementWithoutPlacementOrderToCaseDetailsWhenBothArePresentInPlacement() {
         Element<Child> child = testChild();
         DocumentReference childApplication = testDocument();
-        Element<Placement> childPlacement = element(placementWithConfidentialDoc(child, childApplication));
+        Element<Placement> childPlacement = element(placement(child, childApplication));
 
         CaseDetails caseDetails = CaseDetails.builder()
                 .data(Map.of(
@@ -95,23 +98,34 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
         assertThat(updatedCaseDetails).doesNotContainKey("placementChildName");
         assertThat(updatedCaseDetails).doesNotContainKey("singleChild");
 
+        assertThat(unwrapElements(caseData.getPlacementsWithoutPlacementOrder())).containsOnly(
+                childPlacement.getValue().toBuilder().orderAndNotices(null).build());
+
         assertThat(unwrapElements(caseData.getConfidentialPlacements())).containsOnly(childPlacement.getValue());
 
         assertThat(unwrapElements(caseData.getPlacements())).containsOnly(
-                childPlacement.getValue().toBuilder().confidentialDocuments(null).build());
+                childPlacement.getValue().toBuilder()
+                        .confidentialDocuments(null)
+                        .orderAndNotices(null)
+                        .build());
     }
 
-    private Placement placementWithConfidentialDoc(Element<Child> child, DocumentReference application) {
+    private Placement placement(Element<Child> child, DocumentReference application) {
         return Placement.builder()
                 .childId(child.getId())
                 .childName(child.getValue().getParty().getFullName())
                 .application(application)
                 .confidentialDocuments(confidentialDocuments())
+                .orderAndNotices(placementOrder())
                 .build();
     }
 
     private List<Element<PlacementConfidentialDocument>> confidentialDocuments() {
         return wrapElements(PlacementConfidentialDocument.builder().type(ANNEX_B).build());
+    }
+
+    private List<Element<PlacementOrderAndNotices>> placementOrder() {
+        return wrapElements(PlacementOrderAndNotices.builder().type(PLACEMENT_ORDER).build());
     }
 
     private Map<String, Object> expectedPlacement(Element<Placement> placement, DocumentReference application) {
