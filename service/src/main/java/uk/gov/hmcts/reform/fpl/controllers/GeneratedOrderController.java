@@ -60,7 +60,6 @@ public class GeneratedOrderController {
     private final GatewayConfiguration gatewayConfiguration;
     private final ChildrenService childrenService;
 
-    // TODO: 31/01/2020 update tests
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -139,7 +138,6 @@ public class GeneratedOrderController {
 
         caseDetails.getData().put("orderCollection", orders);
 
-        // TODO: 31/01/2020 need to remove more fields
         service.removeOrderProperties(caseDetails.getData());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
