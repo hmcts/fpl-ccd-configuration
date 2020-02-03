@@ -49,7 +49,8 @@
     "ListElementCode": "childCountContainer",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "showMe=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

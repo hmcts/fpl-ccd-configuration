@@ -12,6 +12,7 @@ import java.util.List;
 
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
 
 @Service
@@ -84,5 +85,21 @@ public class ChildrenService {
             .partyId(randomUUID().toString())
             .partyType(INDIVIDUAL)
             .build());
+    }
+
+    // TODO: 31/01/2020 test me
+    public String getChildrenLabel(List<Child> children) {
+        if (isEmpty(children)) {
+            return "No children in the case";
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < children.size(); i++) {
+            final String name = children.get(i).getParty().getFullName();
+            builder.append(String.format("Child %d: %s%n", i + 1, name));
+        }
+
+        return builder.toString();
     }
 }

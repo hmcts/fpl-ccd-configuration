@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.InterimEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
@@ -45,6 +46,29 @@ public class ValidateOrderController {
 
         if (caseData.getEpoType() == PREVENT_REMOVAL) {
             errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(errors)
+            .build();
+    }
+
+    // TODO: 31/01/2020 test me
+    @PostMapping("/children/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventValidateChildren(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final ChildSelector childSelector = mapper.convertValue(
+            caseDetails.getData().get("childSelector"), ChildSelector.class);
+
+        List<String> errors;
+
+        if (childSelector.getSelected().isEmpty()) {
+            errors = List.of("Select the children included in the order.");
+        } else {
+            errors = List.of();
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

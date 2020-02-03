@@ -20,11 +20,14 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -40,12 +43,13 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Api
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RequestMapping("/callback/create-order")
 @RestController
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderController {
     private final ObjectMapper mapper;
     private final GeneratedOrderService service;
@@ -54,7 +58,9 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
+    private final ChildrenService childrenService;
 
+    // TODO: 31/01/2020 update tests
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -64,10 +70,12 @@ public class GeneratedOrderController {
             ValidateFamilyManCaseNumberGroup.class);
 
         if (errors.isEmpty()) {
-            final int size = caseData.getAllChildren().size();
-            final String show = size == 1 ? "No" : "Yes";
-            log.info(String.format("%d=%s", size, show));
-            caseDetails.getData().put("pageShow", Map.of("showMe", "Yes"));
+            List<Child> allChildren = unwrapElements(caseData.getAllChildren());
+            ChildSelector childSelector = ChildSelector.builder().build();
+            childSelector.populateChildCountContainer(allChildren.size());
+            caseDetails.getData().put("pageShow", Map.of("showMe", allChildren.size() <= 1 ? "No" : "Yes"));
+            caseDetails.getData().put("childSelector", childSelector);
+            caseDetails.getData().put("children_label", childrenService.getChildrenLabel(allChildren));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -114,6 +122,7 @@ public class GeneratedOrderController {
 
         caseDetails.getData().put("orderCollection", orders);
 
+        // TODO: 31/01/2020 need to remove more fields
         service.removeOrderProperties(caseDetails.getData());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -140,7 +149,7 @@ public class GeneratedOrderController {
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-                service.getOrderTemplateData(caseData), templateType);
+            service.getOrderTemplateData(caseData), templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
