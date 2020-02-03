@@ -130,7 +130,7 @@ public class PlacementController {
             new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
-    private Boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
+    private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
         return isNotEmpty(previousPlacement) && newPlacement.equals(previousPlacement);
     }
 }
