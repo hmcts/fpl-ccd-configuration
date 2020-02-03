@@ -53,7 +53,7 @@ class CaseManagementOrderProgressionServiceTest {
     private ObjectMapper mapper;
 
     @Mock
-    private ApplicationEventPublisher eventPublisher;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Mock
     private RequestData requestData;
@@ -62,7 +62,7 @@ class CaseManagementOrderProgressionServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new CaseManagementOrderProgressionService(mapper, requestData, eventPublisher);
+        service = new CaseManagementOrderProgressionService(mapper, applicationEventPublisher, requestData);
     }
 
     @Test
