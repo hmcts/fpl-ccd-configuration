@@ -51,7 +51,7 @@ public class CaseDataExtractionService {
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
-    private final DirectionHelperService directionHelperService;
+    private final CommonDirectionService commonDirectionService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
 
@@ -146,7 +146,7 @@ public class CaseDataExtractionService {
         }
 
         Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
-            directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
+            commonDirectionService.sortDirectionsByAssignee(commonDirectionService.numberDirections(
                 caseData.getStandardDirectionOrder().getDirections()));
 
         ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();

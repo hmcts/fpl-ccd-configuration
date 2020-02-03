@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDat
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, DraftCMOService.class, CommonCaseDataExtractionService.class,
-    DateFormatterService.class, DirectionHelperService.class, UserDetailsService.class, HearingVenueLookUpService.class,
+    DateFormatterService.class, CommonDirectionService.class, UserDetailsService.class, HearingVenueLookUpService.class,
     HearingBookingService.class, JsonOrdersLookupService.class
 })
 class CMODocmosisTemplateDataGenerationServiceTest {
@@ -64,7 +64,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     private UserDetailsService userDetailsService;
 
     @InjectMocks
-    private DirectionHelperService directionHelperService;
+    private CommonDirectionService commonDirectionService;
 
     @Autowired
     CMODocmosisTemplateDataGenerationServiceTest(DateFormatterService dateFormatterService,
@@ -87,10 +87,10 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     void setUp() {
         CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(
             dateFormatterService, hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService,
-            directionHelperService, hearingVenueLookUpService, commonCaseDataExtractionService);
+            commonDirectionService, hearingVenueLookUpService, commonCaseDataExtractionService);
 
         templateDataGenerationService = new CMODocmosisTemplateDataGenerationService(
-            commonCaseDataExtractionService, caseDataExtractionService, dateFormatterService, directionHelperService,
+            commonCaseDataExtractionService, caseDataExtractionService, dateFormatterService, commonDirectionService,
             draftCMOService, hearingBookingService, hmctsCourtLookupConfiguration, mapper);
     }
 
