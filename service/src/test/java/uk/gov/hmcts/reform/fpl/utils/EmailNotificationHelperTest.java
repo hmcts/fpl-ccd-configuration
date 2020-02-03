@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 class EmailNotificationHelperTest {
     private final DateFormatterService dateFormatterService = new DateFormatterService();
@@ -125,5 +126,12 @@ class EmailNotificationHelperTest {
         String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
             caseData.getHearingDetails());
         assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
+    }
+
+    @Test
+    void shouldFormatUrlCorrectlyWhenBaseUrlAndCaseIdProvided() {
+        String formattedUrl = formatCaseUrl("http://testurl", 123L);
+        String expectedUrl = "http://testurl/case/PUBLICLAW/CARE_SUPERVISION_EPO/123";
+        assertThat(formattedUrl).isEqualTo(expectedUrl);
     }
 }

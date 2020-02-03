@@ -43,7 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassi
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, DateFormatterService.class, DirectionHelperService.class, DraftCMOService.class
+    JacksonAutoConfiguration.class, DateFormatterService.class, CommonDirectionService.class, DraftCMOService.class
 })
 class DraftCMOServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
