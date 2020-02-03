@@ -16,4 +16,6 @@ public class NotifyTemplates {
         "64cc7ea5-ca74-4679-912f-6d84d1c7e4cd";
     public static final String CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE  =
         "931dcd86-d331-4273-abaa-208daed0761a";
+    public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
+        "6bdbc939-14bb-4dae-ac35-e0d381840719";
 }

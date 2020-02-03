@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -78,14 +78,14 @@ class PopulateStandardDirectionsHandlerTest {
     private UserDetailsService userDetailsService;
 
     @InjectMocks
-    private DirectionHelperService directionHelperService;
+    private CommonDirectionService commonDirectionService;
 
     private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
 
     @BeforeEach
     void before() {
         populateStandardDirectionsHandler = new PopulateStandardDirectionsHandler(objectMapper, ordersLookupService,
-            coreCaseDataApi, authTokenGenerator, idamClient, userConfig, directionHelperService, hearingBookingService);
+            coreCaseDataApi, authTokenGenerator, idamClient, userConfig, commonDirectionService, hearingBookingService);
 
         given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
 
