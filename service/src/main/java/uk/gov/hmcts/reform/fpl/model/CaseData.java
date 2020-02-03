@@ -20,6 +20,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
@@ -111,6 +114,7 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
     private final List<Element<Direction>> respondentDirectionsCustomCMO;
+    private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
@@ -182,6 +186,7 @@ public class CaseData {
     private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
     private final Integer orderMonths;
+    private final InterimEndDate interimEndDate;
     private final List<Element<GeneratedOrder>> orderCollection;
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
@@ -292,5 +297,10 @@ public class CaseData {
 
     public List<Element<Other>> getConfidentialOthers() {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
+    }
+
+    @JsonGetter("placements")
+    public List<Element<Placement>> getPlacements() {
+        return defaultIfNull(placements, new ArrayList<>());
     }
 }

@@ -17,6 +17,18 @@ module.exports = {
       },
     },
     directions: '#orderFurtherDirections_directions',
+    interimEndDate: {
+      id: '#interimEndDate_interimEndDate',
+      options: {
+        endOfProceedings: 'At the end of the proceedings',
+        namedDate: 'On a named date',
+      },
+      endDate: {
+        day: '#interimEndDate_endDate-day',
+        month:'#interimEndDate_endDate-month',
+        year:'#interimEndDate_endDate-year',
+      },
+    },
     months: '#orderMonths',
     epo: {
       childrenDescription: {
@@ -102,5 +114,21 @@ module.exports = {
     I.fillField(this.fields.epo.endDate.hour, date.getHours());
     I.fillField(this.fields.epo.endDate.minute, date.getMinutes());
     I.fillField(this.fields.epo.endDate.second, date.getSeconds());
+  },
+
+  async selectEndOfProceedings() {
+    within(this.fields.interimEndDate.id, () => {
+      I.click(locate('label').withText(this.fields.interimEndDate.options.endOfProceedings));
+    });
+  },
+
+  async selectAndEnterNamedDate(date) {
+    within(this.fields.interimEndDate.id, () => {
+      I.click(locate('label').withText(this.fields.interimEndDate.options.namedDate));
+    });
+    I.click(this.fields.interimEndDate.options.namedDate);
+    I.fillField(this.fields.interimEndDate.endDate.day, date.day);
+    I.fillField(this.fields.interimEndDate.endDate.month, date.month);
+    I.fillField(this.fields.interimEndDate.endDate.year, date.year);
   },
 };
