@@ -28,6 +28,8 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -77,9 +79,9 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -111,16 +113,51 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         super("create-order");
     }
 
-    @Test
-    void aboutToStartShouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(Map.of("data", "some data"))
-            .build();
+    @Nested
+    class AboutToStart {
+        @Test
+        void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(12345L)
+                .data(Map.of("data", "some data"))
+                .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
+            assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
+        }
+
+        @Test
+        void shouldPopulatePageShowWithYesWhenMoreThanOneChild() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(
+                buildCaseDetails("Wallace", "Gromit"));
+
+            final Map<String, String> pageShow = mapper.convertValue(
+                callbackResponse.getData().get("pageShow"), new TypeReference<>() {});
+
+            assertThat(pageShow.get("showMe")).isEqualTo("Yes");
+        }
+
+        @Test
+        void shouldPopulatePageShowWithNotWhenOneChild() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails("Wallace"));
+
+            final Map<String, String> pageShow = mapper.convertValue(
+                callbackResponse.getData().get("pageShow"), new TypeReference<>() {});
+
+            assertThat(pageShow.get("showMe")).isEqualTo("No");
+        }
+
+        private CaseDetails buildCaseDetails(String... firstNames) {
+            CaseData caseData = CaseData.builder()
+                .familyManCaseNumber("EXAMPLE")
+                .children1(createChildren(firstNames))
+                .build();
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+                .build();
+        }
     }
 
     @Test
@@ -166,6 +203,18 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
             .build();
+    }
+
+    private List<Element<Child>> createChildren(String... firstNames) {
+        Child[] children = new Child[firstNames.length];
+        for (int i = 0; i < firstNames.length; i++) {
+            children[i] = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName(firstNames[i])
+                    .build())
+                .build();
+        }
+        return wrapElements(children);
     }
 
     @Nested
@@ -296,22 +345,37 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     @Nested
     class PopulateChildSelectorMidEvent {
         @Test
-        void shouldPopulateChildSelectorWhenNoIsSelected() {
-
-            AboutToStartOrSubmitCallbackResponse aboutToStartOrSubmitCallbackResponse = postMidEvent(
+        void shouldPopulateChildSelectorAndLabelWhenNoIsSelected() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
                 buildCaseDetails("No"), "populate-selector");
 
-            CaseData caseData = mapper.convertValue(aboutToStartOrSubmitCallbackResponse.getData(), CaseData.class);
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
             ChildSelector actual = caseData.getChildSelector();
             ChildSelector expected = getExpectedChildSelector();
 
+            assertThat(callbackResponse.getData().get("children_label"))
+                .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
+
             assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        void shouldNotPopulateChildSelectorAndLabelWhenYesIsSelected() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseDetails("Yes"), "populate-selector");
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            ChildSelector actual = caseData.getChildSelector();
+
+            assertThat(callbackResponse.getData().get("children_label")).isNull();
+            assertThat(actual).isNull();
         }
 
         private ChildSelector getExpectedChildSelector() {
             return ChildSelector.builder()
-                .childCountContainer("123")
+                .childCountContainer("12")
                 .child1(false).child2(false)
                 .child3(false).child4(false)
                 .child5(false).child6(false)
@@ -320,21 +384,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build();
         }
 
-        @Test
-        void shouldNotPopulateChildSelectorWhenYesIsSelected() {
-            AboutToStartOrSubmitCallbackResponse aboutToStartOrSubmitCallbackResponse = postMidEvent(
-                buildCaseDetails("Yes"), "populate-selector");
-
-            CaseData caseData = mapper.convertValue(aboutToStartOrSubmitCallbackResponse.getData(), CaseData.class);
-
-            ChildSelector actual = caseData.getChildSelector();
-
-            assertThat(actual).isNull();
-        }
-
         private CaseDetails buildCaseDetails(String choice) {
             CaseData caseData = CaseData.builder()
-                .children1(createPopulatedChildren())
+                .children1(createChildren("Wallace", "Gromit"))
                 .allChildrenChoice(choice)
                 .build();
 

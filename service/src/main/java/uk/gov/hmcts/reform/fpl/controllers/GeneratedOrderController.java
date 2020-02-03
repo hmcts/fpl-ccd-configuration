@@ -73,7 +73,6 @@ public class GeneratedOrderController {
             List<Child> allChildren = unwrapElements(caseData.getAllChildren());
             final String pageShow = allChildren.size() <= 1 ? "No" : "Yes";
             caseDetails.getData().put("pageShow", Map.of("showMe", pageShow));
-            caseDetails.getData().put("children_label", childrenService.getChildrenLabel(allChildren));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -90,9 +89,11 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if ("No".equals(caseData.getAllChildrenChoice())) {
+            List<Child> allChildren = unwrapElements(caseData.getAllChildren());
             ChildSelector childSelector = ChildSelector.builder().build();
-            childSelector.populateChildCountContainer(caseData.getAllChildren().size());
+            childSelector.populateChildCountContainer(allChildren.size());
             caseDetails.getData().put("childSelector", childSelector);
+            caseDetails.getData().put("children_label", childrenService.getChildrenLabel(allChildren));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
