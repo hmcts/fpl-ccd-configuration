@@ -13,10 +13,9 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
@@ -52,6 +51,15 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .build();
     }
 
+    public Map<String, Object> buildCMORejectedByJudgeNotificationParameters(final CaseDetails caseDetails) {
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonCMONotificationParameters(caseDetails))
+            .put("requestedChanges", caseData.getCaseManagementOrder().getAction().getChangeRequestedByJudge())
+            .build();
+    }
+
     public Map<String, Object> buildCMOReadyForJudgeReviewNotificationParameters(final CaseDetails caseDetails) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -69,8 +77,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             "subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
                 caseData.getHearingDetails()),
             "reference", String.valueOf(caseDetails.getId()),
-            "caseUrl", String.format("%1$s/case/%2$s/%3$s/%4$s",
-                uiBaseUrl, JURISDICTION, CASE_TYPE, caseDetails.getId())
+            "caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId())
         );
     }
 
