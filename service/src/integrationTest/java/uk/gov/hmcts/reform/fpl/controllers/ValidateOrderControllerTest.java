@@ -11,9 +11,11 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,6 +94,36 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), END_OF_PROCEEDINGS);
         final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorsWhenAChildIsSelected() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("childSelector", createChildSelectorWithoutSelected()))
+            .build();
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "children");
+        final List<String> errors = callbackResponse.getErrors();
+        assertThat(errors).containsOnlyOnce("Select the children included in the order.");
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenAChildIsSelected() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("childSelector", createChildSelectorWithSelected()))
+            .build();
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "children");
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    private ChildSelector createChildSelectorWithSelected() {
+        return ChildSelector.builder()
+            .child1(true)
+            .build();
+    }
+
+    private ChildSelector createChildSelectorWithoutSelected() {
+        return ChildSelector.builder()
+            .build();
     }
 
     private CaseDetails createCaseDetails(EPOType preventRemoval, LocalDateTime now) {

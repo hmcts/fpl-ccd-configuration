@@ -53,7 +53,6 @@ public class ValidateOrderController {
             .build();
     }
 
-    // TODO: 31/01/2020 test me
     @PostMapping("/children/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateChildren(
         @RequestBody CallbackRequest callbackRequest) {
@@ -61,12 +60,10 @@ public class ValidateOrderController {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<String> errors;
+        List<String> errors = List.of();
 
         if (caseData.getChildSelector().getSelected().isEmpty()) {
             errors = List.of("Select the children included in the order.");
-        } else {
-            errors = List.of();
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
