@@ -486,11 +486,7 @@ class GeneratedOrderServiceTest {
                     .orderMonths(5)
                     .allChildrenChoice("No")
                     .childSelector(ChildSelector.builder()
-                        .child1(true).child2(false)
-                        .child3(false).child4(false)
-                        .child5(false).child6(false)
-                        .child7(false).child8(false)
-                        .child9(false).child10(false)
+                        .child1(true)
                         .build());
 
                 if (subtype == INTERIM) {

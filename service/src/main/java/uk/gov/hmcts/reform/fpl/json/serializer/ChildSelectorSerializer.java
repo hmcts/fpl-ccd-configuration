@@ -17,20 +17,20 @@ public class ChildSelectorSerializer extends JsonSerializer<ChildSelector> {
                           SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
         gen.writeObjectField("childCountContainer", value.getChildCountContainer());
-        generateChild(gen, 1, value.getChild1());
-        generateChild(gen, 2, value.getChild2());
-        generateChild(gen, 3, value.getChild3());
-        generateChild(gen, 4, value.getChild4());
-        generateChild(gen, 5, value.getChild5());
-        generateChild(gen, 6, value.getChild6());
-        generateChild(gen, 7, value.getChild7());
-        generateChild(gen, 8, value.getChild8());
-        generateChild(gen, 9, value.getChild9());
-        generateChild(gen, 10, value.getChild10());
+        generateChild(gen, 1, value.isChild1());
+        generateChild(gen, 2, value.isChild2());
+        generateChild(gen, 3, value.isChild3());
+        generateChild(gen, 4, value.isChild4());
+        generateChild(gen, 5, value.isChild5());
+        generateChild(gen, 6, value.isChild6());
+        generateChild(gen, 7, value.isChild7());
+        generateChild(gen, 8, value.isChild8());
+        generateChild(gen, 9, value.isChild9());
+        generateChild(gen, 10, value.isChild10());
         gen.writeEndObject();
     }
 
-    private void generateChild(JsonGenerator generator, int i, Boolean value) throws IOException {
+    private void generateChild(JsonGenerator generator, int i, boolean value) throws IOException {
         generator.writeObjectField("child" + i, toList(value));
     }
 

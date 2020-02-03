@@ -11,16 +11,26 @@ import java.util.List;
 @Builder
 public class ChildSelector {
     private String childCountContainer;
-    private Boolean child1;
-    private Boolean child2;
-    private Boolean child3;
-    private Boolean child4;
-    private Boolean child5;
-    private Boolean child6;
-    private Boolean child7;
-    private Boolean child8;
-    private Boolean child9;
-    private Boolean child10;
+    @Builder.Default
+    private boolean child1 = false;
+    @Builder.Default
+    private boolean child2 = false;
+    @Builder.Default
+    private boolean child3 = false;
+    @Builder.Default
+    private boolean child4 = false;
+    @Builder.Default
+    private boolean child5 = false;
+    @Builder.Default
+    private boolean child6 = false;
+    @Builder.Default
+    private boolean child7 = false;
+    @Builder.Default
+    private boolean child8 = false;
+    @Builder.Default
+    private boolean child9 = false;
+    @Builder.Default
+    private boolean child10 = false;
 
     // TODO: 31/01/2020 test me
     public void populateChildCountContainer(int max) {

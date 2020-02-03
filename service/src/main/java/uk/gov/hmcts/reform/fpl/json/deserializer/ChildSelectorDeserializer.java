@@ -40,11 +40,11 @@ public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
         return isNodeNull(node) ? "" : ((TextNode) node).asText();
     }
 
-    private Boolean readChildNode(TreeNode treeNode, int child) {
+    private boolean readChildNode(TreeNode treeNode, int child) {
         return toBoolean((ArrayNode) treeNode.get("child" + child));
     }
 
-    private Boolean toBoolean(ArrayNode arrayNode) {
+    private boolean toBoolean(ArrayNode arrayNode) {
         return !isNodeNull(arrayNode) && arrayNode.size() != 0;
     }
 
