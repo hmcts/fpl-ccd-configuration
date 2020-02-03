@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +66,7 @@ class CaseManagementOrderProgressionServiceTest {
     }
 
     @Test
-    void shouldPopulateCmoToActionWhenLocalAuthoritySendsToJudge() throws IOException {
+    void shouldPopulateCmoToActionWhenLocalAuthoritySendsToJudge() {
         CaseData caseData = caseDataWithCaseManagementOrder(SEND_TO_JUDGE).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 

@@ -12,15 +12,17 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,15 +32,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
@@ -77,77 +79,102 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                 .build())
             .build();
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
-                "hearingDetails", createHearingBookings(testDate, testDate.plusHours(4)),
-                "respondents1", createRespondents(),
-                "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-                "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
-            .build();
+        CaseDetails caseDetails = buildCaseDetails(order, ACTION_CASE_MANAGEMENT_ORDER);
 
         CaseData caseDataBefore = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCallbackRequest(caseDetails));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+            buildCallbackRequest(caseDetails, ACTION_CASE_MANAGEMENT_ORDER));
         CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(responseData.getCaseManagementOrder().getStatus()).isEqualTo(SELF_REVIEW);
+        cmoCommonAssertions(responseData, caseDataBefore);
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(expectedJudgeRejectedNotificationParameters()), eq(caseId.toString()));
+    }
+
+    private void cmoCommonAssertions(CaseData responseData, CaseData caseDataBefore) {
         assertThat(responseData.getHearingDetails()).isEqualTo(caseDataBefore.getHearingDetails());
         assertThat(responseData.getRespondents1()).isEqualTo(caseDataBefore.getRespondents1());
         assertThat(responseData.getCaseLocalAuthority()).isEqualTo(caseDataBefore.getCaseLocalAuthority());
         assertThat(responseData.getFamilyManCaseNumber()).isEqualTo(caseDataBefore.getFamilyManCaseNumber());
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedNotificationParameters()), eq(caseId.toString()));
     }
 
     @Test
     void aboutToSubmitShouldNotNotifyLocalAuthorityWhenChangesAreNotRequested()
         throws NotificationClientException {
 
-        CaseManagementOrder order = CaseManagementOrder.builder()
-            .status(SEND_TO_JUDGE)
-            .action(OrderAction.builder()
-                .type(ActionType.SELF_REVIEW)
-                .build())
-            .build();
+        CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, ActionType.SELF_REVIEW);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(12345L)
             .data(Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order))
             .build();
 
-        postAboutToSubmitEvent(buildCallbackRequest(caseDetails));
+        postAboutToSubmitEvent(buildCallbackRequest(caseDetails, ACTION_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedNotificationParameters()), eq(caseId.toString()));
+            eq(expectedJudgeRejectedNotificationParameters()), eq(caseId.toString()));
     }
 
     @Test
     void aboutToSubmitShouldPopulateListServedCaseManagementOrdersWhenSendsToAllParties() {
-        CaseManagementOrder order = CaseManagementOrder.builder()
-            .status(SEND_TO_JUDGE)
-            .id(uuid)
-            .action(OrderAction.builder()
-                .type(SEND_TO_ALL_PARTIES)
-                .build())
-            .build();
+        CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, SEND_TO_ALL_PARTIES);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(caseDataMap(order, LocalDateTime.now().minusDays(1)))
-            .build();
+        CaseDetails caseDetails = buildCaseDetails(order, ACTION_CASE_MANAGEMENT_ORDER);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCallbackRequest(caseDetails));
+        CaseData caseDataBefore = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCallbackRequest(caseDetails,
+            ACTION_CASE_MANAGEMENT_ORDER));
+        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(response.getData())
-            .containsOnlyKeys(SERVED_CASE_MANAGEMENT_ORDERS.getKey(), HEARING_DETAILS_KEY);
+        List<CaseManagementOrder> expectedServedCMOs = new ArrayList<>();
+        expectedServedCMOs.add(order);
+
+        assertThat(ElementUtils.unwrapElements(responseData.getServedCaseManagementOrders())).isEqualTo(
+            expectedServedCMOs);
+        cmoCommonAssertions(responseData, caseDataBefore);
     }
 
-    private Map<String, Object> expectedNotificationParameters() {
+    @Test
+    void aboutToSubmitShouldSendNotificationWhenStatusIsSendToJudge() throws Exception {
+        CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, SEND_TO_ALL_PARTIES);
+
+        CaseDetails caseDetails = buildCaseDetails(order, DRAFT_CASE_MANAGEMENT_ORDER);
+
+        postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
+            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+    }
+
+    @Test
+    void aboutToSubmitShouldNotSendNotificationWhenStatusIsNotSendToJudge() throws Exception {
+        CaseManagementOrder order = buildOrder(SELF_REVIEW, SEND_TO_ALL_PARTIES);
+
+        CaseDetails caseDetails = buildCaseDetails(order, DRAFT_CASE_MANAGEMENT_ORDER);
+
+        postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
+            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+    }
+
+    private Map<String, Object> expectedJudgeRejectedNotificationParameters() {
         return ImmutableMap.<String, Object>builder()
             .putAll(commonNotificationParameters())
             .put("requestedChanges", "Please make this change XYZ")
+            .build();
+    }
+
+    private Map<String, Object> expectedCMODraftCompleteNotificationParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .putAll(commonNotificationParameters())
+            .put("respondentLastName", "Jones")
             .build();
     }
 
@@ -160,22 +187,32 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .build();
     }
 
-    private Map<String, Object> caseDataMap(CaseManagementOrder order, LocalDateTime localDateTime) {
-        return ImmutableMap.of(
-            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
-            HEARING_DETAILS_KEY, List.of(Element.<HearingBooking>builder()
-                .id(uuid)
-                .value(HearingBooking.builder()
-                    .startDate(localDateTime)
-                    .build())
-                .build()));
-    }
-
-    private CallbackRequest buildCallbackRequest(CaseDetails caseDetails) {
-        return CallbackRequest.builder()
-            .eventId(ACTION_CASE_MANAGEMENT_ORDER.getId())
-            .caseDetails(caseDetails)
+    private CaseManagementOrder buildOrder(CMOStatus status, ActionType actionType) {
+        return CaseManagementOrder.builder()
+            .status(status)
+            .id(uuid)
+            .action(OrderAction.builder()
+                .type(actionType)
+                .build())
             .build();
     }
 
+    private CaseDetails buildCaseDetails(CaseManagementOrder order, Event cmoEvent) {
+        return CaseDetails.builder()
+            .id(12345L)
+            .data(Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
+                "cmoEventId", cmoEvent.getId(),
+                "hearingDetails", createHearingBookings(testDate, testDate.plusHours(4)),
+                "respondents1", createRespondents(),
+                "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+                "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
+            .build();
+    }
+
+    private CallbackRequest buildCallbackRequest(CaseDetails caseDetails, Event event) {
+        return CallbackRequest.builder()
+            .eventId(event.getId())
+            .caseDetails(caseDetails)
+            .build();
+    }
 }

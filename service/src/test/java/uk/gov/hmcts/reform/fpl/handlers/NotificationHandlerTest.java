@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.Loc
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
@@ -66,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
@@ -244,8 +246,8 @@ class NotificationHandlerTest {
             getCMOIssuedCaseLinkNotificationParameters();
         private final Map<String, Object> expectedCMOIssuedNotificationParametersForRepresentative =
             getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative();
-
-
+        private final Map<String, Object> expectedCMOReadyForJudgeNotificationParameters =
+            getCMOReadyForJudgeNotificationParameters();
         private final Map<String, Object> expectedCMORejectedNotificationParameters =
             getCMORejectedCaseLinkNotificationParameters();
 
@@ -295,6 +297,7 @@ class NotificationHandlerTest {
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
             CaseData caseData = buildCaseDataWithRepresentatives();
+
             given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
                 DIGITAL_SERVICE))
                 .willReturn(expectedRepresentatives());
@@ -330,9 +333,34 @@ class NotificationHandlerTest {
                 eq(expectedCMORejectedNotificationParameters), eq("12345"));
         }
 
+        @Test
+        void shouldNotifyAdminOfCMOReadyForJudgeReview() throws Exception {
+            CallbackRequest callbackRequest = callbackRequest();
+            CaseDetails caseDetails = callbackRequest().getCaseDetails();
+
+            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
+
+            given(caseManagementOrderEmailContentProvider.buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+                .willReturn(expectedCMOReadyForJudgeNotificationParameters);
+
+            cmoNotificationHandler.sendNotificationForCaseManagementOrderReadyForJudgeReview(
+                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+
+            verify(notificationClient).sendEmail(
+                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
+                eq(expectedCMOReadyForJudgeNotificationParameters), eq("12345"));
+        }
+
         private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
             return ImmutableMap.<String, Object>builder()
                 .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
+                .putAll(expectedCommonCMONotificationParameters())
+                .build();
+        }
+
+        private ImmutableMap<String, Object> getCMOReadyForJudgeNotificationParameters() {
+            return ImmutableMap.<String, Object>builder()
                 .putAll(expectedCommonCMONotificationParameters())
                 .build();
         }
