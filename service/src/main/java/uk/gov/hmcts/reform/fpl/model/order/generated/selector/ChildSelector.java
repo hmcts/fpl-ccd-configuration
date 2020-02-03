@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model.order.generated.selector;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.List;
 @Data
 @Builder
 public class ChildSelector {
+    @Setter(AccessLevel.PRIVATE)
     private String childCountContainer;
     @Builder.Default
     private boolean child1 = false;
@@ -32,7 +35,6 @@ public class ChildSelector {
     @Builder.Default
     private boolean child10 = false;
 
-    // TODO: 31/01/2020 test me
     public void populateChildCountContainer(int max) {
         if (max < 1) {
             childCountContainer = "";
@@ -47,7 +49,6 @@ public class ChildSelector {
         setChildCountContainer(builder.toString());
     }
 
-    // TODO: 31/01/2020 test me
     @JsonIgnore
     public List<Integer> getSelected() {
         List<Integer> selected = new ArrayList<>();
