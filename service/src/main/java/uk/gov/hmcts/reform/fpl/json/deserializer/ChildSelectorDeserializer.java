@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.springframework.boot.jackson.JsonComponent;
@@ -40,12 +39,12 @@ public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
         return isNodeNull(node) ? "" : ((TextNode) node).asText();
     }
 
-    private boolean readChildNode(TreeNode treeNode, int child) {
-        return toBoolean((ArrayNode) treeNode.get("child" + child));
+    private boolean readChildNode(TreeNode node, int child) {
+        return toBoolean(node.get("child" + child));
     }
 
-    private boolean toBoolean(ArrayNode arrayNode) {
-        return !isNodeNull(arrayNode) && arrayNode.size() != 0;
+    private boolean toBoolean(TreeNode node) {
+        return !isNodeNull(node) && node.size() != 0;
     }
 
     private boolean isNodeNull(TreeNode node) {

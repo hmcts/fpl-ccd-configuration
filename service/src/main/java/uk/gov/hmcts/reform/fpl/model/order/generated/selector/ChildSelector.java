@@ -13,7 +13,8 @@ import java.util.List;
 @Builder
 public class ChildSelector {
     @Setter(AccessLevel.PRIVATE)
-    private String childCountContainer;
+    @Builder.Default
+    private String childCountContainer = "";
     @Builder.Default
     private boolean child1 = false;
     @Builder.Default
