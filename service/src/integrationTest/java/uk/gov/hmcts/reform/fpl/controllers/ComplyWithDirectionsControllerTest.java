@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -16,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +31,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
@@ -42,7 +44,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToStartCallbackShouldAddAllPartiesDirectionsIntoSeparateRoleCollections() throws Exception {
+    void aboutToStartCallbackShouldAddAllPartiesDirectionsIntoSeparateRoleCollections() {
         List<Direction> directions = directionsForAllRoles();
         Order sdo = Order.builder().directions(buildDirections(directions)).build();
 
@@ -80,7 +82,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void aboutToSubmitShouldAddResponseToStandardDirectionOrderWhenEmptyServedCaseManagementOrders() throws Exception {
+    void aboutToSubmitShouldAddResponseToStandardDirectionOrderWhenEmptyServedCaseManagementOrders() {
         UUID uuid = randomUUID();
         List<Element<Direction>> directions = directions(uuid);
         Order sdo = order(uuid);
@@ -100,7 +102,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void aboutToSubmitShouldAddResponseToCaseManagementOrderWhenPopulatedServedCaseManagementOrders() throws Exception {
+    void aboutToSubmitShouldAddResponseToCaseManagementOrderWhenPopulatedServedCaseManagementOrders() {
         UUID uuid = randomUUID();
         List<Element<Direction>> directions = directions(uuid);
         Order sdo = order(uuid);
@@ -124,32 +126,25 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     }
 
     private List<Element<CaseManagementOrder>> caseManagementOrders(UUID uuid) {
-        return ImmutableList.of(Element.<CaseManagementOrder>builder()
-            .value(CaseManagementOrder.builder()
+        return wrapElements(CaseManagementOrder.builder()
                 .directions(directions(uuid))
-                .build())
-            .build());
+                .build());
     }
 
     private Order order(UUID uuid) {
-        return Order.builder().directions(ImmutableList.of(Element.<Direction>builder()
-            .id(uuid)
-            .value(Direction.builder()
+        return Order.builder()
+            .directions(List.of(element(uuid, Direction.builder()
                 .directionType("example direction")
-                .build())
-            .build()))
+                .build())))
             .build();
     }
 
     private List<Element<Direction>> directions(UUID uuid) {
-        return ImmutableList.of(Element.<Direction>builder()
-            .id(uuid)
-            .value(Direction.builder()
+        return List.of(element(uuid, Direction.builder()
                 .response(DirectionResponse.builder()
                     .complied("Yes")
                     .build())
-                .build())
-            .build());
+                .build()));
     }
 
     private List<Direction> directionsForAllRoles() {
@@ -159,18 +154,12 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     }
 
     private List<Element<Direction>> buildDirections(List<Direction> directions) {
-        return directions.stream().map(direction -> Element.<Direction>builder()
-            .id(randomUUID())
-            .value(direction)
-            .build())
+        return directions.stream().map(ElementUtils::element)
             .collect(toList());
     }
 
     private List<Element<Direction>> buildDirections(Direction direction) {
-        return ImmutableList.of(Element.<Direction>builder()
-            .id(randomUUID())
-            .value(direction)
-            .build());
+        return wrapElements(direction);
     }
 
 
@@ -178,7 +167,6 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
         return mapper.convertValue(callbackResponse.getData(), CaseData.class);
     }
 
-    @SuppressWarnings("LineLength")
     private boolean collectionsContainDirectionsForRoleAndAllParties(CaseData caseData) {
         return roleDirectionsContainExpectedDirections(caseData.getLocalAuthorityDirections(), LOCAL_AUTHORITY)
             && roleDirectionsContainExpectedDirections(caseData.getCafcassDirections(), CAFCASS)

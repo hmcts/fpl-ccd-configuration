@@ -5,8 +5,10 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -18,8 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,15 +52,21 @@ class CaseManagementOrderProgressionServiceTest {
     @Autowired
     private ObjectMapper mapper;
 
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Mock
+    private RequestData requestData;
+
     private CaseManagementOrderProgressionService service;
 
     @BeforeEach
     void setUp() {
-        this.service = new CaseManagementOrderProgressionService(mapper);
+        service = new CaseManagementOrderProgressionService(mapper, applicationEventPublisher, requestData);
     }
 
     @Test
-    void shouldPopulateCmoToActionWhenLocalAuthoritySendsToJudge() throws IOException {
+    void shouldPopulateCmoToActionWhenLocalAuthoritySendsToJudge() {
         CaseData caseData = caseDataWithCaseManagementOrder(SEND_TO_JUDGE).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
@@ -72,7 +80,7 @@ class CaseManagementOrderProgressionServiceTest {
     }
 
     @Test
-    void shouldPopulateSharedDocumentWhenOrderIsReadyForPartiesReview() throws IOException {
+    void shouldPopulateSharedDocumentWhenOrderIsReadyForPartiesReview() {
         CaseData caseData = caseDataWithCaseManagementOrder(PARTIES_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
@@ -86,7 +94,7 @@ class CaseManagementOrderProgressionServiceTest {
     }
 
     @Test
-    void shouldRemoveSharedDraftDocumentWhenStatusIsSelfReview() throws IOException {
+    void shouldRemoveSharedDraftDocumentWhenStatusIsSelfReview() {
         CaseData caseData = caseDataWithCaseManagementOrder(CMOStatus.SELF_REVIEW)
             .sharedDraftCMODocument(DocumentReference.builder().build())
             .build();
@@ -168,7 +176,7 @@ class CaseManagementOrderProgressionServiceTest {
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
-    private CaseData.CaseDataBuilder caseDataWithCaseManagementOrder(CMOStatus status) throws IOException {
+    private CaseData.CaseDataBuilder caseDataWithCaseManagementOrder(CMOStatus status) {
         return CaseData.builder().caseManagementOrder(
             CaseManagementOrder.builder()
                 .status(status)
