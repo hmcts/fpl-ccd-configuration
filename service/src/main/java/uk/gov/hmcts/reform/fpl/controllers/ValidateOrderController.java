@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.InterimEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
@@ -60,12 +59,11 @@ public class ValidateOrderController {
         @RequestBody CallbackRequest callbackRequest) {
 
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        final ChildSelector childSelector = mapper.convertValue(
-            caseDetails.getData().get("childSelector"), ChildSelector.class);
+        final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<String> errors;
 
-        if (childSelector.getSelected().isEmpty()) {
+        if (caseData.getChildSelector().getSelected().isEmpty()) {
             errors = List.of("Select the children included in the order.");
         } else {
             errors = List.of();

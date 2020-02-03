@@ -188,6 +188,7 @@ public class CaseData {
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
     private final ChildSelector childSelector;
+    private final String allChildrenChoice;
     private final List<Element<GeneratedOrder>> orderCollection;
 
     public List<Element<GeneratedOrder>> getOrderCollection() {

@@ -33,27 +33,28 @@ public class ChildSelector {
         for (int i = 1; i <= max; i++) {
             builder.append(i);
         }
-        childCountContainer = builder.toString();
+
+        setChildCountContainer(builder.toString());
     }
 
     // TODO: 31/01/2020 test me
     @JsonIgnore
     public List<Integer> getSelected() {
         List<Integer> selected = new ArrayList<>();
-        addSelected(selected, child1, 1);
-        addSelected(selected, child2, 2);
-        addSelected(selected, child3, 3);
-        addSelected(selected, child4, 4);
-        addSelected(selected, child5, 5);
-        addSelected(selected, child6, 6);
-        addSelected(selected, child7, 7);
-        addSelected(selected, child8, 8);
-        addSelected(selected, child9, 9);
-        addSelected(selected, child10, 10);
+        addSelectedChild(selected, child1, 0);
+        addSelectedChild(selected, child2, 1);
+        addSelectedChild(selected, child3, 2);
+        addSelectedChild(selected, child4, 3);
+        addSelectedChild(selected, child5, 4);
+        addSelectedChild(selected, child6, 5);
+        addSelectedChild(selected, child7, 6);
+        addSelectedChild(selected, child8, 7);
+        addSelectedChild(selected, child9, 8);
+        addSelectedChild(selected, child10, 9);
         return selected;
     }
 
-    private void addSelected(List<Integer> selected, boolean value, int child) {
+    private void addSelectedChild(List<Integer> selected, boolean value, int child) {
         if (value) {
             selected.add(child);
         }

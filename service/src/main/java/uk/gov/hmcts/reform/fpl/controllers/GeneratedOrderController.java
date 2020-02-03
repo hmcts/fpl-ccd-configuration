@@ -71,16 +71,32 @@ public class GeneratedOrderController {
 
         if (errors.isEmpty()) {
             List<Child> allChildren = unwrapElements(caseData.getAllChildren());
-            ChildSelector childSelector = ChildSelector.builder().build();
-            childSelector.populateChildCountContainer(allChildren.size());
-            caseDetails.getData().put("pageShow", Map.of("showMe", allChildren.size() <= 1 ? "No" : "Yes"));
-            caseDetails.getData().put("childSelector", childSelector);
+            final String pageShow = allChildren.size() <= 1 ? "No" : "Yes";
+            caseDetails.getData().put("pageShow", Map.of("showMe", pageShow));
             caseDetails.getData().put("children_label", childrenService.getChildrenLabel(allChildren));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(errors)
+            .build();
+    }
+
+    @PostMapping("/populate-selector/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handlePopulateSelectorMidEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if ("No".equals(caseData.getAllChildrenChoice())) {
+            ChildSelector childSelector = ChildSelector.builder().build();
+            childSelector.populateChildCountContainer(caseData.getAllChildren().size());
+            caseDetails.getData().put("childSelector", childSelector);
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
             .build();
     }
 
