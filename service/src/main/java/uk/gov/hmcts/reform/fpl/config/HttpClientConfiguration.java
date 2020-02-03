@@ -30,6 +30,8 @@ public class HttpClientConfiguration {
             .create()
             .useSystemProperties()
             .setDefaultRequestConfig(config)
+            .setMaxConnPerRoute(10)
+            .setMaxConnTotal(100)
             .build();
     }
 
