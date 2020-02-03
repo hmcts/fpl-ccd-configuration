@@ -548,7 +548,6 @@ class NotificationHandlerTest {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
         final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
 
-
         given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
             .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 

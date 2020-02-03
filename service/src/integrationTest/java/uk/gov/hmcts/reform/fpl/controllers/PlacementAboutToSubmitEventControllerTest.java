@@ -101,7 +101,7 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
                 "children1", List.of(child1),
-                "placements", List.of(child1Placement, child1Placement),
+                "placements", List.of(child1Placement),
                 "placement", child1Placement.getValue(),
                 "childrenList", child1.getId()))
             .build();
