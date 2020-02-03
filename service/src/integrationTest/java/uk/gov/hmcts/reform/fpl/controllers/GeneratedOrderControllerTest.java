@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -76,6 +77,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -291,9 +293,60 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
     }
 
+    @Nested
+    class PopulateChildSelectorMidEvent {
+        @Test
+        void shouldPopulateChildSelectorWhenNoIsSelected() {
+
+            AboutToStartOrSubmitCallbackResponse aboutToStartOrSubmitCallbackResponse = postMidEvent(
+                buildCaseDetails("No"), "populate-selector");
+
+            CaseData caseData = mapper.convertValue(aboutToStartOrSubmitCallbackResponse.getData(), CaseData.class);
+
+            ChildSelector actual = caseData.getChildSelector();
+            ChildSelector expected = getExpectedChildSelector();
+
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        private ChildSelector getExpectedChildSelector() {
+            return ChildSelector.builder()
+                .childCountContainer("123")
+                .child1(false).child2(false)
+                .child3(false).child4(false)
+                .child5(false).child6(false)
+                .child7(false).child8(false)
+                .child9(false).child10(false)
+                .build();
+        }
+
+        @Test
+        void shouldNotPopulateChildSelectorWhenYesIsSelected() {
+            AboutToStartOrSubmitCallbackResponse aboutToStartOrSubmitCallbackResponse = postMidEvent(
+                buildCaseDetails("Yes"), "populate-selector");
+
+            CaseData caseData = mapper.convertValue(aboutToStartOrSubmitCallbackResponse.getData(), CaseData.class);
+
+            ChildSelector actual = caseData.getChildSelector();
+
+            assertThat(actual).isNull();
+        }
+
+        private CaseDetails buildCaseDetails(String choice) {
+            CaseData caseData = CaseData.builder()
+                .children1(createPopulatedChildren())
+                .allChildrenChoice(choice)
+                .build();
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+                .build();
+        }
+    }
+
     @TestInstance(PER_CLASS)
     @Nested
-    class MidEvent {
+    class GenerateDocumentMidEvent {
         private final byte[] pdf = {1, 2, 3, 4, 5};
         private Document document;
 
@@ -367,12 +420,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         private CaseDetails generateBlankOrderCaseDetails() {
-            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
-
-            dataBuilder.order(GeneratedOrder.builder().details("").build())
-                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
-
-            generateDefaultValues(dataBuilder);
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(BLANK_ORDER, null)
+                .order(GeneratedOrder.builder().details("").build());
 
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
