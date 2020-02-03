@@ -12,4 +12,8 @@ public enum YesNo {
     YesNo(String value) {
         this.value = value;
     }
+
+    public static YesNo from(Boolean val) {
+        return val ? YES : NO;
+    }
 }

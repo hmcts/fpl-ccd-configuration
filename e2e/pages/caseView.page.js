@@ -11,6 +11,7 @@ module.exports = {
     legalBasis: 'Legal basis',
     documents: 'Documents',
     confidential: 'Confidential',
+    placement: 'Placement',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',

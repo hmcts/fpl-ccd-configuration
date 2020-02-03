@@ -104,6 +104,22 @@ module.exports = function () {
       }
     },
 
+    seeNestedAnswerInTab(questionNo, complexTypeHeading, complexTypeSubHeading, question, answer) {
+      const panelLocator = name => locate(`//div[@class="complex-panel"][//span[text()="${name}"]]`);
+
+      const topLevelLocator = panelLocator(complexTypeHeading);
+      const subLevelLocator = panelLocator(complexTypeSubHeading);
+      const rowLocator = locate(`${topLevelLocator}${subLevelLocator}/table/tbody/tr[${questionNo}]`);
+      const questionLocator = locate(`${rowLocator}/th/span`);
+      const answerLocator = locate(`${rowLocator}/td/span`);
+
+      this.seeElement(topLevelLocator);
+      this.seeElement(subLevelLocator);
+      this.seeElement(rowLocator);
+      this.seeElement(questionLocator.withText(question));
+      this.seeElement(answerLocator.withText(answer));
+    },
+
     signOut() {
       this.click('Sign Out');
       this.wait(2); // in seconds
@@ -126,7 +142,7 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
     },
 
-    async enterMandatoryFields () {
+    async enterMandatoryFields (settings) {
       await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
       ordersAndDirectionsNeededEventPage.checkCareOrder();
       await this.completeEvent('Save and continue');
@@ -139,6 +155,10 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
+      if(settings && settings.multipleChildren){
+        await this.addAnotherElementToCollection('Child');
+        await enterChildrenEventPage.enterChildDetails('John', 'Black', '02', '09', '2016');
+      }
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
       await enterRespondentsEventPage.enterRespondent(respondent[0]);

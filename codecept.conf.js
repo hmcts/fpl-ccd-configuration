@@ -72,6 +72,7 @@ exports.config = {
     complyWithDirectionsEventPage: './e2e/pages/events/complyWithDirectionsEvent.page.js',
     complyOnBehalfOfOthersEventPage: './e2e/pages/events/complyOnBehalfOfOthersEvent.page.js',
     actionCaseManagementOrderEventPage: './e2e/pages/events/actionCaseManagementOrderEvent.page.js',
+    placementEventPage: './e2e/pages/events/placementEvent.page.js',
   },
   plugins: {
     autoDelay: {
