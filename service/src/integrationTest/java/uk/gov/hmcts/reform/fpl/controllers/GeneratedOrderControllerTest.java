@@ -307,11 +307,12 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         @ParameterizedTest
-        @MethodSource("midEventArgumentSource")
+        @MethodSource("generateDocumentMidEventArgumentSource")
         void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails,
                                                                        String fileName,
                                                                        DocmosisTemplates templateName) {
-            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                caseDetails, "generate-document");
 
             verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(), eq(templateName));
             verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
@@ -323,7 +324,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         @Test
         void shouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
-            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections());
+            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), "generate-document");
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
             verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
@@ -335,7 +336,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             reset(uploadDocumentService);
         }
 
-        private Stream<Arguments> midEventArgumentSource() {
+        private Stream<Arguments> generateDocumentMidEventArgumentSource() {
             return Stream.of(
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetails(INTERIM), "interim_care_order.pdf", ORDER),
