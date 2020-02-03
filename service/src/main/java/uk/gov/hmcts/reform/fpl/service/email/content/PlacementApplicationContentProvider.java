@@ -12,8 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
@@ -34,8 +33,7 @@ public class PlacementApplicationContentProvider extends AbstractEmailContentPro
 
         return ImmutableMap.of(
             "respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()),
-            "caseUrl", String.format("%1$s/case/%2$s/%3$s/%4$s",
-                uiBaseUrl, JURISDICTION, CASE_TYPE, caseDetails.getId())
+            "caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId())
         );
     }
 }
