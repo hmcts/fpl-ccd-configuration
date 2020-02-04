@@ -88,8 +88,7 @@ public class ChildrenService {
             .build());
     }
 
-    // TODO: 31/01/2020 test me
-    public String getChildrenLabel(List<Child> children) {
+    public String getChildrenLabel(List<Element<Child>> children) {
         if (isEmpty(children)) {
             return "No children in the case";
         }
@@ -97,14 +96,13 @@ public class ChildrenService {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < children.size(); i++) {
-            final String name = children.get(i).getParty().getFullName();
+            final String name = children.get(i).getValue().getParty().getFullName();
             builder.append(String.format("Child %d: %s%n", i + 1, name));
         }
 
         return builder.toString();
     }
 
-    // TODO: 04/02/2020 Test me
     public void updatePageShowBasedOnChildCount(CaseDetails caseDetails, List<Element<Child>> children) {
         caseDetails.getData().put("pageShow", children.size() <= 1 ? "No" : "Yes");
     }

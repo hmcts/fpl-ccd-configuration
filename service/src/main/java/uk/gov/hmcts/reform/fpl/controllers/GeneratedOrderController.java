@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -43,7 +42,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.populateChildCountContainer;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Api
@@ -86,11 +84,10 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if ("No".equals(caseData.getAllChildrenChoice())) {
-            List<Child> allChildren = unwrapElements(caseData.getAllChildren());
             ChildSelector childSelector = ChildSelector.builder().build();
-            populateChildCountContainer(childSelector, allChildren.size());
+            populateChildCountContainer(childSelector, caseData.getAllChildren().size());
             caseDetails.getData().put("childSelector", childSelector);
-            caseDetails.getData().put("children_label", childrenService.getChildrenLabel(allChildren));
+            caseDetails.getData().put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

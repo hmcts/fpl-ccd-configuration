@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -13,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -245,6 +248,51 @@ class ChildrenServiceTest {
         assertThat(getParty(updatedChildren, 0).address).isNotNull();
         assertThat(getParty(updatedChildren, 0).email).isNotNull();
         assertThat(getParty(updatedChildren, 0).telephoneNumber).isNotNull();
+    }
+
+    @Test
+    void shouldBuildExpectedLabelWhenEmptyList() {
+        String label = service.getChildrenLabel(List.of());
+        assertThat(label).isEqualTo("No children in the case");
+    }
+
+    @Test
+    void shouldBuildExpectedLabelWhenPopulatedList() {
+        String label = service.getChildrenLabel(childElementWithDetailsHiddenValue(""));
+        assertThat(label).isEqualTo("Child 1: James\n");
+    }
+
+    @Test
+    void shouldPopulateCaseDataMapWithYesWhenThereAre2OrMoreChildren() {
+        List<Element<Child>> children = new ArrayList<>();
+        children.add(childWithConfidentialFields(randomUUID()));
+        children.add(childWithConfidentialFields(randomUUID()));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+        service.updatePageShowBasedOnChildCount(caseDetails, children);
+
+        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("Yes");
+    }
+
+    @Test
+    void shouldPopulateCaseDataMapWithNoWhenThereIsOneChild() {
+        List<Element<Child>> children = new ArrayList<>();
+        children.add(childWithConfidentialFields(randomUUID()));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+        service.updatePageShowBasedOnChildCount(caseDetails, children);
+
+        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
+    }
+
+    @Test
+    void shouldPopulateCaseDataMapWithNoWhenThereIsEmptyList() {
+        List<Element<Child>> children = new ArrayList<>();
+
+        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+        service.updatePageShowBasedOnChildCount(caseDetails, children);
+
+        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }
 
     private Element<Child> childWithDetailsHiddenNo(UUID id) {
