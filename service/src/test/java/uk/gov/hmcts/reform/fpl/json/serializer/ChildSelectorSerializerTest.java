@@ -13,7 +13,7 @@ class ChildSelectorSerializerTest extends SerializerTest {
     }
 
     @Test
-    void shouldSerialiseFalseToEmptyArray() throws JsonProcessingException {
+    void shouldCreateStringWithEmptyArraysWhenValuesAreFalse() throws JsonProcessingException {
         ChildSelector childSelector = ChildSelector.builder().build();
         String actual = mapper.writeValueAsString(childSelector);
         String expected = "{" +
@@ -28,7 +28,7 @@ class ChildSelectorSerializerTest extends SerializerTest {
     }
 
     @Test
-    void shouldSerialiseTrueToPopulatedArray() throws JsonProcessingException {
+    void shouldCreateStringWithPopulatedArraysWhenValuesAreTrue() throws JsonProcessingException {
         ChildSelector childSelector = ChildSelector.builder().child1(true).child5(true).child10(true).build();
         String actual = mapper.writeValueAsString(childSelector);
         String expected = "{" +
@@ -43,7 +43,7 @@ class ChildSelectorSerializerTest extends SerializerTest {
     }
 
     @Test
-    void shouldSerialiseNullStringToNull() throws JsonProcessingException {
+    void shouldCreateAStringWithNullAssignedToChildCountContainerWhenValueIsNull() throws JsonProcessingException {
         ChildSelector childSelector = ChildSelector.builder().childCountContainer(null).build();
         String actual = mapper.writeValueAsString(childSelector);
         String expected = "{" +

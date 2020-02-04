@@ -28,7 +28,7 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
     }
 
     @Test
-    void shouldCreateObjectWithTrueValuesWhenArraysArePopulated() throws JsonProcessingException {
+    void shouldCreateChildSelectorWithTrueValuesWhenArraysArePopulated() throws JsonProcessingException {
         String jsonString = "{" +
             "\"childCountContainer\":\"\"," +
             "\"child1\":[\"selected\"],\"child2\":[]," +
