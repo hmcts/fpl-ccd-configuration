@@ -96,8 +96,9 @@ public class RepresentativesController {
             System.out.println("None new added");
         } else {
             System.out.println("New added");
+            int representativeAdded = caseData.getRepresentatives().size() - 1;
             RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
-                .get(0).getValue().getServingPreferences();
+                .get(representativeAdded).getValue().getServingPreferences();
 
             if(servingPreferences.equals(EMAIL))
             {
