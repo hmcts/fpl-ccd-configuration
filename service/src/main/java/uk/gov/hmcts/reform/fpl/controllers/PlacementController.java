@@ -96,7 +96,7 @@ public class PlacementController {
         caseProperties.put("placements", placementService.setPlacement(caseData, currentPlacement));
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 
-        if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
+        if (!isUpdatingExistingPlacementFilename(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest, requestData);
         }
 
@@ -130,7 +130,8 @@ public class PlacementController {
             new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
-    private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
-        return isNotEmpty(previousPlacement) && newPlacement.equals(previousPlacement);
+    private boolean isUpdatingExistingPlacementFilename(Placement previousPlacement, Placement newPlacement) {
+        return isNotEmpty(previousPlacement) && newPlacement.application.getFilename()
+            .equals(previousPlacement.application.getFilename());
     }
 }
