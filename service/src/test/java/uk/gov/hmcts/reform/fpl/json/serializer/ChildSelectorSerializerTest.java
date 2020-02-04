@@ -33,11 +33,11 @@ class ChildSelectorSerializerTest extends SerializerTest {
         String actual = mapper.writeValueAsString(childSelector);
         String expected = "{"
             + "\"childCountContainer\":\"\","
-            + "\"child1\":[\"selected\"],\"child2\":[],"
+            + "\"child1\":[\"SELECTED\"],\"child2\":[],"
             + "\"child3\":[],\"child4\":[],"
-            + "\"child5\":[\"selected\"],\"child6\":[],"
+            + "\"child5\":[\"SELECTED\"],\"child6\":[],"
             + "\"child7\":[],\"child8\":[],"
-            + "\"child9\":[],\"child10\":[\"selected\"]"
+            + "\"child9\":[],\"child10\":[\"SELECTED\"]"
             + "}";
         assertEquals(expected, actual, true);
     }

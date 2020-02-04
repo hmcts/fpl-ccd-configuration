@@ -7,7 +7,6 @@ import org.springframework.boot.jackson.JsonComponent;
 import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
 
 import java.io.IOException;
-import java.util.List;
 
 @JsonComponent
 public class ChildSelectorSerializer extends JsonSerializer<ChildSelector> {
@@ -30,10 +29,10 @@ public class ChildSelectorSerializer extends JsonSerializer<ChildSelector> {
     }
 
     private void generateChild(JsonGenerator generator, int i, boolean value) throws IOException {
-        generator.writeObjectField("child" + i, toList(value));
+        generator.writeObjectField("child" + i, toArray(value));
     }
 
-    public List<String> toList(Boolean selected) {
-        return selected != null && selected ? List.of("selected") : List.of();
+    public String[] toArray(Boolean selected) {
+        return selected != null && selected ? new String[] {"SELECTED"} : new String[]{};
     }
 }

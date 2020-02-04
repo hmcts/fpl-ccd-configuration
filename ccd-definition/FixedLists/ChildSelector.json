@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "selected",
+    "ListElementCode": "SELECTED",
     "ListElement": "Yes",
     "DisplayOrder": 1
   }
