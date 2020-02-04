@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-public abstract class SerializerTest {
+abstract class SerializerTest {
     protected ObjectMapper mapper;
 
     protected <T> SerializerTest(Class<? extends T> type, JsonSerializer<T> serializer) {
