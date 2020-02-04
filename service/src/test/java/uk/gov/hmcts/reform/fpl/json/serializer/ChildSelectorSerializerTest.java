@@ -24,7 +24,7 @@ class ChildSelectorSerializerTest extends SerializerTest {
             "\"child7\":[],\"child8\":[]," +
             "\"child9\":[],\"child10\":[]" +
             "}";
-        assertEquals(expected, actual, false);
+        assertEquals(expected, actual, true);
     }
 
     @Test
@@ -39,7 +39,7 @@ class ChildSelectorSerializerTest extends SerializerTest {
             "\"child7\":[],\"child8\":[]," +
             "\"child9\":[],\"child10\":[\"selected\"]" +
             "}";
-        assertEquals(expected, actual, false);
+        assertEquals(expected, actual, true);
     }
 
     @Test
@@ -54,6 +54,6 @@ class ChildSelectorSerializerTest extends SerializerTest {
             "\"child7\":[],\"child8\":[]," +
             "\"child9\":[],\"child10\":[]" +
             "}";
-        assertEquals(expected, actual, false);
+        assertEquals(expected, actual, true);
     }
 }
