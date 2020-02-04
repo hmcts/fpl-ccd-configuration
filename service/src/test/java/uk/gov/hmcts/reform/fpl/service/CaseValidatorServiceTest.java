@@ -214,6 +214,7 @@ class CaseValidatorServiceTest {
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
         assertThat(errors).containsOnlyOnce(
+            "In the applicant section:",
             "• Enter a valid email address"
         );
     }
@@ -231,13 +232,14 @@ class CaseValidatorServiceTest {
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
         assertThat(errors).containsOnlyOnce(
+            "In the respondents section:",
             "• Enter a valid email address"
         );
     }
 
     @ParameterizedTest
     @MethodSource("invalidEmailAddresses")
-    void shouldReturnAnErrorWhenSolicitorEmailAddressIsInvalid(final String email) {
+    void shouldReturnAnErrorWhenApplicantSolicitorEmailAddressIsInvalid(final String email) {
         CaseData caseData = partiallyCompleteCaseData()
             .respondents1(respondents())
             .grounds(grounds())
@@ -248,6 +250,7 @@ class CaseValidatorServiceTest {
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
         assertThat(errors).containsOnlyOnce(
+            "In the applicant section:",
             "• Enter a valid email address"
         );
     }
