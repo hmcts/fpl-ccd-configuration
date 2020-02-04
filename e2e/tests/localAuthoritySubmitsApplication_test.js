@@ -251,6 +251,8 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(3, 'Party', 'Name of applicant', applicant.name);
   I.seeAnswerInTab(4, 'Party', 'Payment by account (PBA) number', applicant.pbaNumber);
+  I.seeAnswerInTab(5, 'Party', 'Client code', applicant.clientCode);
+  I.seeAnswerInTab(6, 'Party', 'Customer reference', applicant.customerReference);
   I.seeAnswerInTab(1, 'Address', 'Building and Street', applicant.address.buildingAndStreet.lineOne);
   I.seeAnswerInTab(2, 'Address', '', applicant.address.buildingAndStreet.lineTwo);
   I.seeAnswerInTab(3, 'Address', '', applicant.address.buildingAndStreet.lineThree);
@@ -259,7 +261,7 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   I.seeAnswerInTab(6, 'Address', 'Country', applicant.address.country);
   I.seeAnswerInTab(1, 'Telephone number', 'Telephone number', applicant.telephoneNumber);
   I.seeAnswerInTab(2, 'Telephone number', 'Name of person to contact', applicant.nameOfPersonToContact);
-  I.seeAnswerInTab(7, 'Party', 'Job title', applicant.jobTitle);
+  I.seeAnswerInTab(9, 'Party', 'Job title', applicant.jobTitle);
   I.seeAnswerInTab(1, 'Mobile number', 'Mobile number', applicant.mobileNumber);
   I.seeAnswerInTab(1, 'Email', 'Email', applicant.email);
   I.seeAnswerInTab(1, 'Solicitor', 'Solicitor\'s full name', 'John Smith');
