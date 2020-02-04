@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class ChildSelector {
     @Builder.Default
-    private String childCountContainer = "";
+    private String childCount = "";
     @Builder.Default
     private boolean child1 = false;
     @Builder.Default

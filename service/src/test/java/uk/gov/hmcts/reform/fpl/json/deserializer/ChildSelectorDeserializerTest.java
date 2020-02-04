@@ -15,7 +15,7 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
     @Test
     void shouldCreateDefaultChildSelectorWhenArraysAreEmpty() throws JsonProcessingException {
         String jsonString = "{"
-            + "\"childCountContainer\":\"\","
+            + "\"childCount\":\"\","
             + "\"child1\":[],\"child2\":[],"
             + "\"child3\":[],\"child4\":[],"
             + "\"child5\":[],\"child6\":[],"
@@ -30,7 +30,7 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
     @Test
     void shouldCreateChildSelectorWithTrueValuesWhenArraysArePopulated() throws JsonProcessingException {
         String jsonString = "{"
-            + "\"childCountContainer\":\"\","
+            + "\"childCount\":\"\","
             + "\"child1\":[\"selected\"],\"child2\":[],"
             + "\"child3\":[],\"child4\":[],"
             + "\"child5\":[],\"child6\":[],"
@@ -45,7 +45,7 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
     @Test
     void shouldCreateDefaultChildSelectorWhenChildCountContainerIsNull() throws JsonProcessingException {
         String jsonString = "{"
-            + "\"childCountContainer\":null,"
+            + "\"childCount\":null,"
             + "\"child1\":[],\"child2\":[],"
             + "\"child3\":[],\"child4\":[],"
             + "\"child5\":[],\"child6\":[],"
@@ -60,7 +60,7 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
     @Test
     void shouldCreateDefaultChildSelectorWhenArraysAreNull() throws JsonProcessingException {
         String jsonString = "{"
-            + "\"childCountContainer\":null,"
+            + "\"childCount\":null,"
             + "\"child1\":[],\"child2\":null,"
             + "\"child3\":[],\"child4\":[],"
             + "\"child5\":[],\"child6\":null,"

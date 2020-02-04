@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.generateChildCountContainer;
+import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.generateChildCount;
 import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.getSelectedIndexes;
 
 class ChildSelectorUtilsTest {
@@ -25,11 +25,11 @@ class ChildSelectorUtilsTest {
 
     @Test
     void shouldSetAnEmptyStringWhenTheValueIsLessThan1() {
-        assertThat(generateChildCountContainer(0)).isEmpty();
+        assertThat(generateChildCount(0)).isEmpty();
     }
 
     @Test
     void shouldSetAStringWithNumbersInAscendingOrderWhenTheValueIsGreaterThan0() {
-        assertThat(generateChildCountContainer(6)).isEqualTo("123456");
+        assertThat(generateChildCount(6)).isEqualTo("123456");
     }
 }

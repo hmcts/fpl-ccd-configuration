@@ -340,7 +340,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         private ChildSelector getExpectedChildSelector() {
             return ChildSelector.builder()
-                .childCountContainer("12")
+                .childCount("12")
                 .build();
         }
 

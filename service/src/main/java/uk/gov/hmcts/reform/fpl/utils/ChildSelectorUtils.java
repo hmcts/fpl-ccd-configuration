@@ -11,7 +11,7 @@ public class ChildSelectorUtils {
 
     }
 
-    public static String generateChildCountContainer(int max) {
+    public static String generateChildCount(int max) {
         if (max < 1) {
             return "";
         }

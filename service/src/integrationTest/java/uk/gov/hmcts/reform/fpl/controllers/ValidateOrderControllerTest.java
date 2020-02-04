@@ -99,7 +99,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnErrorsWhenAChildIsSelected() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("childSelector", createChildSelectorWithoutSelected()))
+            .data(Map.of("childSelector", ChildSelector.builder().build()))
             .build();
         final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
         final List<String> errors = callbackResponse.getErrors();
@@ -109,21 +109,10 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     @Test
     void shouldNotReturnErrorsWhenAChildIsSelected() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("childSelector", createChildSelectorWithSelected()))
+            .data(Map.of("childSelector", ChildSelector.builder().child1(true).build()))
             .build();
         final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
         assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    private ChildSelector createChildSelectorWithSelected() {
-        return ChildSelector.builder()
-            .child1(true)
-            .build();
-    }
-
-    private ChildSelector createChildSelectorWithoutSelected() {
-        return ChildSelector.builder()
-            .build();
     }
 
     private CaseDetails createCaseDetails(EPOType preventRemoval, LocalDateTime now) {

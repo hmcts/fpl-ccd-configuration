@@ -19,7 +19,7 @@ public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
         TreeNode treeNode = parser.getCodec().readTree(parser);
         String childCount = getChildCountContainer(treeNode);
         return ChildSelector.builder()
-            .childCountContainer(childCount)
+            .childCount(childCount)
             .child1(readChildNode(treeNode, 1))
             .child2(readChildNode(treeNode, 2))
             .child3(readChildNode(treeNode, 3))
@@ -34,7 +34,7 @@ public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
     }
 
     private String getChildCountContainer(TreeNode treeNode) {
-        TreeNode node = treeNode.get("childCountContainer");
+        TreeNode node = treeNode.get("childCount");
         return isNodeNull(node) ? "" : ((TextNode) node).asText();
     }
 
