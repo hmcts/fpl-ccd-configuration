@@ -184,7 +184,7 @@ public class NotificationHandler {
         CaseDetails detailsBefore = event.getCallbackRequest().getCaseDetailsBefore();
         CaseDetails currentAfter = event.getCallbackRequest().getCaseDetails();
 
-        sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+        sendNotification(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
