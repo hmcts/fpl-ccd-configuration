@@ -9,19 +9,20 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
-import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseByEmailEvent;
+import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseThroughDigitalServiceEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.*;
 
 @Api
 @RestController
@@ -86,7 +87,16 @@ public class RepresentativesController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
-        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(callbackRequest, authorization, userId));
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
+            .get(0).getValue().getServingPreferences();
+
+        if(servingPreferences.equals(EMAIL))
+        {
+            applicationEventPublisher.publishEvent(new PartyAddedToCaseByEmailEvent(callbackRequest, authorization, userId));
+        } else if(servingPreferences.equals(DIGITAL_SERVICE)) {
+            applicationEventPublisher.publishEvent(new PartyAddedToCaseThroughDigitalServiceEvent(callbackRequest, authorization, userId));
+        }
     }
 
     private String getRespondentsLabel(CaseData caseData) {

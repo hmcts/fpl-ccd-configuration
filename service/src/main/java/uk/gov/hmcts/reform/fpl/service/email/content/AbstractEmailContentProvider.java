@@ -82,7 +82,7 @@ public abstract class AbstractEmailContentProvider {
         return "";
     }
 
-    private String formatCaseURL(Long caseId) {
+    protected String formatCaseURL(Long caseId) {
         return String.format("%s/case/%s/%s/%s", uiBaseUrl, JURISDICTION, CASE_TYPE, caseId);
     }
 

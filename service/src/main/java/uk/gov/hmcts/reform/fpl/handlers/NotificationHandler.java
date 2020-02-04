@@ -28,8 +28,7 @@ import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.*;
 
 @Slf4j
 @Component
@@ -42,7 +41,8 @@ public class NotificationHandler {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
-    private final PartyAddedToCaseEmailContentProvider partyAddedToCaseEmailContentProvider;
+    private final PartyAddedToCaseByEmailContentProvider partyAddedToCaseEmailContentProvider;
+    private final PartyAddedToCaseThroughDigitalServicelContentProvider partyAddedToCaseThroughDigitalServicelContentProvider;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
@@ -158,13 +158,31 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationToPartyAddedToCase(PartyAddedToCaseEvent event) {
+    public void sendNotificationToPartyAddedToCaseByEmail(PartyAddedToCaseByEmailEvent event) {
         EventData eventData = new EventData(event);
         CaseDetails details = eventData.getCaseDetails();
         Map<String, Object> parameters = partyAddedToCaseEmailContentProvider
             .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
         CaseData caseData = objectMapper.convertValue(details.getData(), CaseData.class);
         String email = caseData.getRepresentatives().get(0).getValue().getEmail();
+
+       CaseDetails detailsBefore = event.getCallbackRequest().getCaseDetailsBefore();
+       CaseDetails currentAfter = event.getCallbackRequest().getCaseDetails();
+
+        sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+    }
+
+    @EventListener
+    public void sendNotificationToPartyAddedToCaseThroughDigitalService(PartyAddedToCaseThroughDigitalServiceEvent event) {
+        EventData eventData = new EventData(event);
+        CaseDetails details = eventData.getCaseDetails();
+        Map<String, Object> parameters = partyAddedToCaseThroughDigitalServicelContentProvider
+            .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
+        CaseData caseData = objectMapper.convertValue(details.getData(), CaseData.class);
+        String email = caseData.getRepresentatives().get(0).getValue().getEmail();
+
+        CaseDetails detailsBefore = event.getCallbackRequest().getCaseDetailsBefore();
+        CaseDetails currentAfter = event.getCallbackRequest().getCaseDetails();
 
         sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
     }

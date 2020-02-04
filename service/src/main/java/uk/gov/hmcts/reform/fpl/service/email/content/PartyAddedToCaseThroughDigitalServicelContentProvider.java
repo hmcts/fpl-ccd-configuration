@@ -8,24 +8,21 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
 import static java.util.Objects.isNull;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @Service
-public class PartyAddedToCaseEmailContentProvider extends AbstractEmailContentProvider {
+public class PartyAddedToCaseThroughDigitalServicelContentProvider extends AbstractEmailContentProvider {
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    protected PartyAddedToCaseEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                                   ObjectMapper objectMapper,
-                                                   DateFormatterService dateFormatterService,
-                                                   HearingBookingService hearingBookingService) {
+    protected PartyAddedToCaseThroughDigitalServicelContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                                                    ObjectMapper objectMapper,
+                                                                    DateFormatterService dateFormatterService,
+                                                                    HearingBookingService hearingBookingService) {
         super(uiBaseUrl,dateFormatterService,hearingBookingService);
         this.objectMapper = objectMapper;
     }
@@ -34,7 +31,7 @@ public class PartyAddedToCaseEmailContentProvider extends AbstractEmailContentPr
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         return Map.of(
             "firstRespondentLastName", caseData.getRespondents1().get(0).getValue().getParty().getLastName(),
-            "familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber()
-        );
+            "familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber(),
+            "caseUrl", formatCaseURL(caseDetails.getId()));
     }
 }
