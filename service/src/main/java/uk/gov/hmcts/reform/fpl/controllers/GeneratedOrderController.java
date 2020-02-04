@@ -83,9 +83,11 @@ public class GeneratedOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if ("No".equals(caseData.getAllChildrenChoice())) {
-            String childCount = generateChildCount(caseData.getAllChildren().size());
-            caseDetails.getData().put("childSelector", ChildSelector.builder().childCount(childCount));
+        if ("No".equals(caseData.getOrderAppliesToAllChildren())) {
+            caseDetails.getData().put("childSelector", ChildSelector.builder()
+                .childCount(generateChildCount(caseData.getAllChildren().size()))
+                .build());
+
             caseDetails.getData().put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
         }
 

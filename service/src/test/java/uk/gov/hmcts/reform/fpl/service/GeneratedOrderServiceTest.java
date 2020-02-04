@@ -441,7 +441,7 @@ class GeneratedOrderServiceTest {
                                              GeneratedOrderSubtype subtype,
                                              LocalDate localDate) {
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
-        caseDataBuilder.allChildrenChoice("Yes");
+        caseDataBuilder.orderAppliesToAllChildren("Yes");
 
         switch (type) {
             case BLANK_ORDER:
@@ -484,7 +484,7 @@ class GeneratedOrderServiceTest {
                         .directions("Example Directions")
                         .build())
                     .orderMonths(5)
-                    .allChildrenChoice("No")
+                    .orderAppliesToAllChildren("No")
                     .childSelector(ChildSelector.builder()
                         .child1(true)
                         .build());

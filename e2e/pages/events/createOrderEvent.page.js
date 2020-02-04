@@ -37,7 +37,7 @@ module.exports = {
       selectorText: 'Yes',
     },
     allChildren: {
-      id: '#allChildrenChoice',
+      id: '#orderAppliesToAllChildren',
       options: {
         yes: 'Yes',
         no: 'No',

@@ -139,7 +139,7 @@ public class GeneratedOrderService {
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
 
         List<Child> children = getSelectedChildren(unwrapElements(caseData.getAllChildren()),
-            caseData.getChildSelector(), caseData.getAllChildrenChoice());
+            caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren());
         List<Map<String, String>> childrenDetails = getChildrenDetails(children);
 
         switch (orderType) {

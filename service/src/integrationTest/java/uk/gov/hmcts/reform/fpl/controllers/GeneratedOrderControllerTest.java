@@ -330,7 +330,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         private CaseDetails buildCaseDetails(String choice) {
             CaseData caseData = CaseData.builder()
                 .children1(createChildren("Wallace", "Gromit"))
-                .allChildrenChoice(choice)
+                .orderAppliesToAllChildren(choice)
                 .build();
 
             return CaseDetails.builder()
