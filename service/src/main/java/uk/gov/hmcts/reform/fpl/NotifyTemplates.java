@@ -18,4 +18,5 @@ public class NotifyTemplates {
         "931dcd86-d331-4273-abaa-208daed0761a";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "6bdbc939-14bb-4dae-ac35-e0d381840719";
+    public static final String PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE = "ca15c188-14d2-49a3-ac61-fdd7c6c7dc9b";
 }
