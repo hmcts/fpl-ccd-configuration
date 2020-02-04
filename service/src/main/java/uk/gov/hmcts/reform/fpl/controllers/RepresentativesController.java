@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseByEmailEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseThroughDigitalServiceEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -86,16 +87,24 @@ public class RepresentativesController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
-
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
-            .get(0).getValue().getServingPreferences();
 
-        if(servingPreferences.equals(EMAIL))
+        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
+
+        if(caseDataBefore.getRepresentatives().size() == caseData.getRepresentatives().size())
         {
-            applicationEventPublisher.publishEvent(new PartyAddedToCaseByEmailEvent(callbackRequest, authorization, userId));
-        } else if(servingPreferences.equals(DIGITAL_SERVICE)) {
-            applicationEventPublisher.publishEvent(new PartyAddedToCaseThroughDigitalServiceEvent(callbackRequest, authorization, userId));
+            System.out.println("None new added");
+        } else {
+            System.out.println("New added");
+            RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
+                .get(0).getValue().getServingPreferences();
+
+            if(servingPreferences.equals(EMAIL))
+            {
+                applicationEventPublisher.publishEvent(new PartyAddedToCaseByEmailEvent(callbackRequest, authorization, userId));
+            } else if(servingPreferences.equals(DIGITAL_SERVICE)) {
+                applicationEventPublisher.publishEvent(new PartyAddedToCaseThroughDigitalServiceEvent(callbackRequest, authorization, userId));
+            }
         }
     }
 
