@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -42,7 +42,7 @@ public class PopulateStandardDirectionsHandler {
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient idamClient;
     private final SystemUpdateUserConfiguration userConfig;
-    private final DirectionHelperService directionHelperService;
+    private final CommonDirectionService commonDirectionService;
     private final HearingBookingService hearingBookingService;
 
     @Autowired
@@ -52,7 +52,7 @@ public class PopulateStandardDirectionsHandler {
                                              AuthTokenGenerator authTokenGenerator,
                                              IdamClient idamClient,
                                              SystemUpdateUserConfiguration userConfig,
-                                             DirectionHelperService directionHelperService,
+                                             CommonDirectionService commonDirectionService,
                                              HearingBookingService hearingBookingService) {
         this.mapper = mapper;
         this.ordersLookupService = ordersLookupService;
@@ -60,7 +60,7 @@ public class PopulateStandardDirectionsHandler {
         this.authTokenGenerator = authTokenGenerator;
         this.idamClient = idamClient;
         this.userConfig = userConfig;
-        this.directionHelperService = directionHelperService;
+        this.commonDirectionService = commonDirectionService;
         this.hearingBookingService = hearingBookingService;
     }
 
@@ -107,11 +107,11 @@ public class PopulateStandardDirectionsHandler {
 
         List<Element<Direction>> directions = standardDirectionOrder.getDirections()
             .stream()
-            .map(direction -> directionHelperService.constructDirectionForCCD(
+            .map(direction -> commonDirectionService.constructDirectionForCCD(
                 direction, getCompleteByDate(caseData, direction)))
             .collect(toList());
 
-        directionHelperService.sortDirectionsByAssignee(directions)
+        commonDirectionService.sortDirectionsByAssignee(directions)
             .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
         return caseDetails.getData();

@@ -17,6 +17,9 @@ module.exports = [
     subtype: 'Interim',
     fullType: 'Interim care order',
     document: 'interim_care_order.pdf',
+    interimEndDate: {
+      isNamedDate: false,
+    },
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Judy',
@@ -39,7 +42,14 @@ module.exports = [
     subtype: 'Interim',
     fullType: 'Interim supervision order',
     document: 'interim_supervision_order.pdf',
-    months: '5',
+    interimEndDate: {
+      isNamedDate: true,
+      endDate: {
+        day: '12',
+        month: '03',
+        year: '2120',
+      },
+    },
     judgeAndLegalAdvisor: {
       judgeTitle: 'His Honour Judge',
       judgeLastName: 'Dredd',

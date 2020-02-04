@@ -543,10 +543,10 @@ cliui@^5.0.0:
     strip-ansi "^5.2.0"
     wrap-ansi "^5.1.0"
 
-codeceptjs@2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.4.1.tgz#8c0f38847ce9ba12a83e73476eab14c86255ac09"
-  integrity sha512-YAvOJAIs/7liUc5Rdf1CLA8HjZAKaiJSE3PAnen8KdjC35zCbk6qqiGjO9xjbCt49jQ8LPk2AyIWVoZzc62Vqg==
+codeceptjs@2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.4.3.tgz#cf6d7146cdc38b8ade036b7e700618dfd9ae6bc7"
+  integrity sha512-XbpWZpoUxqkatBu5m4GzXIJujnXk81qUbrK1nc8WeZk4WxlusWvVkSeWLjf1zwWZ0f7gFUEGcJnCrdtolmp9GQ==
   dependencies:
     "@codeceptjs/configure" "^0.4.0"
     "@types/mocha" "^5.2.7"
