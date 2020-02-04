@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseThroughDigitalServiceEvent
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -94,6 +95,14 @@ public class RepresentativesController {
         if(caseDataBefore.getRepresentatives().size() == caseData.getRepresentatives().size())
         {
             System.out.println("None new added");
+            List<Element<Representative>> representativesBefore = caseDataBefore.getRepresentatives();
+            List<Element<Representative>> representativesAfter = caseData.getRepresentatives();
+
+            //remove all elements of second list
+            representativesAfter.removeAll(representativesBefore);
+
+            System.out.println("Difference is" + representativesAfter);
+
         } else {
             System.out.println("New added");
             int representativeAdded = caseData.getRepresentatives().size() - 1;
