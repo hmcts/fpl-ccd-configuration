@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -101,5 +102,10 @@ public class ChildrenService {
         }
 
         return builder.toString();
+    }
+
+    // TODO: 04/02/2020 Test me
+    public void updatePageShowBasedOnChildCount(CaseDetails caseDetails, List<Element<Child>> children) {
+        caseDetails.getData().put("pageShow", children.size() <= 1 ? "No" : "Yes");
     }
 }

@@ -37,12 +37,12 @@ import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGrou
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.populateChildCountContainer;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -69,9 +69,7 @@ public class GeneratedOrderController {
             ValidateFamilyManCaseNumberGroup.class);
 
         if (errors.isEmpty()) {
-            List<Child> allChildren = unwrapElements(caseData.getAllChildren());
-            final String pageShow = allChildren.size() <= 1 ? "No" : "Yes";
-            caseDetails.getData().put("pageShow", Map.of("showMe", pageShow));
+            childrenService.updatePageShowBasedOnChildCount(caseDetails, caseData.getAllChildren());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -90,7 +88,7 @@ public class GeneratedOrderController {
         if ("No".equals(caseData.getAllChildrenChoice())) {
             List<Child> allChildren = unwrapElements(caseData.getAllChildren());
             ChildSelector childSelector = ChildSelector.builder().build();
-            childSelector.populateChildCountContainer(allChildren.size());
+            populateChildCountContainer(childSelector, allChildren.size());
             caseDetails.getData().put("childSelector", childSelector);
             caseDetails.getData().put("children_label", childrenService.getChildrenLabel(allChildren));
         }

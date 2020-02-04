@@ -41,9 +41,10 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.getSelectedIndexes;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-// REFACTOR: 27/01/2020 Extract docmosis logic into a new service
+// REFACTOR: 27/01/2020 Extract docmosis logic into a new service that extends DocmosisTemplateDataGeneration
 
 @Slf4j
 @Service
@@ -306,7 +307,7 @@ public class GeneratedOrderService {
             return allChildren;
         }
 
-        return selector.getSelected().stream()
+        return getSelectedIndexes(selector).stream()
             .map(allChildren::get)
             .collect(Collectors.toList());
     }
