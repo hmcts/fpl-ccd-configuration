@@ -113,51 +113,16 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         super("create-order");
     }
 
-    @Nested
-    class AboutToStart {
-        @Test
-        void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
-            CaseDetails caseDetails = CaseDetails.builder()
-                .id(12345L)
-                .data(Map.of("data", "some data"))
-                .build();
+    @Test
+    void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(Map.of("data", "some data"))
+            .build();
 
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-            assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
-        }
-
-        @Test
-        void shouldPopulatePageShowWithYesWhenMoreThanOneChild() {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(
-                buildCaseDetails("Wallace", "Gromit"));
-
-            final Map<String, String> pageShow = mapper.convertValue(
-                callbackResponse.getData().get("pageShow"), new TypeReference<>() {});
-
-            assertThat(pageShow.get("showMe")).isEqualTo("Yes");
-        }
-
-        @Test
-        void shouldPopulatePageShowWithNotWhenOneChild() {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails("Wallace"));
-
-            final Map<String, String> pageShow = mapper.convertValue(
-                callbackResponse.getData().get("pageShow"), new TypeReference<>() {});
-
-            assertThat(pageShow.get("showMe")).isEqualTo("No");
-        }
-
-        private CaseDetails buildCaseDetails(String... firstNames) {
-            CaseData caseData = CaseData.builder()
-                .familyManCaseNumber("EXAMPLE")
-                .children1(createChildren(firstNames))
-                .build();
-
-            return CaseDetails.builder()
-                .data(mapper.convertValue(caseData, new TypeReference<>() {}))
-                .build();
-        }
+        assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
 
     @Test

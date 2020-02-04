@@ -1045,7 +1045,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "pageShow",
     "Label": " ",
-    "FieldType": "PageShow",
+    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {
