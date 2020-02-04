@@ -72,7 +72,6 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
         placements.forEach(type -> assertThat(updatedCaseDetails.get(type)).isEqualTo(List.of(
             expectedPlacement(child1Placement, child1Application),
             expectedPlacement(child2NewPlacement, child2NewApplication)))
-
         );
     }
 
