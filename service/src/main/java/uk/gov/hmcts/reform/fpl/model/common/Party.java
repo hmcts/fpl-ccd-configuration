@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 
 import java.time.LocalDate;
 
+import javax.validation.Valid;
+
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
 @Data
@@ -25,6 +27,8 @@ public class Party {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     public final LocalDate dateOfBirth;
     public final Address address;
+
+    @Valid
     public final EmailAddress email;
     public final Telephone telephoneNumber;
 
