@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -27,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
 import java.util.List;
+import java.util.stream.Stream;
 import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -202,6 +205,53 @@ class CaseValidatorServiceTest {
         assertThat(errors).isEmpty();
     }
 
+    @ParameterizedTest
+    @MethodSource("invalidEmailAddresses")
+    void shouldReturnAnErrorWhenApplicantPartyEmailAddressIsInvalid(final String email) {
+        CaseData caseData = partiallyCompleteCaseData()
+            .applicants(applicantWithInvalidEmailAddress(email))
+            .build();
+
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
+        assertThat(errors).containsOnlyOnce(
+            "• Enter a valid email address"
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidEmailAddresses")
+    void shouldReturnAnErrorWhenRespondentPartyEmailAddressIsInvalid(final String email) {
+        CaseData caseData = partiallyCompleteCaseData()
+            .respondents1(respondentWithInvalidEmailAddress(email))
+            .grounds(grounds())
+            .applicants(applicants(true))
+            .solicitor(solicitor())
+            .allocationProposal(allocationProposal())
+            .build();
+
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
+        assertThat(errors).containsOnlyOnce(
+            "• Enter a valid email address"
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidEmailAddresses")
+    void shouldReturnAnErrorWhenSolicitorEmailAddressIsInvalid(final String email) {
+        CaseData caseData = partiallyCompleteCaseData()
+            .respondents1(respondents())
+            .grounds(grounds())
+            .applicants(applicants(true))
+            .solicitor(solicitorWithInvalidEmailAddress(email))
+            .allocationProposal(allocationProposal())
+            .build();
+
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
+        assertThat(errors).containsOnlyOnce(
+            "• Enter a valid email address"
+        );
+    }
+
     private CaseData emptyMandatoryCaseData() {
         return CaseData.builder()
             .caseName("Test case")
@@ -301,8 +351,61 @@ class CaseValidatorServiceTest {
             .build());
     }
 
+    private List<Element<Applicant>> applicantWithInvalidEmailAddress(final String emailAddress) {
+        return wrapElements(Applicant.builder()
+            .leadApplicantIndicator("Yes")
+            .party(ApplicantParty.builder()
+                .organisationName("Harry Kane")
+                .jobTitle("Judge")
+                .address(Address.builder()
+                    .addressLine1("1 Some street")
+                    .addressLine2("Some road")
+                    .postTown("some town")
+                    .postcode("BT66 7RR")
+                    .county("Some county")
+                    .country("UK")
+                    .build())
+                .email(EmailAddress.builder()
+                    .email(emailAddress)
+                    .build())
+                .telephoneNumber(Telephone.builder()
+                    .telephoneNumber("02838882404")
+                    .contactDirection("Harry Kane")
+                    .build())
+                .build())
+            .build());
+    }
+
+    private List<Element<Respondent>> respondentWithInvalidEmailAddress(final String emailAddress) {
+        return wrapElements(Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("Timothy")
+                .lastName("Jones")
+                .address(Address.builder()
+                    .addressLine1("1 Some street")
+                    .addressLine2("Some road")
+                    .postTown("some town")
+                    .postcode("BT66 7RR")
+                    .county("Some county")
+                    .country("UK")
+                    .build())
+                .email(EmailAddress.builder()
+                    .email(emailAddress)
+                    .build())
+                .telephoneNumber(Telephone.builder()
+                    .telephoneNumber("02838882404")
+                    .contactDirection("Harry Kane")
+                    .build())
+                .build())
+            .build());
+    }
+
     private Solicitor solicitor() {
         return Solicitor.builder().name("fred").email("fred@fred.me").build();
+    }
+
+    private Solicitor solicitorWithInvalidEmailAddress(final String emailAddress) {
+        return Solicitor.builder().name("fred").email(emailAddress).build();
     }
 
     private Orders orders() {
@@ -322,5 +425,10 @@ class CaseValidatorServiceTest {
             .thresholdDetails("details")
             .thresholdReason(ImmutableList.of("reason"))
             .build();
+    }
+
+    private static Stream<String> invalidEmailAddresses() {
+        return Stream.of("st.leonards", "st.leonards.com", "st.leonards@.com.au", "c/o st.leonards@test.com",
+            "st.leonards//2002@gmail.com", "st.leonards@test.com@au", "c/o", "st.leonards@gmail.com.1a");
     }
 }
