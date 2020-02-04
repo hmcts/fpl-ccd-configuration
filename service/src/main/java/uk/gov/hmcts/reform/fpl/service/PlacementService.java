@@ -38,12 +38,17 @@ public class PlacementService {
     }
 
     public Placement getPlacement(CaseData caseData, Element<Child> child) {
-        return findPlacement(caseData.getPlacements(), child.getId())
+        return findPlacement(getPlacements(caseData), child.getId())
             .map(Element::getValue)
             .orElse(Placement.builder()
                 .childId(child.getId())
                 .childName(child.getValue().getParty().getFullName())
                 .build());
+    }
+
+    private List<Element<Placement>> getPlacements(CaseData caseData) {
+        return caseData.getConfidentialPlacements().isEmpty()
+            ? caseData.getPlacements() : caseData.getConfidentialPlacements();
     }
 
     public List<Element<Placement>> setPlacement(CaseData caseData, Placement placement) {

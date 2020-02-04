@@ -115,6 +115,8 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirectionsCustom;
     private final List<Element<Direction>> respondentDirectionsCustomCMO;
     private final List<Element<Placement>> placements;
+    private final List<Element<Placement>> confidentialPlacements;
+    private final List<Element<Placement>> placementsWithoutPlacementOrder;
     private final Order standardDirectionOrder;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
@@ -302,5 +304,15 @@ public class CaseData {
     @JsonGetter("placements")
     public List<Element<Placement>> getPlacements() {
         return defaultIfNull(placements, new ArrayList<>());
+    }
+
+    @JsonGetter("confidentialPlacements")
+    public List<Element<Placement>> getConfidentialPlacements() {
+        return defaultIfNull(confidentialPlacements, new ArrayList<>());
+    }
+
+    @JsonGetter("placementsWithoutPlacementOrder")
+    public List<Element<Placement>> getPlacementsWithoutPlacementOrder() {
+        return defaultIfNull(placementsWithoutPlacementOrder, new ArrayList<>());
     }
 }
