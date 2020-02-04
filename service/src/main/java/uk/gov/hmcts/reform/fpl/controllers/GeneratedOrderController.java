@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
@@ -36,12 +35,13 @@ import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGrou
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.populateChildCountContainer;
+import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.generateChildCountContainer;
 
 @Slf4j
 @Api
@@ -67,7 +67,7 @@ public class GeneratedOrderController {
             ValidateFamilyManCaseNumberGroup.class);
 
         if (errors.isEmpty()) {
-            childrenService.updatePageShowBasedOnChildCount(caseDetails, caseData.getAllChildren());
+            childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -84,9 +84,8 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if ("No".equals(caseData.getAllChildrenChoice())) {
-            ChildSelector childSelector = ChildSelector.builder().build();
-            populateChildCountContainer(childSelector, caseData.getAllChildren().size());
-            caseDetails.getData().put("childSelector", childSelector);
+            String childCountContainer = generateChildCountContainer(caseData.getAllChildren().size());
+            caseDetails.getData().put("childSelector", Map.of("childCountContainer", childCountContainer));
             caseDetails.getData().put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
         }
 

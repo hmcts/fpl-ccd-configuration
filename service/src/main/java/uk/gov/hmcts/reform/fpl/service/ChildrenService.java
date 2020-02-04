@@ -103,7 +103,7 @@ public class ChildrenService {
         return builder.toString();
     }
 
-    public void updatePageShowBasedOnChildCount(CaseDetails caseDetails, List<Element<Child>> children) {
+    public void addPageShowToCaseDetails(CaseDetails caseDetails, List<Element<Child>> children) {
         caseDetails.getData().put("pageShow", children.size() <= 1 ? "No" : "Yes");
     }
 }

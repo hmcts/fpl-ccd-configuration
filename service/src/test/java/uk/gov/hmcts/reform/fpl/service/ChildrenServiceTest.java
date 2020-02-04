@@ -269,7 +269,7 @@ class ChildrenServiceTest {
         children.add(childWithConfidentialFields(randomUUID()));
 
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.updatePageShowBasedOnChildCount(caseDetails, children);
+        service.addPageShowToCaseDetails(caseDetails, children);
 
         assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("Yes");
     }
@@ -280,7 +280,7 @@ class ChildrenServiceTest {
         children.add(childWithConfidentialFields(randomUUID()));
 
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.updatePageShowBasedOnChildCount(caseDetails, children);
+        service.addPageShowToCaseDetails(caseDetails, children);
 
         assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }
@@ -290,7 +290,7 @@ class ChildrenServiceTest {
         List<Element<Child>> children = new ArrayList<>();
 
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.updatePageShowBasedOnChildCount(caseDetails, children);
+        service.addPageShowToCaseDetails(caseDetails, children);
 
         assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }

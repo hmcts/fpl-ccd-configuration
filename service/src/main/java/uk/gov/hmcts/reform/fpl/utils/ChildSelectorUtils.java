@@ -11,10 +11,9 @@ public class ChildSelectorUtils {
 
     }
 
-    public static void populateChildCountContainer(ChildSelector selector, int max) {
+    public static String generateChildCountContainer(int max) {
         if (max < 1) {
-            selector.setChildCountContainer("");
-            return;
+            return "";
         }
 
         StringBuilder builder = new StringBuilder();
@@ -22,7 +21,7 @@ public class ChildSelectorUtils {
             builder.append(i);
         }
 
-        selector.setChildCountContainer(builder.toString());
+        return builder.toString();
     }
 
     public static List<Integer> getSelectedIndexes(ChildSelector selector) {

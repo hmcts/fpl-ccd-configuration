@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.InterimEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
@@ -61,10 +62,10 @@ public class ValidateOrderController {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<String> errors = List.of();
+        List<String> errors = new ArrayList<>();
 
         if (getSelectedIndexes(caseData.getChildSelector()).isEmpty()) {
-            errors = List.of("Select the children included in the order.");
+            errors.add("Select the children included in the order.");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
