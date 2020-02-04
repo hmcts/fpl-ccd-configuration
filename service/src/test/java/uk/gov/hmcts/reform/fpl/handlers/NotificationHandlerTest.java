@@ -40,7 +40,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.OrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
@@ -71,7 +71,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
@@ -126,7 +126,7 @@ class NotificationHandlerTest {
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @Mock
-    private GeneratedOrderEmailContentProvider orderEmailContentProvider;
+    private OrderEmailContentProvider orderEmailContentProvider;
 
     @Mock
     private DateFormatterService dateFormatterService;
@@ -234,7 +234,7 @@ class NotificationHandlerTest {
                 new GeneratedOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl));
 
             verify(notificationClient, times(1)).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(orderLocalAuthorityParameters), eq("12345"));
         }
     }

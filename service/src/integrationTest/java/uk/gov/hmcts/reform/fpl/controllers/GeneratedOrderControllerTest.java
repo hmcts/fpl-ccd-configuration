@@ -62,7 +62,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
@@ -127,7 +127,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         postSubmittedEvent(buildCallbackRequest());
 
         verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
     }
 
