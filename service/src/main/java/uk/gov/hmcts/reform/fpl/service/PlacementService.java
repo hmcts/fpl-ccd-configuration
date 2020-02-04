@@ -51,17 +51,17 @@ public class PlacementService {
             ? caseData.getPlacements() : caseData.getConfidentialPlacements();
     }
 
-    public List<Element<Placement>> setPlacement(CaseData caseData, Placement placement) {
-        List<Element<Placement>> placements = new ArrayList<>(caseData.getPlacements());
+    public List<Element<Placement>> setPlacement(Placement placement, List<Element<Placement>> placements) {
+        List<Element<Placement>> updatedPlacements = new ArrayList<>(placements);
 
-        findPlacement(placements, placement.getChildId())
+        findPlacement(updatedPlacements, placement.getChildId())
             .ifPresentOrElse(existingPlacement -> {
                 Element<Placement> newPlacement = element(existingPlacement.getId(), placement);
-                placements.remove(existingPlacement);
-                placements.add(newPlacement);
-            }, () -> placements.add(element(placement)));
+                updatedPlacements.remove(existingPlacement);
+                updatedPlacements.add(newPlacement);
+            }, () -> updatedPlacements.add(element(placement)));
 
-        return placements;
+        return updatedPlacements;
     }
 
     private static Optional<Element<Placement>> findPlacement(List<Element<Placement>> placements, UUID childId) {
