@@ -16,14 +16,14 @@ class ChildSelectorSerializerTest extends SerializerTest {
     void shouldCreateStringWithEmptyArraysWhenValuesAreFalse() throws JsonProcessingException {
         ChildSelector childSelector = ChildSelector.builder().build();
         String actual = mapper.writeValueAsString(childSelector);
-        String expected = "{" +
-            "\"childCountContainer\":\"\"," +
-            "\"child1\":[],\"child2\":[]," +
-            "\"child3\":[],\"child4\":[]," +
-            "\"child5\":[],\"child6\":[]," +
-            "\"child7\":[],\"child8\":[]," +
-            "\"child9\":[],\"child10\":[]" +
-            "}";
+        String expected = "{"
+            + "\"childCountContainer\":\"\","
+            + "\"child1\":[],\"child2\":[],"
+            + "\"child3\":[],\"child4\":[],"
+            + "\"child5\":[],\"child6\":[],"
+            + "\"child7\":[],\"child8\":[],"
+            + "\"child9\":[],\"child10\":[]"
+            + "}";
         assertEquals(expected, actual, true);
     }
 
@@ -31,14 +31,14 @@ class ChildSelectorSerializerTest extends SerializerTest {
     void shouldCreateStringWithPopulatedArraysWhenValuesAreTrue() throws JsonProcessingException {
         ChildSelector childSelector = ChildSelector.builder().child1(true).child5(true).child10(true).build();
         String actual = mapper.writeValueAsString(childSelector);
-        String expected = "{" +
-            "\"childCountContainer\":\"\"," +
-            "\"child1\":[\"selected\"],\"child2\":[]," +
-            "\"child3\":[],\"child4\":[]," +
-            "\"child5\":[\"selected\"],\"child6\":[]," +
-            "\"child7\":[],\"child8\":[]," +
-            "\"child9\":[],\"child10\":[\"selected\"]" +
-            "}";
+        String expected = "{"
+            + "\"childCountContainer\":\"\","
+            + "\"child1\":[\"selected\"],\"child2\":[],"
+            + "\"child3\":[],\"child4\":[],"
+            + "\"child5\":[\"selected\"],\"child6\":[],"
+            + "\"child7\":[],\"child8\":[],"
+            + "\"child9\":[],\"child10\":[\"selected\"]"
+            + "}";
         assertEquals(expected, actual, true);
     }
 
@@ -46,14 +46,14 @@ class ChildSelectorSerializerTest extends SerializerTest {
     void shouldCreateAStringWithNullAssignedToChildCountContainerWhenValueIsNull() throws JsonProcessingException {
         ChildSelector childSelector = ChildSelector.builder().childCountContainer(null).build();
         String actual = mapper.writeValueAsString(childSelector);
-        String expected = "{" +
-            "\"childCountContainer\":null," +
-            "\"child1\":[],\"child2\":[]," +
-            "\"child3\":[],\"child4\":[]," +
-            "\"child5\":[],\"child6\":[]," +
-            "\"child7\":[],\"child8\":[]," +
-            "\"child9\":[],\"child10\":[]" +
-            "}";
+        String expected = "{"
+            + "\"childCountContainer\":null,"
+            + "\"child1\":[],\"child2\":[],"
+            + "\"child3\":[],\"child4\":[],"
+            + "\"child5\":[],\"child6\":[],"
+            + "\"child7\":[],\"child8\":[],"
+            + "\"child9\":[],\"child10\":[]"
+            + "}";
         assertEquals(expected, actual, true);
     }
 }

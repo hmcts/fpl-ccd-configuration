@@ -14,14 +14,14 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
 
     @Test
     void shouldCreateDefaultChildSelectorWhenArraysAreEmpty() throws JsonProcessingException {
-        String jsonString = "{" +
-            "\"childCountContainer\":\"\"," +
-            "\"child1\":[],\"child2\":[]," +
-            "\"child3\":[],\"child4\":[]," +
-            "\"child5\":[],\"child6\":[]," +
-            "\"child7\":[],\"child8\":[]," +
-            "\"child9\":[],\"child10\":[]" +
-            "}";
+        String jsonString = "{"
+            + "\"childCountContainer\":\"\","
+            + "\"child1\":[],\"child2\":[],"
+            + "\"child3\":[],\"child4\":[],"
+            + "\"child5\":[],\"child6\":[],"
+            + "\"child7\":[],\"child8\":[],"
+            + "\"child9\":[],\"child10\":[]"
+            + "}";
         ChildSelector actual = mapper.readValue(jsonString, ChildSelector.class);
         ChildSelector expected = ChildSelector.builder().build();
         assertThat(actual).isEqualTo(expected);
@@ -29,14 +29,14 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
 
     @Test
     void shouldCreateChildSelectorWithTrueValuesWhenArraysArePopulated() throws JsonProcessingException {
-        String jsonString = "{" +
-            "\"childCountContainer\":\"\"," +
-            "\"child1\":[\"selected\"],\"child2\":[]," +
-            "\"child3\":[],\"child4\":[]," +
-            "\"child5\":[],\"child6\":[]," +
-            "\"child7\":[\"anything\"],\"child8\":[]," +
-            "\"child9\":[],\"child10\":[]" +
-            "}";
+        String jsonString = "{"
+            + "\"childCountContainer\":\"\","
+            + "\"child1\":[\"selected\"],\"child2\":[],"
+            + "\"child3\":[],\"child4\":[],"
+            + "\"child5\":[],\"child6\":[],"
+            + "\"child7\":[\"anything\"],\"child8\":[],"
+            + "\"child9\":[],\"child10\":[]"
+            + "}";
         ChildSelector actual = mapper.readValue(jsonString, ChildSelector.class);
         ChildSelector expected = ChildSelector.builder().child1(true).child7(true).build();
         assertThat(actual).isEqualTo(expected);
@@ -44,14 +44,14 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
 
     @Test
     void shouldCreateDefaultChildSelectorWhenChildCountContainerIsNull() throws JsonProcessingException {
-        String jsonString = "{" +
-            "\"childCountContainer\":null," +
-            "\"child1\":[],\"child2\":[]," +
-            "\"child3\":[],\"child4\":[]," +
-            "\"child5\":[],\"child6\":[]," +
-            "\"child7\":[],\"child8\":[]," +
-            "\"child9\":[],\"child10\":[]" +
-            "}";
+        String jsonString = "{"
+            + "\"childCountContainer\":null,"
+            + "\"child1\":[],\"child2\":[],"
+            + "\"child3\":[],\"child4\":[],"
+            + "\"child5\":[],\"child6\":[],"
+            + "\"child7\":[],\"child8\":[],"
+            + "\"child9\":[],\"child10\":[]"
+            + "}";
         ChildSelector actual = mapper.readValue(jsonString, ChildSelector.class);
         ChildSelector expected = ChildSelector.builder().build();
         assertThat(actual).isEqualTo(expected);
@@ -59,14 +59,14 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
 
     @Test
     void shouldCreateDefaultChildSelectorWhenArraysAreNull() throws JsonProcessingException {
-        String jsonString = "{" +
-            "\"childCountContainer\":null," +
-            "\"child1\":[],\"child2\":null," +
-            "\"child3\":[],\"child4\":[]," +
-            "\"child5\":[],\"child6\":null," +
-            "\"child7\":[],\"child8\":[]," +
-            "\"child9\":[],\"child10\":[]" +
-            "}";
+        String jsonString = "{"
+            + "\"childCountContainer\":null,"
+            + "\"child1\":[],\"child2\":null,"
+            + "\"child3\":[],\"child4\":[],"
+            + "\"child5\":[],\"child6\":null,"
+            + "\"child7\":[],\"child8\":[],"
+            + "\"child9\":[],\"child10\":[]"
+            + "}";
         ChildSelector actual = mapper.readValue(jsonString, ChildSelector.class);
         ChildSelector expected = ChildSelector.builder().build();
         assertThat(actual).isEqualTo(expected);
