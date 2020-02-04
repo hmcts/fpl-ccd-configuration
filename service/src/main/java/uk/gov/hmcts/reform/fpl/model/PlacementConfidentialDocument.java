@@ -8,16 +8,14 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PlacementOrderAndNotices {
-    private PlacementOrderAndNoticesType type;
+class PlacementConfidentialDocument {
+    private PlacementDocumentType type;
     private DocumentReference document;
     private String description;
 
-    public enum PlacementOrderAndNoticesType {
-        PLACEMENT_ORDER,
-        NOTICE_OF_PROCEEDINGS,
-        NOTICE_OF_HEARING,
-        OTHER,
-        NOTICE_OF_PLACEMENT_ORDER
+    public enum PlacementDocumentType {
+        ANNEX_B,
+        GUARDIANS_REPORT,
+        OTHER_CONFIDENTIAL_DOCUMENTS
     }
 }
