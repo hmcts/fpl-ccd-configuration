@@ -47,24 +47,11 @@ public class Placement {
     }
 
     @JsonIgnore
-    public boolean hasConfidentialDocuments() {
-        return this.getConfidentialDocuments() != null;
-    }
-
-    @JsonIgnore
-    public boolean hasPlacementOrder() {
-        return ofNullable(this.getOrderAndNotices())
-                .flatMap(Collection::stream)
-                .filter(x -> x.getValue() != null && x.getValue().getType() != null)
-                .anyMatch(x -> x.getValue().getType() == PLACEMENT_ORDER);
-    }
-
-    @JsonIgnore
     public Placement removePlacementOrder() {
         List<Element<PlacementOrderAndNotices>> filteredOrders = ofNullable(this.getOrderAndNotices())
-                .flatMap(Collection::stream)
-                .filter(x -> x.getValue().getType() != PLACEMENT_ORDER)
-                .collect(Collectors.toList());
+            .flatMap(Collection::stream)
+            .filter(x -> x.getValue().getType() != PLACEMENT_ORDER)
+            .collect(Collectors.toList());
 
         return this.toBuilder().orderAndNotices(filteredOrders.isEmpty() ? null : filteredOrders).build();
     }

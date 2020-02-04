@@ -51,8 +51,8 @@ public class PlacementController {
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseProperties)
-                .build();
+            .data(caseProperties)
+            .build();
     }
 
     @PostMapping("/mid-event")
@@ -69,8 +69,8 @@ public class PlacementController {
         caseProperties.put("placementChildName", child.getValue().getParty().getFullName());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseProperties)
-                .build();
+            .data(caseProperties)
+            .build();
     }
 
     @PostMapping("/about-to-submit")
@@ -83,18 +83,13 @@ public class PlacementController {
         Element<Child> child = placementService.getChild(caseData, childId);
 
         Placement placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
-                .setChild(child);
-
-        // add placement with confidential details but no placementOrder.
-        if (placement.hasPlacementOrder()) {
-            caseProperties
-                    .put("placementWithoutPlacementOrder", setPlacement(caseData, placement.removePlacementOrder()));
-        }
+            .setChild(child);
 
         // add placement with confidential details and placementOrder
-        if (placement.hasConfidentialDocuments()) {
-            caseProperties.put("confidentialPlacements", setPlacement(caseData, placement));
-        }
+        caseProperties.put("confidentialPlacements", setPlacement(caseData, placement));
+
+        // add placement with confidential details but no placementOrder.
+        caseProperties.put("placementsWithoutPlacementOrder", setPlacement(caseData, placement.removePlacementOrder()));
 
         // add placement with no confidential docs and no placement order
         caseProperties.put("placements", setPlacement(caseData, removeDocuments(placement)));
@@ -102,8 +97,8 @@ public class PlacementController {
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseProperties)
-                .build();
+            .data(caseProperties)
+            .build();
     }
 
     private Placement removeDocuments(Placement placement) {

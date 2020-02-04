@@ -75,7 +75,7 @@ public class CaseData {
     @NotNull(message = "You need to add details to applicant")
     @Valid
     private final List<@NotNull(message = "You need to add details to applicant")
-            Element<Applicant>> applicants;
+        Element<Applicant>> applicants;
     @NotNull(message = "You need to add details to respondents")
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
 
@@ -116,7 +116,7 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirectionsCustomCMO;
     private final List<Element<Placement>> placements;
     private final List<Element<Placement>> confidentialPlacements;
-    private final List<Element<Placement>> placementWithoutPlacementOrder;
+    private final List<Element<Placement>> placementsWithoutPlacementOrder;
     private final Order standardDirectionOrder;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
@@ -156,7 +156,7 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to children") Element<Child>> children1;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
-            ValidateFamilyManCaseNumberGroup.class})
+        ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
 
@@ -250,7 +250,7 @@ public class CaseData {
     @TimeNotMidnight(message = "Enter a valid end time", groups = EPOEndDateGroup.class)
     @Future(message = "Enter an end date in the future", groups = EPOEndDateGroup.class)
     @TimeRange(message = "Date must be within the next 8 days", groups = EPOEndDateGroup.class,
-            maxDate = @TimeDifference(amount = 8, unit = DAYS))
+        maxDate = @TimeDifference(amount = 8, unit = DAYS))
     private final LocalDateTime epoEndDate;
     private final EPOPhrase epoPhrase;
     private final EPOType epoType;
@@ -275,7 +275,7 @@ public class CaseData {
 
     public Optional<Respondent> findRespondent(int seqNo) {
         return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
-                ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+            ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
     }
 
     @JsonIgnore
@@ -311,8 +311,8 @@ public class CaseData {
         return defaultIfNull(confidentialPlacements, new ArrayList<>());
     }
 
-    @JsonGetter("placementWithoutPlacementOrder")
+    @JsonGetter("placementsWithoutPlacementOrder")
     public List<Element<Placement>> getPlacementsWithoutPlacementOrder() {
-        return defaultIfNull(placementWithoutPlacementOrder, new ArrayList<>());
+        return defaultIfNull(placementsWithoutPlacementOrder, new ArrayList<>());
     }
 }

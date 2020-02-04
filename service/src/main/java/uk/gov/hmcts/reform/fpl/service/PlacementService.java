@@ -39,34 +39,34 @@ public class PlacementService {
 
     public Placement getPlacement(CaseData caseData, Element<Child> child) {
         return findPlacement(getPlacements(caseData), child.getId())
-                .map(Element::getValue)
-                .orElse(Placement.builder()
-                        .childId(child.getId())
-                        .childName(child.getValue().getParty().getFullName())
-                        .build());
+            .map(Element::getValue)
+            .orElse(Placement.builder()
+                .childId(child.getId())
+                .childName(child.getValue().getParty().getFullName())
+                .build());
     }
 
     private List<Element<Placement>> getPlacements(CaseData caseData) {
         return caseData.getConfidentialPlacements().isEmpty()
-                ? caseData.getPlacements() : caseData.getConfidentialPlacements();
+            ? caseData.getPlacements() : caseData.getConfidentialPlacements();
     }
 
     public List<Element<Placement>> setPlacement(CaseData caseData, Placement placement) {
         List<Element<Placement>> placements = new ArrayList<>(caseData.getPlacements());
 
         findPlacement(placements, placement.getChildId())
-                .ifPresentOrElse(existingPlacement -> {
-                    Element<Placement> newPlacement = element(existingPlacement.getId(), placement);
-                    placements.remove(existingPlacement);
-                    placements.add(newPlacement);
-                }, () -> placements.add(element(placement)));
+            .ifPresentOrElse(existingPlacement -> {
+                Element<Placement> newPlacement = element(existingPlacement.getId(), placement);
+                placements.remove(existingPlacement);
+                placements.add(newPlacement);
+            }, () -> placements.add(element(placement)));
 
         return placements;
     }
 
     private static Optional<Element<Placement>> findPlacement(List<Element<Placement>> placements, UUID childId) {
         return placements.stream()
-                .filter(placement -> placement.getValue().getChildId().equals(childId))
-                .findFirst();
+            .filter(placement -> placement.getValue().getChildId().equals(childId))
+            .findFirst();
     }
 }

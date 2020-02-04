@@ -49,15 +49,15 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
 
         DocumentReference child2NewApplication = testDocument();
         Element<Placement> child2NewPlacement = element(child2Placement.getId(),
-                testPlacement(child2, child2NewApplication));
+            testPlacement(child2, child2NewApplication));
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .data(Map.of(
-                        "children1", List.of(child1, child2),
-                        "placements", List.of(child2Placement, child1Placement),
-                        "placement", child2NewPlacement.getValue(),
-                        "childrenList", child2.getId()))
-                .build();
+            .data(Map.of(
+                "children1", List.of(child1, child2),
+                "placements", List.of(child2Placement, child1Placement),
+                "placement", child2NewPlacement.getValue(),
+                "childrenList", child2.getId()))
+            .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -66,27 +66,28 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
         assertThat(updatedCaseDetails).doesNotContainKey("placement");
         assertThat(updatedCaseDetails).doesNotContainKey("placementChildName");
         assertThat(updatedCaseDetails).doesNotContainKey("singleChild");
-        assertThat(updatedCaseDetails).doesNotContainKey("confidentialPlacements");
-        assertThat(updatedCaseDetails).doesNotContainKey("placementWithoutPlacementOrder");
 
-        assertThat(updatedCaseDetails.get("placements")).isEqualTo(List.of(
-                expectedPlacement(child1Placement, child1Application),
-                expectedPlacement(child2NewPlacement, child2NewApplication)
-        ));
+        List<String> placements = List.of("placements", "placementsWithoutPlacementOrder", "confidentialPlacements");
+
+        placements.forEach(type -> assertThat(updatedCaseDetails.get(type)).isEqualTo(List.of(
+            expectedPlacement(child1Placement, child1Application),
+            expectedPlacement(child2NewPlacement, child2NewApplication)))
+
+        );
     }
 
     @Test
-    void shouldAddConfidentialPlacementAndPlacementWithoutPlacementOrderToCaseDetailsWhenBothArePresentInPlacement() {
+    void shouldAddConfidentialPlacementAndPlacementsWithoutPlacementOrderToCaseDetailsWhenBothArePresentInPlacement() {
         Element<Child> child = testChild();
         DocumentReference childApplication = testDocument();
         Element<Placement> childPlacement = element(placement(child, childApplication));
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .data(Map.of(
-                        "children1", List.of(child),
-                        "placement", childPlacement.getValue(),
-                        "childrenList", child.getId()))
-                .build();
+            .data(Map.of(
+                "children1", List.of(child),
+                "placement", childPlacement.getValue(),
+                "childrenList", child.getId()))
+            .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -99,25 +100,25 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
         assertThat(updatedCaseDetails).doesNotContainKey("singleChild");
 
         assertThat(unwrapElements(caseData.getPlacementsWithoutPlacementOrder())).containsOnly(
-                childPlacement.getValue().toBuilder().orderAndNotices(null).build());
+            childPlacement.getValue().toBuilder().orderAndNotices(null).build());
 
         assertThat(unwrapElements(caseData.getConfidentialPlacements())).containsOnly(childPlacement.getValue());
 
         assertThat(unwrapElements(caseData.getPlacements())).containsOnly(
-                childPlacement.getValue().toBuilder()
-                        .confidentialDocuments(null)
-                        .orderAndNotices(null)
-                        .build());
+            childPlacement.getValue().toBuilder()
+                .confidentialDocuments(null)
+                .orderAndNotices(null)
+                .build());
     }
 
     private Placement placement(Element<Child> child, DocumentReference application) {
         return Placement.builder()
-                .childId(child.getId())
-                .childName(child.getValue().getParty().getFullName())
-                .application(application)
-                .confidentialDocuments(confidentialDocuments())
-                .orderAndNotices(placementOrder())
-                .build();
+            .childId(child.getId())
+            .childName(child.getValue().getParty().getFullName())
+            .application(application)
+            .confidentialDocuments(confidentialDocuments())
+            .orderAndNotices(placementOrder())
+            .build();
     }
 
     private List<Element<PlacementConfidentialDocument>> confidentialDocuments() {
@@ -130,12 +131,12 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
 
     private Map<String, Object> expectedPlacement(Element<Placement> placement, DocumentReference application) {
         return Map.of("id", placement.getId().toString(),
-                "value", Map.of("placementChildName", placement.getValue().getChildName(),
-                        "placementChildId", placement.getValue().getChildId().toString(),
-                        "placementApplication", Map.of(
-                                "document_binary_url", application.getBinaryUrl(),
-                                "document_filename", application.getFilename(),
-                                "document_url", application.getUrl()
-                        )));
+            "value", Map.of("placementChildName", placement.getValue().getChildName(),
+                "placementChildId", placement.getValue().getChildId().toString(),
+                "placementApplication", Map.of(
+                    "document_binary_url", application.getBinaryUrl(),
+                    "document_filename", application.getFilename(),
+                    "document_url", application.getUrl()
+                )));
     }
 }
