@@ -431,7 +431,16 @@ class CaseValidatorServiceTest {
     }
 
     private static Stream<String> invalidEmailAddresses() {
-        return Stream.of("st.leonards", "st.leonards.com", "st.leonards@.com.au", "c/o st.leonards@test.com",
-            "st.leonards//2002@gmail.com", "st.leonards@test.com@au", "c/o", "st.leonards@gmail.com.1a");
+        return Stream.of(
+            "st.leonards",
+            "st.leonards.com",
+            "st.leonards@.com.au",
+            "c/o st.leonards@test.com",
+            "st.leonards//2002@gmail.com",
+            "st.leonards@test.com@au",
+            "c/o",
+            "st.leonards@gmail.com.1a",
+            "c/0leonards.@s.c"
+        );
     }
 }
