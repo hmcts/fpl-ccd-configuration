@@ -101,7 +101,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("childSelector", createChildSelectorWithoutSelected()))
             .build();
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "children");
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
         final List<String> errors = callbackResponse.getErrors();
         assertThat(errors).containsOnlyOnce("Select the children included in the order.");
     }
@@ -111,7 +111,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("childSelector", createChildSelectorWithSelected()))
             .build();
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "children");
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 

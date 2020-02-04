@@ -53,7 +53,7 @@ public class ValidateOrderController {
             .build();
     }
 
-    @PostMapping("/children/mid-event")
+    @PostMapping("/child-selector/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateChildren(
         @RequestBody CallbackRequest callbackRequest) {
 
