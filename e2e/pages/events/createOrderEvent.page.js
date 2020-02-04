@@ -160,9 +160,9 @@ module.exports = {
     });
   },
 
-  async chooseToSelectChildren() {
+  async notAllChildren() {
     within(this.fields.allChildren.id, () => {
-      I.click(locate('label').withText(this.fields.allChildren.options.yes));
+      I.click(locate('label').withText(this.fields.allChildren.options.no));
     });
   },
 };
