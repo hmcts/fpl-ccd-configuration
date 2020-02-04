@@ -170,18 +170,6 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private List<Element<Child>> createChildren(String... firstNames) {
-        Child[] children = new Child[firstNames.length];
-        for (int i = 0; i < firstNames.length; i++) {
-            children[i] = Child.builder()
-                .party(ChildParty.builder()
-                    .firstName(firstNames[i])
-                    .build())
-                .build();
-        }
-        return wrapElements(children);
-    }
-
     @Nested
     class AboutToSubmit {
 
@@ -316,13 +304,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            ChildSelector actual = caseData.getChildSelector();
-            ChildSelector expected = getExpectedChildSelector();
-
             assertThat(callbackResponse.getData().get("children_label"))
                 .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
 
-            assertThat(actual).isEqualTo(expected);
+            assertThat(caseData.getChildSelector()).isEqualTo(getExpectedChildSelector());
         }
 
         @Test
@@ -332,10 +317,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            ChildSelector actual = caseData.getChildSelector();
-
             assertThat(callbackResponse.getData().get("children_label")).isNull();
-            assertThat(actual).isNull();
+            assertThat(caseData.getChildSelector()).isNull();
         }
 
         private ChildSelector getExpectedChildSelector() {
@@ -353,6 +336,18 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             return CaseDetails.builder()
                 .data(mapper.convertValue(caseData, new TypeReference<>() {}))
                 .build();
+        }
+
+        private List<Element<Child>> createChildren(String... firstNames) {
+            Child[] children = new Child[firstNames.length];
+            for (int i = 0; i < firstNames.length; i++) {
+                children[i] = Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName(firstNames[i])
+                        .build())
+                    .build();
+            }
+            return wrapElements(children);
         }
     }
 
