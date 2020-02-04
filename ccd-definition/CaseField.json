@@ -1056,5 +1056,54 @@
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Comment": "Displays a list of names for children, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childrenList",
+    "Label": "Which child?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "singleChild",
+    "Label": "Single child",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementChildName",
+    "Label": "Child name",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementLabel",
+    "Label": "# ${placementChildName}",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placement",
+    "Label": "Placement application",
+    "FieldType": "Placement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placements",
+    "Label": "Child",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Placement",
+    "SecurityClassification": "Public"
   }
 ]
