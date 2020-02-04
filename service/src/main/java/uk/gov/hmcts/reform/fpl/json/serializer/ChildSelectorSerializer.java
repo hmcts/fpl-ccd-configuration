@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
 import java.io.IOException;
 import java.util.List;
 
-// TODO: 31/01/2020 Test me
 @JsonComponent
 public class ChildSelectorSerializer extends JsonSerializer<ChildSelector> {
     @Override

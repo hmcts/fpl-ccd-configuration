@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
 
 import java.io.IOException;
 
-// TODO: 31/01/2020 Test me
 @JsonComponent
 public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
     @Override
