@@ -311,7 +311,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails,
                                                                        String fileName,
                                                                        DocmosisTemplates templateName) {
-            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                caseDetails, "generate-document");
 
             verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(), eq(templateName));
             verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
@@ -323,7 +324,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         @Test
         void shouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
-            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections());
+            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), "generate-document");
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
             verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());

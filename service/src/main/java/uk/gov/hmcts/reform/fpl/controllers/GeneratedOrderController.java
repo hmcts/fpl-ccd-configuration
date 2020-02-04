@@ -80,7 +80,7 @@ public class GeneratedOrderController {
             .build();
     }
 
-    @PostMapping("/mid-event")
+    @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
