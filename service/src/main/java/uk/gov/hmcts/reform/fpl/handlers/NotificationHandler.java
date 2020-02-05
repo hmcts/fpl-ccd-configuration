@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.*;
@@ -27,6 +28,7 @@ import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static jdk.dynalink.linker.support.Guards.isNotNull;
 import static jdk.dynalink.linker.support.Guards.isNull;
@@ -34,6 +36,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.*;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Component
@@ -196,14 +199,19 @@ public class NotificationHandler {
                 }
             } else {
                 if (!caseData.getRepresentatives().isEmpty()) {
-                    int newRepresentativeToNotify = caseData.getRepresentatives().size() - 1;
-                    RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
-                        .get(newRepresentativeToNotify).getValue().getServingPreferences();
-
-                    String email = caseData.getRepresentatives().get(newRepresentativeToNotify).getValue().getEmail();
 
                     if(!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())){
-                        sendNotificationBasedOnPreference(event, servingPreferences, email);
+
+                            List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(caseData,caseDataBefore);
+
+                            if(!changedRepresentatives.isEmpty()){
+                                changedRepresentatives.stream().forEach(representativeElement -> {
+                                    String emailForRepresentative = representativeElement.getValue().getEmail();
+                                    RepresentativeServingPreferences servingPreferencesForRep = representativeElement.getValue().getServingPreferences();
+
+                                    sendNotificationBasedOnPreference(event, servingPreferencesForRep, emailForRepresentative);
+                                });
+                            }
                     }
                 }
             }
