@@ -54,6 +54,8 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildSelectorType.SELECTED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
@@ -442,7 +444,7 @@ class GeneratedOrderServiceTest {
                                              GeneratedOrderSubtype subtype,
                                              LocalDate localDate) {
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
-        caseDataBuilder.orderAppliesToAllChildren("Yes");
+        caseDataBuilder.orderAppliesToAllChildren(YES.getValue());
 
         switch (type) {
             case BLANK_ORDER:
@@ -485,7 +487,7 @@ class GeneratedOrderServiceTest {
                         .directions("Example Directions")
                         .build())
                     .orderMonths(5)
-                    .orderAppliesToAllChildren("No")
+                    .orderAppliesToAllChildren(NO.getValue())
                     .childSelector(ChildSelector.builder()
                         .child1(List.of(SELECTED))
                         .build());
