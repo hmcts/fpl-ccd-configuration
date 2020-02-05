@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseByEmailEvent;
+import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseThroughDigitalServiceEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -88,34 +89,9 @@ public class RepresentativesController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
+        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(callbackRequest, authorization, userId));
 
-        if(caseDataBefore.getRepresentatives().size() == caseData.getRepresentatives().size())
-        {
-            System.out.println("None new added");
-            List<Element<Representative>> representativesBefore = caseDataBefore.getRepresentatives();
-            List<Element<Representative>> representativesAfter = caseData.getRepresentatives();
-
-            //remove all elements of second list
-            representativesAfter.removeAll(representativesBefore);
-
-            System.out.println("Difference is" + representativesAfter);
-
-        } else {
-            System.out.println("New added");
-            int representativeAdded = caseData.getRepresentatives().size() - 1;
-            RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
-                .get(representativeAdded).getValue().getServingPreferences();
-
-            if(servingPreferences.equals(EMAIL))
-            {
-                applicationEventPublisher.publishEvent(new PartyAddedToCaseByEmailEvent(callbackRequest, authorization, userId));
-            } else if(servingPreferences.equals(DIGITAL_SERVICE)) {
-                applicationEventPublisher.publishEvent(new PartyAddedToCaseThroughDigitalServiceEvent(callbackRequest, authorization, userId));
-            }
-        }
     }
 
     private String getRespondentsLabel(CaseData caseData) {
