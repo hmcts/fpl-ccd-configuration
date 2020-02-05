@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
 import java.util.Map;
 import java.util.UUID;
+import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -88,21 +89,35 @@ public class PlacementController {
         UUID childId = getSelectedChildId(caseDetails, caseData);
         Element<Child> child = placementService.getChild(caseData, childId);
 
-        Placement currentPlacement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
+        Placement placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
             .setChild(child);
 
-        Placement previousPlacement = placementService.getPlacement(caseData, child);
-
-        caseProperties.put("placements", placementService.setPlacement(caseData, currentPlacement));
+        caseProperties.put("placements", placementService.setPlacement(caseData, placement));
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
-
-        if (!isUpdatingExistingPlacementFilename(previousPlacement, currentPlacement)) {
-            publishPlacementApplicationUploadEvent(callbackRequest);
-        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
             .build();
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(
+        @RequestBody @NotNull CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        UUID childId = getSelectedChildId(caseDetails, caseData);
+        Element<Child> child = placementService.getChild(caseData, childId);
+
+        Placement currentPlacement = placementService.getPlacement(caseData, child);
+        Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
+
+        if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
+            publishPlacementApplicationUploadEvent(callbackRequest);
+        }
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {
@@ -130,8 +145,8 @@ public class PlacementController {
             new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
-    private boolean isUpdatingExistingPlacementFilename(Placement previousPlacement, Placement newPlacement) {
-        return isNotEmpty(previousPlacement) && newPlacement.application.getFilename()
-            .equals(previousPlacement.application.getFilename());
+    private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
+        return isNotEmpty(previousPlacement)
+            && newPlacement.getApplication().equals(previousPlacement.getApplication());
     }
 }
