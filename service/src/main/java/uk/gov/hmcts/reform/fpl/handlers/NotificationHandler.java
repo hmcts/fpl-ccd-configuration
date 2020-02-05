@@ -173,23 +173,18 @@ public class NotificationHandler {
         if (isNotEmpty(caseDataBefore.getRepresentatives())) {
             if(!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())){
                 List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(caseData,caseDataBefore);
-                sendNotificationToChangedParties(event, changedRepresentatives);
+                sendNotificationToParties(event, changedRepresentatives);
             }
 
             } else {
             if (!caseData.getRepresentatives().isEmpty()) {
-                caseData.getRepresentatives().stream().forEach(representativeElement -> {
-                    String emailForRepresentative = representativeElement.getValue().getEmail();
-                    RepresentativeServingPreferences servingPreferencesForRep = representativeElement.getValue().getServingPreferences();
-
-                    sendNotificationBasedOnPreference(event, servingPreferencesForRep, emailForRepresentative);
-                });
-
+                List<Element<Representative>> representatives = caseData.getRepresentatives();
+                sendNotificationToParties(event, representatives);
             }
         }
     }
 
-    private void sendNotificationToChangedParties(PartyAddedToCaseEvent event, List<Element<Representative>> representatives){
+    private void sendNotificationToParties(PartyAddedToCaseEvent event, List<Element<Representative>> representatives){
                 if(!representatives.isEmpty()){
                     representatives.stream().forEach(representativeElement -> {
                         String emailForRepresentative = representativeElement.getValue().getEmail();
