@@ -166,20 +166,6 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationToPartyAddedToCaseThroughDigitalService(PartyAddedToCaseThroughDigitalServiceEvent event) {
-        EventData eventData = new EventData(event);
-        CaseDetails details = eventData.getCaseDetails();
-        Map<String, Object> parameters = partyAddedToCaseThroughDigitalServicelContentProvider
-            .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
-        CaseData caseData = objectMapper.convertValue(details.getData(), CaseData.class);
-
-        int representativeToEmail = caseData.getRepresentatives().size() - 1;
-        String email = caseData.getRepresentatives().get(representativeToEmail).getValue().getEmail();
-
-        sendNotification(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
-    }
-
-    @EventListener
     public void sendNotificationToPartyAddedToCase(PartyAddedToCaseEvent event) {
         CaseData caseData = objectMapper.convertValue(event.getCallbackRequest().getCaseDetails().getData(), CaseData.class);
         CaseData caseDataBefore = objectMapper.convertValue(event.getCallbackRequest().getCaseDetailsBefore().getData(), CaseData.class);
@@ -216,7 +202,6 @@ public class NotificationHandler {
                 }
             }
         }
-
 
     private void sendNotificationBasedOnPreference(PartyAddedToCaseEvent event, RepresentativeServingPreferences servingPreferences,
                                                    String email){
