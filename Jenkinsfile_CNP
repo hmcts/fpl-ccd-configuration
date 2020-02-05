@@ -74,7 +74,6 @@ withPipeline(type, product, component) {
   if (!new ProjectBranch(env.BRANCH_NAME).isDemo()) {
     disableLegacyDeployment()
   }
-  enableDockerBuild()
   enableAksStagingDeployment()
   installCharts()
   enableSlackNotifications('#fpla-tech')

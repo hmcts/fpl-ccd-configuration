@@ -1,7 +1,17 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum YesNo {
-    YES, NO;
+    YES("Yes"),
+    NO("No");
+
+    private final String value;
+
+    YesNo(String value) {
+        this.value = value;
+    }
 
     public static YesNo from(Boolean val) {
         return val ? YES : NO;

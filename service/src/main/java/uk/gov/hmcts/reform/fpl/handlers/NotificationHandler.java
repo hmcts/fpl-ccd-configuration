@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLAT
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
@@ -159,11 +161,6 @@ public class NotificationHandler {
         sendCMODocumentLinkNotifications(eventData, event.getDocumentContents());
     }
 
-    private void sendCMOCaseLinkNotifications(final EventData eventData) {
-        sendCMOCaseLinkNotificationForLocalAuthority(eventData);
-        sendCMOCaseLinkNotificationToRepresentatives(eventData);
-    }
-
     @EventListener
     public void sendNotificationForCaseManagementOrderReadyForJudgeReview(
         final CaseManagementOrderReadyForJudgeReviewEvent event) {
@@ -175,6 +172,25 @@ public class NotificationHandler {
         String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
 
         sendNotification(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+    }
+
+    @EventListener
+    public void notifyLocalAuthorityOfRejectedCaseManagementOrder(final CaseManagementOrderRejectedEvent event) {
+        EventData eventData = new EventData(event);
+
+        Map<String, Object> parameters =
+            caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(
+                eventData.getCaseDetails());
+
+        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
+            eventData.getLocalAuthorityCode());
+
+        sendNotification(CMO_REJECTED_BY_JUDGE_TEMPLATE, recipientEmail, parameters, eventData.getReference());
+    }
+
+    private void sendCMOCaseLinkNotifications(final EventData eventData) {
+        sendCMOCaseLinkNotificationForLocalAuthority(eventData);
+        sendCMOCaseLinkNotificationToRepresentatives(eventData);
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
