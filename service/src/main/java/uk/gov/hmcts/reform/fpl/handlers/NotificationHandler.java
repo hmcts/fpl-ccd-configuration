@@ -176,13 +176,13 @@ public class NotificationHandler {
 
             } else {
             if (!caseData.getRepresentatives().isEmpty()) {
-                int newRepresentativeToNotify = caseData.getRepresentatives().size() - 1;
-                RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
-                    .get(newRepresentativeToNotify).getValue().getServingPreferences();
+                caseData.getRepresentatives().stream().forEach(representativeElement -> {
+                    String emailForRepresentative = representativeElement.getValue().getEmail();
+                    RepresentativeServingPreferences servingPreferencesForRep = representativeElement.getValue().getServingPreferences();
 
-                String email = caseData.getRepresentatives().get(newRepresentativeToNotify).getValue().getEmail();
+                    sendNotificationBasedOnPreference(event, servingPreferencesForRep, emailForRepresentative);
+                });
 
-                sendNotificationBasedOnPreference(event, servingPreferences, email);
             }
         }
     }
