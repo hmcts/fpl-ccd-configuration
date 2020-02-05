@@ -175,7 +175,6 @@ public class NotificationHandler {
 
     @EventListener
     public void sendNotificationToPartyAddedToCase(PartyAddedToCaseEvent event) {
-        EventData eventData = new EventData(event);
         CaseData caseData = objectMapper.convertValue(event.getCallbackRequest().getCaseDetails().getData(), CaseData.class);
         CaseData caseDataBefore = objectMapper.convertValue(event.getCallbackRequest().getCaseDetailsBefore().getData(), CaseData.class);
 
@@ -190,19 +189,10 @@ public class NotificationHandler {
                    System.out.println("Changed representative" + changedRepresentatives.get(i));
 
                     String email = changedRepresentatives.get(i).getValue().getEmail();
-                    RepresentativeServingPreferences servingPreferences = changedRepresentatives.get(0).getValue().getServingPreferences();
+                    RepresentativeServingPreferences servingPreferences = changedRepresentatives.get(i).getValue().getServingPreferences();
 
-                    if (servingPreferences.equals(EMAIL)) {
-                        Map<String, Object> parameters = partyAddedToCaseEmailContentProvider
-                            .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
+                    sendNotificationBasedOnPreference(event,servingPreferences,email);
 
-                        sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
-                    } else if (servingPreferences.equals(DIGITAL_SERVICE)) {
-                        Map<String, Object> parameters = partyAddedToCaseThroughDigitalServicelContentProvider
-                            .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
-
-                        sendNotification(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
-                    }
                 }
             }
 
@@ -214,18 +204,25 @@ public class NotificationHandler {
 
                 String email = caseData.getRepresentatives().get(newRepresentativeToNotify).getValue().getEmail();
 
-                if (servingPreferences.equals(EMAIL)) {
-                    Map<String, Object> parameters = partyAddedToCaseEmailContentProvider
-                        .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
-
-                    sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
-                } else if (servingPreferences.equals(DIGITAL_SERVICE)) {
-                    Map<String, Object> parameters = partyAddedToCaseThroughDigitalServicelContentProvider
-                        .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
-
-                    sendNotification(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
-                }
+                sendNotificationBasedOnPreference(event,servingPreferences,email);
             }
+        }
+    }
+
+    private void sendNotificationBasedOnPreference(PartyAddedToCaseEvent event, RepresentativeServingPreferences servingPreferences,
+                                                   String email){
+        EventData eventData = new EventData(event);
+
+        if (servingPreferences.equals(EMAIL)) {
+            Map<String, Object> parameters = partyAddedToCaseEmailContentProvider
+                .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
+
+            sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+        } else if (servingPreferences.equals(DIGITAL_SERVICE)) {
+            Map<String, Object> parameters = partyAddedToCaseThroughDigitalServicelContentProvider
+                .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
+
+            sendNotification(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
         }
     }
 
