@@ -17,15 +17,18 @@ import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 
 @Api
 @RestController
@@ -99,7 +102,7 @@ public class PlacementController {
         if (!isUpdatingExistingPlacementFilename(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest);
         }
-        
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
             .build();
@@ -136,9 +139,19 @@ public class PlacementController {
             .equals(previousPlacement.application.getFilename());
     }
 
+    private boolean noticeOfPlacementOrderExists(Placement placement) {
+        return placement.getOrderAndNotices().stream()
+            .anyMatch(p -> p.getValue().getType().equals(NOTICE_OF_PLACEMENT_ORDER));
+    }
+
     private boolean noticeOfPlacementOrderUpdated(Placement previousPlacement,
                                                   Placement newPlacement) {
-        return isNotEmpty(previousPlacement.getOrderAndNotices()) && newPlacement.getOrderAndNotices().contains()
-            .equals(previousPlacement.application.getFilename());
+
+        Optional<Element<PlacementOrderAndNotices>> previousNoticeOfPlacementOrders =
+            previousPlacement.getOrderAndNotices().stream()
+            .filter(placement -> placement.getValue().getType().equals(NOTICE_OF_PLACEMENT_ORDER))
+            .findAny();
+
+        return false;
     }
 }
