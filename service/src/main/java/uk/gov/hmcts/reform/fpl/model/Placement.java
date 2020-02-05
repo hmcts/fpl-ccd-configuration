@@ -28,6 +28,9 @@ public class Placement {
     @JsonProperty("placementSupportingDocuments")
     private List<Element<PlacementSupportingDocument>> supportingDocuments;
 
+    @JsonProperty("placementConfidentialDocuments")
+    private List<Element<PlacementConfidentialDocument>> confidentialDocuments;
+
     @JsonProperty("placementOrderAndNotices")
     private List<Element<PlacementOrderAndNotices>> orderAndNotices;
 
