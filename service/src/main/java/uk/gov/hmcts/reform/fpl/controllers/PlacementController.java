@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
 import java.util.Map;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -101,8 +100,7 @@ public class PlacementController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(
-        @RequestBody @NotNull CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
 
