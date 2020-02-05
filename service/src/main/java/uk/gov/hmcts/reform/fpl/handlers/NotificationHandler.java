@@ -186,13 +186,11 @@ public class NotificationHandler {
             if(!changedRepresentatives.isEmpty()){
                 //send notification to changed ones
                 for (int i = 0; i < changedRepresentatives.size(); i++) {
-                   System.out.println("Changed representative" + changedRepresentatives.get(i));
 
                     String email = changedRepresentatives.get(i).getValue().getEmail();
                     RepresentativeServingPreferences servingPreferences = changedRepresentatives.get(i).getValue().getServingPreferences();
 
-                    sendNotificationBasedOnPreference(event,servingPreferences,email);
-
+                    sendNotificationBasedOnPreference(event, servingPreferences, email);
                 }
             }
 
@@ -204,7 +202,7 @@ public class NotificationHandler {
 
                 String email = caseData.getRepresentatives().get(newRepresentativeToNotify).getValue().getEmail();
 
-                sendNotificationBasedOnPreference(event,servingPreferences,email);
+                sendNotificationBasedOnPreference(event, servingPreferences, email);
             }
         }
     }
