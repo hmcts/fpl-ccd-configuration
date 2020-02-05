@@ -202,7 +202,9 @@ public class NotificationHandler {
 
                     String email = caseData.getRepresentatives().get(newRepresentativeToNotify).getValue().getEmail();
 
-                    sendNotificationBasedOnPreference(event, servingPreferences, email);
+                    if(!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())){
+                        sendNotificationBasedOnPreference(event, servingPreferences, email);
+                    }
                 }
             }
         } else {
