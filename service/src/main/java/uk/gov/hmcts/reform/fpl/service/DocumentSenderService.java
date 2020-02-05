@@ -29,15 +29,14 @@ public class DocumentSenderService {
         for (Representative representative : representativesServedByPost) {
 
             //TODO create general letter and cover letter - separate PR
-            //coverDocumentsService.createGeneralLetter(familyManCaseNumber, representative);
-            //coverDocumentsService.createCoverSheet(ccdCaseNumber, representative);
+            DocumentReference generalLetterAndCoversheet = documentToBeSent;
 
             //TODO stitching service, pass in general letter, cover sheet, mainDocument - separate PR
-
             documentsSentToParties.add(DocumentSentToParty.builder()
                 .partyName(representative.getFullName())
                 //TODO use stitched document
                 .document(documentToBeSent)
+                .generalLetterAndCoversheet(generalLetterAndCoversheet)
                 //add compiled document from stitching service
                 .sentAt(dateFormatterService
                     .formatLocalDateTimeBaseUsingFormat(now(clock), "h:mma, d MMMM yyyy")).build());

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.DocumentSentToParty;
+import uk.gov.hmcts.reform.fpl.model.DocumentToBeSent;
 import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -47,10 +48,8 @@ public class SendDocumentController {
             representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), POST);
 
         if (!partiesServedByPost.isEmpty()) {
-            DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData().remove("documentToBeSent"),
-                DocumentReference.class);
-            List<DocumentSentToParty> printedDocuments =
-                printDocuments(documentToBeSent, partiesServedByPost);
+            DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData().remove("documentToBeSent"), DocumentReference.class);
+            List<DocumentSentToParty> printedDocuments = printDocuments(documentToBeSent, partiesServedByPost);
             updateSentDocumentsHistory(caseDetails, printedDocuments);
         }
 

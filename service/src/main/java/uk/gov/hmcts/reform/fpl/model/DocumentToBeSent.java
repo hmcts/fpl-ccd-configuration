@@ -8,9 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DocumentSentToParty {
-    String partyName;
-    DocumentReference document;
-    DocumentReference generalLetterAndCoversheet;
-    String sentAt;
+public class DocumentToBeSent {
+
+    private final DocumentReference document;
+    private final DocumentReference coversheet;
 }
