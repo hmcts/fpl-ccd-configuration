@@ -28,7 +28,10 @@ import uk.gov.service.notify.SendEmailResponse;
 import java.util.List;
 import java.util.Map;
 
+import static jdk.dynalink.linker.support.Guards.isNotNull;
+import static jdk.dynalink.linker.support.Guards.isNull;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.*;
 
@@ -178,22 +181,30 @@ public class NotificationHandler {
         CaseData caseData = objectMapper.convertValue(event.getCallbackRequest().getCaseDetails().getData(), CaseData.class);
         CaseData caseDataBefore = objectMapper.convertValue(event.getCallbackRequest().getCaseDetailsBefore().getData(), CaseData.class);
 
-        if(caseDataBefore.getRepresentatives().size() == caseData.getRepresentatives().size())
-        {
+        if (isNotEmpty(caseDataBefore.getRepresentatives())) {
+            if(caseData.getRepresentatives().size() == caseDataBefore.getRepresentatives().size())
+            {
+                List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(caseData,caseDataBefore);
 
-            List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(caseData,caseDataBefore);
+                if(!changedRepresentatives.isEmpty()){
+                    changedRepresentatives.stream().forEach(representativeElement -> {
+                        String email = representativeElement.getValue().getEmail();
+                        RepresentativeServingPreferences servingPreferences = representativeElement.getValue().getServingPreferences();
 
-            if(!changedRepresentatives.isEmpty()){
-                //send notification to changed ones
-                for (int i = 0; i < changedRepresentatives.size(); i++) {
+                        sendNotificationBasedOnPreference(event, servingPreferences, email);
+                    });
+                }
+            } else {
+                if (!caseData.getRepresentatives().isEmpty()) {
+                    int newRepresentativeToNotify = caseData.getRepresentatives().size() - 1;
+                    RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
+                        .get(newRepresentativeToNotify).getValue().getServingPreferences();
 
-                    String email = changedRepresentatives.get(i).getValue().getEmail();
-                    RepresentativeServingPreferences servingPreferences = changedRepresentatives.get(i).getValue().getServingPreferences();
+                    String email = caseData.getRepresentatives().get(newRepresentativeToNotify).getValue().getEmail();
 
                     sendNotificationBasedOnPreference(event, servingPreferences, email);
                 }
             }
-
         } else {
             if (!caseData.getRepresentatives().isEmpty()) {
                 int newRepresentativeToNotify = caseData.getRepresentatives().size() - 1;
