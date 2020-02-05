@@ -105,6 +105,56 @@
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 10",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"12345678910\""
+    "FieldShowCondition": "childCount=\"12345678910*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "child11",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 11",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "childCount=\"1234567891011*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "child12",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 12",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "childCount=\"123456789101112*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "child13",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 13",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "childCount=\"12345678910111213*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "child14",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 14",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "childCount=\"1234567891011121314*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "child15",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 15",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "childCount=\"123456789101112131415\""
   }
 ]

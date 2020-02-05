@@ -39,6 +39,11 @@ public class ChildSelectorUtils {
         addSelectedChild(selected, selector.getChild8(), 7);
         addSelectedChild(selected, selector.getChild9(), 8);
         addSelectedChild(selected, selector.getChild10(), 9);
+        addSelectedChild(selected, selector.getChild11(), 10);
+        addSelectedChild(selected, selector.getChild12(), 11);
+        addSelectedChild(selected, selector.getChild13(), 12);
+        addSelectedChild(selected, selector.getChild14(), 13);
+        addSelectedChild(selected, selector.getChild15(), 14);
         return selected;
     }
 

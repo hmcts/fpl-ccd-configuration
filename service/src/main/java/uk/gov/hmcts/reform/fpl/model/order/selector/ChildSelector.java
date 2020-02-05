@@ -20,4 +20,9 @@ public class ChildSelector {
     private List<ChildSelectorType> child8;
     private List<ChildSelectorType> child9;
     private List<ChildSelectorType> child10;
+    private List<ChildSelectorType> child11;
+    private List<ChildSelectorType> child12;
+    private List<ChildSelectorType> child13;
+    private List<ChildSelectorType> child14;
+    private List<ChildSelectorType> child15;
 }
