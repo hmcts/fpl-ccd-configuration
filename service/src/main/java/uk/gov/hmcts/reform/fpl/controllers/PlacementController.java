@@ -97,7 +97,7 @@ public class PlacementController {
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 
         if (!isUpdatingExistingPlacementFilename(previousPlacement, currentPlacement)) {
-            publishPlacementApplicationUploadEvent(callbackRequest, requestData);
+            publishPlacementApplicationUploadEvent(callbackRequest);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -125,7 +125,7 @@ public class PlacementController {
         }
     }
 
-    private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest, RequestData requestData) {
+    private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
         applicationEventPublisher.publishEvent(
             new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
     }
