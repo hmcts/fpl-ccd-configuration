@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 public class ChildSelectorUtils {
 
     private ChildSelectorUtils() {
@@ -41,7 +43,7 @@ public class ChildSelectorUtils {
     }
 
     private static void addSelectedChild(List<Integer> selected, List<ChildSelectorType> value, int child) {
-        if (value != null && !value.isEmpty()) {
+        if (isNotEmpty(value)) {
             selected.add(child);
         }
     }
