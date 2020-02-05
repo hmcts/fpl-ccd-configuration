@@ -4,32 +4,20 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildSelectorType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Builder
 public class ChildSelector {
-    @Builder.Default
-    private String childCount = "";
-    @Builder.Default
-    private List<ChildSelectorType> child1 = new ArrayList<>();
-    @Builder.Default
-    private List<ChildSelectorType> child2 = new ArrayList<>();
-    @Builder.Default
-    private List<ChildSelectorType> child3 = new ArrayList<>();
-    @Builder.Default
-    private List<ChildSelectorType> child4 = new ArrayList<>();
-    @Builder.Default
-    private List<ChildSelectorType> child5 = new ArrayList<>();
-    @Builder.Default
-    private List<ChildSelectorType> child6 = new ArrayList<>();
-    @Builder.Default
-    private List<ChildSelectorType> child7 = new ArrayList<>();
-    @Builder.Default
-    private List<ChildSelectorType> child8 = new ArrayList<>();
-    @Builder.Default
-    private List<ChildSelectorType> child9 = new ArrayList<>();
-    @Builder.Default
-    private List<ChildSelectorType> child10 = new ArrayList<>();
+    private String childCount;
+    private List<ChildSelectorType> child1;
+    private List<ChildSelectorType> child2;
+    private List<ChildSelectorType> child3;
+    private List<ChildSelectorType> child4;
+    private List<ChildSelectorType> child5;
+    private List<ChildSelectorType> child6;
+    private List<ChildSelectorType> child7;
+    private List<ChildSelectorType> child8;
+    private List<ChildSelectorType> child9;
+    private List<ChildSelectorType> child10;
 }
