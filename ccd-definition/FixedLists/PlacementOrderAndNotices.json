@@ -26,5 +26,12 @@
     "ListElementCode": "OTHER",
     "ListElement": "Other document",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementOrderAndNoticesType",
+    "ListElementCode": "NOTICE_OF_PLACEMENT_ORDER",
+    "ListElement": "Notice of placement order",
+    "DisplayOrder": 5
   }
 ]

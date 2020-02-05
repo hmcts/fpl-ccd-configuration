@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
@@ -52,7 +53,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
 @Builder(toBuilder = true)
@@ -262,7 +262,7 @@ public class CaseData {
     public List<Element<Other>> getAllOthers() {
         List<Element<Other>> othersList = new ArrayList<>();
 
-        ofNullable(this.getOthers()).map(others -> element(others.getFirstOther())).ifPresent(othersList::add);
+        ofNullable(this.getOthers()).map(Others::getFirstOther).map(ElementUtils::element).ifPresent(othersList::add);
         ofNullable(this.getOthers()).map(Others::getAdditionalOthers).ifPresent(othersList::addAll);
 
         return Collections.unmodifiableList(othersList);
