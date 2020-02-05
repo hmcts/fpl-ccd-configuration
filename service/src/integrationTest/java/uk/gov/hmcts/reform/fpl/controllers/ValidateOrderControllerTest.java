@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.model.order.generated.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -21,6 +21,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildSelectorType.SELECTED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 
@@ -101,17 +102,20 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("childSelector", ChildSelector.builder().build()))
             .build();
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
-        final List<String> errors = callbackResponse.getErrors();
-        assertThat(errors).containsOnlyOnce("Select the children included in the order.");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
+
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Select the children included in the order.");
     }
 
     @Test
     void shouldNotReturnErrorsWhenAChildIsSelected() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("childSelector", ChildSelector.builder().child1(true).build()))
+            .data(Map.of("childSelector", ChildSelector.builder().child1(List.of(SELECTED)).build()))
             .build();
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
+
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
