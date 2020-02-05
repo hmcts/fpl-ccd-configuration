@@ -171,8 +171,10 @@ public class NotificationHandler {
         CaseData caseDataBefore = objectMapper.convertValue(event.getCallbackRequest().getCaseDetailsBefore().getData(), CaseData.class);
 
         if (isNotEmpty(caseDataBefore.getRepresentatives())) {
-
-            sendNotificationToChangedParties(caseData, caseDataBefore, event);
+            if(!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())){
+                List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(caseData,caseDataBefore);
+                sendNotificationToChangedParties(event, changedRepresentatives);
+            }
 
             } else {
             if (!caseData.getRepresentatives().isEmpty()) {
@@ -187,13 +189,9 @@ public class NotificationHandler {
         }
     }
 
-    private void sendNotificationToChangedParties(CaseData caseData, CaseData caseDataBefore, PartyAddedToCaseEvent event){
-            if(!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())){
-
-                List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(caseData,caseDataBefore);
-
-                if(!changedRepresentatives.isEmpty()){
-                    changedRepresentatives.stream().forEach(representativeElement -> {
+    private void sendNotificationToChangedParties(PartyAddedToCaseEvent event, List<Element<Representative>> representatives){
+                if(!representatives.isEmpty()){
+                    representatives.stream().forEach(representativeElement -> {
                         String emailForRepresentative = representativeElement.getValue().getEmail();
                         RepresentativeServingPreferences servingPreferencesForRep = representativeElement.getValue().getServingPreferences();
 
@@ -201,7 +199,6 @@ public class NotificationHandler {
                     });
                 }
             }
-        }
 
     private void sendNotificationBasedOnPreference(PartyAddedToCaseEvent event, RepresentativeServingPreferences servingPreferences,
                                                    String email){
