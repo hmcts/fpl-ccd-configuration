@@ -181,13 +181,29 @@ public class NotificationHandler {
 
         if(caseDataBefore.getRepresentatives().size() == caseData.getRepresentatives().size())
         {
-            System.out.println("None new added");
 
             List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(caseData,caseDataBefore);
 
-            if(!getChangedRepresentatives(caseData,caseDataBefore).isEmpty()){
+            if(!changedRepresentatives.isEmpty()){
                 //send notification to changed ones
-                System.out.println("Difference is not empty" + changedRepresentatives);
+                for (int i = 0; i < changedRepresentatives.size(); i++) {
+                   System.out.println("Changed representative" + changedRepresentatives.get(i));
+
+                    String email = changedRepresentatives.get(i).getValue().getEmail();
+                    RepresentativeServingPreferences servingPreferences = changedRepresentatives.get(0).getValue().getServingPreferences();
+
+                    if (servingPreferences.equals(EMAIL)) {
+                        Map<String, Object> parameters = partyAddedToCaseEmailContentProvider
+                            .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
+
+                        sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+                    } else if (servingPreferences.equals(DIGITAL_SERVICE)) {
+                        Map<String, Object> parameters = partyAddedToCaseThroughDigitalServicelContentProvider
+                            .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
+
+                        sendNotification(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+                    }
+                }
             }
 
         } else {
