@@ -9,7 +9,7 @@ Feature('Case maintenance after submission');
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.enterMandatoryFields();
+    await I.enterMandatoryFields({multipleChildren: true});
     await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit');
@@ -62,4 +62,42 @@ Scenario('local authority provides a statements of service', async (I, caseViewP
   I.seeAnswerInTab(6, 'Recipients 2', 'Time sent', recipients[1].timeSent);
   I.seeAnswerInTab(7, 'Recipients 2', 'How were they sent?', recipients[1].sentBy);
   I.seeAnswerInTab(8, 'Recipients 2', 'Recipient\'s email address', recipients[1].email);
+});
+
+Scenario('local authority upload placement application', async (I, caseViewPage, placementEventPage) => {
+  await I.navigateToCaseDetails(caseId);
+
+  await caseViewPage.goToNewActions(config.administrationActions.placement);
+  await placementEventPage.selectChild('Timothy Jones');
+  await placementEventPage.addApplication(config.testFile);
+  await placementEventPage.addSupportingDocument(0, 'Statement of facts', config.testFile);
+  await placementEventPage.addConfidentialDocument(0, 'Annex B', config.testFile);
+  await placementEventPage.addOrderOrNotice(0, 'Notice of hearing', config.testFile, 'test note');
+  await I.completeEvent('Save and continue');
+
+  await caseViewPage.goToNewActions(config.administrationActions.placement);
+  await placementEventPage.selectChild('John Black');
+  await placementEventPage.addApplication(config.testFile);
+  await placementEventPage.addSupportingDocument(0, 'Other final orders', config.testFile);
+  await placementEventPage.addConfidentialDocument(0, 'Other confidential documents', config.testFile);
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.placement);
+
+  I.seeAnswerInTab(2, 'Child 1', 'Name', 'Timothy Jones');
+  I.seeAnswerInTab(3, 'Child 1', 'Application document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(1, 'Child 1', 'Supporting document 1', 'Document type', 'Statement of facts');
+  I.seeNestedAnswerInTab(2, 'Child 1', 'Supporting document 1', 'Document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(1, 'Child 1', 'Confidential document 1', 'Document type', 'Annex B');
+  I.seeNestedAnswerInTab(2, 'Child 1', 'Confidential document 1', 'Document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(1, 'Child 1', 'Order and notices 1', 'Document type', 'Notice of hearing');
+  I.seeNestedAnswerInTab(2, 'Child 1', 'Order and notices 1', 'Document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(3, 'Child 1', 'Order and notices 1', 'Description', 'test note');
+
+  I.seeAnswerInTab(2, 'Child 2', 'Name', 'John Black');
+  I.seeAnswerInTab(3, 'Child 2', 'Application document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(1, 'Child 2', 'Supporting document 1', 'Document type', 'Other final orders');
+  I.seeNestedAnswerInTab(2, 'Child 2', 'Supporting document 1', 'Document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(1, 'Child 2', 'Confidential document 1', 'Document type', 'Other confidential documents');
+  I.seeNestedAnswerInTab(2, 'Child 2', 'Confidential document 1', 'Document', 'mockFile.txt');
 });
