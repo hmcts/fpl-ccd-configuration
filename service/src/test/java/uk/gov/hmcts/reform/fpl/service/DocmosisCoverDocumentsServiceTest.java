@@ -41,14 +41,16 @@ class DocmosisCoverDocumentsServiceTest {
     }
 
     @Test
-    void shouldBuildGeneralLetterWhenFamilyManCaseNumberAndRepresentativeDataProvided() {
+    void shouldBuildCoverDocumentsWhenAllDataProvided() {
         String familyManCaseNumber = "12345";
+        Long ccdCaseNumber = 1234123412341234L;
         Representative testRepresentative = buildRepresentative();
-        Map<String, Object> generalLetterData = documentsService.buildGeneralLetterData(familyManCaseNumber,
-            testRepresentative);
+        Map<String, Object> generalLetterData = documentsService.buildCoverDocumentsData(familyManCaseNumber,
+            ccdCaseNumber, testRepresentative);
 
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", "12345")
+            .put("ccdCaseNumber", "1234-1234-1234-1234")
             .put("representativeName", "Mark Jones")
             .put("representativeAddress", "1 Petty France\nSt James's Park\nLondon")
             .build();

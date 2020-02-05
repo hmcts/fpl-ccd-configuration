@@ -9,27 +9,27 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.GENERAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.COVER_DOCS;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocmosisCoverDocumentsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
-    public DocmosisDocument createGeneralLetter(String familyManCaseNumber, Representative representative) {
-        Map<String, Object> templateData = buildGeneralLetterData(familyManCaseNumber, representative);
-        return docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, GENERAL);
+    public DocmosisDocument createCoverDocuments(String familyManCaseNumber,
+                                                 Long caseNumber,
+                                                 Representative representative) {
+        Map<String, Object> templateData = buildCoverDocumentsData(familyManCaseNumber, caseNumber, representative);
+        return docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, COVER_DOCS);
     }
 
-    Map<String, Object> buildGeneralLetterData(String familyManCaseNumber, Representative representative) {
+    Map<String, Object> buildCoverDocumentsData(String familyManCaseNumber,
+                                                Long caseNumber,
+                                                Representative representative) {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", familyManCaseNumber)
-            .putAll(getRepresentativeData(representative))
-            .build();
-    }
-
-    private Map<String, Object> getRepresentativeData(Representative representative) {
-        return ImmutableMap.<String, Object>builder()
+            .put("ccdCaseNumber", formatCCDCaseNumber(caseNumber))
             .put("representativeName", representative.getFullName())
             .put("representativeAddress", representative.getAddress().getAddressAsString("\n"))
             .build();
