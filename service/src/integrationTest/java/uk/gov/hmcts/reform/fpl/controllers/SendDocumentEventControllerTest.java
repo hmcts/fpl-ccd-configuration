@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.DocumentSentToParty;
-import uk.gov.hmcts.reform.fpl.model.DocumentToBeSent;
 import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.Clock;
@@ -57,10 +57,7 @@ class SendDocumentEventControllerTest extends AbstractControllerTest {
         Representative representative2 = representative("Alex Brown", EMAIL);
         Representative representative3 = representative("Emma White", DIGITAL_SERVICE);
 
-        DocumentToBeSent documentToBeSent = DocumentToBeSent.builder()
-            .document(testDocument())
-            .coversheet(testDocument())
-            .build();
+        DocumentReference documentToBeSent = testDocument();
 
         CaseDetails caseDetails = buildCaseData(documentToBeSent, representative1, representative2, representative3);
 
@@ -75,13 +72,13 @@ class SendDocumentEventControllerTest extends AbstractControllerTest {
         assertThat(unwrapElements(outgoingCaseData.get(0).getDocumentsSentToParty()))
             .containsExactly(DocumentSentToParty.builder()
                 .partyName(representative1.getFullName())
-                .document(documentToBeSent.getDocument())
-                .generalLetterAndCoversheet(documentToBeSent.getCoversheet())
+                .document(documentToBeSent)
+                .coversheet(documentToBeSent)
                 .sentAt("12:10pm, 5 January 2020")
                 .build());
     }
 
-    private static CaseDetails buildCaseData(DocumentToBeSent documentToBeSent, Representative... representatives) {
+    private static CaseDetails buildCaseData(DocumentReference documentToBeSent, Representative... representatives) {
         return CaseDetails.builder()
             .id(RandomUtils.nextLong())
             .data(Map.of(

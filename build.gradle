@@ -4,7 +4,7 @@ buildscript {
   }
   configurations.maybeCreate('pitest')
   dependencies {
-    classpath group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.4.5'
+    classpath group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.4.6'
     pitest group: 'org.pitest', name: 'pitest-junit5-plugin', version: '0.11'
   }
 }

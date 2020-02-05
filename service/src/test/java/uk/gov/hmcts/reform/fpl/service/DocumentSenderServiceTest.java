@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.DocumentSentToParty;
-import uk.gov.hmcts.reform.fpl.model.DocumentToBeSent;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
@@ -50,13 +49,7 @@ public class DocumentSenderServiceTest {
 
     @Test
     void shouldSendDocumentToAllParties() {
-
         DocumentReference documentToBeSent = testDocument();
-
-//        DocumentToBeSent documentToBeSent = DocumentToBeSent.builder()
-//            .document(testDocument())
-//            .coversheet(testDocument())
-//            .build();
 
         Representative representative1 = testRepresentative();
         Representative representative2 = testRepresentative();
@@ -65,29 +58,27 @@ public class DocumentSenderServiceTest {
             List.of(representative1, representative2));
 
         assertThat(documentsSentToParties).containsExactly(
-            documentSentToRepresentative(documentToBeSent, representative1),
-            documentSentToRepresentative(documentToBeSent, representative2)
+            documentSentToRepresentative(documentToBeSent, documentToBeSent, representative1),
+            documentSentToRepresentative(documentToBeSent, documentToBeSent, representative2)
         );
     }
 
     @Test
     void shouldNotSendDocumentIfNoPartiesToBePosted() {
-        DocumentToBeSent documentToBeSent = DocumentToBeSent.builder()
-            .document(testDocument())
-            .coversheet(testDocument())
-            .build();
+        DocumentReference documentToBeSent = testDocument();
 
         List<DocumentSentToParty> documentsSentToParties = documentSenderService.send(documentToBeSent, emptyList());
 
         assertThat(documentsSentToParties).isEmpty();
     }
 
-    private static DocumentSentToParty documentSentToRepresentative(DocumentToBeSent documentToBeSent,
+    private static DocumentSentToParty documentSentToRepresentative(DocumentReference documentToBeSent,
+                                                                    DocumentReference coversheet,
                                                                     Representative representative) {
         return DocumentSentToParty.builder()
             .partyName(representative.getFullName())
-            .document(documentToBeSent.getDocument())
-            .generalLetterAndCoversheet(documentToBeSent.getCoversheet())
+            .document(documentToBeSent)
+            .coversheet(coversheet)
             .sentAt(FORMATTED_SENT_TIME)
             .build();
     }

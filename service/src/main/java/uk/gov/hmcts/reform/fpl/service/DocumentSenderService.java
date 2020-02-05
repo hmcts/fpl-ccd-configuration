@@ -36,7 +36,7 @@ public class DocumentSenderService {
                 .partyName(representative.getFullName())
                 //TODO use stitched document
                 .document(documentToBeSent)
-                .generalLetterAndCoversheet(generalLetterAndCoversheet)
+                .coversheet(generalLetterAndCoversheet)
                 //add compiled document from stitching service
                 .sentAt(dateFormatterService
                     .formatLocalDateTimeBaseUsingFormat(now(clock), "h:mma, d MMMM yyyy")).build());

@@ -1078,7 +1078,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documentToBeSent",
     "Label": "Party",
-    "FieldType": "DocumentWithCoversheet",
+    "FieldType": "Document",
     "SecurityClassification": "Public"
   },
   {
