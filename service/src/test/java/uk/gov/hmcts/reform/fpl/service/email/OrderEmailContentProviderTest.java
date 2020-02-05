@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderEmailContentProvider;
 
 import java.time.LocalDate;
@@ -54,6 +56,8 @@ class OrderEmailContentProviderTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private RepresentativeService representativeService;
+
     private OrderEmailContentProvider orderEmailContentProvider;
 
     private String familyManCaseNumber;
@@ -63,8 +67,7 @@ class OrderEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.orderEmailContentProvider = new OrderEmailContentProvider("",
-            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService,
-            hmctsCourtLookupConfiguration, representativeService);
+            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService, representativeService);
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");

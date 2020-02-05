@@ -13,19 +13,21 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
+import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
@@ -40,6 +42,7 @@ public class PlacementController {
     private final PlacementService placementService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RequestData requestData;
+    private final DocumentDownloadService documentDownloadService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -109,6 +112,29 @@ public class PlacementController {
 
     }
 
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody @NotNull CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        List<UUID> currentPlacementOrderIds = getElementIdsForNoticeOfPlacementOrder(caseData);
+        List<UUID> previousPlacementOrderIds = getElementIdsForNoticeOfPlacementOrder(caseDataBefore);
+
+        currentPlacementOrderIds.removeAll(previousPlacementOrderIds);
+
+        //TODO get binary url link to correct notice of placement order
+        if (!currentPlacementOrderIds.isEmpty()) {
+            byte[] documentContents = documentDownloadService.downloadDocument(requestData.authorisation(), requestData.userId(),
+            caseData.getConfidentialPlacements().get(0).getValue().getOrderAndNotices().get(0).getValue().getDocument().getBinaryUrl());
+
+            applicationEventPublisher.publishEvent(new NoticeOfPlacementOrderUploadedEvent(callbackRequest,
+                requestData.authorisation(), requestData.userId(), documentContents));
+        }
+    }
+
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {
         if (placementService.hasSingleChild(caseData)) {
             return caseData.getAllChildren().get(0).getId();
@@ -139,19 +165,8 @@ public class PlacementController {
             .equals(previousPlacement.application.getFilename());
     }
 
-    private boolean noticeOfPlacementOrderExists(Placement placement) {
-        return placement.getOrderAndNotices().stream()
-            .anyMatch(p -> p.getValue().getType().equals(NOTICE_OF_PLACEMENT_ORDER));
-    }
-
-    private boolean noticeOfPlacementOrderUpdated(Placement previousPlacement,
-                                                  Placement newPlacement) {
-
-        Optional<Element<PlacementOrderAndNotices>> previousNoticeOfPlacementOrders =
-            previousPlacement.getOrderAndNotices().stream()
-            .filter(placement -> placement.getValue().getType().equals(NOTICE_OF_PLACEMENT_ORDER))
-            .findAny();
-
-        return false;
+    private List<UUID> getElementIdsForNoticeOfPlacementOrder(CaseData caseData) {
+        return placementService.getElementIdsForOrderAndNotices(
+            caseData.getConfidentialPlacements(), NOTICE_OF_PLACEMENT_ORDER);
     }
 }

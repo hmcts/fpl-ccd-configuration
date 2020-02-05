@@ -40,9 +40,9 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.OrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.OrderEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
@@ -154,6 +154,7 @@ class NotificationHandlerTest {
 
     @Nested
     class C2UploadedNotificationChecks {
+        private final byte[] documentContents = {1, 2, 3};
         final String mostRecentUploadedDocumentUrl =
             "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
@@ -230,8 +231,8 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyPartiesOnOrderSubmission() throws IOException, NotificationClientException {
-            notificationHandler.sendNotificationForOrder(
-                new GeneratedOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl));
+            notificationHandler.sendNotificationsForGeneratedOrder(new GeneratedOrderEvent(callbackRequest(),
+                AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, documentContents));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
@@ -341,7 +342,8 @@ class NotificationHandlerTest {
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
-            given(caseManagementOrderEmailContentProvider.buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+            given(
+                caseManagementOrderEmailContentProvider.buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
                 .willReturn(expectedCMOReadyForJudgeNotificationParameters);
 
             cmoNotificationHandler.sendNotificationForCaseManagementOrderReadyForJudgeReview(
@@ -408,7 +410,6 @@ class NotificationHandlerTest {
                 "reference", "12345",
                 "caseUrl", String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE));
         }
-
 
         private Map<String, Object> getCMORejectedCaseLinkNotificationParameters() {
             return ImmutableMap.<String, Object>builder()

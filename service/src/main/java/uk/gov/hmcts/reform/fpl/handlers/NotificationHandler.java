@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -104,13 +105,14 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationForOrder(final GeneratedOrderEvent event) {
+    public void sendNotificationsForGeneratedOrder(final GeneratedOrderEvent event) {
         EventData eventData = new EventData(event);
 
         sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             event.getMostRecentUploadedDocumentUrl());
 
-        sendOrderNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
+        sendOrderNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+            event.getDocumentContents());
     }
 
     @EventListener
@@ -227,9 +229,20 @@ public class NotificationHandler {
             });
     }
 
+    @EventListener
+    public void sendNotificationForNoticeOfPlacementOrderUploaded(NoticeOfPlacementOrderUploadedEvent event) {
+        EventData eventData = new EventData(event);
+        //Code from 1193 here
+        
+        sendOrderNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+            event.getDocumentContents());
+    }
+
     private void sendCMODocumentLinkNotifications(final EventData eventData, final byte[] documentContents) {
         sendCMODocumentLinkNotificationForCafcass(eventData, documentContents);
         sendCMODocumentLinkNotificationsToRepresentatives(eventData, documentContents);
+        sendOrderNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+            documentContents);
     }
 
     private void sendCMODocumentLinkNotificationForCafcass(final EventData eventData, final byte[] documentContents) {
@@ -284,9 +297,11 @@ public class NotificationHandler {
             Long.toString(caseDetails.getId()));
     }
 
-    private void sendOrderNotificationToHmctsAdmin(final CaseDetails caseDetails, final String localAuthorityCode) {
-        Map<String, Object> hmctsParameters =
-            orderEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(caseDetails, localAuthorityCode);
+    private void sendOrderNotificationToHmctsAdmin(final CaseDetails caseDetails,
+                                                   final String localAuthorityCode,
+                                                   final byte[] documentContents) {
+        Map<String, Object> hmctsParameters = orderEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
+            caseDetails, localAuthorityCode, documentContents);
 
         String hmctsEmail = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 

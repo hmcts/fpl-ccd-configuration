@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang3.ObjectUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -25,7 +25,9 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.formatRepresentativesForPostNotification;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
+import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
+@Slf4j
 @Service
 public class OrderEmailContentProvider extends AbstractEmailContentProvider {
 
@@ -54,8 +56,9 @@ public class OrderEmailContentProvider extends AbstractEmailContentProvider {
             .build();
     }
 
-    public Map<String, Object> buildOrderNotificationParametersForHmctsAdmin(
-        final CaseDetails caseDetails, final String localAuthorityCode) {
+    public Map<String, Object> buildOrderNotificationParametersForHmctsAdmin(final CaseDetails caseDetails,
+                                                                             final String localAuthorityCode,
+                                                                             final byte[] documentContents) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         List<Representative> representativesServedByPost = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), POST);
@@ -63,8 +66,10 @@ public class OrderEmailContentProvider extends AbstractEmailContentProvider {
 
         return ImmutableMap.<String, Object>builder()
             .put("needsPosting", !representativesServedByPost.isEmpty() ? "Yes" : "No")
+            .put("doesNotNeedPosting", representativesServedByPost.isEmpty() ? "Yes" : "No")
             .put("courtName", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()))
+            .putAll(caseUrlOrDocumentLink(!representativesServedByPost.isEmpty(), documentContents,
+                caseDetails.getId()))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("representatives", formattedRepresentatives.isEmpty() ? "" : formattedRepresentatives)
             .build();
@@ -82,5 +87,20 @@ public class OrderEmailContentProvider extends AbstractEmailContentProvider {
             "reference", String.valueOf(caseDetails.getId()),
             "caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId()
         );
+    }
+
+    private Map<String, Object> caseUrlOrDocumentLink(boolean needsServing,
+                                                      final byte[] documentContents,
+                                                      Long caseId) {
+        ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
+
+        try {
+            url.put("caseUrlOrDocumentLink", needsServing ? prepareUpload(documentContents)
+                : formatCaseUrl(uiBaseUrl, caseId));
+        } catch (NotificationClientException e) {
+            log.error("Unable to send notification due to ", e);
+        }
+
+        return url.build();
     }
 }

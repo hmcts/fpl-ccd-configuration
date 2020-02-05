@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,7 +25,9 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -43,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 @Api
 @RequestMapping("/callback/create-order")
 @RestController
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderController {
     private final ObjectMapper mapper;
     private final GeneratedOrderService service;
@@ -51,23 +55,8 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
-
-    @Autowired
-    public GeneratedOrderController(ObjectMapper mapper,
-                                    GeneratedOrderService service,
-                                    ValidateGroupService validateGroupService,
-                                    DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                                    UploadDocumentService uploadDocumentService,
-                                    ApplicationEventPublisher applicationEventPublisher,
-                                    GatewayConfiguration gatewayConfiguration) {
-        this.mapper = mapper;
-        this.service = service;
-        this.validateGroupService = validateGroupService;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.gatewayConfiguration = gatewayConfiguration;
-    }
+    private final DocumentDownloadService documentDownloadService;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -126,15 +115,18 @@ public class GeneratedOrderController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
-                                     @RequestHeader(value = "user-id") String userId,
-                                     @RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         String mostRecentUploadedDocumentUrl = service.getMostRecentUploadedOrderDocumentUrl(
             caseData.getOrderCollection());
 
-        applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
-            concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
+        byte[] documentContents = documentDownloadService.downloadDocument(requestData.authorisation(),
+            requestData.userId(), mostRecentUploadedDocumentUrl);
+
+        applicationEventPublisher.publishEvent(
+            new GeneratedOrderEvent(callbackRequest, requestData.authorisation(), requestData.userId(),
+                concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl),
+                documentContents));
     }
 
     private Document getDocument(String authorization,
@@ -144,7 +136,7 @@ public class GeneratedOrderController {
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-                service.getOrderTemplateData(caseData), templateType);
+            service.getOrderTemplateData(caseData), templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
