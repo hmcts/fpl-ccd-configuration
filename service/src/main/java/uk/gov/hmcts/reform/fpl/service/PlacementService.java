@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
@@ -38,7 +39,7 @@ public class PlacementService {
     }
 
     public Placement getPlacement(CaseData caseData, Element<Child> child) {
-        return findPlacement(getPlacements(caseData), child.getId())
+        return findPlacement(caseData.getPlacements(), child.getId())
             .map(Element::getValue)
             .orElse(Placement.builder()
                 .childId(child.getId())
@@ -46,22 +47,33 @@ public class PlacementService {
                 .build());
     }
 
-    private List<Element<Placement>> getPlacements(CaseData caseData) {
-        return caseData.getConfidentialPlacements().isEmpty()
-            ? caseData.getPlacements() : caseData.getConfidentialPlacements();
-    }
+    public List<Element<Placement>> setPlacement(CaseData caseData, Placement placement) {
+        List<Element<Placement>> placements = new ArrayList<>(caseData.getPlacements());
 
-    public List<Element<Placement>> setPlacement(Placement placement, List<Element<Placement>> placements) {
-        List<Element<Placement>> updatedPlacements = new ArrayList<>(placements);
-
-        findPlacement(updatedPlacements, placement.getChildId())
+        findPlacement(placements, placement.getChildId())
             .ifPresentOrElse(existingPlacement -> {
                 Element<Placement> newPlacement = element(existingPlacement.getId(), placement);
-                updatedPlacements.remove(existingPlacement);
-                updatedPlacements.add(newPlacement);
-            }, () -> updatedPlacements.add(element(placement)));
+                placements.remove(existingPlacement);
+                placements.add(newPlacement);
+            }, () -> placements.add(element(placement)));
 
-        return updatedPlacements;
+        return placements;
+    }
+
+    public List<Element<Placement>> withoutPlacementOrder(List<Element<Placement>> placements) {
+        return placements.stream()
+            .map(placement -> element(placement.getId(), placement.getValue().removePlacementOrder()))
+            .collect(toList());
+    }
+
+    public List<Element<Placement>> withoutConfidentialData(List<Element<Placement>> placements) {
+        return placements.stream()
+            .map(placement -> element(placement.getId(), removeConfidentialDocuments(placement)))
+            .collect(toList());
+    }
+
+    private Placement removeConfidentialDocuments(Element<Placement> placement) {
+        return placement.getValue().removePlacementOrder().removeConfidentialDocuments();
     }
 
     private static Optional<Element<Placement>> findPlacement(List<Element<Placement>> placements, UUID childId) {

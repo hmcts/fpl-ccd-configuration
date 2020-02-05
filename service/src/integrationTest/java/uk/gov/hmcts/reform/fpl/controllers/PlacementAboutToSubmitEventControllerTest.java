@@ -16,7 +16,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument.PlacementDocumentType.ANNEX_B;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
@@ -31,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
 class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
+    private static final UUID CONFIDENTIAL_DOC_ID = randomUUID();
 
     PlacementAboutToSubmitEventControllerTest() {
         super("placement");
@@ -98,16 +101,19 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
         assertThat(updatedCaseDetails).doesNotContainKey("placementChildName");
         assertThat(updatedCaseDetails).doesNotContainKey("singleChild");
 
-        assertThat(unwrapElements(caseData.getPlacementsWithoutPlacementOrder())).containsOnly(
-            childPlacement.getValue().toBuilder().orderAndNotices(null).build());
+        assertThat(convertToList(updatedCaseDetails, "placementsWithoutPlacementOrder").get(0))
+            .extracting("value")
+            .isEqualTo(expectedPlacementWithoutPlacementOrder(childPlacement, childApplication));
 
-        assertThat(unwrapElements(caseData.getConfidentialPlacements())).containsOnly(childPlacement.getValue());
+        assertThat(unwrapElements(caseData.getPlacements())).containsOnly(childPlacement.getValue());
 
-        assertThat(unwrapElements(caseData.getPlacements())).containsOnly(
-            childPlacement.getValue().toBuilder()
-                .confidentialDocuments(null)
-                .orderAndNotices(null)
-                .build());
+        assertThat(convertToList(updatedCaseDetails, "placements").get(0))
+            .extracting("value")
+            .isEqualTo(expectedPlacementWithoutConfidentialDocuments(childPlacement, childApplication));
+    }
+
+    private List convertToList(Map<String, Object> updatedCaseDetails, String string) {
+        return mapper.convertValue(updatedCaseDetails.get(string), List.class);
     }
 
     private Placement placement(Element<Child> child, DocumentReference application) {
@@ -121,7 +127,7 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
     }
 
     private List<Element<PlacementConfidentialDocument>> confidentialDocuments() {
-        return wrapElements(PlacementConfidentialDocument.builder().type(ANNEX_B).build());
+        return List.of(element(CONFIDENTIAL_DOC_ID, PlacementConfidentialDocument.builder().type(ANNEX_B).build()));
     }
 
     private List<Element<PlacementOrderAndNotices>> placementOrder() {
@@ -135,7 +141,29 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
                 "placementApplication", Map.of(
                     "document_binary_url", application.getBinaryUrl(),
                     "document_filename", application.getFilename(),
-                    "document_url", application.getUrl()
-                )));
+                    "document_url", application.getUrl())));
+    }
+
+    private Map<String, Object> expectedPlacementWithoutPlacementOrder(Element<Placement> placement,
+                                                                       DocumentReference application) {
+        return Map.of("placementChildName", placement.getValue().getChildName(),
+            "placementChildId", placement.getValue().getChildId().toString(),
+            "placementApplication", Map.of(
+                "document_binary_url", application.getBinaryUrl(),
+                "document_filename", application.getFilename(),
+                "document_url", application.getUrl()),
+            "placementConfidentialDocuments", List.of(Map.of(
+                "id", CONFIDENTIAL_DOC_ID.toString(),
+                "value", Map.of("type", "ANNEX_B"))));
+    }
+
+    private Map<String, Object> expectedPlacementWithoutConfidentialDocuments(Element<Placement> placement,
+                                                                              DocumentReference application) {
+        return Map.of("placementChildName", placement.getValue().getChildName(),
+            "placementChildId", placement.getValue().getChildId().toString(),
+            "placementApplication", Map.of(
+                "document_binary_url", application.getBinaryUrl(),
+                "document_filename", application.getFilename(),
+                "document_url", application.getUrl()));
     }
 }

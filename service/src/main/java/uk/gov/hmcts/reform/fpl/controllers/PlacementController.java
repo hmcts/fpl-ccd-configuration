@@ -85,20 +85,17 @@ public class PlacementController {
         Placement placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
             .setChild(child);
 
-        caseProperties.put("confidentialPlacements", placementService.setPlacement(placement, caseData.getConfidentialPlacements()));
+        List<Element<Placement>> updatedPlacement = placementService.setPlacement(caseData, placement);
 
-        caseProperties.put("placementsWithoutPlacementOrder", placementService.setPlacement(placement.removePlacementOrder(), caseData.getPlacementsWithoutPlacementOrder()));
+        caseProperties.put("confidentialPlacements", updatedPlacement);
+        caseProperties.put("placementsWithoutPlacementOrder", placementService.withoutPlacementOrder(updatedPlacement));
+        caseProperties.put("placements", placementService.withoutConfidentialData(updatedPlacement));
 
-        caseProperties.put("placements", placementService.setPlacement(removeDocuments(placement), caseData.getPlacements()));
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
             .build();
-    }
-
-    private Placement removeDocuments(Placement placement) {
-        return placement.removePlacementOrder().removeConfidentialDocuments();
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {
