@@ -190,7 +190,7 @@ dependencies {
   compile group: 'org.springframework.security', name: 'spring-security-config'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
-  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.4.1' // override to fix vulnerability issue (CVE-2019-17195)
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.5.1' // override to fix vulnerability issue (CVE-2019-17195)
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
