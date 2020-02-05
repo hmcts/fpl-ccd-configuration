@@ -191,23 +191,24 @@ public class NotificationHandler {
             }
 
         } else {
-            int newRepresentativeToNotify = caseData.getRepresentatives().size() - 1;
-            RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
-                .get(newRepresentativeToNotify).getValue().getServingPreferences();
+            if (!caseData.getRepresentatives().isEmpty()) {
+                int newRepresentativeToNotify = caseData.getRepresentatives().size() - 1;
+                RepresentativeServingPreferences servingPreferences = caseData.getRepresentatives()
+                    .get(newRepresentativeToNotify).getValue().getServingPreferences();
 
-            String email = caseData.getRepresentatives().get(newRepresentativeToNotify).getValue().getEmail();
+                String email = caseData.getRepresentatives().get(newRepresentativeToNotify).getValue().getEmail();
 
-            if(servingPreferences.equals(EMAIL))
-            {
-                Map<String, Object> parameters = partyAddedToCaseEmailContentProvider
-                    .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
+                if (servingPreferences.equals(EMAIL)) {
+                    Map<String, Object> parameters = partyAddedToCaseEmailContentProvider
+                        .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
 
-                sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
-            } else if(servingPreferences.equals(DIGITAL_SERVICE)) {
-                Map<String, Object> parameters = partyAddedToCaseThroughDigitalServicelContentProvider
-                    .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
+                    sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+                } else if (servingPreferences.equals(DIGITAL_SERVICE)) {
+                    Map<String, Object> parameters = partyAddedToCaseThroughDigitalServicelContentProvider
+                        .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
 
-                sendNotification(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+                    sendNotification(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+                }
             }
         }
     }
