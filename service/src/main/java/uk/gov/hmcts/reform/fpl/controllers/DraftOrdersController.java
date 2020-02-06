@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,13 +38,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 @Api
 @RestController
 @RequestMapping("/callback/draft-standard-directions")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftOrdersController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService docmosisService;
@@ -54,27 +59,6 @@ public class DraftOrdersController {
     private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
-
-    @Autowired
-    public DraftOrdersController(ObjectMapper mapper,
-                                 DocmosisDocumentGeneratorService docmosisService,
-                                 UploadDocumentService uploadDocumentService,
-                                 CaseDataExtractionService caseDataExtractionService,
-                                 CommonDirectionService commonDirectionService,
-                                 OrdersLookupService ordersLookupService,
-                                 CoreCaseDataService coreCaseDataService,
-                                 ApplicationEventPublisher applicationEventPublisher,
-                                 PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService) {
-        this.mapper = mapper;
-        this.docmosisService = docmosisService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.caseDataExtractionService = caseDataExtractionService;
-        this.commonDirectionService = commonDirectionService;
-        this.ordersLookupService = ordersLookupService;
-        this.coreCaseDataService = coreCaseDataService;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.prepareDirectionsForDataStoreService = prepareDirectionsForDataStoreService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -179,6 +163,7 @@ public class DraftOrdersController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .errors(validate(updated))
             .build();
     }
 
@@ -225,5 +210,16 @@ public class DraftOrdersController {
         }
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
+    }
+
+    private List<String> validate(CaseData caseData) {
+        if (SEALED == caseData.getStandardDirectionOrder().getOrderStatus()
+            && isEmpty(caseData.getHearingDetails())) {
+            return singletonList(
+                "This standard directions order does not have a hearing associated with it. "
+                    + "Please enter a hearing date and resubmit the SDO");
+        }
+
+        return emptyList();
     }
 }
