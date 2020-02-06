@@ -118,16 +118,7 @@ class NotificationHandlerTest {
     private GeneratedOrderEmailContentProvider orderEmailContentProvider;
 
     @Mock
-    private PartyAddedToCaseByEmailContentProvider partyAddedToCaseByEmailContentProvider;
-
-    @Mock
-    private PartyAddedToCaseThroughDigitalServicelContentProvider partyAddedToCaseThroughDigitalServicelContentProvider;
-
-    @Mock
     private DateFormatterService dateFormatterService;
-
-    @Mock
-    private HearingBookingService hearingBookingService;
 
     @Mock
     private IdamApi idamApi;
@@ -554,12 +545,11 @@ class NotificationHandlerTest {
                 .servingPreferences(EMAIL).build()).build();
         representatives.add(representative);
 
-        CaseDetails details = CaseDetails.builder().build();
-        RepresentativeServingPreferences preferences = EMAIL;
-        PartyAddedToCaseEvent event = new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives);
-
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(Mockito.any(),
             Mockito.any())).willReturn(expectedParameters);
+
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(Mockito.any()))
+            .willReturn(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
 
