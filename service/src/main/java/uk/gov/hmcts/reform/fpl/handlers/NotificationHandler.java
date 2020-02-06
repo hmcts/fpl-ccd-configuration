@@ -50,8 +50,7 @@ public class NotificationHandler {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
-    private final PartyAddedToCaseByEmailContentProvider partyAddedToCaseEmailContentProvider;
-    private final PartyAddedToCaseThroughDigitalServicelContentProvider partyAddedToCaseThroughDigitalServicelContentProvider;
+    private final PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
@@ -169,36 +168,24 @@ public class NotificationHandler {
     @EventListener
     private void sendNotificationToParties(PartyAddedToCaseEvent event) {
         List<Element<Representative>> representatives = event.getRepresentativesToNotify();
+        EventData eventData = new EventData(event);
+
         if (isNotEmpty(representatives)) {
-            if (!representatives.isEmpty()) {
                 representatives.stream().forEach(representativeElement -> {
                     String emailForRepresentative = representativeElement.getValue().getEmail();
                     RepresentativeServingPreferences servingPreferencesForRep = representativeElement.getValue().getServingPreferences();
                     if (!servingPreferencesForRep.equals(POST)) {
 
-                        EventData eventData = new EventData(event);
-                        Map<String, Object> parameters = getPartyAddedToCaseNotificationParameters(event, servingPreferencesForRep);
-                        String notificationTemplate = getPartyAddedToCaseNotificationTemplate(event, servingPreferencesForRep);
-                        sendNotification(notificationTemplate, emailForRepresentative, parameters, eventData.getReference());
+                        Map<String, Object> parameters = partyAddedToCaseContentProvider
+                            .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(),
+                                servingPreferencesForRep);
+                        String notificationTemplate = partyAddedToCaseContentProvider
+                            .getPartyAddedToCaseNotificationTemplate(servingPreferencesForRep);
 
+                        sendNotification(notificationTemplate, emailForRepresentative, parameters, eventData.getReference());
                     }
                 });
             }
-        }
-    }
-
-    private Map<String, Object> getPartyAddedToCaseNotificationParameters(PartyAddedToCaseEvent event, RepresentativeServingPreferences servingPreferences) {
-        if (servingPreferences.equals(EMAIL)) {
-            return partyAddedToCaseEmailContentProvider
-                .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
-        } else return partyAddedToCaseThroughDigitalServicelContentProvider
-                .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
-    }
-
-    private String getPartyAddedToCaseNotificationTemplate(PartyAddedToCaseEvent event, RepresentativeServingPreferences servingPreferences) {
-        if (servingPreferences.equals(EMAIL)) {
-            return PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-        } else return PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
