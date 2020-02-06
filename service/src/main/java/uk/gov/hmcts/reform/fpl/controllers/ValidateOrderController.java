@@ -22,7 +22,6 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
-import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.getSelectedIndexes;
 
 @Api
 @RestController
@@ -64,7 +63,7 @@ public class ValidateOrderController {
 
         List<String> errors = new ArrayList<>();
 
-        if (getSelectedIndexes(caseData.getChildSelector()).isEmpty()) {
+        if (caseData.getChildSelector().getSelected().isEmpty()) {
             errors.add("Select the children included in the order.");
         }
 

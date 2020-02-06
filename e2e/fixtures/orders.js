@@ -59,7 +59,7 @@ module.exports = [
       legalAdvisorName: 'Frank N. Stein',
     },
     directionText: 'Example direction',
-    children: [1],
+    children: [0],
   },
   {
     type: 'Supervision order',
@@ -73,7 +73,7 @@ module.exports = [
       legalAdvisorName: 'Frank N. Stein',
     },
     directionText: 'Example direction',
-    children: [2],
+    children: [1],
   },
   {
     type: 'Emergency protection order',
@@ -99,6 +99,6 @@ module.exports = [
     },
     directionText: 'Example direction',
     includePhrase: 'Yes',
-    children: 'All',
+    children: [0,1],
   },
 ];

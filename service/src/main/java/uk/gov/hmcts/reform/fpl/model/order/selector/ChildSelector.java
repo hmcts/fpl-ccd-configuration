@@ -1,28 +1,33 @@
 package uk.gov.hmcts.reform.fpl.model.order.selector;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildSelectorType;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Builder
 public class ChildSelector {
-    private String childCount;
-    private List<ChildSelectorType> child1;
-    private List<ChildSelectorType> child2;
-    private List<ChildSelectorType> child3;
-    private List<ChildSelectorType> child4;
-    private List<ChildSelectorType> child5;
-    private List<ChildSelectorType> child6;
-    private List<ChildSelectorType> child7;
-    private List<ChildSelectorType> child8;
-    private List<ChildSelectorType> child9;
-    private List<ChildSelectorType> child10;
-    private List<ChildSelectorType> child11;
-    private List<ChildSelectorType> child12;
-    private List<ChildSelectorType> child13;
-    private List<ChildSelectorType> child14;
-    private List<ChildSelectorType> child15;
+    @Setter(AccessLevel.PRIVATE)
+    @Builder.Default
+    private String childCount = "";
+    @Builder.Default
+    private List<Integer> selected = new ArrayList<>();
+
+    public void generateChildCount(int max) {
+        if (max < 1) {
+            setChildCount("");
+        } else {
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 1; i <= max; i++) {
+                builder.append(i);
+            }
+
+            setChildCount(builder.toString());
+        }
+    }
 }

@@ -21,7 +21,6 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildSelectorType.SELECTED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 
@@ -111,7 +110,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     @Test
     void shouldNotReturnErrorsWhenAChildIsSelected() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("childSelector", ChildSelector.builder().child1(List.of(SELECTED)).build()))
+            .data(Map.of("childSelector", ChildSelector.builder().selected(List.of(0)).build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");

@@ -42,7 +42,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.utils.ChildSelectorUtils.generateChildCount;
 
 @Slf4j
 @Api
@@ -85,10 +84,10 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
-            caseDetails.getData().put("childSelector", ChildSelector.builder()
-                .childCount(generateChildCount(caseData.getAllChildren().size()))
-                .build());
+            ChildSelector childSelector = ChildSelector.builder().build();
+            childSelector.generateChildCount(caseData.getAllChildren().size());
 
+            caseDetails.getData().put("childSelector", childSelector);
             caseDetails.getData().put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
         }
 
