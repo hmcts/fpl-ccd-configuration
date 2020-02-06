@@ -60,8 +60,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEM
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.*;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
@@ -83,6 +83,7 @@ class NotificationHandlerTest {
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String COURT_CODE = "11";
     private static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "joe-blogs@gmail.com";
+    private static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "damian@swansea.gov.uk";
 
     @Mock
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -531,7 +532,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationToPartiesAddedToCaseByEmail() throws IOException, NotificationClientException {
+    void shouldSendNotificationToPartiesWhenAddedToCaseByEmail() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", "Moley")
             .put("familyManCaseNumber", "123")
@@ -546,7 +547,6 @@ class NotificationHandlerTest {
         representatives.add(representative);
 
         RepresentativeServingPreferences preferences = EMAIL;
-        CaseDetails details = CaseDetails.builder().build();
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(),
             preferences)).willReturn(expectedParameters);
@@ -559,6 +559,50 @@ class NotificationHandlerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE), eq(PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
+    }
+
+    @Test
+    void shouldSendNotificationToPartiesWhenAddedToCaseThroughDigitalService() throws IOException, NotificationClientException {
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
+            .put("firstRespondentLastName", "Moley")
+            .put("familyManCaseNumber", "123")
+            .put("reference", "12345")
+            .build();
+
+        List<Element<Representative>> representatives = new ArrayList<>();
+        Element<Representative> representative = Element.<Representative>builder()
+            .value(Representative.builder()
+                .email("damian@swansea.gov.uk")
+                .servingPreferences(DIGITAL_SERVICE).build()).build();
+        representatives.add(representative);
+
+        RepresentativeServingPreferences preferences = DIGITAL_SERVICE;
+
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(),
+            preferences)).willReturn(expectedParameters);
+
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(preferences))
+            .willReturn(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
+
+        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE), eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
+            eq(expectedParameters), eq("12345"));
+    }
+
+    @Test
+    void shouldNotSendNotificationToPartiesWhenAddedToCaseThroughPost() throws IOException, NotificationClientException {
+        List<Element<Representative>> representatives = new ArrayList<>();
+        Element<Representative> representative = Element.<Representative>builder()
+            .value(Representative.builder()
+                .email("damian@swansea.gov.uk")
+                .servingPreferences(POST).build()).build();
+        representatives.add(representative);
+
+        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
+
+        verify(notificationClient, times(0)).sendEmail(null,null,null,null);
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
