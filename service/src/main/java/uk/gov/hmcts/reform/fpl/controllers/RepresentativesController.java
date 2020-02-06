@@ -90,7 +90,9 @@ public class RepresentativesController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
-        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(callbackRequest, authorization, userId));
+        List<Element<Representative>> representativeParties = representativeService.getRepresentativePartiesToNotify(callbackRequest);
+
+        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(callbackRequest, authorization, userId, representativeParties));
 
     }
 

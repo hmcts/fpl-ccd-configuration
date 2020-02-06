@@ -26,6 +26,7 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -166,59 +167,38 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationToPartyAddedToCase(PartyAddedToCaseEvent event) {
-        CaseData caseData = objectMapper.convertValue(event.getCallbackRequest().getCaseDetails().getData(), CaseData.class);
-        CaseData caseDataBefore = objectMapper.convertValue(event.getCallbackRequest().getCaseDetailsBefore().getData(), CaseData.class);
+    private void sendNotificationToParties(PartyAddedToCaseEvent event) {
+        List<Element<Representative>> representatives = event.getRepresentativesToNotify();
+        if (isNotEmpty(representatives)) {
+            if (!representatives.isEmpty()) {
+                representatives.stream().forEach(representativeElement -> {
+                    String emailForRepresentative = representativeElement.getValue().getEmail();
+                    RepresentativeServingPreferences servingPreferencesForRep = representativeElement.getValue().getServingPreferences();
+                    if (!servingPreferencesForRep.equals(POST)) {
 
-        if (isNotEmpty(caseDataBefore.getRepresentatives())) {
-            if(!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())){
-                List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(caseData,caseDataBefore);
-                sendNotificationToParties(event, changedRepresentatives);
-            }
+                        EventData eventData = new EventData(event);
+                        Map<String, Object> parameters = getPartyAddedToCaseNotificationParameters(event, servingPreferencesForRep);
+                        String notificationTemplate = getPartyAddedToCaseNotificationTemplate(event, servingPreferencesForRep);
+                        sendNotification(notificationTemplate, emailForRepresentative, parameters, eventData.getReference());
 
-            } else {
-            if (!caseData.getRepresentatives().isEmpty()) {
-                List<Element<Representative>> representatives = caseData.getRepresentatives();
-                sendNotificationToParties(event, representatives);
+                    }
+                });
             }
         }
     }
 
-    private void sendNotificationToParties(PartyAddedToCaseEvent event, List<Element<Representative>> representatives){
-                if(!representatives.isEmpty()){
-                    representatives.stream().forEach(representativeElement -> {
-                        String emailForRepresentative = representativeElement.getValue().getEmail();
-                        RepresentativeServingPreferences servingPreferencesForRep = representativeElement.getValue().getServingPreferences();
-
-                        sendNotificationBasedOnPreference(event, servingPreferencesForRep, emailForRepresentative);
-                    });
-                }
-            }
-
-    private void sendNotificationBasedOnPreference(PartyAddedToCaseEvent event, RepresentativeServingPreferences servingPreferences,
-                                                   String email){
-        EventData eventData = new EventData(event);
-
+    private Map<String, Object> getPartyAddedToCaseNotificationParameters(PartyAddedToCaseEvent event, RepresentativeServingPreferences servingPreferences) {
         if (servingPreferences.equals(EMAIL)) {
-            Map<String, Object> parameters = partyAddedToCaseEmailContentProvider
+            return partyAddedToCaseEmailContentProvider
                 .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
-
-            sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
-        } else if (servingPreferences.equals(DIGITAL_SERVICE)) {
-            Map<String, Object> parameters = partyAddedToCaseThroughDigitalServicelContentProvider
-                .buildPartyAddedToCaseNotification(eventData.getCaseDetails());
-
-            sendNotification(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
-        }
+        } else return partyAddedToCaseThroughDigitalServicelContentProvider
+                .buildPartyAddedToCaseNotification(event.getCallbackRequest().getCaseDetails());
     }
 
-    private List<Element<Representative>> getChangedRepresentatives(CaseData caseData, CaseData caseDataBefore){
-        List<Element<Representative>> representativesBefore = caseDataBefore.getRepresentatives();
-        List<Element<Representative>> representativesAfter = caseData.getRepresentatives();
-
-        representativesAfter.removeAll(representativesBefore);
-
-        return  representativesAfter;
+    private String getPartyAddedToCaseNotificationTemplate(PartyAddedToCaseEvent event, RepresentativeServingPreferences servingPreferences) {
+        if (servingPreferences.equals(EMAIL)) {
+            return PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
+        } else return PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {

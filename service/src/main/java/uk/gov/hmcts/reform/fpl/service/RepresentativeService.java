@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -41,6 +43,7 @@ public class RepresentativeService {
     private final CaseService caseService;
     private final OrganisationService organisationService;
     private final RepresentativeCaseRoleService representativeCaseRoleService;
+    private final ObjectMapper mapper;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -210,5 +213,33 @@ public class RepresentativeService {
             default:
                 return Optional.empty();
         }
+    }
+
+    public List<Element<Representative>> getRepresentativePartiesToNotify(CallbackRequest request){
+        CaseData caseData = mapper.convertValue(request.getCaseDetails().getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class);
+
+        if (isNotEmpty(caseDataBefore.getRepresentatives())) {
+            if(!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())){
+                return getChangedRepresentatives(caseData,caseDataBefore);
+            }
+
+        } else {
+            if (!caseData.getRepresentatives().isEmpty()) {
+                return caseData.getRepresentatives();
+            }
+        }
+
+        return null;
+    }
+
+
+    private List<Element<Representative>> getChangedRepresentatives(CaseData caseData, CaseData caseDataBefore){
+        List<Element<Representative>> representativesBefore = caseDataBefore.getRepresentatives();
+        List<Element<Representative>> representativesAfter = caseData.getRepresentatives();
+
+        representativesAfter.removeAll(representativesBefore);
+
+        return  representativesAfter;
     }
 }
