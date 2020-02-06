@@ -10,7 +10,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child1",
+    "ListElementCode": "child0",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 1",
@@ -20,7 +20,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child2",
+    "ListElementCode": "child1",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 2",
@@ -30,7 +30,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child3",
+    "ListElementCode": "child2",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 3",
@@ -40,7 +40,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child4",
+    "ListElementCode": "child3",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 4",
@@ -50,7 +50,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child5",
+    "ListElementCode": "child4",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 5",
@@ -60,7 +60,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child6",
+    "ListElementCode": "child5",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 6",
@@ -70,7 +70,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child7",
+    "ListElementCode": "child6",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 7",
@@ -80,7 +80,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child8",
+    "ListElementCode": "child7",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 8",
@@ -90,7 +90,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child9",
+    "ListElementCode": "child8",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 9",
@@ -100,7 +100,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child10",
+    "ListElementCode": "child9",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 10",
@@ -110,7 +110,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child11",
+    "ListElementCode": "child10",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 11",
@@ -120,7 +120,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child12",
+    "ListElementCode": "child11",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 12",
@@ -130,7 +130,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child13",
+    "ListElementCode": "child12",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 13",
@@ -140,7 +140,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child14",
+    "ListElementCode": "child13",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 14",
@@ -150,7 +150,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child15",
+    "ListElementCode": "child14",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 15",
