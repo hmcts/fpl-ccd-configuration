@@ -34,14 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
-import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
-import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.*;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
@@ -125,6 +118,9 @@ class NotificationHandlerTest {
 
     @Mock
     private GeneratedOrderEmailContentProvider orderEmailContentProvider;
+
+    @Mock
+    private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
     @Mock
     private DateFormatterService dateFormatterService;
@@ -260,7 +256,7 @@ class NotificationHandlerTest {
             // did this to enable ObjectMapper injection
             // TODO: 17/12/2019 nice to refactor to make cleaner
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
-                hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
+                hmctsEmailContentProvider, partyAddedToCaseContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
                 gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
                 localAuthorityEmailContentProvider, notificationClient, idamApi, inboxLookupService,
                 caseManagementOrderEmailContentProvider, representativeService, localAuthorityNameLookupConfiguration,
