@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,16 +23,13 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
-import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
-import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.events.*;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.*;
@@ -44,10 +42,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -64,7 +59,9 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMP
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
@@ -85,6 +82,7 @@ class NotificationHandlerTest {
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String COURT_CODE = "11";
+    private static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "joe-blogs@gmail.com";
 
     @Mock
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -120,10 +118,16 @@ class NotificationHandlerTest {
     private GeneratedOrderEmailContentProvider orderEmailContentProvider;
 
     @Mock
-    private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
+    private PartyAddedToCaseByEmailContentProvider partyAddedToCaseByEmailContentProvider;
+
+    @Mock
+    private PartyAddedToCaseThroughDigitalServicelContentProvider partyAddedToCaseThroughDigitalServicelContentProvider;
 
     @Mock
     private DateFormatterService dateFormatterService;
+
+    @Mock
+    private HearingBookingService hearingBookingService;
 
     @Mock
     private IdamApi idamApi;
@@ -139,6 +143,9 @@ class NotificationHandlerTest {
 
     @Mock
     private RepresentativeService representativeService;
+
+    @Mock
+    private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -530,6 +537,35 @@ class NotificationHandlerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters),
             eq("12345"));
+    }
+
+    @Test
+    void shouldSendNotificationToPartiesAddedToCaseByEmail() throws IOException, NotificationClientException {
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
+            .put("firstRespondentLastName", "Moley")
+            .put("familyManCaseNumber", "123")
+            .put("reference", "12345")
+            .build();
+
+        List<Element<Representative>> representatives = new ArrayList<>();
+        Element<Representative> representative = Element.<Representative>builder()
+            .value(Representative.builder()
+                .email("joe-blogs@gmail.com")
+                .servingPreferences(EMAIL).build()).build();
+        representatives.add(representative);
+
+        CaseDetails details = CaseDetails.builder().build();
+        RepresentativeServingPreferences preferences = EMAIL;
+        PartyAddedToCaseEvent event = new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives);
+
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(Mockito.any(),
+            Mockito.any())).willReturn(expectedParameters);
+
+        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE), eq(PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS),
+            eq(expectedParameters), eq("12345"));
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
