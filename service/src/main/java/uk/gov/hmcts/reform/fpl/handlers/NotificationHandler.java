@@ -166,7 +166,7 @@ public class NotificationHandler {
     }
 
     @EventListener
-    private void sendNotificationToParties(PartyAddedToCaseEvent event) {
+    public void sendNotificationToPartiesAddedToCase(PartyAddedToCaseEvent event) {
         List<Element<Representative>> representatives = event.getRepresentativesToNotify();
         EventData eventData = new EventData(event);
 
