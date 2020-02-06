@@ -545,10 +545,13 @@ class NotificationHandlerTest {
                 .servingPreferences(EMAIL).build()).build();
         representatives.add(representative);
 
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(Mockito.any(),
-            Mockito.any())).willReturn(expectedParameters);
+        RepresentativeServingPreferences preferences = EMAIL;
+        CaseDetails details = CaseDetails.builder().build();
 
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(Mockito.any()))
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(),
+            preferences)).willReturn(expectedParameters);
+
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(preferences))
             .willReturn(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
