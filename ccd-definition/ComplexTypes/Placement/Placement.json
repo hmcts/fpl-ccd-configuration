@@ -36,6 +36,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Placement",
+    "ListElementCode": "placementConfidentialDocuments",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PlacementConfidentialDocument",
+    "ElementLabel": "Confidential document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Placement",
     "ListElementCode": "placementOrderAndNotices",
     "FieldType": "Collection",
     "FieldTypeParameter": "PlacementOrderAndNotices",
