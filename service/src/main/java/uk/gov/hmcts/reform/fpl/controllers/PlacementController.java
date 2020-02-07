@@ -152,7 +152,7 @@ public class PlacementController {
     }
 
     private List<String> getDocumentReferenceForNoticeOfPlacementOrder(CaseData caseData) {
-        return placementService.getOrderAndNoticesDocumentUrls(
+        return placementService.getPlacementOrderAndNoticesDocumentUrls(
             caseData.getPlacements(), NOTICE_OF_PLACEMENT_ORDER);
     }
 }

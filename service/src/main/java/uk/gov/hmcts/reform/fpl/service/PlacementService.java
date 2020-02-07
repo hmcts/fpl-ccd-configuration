@@ -4,8 +4,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -70,8 +69,8 @@ public class PlacementService {
             .findFirst();
     }
 
-    public List<String> getOrderAndNoticesDocumentUrls(List<Element<Placement>> placements,
-                                                       PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
+    public List<String> getPlacementOrderAndNoticesDocumentUrls(List<Element<Placement>> placements,
+                                                                PlacementOrderAndNoticesType type) {
         return placements.isEmpty() ? emptyList() : placements
             .stream()
             .map(x -> x.getValue().getOrderAndNotices())
