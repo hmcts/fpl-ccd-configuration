@@ -260,20 +260,23 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
         byte[] pdf = {1, 2, 3, 4, 5};
         Document document = document();
 
+        private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
+        private static final String DRAFT_ORDER_FILE_NAME = "draft-standard-directions-order.pdf";
+
         DocumentTests() throws IOException {
             //NO - OP
         }
 
         @BeforeEach
         void setup() {
-            DocmosisDocument docmosisDocument = new DocmosisDocument("standard-directions-order.pdf", pdf);
+            DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, pdf);
 
             given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         }
 
         @Test
         void midEventShouldGenerateDraftStandardDirectionDocument() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, "draft-standard-directions-order.pdf"))
+            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, DRAFT_ORDER_FILE_NAME))
                 .willReturn(document);
 
             List<Element<Direction>> directions = buildDirections(
@@ -306,7 +309,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         @Test
         void aboutToSubmitShouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, "standard-directions-order.pdf"))
+            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
                 .willReturn(document);
 
             UUID uuid = UUID.randomUUID();
@@ -323,27 +326,13 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                     .build())
                 .build());
 
-            List<Element<Direction>> directionWithShowHideValuesRemoved = List.of(Element.<Direction>builder()
-                .id(uuid)
-                .value(Direction.builder()
-                    .directionType("Identify alternative carers")
-                    .assignee(LOCAL_AUTHORITY)
-                    .readOnly("Yes")
-                    .build())
-                .build());
+            List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(uuid);
 
             Order order = Order.builder()
                 .orderStatus(OrderStatus.SEALED)
                 .build();
 
-            CallbackRequest request = CallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                    .data(createCaseDataMap(directionWithShowHideValuesRemoved)
-                        .put("standardDirectionOrder", order)
-                        .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                        .build())
-                    .build())
-                .build();
+            CallbackRequest request = buildCallbackRequest(directionWithShowHideValuesRemoved, order);
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(request);
 
@@ -358,6 +347,51 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
             assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isNotNull();
             assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
+        }
+
+        @Test
+        void aboutToSubmitShouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
+            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
+                .willReturn(document());
+
+            UUID uuid = UUID.randomUUID();
+
+            List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(uuid);
+
+            Order order = Order.builder()
+                .orderStatus(OrderStatus.SEALED)
+                .build();
+
+            CallbackRequest request = buildCallbackRequest(directionWithShowHideValuesRemoved, order);
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
+
+            assertThat(response.getErrors())
+                .containsOnly("This standard directions order does not have a hearing associated with it. "
+                    + "Please enter a hearing date and resubmit the SDO");
+        }
+
+        private List<Element<Direction>> buildDirectionWithShowHideValuesRemoved(UUID uuid) {
+            return List.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .directionType("Identify alternative carers")
+                    .assignee(LOCAL_AUTHORITY)
+                    .readOnly("Yes")
+                    .build())
+                .build());
+        }
+
+        private CallbackRequest buildCallbackRequest(List<Element<Direction>> directionWithShowHideValuesRemoved,
+                                                     Order order) {
+            return CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                    .data(createCaseDataMap(directionWithShowHideValuesRemoved)
+                        .put("standardDirectionOrder", order)
+                        .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                        .build())
+                    .build())
+                .build();
         }
     }
 }
