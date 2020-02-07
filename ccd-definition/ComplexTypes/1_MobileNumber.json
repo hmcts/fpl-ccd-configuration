@@ -6,6 +6,8 @@
     "FieldType": "Text",
     "ElementLabel": "Mobile number",
     "HintText": "For example, 07665 545327",
+    "Min": "10",
+    "Max": "24",
     "SecurityClassification": "Public"
   }
 ]
