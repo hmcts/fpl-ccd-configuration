@@ -39,6 +39,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.deleteWhitespace;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -124,7 +125,7 @@ public class RoboticsDataService {
     }
 
     private String getApplicantPartyNumber(final Telephone telephone) {
-        return isNotEmpty(telephone) ? telephone.getTelephoneNumber() : null;
+        return isNotEmpty(telephone) ? formatContactNumber(telephone.getTelephoneNumber()) : null;
     }
 
     private String getApplicantContactName(final Telephone mobileNumber) {
@@ -267,5 +268,11 @@ public class RoboticsDataService {
 
     private boolean isAnyConfirmed(final String... values) {
         return asList(values).contains(YES.getValue());
+    }
+
+    private String formatContactNumber(final String number) {
+        final String regEx = "(?!^)\\+|[^+\\d]+";
+
+        return deleteWhitespace(number).replaceAll(regEx, "");
     }
 }
