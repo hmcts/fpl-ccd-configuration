@@ -182,7 +182,7 @@ def versions = [
 ]
 
 dependencies {
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
   compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot)

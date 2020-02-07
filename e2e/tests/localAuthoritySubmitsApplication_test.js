@@ -132,7 +132,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeAnswerInTab(14, 'Party', 'Father\'s full name', 'David Smith');
   I.seeAnswerInTab(15, 'Party', 'Does the father have parental responsibility?', 'Yes');
   I.seeAnswerInTab(16, 'Party', 'Name of social worker', 'James Jackson');
-  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567');
+  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567890');
   I.seeAnswerInTab(18, 'Party', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(19, 'Party', 'Do you need contact details hidden from other parties?', 'No');
   I.seeAnswerInTab(20, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'Yes');
@@ -151,7 +151,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeAnswerInTab(11, 'Party', 'Father\'s full name', 'David Smith');
   I.seeAnswerInTab(12, 'Party', 'Does the father have parental responsibility?', 'Yes');
   I.seeAnswerInTab(13, 'Party', 'Name of social worker', 'James Jackson');
-  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567');
+  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567890');
   I.seeAnswerInTab(15, 'Party', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(16, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(17, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
@@ -176,7 +176,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeAnswerInTab(12, 'Party', 'Father\'s full name', 'David Smith');
   I.seeAnswerInTab(13, 'Party', 'Does the father have parental responsibility?', 'Yes');
   I.seeAnswerInTab(14, 'Party', 'Name of social worker', 'James Jackson');
-  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567');
+  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567890');
   I.seeAnswerInTab(16, 'Party', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(17, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(18, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
