@@ -59,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
@@ -332,7 +333,19 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                 .orderStatus(OrderStatus.SEALED)
                 .build();
 
-            CallbackRequest request = buildCallbackRequest(directionWithShowHideValuesRemoved, order);
+            CallbackRequest request = CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                    .data(createCaseDataMap(directionWithShowHideValuesRemoved)
+                        .put("standardDirectionOrder", order)
+                        .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                        .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
+                            .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
+                            .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
+                            .venue("EXAMPLE")
+                            .build()))
+                        .build())
+                    .build())
+                .build();
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(request);
 
@@ -362,7 +375,14 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                 .orderStatus(OrderStatus.SEALED)
                 .build();
 
-            CallbackRequest request = buildCallbackRequest(directionWithShowHideValuesRemoved, order);
+            CallbackRequest request = CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                    .data(createCaseDataMap(directionWithShowHideValuesRemoved)
+                        .put("standardDirectionOrder", order)
+                        .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                        .build())
+                    .build())
+                .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
 
@@ -380,18 +400,6 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                     .readOnly("Yes")
                     .build())
                 .build());
-        }
-
-        private CallbackRequest buildCallbackRequest(List<Element<Direction>> directionWithShowHideValuesRemoved,
-                                                     Order order) {
-            return CallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                    .data(createCaseDataMap(directionWithShowHideValuesRemoved)
-                        .put("standardDirectionOrder", order)
-                        .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                        .build())
-                    .build())
-                .build();
         }
     }
 }

@@ -132,6 +132,14 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        List<String> validationErrors = orderValidationService.validate(caseData);
+        if (!validationErrors.isEmpty()) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .errors(orderValidationService.validate(caseData))
+                .build();
+        }
+
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(commonDirectionService.combineAllDirections(caseData))
@@ -162,7 +170,6 @@ public class DraftOrdersController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(orderValidationService.validate(updated))
             .build();
     }
 
