@@ -140,6 +140,14 @@ public class DraftOrdersController {
                 .build())
             .build();
 
+        List<String> validationErrors = orderValidationService.validate(updated);
+        if (!validationErrors.isEmpty()) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .errors(orderValidationService.validate(updated))
+                .build();
+        }
+
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
@@ -162,7 +170,6 @@ public class DraftOrdersController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(orderValidationService.validate(updated))
             .build();
     }
 

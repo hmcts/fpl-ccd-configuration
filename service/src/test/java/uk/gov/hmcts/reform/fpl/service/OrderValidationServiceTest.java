@@ -76,9 +76,16 @@ public class OrderValidationServiceTest {
         assertThat(returnedErrors).isEmpty();
     }
 
-    private Order buildOrderWithStatus(final OrderStatus orderStatus) {
-        return Order.builder()
-            .orderStatus(orderStatus)
+    private CaseDetails buildCaseDetailsWithHearingDetails(final OrderStatus orderStatus) {
+        CaseDetails caseDetails = buildCaseDetails(orderStatus);
+
+        Map<String, Object> caseDataMap = caseDetails.getData();
+
+        return caseDetails.toBuilder()
+            .data(ImmutableMap.<String, Object>builder()
+                .putAll(caseDataMap)
+                .putAll(Map.of(HEARING_DETAILS_KEY, createHearingBookings(LocalDateTime.now())))
+                .build())
             .build();
     }
 
@@ -91,16 +98,9 @@ public class OrderValidationServiceTest {
             .build();
     }
 
-    private CaseDetails buildCaseDetailsWithHearingDetails(final OrderStatus orderStatus) {
-        CaseDetails caseDetails = buildCaseDetails(orderStatus);
-
-        Map<String, Object> caseDataMap = caseDetails.getData();
-
-        return caseDetails.toBuilder()
-            .data(ImmutableMap.<String, Object>builder()
-                .putAll(caseDataMap)
-                .putAll(Map.of(HEARING_DETAILS_KEY, createHearingBookings(LocalDateTime.now())))
-                .build())
+    private Order buildOrderWithStatus(final OrderStatus orderStatus) {
+        return Order.builder()
+            .orderStatus(orderStatus)
             .build();
     }
 }
