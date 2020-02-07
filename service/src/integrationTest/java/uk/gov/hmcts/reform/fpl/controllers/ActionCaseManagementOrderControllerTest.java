@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -260,6 +261,10 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
             anyMap(), eq(CASE_ID));
 
+        verify(notificationClient).sendEmail(
+            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
+            anyMap(), eq(CASE_ID));
+
         verifyZeroInteractions(notificationClient);
     }
 
@@ -294,10 +299,11 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedShouldTriggerCMOProgressionAndSendNotificationsToOnlyLocalAuthorityAndCafcass() throws Exception {
+    void submittedShouldNotifyAdminSoTheyCanServeRepresentativesByPost() throws Exception {
         List<Element<Representative>> representativeServedByPost = wrapElements(Representative.builder()
             .email("bien@example.com")
             .fullName("Bien")
+            .address(Address.builder().build())
             .servingPreferences(POST)
             .build());
 
@@ -309,6 +315,10 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
+            anyMap(), eq(CASE_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
             anyMap(), eq(CASE_ID));
 
         verifyZeroInteractions(notificationClient);

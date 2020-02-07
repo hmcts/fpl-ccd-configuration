@@ -24,6 +24,7 @@ public class PeopleInCaseHelper {
             .orElse("");
     }
 
+    //To be deleted when print and post is available to use (before March 3rd)
     public static List<String> formatRepresentativesForPostNotification(List<Representative> representatives) {
         return representatives.stream()
             .map(rep -> rep.getFullName() + "\n" + rep.getAddress().getAddressAsString())

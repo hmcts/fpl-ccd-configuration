@@ -55,6 +55,7 @@ class OrderEmailContentProviderTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @MockBean
     private RepresentativeService representativeService;
 
     private OrderEmailContentProvider orderEmailContentProvider;

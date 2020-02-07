@@ -57,6 +57,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -71,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -280,6 +282,9 @@ class NotificationHandlerTest {
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
+            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
+
             given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
                 LOCAL_AUTHORITY_NAME))
                 .willReturn(expectedCMOIssuedNotificationParameters);
@@ -290,6 +295,10 @@ class NotificationHandlerTest {
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(expectedCMOIssuedNotificationParameters), eq("12345"));
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(COURT_EMAIL_ADDRESS),
+                anyMap(), eq("12345"));
         }
 
         @Test
@@ -298,6 +307,9 @@ class NotificationHandlerTest {
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
             CaseData caseData = buildCaseDataWithRepresentatives();
+
+            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
             given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
                 DIGITAL_SERVICE))
@@ -313,6 +325,10 @@ class NotificationHandlerTest {
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
                 eq(expectedCMOIssuedNotificationParametersForRepresentative), eq("12345"));
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(COURT_EMAIL_ADDRESS),
+                anyMap(), eq("12345"));
         }
 
         @Test
