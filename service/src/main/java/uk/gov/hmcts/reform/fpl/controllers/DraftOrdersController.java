@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -38,11 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 @Api
@@ -59,6 +57,7 @@ public class DraftOrdersController {
     private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
+    private final OrderValidationService orderValidationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -163,7 +162,7 @@ public class DraftOrdersController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validate(updated))
+            .errors(orderValidationService.validate(updated))
             .build();
     }
 
@@ -210,16 +209,5 @@ public class DraftOrdersController {
         }
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
-    }
-
-    private List<String> validate(CaseData caseData) {
-        if (SEALED == caseData.getStandardDirectionOrder().getOrderStatus()
-            && isEmpty(caseData.getHearingDetails())) {
-            return singletonList(
-                "This standard directions order does not have a hearing associated with it. "
-                    + "Please enter a hearing date and resubmit the SDO");
-        }
-
-        return emptyList();
     }
 }
