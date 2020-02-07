@@ -15,7 +15,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocumentsSentToParty {
-    private String partyName;
+    private final String partyName;
     private final List<Element<SentDocument>> documentsSentToParty;
 
     public DocumentsSentToParty(String partyName, List<Element<SentDocument>> documentsSentToParty) {

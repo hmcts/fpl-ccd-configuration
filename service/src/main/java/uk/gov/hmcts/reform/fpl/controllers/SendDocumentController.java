@@ -41,8 +41,10 @@ public class SendDocumentController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
         var representativesServedByPost =
             representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), POST);
+
         if (featureToggleService.isXeroxPrintingEnabled() && !representativesServedByPost.isEmpty()) {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData()
                 .remove("documentToBeSent"), DocumentReference.class);

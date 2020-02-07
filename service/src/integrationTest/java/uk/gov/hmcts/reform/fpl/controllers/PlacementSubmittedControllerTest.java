@@ -95,9 +95,11 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .id(CASE_ID)
                 .data(buildPlacementData(List.of(child1), List.of(child1Placement), child1.getId()))
                 .build())
             .caseDetailsBefore(CaseDetails.builder()
+                .id(CASE_ID)
                 .data(buildPlacementData(List.of(child1), List.of(child1Placement), child1.getId()))
                 .build())
             .build();

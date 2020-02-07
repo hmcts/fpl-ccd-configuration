@@ -33,6 +33,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ActiveProfiles("integration-test")
@@ -101,7 +102,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
             .id(RandomUtils.nextLong())
             .data(Map.of(
                 "documentToBeSent", documentReference,
-                "representatives", ElementUtils.wrapElements(representatives)))
+                "representatives", wrapElements(representatives)))
             .build();
     }
 
