@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerTest {
+class RepresentativeAboutToSubmitControllerTest extends AbstractControllerTest {
 
     private final String serviceAuthToken = RandomStringUtils.randomAlphanumeric(10);
 
@@ -52,7 +52,7 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
     @MockBean
     private CaseUserApi caseUserApi;
 
-    RepresentativeAboutToSubmitEventControllerTest() {
+    RepresentativeAboutToSubmitControllerTest() {
         super("manage-representatives");
     }
 

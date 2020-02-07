@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
+import uk.gov.hmcts.reform.fpl.service.PlacementService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.Map;
 import java.util.UUID;
@@ -37,6 +39,7 @@ public class PlacementController {
     private final PlacementService placementService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RequestData requestData;
+    private final CoreCaseDataService coreCaseDataService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -92,7 +95,7 @@ public class PlacementController {
             .setChild(child);
 
         caseProperties.put("placements", placementService.setPlacement(caseData, placement));
-        removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
+        removeTemporaryFields(caseDetails, "placementChildName", "singleChild");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
@@ -116,6 +119,15 @@ public class PlacementController {
         if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest);
         }
+
+        var placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class);
+        coreCaseDataService.triggerEvent(
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId(),
+            "internal-change:SEND_DOCUMENT",
+            Map.of("documentToBeSent", placement.getApplication())
+        );
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {

@@ -46,5 +46,4 @@ public class TestDataHelper {
             .application(testDocument())
             .build();
     }
-
 }

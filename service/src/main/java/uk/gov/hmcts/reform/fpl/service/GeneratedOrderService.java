@@ -208,13 +208,13 @@ public class GeneratedOrderService {
         return subtype + orderType.getFileName();
     }
 
-    public String getMostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
+    public DocumentReference getMostRecentUploadedOrderDocument(final List<Element<GeneratedOrder>> orders) {
         return getLast(orders.stream()
             .filter(Objects::nonNull)
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .collect(toList()))
-            .getDocument().getBinaryUrl();
+            .getDocument();
     }
 
     public void removeOrderProperties(Map<String, Object> caseData) {

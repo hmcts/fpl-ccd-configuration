@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 @Api
 @RestController
 @RequestMapping("/callback/draft-standard-directions")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftOrdersController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService docmosisService;
@@ -54,27 +56,6 @@ public class DraftOrdersController {
     private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
-
-    @Autowired
-    public DraftOrdersController(ObjectMapper mapper,
-                                 DocmosisDocumentGeneratorService docmosisService,
-                                 UploadDocumentService uploadDocumentService,
-                                 CaseDataExtractionService caseDataExtractionService,
-                                 CommonDirectionService commonDirectionService,
-                                 OrdersLookupService ordersLookupService,
-                                 CoreCaseDataService coreCaseDataService,
-                                 ApplicationEventPublisher applicationEventPublisher,
-                                 PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService) {
-        this.mapper = mapper;
-        this.docmosisService = docmosisService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.caseDataExtractionService = caseDataExtractionService;
-        this.commonDirectionService = commonDirectionService;
-        this.ordersLookupService = ordersLookupService;
-        this.coreCaseDataService = coreCaseDataService;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.prepareDirectionsForDataStoreService = prepareDirectionsForDataStoreService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -189,7 +170,8 @@ public class DraftOrdersController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (caseData.getStandardDirectionOrder().getOrderStatus() != OrderStatus.SEALED) {
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
             return;
         }
 
@@ -200,7 +182,14 @@ public class DraftOrdersController {
             "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
         );
 
-        if (caseData.getStandardDirectionOrder().getOrderStatus() == SEALED) {
+        if (standardDirectionOrder.getOrderStatus() == SEALED) {
+            coreCaseDataService.triggerEvent(
+                callbackRequest.getCaseDetails().getJurisdiction(),
+                callbackRequest.getCaseDetails().getCaseTypeId(),
+                callbackRequest.getCaseDetails().getId(),
+                "internal-change:SEND_DOCUMENT",
+                Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
+            );
             applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
                 authorization,
                 userId));

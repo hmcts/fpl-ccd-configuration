@@ -12,6 +12,8 @@ management:
 spring:
   application:
     name: fpl-service
+  main:
+    allow-bean-definition-overriding: true
 
 idam:
   s2s-auth:
@@ -24,6 +26,8 @@ fpl:
 
 spring:
   profiles: integration-test
+  main:
+    allow-bean-definition-overriding: true
   mail:
     host: 127.0.0.1
     port: 1025
@@ -78,6 +82,9 @@ rd_professional:
   api:
     url: http://fake-rd-professional-api
 
+send-letter:
+  url: http://fake-send-letter-api
+
 ccd:
   ui:
     base:
@@ -102,6 +109,9 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
 
+ld:
+  sdk_key: testKey
+
 robotics:
   notification:
     sender: sender@example.com
@@ -125,6 +135,8 @@ feature:
 
 spring:
   profiles: local
+  main:
+    allow-bean-definition-overriding: true
   security:
     enabled: true
     oauth2:
@@ -185,6 +197,9 @@ rd_professional:
   api:
     url: http://localhost:8765
 
+send-letter:
+  url: http://localhost:8765
+
 ccd:
   ui:
     base:
@@ -223,3 +238,6 @@ feature:
       support:
         api:
           enabled: true
+
+ld:
+  sdk_key: fake-key

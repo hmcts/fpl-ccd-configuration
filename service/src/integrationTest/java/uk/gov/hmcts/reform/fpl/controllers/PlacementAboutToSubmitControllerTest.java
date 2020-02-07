@@ -23,9 +23,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 @ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
+class PlacementAboutToSubmitControllerTest extends AbstractControllerTest {
 
-    PlacementAboutToSubmitEventControllerTest() {
+    PlacementAboutToSubmitControllerTest() {
         super("placement");
     }
 
@@ -56,7 +56,7 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
 
         Map<String, Object> updatedCaseDetails = callbackResponse.getData();
 
-        assertThat(updatedCaseDetails).doesNotContainKey("placement");
+        assertThat(updatedCaseDetails).containsKey("placement");
         assertThat(updatedCaseDetails).doesNotContainKey("placementChildName");
         assertThat(updatedCaseDetails).doesNotContainKey("singleChild");
 

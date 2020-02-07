@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.HashMap;
@@ -38,11 +39,16 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 class PlacementSubmittedControllerTest extends AbstractControllerTest {
     @MockBean
     private NotificationClient notificationClient;
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     private static final Long CASE_ID = 12345L;
     private static final String CASE_REFERENCE = "12345";
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
+
+    private final DocumentReference documentReference = DocumentReference.builder().build();
 
     PlacementSubmittedControllerTest() {
         super("placement");
@@ -76,6 +82,9 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
+        verify(coreCaseDataService).triggerEvent(null, null, CASE_ID, SEND_DOCUMENT_EVENT, Map.of(
+            "documentToBeSent", documentReference
+        ));
     }
 
     @Test
@@ -98,6 +107,9 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         verify(notificationClient, never()).sendEmail(
             eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
+        verify(coreCaseDataService).triggerEvent(null, null, CASE_ID, SEND_DOCUMENT_EVENT, Map.of(
+            "documentToBeSent", documentReference
+        ));
     }
 
     private Map<String, Object> buildPlacementData(List<Element<Child>> children,
@@ -106,6 +118,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         return Map.of(
             "children1", children,
             "placements", placements,
+            "placement", Placement.builder().application(documentReference).build(),
             "childrenList", childID);
     }
 

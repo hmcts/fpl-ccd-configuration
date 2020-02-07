@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -92,8 +91,11 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     private static final String CASE_ID = "12345";
     private static final String REPRESENTATIVES = "representatives";
     private static final String CAFCASS_EMAIL_ADDRESS = "cafcass@cafcass.com";
-    private static final String EVENT_KEY = "internal-change:CMO_PROGRESSION";
+    private static final String CMO_EVENT_KEY = "internal-change:CMO_PROGRESSION";
+    private static final String SEND_DOCUMENT_KEY = "internal-change:SEND_DOCUMENT";
     private static final UUID ID = randomUUID();
+
+    private final DocumentReference documentReference = buildFromDocument(document());
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
     @Autowired
@@ -158,7 +160,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartShouldNotProgressOrderWhenOrderActionIsNotSet() {
-        CaseDetails caseDetails = createCaseDetailstWithEmptyCMO();
+        CaseDetails caseDetails = createCaseDetailsWithEmptyCMO();
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -227,7 +229,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldRemoveOrderWhenOrderActionIsNotJudgeReview() {
-        CaseDetails caseDetails = createCaseDetailstWithEmptyCMO();
+        CaseDetails caseDetails = createCaseDetailsWithEmptyCMO();
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -245,7 +247,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         postSubmittedEvent(caseDetails);
 
-        verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
+        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
@@ -271,7 +273,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         postSubmittedEvent(caseDetails);
 
-        verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
+        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
@@ -300,7 +302,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         postSubmittedEvent(caseDetails);
 
-        verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
+        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
@@ -328,7 +330,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         verifyZeroInteractions(notificationClient);
     }
 
-    private CaseDetails createCaseDetailstWithEmptyCMO() {
+    private CaseDetails createCaseDetailsWithEmptyCMO() {
         Map<String, Object> data = new HashMap<>();
         final CaseManagementOrder order = CaseManagementOrder.builder().build();
 
@@ -338,7 +340,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     private CaseManagementOrder expectedCaseManagementOrder() {
         return CaseManagementOrder.builder()
-            .orderDoc(buildFromDocument(document()))
+            .orderDoc(documentReference)
             .id(ID)
             .directions(emptyList())
             .action(OrderAction.builder()
@@ -372,10 +374,11 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     private CaseManagementOrder getCaseManagementOrder() {
         return CaseManagementOrder.builder()
             .id(ID)
-            .status(CMOStatus.SEND_TO_JUDGE)
+            .status(SEND_TO_JUDGE)
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())
+            .orderDoc(DocumentReference.builder().build())
             .build();
     }
 
@@ -429,7 +432,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             REPRESENTATIVES, representatives,
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)
-                .orderDoc(DocumentReference.buildFromDocument(document))
+                .orderDoc(documentReference)
                 .action(OrderAction.builder()
                     .type(SEND_TO_ALL_PARTIES)
                     .build())
@@ -456,10 +459,16 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         return buildCaseDetails(data);
     }
 
-    private void verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO()
+    private void verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO()
         throws NotificationClientException {
         verify(coreCaseDataService)
-            .triggerEvent(JURISDICTION, CASE_TYPE, 12345L, EVENT_KEY);
+            .triggerEvent(JURISDICTION, CASE_TYPE, 12345L, CMO_EVENT_KEY);
+
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            12345L,
+            SEND_DOCUMENT_KEY,
+            Map.of("documentToBeSent", documentReference));
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),

@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.service.notify.NotificationClient;
 
@@ -87,6 +88,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
+    private static final Long CASE_ID = 19898989L;
 
     private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
 
@@ -98,6 +100,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Autowired
     private DateFormatterService dateFormatterService;
@@ -131,10 +136,26 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
     }
 
+    @Test
+    void submittedCallbackShouldTriggerSendDocumentEvent() {
+        String event = "internal-change:SEND_DOCUMENT";
+        postSubmittedEvent(buildCallbackRequest());
+
+        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, event, Map.of(
+            "documentToBeSent", DocumentReference.builder()
+                .filename("C21 3.pdf")
+                .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
+                .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
+                .build()
+        ));
+    }
+
     private CallbackRequest buildCallbackRequest() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .id(19898989L)
+                .id(CASE_ID)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
                 .data(ImmutableMap.of(
                     "orderCollection", createOrders(),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
