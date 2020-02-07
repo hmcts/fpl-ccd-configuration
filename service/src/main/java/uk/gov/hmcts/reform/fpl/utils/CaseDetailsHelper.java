@@ -8,10 +8,12 @@ public class CaseDetailsHelper {
     }
 
     public static String formatCCDCaseNumber(Long caseNumber) {
-        if (String.valueOf(caseNumber).length() != 16) {
+        String ccdCaseNumber = String.valueOf(caseNumber)
+            
+        if (ccdCaseNumber.length() != 16) {
             throw new IllegalArgumentException("CCD Case number must be 16 digits long");
         }
-
-        return String.join("-", Splitter.fixedLength(4).splitToList(String.valueOf(caseNumber)));
+        
+        return String.join("-", Splitter.fixedLength(4).splitToList(ccdCaseNumber));
     }
 }
