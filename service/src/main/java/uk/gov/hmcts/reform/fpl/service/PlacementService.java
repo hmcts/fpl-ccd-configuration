@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -70,14 +70,14 @@ public class PlacementService {
             .findFirst();
     }
 
-    public List<UUID> getElementIdsForOrderAndNotices(List<Element<Placement>> placements,
-                                                      PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
+    public List<String> getOrderAndNoticesDocumentUrls(List<Element<Placement>> placements,
+                                                       PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
         return placements.isEmpty() ? emptyList() : placements
             .stream()
             .map(x -> x.getValue().getOrderAndNotices())
             .flatMap(Collection::stream)
             .filter(y -> y.getValue().getType() == type)
-            .map(Element::getId)
+            .map(element -> element.getValue().getDocument().getBinaryUrl())
             .collect(toList());
     }
 }

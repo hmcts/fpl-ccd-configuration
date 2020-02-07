@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -27,9 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 
 @Api
@@ -102,10 +99,6 @@ public class PlacementController {
         caseProperties.put("placements", placementService.setPlacement(caseData, currentPlacement));
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 
-        if (!isUpdatingExistingPlacementFilename(previousPlacement, currentPlacement)) {
-            publishPlacementApplicationUploadEvent(callbackRequest);
-        }
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
             .build();
@@ -113,25 +106,28 @@ public class PlacementController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody @NotNull CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        List<UUID> currentPlacementOrderIds = getElementIdsForNoticeOfPlacementOrder(caseData);
-        List<UUID> previousPlacementOrderIds = getElementIdsForNoticeOfPlacementOrder(caseDataBefore);
+        List<String> currentPlacementDocRefs = getDocumentReferenceForNoticeOfPlacementOrder(caseData);
+        List<String> previousPlacementDocRefs = getDocumentReferenceForNoticeOfPlacementOrder(caseDataBefore);
 
-        currentPlacementOrderIds.removeAll(previousPlacementOrderIds);
+        currentPlacementDocRefs.removeAll(previousPlacementDocRefs);
 
-        //TODO get binary url link to correct notice of placement order
-        if (!currentPlacementOrderIds.isEmpty()) {
-            byte[] documentContents = documentDownloadService.downloadDocument(requestData.authorisation(), requestData.userId(),
-            caseData.getConfidentialPlacements().get(0).getValue().getOrderAndNotices().get(0).getValue().getDocument().getBinaryUrl());
+        System.out.println(currentPlacementDocRefs.size());
 
-            applicationEventPublisher.publishEvent(new NoticeOfPlacementOrderUploadedEvent(callbackRequest,
-                requestData.authorisation(), requestData.userId(), documentContents));
+        //send notification with right document
+        if (!currentPlacementDocRefs.isEmpty()) {
+            currentPlacementDocRefs.stream()
+                .map(binaryUrl -> documentDownloadService.downloadDocument(
+                    requestData.authorisation(), requestData.userId(), binaryUrl))
+                .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
+                    callbackRequest, requestData.authorisation(), requestData.userId(), documentContents))
+                .forEach(applicationEventPublisher::publishEvent);
         }
     }
 
@@ -155,18 +151,8 @@ public class PlacementController {
         }
     }
 
-    private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(
-            new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
-    }
-
-    private boolean isUpdatingExistingPlacementFilename(Placement previousPlacement, Placement newPlacement) {
-        return isNotEmpty(previousPlacement) && newPlacement.application.getFilename()
-            .equals(previousPlacement.application.getFilename());
-    }
-
-    private List<UUID> getElementIdsForNoticeOfPlacementOrder(CaseData caseData) {
-        return placementService.getElementIdsForOrderAndNotices(
-            caseData.getConfidentialPlacements(), NOTICE_OF_PLACEMENT_ORDER);
+    private List<String> getDocumentReferenceForNoticeOfPlacementOrder(CaseData caseData) {
+        return placementService.getOrderAndNoticesDocumentUrls(
+            caseData.getPlacements(), NOTICE_OF_PLACEMENT_ORDER);
     }
 }

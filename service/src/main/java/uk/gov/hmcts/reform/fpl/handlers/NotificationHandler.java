@@ -233,7 +233,7 @@ public class NotificationHandler {
     public void sendNotificationForNoticeOfPlacementOrderUploaded(NoticeOfPlacementOrderUploadedEvent event) {
         EventData eventData = new EventData(event);
         //Code from 1193 here
-        
+        System.out.println("Send placement email to admin");
         sendOrderNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             event.getDocumentContents());
     }
