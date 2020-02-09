@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESP
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -60,6 +63,9 @@ class RepresentativesServiceTest {
 
     @Mock
     private RequestData requestData;
+
+    @Mock
+    private ObjectMapper mapper;
 
     @Mock
     private RepresentativeCaseRoleService representativesCaseRoleService;
@@ -348,6 +354,15 @@ class RepresentativesServiceTest {
             .containsExactly(responded1Representative1.getId(), responded1Representative2.getId());
         assertThat(unwrapElements(respondent2.getRepresentedBy()))
             .containsExactly(responded2Representative.getId());
+    }
+
+    @Test
+    void shouldMapCaseData() throws IOException {
+
+
+//        final CaseData caseData = mapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
+
+        representativesService.getRepresentativePartiesToNotify(callbackRequest());
     }
 
     private static CaseData caseWithRepresentatives(Representative... representatives) {
