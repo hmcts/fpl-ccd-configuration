@@ -9,7 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -358,11 +361,32 @@ class RepresentativesServiceTest {
 
     @Test
     void shouldMapCaseData() throws IOException {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(Map.of(
+                    "id", "",
+                    "value", Representative.builder().build()
+                    )
+                )
+                .build())
+            .caseDetailsBefore(CaseDetails.builder()
+                .id(12345L)
+                .data(Map.of(
+                    "id", "",
+                    "value", Representative.builder().fullName("Test").build()
+                    )
+                )
+                .build())
+            .build();
 
+        CaseData data = caseWithRepresentatives();
 
-//        final CaseData caseData = mapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
+        Mockito.when(mapper.convertValue(request.getCaseDetails().getData(), CaseData.class)).thenReturn(data);
 
-        representativesService.getRepresentativePartiesToNotify(callbackRequest());
+        Mockito.when(mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(data);
+
+        representativesService.getRepresentativePartiesToNotify(request);
     }
 
     private static CaseData caseWithRepresentatives(Representative... representatives) {
