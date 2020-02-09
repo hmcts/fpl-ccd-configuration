@@ -19,7 +19,7 @@ public class PartyAddedToCaseThroughDigitalServicelContentProvider extends Abstr
     private final ObjectMapper objectMapper;
 
     @Autowired
-    protected PartyAddedToCaseThroughDigitalServicelContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+    public PartyAddedToCaseThroughDigitalServicelContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                                                     ObjectMapper objectMapper,
                                                                     DateFormatterService dateFormatterService,
                                                                     HearingBookingService hearingBookingService) {

@@ -32,6 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.*;
 
@@ -40,10 +43,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.*;
     DateFormatterService.class, HearingBookingService.class, PartyAddedToCaseThroughDigitalServicelContentProvider.class,
 PartyAddedToCaseByEmailContentProvider.class})
 class PartyAddedToCaseContentProviderTest {
-
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String CAFCASS_NAME = "Test cafcass";
-    private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
 
     @Autowired
     private HearingBookingService hearingBookingService;
@@ -64,6 +63,9 @@ class PartyAddedToCaseContentProviderTest {
         this.partyAddedToCaseByEmailContentProvider = new PartyAddedToCaseByEmailContentProvider("", mapper,
             dateFormatterService, hearingBookingService);
 
+        this.partyAddedToCaseThroughDigitalServicelContentProvider = new PartyAddedToCaseThroughDigitalServicelContentProvider(
+            "", mapper, dateFormatterService, hearingBookingService);
+
         this.partyAddedToCaseContentProvider = new PartyAddedToCaseContentProvider(
             "null", dateFormatterService, hearingBookingService, partyAddedToCaseByEmailContentProvider,
             partyAddedToCaseThroughDigitalServicelContentProvider);
@@ -79,5 +81,30 @@ class PartyAddedToCaseContentProviderTest {
         RepresentativeServingPreferences preferences = EMAIL;
 
         assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(), preferences)).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldGetPartyAddedToCaseThroughDigitalServiceNotificationParameters() throws IOException {
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
+            .put("firstRespondentLastName", "Smith")
+            .put("familyManCaseNumber", "12345L")
+            .put("caseUrl", "/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
+            .build();
+
+        RepresentativeServingPreferences preferences = DIGITAL_SERVICE;
+
+        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(), preferences)).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldGetPartyAddedToCaseByEmailNotificationTemplate() {
+        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(EMAIL))
+            .isEqualTo(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
+    }
+
+    @Test
+    void shouldGetPartyAddedThroughDigitalServiceNotificationTemplate() {
+        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(DIGITAL_SERVICE))
+            .isEqualTo(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
     }
 }

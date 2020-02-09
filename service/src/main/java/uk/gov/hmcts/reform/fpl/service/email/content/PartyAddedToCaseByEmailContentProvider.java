@@ -33,7 +33,7 @@ public class PartyAddedToCaseByEmailContentProvider extends AbstractEmailContent
     public Map<String, Object> buildPartyAddedToCaseNotification(final CaseDetails caseDetails) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         return Map.of(
-            "firstRespondentLastName", caseData.getRespondents1().get(0).getValue().getParty().getLastName(),
+            "firstRespondentLastName", isNull(caseData.getRespondents1()) ? "" : caseData.getRespondents1().get(0).getValue().getParty().getLastName(),
             "familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber()
         );
     }
