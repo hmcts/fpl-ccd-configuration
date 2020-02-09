@@ -25,7 +25,7 @@ public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvide
     private final PartyAddedToCaseThroughDigitalServicelContentProvider partyAddedToCaseThroughDigitalServicelContentProvider;
 
     @Autowired
-    protected PartyAddedToCaseContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+    public PartyAddedToCaseContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                               DateFormatterService dateFormatterService,
                                               HearingBookingService hearingBookingService,
                                               PartyAddedToCaseByEmailContentProvider partyAddedToCaseEmailContentProvider,

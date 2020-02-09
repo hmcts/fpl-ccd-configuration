@@ -22,7 +22,7 @@ public class PartyAddedToCaseByEmailContentProvider extends AbstractEmailContent
     private final ObjectMapper objectMapper;
 
     @Autowired
-    protected PartyAddedToCaseByEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+    public PartyAddedToCaseByEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                                      ObjectMapper objectMapper,
                                                      DateFormatterService dateFormatterService,
                                                      HearingBookingService hearingBookingService) {
