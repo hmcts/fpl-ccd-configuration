@@ -23,10 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -380,13 +377,31 @@ class RepresentativesServiceTest {
                 .build())
             .build();
 
-        CaseData data = caseWithRepresentatives();
+        List<Element<Representative>> representativeList = new ArrayList<>();
+        Element<Representative> representativeElement = Element.<Representative>builder()
+            .value(Representative.builder().fullName("Toireasa").build()).build();
+        representativeList.add(representativeElement);
 
-        Mockito.when(mapper.convertValue(request.getCaseDetails().getData(), CaseData.class)).thenReturn(data);
+        Element<Representative> representativeElementTwo = Element.<Representative>builder()
+            .value(Representative.builder().fullName("Siofra").build()).build();
+        representativeList.add(representativeElement);
 
-        Mockito.when(mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(data);
+        representativeList.add(representativeElementTwo);
 
-        representativesService.getRepresentativePartiesToNotify(request);
+        List<Element<Representative>> representativeListBefore = new ArrayList<>();
+        representativeListBefore.add(representativeElement);
+
+        CaseData caseDataBefore = CaseData.builder().caseName("Name").representatives(representativeListBefore).build();
+
+        CaseData caseData = CaseData.builder().caseName("Name").representatives(representativeList).build();
+
+        Mockito.when(mapper.convertValue(request.getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
+
+        Mockito.when(mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
+
+        List<Element<Representative>> representativesToNotify = representativesService
+            .getRepresentativePartiesToNotify(request);
+        System.out.println("Notify" + representativesToNotify);
     }
 
     private static CaseData caseWithRepresentatives(Representative... representatives) {

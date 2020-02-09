@@ -219,6 +219,11 @@ public class RepresentativeService {
         CaseData caseData = mapper.convertValue(request.getCaseDetails().getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class);
 
+        if(caseData.getCaseName().equals("Name"))
+        {
+            System.out.println("Test");
+        }
+
         if (isNotEmpty(caseDataBefore.getRepresentatives())) {
             if(!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())){
                 return getChangedRepresentatives(caseData,caseDataBefore);
