@@ -14,15 +14,15 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 
 @Service
-public class PartyAddedToCaseThroughDigitalServicelContentProvider extends AbstractEmailContentProvider {
+public class PartyAddedToCaseThroughDigitalServiceContentProvider extends AbstractEmailContentProvider {
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public PartyAddedToCaseThroughDigitalServicelContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                                                    ObjectMapper objectMapper,
-                                                                    DateFormatterService dateFormatterService,
-                                                                    HearingBookingService hearingBookingService) {
+    public PartyAddedToCaseThroughDigitalServiceContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                                                ObjectMapper objectMapper,
+                                                                DateFormatterService dateFormatterService,
+                                                                HearingBookingService hearingBookingService) {
         super(uiBaseUrl,dateFormatterService,hearingBookingService);
         this.objectMapper = objectMapper;
     }
@@ -30,7 +30,7 @@ public class PartyAddedToCaseThroughDigitalServicelContentProvider extends Abstr
     public Map<String, Object> buildPartyAddedToCaseNotification(final CaseDetails caseDetails) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         return Map.of(
-            "firstRespondentLastName", caseData.getRespondents1().get(0).getValue().getParty().getLastName(),
+            "firstRespondentLastName", isNull(caseData.getRespondents1()) ? "" : caseData.getRespondents1().get(0).getValue().getParty().getLastName(),
             "familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber(),
             "caseUrl", formatCaseURL(caseDetails.getId()));
     }
