@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESP
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -357,32 +359,34 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    void shouldMapCaseData() throws IOException {
-        List<Element<Representative>> representativeList = new ArrayList<>();
-        Element<Representative> representativeElement = Element.<Representative>builder()
-            .value(Representative.builder().fullName("Toireasa").build()).build();
-        representativeList.add(representativeElement);
-
-        Element<Representative> representativeElementTwo = Element.<Representative>builder()
-            .value(Representative.builder().fullName("Siofra").build()).build();
-        representativeList.add(representativeElement);
-
-        representativeList.add(representativeElementTwo);
-
-        List<Element<Representative>> representativeListBefore = new ArrayList<>();
-        representativeListBefore.add(representativeElement);
-
-        CaseData caseDataBefore = CaseData.builder().caseName("Name").representatives(representativeListBefore).build();
-
-        CaseData caseData = CaseData.builder().caseName("Name").representatives(representativeList).build();
+    void shouldGetRepresentativePartiesToNotifyWhenNewRepresentativeAdded() throws IOException {
+        CaseData caseDataBefore = CaseData.builder().representatives(emptyList()).build();
+        CaseData caseData = buildCaseDataWithRepresentatives();
 
         Mockito.when(mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
-
         Mockito.when(mapper.convertValue(callbackRequest().getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
+
+        List<Element<Representative>> expectedRepresentatives = createRepresentatives(DIGITAL_SERVICE);
 
         List<Element<Representative>> representativesToNotify = representativesService
             .getRepresentativePartiesToNotify(callbackRequest());
-        System.out.println("Notify" + representativesToNotify);
+
+        assertThat(representativesToNotify.equals(expectedRepresentatives));
+    }
+
+    private CaseData buildCaseDataWithRepresentatives() {
+        return CaseData.builder()
+            .representatives(createRepresentatives(DIGITAL_SERVICE))
+            .build();
+    }
+
+    public static List<Element<Representative>> createRepresentatives(
+        RepresentativeServingPreferences servingPreferences) {
+        return wrapElements(Representative.builder()
+            .email("abc@example.com")
+            .fullName("Jon Snow")
+            .servingPreferences(servingPreferences)
+            .build());
     }
 
     private static CaseData caseWithRepresentatives(Representative... representatives) {
