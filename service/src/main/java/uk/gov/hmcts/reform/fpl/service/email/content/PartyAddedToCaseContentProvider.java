@@ -36,7 +36,7 @@ public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvide
 
     public Map<String, Object> getPartyAddedToCaseNotificationParameters(CaseDetails caseDetails,
                                         RepresentativeServingPreferences servingPreferences) {
-        if (servingPreferences.equals(EMAIL)) {
+        if (servingPreferences == EMAIL) {
             return partyAddedToCaseEmailContentProvider
                 .buildPartyAddedToCaseNotification(caseDetails);
         } else {
@@ -46,7 +46,7 @@ public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvide
     }
 
     public String getPartyAddedToCaseNotificationTemplate(RepresentativeServingPreferences servingPreferences) {
-        if (servingPreferences.equals(EMAIL)) {
+        if (servingPreferences == EMAIL) {
             return PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
         }     else {
             return PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;

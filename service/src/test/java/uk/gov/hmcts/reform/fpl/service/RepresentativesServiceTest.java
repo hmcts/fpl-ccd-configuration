@@ -33,7 +33,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Map.entry;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -373,7 +372,7 @@ class RepresentativesServiceTest {
         List<Element<Representative>> expectedRepresentatives = createRepresentatives(DIGITAL_SERVICE);
 
         List<Element<Representative>> representativesToNotify = representativesService
-            .getRepresentativePartiesToNotify(callbackRequest());
+            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
 
         assertThat(representativesToNotify.equals(expectedRepresentatives));
     }
@@ -389,9 +388,9 @@ class RepresentativesServiceTest {
             .getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
 
         List<Element<Representative>> representativesToNotify = representativesService
-            .getRepresentativePartiesToNotify(callbackRequest());
+            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
 
-        assertNull(representativesToNotify);
+        assertThat(representativesToNotify.isEmpty());
     }
 
     @Test
@@ -407,7 +406,7 @@ class RepresentativesServiceTest {
         List<Element<Representative>> expectedRepresentatives = createRepresentatives(EMAIL);
 
         List<Element<Representative>> representativesToNotify = representativesService
-            .getRepresentativePartiesToNotify(callbackRequest());
+            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
 
         assertThat(representativesToNotify.equals(expectedRepresentatives));
     }

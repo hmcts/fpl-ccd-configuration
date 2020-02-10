@@ -226,7 +226,7 @@ public class NotificationHandler {
                 String email = representativeElement.getValue().getEmail();
                 RepresentativeServingPreferences servingPreferences
                         = representativeElement.getValue().getServingPreferences();
-                if (!servingPreferences.equals(POST)) {
+                if (servingPreferences != POST) {
 
                     Map<String, Object> parameters = partyAddedToCaseContentProvider
                         .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(),
