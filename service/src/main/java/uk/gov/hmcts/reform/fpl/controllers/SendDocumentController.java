@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -14,10 +13,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSenderService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
-import uk.gov.hmcts.reform.fpl.service.SentDocumentHistoryService;
 
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 
@@ -30,15 +29,12 @@ public class SendDocumentController {
     private final ObjectMapper mapper;
 
     private final DocumentSenderService documentSenderService;
-    private final SentDocumentHistoryService documentHistoryService;
     private final RepresentativeService representativeService;
     private final FeatureToggleService featureToggleService;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSave(
-        @RequestHeader("authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSave(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -49,10 +45,10 @@ public class SendDocumentController {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData()
                 .remove("documentToBeSent"), DocumentReference.class);
 
-            var printedDocuments = documentSenderService.send(documentToBeSent,
+            documentSenderService.send(documentToBeSent,
                 representativesServedByPost,
-                authorization,
-                userId);
+                requestData.authorisation(),
+                requestData.userId());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
