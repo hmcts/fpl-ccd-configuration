@@ -166,28 +166,5 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
                 "document_filename", application.getFilename(),
                 "document_url", application.getUrl()));
     }
-
-    private Map<String, Object> expectedPlacementWithoutPlacementOrder(Element<Placement> placement,
-                                                                       DocumentReference application) {
-        return Map.of("placementChildName", placement.getValue().getChildName(),
-            "placementChildId", placement.getValue().getChildId().toString(),
-            "placementApplication", Map.of(
-                "document_binary_url", application.getBinaryUrl(),
-                "document_filename", application.getFilename(),
-                "document_url", application.getUrl()),
-            "placementConfidentialDocuments", List.of(Map.of(
-                "id", CONFIDENTIAL_DOC_ID.toString(),
-                "value", Map.of("type", "ANNEX_B"))));
-    }
-
-    private Map<String, Object> expectedPlacementWithoutConfidentialDocuments(Element<Placement> placement,
-                                                                              DocumentReference application) {
-        return Map.of("placementChildName", placement.getValue().getChildName(),
-            "placementChildId", placement.getValue().getChildId().toString(),
-            "placementApplication", Map.of(
-                "document_binary_url", application.getBinaryUrl(),
-                "document_filename", application.getFilename(),
-                "document_url", application.getUrl()));
-    }
 }
 
