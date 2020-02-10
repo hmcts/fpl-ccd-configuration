@@ -495,8 +495,7 @@
         "title": "Example Order",
         "details": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
       },
-      "familyManCaseNumber": "12345L",
-      "representatives": []
+      "familyManCaseNumber": "12345L"
     }
   },
   "case_details_before": {

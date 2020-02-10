@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -25,8 +26,8 @@ import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 
 @Api
@@ -34,9 +35,9 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOr
 @RequestMapping("/callback/placement")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PlacementController {
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final ObjectMapper mapper;
     private final PlacementService placementService;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final RequestData requestData;
 
     @PostMapping("/about-to-start")
@@ -105,25 +106,35 @@ public class PlacementController {
             .build();
     }
 
+    //TODO: this method is getting too busy. What is the best way to split logic out here?
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody @NotNull CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        List<String> currentDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseData);
-        List<String> previousDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseDataBefore);
+        UUID childId = getSelectedChildId(caseDetails, caseData);
+        Element<Child> child = placementService.getChild(caseData, childId);
+
+        Placement currentPlacement = placementService.getPlacement(caseData, child);
+        Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
+
+        // TODO refactor: this logic is confusing. Suggested: new method isNewOrUpdated...
+        if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
+            publishPlacementApplicationUploadEvent(callbackRequest);
+        }
+
+        List<String> currentDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseData.getPlacements());
+        List<String> previousDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseDataBefore.getPlacements());
         currentDocumentUrls.removeAll(previousDocumentUrls);
 
-        if (!currentDocumentUrls.isEmpty()) {
-            currentDocumentUrls.forEach(newDocument -> applicationEventPublisher.publishEvent(
-                new NoticeOfPlacementOrderUploadedEvent(
-                    callbackRequest,
-                    requestData.authorisation(),
-                    requestData.userId())));
-        }
+        currentDocumentUrls.forEach(newDocument -> applicationEventPublisher.publishEvent(
+            new NoticeOfPlacementOrderUploadedEvent(
+                callbackRequest,
+                requestData.authorisation(),
+                requestData.userId())));
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {
@@ -146,8 +157,18 @@ public class PlacementController {
         }
     }
 
-    private List<String> getBinaryUrlsForNoticeOfPlacementOrder(CaseData caseData) {
-        return placementService.getBinaryUrlsForOrderAndNotices(
-            caseData.getPlacements(), NOTICE_OF_PLACEMENT_ORDER);
+    private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
+        applicationEventPublisher.publishEvent(
+            new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
+    }
+
+    //TODO: refactor logic. Double negative for !isNotEmpty currently.
+    private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
+        return isNotEmpty(previousPlacement)
+            && newPlacement.getApplication().equals(previousPlacement.getApplication());
+    }
+
+    private List<String> getBinaryUrlsForNoticeOfPlacementOrder(List<Element<Placement>> placements) {
+        return placementService.getBinaryUrlsForOrderAndNotices(placements, NOTICE_OF_PLACEMENT_ORDER);
     }
 }

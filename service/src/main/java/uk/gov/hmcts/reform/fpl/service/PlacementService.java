@@ -99,9 +99,6 @@ public class PlacementService {
     }
 
     private String getBinaryUrl(Element<PlacementOrderAndNotices> element) {
-        DocumentReference document = ofNullable(element.getValue().getDocument())
-            .orElse(DocumentReference.builder().build());
-
-        return document.getBinaryUrl();
+        return ofNullable(element.getValue().getDocument()).orElse(DocumentReference.builder().build()).getBinaryUrl();
     }
 }

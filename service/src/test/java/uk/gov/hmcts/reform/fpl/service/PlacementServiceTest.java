@@ -207,7 +207,7 @@ class PlacementServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyListWhenPlacementWithNoOrderAndNotices() {
+        void shouldReturnEmptyListWhenPlacementDoesNotContainOrderAndNotices() {
             List<Element<Placement>> placements = wrapElements(placementWithoutOrderAndNotices());
 
             assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, PLACEMENT_ORDER)).isEmpty();
@@ -229,12 +229,7 @@ class PlacementServiceTest {
         void shouldReturnEmptyListWhenBinaryUrlIsNotPresent() {
             PlacementOrderAndNotices.PlacementOrderAndNoticesType type = PLACEMENT_ORDER;
 
-            List<Element<Placement>> placements = wrapElements(
-                Placement.builder()
-                    .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
-                        .type(type)
-                        .build()))
-                    .build());
+            List<Element<Placement>> placements = wrapElements(placement(null, type));
 
             assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, type)).isEmpty();
         }
