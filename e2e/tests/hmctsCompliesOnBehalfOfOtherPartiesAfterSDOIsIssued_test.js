@@ -26,7 +26,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
     enterFamilyManCaseNumberEventPage.enterCaseID();
     await I.completeEvent('Save and continue');
-    caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+    await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
     await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
     await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
     caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
