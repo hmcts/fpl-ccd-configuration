@@ -76,5 +76,4 @@ class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
                     "document_url", application.getUrl()
                 )));
     }
-
 }
