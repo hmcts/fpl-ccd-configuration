@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEven
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -43,6 +44,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvi
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
@@ -72,6 +74,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMP
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
@@ -142,6 +145,9 @@ class NotificationHandlerTest {
 
     @Mock
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
+
+    @Mock
+    private PlacementApplicationContentProvider placementApplicationContentProvider;
 
     @Mock
     private RepresentativeService representativeService;
@@ -267,8 +273,8 @@ class NotificationHandlerTest {
                 hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
                 gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
                 localAuthorityEmailContentProvider, notificationClient, idamApi, inboxLookupService,
-                caseManagementOrderEmailContentProvider, representativeService, localAuthorityNameLookupConfiguration,
-                objectMapper);
+                caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
+                localAuthorityNameLookupConfiguration, objectMapper);
         }
 
         @Test
@@ -565,6 +571,33 @@ class NotificationHandlerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters),
             eq("12345"));
+    }
+
+    @Test
+    void shouldNotifyAdminOfPlacementApplicationUpload() throws Exception {
+        CallbackRequest callbackRequest = callbackRequest();
+        CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
+
+        given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
+
+        given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseDetails))
+            .willReturn(expectedParameters);
+
+        notificationHandler.notifyAdminOfPlacementApplicationUpload(
+            new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
+            eq(expectedParameters), eq("12345"));
+    }
+
+    private Map<String, Object> getExpectedPlacementNotificationParameters() {
+        return ImmutableMap.of(
+            "respondentLastName", "Moley",
+            "caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345"
+        );
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {

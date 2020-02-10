@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,16 +13,20 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -31,6 +36,8 @@ public class PlacementController {
 
     private final ObjectMapper mapper;
     private final PlacementService placementService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -98,6 +105,25 @@ public class PlacementController {
             .build();
     }
 
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        UUID childId = getSelectedChildId(caseDetails, caseData);
+        Element<Child> child = placementService.getChild(caseData, childId);
+
+        Placement currentPlacement = placementService.getPlacement(caseData, child);
+        Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
+
+        if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
+            publishPlacementApplicationUploadEvent(callbackRequest);
+        }
+    }
+
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {
         if (placementService.hasSingleChild(caseData)) {
             return caseData.getAllChildren().get(0).getId();
@@ -116,5 +142,15 @@ public class PlacementController {
         for (String field : fields) {
             caseDetails.getData().remove(field);
         }
+    }
+
+    private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
+        applicationEventPublisher.publishEvent(
+            new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
+    }
+
+    private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
+        return isNotEmpty(previousPlacement)
+            && newPlacement.getApplication().equals(previousPlacement.getApplication());
     }
 }
