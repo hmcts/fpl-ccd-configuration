@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ObjectMapper.class, PlacementService.class})
-public class PlacementServiceTest {
+class PlacementServiceTest {
 
     @Autowired
     private PlacementService placementService;
@@ -42,19 +42,19 @@ public class PlacementServiceTest {
     class HasSingleChild {
 
         @Test
-        public void shouldReturnFalseWhenCaseHasNoChild() {
+        void shouldReturnFalseWhenCaseHasNoChild() {
             CaseData caseData = caseWithChildren(emptyList());
             assertThat(placementService.hasSingleChild(caseData)).isFalse();
         }
 
         @Test
-        public void shouldReturnFalseWhenCaseHasMoreThanOneChild() {
+        void shouldReturnFalseWhenCaseHasMoreThanOneChild() {
             CaseData caseData = caseWithChildren(testChild(), testChild());
             assertThat(placementService.hasSingleChild(caseData)).isFalse();
         }
 
         @Test
-        public void shouldReturnTrueWhenCaseHasOneChild() {
+        void shouldReturnTrueWhenCaseHasOneChild() {
             CaseData caseData = caseWithChildren(testChild());
             assertThat(placementService.hasSingleChild(caseData)).isTrue();
         }
@@ -64,7 +64,7 @@ public class PlacementServiceTest {
     class GetChild {
 
         @Test
-        public void shouldGetChild() {
+        void shouldGetChild() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -75,7 +75,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldReturnNullIfChildIsNotFound() {
+        void shouldReturnNullIfChildIsNotFound() {
             Element<Child> child1 = testChild();
 
             CaseData caseData = caseWithChildren(child1);
@@ -88,7 +88,7 @@ public class PlacementServiceTest {
     class GetChildrenList {
 
         @Test
-        public void shouldGetChildrenList() {
+        void shouldGetChildrenList() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -101,7 +101,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldGetPreselectedChildrenList() {
+        void shouldGetPreselectedChildrenList() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -115,7 +115,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldGetEmptyChildrenList() {
+        void shouldGetEmptyChildrenList() {
             List<Element<Child>> children = emptyList();
 
             CaseData caseData = caseWithChildren(children);
@@ -129,7 +129,7 @@ public class PlacementServiceTest {
     class GetPlacement {
 
         @Test
-        public void shouldGetDefaultPlacement() {
+        void shouldGetDefaultPlacement() {
             Element<Child> child = testChild();
 
             CaseData caseData = caseWithChildren(child);
@@ -143,7 +143,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldGetExistingPlacement() {
+        void shouldGetExistingPlacement() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -163,7 +163,7 @@ public class PlacementServiceTest {
     class SetPlacement {
 
         @Test
-        public void shouldAddNewPlacement() {
+        void shouldAddNewPlacement() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -178,7 +178,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldUpdateExistingPlacement() {
+        void shouldUpdateExistingPlacement() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 

@@ -13,6 +13,8 @@ module.exports = {
         mobileNumber: `#applicants_${index}_party_mobileNumber_telephoneNumber`,
         jobTitle: `#applicants_${index}_party_jobTitle`,
         pbaNumber: `input[id="applicants_${index}_party_pbaNumber"]`,
+        clientCode: `input[id="applicants_${index}_party_clientCode"]`,
+        customerReference: `input[id="applicants_${index}_party_customerReference"]`,
       },
       solicitor: {
         name: '#solicitor_name',
@@ -30,6 +32,8 @@ module.exports = {
 
     I.fillField(this.fields(elementIndex).applicant.name, applicant.name);
     I.fillField(this.fields(elementIndex).applicant.pbaNumber, applicant.pbaNumber);
+    I.fillField(this.fields(elementIndex).applicant.clientCode, applicant.clientCode);
+    I.fillField(this.fields(elementIndex).applicant.customerReference, applicant.customerReference);
     within(this.fields(elementIndex).applicant.address, () => {
       //XXX postcode lookup
       postcodeLookup.enterAddressManually(applicant.address);

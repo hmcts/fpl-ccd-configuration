@@ -67,6 +67,22 @@ public class PlacementService {
         return placements;
     }
 
+    public List<Element<Placement>> withoutPlacementOrder(List<Element<Placement>> placements) {
+        return placements.stream()
+            .map(placement -> element(placement.getId(), placement.getValue().removePlacementOrder()))
+            .collect(toList());
+    }
+
+    public List<Element<Placement>> withoutConfidentialData(List<Element<Placement>> placements) {
+        return placements.stream()
+            .map(placement -> element(placement.getId(), removeConfidentialDocuments(placement)))
+            .collect(toList());
+    }
+
+    private Placement removeConfidentialDocuments(Element<Placement> placement) {
+        return placement.getValue().removePlacementOrder().removeConfidentialDocuments();
+    }
+
     private static Optional<Element<Placement>> findPlacement(List<Element<Placement>> placements, UUID childId) {
         return placements.stream()
             .filter(placement -> placement.getValue().getChildId().equals(childId))
