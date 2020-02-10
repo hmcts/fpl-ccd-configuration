@@ -685,7 +685,7 @@ class NotificationHandlerTest {
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
 
-        verify(notificationClient, times(0)).sendEmail(null,null,null,null);
+        verify(notificationClient, times(0)).sendEmail(null, null, null, null);
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {

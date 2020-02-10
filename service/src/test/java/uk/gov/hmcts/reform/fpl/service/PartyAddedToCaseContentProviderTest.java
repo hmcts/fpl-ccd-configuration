@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseByEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseThroughDigitalServiceContentProvider;
@@ -65,10 +64,8 @@ class PartyAddedToCaseContentProviderTest {
             .put("familyManCaseNumber", "12345L")
             .build();
 
-        RepresentativeServingPreferences preferences = EMAIL;
-
         assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
-            callbackRequest().getCaseDetails(), preferences)).isEqualTo(expectedParameters);
+            callbackRequest().getCaseDetails(), EMAIL)).isEqualTo(expectedParameters);
     }
 
     @Test
@@ -79,10 +76,8 @@ class PartyAddedToCaseContentProviderTest {
             .put("caseUrl", "/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
             .build();
 
-        RepresentativeServingPreferences preferences = DIGITAL_SERVICE;
-
         assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
-            callbackRequest().getCaseDetails(), preferences)).isEqualTo(expectedParameters);
+            callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).isEqualTo(expectedParameters);
     }
 
     @Test

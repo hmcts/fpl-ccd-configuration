@@ -221,15 +221,13 @@ public class RepresentativeService {
 
         if (isNotEmpty(caseDataBefore.getRepresentatives())) {
             if (!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())) {
-                return getChangedRepresentatives(caseData,caseDataBefore);
+                return getChangedRepresentatives(caseData, caseDataBefore);
             }
-
         } else {
             if (!caseData.getRepresentatives().isEmpty()) {
                 return caseData.getRepresentatives();
             }
         }
-
         return null;
     }
 
