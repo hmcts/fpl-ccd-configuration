@@ -5,14 +5,15 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseByEmailEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
-import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseThroughDigitalServiceEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -25,7 +26,6 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.*;
 
 @Api
 @RestController
@@ -90,9 +90,11 @@ public class RepresentativesController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
-        List<Element<Representative>> representativeParties = representativeService.getRepresentativePartiesToNotify(callbackRequest);
+        List<Element<Representative>> representativeParties = representativeService
+            .getRepresentativePartiesToNotify(callbackRequest);
 
-        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(callbackRequest, authorization, userId, representativeParties));
+        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(
+            callbackRequest, authorization, userId, representativeParties));
 
     }
 

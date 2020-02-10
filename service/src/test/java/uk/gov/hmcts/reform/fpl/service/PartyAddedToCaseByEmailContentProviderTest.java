@@ -46,7 +46,8 @@ class PartyAddedToCaseByEmailContentProviderTest {
             .put("familyManCaseNumber", "12345L")
             .build();
 
-        assertThat(partyAddedToCaseByEmailContentProvider.buildPartyAddedToCaseNotification(callbackRequest().getCaseDetails()))
+        assertThat(partyAddedToCaseByEmailContentProvider.buildPartyAddedToCaseNotification(
+            callbackRequest().getCaseDetails()))
             .isEqualTo(expectedParameters);
     }
 

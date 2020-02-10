@@ -11,8 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -24,7 +22,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -47,7 +49,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESP
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -364,8 +365,10 @@ class RepresentativesServiceTest {
         CaseData caseDataBefore = CaseData.builder().representatives(emptyList()).build();
         CaseData caseData = buildCaseDataWithRepresentatives();
 
-        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
-        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
+        Mockito.when(mapper.convertValue(callbackRequest()
+            .getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
+        Mockito.when(mapper.convertValue(callbackRequest()
+            .getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
 
         List<Element<Representative>> expectedRepresentatives = createRepresentatives(DIGITAL_SERVICE);
 
@@ -380,8 +383,10 @@ class RepresentativesServiceTest {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives();
         CaseData caseData = buildCaseDataWithRepresentatives();
 
-        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
-        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
+        Mockito.when(mapper.convertValue(callbackRequest()
+            .getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
+        Mockito.when(mapper.convertValue(callbackRequest()
+            .getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
 
         List<Element<Representative>> representativesToNotify = representativesService
             .getRepresentativePartiesToNotify(callbackRequest());
@@ -403,8 +408,10 @@ class RepresentativesServiceTest {
         CaseData caseData = CaseData.builder().representatives(
             changedRepresentatives).build();
 
-        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
-        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
+        Mockito.when(mapper.convertValue(callbackRequest()
+            .getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
+        Mockito.when(mapper.convertValue(callbackRequest()
+            .getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
 
         List<Element<Representative>> expectedRepresentatives = createRepresentatives(EMAIL);
 

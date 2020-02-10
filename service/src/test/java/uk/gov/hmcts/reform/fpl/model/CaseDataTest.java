@@ -95,7 +95,7 @@ class CaseDataTest {
     void shouldGetEmptyListOfOthersWhenOthersAreEmpty() {
         CaseData caseData = caseData(Others.builder());
 
-        assertThat(caseData.getAllOthers().get(0).getValue()).isNull();
+        assertThat(caseData.getAllOthers().isEmpty());
     }
 
     @Test

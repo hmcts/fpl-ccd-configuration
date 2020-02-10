@@ -11,33 +11,52 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
-import uk.gov.hmcts.reform.fpl.events.*;
+import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
+import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
-import uk.gov.hmcts.reform.fpl.service.email.content.*;
+import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
+import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
-import uk.gov.service.notify.SendEmailResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static jdk.dynalink.linker.support.Guards.isNotNull;
-import static jdk.dynalink.linker.support.Guards.isNull;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.*;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 
 @Slf4j
 @Component
@@ -171,21 +190,23 @@ public class NotificationHandler {
         EventData eventData = new EventData(event);
 
         if (isNotEmpty(representatives)) {
-                representatives.stream().forEach(representativeElement -> {
-                    String emailForRepresentative = representativeElement.getValue().getEmail();
-                    RepresentativeServingPreferences servingPreferencesForRep = representativeElement.getValue().getServingPreferences();
-                    if (!servingPreferencesForRep.equals(POST)) {
+            representatives.stream().forEach(representativeElement -> {
+                String emailForRepresentative = representativeElement.getValue().getEmail();
+                RepresentativeServingPreferences servingPreferencesForRep
+                        = representativeElement.getValue().getServingPreferences();
+                if (!servingPreferencesForRep.equals(POST)) {
 
-                        Map<String, Object> parameters = partyAddedToCaseContentProvider
-                            .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(),
-                                servingPreferencesForRep);
-                        String notificationTemplate = partyAddedToCaseContentProvider
-                            .getPartyAddedToCaseNotificationTemplate(servingPreferencesForRep);
+                    Map<String, Object> parameters = partyAddedToCaseContentProvider
+                        .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(),
+                           servingPreferencesForRep);
+                    String notificationTemplate = partyAddedToCaseContentProvider
+                        .getPartyAddedToCaseNotificationTemplate(servingPreferencesForRep);
 
-                        sendNotification(notificationTemplate, emailForRepresentative, parameters, eventData.getReference());
-                    }
-                });
-            }
+                    sendNotification(notificationTemplate, emailForRepresentative, parameters,
+                        eventData.getReference());
+                }
+            });
+        }
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
@@ -258,9 +279,7 @@ public class NotificationHandler {
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
         log.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
-//            SendEmailResponse response = notificationClient.sendEmail(templateId, email, parameters, reference);
-//            System.out.println(response.getBody() + email);
-              notificationClient.sendEmail(templateId, email, parameters, reference);
+            notificationClient.sendEmail(templateId, email, parameters, reference);
         } catch (NotificationClientException e) {
             log.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
         }

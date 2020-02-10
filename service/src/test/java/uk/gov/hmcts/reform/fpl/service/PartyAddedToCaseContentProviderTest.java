@@ -22,12 +22,12 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.*;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, PartyAddedToCaseContentProvider.class,
     DateFormatterService.class, HearingBookingService.class, PartyAddedToCaseThroughDigitalServiceContentProvider.class,
-PartyAddedToCaseByEmailContentProvider.class})
+    PartyAddedToCaseByEmailContentProvider.class})
 class PartyAddedToCaseContentProviderTest {
 
     @Autowired
@@ -49,7 +49,8 @@ class PartyAddedToCaseContentProviderTest {
         this.partyAddedToCaseByEmailContentProvider = new PartyAddedToCaseByEmailContentProvider("", mapper,
             dateFormatterService, hearingBookingService);
 
-        this.partyAddedToCaseThroughDigitalServicelContentProvider = new PartyAddedToCaseThroughDigitalServiceContentProvider(
+        this.partyAddedToCaseThroughDigitalServicelContentProvider
+            = new PartyAddedToCaseThroughDigitalServiceContentProvider(
             "", mapper, dateFormatterService, hearingBookingService);
 
         this.partyAddedToCaseContentProvider = new PartyAddedToCaseContentProvider(
@@ -66,7 +67,8 @@ class PartyAddedToCaseContentProviderTest {
 
         RepresentativeServingPreferences preferences = EMAIL;
 
-        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(), preferences)).isEqualTo(expectedParameters);
+        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
+            callbackRequest().getCaseDetails(), preferences)).isEqualTo(expectedParameters);
     }
 
     @Test
@@ -79,7 +81,8 @@ class PartyAddedToCaseContentProviderTest {
 
         RepresentativeServingPreferences preferences = DIGITAL_SERVICE;
 
-        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(), preferences)).isEqualTo(expectedParameters);
+        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
+            callbackRequest().getCaseDetails(), preferences)).isEqualTo(expectedParameters);
     }
 
     @Test

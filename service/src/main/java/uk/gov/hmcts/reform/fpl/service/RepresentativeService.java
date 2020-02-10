@@ -215,12 +215,12 @@ public class RepresentativeService {
         }
     }
 
-    public List<Element<Representative>> getRepresentativePartiesToNotify(CallbackRequest request){
+    public List<Element<Representative>> getRepresentativePartiesToNotify(CallbackRequest request) {
         CaseData caseData = mapper.convertValue(request.getCaseDetails().getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class);
 
         if (isNotEmpty(caseDataBefore.getRepresentatives())) {
-            if(!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())){
+            if (!caseDataBefore.getRepresentatives().containsAll(caseData.getRepresentatives())) {
                 return getChangedRepresentatives(caseData,caseDataBefore);
             }
 
@@ -233,8 +233,7 @@ public class RepresentativeService {
         return null;
     }
 
-
-    private List<Element<Representative>> getChangedRepresentatives(CaseData caseData, CaseData caseDataBefore){
+    private List<Element<Representative>> getChangedRepresentatives(CaseData caseData, CaseData caseDataBefore) {
         List<Element<Representative>> representativesBefore = caseDataBefore.getRepresentatives();
         List<Element<Representative>> representativesAfter = caseData.getRepresentatives();
 

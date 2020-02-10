@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseByEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseThroughDigitalServiceContentProvider;
 
 import java.io.IOException;
@@ -23,7 +22,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDet
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class,
-    DateFormatterService.class, HearingBookingService.class, PartyAddedToCaseThroughDigitalServiceContentProvider.class})
+    DateFormatterService.class, HearingBookingService.class,
+    PartyAddedToCaseThroughDigitalServiceContentProvider.class})
 class PartyAddedToCaseThroughDigitalServiceContentProviderTest {
 
     @Autowired
@@ -38,7 +38,8 @@ class PartyAddedToCaseThroughDigitalServiceContentProviderTest {
 
     @BeforeEach
     void setup() {
-        this.partyAddedToCaseThroughDigitalServiceContentProvider = new PartyAddedToCaseThroughDigitalServiceContentProvider("", mapper,
+        this.partyAddedToCaseThroughDigitalServiceContentProvider =
+            new PartyAddedToCaseThroughDigitalServiceContentProvider("", mapper,
             dateFormatterService, hearingBookingService);
     }
 
@@ -50,7 +51,8 @@ class PartyAddedToCaseThroughDigitalServiceContentProviderTest {
             .put("caseUrl", "/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
             .build();
 
-        assertThat(partyAddedToCaseThroughDigitalServiceContentProvider.buildPartyAddedToCaseNotification(callbackRequest().getCaseDetails()))
+        assertThat(partyAddedToCaseThroughDigitalServiceContentProvider
+            .buildPartyAddedToCaseNotification(callbackRequest().getCaseDetails()))
             .isEqualTo(expectedParameters);
     }
 
@@ -62,7 +64,8 @@ class PartyAddedToCaseThroughDigitalServiceContentProviderTest {
             .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/123")
             .build();
 
-        assertThat(partyAddedToCaseThroughDigitalServiceContentProvider.buildPartyAddedToCaseNotification(emptyCaseDetails()))
+        assertThat(partyAddedToCaseThroughDigitalServiceContentProvider
+            .buildPartyAddedToCaseNotification(emptyCaseDetails()))
             .isEqualTo(expectedParameters);
     }
 }

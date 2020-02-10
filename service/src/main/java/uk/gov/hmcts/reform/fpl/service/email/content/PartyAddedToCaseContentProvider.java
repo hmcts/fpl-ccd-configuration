@@ -18,30 +18,38 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvider {
 
     private final PartyAddedToCaseByEmailContentProvider partyAddedToCaseEmailContentProvider;
-    private final PartyAddedToCaseThroughDigitalServiceContentProvider partyAddedToCaseThroughDigitalServicelContentProvider;
+    private final PartyAddedToCaseThroughDigitalServiceContentProvider
+        partyAddedToCaseThroughDigitalServicelContentProvider;
 
     @Autowired
     public PartyAddedToCaseContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                            DateFormatterService dateFormatterService,
                                            HearingBookingService hearingBookingService,
                                            PartyAddedToCaseByEmailContentProvider partyAddedToCaseEmailContentProvider,
-                                           PartyAddedToCaseThroughDigitalServiceContentProvider partyAddedToCaseThroughDigitalServicelContentProvider) {
+                                           PartyAddedToCaseThroughDigitalServiceContentProvider
+                                                   partyAddedToCaseThroughDigitalServicelContentProvider) {
         super(uiBaseUrl, dateFormatterService, hearingBookingService);
         this.partyAddedToCaseEmailContentProvider = partyAddedToCaseEmailContentProvider;
-        this.partyAddedToCaseThroughDigitalServicelContentProvider = partyAddedToCaseThroughDigitalServicelContentProvider;
+        this.partyAddedToCaseThroughDigitalServicelContentProvider
+            = partyAddedToCaseThroughDigitalServicelContentProvider;
     }
 
-    public Map<String, Object> getPartyAddedToCaseNotificationParameters(CaseDetails caseDetails, RepresentativeServingPreferences servingPreferences) {
+    public Map<String, Object> getPartyAddedToCaseNotificationParameters(CaseDetails caseDetails,
+                                        RepresentativeServingPreferences servingPreferences) {
         if (servingPreferences.equals(EMAIL)) {
             return partyAddedToCaseEmailContentProvider
                 .buildPartyAddedToCaseNotification(caseDetails);
-        } else return partyAddedToCaseThroughDigitalServicelContentProvider
-            .buildPartyAddedToCaseNotification(caseDetails);
+        } else {
+            return partyAddedToCaseThroughDigitalServicelContentProvider
+                .buildPartyAddedToCaseNotification(caseDetails);
+        }
     }
 
     public String getPartyAddedToCaseNotificationTemplate(RepresentativeServingPreferences servingPreferences) {
         if (servingPreferences.equals(EMAIL)) {
             return PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-        } else return PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
+        }     else {
+            return PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
+        }
     }
 }
