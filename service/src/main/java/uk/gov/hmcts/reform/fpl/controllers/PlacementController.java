@@ -118,11 +118,11 @@ public class PlacementController {
         currentDocumentUrls.removeAll(previousDocumentUrls);
 
         if (!currentDocumentUrls.isEmpty()) {
-            applicationEventPublisher.publishEvent(
+            currentDocumentUrls.forEach(newDocument -> applicationEventPublisher.publishEvent(
                 new NoticeOfPlacementOrderUploadedEvent(
                     callbackRequest,
                     requestData.authorisation(),
-                    requestData.userId()));
+                    requestData.userId())));
         }
     }
 

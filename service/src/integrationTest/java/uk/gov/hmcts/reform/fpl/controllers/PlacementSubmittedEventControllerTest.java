@@ -48,11 +48,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldSendEmailNotificationWhenNewOrder() throws NotificationClientException {
-        UUID uuid = randomUUID();
-        Respondent respondent = respondent();
-        respondent.addRepresentative(uuid);
-
-        postSubmittedEvent(callbackRequest(uuid, respondent));
+        postSubmittedEvent(callbackRequestWithEmptyCaseDetailsBefore());
 
         verify(notificationClient, times(1)).sendEmail(
             eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
@@ -61,6 +57,23 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             eq("1"));
 
         verify(notificationClient, times(1)).sendEmail(
+            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+            eq("representative@example.com"),
+            eq(parameters()),
+            eq("1"));
+    }
+
+    @Test
+    void shouldNotSendEmailNotificationWhenNoChangesToOrder() throws NotificationClientException {
+        postSubmittedEvent(callbackRequestWithMatchingCaseDetailsBefore());
+
+        verify(notificationClient, times(0)).sendEmail(
+            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+            eq("local-authority@local-authority.com"),
+            eq(parameters()),
+            eq("1"));
+
+        verify(notificationClient, times(0)).sendEmail(
             eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
             eq("representative@example.com"),
             eq(parameters()),
@@ -82,25 +95,44 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private CallbackRequest callbackRequest(UUID uuid, Respondent respondent) {
+    private CallbackRequest callbackRequestWithEmptyCaseDetailsBefore() {
+        UUID representativeId = randomUUID();
+        Respondent respondent = respondent();
+        respondent.addRepresentative(representativeId);
+
         return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(1L)
-                .data(Map.of(
-                    "caseLocalAuthority", "example",
-                    "confidentialPlacements", List.of(element(Placement.builder()
-                        .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
-                            .type(NOTICE_OF_PLACEMENT_ORDER)
-                            .document(DocumentReference.buildFromDocument(document()))
-                            .build()))
-                        .build())),
-                    "respondents1", wrapElements(respondent),
-                    "representatives", List.of(element(uuid, Representative.builder()
-                        .servingPreferences(DIGITAL_SERVICE)
-                        .email("representative@example.com")
-                        .build()))))
-                .build())
+            .caseDetails(populatedCaseDetails(representativeId, respondent))
             .caseDetailsBefore(CaseDetails.builder().data(new HashMap<>()).build())
+            .build();
+    }
+
+    private CallbackRequest callbackRequestWithMatchingCaseDetailsBefore() {
+        UUID representativeId = randomUUID();
+        Respondent respondent = respondent();
+        respondent.addRepresentative(representativeId);
+
+        return CallbackRequest.builder()
+            .caseDetails(populatedCaseDetails(representativeId, respondent))
+            .caseDetailsBefore(populatedCaseDetails(representativeId, respondent))
+            .build();
+    }
+
+    private CaseDetails populatedCaseDetails(UUID representativeId, Respondent respondent) {
+        return CaseDetails.builder()
+            .id(1L)
+            .data(Map.of(
+                "caseLocalAuthority", "example",
+                "confidentialPlacements", List.of(element(Placement.builder()
+                    .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
+                        .type(NOTICE_OF_PLACEMENT_ORDER)
+                        .document(DocumentReference.buildFromDocument(document()))
+                        .build()))
+                    .build())),
+                "respondents1", wrapElements(respondent),
+                "representatives", List.of(element(representativeId, Representative.builder()
+                    .servingPreferences(DIGITAL_SERVICE)
+                    .email("representative@example.com")
+                    .build()))))
             .build();
     }
 }
