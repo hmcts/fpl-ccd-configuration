@@ -358,25 +358,6 @@ class RepresentativesServiceTest {
 
     @Test
     void shouldMapCaseData() throws IOException {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(Map.of(
-                    "id", "",
-                    "value", Representative.builder().build()
-                    )
-                )
-                .build())
-            .caseDetailsBefore(CaseDetails.builder()
-                .id(12345L)
-                .data(Map.of(
-                    "id", "",
-                    "value", Representative.builder().fullName("Test").build()
-                    )
-                )
-                .build())
-            .build();
-
         List<Element<Representative>> representativeList = new ArrayList<>();
         Element<Representative> representativeElement = Element.<Representative>builder()
             .value(Representative.builder().fullName("Toireasa").build()).build();
@@ -395,12 +376,12 @@ class RepresentativesServiceTest {
 
         CaseData caseData = CaseData.builder().caseName("Name").representatives(representativeList).build();
 
-        Mockito.when(mapper.convertValue(request.getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
+        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
 
-        Mockito.when(mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
+        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
 
         List<Element<Representative>> representativesToNotify = representativesService
-            .getRepresentativePartiesToNotify(request);
+            .getRepresentativePartiesToNotify(callbackRequest());
         System.out.println("Notify" + representativesToNotify);
     }
 
