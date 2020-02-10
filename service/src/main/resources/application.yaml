@@ -83,7 +83,7 @@ rd_professional:
     url: http://fake-rd-professional-api
 
 send-letter:
-  url: http://fake-send-letter-api
+  url: http://fake-send-letter
 
 ccd:
   ui:
