@@ -21,4 +21,5 @@ public class NotifyTemplates {
         "6bdbc939-14bb-4dae-ac35-e0d381840719";
     public static final String CMO_REJECTED_BY_JUDGE_TEMPLATE = "44124d30-dce0-4ae4-8e74-27dc43fc282a";
     public static final String PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE = "ac0a0091-0b2e-44b9-afa1-321590b5d984";
+    public static final String NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE = "ac0a0091-0b2e-44b9-afa1-321590b5d984";
 }

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.UUID.randomUUID;
@@ -261,9 +264,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
             anyMap(), eq(CASE_ID));
 
-        verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
-            anyMap(), eq(CASE_ID));
+        verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded();
 
         verifyZeroInteractions(notificationClient);
     }
@@ -291,21 +292,14 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq("ragnar@example.com"),
             anyMap(), eq(CASE_ID));
 
-        verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
-            anyMap(), eq(CASE_ID));
+        verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded();
 
         verifyZeroInteractions(notificationClient);
     }
 
     @Test
     void submittedShouldNotifyAdminSoTheyCanServeRepresentativesByPost() throws Exception {
-        List<Element<Representative>> representativeServedByPost = wrapElements(Representative.builder()
-            .email("bien@example.com")
-            .fullName("Bien")
-            .address(Address.builder().build())
-            .servingPreferences(POST)
-            .build());
+        List<Element<Representative>> representativeServedByPost = buildRepresentativesServedByPost();
 
         CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativeServedByPost);
 
@@ -319,7 +313,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
-            anyMap(), eq(CASE_ID));
+            eq(getExpectedParametersForAdminWhenRepresentativesNeedServingByPost()), eq(CASE_ID));
 
         verifyZeroInteractions(notificationClient);
     }
@@ -435,6 +429,35 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             .build();
     }
 
+    private Map<String, Object> getExpectedParametersForAdminWhenNoRepresentativesServedByPost() {
+        return ImmutableMap.<String, Object>builder()
+            .put("needsPosting", "No")
+            .put("doesNotNeedPosting", "Yes")
+            .put("courtName", LOCAL_AUTHORITY_NAME)
+            .put("caseUrlOrDocumentLink", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
+            .put("respondentLastName", "Jones")
+            .put("representatives", "")
+            .build();
+    }
+
+    private Map<String, Object> getExpectedParametersForAdminWhenRepresentativesNeedServingByPost() {
+
+        byte[] fileContentAsByte = Base64.encodeBase64(PDF);
+        String fileContent = new String(fileContentAsByte, ISO_8859_1);
+
+        JSONObject jsonFileObject = new JSONObject();
+        jsonFileObject.put("file", fileContent);
+
+        return ImmutableMap.<String, Object>builder()
+            .put("needsPosting", "Yes")
+            .put("doesNotNeedPosting", "No")
+            .put("courtName", LOCAL_AUTHORITY_NAME)
+            .put("respondentLastName", "Jones")
+            .put("representatives", List.of("Paul Blart\nStreet, Town, Postcode"))
+            .put("caseUrlOrDocumentLink", jsonFileObject)
+            .build();
+    }
+
     private Map<String, Object> buildSubmittedRequestData(final List<Element<Representative>>
                                                               representatives) {
         return Map.of(
@@ -465,8 +488,8 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     }
 
     private CaseDetails populateRepresentativesByServedPreferenceData(
-        List<Element<Representative>> representativesServedByDigitalService) {
-        Map<String, Object> data = buildSubmittedRequestData(representativesServedByDigitalService);
+        List<Element<Representative>> representativesServedByPreference) {
+        Map<String, Object> data = buildSubmittedRequestData(representativesServedByPreference);
 
         return buildCaseDetails(data);
     }
@@ -481,6 +504,12 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             eq(getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME)), eq(CASE_ID));
     }
 
+    private void verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded() throws NotificationClientException {
+        verify(notificationClient).sendEmail(
+            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
+            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()), eq(CASE_ID));
+    }
+
     private List<Element<Representative>> buildRepresentativesServedByEmail() {
         return wrapElements(Representative.builder()
             .email("jamie@example.com")
@@ -490,6 +519,19 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             .email("ragnar@example.com")
             .fullName("Ragnar")
             .servingPreferences(EMAIL)
+            .build());
+    }
+
+    private List<Element<Representative>> buildRepresentativesServedByPost() {
+        return wrapElements(Representative.builder()
+            .email("paul@example.com")
+            .fullName("Paul Blart")
+            .address(Address.builder()
+                .addressLine1("Street")
+                .postTown("Town")
+                .postcode("Postcode")
+                .build())
+            .servingPreferences(POST)
             .build());
     }
 }
