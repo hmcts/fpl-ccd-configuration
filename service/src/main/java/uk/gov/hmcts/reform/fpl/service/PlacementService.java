@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -16,7 +18,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -85,16 +86,22 @@ public class PlacementService {
             .findFirst();
     }
 
-    //TODO: unit tests
-    // look at if else logic.
     public List<String> getBinaryUrlsForOrderAndNotices(List<Element<Placement>> placements,
                                                         PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
-        return placements.isEmpty() ? emptyList() : placements
-            .stream()
-            .map(x -> x.getValue().getOrderAndNotices())
+        return placements.stream()
+            .filter(element -> element.getValue().getOrderAndNotices() != null)
+            .map(element -> element.getValue().getOrderAndNotices())
             .flatMap(Collection::stream)
-            .filter(y -> y.getValue().getType() == type)
-            .map(z -> z.getValue().getDocument().getBinaryUrl())
+            .filter(element -> element.getValue().getType() == type)
+            .map(this::getBinaryUrl)
+            .filter(Strings::isNotEmpty)
             .collect(toList());
+    }
+
+    private String getBinaryUrl(Element<PlacementOrderAndNotices> element) {
+        DocumentReference document = ofNullable(element.getValue().getDocument())
+            .orElse(DocumentReference.builder().build());
+
+        return document.getBinaryUrl();
     }
 }
