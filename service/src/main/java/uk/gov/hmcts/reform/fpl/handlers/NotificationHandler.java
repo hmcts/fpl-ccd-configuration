@@ -17,8 +17,10 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -35,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvi
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.service.notify.NotificationClient;
@@ -50,9 +53,11 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLAT
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -80,6 +85,7 @@ public class NotificationHandler {
     private final IdamApi idamApi;
     private final InboxLookupService inboxLookupService;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
+    private final PlacementApplicationContentProvider placementApplicationContentProvider;
     private final RepresentativeService representativeService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final ObjectMapper objectMapper;
@@ -159,16 +165,23 @@ public class NotificationHandler {
     }
 
     @EventListener
+    public void notifyAdminOfPlacementApplicationUpload(PlacementApplicationEvent event) {
+        EventData eventData = new EventData(event);
+
+        Map<String, Object> parameters = placementApplicationContentProvider
+            .buildPlacementApplicationNotificationParameters(eventData.getCaseDetails());
+
+        String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
+
+        sendNotification(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+    }
+
+    @EventListener
     public void sendNotificationsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
 
         sendCMOCaseLinkNotifications(eventData);
         sendCMODocumentLinkNotifications(eventData, event.getDocumentContents());
-    }
-
-    private void sendCMOCaseLinkNotifications(final EventData eventData) {
-        sendCMOCaseLinkNotificationForLocalAuthority(eventData);
-        sendCMOCaseLinkNotificationToRepresentatives(eventData);
     }
 
     @EventListener
@@ -182,6 +195,25 @@ public class NotificationHandler {
         String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
 
         sendNotification(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
+    }
+
+    @EventListener
+    public void notifyLocalAuthorityOfRejectedCaseManagementOrder(final CaseManagementOrderRejectedEvent event) {
+        EventData eventData = new EventData(event);
+
+        Map<String, Object> parameters =
+            caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(
+                eventData.getCaseDetails());
+
+        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
+            eventData.getLocalAuthorityCode());
+
+        sendNotification(CMO_REJECTED_BY_JUDGE_TEMPLATE, recipientEmail, parameters, eventData.getReference());
+    }
+
+    private void sendCMOCaseLinkNotifications(final EventData eventData) {
+        sendCMOCaseLinkNotificationForLocalAuthority(eventData);
+        sendCMOCaseLinkNotificationToRepresentatives(eventData);
     }
 
     @EventListener

@@ -50,7 +50,7 @@ public class Address {
     }
 
     @JsonIgnore
-    public String getAddressAsString() {
+    public String getAddressAsString(String delimiter) {
         ImmutableList<String> addressAsList = ImmutableList.of(
             defaultIfNull(getAddressLine1(), ""),
             defaultIfNull(getAddressLine2(), ""),
@@ -62,6 +62,6 @@ public class Address {
 
         return addressAsList.stream()
             .filter(StringUtils::isNotBlank)
-            .collect(Collectors.joining(", "));
+            .collect(Collectors.joining(delimiter));
     }
 }

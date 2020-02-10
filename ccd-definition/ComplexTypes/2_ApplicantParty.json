@@ -39,6 +39,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantParty",
+    "ListElementCode": "clientCode",
+    "FieldType": "Text",
+    "ElementLabel": "Client code",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "customerReference",
+    "FieldType": "Text",
+    "ElementLabel": "Customer reference",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
     "ElementLabel": "Address",

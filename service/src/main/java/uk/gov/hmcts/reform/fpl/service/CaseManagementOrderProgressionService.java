@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -33,8 +34,8 @@ public class CaseManagementOrderProgressionService {
     // requires changes in CCD definition. Decided not in scope of 24.
 
     private final ObjectMapper mapper;
-    private final RequestData requestData;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final RequestData requestData;
 
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -77,6 +78,8 @@ public class CaseManagementOrderProgressionService {
 
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), updatedOrder);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
+
+                sendChangesRequestedNotificationToLocalAuthority(caseDetails);
                 break;
             case SELF_REVIEW:
                 break;
@@ -98,5 +101,12 @@ public class CaseManagementOrderProgressionService {
 
         applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest,
                 requestData.authorisation(), requestData.userId()));
+    }
+
+    private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {
+        applicationEventPublisher.publishEvent(
+            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build(),
+                requestData.authorisation(),
+                requestData.userId()));
     }
 }
