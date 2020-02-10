@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -570,24 +569,40 @@ class NotificationHandlerTest {
             eq("12345"));
     }
 
-    //TODO: null pointer in notification handler: 210. Need to update callbackRequest()
-    @Disabled
-    @Test
-    void shouldSendNotificationForPlacementOrderUploaded() throws IOException, NotificationClientException {
-        Map<String, Object> parameters = Map.of("respondentLastName", "Nelson",
-            "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
+    @Nested
+    class NoticeOfPlacementOrderNotification {
+        private NotificationHandler placementNotificationHandler;
 
-        given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        @BeforeEach
+        void setup() throws IOException {
+            given(inboxLookupService.getNotificationRecipientEmail(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
-            callbackRequest().getCaseDetails())).willReturn(parameters);
+            placementNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
+                cafcassLookupConfiguration, hmctsEmailContentProvider, cafcassEmailContentProvider,
+                cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider, c2UploadedEmailContentProvider,
+                orderEmailContentProvider, localAuthorityEmailContentProvider, notificationClient, idamApi,
+                inboxLookupService, caseManagementOrderEmailContentProvider, representativeService,
+                localAuthorityNameLookupConfiguration, objectMapper);
+        }
 
-        notificationHandler.sendNotificationForNoticeOfPlacementOrderUploaded(
-            new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        @Test
+        void shouldSendNotificationForPlacementOrderUploaded() throws IOException, NotificationClientException {
+            Map<String, Object> parameters = Map.of("respondentLastName", "Nelson",
+                "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
 
-        verify(notificationClient, times(1)).sendEmail(
-            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE), eq("local-authority@local-authority.com"), eq(parameters), eq("1"));
+            given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
+                callbackRequest().getCaseDetails())).willReturn(parameters);
+
+            placementNotificationHandler.sendNotificationForNoticeOfPlacementOrderUploaded(
+                new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(parameters),
+                eq("12345"));
+        }
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {

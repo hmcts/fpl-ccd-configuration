@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -65,6 +67,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                     "confidentialPlacements", List.of(element(Placement.builder()
                         .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
                             .type(NOTICE_OF_PLACEMENT_ORDER)
+                            .document(DocumentReference.buildFromDocument(document()))
                             .build()))
                         .build())),
                     "respondents1", wrapElements(respondent),

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
 import java.util.List;
@@ -37,6 +37,7 @@ public class PlacementController {
     private final ObjectMapper mapper;
     private final PlacementService placementService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -91,14 +92,11 @@ public class PlacementController {
         Placement placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
             .setChild(child);
 
-        // add placement with confidential details and placementOrder
-        caseProperties.put("confidentialPlacements", setPlacement(caseData, placement));
+        List<Element<Placement>> updatedPlacement = placementService.setPlacement(caseData, placement);
 
-        // add placement with confidential details but no placementOrder.
-        caseProperties.put("placementsWithoutPlacementOrder", setPlacement(caseData, placement.removePlacementOrder()));
-
-        // add placement with no confidential docs and no placement order
-        caseProperties.put("placements", setPlacement(caseData, removeDocuments(placement)));
+        caseProperties.put("confidentialPlacements", updatedPlacement);
+        caseProperties.put("placementsWithoutPlacementOrder", placementService.withoutPlacementOrder(updatedPlacement));
+        caseProperties.put("placements", placementService.withoutConfidentialData(updatedPlacement));
 
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 
@@ -108,33 +106,24 @@ public class PlacementController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
-        @RequestBody @NotNull CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        List<UUID> currentPlacementOrderIds = getElementIdsForNoticeOfPlacementOrder(caseData);
-        List<UUID> previousPlacementOrderIds = getElementIdsForNoticeOfPlacementOrder(caseDataBefore);
+        List<String> currentDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseData);
+        List<String> previousDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseDataBefore);
+        currentDocumentUrls.removeAll(previousDocumentUrls);
 
-        currentPlacementOrderIds.removeAll(previousPlacementOrderIds);
-
-        if (!currentPlacementOrderIds.isEmpty()) {
+        if (!currentDocumentUrls.isEmpty()) {
             applicationEventPublisher.publishEvent(
-                new NoticeOfPlacementOrderUploadedEvent(callbackRequest, authorization, userId));
+                new NoticeOfPlacementOrderUploadedEvent(
+                    callbackRequest,
+                    requestData.authorisation(),
+                    requestData.userId()));
         }
-    }
-
-    private Placement removeDocuments(Placement placement) {
-        return placement.removePlacementOrder().removeConfidentialDocuments();
-    }
-
-    private List<Element<Placement>> setPlacement(CaseData caseData, Placement placement) {
-        return placementService.setPlacement(caseData, placement);
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {
@@ -157,8 +146,8 @@ public class PlacementController {
         }
     }
 
-    private List<UUID> getElementIdsForNoticeOfPlacementOrder(CaseData caseData) {
-        return placementService.getElementIdsForOrderAndNotices(
-            caseData.getConfidentialPlacements(), NOTICE_OF_PLACEMENT_ORDER);
+    private List<String> getBinaryUrlsForNoticeOfPlacementOrder(CaseData caseData) {
+        return placementService.getBinaryUrlsForOrderAndNotices(
+            caseData.getPlacements(), NOTICE_OF_PLACEMENT_ORDER);
     }
 }

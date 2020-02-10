@@ -42,17 +42,12 @@ public class PlacementService {
     }
 
     public Placement getPlacement(CaseData caseData, Element<Child> child) {
-        return findPlacement(getPlacements(caseData), child.getId())
+        return findPlacement(caseData.getPlacements(), child.getId())
             .map(Element::getValue)
             .orElse(Placement.builder()
                 .childId(child.getId())
                 .childName(child.getValue().getParty().getFullName())
                 .build());
-    }
-
-    private List<Element<Placement>> getPlacements(CaseData caseData) {
-        return caseData.getConfidentialPlacements().isEmpty()
-            ? caseData.getPlacements() : caseData.getConfidentialPlacements();
     }
 
     public List<Element<Placement>> setPlacement(CaseData caseData, Placement placement) {
@@ -68,6 +63,22 @@ public class PlacementService {
         return placements;
     }
 
+    public List<Element<Placement>> withoutPlacementOrder(List<Element<Placement>> placements) {
+        return placements.stream()
+            .map(placement -> element(placement.getId(), placement.getValue().removePlacementOrder()))
+            .collect(toList());
+    }
+
+    public List<Element<Placement>> withoutConfidentialData(List<Element<Placement>> placements) {
+        return placements.stream()
+            .map(placement -> element(placement.getId(), removeConfidentialDocuments(placement)))
+            .collect(toList());
+    }
+
+    private Placement removeConfidentialDocuments(Element<Placement> placement) {
+        return placement.getValue().removePlacementOrder().removeConfidentialDocuments();
+    }
+
     private static Optional<Element<Placement>> findPlacement(List<Element<Placement>> placements, UUID childId) {
         return placements.stream()
             .filter(placement -> placement.getValue().getChildId().equals(childId))
@@ -76,14 +87,14 @@ public class PlacementService {
 
     //TODO: unit tests
     // look at if else logic.
-    public List<UUID> getElementIdsForOrderAndNotices(List<Element<Placement>> placements,
-                                                      PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
+    public List<String> getBinaryUrlsForOrderAndNotices(List<Element<Placement>> placements,
+                                                        PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
         return placements.isEmpty() ? emptyList() : placements
             .stream()
             .map(x -> x.getValue().getOrderAndNotices())
             .flatMap(Collection::stream)
             .filter(y -> y.getValue().getType() == type)
-            .map(Element::getId)
+            .map(z -> z.getValue().getDocument().getBinaryUrl())
             .collect(toList());
     }
 }
