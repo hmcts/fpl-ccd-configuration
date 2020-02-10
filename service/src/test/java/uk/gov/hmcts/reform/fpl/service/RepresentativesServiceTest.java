@@ -31,6 +31,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Map.entry;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -372,6 +373,20 @@ class RepresentativesServiceTest {
             .getRepresentativePartiesToNotify(callbackRequest());
 
         assertThat(representativesToNotify.equals(expectedRepresentatives));
+    }
+
+    @Test
+    void shouldNotReturnAnyRepresentativesIfNewRepresentativeNotAdded() throws IOException {
+        CaseData caseDataBefore = buildCaseDataWithRepresentatives();
+        CaseData caseData = buildCaseDataWithRepresentatives();
+
+        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
+        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
+
+        List<Element<Representative>> representativesToNotify = representativesService
+            .getRepresentativePartiesToNotify(callbackRequest());
+
+        assertNull(representativesToNotify);
     }
 
     private CaseData buildCaseDataWithRepresentatives() {
