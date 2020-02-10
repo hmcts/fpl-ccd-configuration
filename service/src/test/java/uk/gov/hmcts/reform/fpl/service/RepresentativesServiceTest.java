@@ -389,6 +389,31 @@ class RepresentativesServiceTest {
         assertNull(representativesToNotify);
     }
 
+    @Test
+    void shouldGetRepresentativePartiesToNotifyWhenRepresentativeChanged() throws IOException {
+        CaseData caseDataBefore = buildCaseDataWithRepresentatives();
+
+        List<Element<Representative>> changedRepresentatives = new ArrayList<>();
+        changedRepresentatives.add(Element.<Representative>builder().value(Representative.builder()
+            .email("abc@example.com")
+            .fullName("Jon Snow")
+            .servingPreferences(EMAIL)
+            .build()).build());
+
+        CaseData caseData = CaseData.builder().representatives(
+            changedRepresentatives).build();
+
+        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
+        Mockito.when(mapper.convertValue(callbackRequest().getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
+
+        List<Element<Representative>> expectedRepresentatives = createRepresentatives(EMAIL);
+
+        List<Element<Representative>> representativesToNotify = representativesService
+            .getRepresentativePartiesToNotify(callbackRequest());
+
+        assertThat(representativesToNotify.equals(expectedRepresentatives));
+    }
+
     private CaseData buildCaseDataWithRepresentatives() {
         return CaseData.builder()
             .representatives(createRepresentatives(DIGITAL_SERVICE))
