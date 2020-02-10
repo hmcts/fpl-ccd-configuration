@@ -26,8 +26,10 @@ class PartyAddedToCaseByEmailContentProviderTest {
     @Autowired
     private HearingBookingService hearingBookingService;
 
+    @Autowired
     private DateFormatterService dateFormatterService;
 
+    @Autowired
     private PartyAddedToCaseByEmailContentProvider partyAddedToCaseByEmailContentProvider;
 
     @Autowired

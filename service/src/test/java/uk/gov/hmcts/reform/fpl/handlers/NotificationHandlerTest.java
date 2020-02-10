@@ -63,6 +63,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -615,11 +616,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendNotificationToPartiesWhenAddedToCaseByEmail() throws IOException, NotificationClientException {
-        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("firstRespondentLastName", "Moley")
-            .put("familyManCaseNumber", "123")
-            .put("reference", "12345")
-            .build();
+        final Map<String, Object> expectedParameters = getPartyAddedByEmailNotificationParameters();
 
         List<Element<Representative>> representatives = new ArrayList<>();
         Element<Representative> representative = Element.<Representative>builder()
@@ -643,11 +640,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendNotificationToPartiesWhenAddedToCaseThroughDigitalService() throws IOException, NotificationClientException {
-        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("firstRespondentLastName", "Moley")
-            .put("familyManCaseNumber", "123")
-            .put("reference", "12345")
-            .build();
+        final Map<String, Object> expectedParameters = getPartyAddedByEmailNotificationParameters();
 
         List<Element<Representative>> representatives = new ArrayList<>();
         Element<Representative> representative = Element.<Representative>builder()
@@ -680,7 +673,15 @@ class NotificationHandlerTest {
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
 
-        verify(notificationClient, times(0)).sendEmail(null, null, null, null);
+        verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
+    }
+
+    private Map<String, Object> getPartyAddedByEmailNotificationParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .put("firstRespondentLastName", "Moley")
+            .put("familyManCaseNumber", "123")
+            .put("reference", "12345")
+            .build();
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {

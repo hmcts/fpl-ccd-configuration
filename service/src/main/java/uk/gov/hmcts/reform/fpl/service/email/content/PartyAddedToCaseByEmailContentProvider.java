@@ -11,7 +11,8 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.util.Map;
 
-import static java.util.Objects.isNull;
+import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
 public class PartyAddedToCaseByEmailContentProvider extends AbstractEmailContentProvider {
@@ -30,10 +31,8 @@ public class PartyAddedToCaseByEmailContentProvider extends AbstractEmailContent
     public Map<String, Object> buildPartyAddedToCaseNotification(final CaseDetails caseDetails) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         return Map.of(
-            "firstRespondentLastName", isNull(caseData.getRespondents1()) ? ""
-                : caseData.getRespondents1().get(0).getValue().getParty().getLastName(),
-            "familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? ""
-                : caseData.getFamilyManCaseNumber()
+            "firstRespondentLastName", getFirstRespondentLastName(caseData.getRespondents1()),
+            "familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), "")
         );
     }
 }

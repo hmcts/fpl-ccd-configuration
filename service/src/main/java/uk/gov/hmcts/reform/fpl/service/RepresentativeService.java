@@ -234,7 +234,6 @@ public class RepresentativeService {
         List<Element<Representative>> representativesBefore) {
 
         currentRepresentatives.removeAll(representativesBefore);
-
         return  currentRepresentatives;
     }
 }

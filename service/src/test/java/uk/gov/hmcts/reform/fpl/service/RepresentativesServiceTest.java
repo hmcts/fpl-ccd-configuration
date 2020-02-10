@@ -360,14 +360,9 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    void shouldGetRepresentativePartiesToNotifyWhenNewRepresentativeAdded() throws IOException {
+    void shouldGetRepresentativePartiesToNotifyWhenNewRepresentativeAdded() {
         CaseData caseDataBefore = CaseData.builder().representatives(emptyList()).build();
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
-
-        Mockito.when(mapper.convertValue(callbackRequest()
-            .getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
-        Mockito.when(mapper.convertValue(callbackRequest()
-            .getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
 
         List<Element<Representative>> expectedRepresentatives = createRepresentatives(DIGITAL_SERVICE);
 
