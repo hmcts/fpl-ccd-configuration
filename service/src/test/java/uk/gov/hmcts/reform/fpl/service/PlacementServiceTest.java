@@ -10,6 +10,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -19,6 +22,9 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.OTHER;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -189,6 +195,69 @@ public class PlacementServiceTest {
             List<Element<Placement>> updatedPlacements = placementService.setPlacement(caseData, updatedChild2);
 
             assertThat(unwrapElements(updatedPlacements)).containsExactlyInAnyOrder(child1Placement, updatedChild2);
+        }
+    }
+
+    @Nested
+    class GetBinaryUrlsForOrderAndNotices {
+
+        @Test
+        void shouldReturnEmptyListWhenNoPlacementsExist() {
+            assertThat(placementService.getBinaryUrlsForOrderAndNotices(emptyList(), PLACEMENT_ORDER)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenPlacementWithNoOrderAndNotices() {
+            List<Element<Placement>> placements = wrapElements(placementWithoutOrderAndNotices());
+
+            assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, PLACEMENT_ORDER)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnListOfIdsForSpecifiedTypeWhenPlacementsIsPopulated() {
+            String binaryUrl = "example binary url link";
+            PlacementOrderAndNotices.PlacementOrderAndNoticesType type = PLACEMENT_ORDER;
+
+            List<Element<Placement>> placements = wrapElements(
+                placement(binaryUrl, type),
+                placement("other url", OTHER));
+
+            assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, type)).containsOnly(binaryUrl);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenBinaryUrlIsNotPresent() {
+            PlacementOrderAndNotices.PlacementOrderAndNoticesType type = PLACEMENT_ORDER;
+
+            List<Element<Placement>> placements = wrapElements(
+                Placement.builder()
+                    .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
+                        .type(type)
+                        .build()))
+                    .build());
+
+            assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, type)).isEmpty();
+        }
+
+        private Placement placementWithoutOrderAndNotices() {
+            return Placement.builder()
+                .application(DocumentReference.buildFromDocument(document()))
+                .childName("child name")
+                .confidentialDocuments(wrapElements(PlacementConfidentialDocument.builder()
+                    .document(DocumentReference.buildFromDocument(document()))
+                    .build()))
+                .build();
+        }
+
+        private Placement placement(String binaryUrl, PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
+            return Placement.builder()
+                .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
+                    .type(type)
+                    .document(DocumentReference.builder()
+                        .binaryUrl(binaryUrl)
+                        .build())
+                    .build()))
+                .build();
         }
     }
 

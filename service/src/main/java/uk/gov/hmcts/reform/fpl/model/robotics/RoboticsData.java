@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.Set;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 
@@ -35,6 +36,7 @@ public class RoboticsData {
     @NotEmpty(message = "value should not be null/empty")
     private final String issueDate;
 
+    @Valid
     private final Applicant applicant;
 
     @Positive(message = "value should be greater than 0")

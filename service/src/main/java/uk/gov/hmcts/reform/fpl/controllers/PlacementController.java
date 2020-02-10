@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 
 @Api
@@ -91,34 +93,35 @@ public class PlacementController {
         UUID childId = getSelectedChildId(caseDetails, caseData);
         Element<Child> child = placementService.getChild(caseData, childId);
 
-        Placement currentPlacement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
+        Placement placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
             .setChild(child);
 
-        Placement previousPlacement = placementService.getPlacement(caseData, child);
-
-        caseProperties.put("placements", placementService.setPlacement(caseData, currentPlacement));
+        caseProperties.put("placements", placementService.setPlacement(caseData, placement));
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
             .build();
-
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        UUID childId = getSelectedChildId(caseDetails, caseData);
+        Element<Child> child = placementService.getChild(caseData, childId);
+
+        Placement currentPlacement = placementService.getPlacement(caseData, child);
+        Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
 
         List<String> currentPlacementDocRefs = getDocumentReferenceForNoticeOfPlacementOrder(caseData);
         List<String> previousPlacementDocRefs = getDocumentReferenceForNoticeOfPlacementOrder(caseDataBefore);
 
         currentPlacementDocRefs.removeAll(previousPlacementDocRefs);
-
-        System.out.println(currentPlacementDocRefs.size());
 
         //send notification with right document
         if (!currentPlacementDocRefs.isEmpty()) {
@@ -128,6 +131,10 @@ public class PlacementController {
                 .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
                     callbackRequest, requestData.authorisation(), requestData.userId(), documentContents))
                 .forEach(applicationEventPublisher::publishEvent);
+        }
+
+        if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
+            publishPlacementApplicationUploadEvent(callbackRequest);
         }
     }
 
@@ -152,7 +159,16 @@ public class PlacementController {
     }
 
     private List<String> getDocumentReferenceForNoticeOfPlacementOrder(CaseData caseData) {
-        return placementService.getPlacementOrderAndNoticesDocumentUrls(
-            caseData.getPlacements(), NOTICE_OF_PLACEMENT_ORDER);
+        return placementService.getBinaryUrlsForOrderAndNotices(caseData.getPlacements(), NOTICE_OF_PLACEMENT_ORDER);
+    }
+
+    private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
+        applicationEventPublisher.publishEvent(
+            new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
+    }
+
+    private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
+        return isNotEmpty(previousPlacement)
+            && newPlacement.getApplication().equals(previousPlacement.getApplication());
     }
 }
