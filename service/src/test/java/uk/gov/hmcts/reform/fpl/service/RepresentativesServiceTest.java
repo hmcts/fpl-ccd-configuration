@@ -363,7 +363,7 @@ class RepresentativesServiceTest {
     @Test
     void shouldGetRepresentativePartiesToNotifyWhenNewRepresentativeAdded() throws IOException {
         CaseData caseDataBefore = CaseData.builder().representatives(emptyList()).build();
-        CaseData caseData = buildCaseDataWithRepresentatives();
+        CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
 
         Mockito.when(mapper.convertValue(callbackRequest()
             .getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
@@ -380,8 +380,8 @@ class RepresentativesServiceTest {
 
     @Test
     void shouldNotReturnAnyRepresentativesIfNewRepresentativeNotAdded() throws IOException {
-        CaseData caseDataBefore = buildCaseDataWithRepresentatives();
-        CaseData caseData = buildCaseDataWithRepresentatives();
+        CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
+        CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
 
         Mockito.when(mapper.convertValue(callbackRequest()
             .getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
@@ -396,17 +396,8 @@ class RepresentativesServiceTest {
 
     @Test
     void shouldGetRepresentativePartiesToNotifyWhenRepresentativeChanged() throws IOException {
-        CaseData caseDataBefore = buildCaseDataWithRepresentatives();
-
-        List<Element<Representative>> changedRepresentatives = new ArrayList<>();
-        changedRepresentatives.add(Element.<Representative>builder().value(Representative.builder()
-            .email("abc@example.com")
-            .fullName("Jon Snow")
-            .servingPreferences(EMAIL)
-            .build()).build());
-
-        CaseData caseData = CaseData.builder().representatives(
-            changedRepresentatives).build();
+        CaseData caseDataBefore = buildCaseDataWithRepresentatives(DIGITAL_SERVICE);
+        CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
 
         Mockito.when(mapper.convertValue(callbackRequest()
             .getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
@@ -421,19 +412,25 @@ class RepresentativesServiceTest {
         assertThat(representativesToNotify.equals(expectedRepresentatives));
     }
 
-    private CaseData buildCaseDataWithRepresentatives() {
+    private CaseData buildCaseDataWithRepresentatives(RepresentativeServingPreferences preference) {
         return CaseData.builder()
-            .representatives(createRepresentatives(DIGITAL_SERVICE))
+            .representatives(createRepresentatives(preference))
             .build();
     }
 
-    public static List<Element<Representative>> createRepresentatives(
+    private List<Element<Representative>> createRepresentatives(
         RepresentativeServingPreferences servingPreferences) {
-        return wrapElements(Representative.builder()
+        List<Element<Representative>> representatives = new ArrayList<>();
+        Representative representative = Representative.builder()
             .email("abc@example.com")
             .fullName("Jon Snow")
             .servingPreferences(servingPreferences)
-            .build());
+            .build();
+
+        Element.<Representative>builder().value(representative);
+        representatives.add(Element.<Representative>builder().value(representative).build());
+
+        return representatives;
     }
 
     private static CaseData caseWithRepresentatives(Representative... representatives) {
