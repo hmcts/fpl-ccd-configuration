@@ -46,20 +46,44 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         super("placement");
     }
 
-    //TODO neaten up.
     @Test
     void shouldSendEmailNotificationWhenNewOrder() throws NotificationClientException {
         UUID uuid = randomUUID();
+        Respondent respondent = respondent();
+        respondent.addRepresentative(uuid);
 
-        Respondent respondent = Respondent.builder()
+        postSubmittedEvent(callbackRequest(uuid, respondent));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+            eq("local-authority@local-authority.com"),
+            eq(parameters()),
+            eq("1"));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+            eq("representative@example.com"),
+            eq(parameters()),
+            eq("1"));
+    }
+
+    private Map<String, Object> parameters() {
+        return Map.of(
+            "respondentLastName", "Nelson",
+            "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
+    }
+
+    private Respondent respondent() {
+        return Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("James")
                 .lastName("Nelson")
                 .build())
             .build();
-        respondent.addRepresentative(uuid);
+    }
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
+    private CallbackRequest callbackRequest(UUID uuid, Respondent respondent) {
+        return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(1L)
                 .data(Map.of(
@@ -78,23 +102,5 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 .build())
             .caseDetailsBefore(CaseDetails.builder().data(new HashMap<>()).build())
             .build();
-
-        Map<String, Object> parameters = Map.of(
-            "respondentLastName", "Nelson",
-            "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
-
-        postSubmittedEvent(callbackRequest);
-
-        verify(notificationClient, times(1)).sendEmail(
-            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-            eq("local-authority@local-authority.com"),
-            eq(parameters),
-            eq("1"));
-
-        verify(notificationClient, times(1)).sendEmail(
-            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-            eq("representative@example.com"),
-            eq(parameters),
-            eq("1"));
     }
 }
