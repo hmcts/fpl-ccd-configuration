@@ -95,7 +95,6 @@ public class RepresentativesController {
 
         applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(
             callbackRequest, authorization, userId, representativeParties));
-
     }
 
     private String getRespondentsLabel(CaseData caseData) {

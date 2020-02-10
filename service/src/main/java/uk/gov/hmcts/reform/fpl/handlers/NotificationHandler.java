@@ -223,18 +223,18 @@ public class NotificationHandler {
 
         if (isNotEmpty(representatives)) {
             representatives.stream().forEach(representativeElement -> {
-                String emailForRepresentative = representativeElement.getValue().getEmail();
-                RepresentativeServingPreferences servingPreferencesForRep
+                String email = representativeElement.getValue().getEmail();
+                RepresentativeServingPreferences servingPreferences
                         = representativeElement.getValue().getServingPreferences();
-                if (!servingPreferencesForRep.equals(POST)) {
+                if (!servingPreferences.equals(POST)) {
 
                     Map<String, Object> parameters = partyAddedToCaseContentProvider
                         .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(),
-                           servingPreferencesForRep);
-                    String notificationTemplate = partyAddedToCaseContentProvider
-                        .getPartyAddedToCaseNotificationTemplate(servingPreferencesForRep);
+                           servingPreferences);
+                    String template = partyAddedToCaseContentProvider
+                        .getPartyAddedToCaseNotificationTemplate(servingPreferences);
 
-                    sendNotification(notificationTemplate, emailForRepresentative, parameters,
+                    sendNotification(template, email, parameters,
                         eventData.getReference());
                 }
             });

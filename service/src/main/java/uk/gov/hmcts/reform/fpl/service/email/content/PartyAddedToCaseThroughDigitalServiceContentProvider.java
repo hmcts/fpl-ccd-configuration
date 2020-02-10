@@ -32,9 +32,11 @@ public class PartyAddedToCaseThroughDigitalServiceContentProvider extends Abstra
     public Map<String, Object> buildPartyAddedToCaseNotification(final CaseDetails caseDetails) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         return Map.of(
-            "firstRespondentLastName", isNull(caseData.getRespondents1()) ? "" : caseData.getRespondents1()
+            "firstRespondentLastName", isNull(caseData.getRespondents1()) ? ""
+                : caseData.getRespondents1()
                 .get(0).getValue().getParty().getLastName(),
-            "familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber(),
+            "familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? ""
+                : caseData.getFamilyManCaseNumber(),
             "caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }
 }

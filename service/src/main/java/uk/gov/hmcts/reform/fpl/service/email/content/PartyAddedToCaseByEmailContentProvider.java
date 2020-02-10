@@ -32,7 +32,8 @@ public class PartyAddedToCaseByEmailContentProvider extends AbstractEmailContent
         return Map.of(
             "firstRespondentLastName", isNull(caseData.getRespondents1()) ? ""
                 : caseData.getRespondents1().get(0).getValue().getParty().getLastName(),
-            "familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber()
+            "familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? ""
+                : caseData.getFamilyManCaseNumber()
         );
     }
 }
