@@ -629,12 +629,10 @@ class NotificationHandlerTest {
                 .servingPreferences(EMAIL).build()).build();
         representatives.add(representative);
 
-        RepresentativeServingPreferences preferences = EMAIL;
-
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(),
-            preferences)).willReturn(expectedParameters);
+            EMAIL)).willReturn(expectedParameters);
 
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(preferences))
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(EMAIL))
             .willReturn(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
@@ -659,12 +657,10 @@ class NotificationHandlerTest {
                 .servingPreferences(DIGITAL_SERVICE).build()).build();
         representatives.add(representative);
 
-        RepresentativeServingPreferences preferences = DIGITAL_SERVICE;
-
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(),
-            preferences)).willReturn(expectedParameters);
+            DIGITAL_SERVICE)).willReturn(expectedParameters);
 
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(preferences))
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(DIGITAL_SERVICE))
             .willReturn(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
