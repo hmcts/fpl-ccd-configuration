@@ -218,11 +218,9 @@ public class RepresentativeService {
                                                                               currentRepresentatives,
         List<Element<Representative>> representativesBefore) {
         if (isNotEmpty(representativesBefore)) {
-            if (!representativesBefore.containsAll(currentRepresentatives)) {
-                return getChangedRepresentatives(currentRepresentatives, representativesBefore);
-            }
+            return getChangedRepresentatives(currentRepresentatives, representativesBefore);
         } else {
-            if (!currentRepresentatives.isEmpty()) {
+            if (isNotEmpty(currentRepresentatives)) {
                 return currentRepresentatives;
             }
         }
@@ -234,6 +232,6 @@ public class RepresentativeService {
         List<Element<Representative>> representativesBefore) {
 
         currentRepresentatives.removeAll(representativesBefore);
-        return  currentRepresentatives;
+        return currentRepresentatives;
     }
 }
