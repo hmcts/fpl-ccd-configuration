@@ -31,6 +31,8 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -41,6 +43,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -85,6 +88,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
@@ -128,7 +132,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToStartShouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
+    void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(12345L)
             .data(Map.of("data", "some data"))
@@ -360,9 +364,65 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
     }
 
+    @Nested
+    class PopulateChildSelectorMidEvent {
+        @Test
+        void shouldPopulateChildSelectorAndLabelWhenNoIsSelected() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseDetails("No"), "populate-selector");
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(callbackResponse.getData().get("children_label"))
+                .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
+
+            assertThat(caseData.getChildSelector()).isEqualTo(getExpectedChildSelector());
+        }
+
+        @Test
+        void shouldNotPopulateChildSelectorAndLabelWhenYesIsSelected() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseDetails("Yes"), "populate-selector");
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(callbackResponse.getData().get("children_label")).isNull();
+            assertThat(caseData.getChildSelector()).isNull();
+        }
+
+        private ChildSelector getExpectedChildSelector() {
+            return ChildSelector.builder()
+                .childCount("12")
+                .build();
+        }
+
+        private CaseDetails buildCaseDetails(String choice) {
+            CaseData caseData = CaseData.builder()
+                .children1(createChildren("Wallace", "Gromit"))
+                .orderAppliesToAllChildren(choice)
+                .build();
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+                .build();
+        }
+
+        private List<Element<Child>> createChildren(String... firstNames) {
+            Child[] children = new Child[firstNames.length];
+            for (int i = 0; i < firstNames.length; i++) {
+                children[i] = Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName(firstNames[i])
+                        .build())
+                    .build();
+            }
+            return wrapElements(children);
+        }
+    }
+
     @TestInstance(PER_CLASS)
     @Nested
-    class MidEvent {
+    class GenerateDocumentMidEvent {
         private final byte[] pdf = {1, 2, 3, 4, 5};
         private Document document;
 
@@ -376,11 +436,12 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         @ParameterizedTest
-        @MethodSource("midEventArgumentSource")
+        @MethodSource("generateDocumentMidEventArgumentSource")
         void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails,
                                                                        String fileName,
                                                                        DocmosisTemplates templateName) {
-            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                caseDetails, "generate-document");
 
             verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(), eq(templateName));
             verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
@@ -392,7 +453,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         @Test
         void shouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
-            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections());
+            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), "generate-document");
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
             verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
@@ -404,7 +465,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             reset(uploadDocumentService);
         }
 
-        private Stream<Arguments> midEventArgumentSource() {
+        private Stream<Arguments> generateDocumentMidEventArgumentSource() {
             return Stream.of(
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetails(INTERIM), "interim_care_order.pdf", ORDER),
@@ -435,12 +496,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         private CaseDetails generateBlankOrderCaseDetails() {
-            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
-
-            dataBuilder.order(GeneratedOrder.builder().details("").build())
-                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
-
-            generateDefaultValues(dataBuilder);
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(BLANK_ORDER, null)
+                .order(GeneratedOrder.builder().details("").build());
 
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
