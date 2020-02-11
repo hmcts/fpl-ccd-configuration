@@ -63,12 +63,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -651,6 +654,19 @@ class NotificationHandlerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE), eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
             eq(expectedParameters), eq("12345"));
+    }
+
+    @Test
+    void shouldThrowNotificationClientExceptionWhenEmailNotSent() throws NotificationClientException {
+
+        Exception exception = new NotificationClientException("Exception");
+
+        when(notificationClient.sendEmail(any(), any(), any(), any())).thenThrow(exception);
+
+        Exception actualException = assertThrows(NotificationClientException.class,
+            () -> notificationClient.sendEmail(any(),any(),any(),any()));
+
+        assertThat(actualException).isEqualTo(exception);
     }
 
     @Test

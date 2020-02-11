@@ -16,6 +16,7 @@ import java.util.Map;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -35,15 +36,14 @@ public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvide
     }
 
     public Map<String, Object> getPartyAddedToCaseNotificationParameters(CaseDetails caseDetails,
-                                        RepresentativeServingPreferences servingPreferences) {
-        if (servingPreferences == EMAIL) {
-            return buildPartyAddedToCaseCommonNotificationParams(caseDetails).build();
-        } else {
-            ImmutableMap.Builder<String, Object> notificationParameters =
-                buildPartyAddedToCaseCommonNotificationParams(caseDetails);
-            notificationParameters.put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()));
-            return notificationParameters.build();
+        RepresentativeServingPreferences servingPreference) {
+        ImmutableMap.Builder<String, Object> notificationParams =
+            buildPartyAddedToCaseCommonNotificationParams(caseDetails);
+
+        if (servingPreference == DIGITAL_SERVICE) {
+            notificationParams.put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()));
         }
+        return notificationParams.build();
     }
 
     public String getPartyAddedToCaseNotificationTemplate(RepresentativeServingPreferences servingPreferences) {
