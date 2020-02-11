@@ -8,8 +8,13 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Stream.ofNullable;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
 
 @Data
 @Builder(toBuilder = true)
@@ -39,5 +44,20 @@ public class Placement {
         this.setChildId(child.getId());
         this.setChildName(child.getValue().getParty().getFullName());
         return this;
+    }
+
+    @JsonIgnore
+    public Placement removePlacementOrder() {
+        List<Element<PlacementOrderAndNotices>> filteredOrders = ofNullable(this.getOrderAndNotices())
+            .flatMap(Collection::stream)
+            .filter(x -> x.getValue().getType() != PLACEMENT_ORDER)
+            .collect(Collectors.toList());
+
+        return this.toBuilder().orderAndNotices(filteredOrders.isEmpty() ? null : filteredOrders).build();
+    }
+
+    @JsonIgnore
+    public Placement removeConfidentialDocuments() {
+        return this.toBuilder().confidentialDocuments(null).build();
     }
 }
