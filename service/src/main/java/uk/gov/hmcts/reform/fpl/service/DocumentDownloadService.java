@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import java.net.URI;
@@ -25,20 +26,23 @@ public class DocumentDownloadService {
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentDownloadClientApi documentDownloadClient;
     private final IdamApi idamApi;
+    private final RequestData requestData;
 
-    public byte[] downloadDocument(final String authorization, final String userId, final String documentUrlString) {
-        final String userRoles = join(",", idamApi.retrieveUserInfo(authorization).getRoles());
+    public byte[] downloadDocument(final String documentUrlString) {
+        final String userRoles = join(",", idamApi.retrieveUserInfo(requestData.authorisation()).getRoles());
 
-        ResponseEntity<Resource> documentDownloadResponse = documentDownloadClient.downloadBinary(
-            authorization, authTokenGenerator.generate(), userRoles, userId,
+        ResponseEntity<Resource> documentDownloadResponse =
+            documentDownloadClient.downloadBinary(requestData.authorisation(),
+            authTokenGenerator.generate(),
+            userRoles,
+            requestData.userId(),
             URI.create(documentUrlString).getPath());
 
         if (isNotEmpty(documentDownloadResponse) && HttpStatus.OK == documentDownloadResponse.getStatusCode()) {
             ByteArrayResource resourceByte = (ByteArrayResource) documentDownloadResponse.getBody();
             return requireNonNull(resourceByte).getByteArray();
-        } else {
-            throw new IllegalArgumentException(String.format("Download of document from %s unsuccessful.",
-                documentUrlString));
         }
+        throw new IllegalArgumentException(String.format("Download of document from %s unsuccessful.",
+            documentUrlString));
     }
 }

@@ -24,22 +24,19 @@ public class DocumentSenderService {
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentDownloadService documentDownloadService;
+    private final DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
-    public List<SentDocument> send(DocumentReference mainDocument,
-                                   List<Representative> representativesServedByPost,
-                                   String authorization,
-                                   String userId) {
+    public List<SentDocument> send(DocumentReference mainDocument, List<Representative> representativesServedByPost,
+                                   Long caseId, String familyManCaseNumber) {
         List<SentDocument> printedDocuments = new ArrayList<>();
         for (Representative representative : representativesServedByPost) {
-            byte[] mainDocumentBinary = documentDownloadService.downloadDocument(
-                authorization,
-                userId,
-                mainDocument.getBinaryUrl());
-            //TODO: get actual document
-            byte[] coversheetWithGeneralLetter = new byte[] {};
+            byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocument.getBinaryUrl());
+            byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,
+                caseId,
+                representative).getBytes();
 
             sendLetterApi.sendLetter(authTokenGenerator.generate(),
-                new LetterWithPdfsRequest(List.of(coversheetWithGeneralLetter, mainDocumentBinary),
+                new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary),
                     "string",
                     Map.of()));
 

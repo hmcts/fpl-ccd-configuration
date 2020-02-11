@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSenderService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -31,7 +30,6 @@ public class SendDocumentController {
     private final DocumentSenderService documentSenderService;
     private final RepresentativeService representativeService;
     private final FeatureToggleService featureToggleService;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSave(@RequestBody CallbackRequest callbackRequest) {
@@ -47,8 +45,8 @@ public class SendDocumentController {
 
             documentSenderService.send(documentToBeSent,
                 representativesServedByPost,
-                requestData.authorisation(),
-                requestData.userId());
+                caseDetails.getId(),
+                caseData.getFamilyManCaseNumber());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

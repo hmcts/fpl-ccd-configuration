@@ -130,7 +130,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
 
-        given(documentDownloadService.downloadDocument(anyString(), anyString(), anyString()))
+        given(documentDownloadService.downloadDocument(anyString()))
             .willReturn(PDF);
     }
 

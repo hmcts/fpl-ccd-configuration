@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.launchdarkly.client.LDClient;
 import com.launchdarkly.client.LDUser;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -14,8 +13,11 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
@@ -24,6 +26,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -44,6 +47,9 @@ class SendDocumentControllerTest extends AbstractControllerTest {
     private final String serviceAuthToken = RandomStringUtils.randomAlphanumeric(10);
 
     @MockBean
+    private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
+
+    @MockBean
     private DocumentDownloadService documentDownloadService;
 
     @MockBean
@@ -62,8 +68,10 @@ class SendDocumentControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setupStoppedClock() {
         given(ldClient.boolVariation(anyString(), any(LDUser.class), anyBoolean())).willReturn(true);
-        given(documentDownloadService.downloadDocument(anyString(), anyString(), anyString())).willReturn(PDF);
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
+        given(docmosisCoverDocumentsService.createCoverDocuments(anyString(), anyLong(), any())).willReturn(
+            DocmosisDocument.builder().bytes(PDF).build());
     }
 
     @Test
@@ -78,7 +86,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
         postAboutToSubmitEvent(caseDetails);
 
-        verify(documentDownloadService).downloadDocument(userAuthToken, userId, documentToBeSend.getBinaryUrl());
+        verify(documentDownloadService).downloadDocument(documentToBeSend.getBinaryUrl());
         verify(sendLetterApi).sendLetter(eq(serviceAuthToken), any(LetterWithPdfsRequest.class));
     }
 
@@ -90,16 +98,15 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
         postAboutToSubmitEvent(caseDetails);
 
-        verify(documentDownloadService, never()).downloadDocument(userAuthToken,
-            userId,
-            documentToBeSend.getBinaryUrl());
+        verify(documentDownloadService, never()).downloadDocument(documentToBeSend.getBinaryUrl());
         verify(sendLetterApi, never()).sendLetter(eq(serviceAuthToken), any(LetterWithPdfsRequest.class));
     }
 
     private static CaseDetails buildCaseData(DocumentReference documentReference, Representative... representatives) {
         return CaseDetails.builder()
-            .id(RandomUtils.nextLong())
+            .id(1234567890123456L)
             .data(Map.of(
+                "familyManCaseNumber", "number",
                 "documentToBeSent", documentReference,
                 "representatives", wrapElements(representatives)))
             .build();
@@ -111,6 +118,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
             .positionInACase("Position")
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
             .servingPreferences(servingPreferences)
+            .address(Address.builder().build())
             .build();
     }
 

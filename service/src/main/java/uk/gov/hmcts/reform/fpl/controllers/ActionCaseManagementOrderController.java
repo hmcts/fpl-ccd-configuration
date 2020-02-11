@@ -206,8 +206,7 @@ public class ActionCaseManagementOrderController {
 
         if (!actionedCmo.isDraft()) {
             final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();
-            byte[] documentContents = documentDownloadService.downloadDocument(authorization, userId,
-                actionCmoDocumentUrl);
+            byte[] documentContents = documentDownloadService.downloadDocument(actionCmoDocumentUrl);
 
             applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, authorization,
                 userId, documentContents));
