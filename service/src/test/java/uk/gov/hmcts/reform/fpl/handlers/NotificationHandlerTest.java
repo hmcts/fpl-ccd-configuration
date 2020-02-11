@@ -85,7 +85,6 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
-@SuppressWarnings("LineLength")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class NotificationHandlerTest {
@@ -249,6 +248,10 @@ class NotificationHandlerTest {
             verify(notificationClient, times(1)).sendEmail(
                 eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(orderLocalAuthorityParameters), eq("12345"));
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(COURT_EMAIL_ADDRESS),
+                anyMap(), eq("12345"));
         }
     }
 
@@ -285,7 +288,7 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotifyLocalAuthorityOfCMOIssued() throws Exception {
+        void shouldNotifyAdminAndLAOfCMOIssued() throws Exception {
             CallbackRequest callbackRequest = callbackRequest();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -335,10 +338,6 @@ class NotificationHandlerTest {
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
                 eq(expectedCMOIssuedNotificationParametersForRepresentative), eq("12345"));
-
-            verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(COURT_EMAIL_ADDRESS),
-                anyMap(), eq("12345"));
         }
 
         @Test

@@ -16,10 +16,9 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 public class NotifyAdminOrderIssuedTestHelper {
 
@@ -49,7 +48,7 @@ public class NotifyAdminOrderIssuedTestHelper {
             .put("needsPosting", "No")
             .put("doesNotNeedPosting", "Yes")
             .put("courtName", LOCAL_AUTHORITY_NAME)
-            .put("caseUrlOrDocumentLink", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
+            .put("caseUrlOrDocumentLink", formatCaseUrl("http://fake-url", 12345L))
             .put("respondentLastName", "Jones")
             .put("representatives", "")
             .build();

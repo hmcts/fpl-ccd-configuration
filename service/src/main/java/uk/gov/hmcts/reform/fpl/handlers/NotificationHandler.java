@@ -113,10 +113,10 @@ public class NotificationHandler {
     public void sendNotificationsForGeneratedOrder(final GeneratedOrderEvent event) {
         EventData eventData = new EventData(event);
 
-        sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+        sendGeneratedOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             event.getMostRecentUploadedDocumentUrl());
 
-        sendOrderNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+        sendOrderIssuedNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             event.getDocumentContents());
     }
 
@@ -249,7 +249,7 @@ public class NotificationHandler {
     private void sendCMODocumentLinkNotifications(final EventData eventData, final byte[] documentContents) {
         sendCMODocumentLinkNotificationForCafcass(eventData, documentContents);
         sendCMODocumentLinkNotificationsToRepresentatives(eventData, documentContents);
-        sendOrderNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+        sendOrderIssuedNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             documentContents);
     }
 
@@ -293,8 +293,9 @@ public class NotificationHandler {
         }
     }
 
-    private void sendOrderNotificationToLocalAuthority(final CaseDetails caseDetails, final String localAuthorityCode,
-                                                       final String mostRecentUploadedDocumentUrl) {
+    private void sendGeneratedOrderNotificationToLocalAuthority(final CaseDetails caseDetails,
+                                                                final String localAuthorityCode,
+                                                                final String mostRecentUploadedDocumentUrl) {
         Map<String, Object> localAuthorityParameters =
             generatedOrderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
@@ -305,12 +306,12 @@ public class NotificationHandler {
             Long.toString(caseDetails.getId()));
     }
 
-    private void sendOrderNotificationToHmctsAdmin(final CaseDetails caseDetails,
-                                                   final String localAuthorityCode,
-                                                   final byte[] documentContents) {
+    private void sendOrderIssuedNotificationToHmctsAdmin(final CaseDetails caseDetails,
+                                                         final String localAuthorityCode,
+                                                         final byte[] documentContents) {
         Map<String, Object> hmctsParameters =
             orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
-            caseDetails, localAuthorityCode, documentContents);
+                caseDetails, localAuthorityCode, documentContents);
 
         String hmctsEmail = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 
