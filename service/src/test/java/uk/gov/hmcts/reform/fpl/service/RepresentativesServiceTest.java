@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -48,7 +47,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESP
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -377,11 +375,6 @@ class RepresentativesServiceTest {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
 
-        Mockito.when(mapper.convertValue(callbackRequest()
-            .getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
-        Mockito.when(mapper.convertValue(callbackRequest()
-            .getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
-
         List<Element<Representative>> representativesToNotify = representativesService
             .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
 
@@ -392,11 +385,6 @@ class RepresentativesServiceTest {
     void shouldGetRepresentativePartiesToNotifyWhenRepresentativeChanged() throws IOException {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(DIGITAL_SERVICE);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
-
-        Mockito.when(mapper.convertValue(callbackRequest()
-            .getCaseDetails().getData(), CaseData.class)).thenReturn(caseData);
-        Mockito.when(mapper.convertValue(callbackRequest()
-            .getCaseDetailsBefore().getData(), CaseData.class)).thenReturn(caseDataBefore);
 
         List<Element<Representative>> expectedRepresentatives = createRepresentatives(EMAIL);
 

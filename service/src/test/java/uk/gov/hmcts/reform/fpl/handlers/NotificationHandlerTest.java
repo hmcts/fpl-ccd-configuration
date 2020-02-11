@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -48,6 +47,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
@@ -618,11 +618,10 @@ class NotificationHandlerTest {
     void shouldSendNotificationToPartiesWhenAddedToCaseByEmail() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = getPartyAddedByEmailNotificationParameters();
 
-        List<Element<Representative>> representatives = new ArrayList<>();
-        Element<Representative> representative = Element.<Representative>builder()
-            .value(Representative.builder()
+        List<Representative> representatives = new ArrayList<>();
+        Representative representative = Representative.builder()
                 .email("joe-blogs@gmail.com")
-                .servingPreferences(EMAIL).build()).build();
+                .servingPreferences(EMAIL).build();
         representatives.add(representative);
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(),
@@ -631,7 +630,7 @@ class NotificationHandlerTest {
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(EMAIL))
             .willReturn(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
 
-        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
+        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, ElementUtils.wrapElements(representative)));
 
         verify(notificationClient, times(1)).sendEmail(
             eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE), eq(PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS),
@@ -642,11 +641,10 @@ class NotificationHandlerTest {
     void shouldSendNotificationToPartiesWhenAddedToCaseThroughDigitalService() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = getPartyAddedByEmailNotificationParameters();
 
-        List<Element<Representative>> representatives = new ArrayList<>();
-        Element<Representative> representative = Element.<Representative>builder()
-            .value(Representative.builder()
+        List<Representative> representatives = new ArrayList<>();
+        Representative representative = Representative.builder()
                 .email("damian@swansea.gov.uk")
-                .servingPreferences(DIGITAL_SERVICE).build()).build();
+                .servingPreferences(DIGITAL_SERVICE).build();
         representatives.add(representative);
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(),
@@ -655,7 +653,7 @@ class NotificationHandlerTest {
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(DIGITAL_SERVICE))
             .willReturn(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
 
-        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
+        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, ElementUtils.wrapElements(representative)));
 
         verify(notificationClient, times(1)).sendEmail(
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE), eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
@@ -664,14 +662,13 @@ class NotificationHandlerTest {
 
     @Test
     void shouldNotSendNotificationToPartiesWhenAddedToCaseThroughPost() throws IOException, NotificationClientException {
-        List<Element<Representative>> representatives = new ArrayList<>();
-        Element<Representative> representative = Element.<Representative>builder()
-            .value(Representative.builder()
+        List<Representative> representatives = new ArrayList<>();
+        Representative representative = Representative.builder()
                 .email("damian@swansea.gov.uk")
-                .servingPreferences(POST).build()).build();
+                .servingPreferences(POST).build();
         representatives.add(representative);
 
-        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
+        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, ElementUtils.wrapElements(representative)));
 
         verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
     }
