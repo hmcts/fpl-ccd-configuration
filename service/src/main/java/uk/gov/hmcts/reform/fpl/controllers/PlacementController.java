@@ -106,7 +106,7 @@ public class PlacementController {
             .build();
     }
 
-    //TODO: this method is getting too busy. What is the best way to split logic out here?
+    //TODO: where should private methods for send notifications exist?
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -115,6 +115,14 @@ public class PlacementController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
+        sendNotificationForNewPlacementOrder(callbackRequest, caseDetails, caseData, caseDataBefore);
+        sendNotificationForNewNoticeOfPlacementOrder(callbackRequest, caseData, caseDataBefore);
+    }
+
+    private void sendNotificationForNewPlacementOrder(CallbackRequest callbackRequest,
+                                                      CaseDetails caseDetails,
+                                                      CaseData caseData,
+                                                      CaseData caseDataBefore) {
         UUID childId = getSelectedChildId(caseDetails, caseData);
         Element<Child> child = placementService.getChild(caseData, childId);
 
@@ -125,7 +133,11 @@ public class PlacementController {
         if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest);
         }
+    }
 
+    private void sendNotificationForNewNoticeOfPlacementOrder(CallbackRequest callbackRequest,
+                                                              CaseData caseData,
+                                                              CaseData caseDataBefore) {
         List<String> currentDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseData.getPlacements());
         List<String> previousDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseDataBefore.getPlacements());
         currentDocumentUrls.removeAll(previousDocumentUrls);

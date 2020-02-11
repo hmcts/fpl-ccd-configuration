@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -90,8 +90,8 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
             postSubmittedEvent(callbackRequest);
 
-            verify(notificationClient).sendEmail(
-                eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
+            verify(notificationClient, times(1)).sendEmail(
+                eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
                 eq("admin@family-court.com"),
                 eq(expectedTemplateParameters()),
                 eq("12345"));
@@ -115,7 +115,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequest);
 
             verify(notificationClient, never()).sendEmail(
-                eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
+                eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
                 eq("admin@family-court.com"),
                 eq(expectedTemplateParameters()),
                 eq("12345"));
@@ -154,8 +154,14 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocument()));
 
         @Test
-        void shouldSendEmailNotificationWhenNewNoticeOfPlacementOrder() throws NotificationClientException {
+        void shouldSendEmailNotificationsWhenNewNoticeOfPlacementOrder() throws NotificationClientException {
             postSubmittedEvent(callbackRequestWithEmptyCaseDetailsBefore());
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
+                eq("admin@family-court.com"),
+                eq(expectedParameters()),
+                eq("1"));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),

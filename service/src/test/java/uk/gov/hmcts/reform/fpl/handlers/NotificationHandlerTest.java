@@ -76,7 +76,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMP
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
@@ -627,7 +627,7 @@ class NotificationHandlerTest {
             new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
     }
 
