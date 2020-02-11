@@ -302,7 +302,7 @@ public class CaseData {
         return Optional.ofNullable(confidentialOthers).orElse(new ArrayList<>());
     }
 
-    @JsonGetter("placements")
+    @JsonGetter("confidentialPlacements")
     public List<Element<Placement>> getPlacements() {
         return defaultIfNull(placements, new ArrayList<>());
     }
