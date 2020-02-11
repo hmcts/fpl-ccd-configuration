@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseByEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseThroughDigitalServiceContentProvider;
 
 import java.io.IOException;
 import java.util.Map;
@@ -25,8 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, PartyAddedToCaseContentProvider.class,
-    DateFormatterService.class, HearingBookingService.class, PartyAddedToCaseThroughDigitalServiceContentProvider.class,
-    PartyAddedToCaseByEmailContentProvider.class})
+    DateFormatterService.class, HearingBookingService.class})
 class PartyAddedToCaseContentProviderTest {
 
     @Autowired
@@ -34,13 +31,6 @@ class PartyAddedToCaseContentProviderTest {
 
     @Autowired
     private DateFormatterService dateFormatterService;
-
-    @Autowired
-    private PartyAddedToCaseByEmailContentProvider partyAddedToCaseByEmailContentProvider;
-
-    @Autowired
-    private PartyAddedToCaseThroughDigitalServiceContentProvider partyAddedToCaseThroughDigitalServicelContentProvider;
-
     @Autowired
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
@@ -49,16 +39,8 @@ class PartyAddedToCaseContentProviderTest {
 
     @BeforeEach
     void setup() {
-        this.partyAddedToCaseByEmailContentProvider = new PartyAddedToCaseByEmailContentProvider("", mapper,
-            dateFormatterService, hearingBookingService);
-
-        this.partyAddedToCaseThroughDigitalServicelContentProvider
-            = new PartyAddedToCaseThroughDigitalServiceContentProvider(
-            "", mapper, dateFormatterService, hearingBookingService);
-
         this.partyAddedToCaseContentProvider = new PartyAddedToCaseContentProvider(
-            "null", dateFormatterService, hearingBookingService, partyAddedToCaseByEmailContentProvider,
-            partyAddedToCaseThroughDigitalServicelContentProvider);
+            "null", dateFormatterService, hearingBookingService, mapper);
     }
 
     @Test
@@ -77,7 +59,7 @@ class PartyAddedToCaseContentProviderTest {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", "Smith")
             .put("familyManCaseNumber", "12345L")
-            .put("caseUrl", "/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
+            .put("caseUrl", "null/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
             .build();
 
         assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
