@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.google.common.collect.MapDifference;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,136 +12,131 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
-import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import static java.util.UUID.randomUUID;
-import static org.mockito.ArgumentMatchers.anyMap;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
 class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
+    private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String CASE_ID = "12345";
+    private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
+    private static final byte[] PDF = {1, 2, 3, 4, 5};
+
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     PlacementSubmittedEventControllerTest() {
         super("placement");
     }
 
     @Test
-    void shouldSendEmailNotificationWhenNewOrder() throws NotificationClientException {
-        postSubmittedEvent(callbackRequestWithEmptyCaseDetailsBefore());
-
-        verify(notificationClient).sendEmail(
-            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-            eq("local-authority@local-authority.com"),
-            eq(parameters()),
-            eq("1"));
-
-        verify(notificationClient).sendEmail(
-            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-            eq("representative@example.com"),
-            eq(parameters()),
-            eq("1"));
+    void shouldSendNotificationToAdminWhenNoticeOfPlacementOrderIssued() throws NotificationClientException {
+        postSubmittedEvent(buildCallbackRequestWithoutRepresentatives());
 
         verify(notificationClient).sendEmail(
             eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
-            eq(anyMap()), eq("1"));
+            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()), eq(CASE_ID));
+
+        verifyZeroInteractions(notificationClient);
     }
 
     @Test
-    void shouldNotSendEmailNotificationWhenNoChangesToOrder() throws NotificationClientException {
-        postSubmittedEvent(callbackRequestWithMatchingCaseDetailsBefore());
+    void shouldSendOrderIssuedNotificationToAdminWhenRepresentativesNeedServing() throws NotificationClientException {
+        given(documentDownloadService.downloadDocument(anyString(), anyString(), anyString()))
+            .willReturn(PDF);
 
-        verify(notificationClient, times(0)).sendEmail(
-            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-            eq("local-authority@local-authority.com"),
-            eq(parameters()),
-            eq("1"));
+        postSubmittedEvent(buildCallbackRequestWithRepresentatives());
 
-        verify(notificationClient, times(0)).sendEmail(
-            eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-            eq("representative@example.com"),
-            eq(parameters()),
-            eq("1"));
+        verify(notificationClient).sendEmail(
+            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
+            dataCaptor.capture(), eq(CASE_ID));
+
+        MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor);
+        assertThat(difference.areEqual()).isTrue();
+
+        verifyZeroInteractions(notificationClient);
     }
 
-    private Map<String, Object> parameters() {
-        return Map.of(
-            "respondentLastName", "Nelson",
-            "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
-    }
+    private CallbackRequest buildCallbackRequestWithoutRepresentatives() {
+        return CallbackRequest.builder()
+            .caseDetailsBefore(CaseDetails.builder()
+                .id(12345L)
+                .data(Map.of(
+                    "respondents1", createRespondents(),
+                    "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+                    "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
+                .build())
 
-    private Respondent respondent() {
-        return Respondent.builder()
-            .party(RespondentParty.builder()
-                .firstName("James")
-                .lastName("Nelson")
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(Map.of(
+                    "confidentialPlacements", List.of(element(Placement.builder()
+                        .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
+                            .type(NOTICE_OF_PLACEMENT_ORDER)
+                            .document(DocumentReference.buildFromDocument(document()))
+                            .build()))
+                        .build())),
+                    "respondents1", createRespondents(),
+                    "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+                    "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
                 .build())
             .build();
     }
 
-    private CallbackRequest callbackRequestWithEmptyCaseDetailsBefore() {
-        UUID representativeId = randomUUID();
-        Respondent respondent = respondent();
-        respondent.addRepresentative(representativeId);
-
+    private CallbackRequest buildCallbackRequestWithRepresentatives() {
         return CallbackRequest.builder()
-            .caseDetails(populatedCaseDetails(representativeId, respondent))
-            .caseDetailsBefore(CaseDetails.builder().data(new HashMap<>()).build())
-            .build();
-    }
+            .caseDetailsBefore(CaseDetails.builder()
+                .id(12345L)
+                .data(Map.of(
+                    "respondents1", createRespondents(),
+                    "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+                    "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
+                .build())
 
-    private CallbackRequest callbackRequestWithMatchingCaseDetailsBefore() {
-        UUID representativeId = randomUUID();
-        Respondent respondent = respondent();
-        respondent.addRepresentative(representativeId);
-
-        return CallbackRequest.builder()
-            .caseDetails(populatedCaseDetails(representativeId, respondent))
-            .caseDetailsBefore(populatedCaseDetails(representativeId, respondent))
-            .build();
-    }
-
-    private CaseDetails populatedCaseDetails(UUID representativeId, Respondent respondent) {
-        return CaseDetails.builder()
-            .id(1L)
-            .data(Map.of(
-                "caseLocalAuthority", "example",
-                "confidentialPlacements", List.of(element(Placement.builder()
-                    .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
-                        .type(NOTICE_OF_PLACEMENT_ORDER)
-                        .document(DocumentReference.buildFromDocument(document()))
-                        .build()))
-                    .build())),
-                "respondents1", wrapElements(respondent),
-                "representatives", List.of(element(representativeId, Representative.builder()
-                    .servingPreferences(DIGITAL_SERVICE)
-                    .email("representative@example.com")
-                    .build()))))
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(Map.of(
+                    "confidentialPlacements", List.of(element(Placement.builder()
+                        .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
+                            .type(NOTICE_OF_PLACEMENT_ORDER)
+                            .document(DocumentReference.buildFromDocument(document()))
+                            .build()))
+                        .build())),
+                    "respondents1", createRespondents(),
+                    "representatives", buildRepresentativesServedByPost(),
+                    "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+                    "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
+                .build())
             .build();
     }
 }

@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.codec.binary.Base64;
-import org.json.JSONObject;
+import com.google.common.collect.MapDifference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -44,7 +44,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.UUID.randomUUID;
@@ -72,7 +71,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
@@ -83,6 +81,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -119,6 +120,9 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
+
     private Document document;
 
     ActionCaseManagementOrderControllerTest() {
@@ -132,7 +136,6 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
-
         given(documentDownloadService.downloadDocument(anyString(), anyString(), anyString()))
             .willReturn(PDF);
     }
@@ -163,7 +166,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartShouldNotProgressOrderWhenOrderActionIsNotSet() {
-        CaseDetails caseDetails = createCaseDetailstWithEmptyCMO();
+        CaseDetails caseDetails = createCaseDetailsWithEmptyCMO();
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -232,7 +235,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldRemoveOrderWhenOrderActionIsNotJudgeReview() {
-        CaseDetails caseDetails = createCaseDetailstWithEmptyCMO();
+        CaseDetails caseDetails = createCaseDetailsWithEmptyCMO();
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -313,7 +316,10 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
-            eq(getExpectedParametersForAdminWhenRepresentativesNeedServingByPost()), eq(CASE_ID));
+            dataCaptor.capture(), eq(CASE_ID));
+
+        MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor);
+        assertThat(difference.areEqual()).isTrue();
 
         verifyZeroInteractions(notificationClient);
     }
@@ -337,7 +343,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         verifyZeroInteractions(notificationClient);
     }
 
-    private CaseDetails createCaseDetailstWithEmptyCMO() {
+    private CaseDetails createCaseDetailsWithEmptyCMO() {
         Map<String, Object> data = new HashMap<>();
         final CaseManagementOrder order = CaseManagementOrder.builder().build();
 
@@ -429,35 +435,6 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private Map<String, Object> getExpectedParametersForAdminWhenNoRepresentativesServedByPost() {
-        return ImmutableMap.<String, Object>builder()
-            .put("needsPosting", "No")
-            .put("doesNotNeedPosting", "Yes")
-            .put("courtName", LOCAL_AUTHORITY_NAME)
-            .put("caseUrlOrDocumentLink", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
-            .put("respondentLastName", "Jones")
-            .put("representatives", "")
-            .build();
-    }
-
-    private Map<String, Object> getExpectedParametersForAdminWhenRepresentativesNeedServingByPost() {
-
-        byte[] fileContentAsByte = Base64.encodeBase64(PDF);
-        String fileContent = new String(fileContentAsByte, ISO_8859_1);
-
-        JSONObject jsonFileObject = new JSONObject();
-        jsonFileObject.put("file", fileContent);
-
-        return ImmutableMap.<String, Object>builder()
-            .put("needsPosting", "Yes")
-            .put("doesNotNeedPosting", "No")
-            .put("courtName", LOCAL_AUTHORITY_NAME)
-            .put("respondentLastName", "Jones")
-            .put("representatives", List.of("Paul Blart\nStreet, Town, Postcode"))
-            .put("caseUrlOrDocumentLink", jsonFileObject)
-            .build();
-    }
-
     private Map<String, Object> buildSubmittedRequestData(final List<Element<Representative>>
                                                               representatives) {
         return Map.of(
@@ -519,19 +496,6 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             .email("ragnar@example.com")
             .fullName("Ragnar")
             .servingPreferences(EMAIL)
-            .build());
-    }
-
-    private List<Element<Representative>> buildRepresentativesServedByPost() {
-        return wrapElements(Representative.builder()
-            .email("paul@example.com")
-            .fullName("Paul Blart")
-            .address(Address.builder()
-                .addressLine1("Street")
-                .postTown("Town")
-                .postcode("Postcode")
-                .build())
-            .servingPreferences(POST)
             .build());
     }
 }

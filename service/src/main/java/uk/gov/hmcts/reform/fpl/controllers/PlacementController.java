@@ -117,12 +117,6 @@ public class PlacementController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        UUID childId = getSelectedChildId(caseDetails, caseData);
-        Element<Child> child = placementService.getChild(caseData, childId);
-
-        Placement currentPlacement = placementService.getPlacement(caseData, child);
-        Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
-
         List<String> currentPlacementDocRefs = getDocumentReferenceForNoticeOfPlacementOrder(caseData);
         List<String> previousPlacementDocRefs = getDocumentReferenceForNoticeOfPlacementOrder(caseDataBefore);
 
@@ -136,10 +130,6 @@ public class PlacementController {
                 .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
                     callbackRequest, requestData.authorisation(), requestData.userId(), documentContents))
                 .forEach(applicationEventPublisher::publishEvent);
-        }
-
-        if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
-            publishPlacementApplicationUploadEvent(callbackRequest);
         }
     }
 

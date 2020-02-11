@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.MapDifference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -11,6 +12,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -56,12 +59,13 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -81,6 +85,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -90,6 +97,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
+    private static final String CASE_ID = "12345";
+    private static final byte[] PDF = {1, 2, 3, 4, 5};
 
     private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
 
@@ -107,6 +116,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     @Autowired
     private Time time;
@@ -127,28 +139,75 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
 
-    @Test
-    void shouldTriggerOrderEventWhenSubmitted() throws Exception {
-        String expectedCaseReference = "19898989";
-        postSubmittedEvent(buildCallbackRequest());
+    @TestInstance(PER_CLASS)
+    @Nested
+    class Submitted {
 
-        verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
+        @AfterEach
+        void resetInvocations() {
+            reset(notificationClient);
+        }
 
-        verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
-            anyMap(), eq(expectedCaseReference));
+        @Test
+        void submittedShouldNotifyAdminAndLAWhenNoRepresentativesNeedServing() throws Exception {
+            postSubmittedEvent(buildCallbackRequest());
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(expectedOrderLocalAuthorityParameters()), eq(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
+                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()), eq(CASE_ID));
+
+            verifyZeroInteractions(notificationClient);
+        }
+
+        @Test
+        void submittedShouldNotifyAdminAndLAWhenRepresentativesNeedServingByPost() throws Exception {
+            given(documentDownloadService.downloadDocument(anyString(), anyString(), anyString()))
+                .willReturn(PDF);
+
+            postSubmittedEvent(buildCallbackRequestWithRepresentatives());
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(expectedOrderLocalAuthorityParameters()), eq(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
+                dataCaptor.capture(), eq(CASE_ID));
+
+            MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor);
+            assertThat(difference.areEqual()).isTrue();
+
+            verifyZeroInteractions(notificationClient);
+        }
     }
 
     private CallbackRequest buildCallbackRequest() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .id(19898989L)
+                .id(12345L)
                 .data(ImmutableMap.of(
                     "orderCollection", createOrders(),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
                     "respondents1", createRespondents(),
+                    "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+                    "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
+                .build())
+            .build();
+    }
+
+    private CallbackRequest buildCallbackRequestWithRepresentatives() {
+        return CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(Map.of(
+                    "orderCollection", createOrders(),
+                    "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
+                    "respondents1", createRespondents(),
+                    "representatives", buildRepresentativesServedByPost(),
                     "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                     "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
                 .build())
@@ -164,8 +223,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             .put("linkToDocument", documentUrl)
             .put("hearingDetailsCallout", subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(
                 dateIn3Months.toLocalDate(), FormatStyle.MEDIUM))
-            .put("reference", "19898989")
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/19898989")
+            .put("reference", CASE_ID)
+            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
     }
 
