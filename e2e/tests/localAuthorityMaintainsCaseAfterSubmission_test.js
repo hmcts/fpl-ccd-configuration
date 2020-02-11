@@ -1,6 +1,7 @@
 const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
 const uploadDocs = require('../fragments/caseDocuments');
+const placementHelper = require('../helpers/placement_helper.js');
 
 let caseId;
 
@@ -72,7 +73,7 @@ Scenario('local authority upload placement application', async (I, caseViewPage,
   await placementEventPage.addApplication(config.testFile);
   await placementEventPage.addSupportingDocument(0, 'Statement of facts', config.testFile);
   await placementEventPage.addConfidentialDocument(0, 'Annex B', config.testFile);
-  await placementEventPage.addOrderOrNotice(0, 'Notice of hearing', config.testFile, 'test note');
+  await placementEventPage.addOrderOrNotice(0, 'Placement order', config.testFile, 'test note');
   await I.completeEvent('Save and continue');
 
   await caseViewPage.goToNewActions(config.administrationActions.placement);
@@ -90,7 +91,7 @@ Scenario('local authority upload placement application', async (I, caseViewPage,
   I.seeNestedAnswerInTab(2, 'Child 1', 'Supporting document 1', 'Document', 'mockFile.txt');
   I.seeNestedAnswerInTab(1, 'Child 1', 'Confidential document 1', 'Document type', 'Annex B');
   I.seeNestedAnswerInTab(2, 'Child 1', 'Confidential document 1', 'Document', 'mockFile.txt');
-  I.seeNestedAnswerInTab(1, 'Child 1', 'Order and notices 1', 'Document type', 'Notice of hearing');
+  I.seeNestedAnswerInTab(1, 'Child 1', 'Order and notices 1', 'Document type', 'Placement order');
   I.seeNestedAnswerInTab(2, 'Child 1', 'Order and notices 1', 'Document', 'mockFile.txt');
   I.seeNestedAnswerInTab(3, 'Child 1', 'Order and notices 1', 'Description', 'test note');
 
@@ -100,4 +101,6 @@ Scenario('local authority upload placement application', async (I, caseViewPage,
   I.seeNestedAnswerInTab(2, 'Child 2', 'Supporting document 1', 'Document', 'mockFile.txt');
   I.seeNestedAnswerInTab(1, 'Child 2', 'Confidential document 1', 'Document type', 'Other confidential documents');
   I.seeNestedAnswerInTab(2, 'Child 2', 'Confidential document 1', 'Document', 'mockFile.txt');
+
+  await placementHelper.assertCafcassCannotSeePlacementOrder(I, caseViewPage, caseId);
 });

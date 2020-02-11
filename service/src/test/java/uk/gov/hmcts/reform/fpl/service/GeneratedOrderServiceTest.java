@@ -24,13 +24,13 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -53,10 +54,13 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -336,6 +340,16 @@ class GeneratedOrderServiceTest {
         final LocalDate date = dateTime.toLocalDate();
         String formattedDate = dateFormatterService.formatLocalDateToString(date, FormatStyle.LONG);
 
+        List<Map<String, String>> children = ImmutableList.of(
+            ImmutableMap.of(
+                "name", "Timmy Jones",
+                "gender", "Boy",
+                "dateOfBirth", formattedDate),
+            ImmutableMap.of(
+                "name", "Robbie Jones",
+                "gender", "Boy",
+                "dateOfBirth", formattedDate));
+
         switch (type) {
             case BLANK_ORDER:
                 expectedMap
@@ -352,17 +366,23 @@ class GeneratedOrderServiceTest {
                         .put("orderTitle", "Interim care order")
                         .put("childrenAct", "Section 38 Children Act 1989")
                         .put("orderDetails",
-                            "It is ordered that the child is placed in the care of Example Local Authority"
+                            "It is ordered that the children are placed in the care of Example Local Authority"
                                 + " until the end of the proceedings.");
                 } else if (subtype == FINAL) {
                     expectedMap
                         .put("orderTitle", "Care order")
                         .put("childrenAct", "Section 31 Children Act 1989")
                         .put("orderDetails",
-                            "It is ordered that the child is placed in the care of Example Local Authority.");
+                            "It is ordered that the children are placed in the care of Example Local Authority.");
                 }
                 break;
             case SUPERVISION_ORDER:
+                children = ImmutableList.of(
+                    ImmutableMap.of(
+                        "name", "Timmy Jones",
+                        "gender", "Boy",
+                        "dateOfBirth", formattedDate));
+
                 expectedMap
                     .put("orderType", SUPERVISION_ORDER);
                 if (subtype == INTERIM) {
@@ -398,7 +418,7 @@ class GeneratedOrderServiceTest {
                     .put("epoType", REMOVE_TO_ACCOMMODATION)
                     .put("includePhrase", "Yes")
                     .put("removalAddress", "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
-                    .put("childrenCount", 1)
+                    .put("childrenCount", 2)
                     .put("epoStartDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
                         "d MMMM yyyy 'at' h:mma"))
                     .put("epoEndDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
@@ -414,11 +434,7 @@ class GeneratedOrderServiceTest {
             .put("todaysDate", formattedDate)
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
-            .put("children", ImmutableList.of(
-                ImmutableMap.of(
-                    "name", "Timmy Jones",
-                    "gender", "Boy",
-                    "dateOfBirth", formattedDate)));
+            .put("children", children);
 
         return expectedMap.build();
     }
@@ -427,6 +443,7 @@ class GeneratedOrderServiceTest {
                                              GeneratedOrderSubtype subtype,
                                              LocalDate localDate) {
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
+        caseDataBuilder.orderAppliesToAllChildren(YES.getValue());
 
         switch (type) {
             case BLANK_ORDER:
@@ -468,7 +485,11 @@ class GeneratedOrderServiceTest {
                         .directionsNeeded("Yes")
                         .directions("Example Directions")
                         .build())
-                    .orderMonths(5);
+                    .orderMonths(5)
+                    .orderAppliesToAllChildren(NO.getValue())
+                    .childSelector(ChildSelector.builder()
+                        .selected(List.of(0))
+                        .build());
 
                 if (subtype == INTERIM) {
                     caseDataBuilder.interimEndDate(InterimEndDate.builder()
@@ -516,16 +537,23 @@ class GeneratedOrderServiceTest {
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
                 .build())
-            .children1(ImmutableList.of(Element.<Child>builder()
-                .value(Child.builder()
+            .children1(ImmutableList.of(
+                element(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("Timmy")
                         .lastName("Jones")
                         .gender("Boy")
                         .dateOfBirth(localDate)
                         .build())
-                    .build())
-                .build()))
+                    .build()),
+                element(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("Robbie")
+                        .lastName("Jones")
+                        .gender("Boy")
+                        .dateOfBirth(localDate)
+                        .build())
+                    .build())))
             .build();
 
         return caseDataBuilder.build();

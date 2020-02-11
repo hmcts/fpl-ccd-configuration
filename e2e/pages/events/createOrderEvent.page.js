@@ -29,6 +29,20 @@ module.exports = {
         year:'#interimEndDate_endDate-year',
       },
     },
+    childSelector: {
+      id: '#childSelector_childSelector',
+      selector: function (index) {
+        return `#childSelector_child${index}`;
+      },
+      selectorText: 'Yes',
+    },
+    allChildren: {
+      id: '#orderAppliesToAllChildren',
+      options: {
+        yes: 'Yes',
+        no: 'No',
+      },
+    },
     months: '#orderMonths',
     epo: {
       childrenDescription: {
@@ -130,5 +144,25 @@ module.exports = {
     I.fillField(this.fields.interimEndDate.endDate.day, date.day);
     I.fillField(this.fields.interimEndDate.endDate.month, date.month);
     I.fillField(this.fields.interimEndDate.endDate.year, date.year);
+  },
+
+  async selectChildren(children = []) {
+    for (let child of children) {
+      within(this.fields.childSelector.selector(child), () => {
+        I.click(locate('label').withText(this.fields.childSelector.selectorText));
+      });
+    }
+  },
+
+  async useAllChildren() {
+    within(this.fields.allChildren.id, () => {
+      I.click(locate('label').withText(this.fields.allChildren.options.yes));
+    });
+  },
+
+  async notAllChildren() {
+    within(this.fields.allChildren.id, () => {
+      I.click(locate('label').withText(this.fields.allChildren.options.no));
+    });
   },
 };

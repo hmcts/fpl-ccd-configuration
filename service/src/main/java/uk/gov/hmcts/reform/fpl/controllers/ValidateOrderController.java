@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.InterimEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
@@ -45,6 +46,25 @@ public class ValidateOrderController {
 
         if (caseData.getEpoType() == PREVENT_REMOVAL) {
             errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(errors)
+            .build();
+    }
+
+    @PostMapping("/child-selector/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventValidateChildren(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<String> errors = new ArrayList<>();
+
+        if (caseData.getChildSelector().getSelected().isEmpty()) {
+            errors.add("Select the children included in the order.");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
