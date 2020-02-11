@@ -1,19 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
-import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -85,24 +80,5 @@ public class PlacementService {
         return placements.stream()
             .filter(placement -> placement.getValue().getChildId().equals(childId))
             .findFirst();
-    }
-
-    public List<String> getBinaryUrlsForOrderAndNotices(List<Element<Placement>> placements,
-                                                        PlacementOrderAndNoticesType type) {
-        return placements.stream()
-            .filter(element -> element.getValue().getOrderAndNotices() != null)
-            .map(element -> element.getValue().getOrderAndNotices())
-            .flatMap(Collection::stream)
-            .filter(element -> element.getValue().getType() == type)
-            .map(this::getBinaryUrl)
-            .filter(Strings::isNotEmpty)
-            .collect(toList());
-    }
-
-    private String getBinaryUrl(Element<PlacementOrderAndNotices> element) {
-        DocumentReference document = ofNullable(element.getValue().getDocument())
-            .orElse(DocumentReference.builder().build());
-
-        return document.getBinaryUrl();
     }
 }

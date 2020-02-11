@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
 import java.util.List;
@@ -29,7 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 
 @Api
 @RestController
@@ -41,7 +38,6 @@ public class PlacementController {
     private final PlacementService placementService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RequestData requestData;
-    private final DocumentDownloadService documentDownloadService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -117,19 +113,14 @@ public class PlacementController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        List<String> currentPlacementDocRefs = getDocumentReferenceForNoticeOfPlacementOrder(caseData);
-        List<String> previousPlacementDocRefs = getDocumentReferenceForNoticeOfPlacementOrder(caseDataBefore);
+        UUID childId = getSelectedChildId(caseDetails, caseData);
+        Element<Child> child = placementService.getChild(caseData, childId);
 
-        currentPlacementDocRefs.removeAll(previousPlacementDocRefs);
+        Placement currentPlacement = placementService.getPlacement(caseData, child);
+        Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
 
-        //send notification with right document
-        if (!currentPlacementDocRefs.isEmpty()) {
-            currentPlacementDocRefs.stream()
-                .map(binaryUrl -> documentDownloadService.downloadDocument(
-                    requestData.authorisation(), requestData.userId(), binaryUrl))
-                .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
-                    callbackRequest, requestData.authorisation(), requestData.userId(), documentContents))
-                .forEach(applicationEventPublisher::publishEvent);
+        if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
+            publishPlacementApplicationUploadEvent(callbackRequest);
         }
     }
 
@@ -151,10 +142,6 @@ public class PlacementController {
         for (String field : fields) {
             caseDetails.getData().remove(field);
         }
-    }
-
-    private List<String> getDocumentReferenceForNoticeOfPlacementOrder(CaseData caseData) {
-        return placementService.getBinaryUrlsForOrderAndNotices(caseData.getPlacements(), NOTICE_OF_PLACEMENT_ORDER);
     }
 
     private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {

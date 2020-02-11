@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -172,14 +171,6 @@ public class NotificationHandler {
         String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
 
         sendNotification(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
-    }
-
-    @EventListener
-    public void sendNotificationForNoticeOfPlacementOrderUploaded(NoticeOfPlacementOrderUploadedEvent event) {
-        EventData eventData = new EventData(event);
-
-        sendOrderNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
-            event.getDocumentContents());
     }
 
     @EventListener
