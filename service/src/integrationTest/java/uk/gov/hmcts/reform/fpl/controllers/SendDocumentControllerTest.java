@@ -2,14 +2,12 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.launchdarkly.client.LDClient;
 import com.launchdarkly.client.LDUser;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -28,7 +26,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -44,7 +41,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 class SendDocumentControllerTest extends AbstractControllerTest {
 
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-    private final String serviceAuthToken = RandomStringUtils.randomAlphanumeric(10);
 
     @MockBean
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
@@ -54,9 +50,6 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
     @MockBean
     private LDClient ldClient;
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
 
     @MockBean
     private SendLetterApi sendLetterApi;
@@ -69,7 +62,6 @@ class SendDocumentControllerTest extends AbstractControllerTest {
     void setupStoppedClock() {
         given(ldClient.boolVariation(anyString(), any(LDUser.class), anyBoolean())).willReturn(true);
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
-        given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
         given(docmosisCoverDocumentsService.createCoverDocuments(anyString(), anyLong(), any())).willReturn(
             DocmosisDocument.builder().bytes(PDF).build());
     }
@@ -87,7 +79,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
         postAboutToSubmitEvent(caseDetails);
 
         verify(documentDownloadService).downloadDocument(documentToBeSend.getBinaryUrl());
-        verify(sendLetterApi).sendLetter(eq(serviceAuthToken), any(LetterWithPdfsRequest.class));
+        verify(sendLetterApi).sendLetter(anyString(), any(LetterWithPdfsRequest.class));
     }
 
     @Test
@@ -99,7 +91,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
         postAboutToSubmitEvent(caseDetails);
 
         verify(documentDownloadService, never()).downloadDocument(documentToBeSend.getBinaryUrl());
-        verify(sendLetterApi, never()).sendLetter(eq(serviceAuthToken), any(LetterWithPdfsRequest.class));
+        verify(sendLetterApi, never()).sendLetter(anyString(), any(LetterWithPdfsRequest.class));
     }
 
     private static CaseDetails buildCaseData(DocumentReference documentReference, Representative... representatives) {

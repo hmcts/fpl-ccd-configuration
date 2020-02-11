@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -19,10 +18,12 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentSenderService {
 
+    private static final String SEND_LETTER_SERVICE_AUTH = "fpl_case_service";
+    private static final String SEND_LETTER_TYPE = "FPLA001";
+
     private final Time time;
     private final DateFormatterService dateFormatterService;
     private final SendLetterApi sendLetterApi;
-    private final AuthTokenGenerator authTokenGenerator;
     private final DocumentDownloadService documentDownloadService;
     private final DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
@@ -35,10 +36,8 @@ public class DocumentSenderService {
                 caseId,
                 representative).getBytes();
 
-            sendLetterApi.sendLetter(authTokenGenerator.generate(),
-                new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary),
-                    "string",
-                    Map.of()));
+            sendLetterApi.sendLetter(SEND_LETTER_SERVICE_AUTH,
+                new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary), SEND_LETTER_TYPE, Map.of()));
 
             printedDocuments.add(SentDocument.builder()
                 .partyName(representative.getFullName())
