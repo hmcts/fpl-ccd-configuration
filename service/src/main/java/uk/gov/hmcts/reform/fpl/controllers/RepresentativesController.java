@@ -21,11 +21,13 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Api
 @RestController
@@ -97,7 +99,8 @@ public class RepresentativesController {
             .getRepresentativePartiesToNotify(currentRepresentatives, representativesBefore);
 
         applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(
-            callbackRequest, requestData.authorisation(), requestData.userId(), representativeParties));
+            callbackRequest, requestData.authorisation(), requestData.userId(),
+            unwrapElements(representativeParties)));
     }
 
     private String getRespondentsLabel(CaseData caseData) {
