@@ -669,7 +669,7 @@ class NotificationHandlerTest {
             .servingPreferences(preference).build();
         representatives.add(representative);
 
-        return  representatives;
+        return representatives;
     }
 
     private Map<String, Object> getPartyAddedByEmailNotificationParameters() {
