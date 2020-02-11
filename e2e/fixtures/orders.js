@@ -11,6 +11,7 @@ module.exports = [
       judgeLastName: 'Sotomayer',
       legalAdvisorName: 'Peter Parker',
     },
+    children: 'All',
   },
   {
     type: 'Care order',
@@ -25,6 +26,7 @@ module.exports = [
       judgeLastName: 'Judy',
       legalAdvisorName: 'Fred Frederickson',
     },
+    children: 'All',
   },
   {
     type: 'Care order',
@@ -36,6 +38,7 @@ module.exports = [
       judgeLastName: 'Judy',
       legalAdvisorName: 'Fred Frederickson',
     },
+    children: 'All',
   },
   {
     type: 'Supervision order',
@@ -56,6 +59,7 @@ module.exports = [
       legalAdvisorName: 'Frank N. Stein',
     },
     directionText: 'Example direction',
+    children: [0],
   },
   {
     type: 'Supervision order',
@@ -69,6 +73,7 @@ module.exports = [
       legalAdvisorName: 'Frank N. Stein',
     },
     directionText: 'Example direction',
+    children: [1],
   },
   {
     type: 'Emergency protection order',
@@ -94,5 +99,6 @@ module.exports = [
     },
     directionText: 'Example direction',
     includePhrase: 'Yes',
+    children: [0,1],
   },
 ];

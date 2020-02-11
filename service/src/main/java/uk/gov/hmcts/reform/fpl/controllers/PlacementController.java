@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -91,7 +92,12 @@ public class PlacementController {
         Placement placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
             .setChild(child);
 
-        caseProperties.put("placements", placementService.setPlacement(caseData, placement));
+        List<Element<Placement>> updatedPlacement = placementService.setPlacement(caseData, placement);
+
+        caseProperties.put("confidentialPlacements", updatedPlacement);
+        caseProperties.put("placementsWithoutPlacementOrder", placementService.withoutPlacementOrder(updatedPlacement));
+        caseProperties.put("placements", placementService.withoutConfidentialData(updatedPlacement));
+
         removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 
         return AboutToStartOrSubmitCallbackResponse.builder()

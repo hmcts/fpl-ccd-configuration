@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,6 +25,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -38,11 +41,13 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 
 @Slf4j
 @Api
 @RequestMapping("/callback/create-order")
 @RestController
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderController {
     private final ObjectMapper mapper;
     private final GeneratedOrderService service;
@@ -51,36 +56,47 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
-
-    @Autowired
-    public GeneratedOrderController(ObjectMapper mapper,
-                                    GeneratedOrderService service,
-                                    ValidateGroupService validateGroupService,
-                                    DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                                    UploadDocumentService uploadDocumentService,
-                                    ApplicationEventPublisher applicationEventPublisher,
-                                    GatewayConfiguration gatewayConfiguration) {
-        this.mapper = mapper;
-        this.service = service;
-        this.validateGroupService = validateGroupService;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.gatewayConfiguration = gatewayConfiguration;
-    }
+    private final ChildrenService childrenService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        final List<String> errors = validateGroupService.validateGroup(caseData,
+            ValidateFamilyManCaseNumberGroup.class);
+
+        if (errors.isEmpty()) {
+            childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
+        }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class))
+            .errors(errors)
             .build();
     }
 
-    @PostMapping("/mid-event")
+    @PostMapping("/populate-selector/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handlePopulateSelectorMidEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
+            ChildSelector childSelector = ChildSelector.builder().build();
+            childSelector.generateChildCount(caseData.getAllChildren().size());
+
+            caseDetails.getData().put("childSelector", childSelector);
+            caseDetails.getData().put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
+    }
+
+    @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,

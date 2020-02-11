@@ -11,9 +11,11 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,6 +93,28 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     void shouldNotReturnErrorsWhenTheInterimEndDateTypeIsEndOfProceedings() {
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), END_OF_PROCEEDINGS);
         final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorsWhenAChildIsSelected() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("childSelector", ChildSelector.builder().build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
+
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Select the children included in the order.");
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenAChildIsSelected() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("childSelector", ChildSelector.builder().selected(List.of(0)).build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
+
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
