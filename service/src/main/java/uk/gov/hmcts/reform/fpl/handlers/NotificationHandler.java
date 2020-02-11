@@ -222,17 +222,18 @@ public class NotificationHandler {
         representatives.stream().forEach(representative -> {
             String email = representative.getEmail();
             RepresentativeServingPreferences servingPreferences
-                        = representative.getServingPreferences();
-            if (servingPreferences != POST) {
+                = representative.getServingPreferences();
 
+            if (servingPreferences != POST) {
                 Map<String, Object> parameters = partyAddedToCaseContentProvider
                     .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(),
-                           servingPreferences);
+                        servingPreferences);
+
                 String template = partyAddedToCaseContentProvider
                     .getPartyAddedToCaseNotificationTemplate(servingPreferences);
 
                 sendNotification(template, email, parameters,
-                        eventData.getReference());
+                    eventData.getReference());
             }
         });
     }

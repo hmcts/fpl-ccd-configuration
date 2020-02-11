@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 

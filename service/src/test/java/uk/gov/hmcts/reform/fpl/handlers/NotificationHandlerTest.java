@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
@@ -106,6 +107,7 @@ class NotificationHandlerTest {
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String COURT_CODE = "11";
     private static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "joe-blogs@gmail.com";
+    private static final String PARTY_ADDED_TO_CASE_BY_POST = "example@gmail.com";
     private static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "damian@swansea.gov.uk";
 
     @Mock
@@ -617,11 +619,7 @@ class NotificationHandlerTest {
     void shouldSendNotificationToPartiesWhenAddedToCaseByEmail() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = getPartyAddedByEmailNotificationParameters();
 
-        List<Representative> representatives = new ArrayList<>();
-        Representative representative = Representative.builder()
-                .email("joe-blogs@gmail.com")
-                .servingPreferences(EMAIL).build();
-        representatives.add(representative);
+        List<Representative> representatives = getRepresentatives(EMAIL, PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS);
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(),
             EMAIL)).willReturn(expectedParameters);
@@ -640,11 +638,7 @@ class NotificationHandlerTest {
     void shouldSendNotificationToPartiesWhenAddedToCaseThroughDigitalService() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = getPartyAddedByEmailNotificationParameters();
 
-        List<Representative> representatives = new ArrayList<>();
-        Representative representative = Representative.builder()
-                .email("damian@swansea.gov.uk")
-                .servingPreferences(DIGITAL_SERVICE).build();
-        representatives.add(representative);
+        List<Representative> representatives = getRepresentatives(DIGITAL_SERVICE, PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL);
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(callbackRequest().getCaseDetails(),
             DIGITAL_SERVICE)).willReturn(expectedParameters);
@@ -661,15 +655,21 @@ class NotificationHandlerTest {
 
     @Test
     void shouldNotSendNotificationToPartiesWhenAddedToCaseThroughPost() throws IOException, NotificationClientException {
-        List<Representative> representatives = new ArrayList<>();
-        Representative representative = Representative.builder()
-                .email("damian@swansea.gov.uk")
-                .servingPreferences(POST).build();
-        representatives.add(representative);
+        List<Representative> representatives = getRepresentatives(POST, PARTY_ADDED_TO_CASE_BY_POST);
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
 
         verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
+    }
+
+    private List<Representative> getRepresentatives(RepresentativeServingPreferences preference, String email) {
+        List<Representative> representatives = new ArrayList<>();
+        Representative representative = Representative.builder()
+            .email(email)
+            .servingPreferences(preference).build();
+        representatives.add(representative);
+
+        return  representatives;
     }
 
     private Map<String, Object> getPartyAddedByEmailNotificationParameters() {
