@@ -31,9 +31,10 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.OrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.service.notify.NotificationClient;
@@ -73,7 +74,8 @@ public class NotificationHandler {
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
-    private final OrderEmailContentProvider orderEmailContentProvider;
+    private final GeneratedOrderEmailContentProvider generatedOrderEmailContentProvider;
+    private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
@@ -294,7 +296,7 @@ public class NotificationHandler {
     private void sendOrderNotificationToLocalAuthority(final CaseDetails caseDetails, final String localAuthorityCode,
                                                        final String mostRecentUploadedDocumentUrl) {
         Map<String, Object> localAuthorityParameters =
-            orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
+            generatedOrderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
 
         String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
@@ -306,7 +308,8 @@ public class NotificationHandler {
     private void sendOrderNotificationToHmctsAdmin(final CaseDetails caseDetails,
                                                    final String localAuthorityCode,
                                                    final byte[] documentContents) {
-        Map<String, Object> hmctsParameters = orderEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
+        Map<String, Object> hmctsParameters =
+            orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
             caseDetails, localAuthorityCode, documentContents);
 
         String hmctsEmail = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();

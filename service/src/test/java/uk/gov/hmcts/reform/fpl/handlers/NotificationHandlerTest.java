@@ -41,9 +41,10 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.OrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -131,7 +132,10 @@ class NotificationHandlerTest {
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @Mock
-    private OrderEmailContentProvider orderEmailContentProvider;
+    private GeneratedOrderEmailContentProvider generatedOrderEmailContentProvider;
+
+    @Mock
+    private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
     @Mock
     private DateFormatterService dateFormatterService;
@@ -204,7 +208,7 @@ class NotificationHandlerTest {
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
                 .willReturn(c2Parameters);
 
-            given(orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
+            given(generatedOrderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
                 .willReturn(orderLocalAuthorityParameters);
         }
@@ -274,10 +278,10 @@ class NotificationHandlerTest {
             // TODO: 17/12/2019 nice to refactor to make cleaner
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
                 hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
-                gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
-                localAuthorityEmailContentProvider, notificationClient, idamApi, inboxLookupService,
-                caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
-                localAuthorityNameLookupConfiguration, objectMapper);
+                gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, generatedOrderEmailContentProvider,
+                orderIssuedEmailContentProvider, localAuthorityEmailContentProvider, notificationClient, idamApi,
+                inboxLookupService, caseManagementOrderEmailContentProvider, placementApplicationContentProvider,
+                representativeService, localAuthorityNameLookupConfiguration, objectMapper);
         }
 
         @Test
