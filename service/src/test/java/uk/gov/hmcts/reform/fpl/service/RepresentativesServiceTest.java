@@ -371,9 +371,20 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    void shouldNotReturnAnyRepresentativesIfNewRepresentativeNotAdded() throws IOException {
+    void shouldNotReturnAnyRepresentativesIfNewRepresentativeNotAdded() {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
+
+        List<Element<Representative>> representativesToNotify = representativesService
+            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
+
+        assertThat(representativesToNotify.isEmpty());
+    }
+
+    @Test
+    void shouldNotReturnAnyRepresentativesIfNoRepresentativesExist() throws IOException {
+        CaseData caseDataBefore = CaseData.builder().build();
+        CaseData caseData = CaseData.builder().build();
 
         List<Element<Representative>> representativesToNotify = representativesService
             .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
