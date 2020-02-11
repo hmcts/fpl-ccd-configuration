@@ -45,7 +45,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
     }
 
     @Test
-    void shouldAddUsersToCaseAndAssociateRepresentativesWithPerson() throws NotificationClientException {
+    void shouldSendNotificationWhenNewPartyIsAddedOrUpdatedToCase() throws NotificationClientException {
         final UUID representativeId = UUID.randomUUID();
 
         Respondent respondent = Respondent.builder().party(RespondentParty.builder()
