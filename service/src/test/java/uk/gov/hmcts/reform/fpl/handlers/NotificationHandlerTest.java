@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -75,9 +76,10 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_LA;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
@@ -593,6 +595,43 @@ class NotificationHandlerTest {
             eq("12345"));
     }
 
+    @Nested
+    class NoticeOfPlacementOrderNotification {
+        private NotificationHandler placementNotificationHandler;
+
+        @BeforeEach
+        void setup() throws IOException {
+            given(inboxLookupService.getNotificationRecipientEmail(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+
+            placementNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
+                cafcassLookupConfiguration, hmctsEmailContentProvider, cafcassEmailContentProvider,
+                cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider, c2UploadedEmailContentProvider,
+                generatedOrderEmailContentProvider, orderIssuedEmailContentProvider, localAuthorityEmailContentProvider,
+                notificationClient, idamApi, inboxLookupService, caseManagementOrderEmailContentProvider,
+                placementApplicationContentProvider, representativeService, localAuthorityNameLookupConfiguration,
+                objectMapper);
+        }
+
+        @Test
+        void shouldSendNotificationForPlacementOrderUploaded() throws IOException, NotificationClientException {
+            Map<String, Object> parameters = Map.of("respondentLastName", "Nelson",
+                "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
+
+            given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
+                callbackRequest().getCaseDetails())).willReturn(parameters);
+
+            placementNotificationHandler.sendNotificationForNoticeOfPlacementOrderUploaded(
+                new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(parameters),
+                eq("12345"));
+        }
+    }
+
     @Test
     void shouldNotifyAdminOfPlacementApplicationUpload() throws Exception {
         CallbackRequest callbackRequest = callbackRequest();
@@ -609,7 +648,7 @@ class NotificationHandlerTest {
             new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
     }
 
