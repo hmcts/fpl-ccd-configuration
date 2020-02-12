@@ -386,6 +386,14 @@ public class RoboticsDataServiceTest {
     }
 
     @ParameterizedTest
+    @MethodSource("blankAndNull")
+    void shouldNotThrowRoboticsDataExceptionWhenApplicantMobileNumberIsNullOrEmpty(final String value)
+        throws IOException {
+        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(value);
+        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+    }
+
+    @ParameterizedTest
     @MethodSource("inValidPhoneNumbers")
     void shouldThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsInValid(String phoneNumber) throws IOException {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
@@ -416,6 +424,14 @@ public class RoboticsDataServiceTest {
     }
 
     @ParameterizedTest
+    @MethodSource("blankAndNull")
+    void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsNullOrEmpty(final String value)
+        throws IOException {
+        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(value);
+        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+    }
+
+    @ParameterizedTest
     @MethodSource("inValidMobileNumbers")
     void shouldThrowRoboticsDataExceptionWhenApplicantMobileNumberIsInValid(String mobileNumber) throws IOException {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(mobileNumber);
@@ -431,11 +447,11 @@ public class RoboticsDataServiceTest {
     }
 
     private static Stream<String> inValidPhoneNumbers() {
-        return Stream.of("01222233343444545556778889999887776655555544", "0203445", "c/o");
+        return Stream.of("01222233343444545556778889999887776655555544", "c/o");
     }
 
     private static Stream<String> inValidInternationalPhoneNumbers() {
-        return Stream.of("", "+1800801920777777777888886565557778888", "c/o");
+        return Stream.of("+1800801920777777777888886565557778888", "c/o");
     }
 
     private static Stream<String> validPhoneNumbers() {
@@ -448,11 +464,15 @@ public class RoboticsDataServiceTest {
     }
 
     private static Stream<String> inValidMobileNumbers() {
-        return Stream.of("0777", "078888888888888888888888656");
+        return Stream.of("c/o yo!", "078888888888888888888888656");
     }
 
     private static Stream<String> inValidInternationalMobileNumbers() {
-        return Stream.of("", "+1800801920777777777888886565557778888", "c/o");
+        return Stream.of("+1800801920777777777888886565557778888", "c/o");
+    }
+
+    private static Stream<String> blankAndNull() {
+        return Stream.of("", null);
     }
 
     private CaseData prepareCaseData(LocalDate date) throws IOException {

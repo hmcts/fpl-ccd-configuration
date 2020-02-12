@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.EmailService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -78,6 +81,25 @@ public class RoboticsNotificationServiceTest {
     @Test
     void notifyRoboticsOfSubmittedCaseDataShouldSendNotificationToRobotics() throws IOException {
         RoboticsData expectedRoboticsData = expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel());
+        given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
+            .willReturn(expectedRoboticsData);
+
+        String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData);
+        given(roboticsDataService.convertRoboticsDataToJson(expectedRoboticsData))
+            .willReturn(expectedRoboticsDataJson);
+
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseDetails()));
+
+        verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
+
+        assertEmailDataAndAttachedJsonData(emailDataArgumentCaptor.getValue(), expectedRoboticsDataJson);
+    }
+
+    @ParameterizedTest
+    @MethodSource("blankAndNull")
+    void notifyRoboticsOfSubmittedCaseDataShouldSendNotificationToRoboticsWhenApplicantContactNumberIsNullOrEmpty(
+        final String number) throws IOException {
+        RoboticsData expectedRoboticsData = expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel(), number);
         given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
             .willReturn(expectedRoboticsData);
 
@@ -157,5 +179,9 @@ public class RoboticsNotificationServiceTest {
             .extracting("data", "filename")
             .containsExactly(tuple(new ByteArrayResource(expectedRoboticsDataJson.getBytes()),
                 "CaseSubmitted_12345.json"));
+    }
+
+    private static Stream<String> blankAndNull() {
+        return Stream.of("", null);
     }
 }
