@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,11 +40,8 @@ class DocumentSenderServiceTest {
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
         .binaryUrl("test_binary_url")
         .build();
-    private static final byte[] MAIN_DOCUMENT_BYTES = new byte[] {1, 2 ,3, 4, 5};
-    private static final List<byte[]> COVER_DOCUMENTS_BYTES = List.of(
-        new byte[] {0},
-        new byte[] {1}
-    );
+    private static final byte[] MAIN_DOCUMENT_BYTES = new byte[] {1, 2, 3, 4, 5};
+    private static final List<byte[]> COVER_DOCUMENTS_BYTES = List.of(new byte[] {0}, new byte[] {1});
     private static final List<Representative> REPRESENTATIVES = List.of(
         Representative.builder().fullName("John Doe").build(),
         Representative.builder().fullName("Foo Bar").build());
@@ -78,10 +74,16 @@ class DocumentSenderServiceTest {
         given(sendLetterApi.sendLetter(anyString(),
             any(LetterWithPdfsRequest.class))).willReturn(new SendLetterResponse(UUID.randomUUID()));
         given(documentDownloadService.downloadDocument(anyString())).willReturn(MAIN_DOCUMENT_BYTES);
-        given(docmosisCoverDocumentsService.createCoverDocuments(anyString(), anyLong(),
-            eq(REPRESENTATIVES.get(0)))).willReturn(DocmosisDocument.builder().bytes(COVER_DOCUMENTS_BYTES.get(0)).build());
-        given(docmosisCoverDocumentsService.createCoverDocuments(anyString(), anyLong(),
-            eq(REPRESENTATIVES.get(1)))).willReturn(DocmosisDocument.builder().bytes(COVER_DOCUMENTS_BYTES.get(1)).build());
+        given(docmosisCoverDocumentsService.createCoverDocuments(anyString(),
+            anyLong(),
+            eq(REPRESENTATIVES.get(0)))).willReturn(DocmosisDocument.builder()
+            .bytes(COVER_DOCUMENTS_BYTES.get(0))
+            .build());
+        given(docmosisCoverDocumentsService.createCoverDocuments(anyString(),
+            anyLong(),
+            eq(REPRESENTATIVES.get(1)))).willReturn(DocmosisDocument.builder()
+            .bytes(COVER_DOCUMENTS_BYTES.get(1))
+            .build());
         given(dateFormatterService.formatLocalDateTimeBaseUsingFormat(any(), anyString())).willReturn(FORMATTED_DATE);
 
 
