@@ -68,6 +68,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEA
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -82,7 +83,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedu
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedCMOParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
 
 @ActiveProfiles("integration-test")
@@ -317,7 +318,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
             dataCaptor.capture(), eq(CASE_ID));
 
-        MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor);
+        MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor, CMO);
         assertThat(difference.areEqual()).isTrue();
 
         verifyZeroInteractions(notificationClient);
@@ -482,8 +483,10 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     private void verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded() throws NotificationClientException {
         verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
-            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()), eq(CASE_ID));
+            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq("admin@family-court.com"),
+            eq(getExpectedCMOParametersForAdminWhenNoRepresentativesServedByPost()),
+            eq(CASE_ID));
     }
 
     private List<Element<Representative>> buildRepresentativesServedByEmail() {

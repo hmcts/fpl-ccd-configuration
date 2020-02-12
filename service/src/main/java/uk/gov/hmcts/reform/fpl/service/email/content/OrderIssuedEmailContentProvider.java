@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
@@ -19,7 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.formatRepresentativesForPostNotification;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -47,13 +50,17 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
 
     public Map<String, Object> buildOrderNotificationParametersForHmctsAdmin(final CaseDetails caseDetails,
                                                                              final String localAuthorityCode,
-                                                                             final byte[] documentContents) {
+                                                                             final byte[] documentContents,
+                                                                             final IssuedOrderType issuedOrderType) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        final String cmoCallout = buildSubjectLine(caseData);
         List<Representative> representativesServedByPost = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), POST);
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(representativesServedByPost);
 
         return ImmutableMap.<String, Object>builder()
+            .put("cmoCallout", issuedOrderType == CMO ? "^" + buildSubjectLineWithHearingBookingDateSuffix(
+                cmoCallout, caseData.getHearingDetails()) : "")
             .put("needsPosting", isNotEmpty(representativesServedByPost) ? "Yes" : "No")
             .put("doesNotNeedPosting", representativesServedByPost.isEmpty() ? "Yes" : "No")
             .put("courtName", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))

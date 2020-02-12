@@ -21,7 +21,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor = @ __(@Autowired))
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentDownloadService {
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentDownloadClientApi documentDownloadClient;

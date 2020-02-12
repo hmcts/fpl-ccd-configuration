@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 
 @ExtendWith(SpringExtension.class)
 public class DocumentDownloadServiceTest {
-    private final String token = "token";
 
     @Mock
     private DocumentDownloadClientApi documentDownloadClient;
@@ -46,23 +45,26 @@ public class DocumentDownloadServiceTest {
 
     private DocumentDownloadService documentDownloadService;
 
-    private String userId;
-
     private Document document;
 
     @BeforeEach
     void setup() {
         document = document();
 
+        String token = "token";
         given(authTokenGenerator.generate())
+            .willReturn("token");
+
+        given(requestData.authorisation())
             .willReturn(token);
 
-        userId = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
+        given(requestData.userId())
+            .willReturn("8a0a7c46-631c-4a55-9b81-4cc9fb9798f4");
 
         UserInfo userInfo = UserInfo.builder()
             .sub("cafcass@cafcass.com")
             .roles(CAFCASS.getRoles())
-            .uid(userId)
+            .uid(requestData.userId())
             .build();
 
         given(idamApi.retrieveUserInfo(token))
@@ -75,7 +77,7 @@ public class DocumentDownloadServiceTest {
     @Test
     public void shouldDownloadDocumentFromDocumentManagement() {
         Document document = document();
-        byte[] expectedDocumentContents = "test" .getBytes();
+        byte[] expectedDocumentContents = "test".getBytes();
 
         ResponseEntity<Resource> expectedResponse = ResponseEntity.ok(new ByteArrayResource(expectedDocumentContents));
         given(resourceResponseEntity.getStatusCode())

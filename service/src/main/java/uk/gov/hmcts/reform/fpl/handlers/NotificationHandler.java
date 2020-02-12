@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
@@ -58,6 +59,9 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
@@ -119,7 +123,7 @@ public class NotificationHandler {
             event.getMostRecentUploadedDocumentUrl());
 
         sendOrderIssuedNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
-            event.getDocumentContents());
+            event.getDocumentContents(), GENERATED_ORDER);
     }
 
     @EventListener
@@ -225,7 +229,7 @@ public class NotificationHandler {
         sendNotification(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters, eventData.reference);
         sendNotificationToRepresentativesServedThroughDigitalService(eventData, parameters);
         sendOrderIssuedNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
-            event.getDocumentContents());
+            event.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
     }
 
     //TODO: refactor to common method to send to parties. i.e sendNotificationToRepresentative(NotificationId,
@@ -285,7 +289,7 @@ public class NotificationHandler {
         sendCMODocumentLinkNotificationForCafcass(eventData, documentContents);
         sendCMODocumentLinkNotificationsToRepresentatives(eventData, documentContents);
         sendOrderIssuedNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
-            documentContents);
+            documentContents, CMO);
     }
 
     private void sendCMODocumentLinkNotificationForCafcass(final EventData eventData, final byte[] documentContents) {
@@ -343,9 +347,10 @@ public class NotificationHandler {
 
     private void sendOrderIssuedNotificationToHmctsAdmin(final CaseDetails caseDetails,
                                                          final String localAuthorityCode,
-                                                         final byte[] documentContents) {
+                                                         final byte[] documentContents,
+                                                         final IssuedOrderType issuedOrderType) {
         Map<String, Object> parameters = orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
-            caseDetails, localAuthorityCode, documentContents);
+            caseDetails, localAuthorityCode, documentContents, issuedOrderType);
 
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 

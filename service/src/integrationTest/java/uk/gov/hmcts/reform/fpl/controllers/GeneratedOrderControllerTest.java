@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -143,7 +144,6 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
 
-    @TestInstance(PER_CLASS)
     @Nested
     class Submitted {
 
@@ -157,11 +157,14 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             postSubmittedEvent(buildCallbackRequest());
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(expectedOrderLocalAuthorityParameters()), eq(CASE_ID));
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(expectedOrderLocalAuthorityParameters()),
+                eq(CASE_ID));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq("admin@family-court.com"),
                 eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()), eq(CASE_ID));
 
             verifyZeroInteractions(notificationClient);
@@ -174,14 +177,20 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             postSubmittedEvent(buildCallbackRequestWithRepresentatives());
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(expectedOrderLocalAuthorityParameters()), eq(CASE_ID));
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(expectedOrderLocalAuthorityParameters()),
+                eq(CASE_ID));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
-                dataCaptor.capture(), eq(CASE_ID));
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq("admin@family-court.com"),
+                dataCaptor.capture(),
+                eq(CASE_ID));
 
-            MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor);
+            MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor,
+                IssuedOrderType.GENERATED_ORDER);
+
             assertThat(difference.areEqual()).isTrue();
 
             verifyZeroInteractions(notificationClient);
@@ -227,7 +236,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             .put("hearingDetailsCallout", subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(
                 dateIn3Months.toLocalDate(), FormatStyle.MEDIUM))
             .put("reference", CASE_ID)
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + CASE_ID)
             .build();
     }
 
