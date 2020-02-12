@@ -6,16 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.fpl.config.payment.FeeConfig;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.model.payment.fees.FeeParameters;
-import uk.gov.hmcts.reform.fpl.model.payment.fees.FeeResponse;
+import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
+import uk.gov.hmcts.reform.fpl.model.payment.fee.FeeParameters;
+import uk.gov.hmcts.reform.fpl.model.payment.fee.FeeResponse;
 
 import java.net.URI;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
+import static uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeType;
 
 @Slf4j
 @Service
@@ -23,11 +24,15 @@ import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 public class FeeService {
 
     private final RestTemplate restTemplate;
-    private final FeeConfig feeConfig;
+    private final FeesConfig feesConfig;
 
-    public List<FeeResponse> getFees(List<OrderType> orderTypes) {
-        return orderTypes.stream()
-            .map(orderType -> makeRequest(buildUri(orderType)))
+    public FeeResponse calculateFeeToUse(List<FeeResponse> feeResponses) {
+        return feeResponses.stream().max(Comparator.comparing(FeeResponse::getAmount)).orElseThrow();
+    }
+
+    public List<FeeResponse> getFees(List<FeeType> feeTypes) {
+        return feeTypes.stream()
+            .map(feeType -> makeRequest(buildUri(feeType)))
             .collect(Collectors.toList());
     }
 
@@ -38,9 +43,9 @@ public class FeeService {
         return response.getBody();
     }
 
-    private URI buildUri(OrderType orderType) {
-        FeeParameters parameters = feeConfig.getFeeParameters(orderType);
-        return fromHttpUrl(feeConfig.getUrl() + feeConfig.getApi())
+    public URI buildUri(FeeType feeType) {
+        FeeParameters parameters = feesConfig.getFeeParameters(feeType);
+        return fromHttpUrl(feesConfig.getUrl() + feesConfig.getApi())
             .queryParam("service", parameters.getService())
             .queryParam("jurisdiction1", parameters.getJurisdiction1())
             .queryParam("jurisdiction2", parameters.getJurisdiction2())
@@ -51,6 +56,4 @@ public class FeeService {
             .encode()
             .toUri();
     }
-
-
 }
