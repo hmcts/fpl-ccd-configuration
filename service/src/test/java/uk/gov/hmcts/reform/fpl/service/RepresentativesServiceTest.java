@@ -405,6 +405,16 @@ class RepresentativesServiceTest {
         assertThat(representativesToNotify.equals(expectedRepresentatives));
     }
 
+    @Test
+    void shouldReturnEmptyListWhenNoRepresentativesExists() {
+        List<Element<Representative>> representatives = (wrapElements(Representative.builder().build()));
+
+        List<Representative> representativesByServedPreference = representativesService
+            .getRepresentativesByServedPreference(representatives, null);
+
+        assertThat(representativesByServedPreference.isEmpty());
+    }
+
     private CaseData buildCaseDataWithRepresentatives(RepresentativeServingPreferences preference) {
         return CaseData.builder()
             .representatives(createRepresentatives(preference))
