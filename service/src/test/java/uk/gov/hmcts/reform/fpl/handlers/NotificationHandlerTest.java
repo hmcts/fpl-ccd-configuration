@@ -63,14 +63,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -611,13 +608,6 @@ class NotificationHandlerTest {
             eq(expectedParameters), eq("12345"));
     }
 
-    private Map<String, Object> getExpectedPlacementNotificationParameters() {
-        return ImmutableMap.of(
-            "respondentLastName", "Moley",
-            "caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345"
-        );
-    }
-
     @Test
     void shouldSendNotificationToPartiesWhenAddedToCaseByEmail() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = getPartyAddedByEmailNotificationParameters();
@@ -657,25 +647,19 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldThrowNotificationClientExceptionWhenEmailNotSent() throws NotificationClientException {
-
-        Exception exception = new NotificationClientException("Exception");
-
-        when(notificationClient.sendEmail(any(), any(), any(), any())).thenThrow(exception);
-
-        Exception actualException = assertThrows(NotificationClientException.class,
-            () -> notificationClient.sendEmail(any(),any(),any(),any()));
-
-        assertThat(actualException).isEqualTo(exception);
-    }
-
-    @Test
     void shouldNotSendNotificationToPartiesWhenAddedToCaseThroughPost() throws IOException, NotificationClientException {
         List<Representative> representatives = getRepresentatives(POST, PARTY_ADDED_TO_CASE_BY_POST);
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
 
         verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
+    }
+
+    private Map<String, Object> getExpectedPlacementNotificationParameters() {
+        return ImmutableMap.of(
+            "respondentLastName", "Moley",
+            "caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345"
+        );
     }
 
     private List<Representative> getRepresentatives(RepresentativeServingPreferences preference, String email) {
