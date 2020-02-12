@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -218,13 +219,22 @@ public class RepresentativeService {
                                                                               currentRepresentatives,
         List<Element<Representative>> representativesBefore) {
         if (isNotEmpty(representativesBefore)) {
-            return getChangedRepresentatives(currentRepresentatives, representativesBefore);
+            List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(currentRepresentatives,
+                representativesBefore);
+            return getRepresentativesWhoseServingPreferenceIsNotPost(changedRepresentatives);
         } else {
             if (isNotEmpty(currentRepresentatives)) {
-                return currentRepresentatives;
+                return getRepresentativesWhoseServingPreferenceIsNotPost(currentRepresentatives);
             }
         }
         return emptyList();
+    }
+
+    private List<Element<Representative>> getRepresentativesWhoseServingPreferenceIsNotPost(
+        List<Element<Representative>> representatives) {
+        return representatives.stream()
+            .filter(representative -> representative.getValue().getServingPreferences() != POST)
+            .collect(Collectors.toList());
     }
 
     private List<Element<Representative>> getChangedRepresentatives(List<Element<Representative>>

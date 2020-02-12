@@ -61,7 +61,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLAT
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 
 @Slf4j
 @Component
@@ -257,17 +256,16 @@ public class NotificationHandler {
             RepresentativeServingPreferences servingPreferences
                 = representative.getServingPreferences();
 
-            if (servingPreferences != POST) {
-                Map<String, Object> parameters = partyAddedToCaseContentProvider
+            Map<String, Object> parameters = partyAddedToCaseContentProvider
                     .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(),
                         servingPreferences);
 
-                String template = partyAddedToCaseContentProvider
+            String template = partyAddedToCaseContentProvider
                     .getPartyAddedToCaseNotificationTemplate(servingPreferences);
 
-                sendNotification(template, email, parameters,
+            sendNotification(template, email, parameters,
                     eventData.getReference());
-            }
+
         });
     }
 

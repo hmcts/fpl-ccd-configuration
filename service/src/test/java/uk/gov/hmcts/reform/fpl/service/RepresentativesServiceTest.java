@@ -401,6 +401,17 @@ class RepresentativesServiceTest {
         assertThat(representativesToNotify.equals(expectedRepresentatives));
     }
 
+    @Test
+    void shouldNotReturnRepresentativesWhoseServingPreferenceIsPost2() {
+        CaseData caseDataBefore = CaseData.builder().build();
+        CaseData caseData = buildCaseDataWithRepresentatives(POST);
+
+        List<Element<Representative>> representativesToNotify = representativesService
+            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
+
+        assertThat(representativesToNotify.isEmpty());
+    }
+
     private CaseData buildCaseDataWithRepresentatives(RepresentativeServingPreferences preference) {
         return CaseData.builder()
             .representatives(createRepresentatives(preference))

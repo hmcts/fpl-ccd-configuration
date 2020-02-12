@@ -64,7 +64,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -87,7 +86,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUG
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
@@ -682,15 +680,6 @@ class NotificationHandlerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE), eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
             eq(expectedParameters), eq("12345"));
-    }
-
-    @Test
-    void shouldNotSendNotificationToPartiesWhenAddedToCaseThroughPost() throws IOException, NotificationClientException {
-        List<Representative> representatives = getRepresentatives(POST, PARTY_ADDED_TO_CASE_BY_POST);
-
-        notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
-
-        verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
     }
 
     private Map<String, Object> getExpectedPlacementNotificationParameters() {
