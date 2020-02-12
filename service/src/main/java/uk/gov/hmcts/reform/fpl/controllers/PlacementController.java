@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class PlacementController {
     private final ObjectMapper mapper;
     private final PlacementService placementService;
     private final RequestData requestData;
+    private final DocumentDownloadService documentDownloadService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -142,11 +144,11 @@ public class PlacementController {
         List<String> previousDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseDataBefore.getPlacements());
         currentDocumentUrls.removeAll(previousDocumentUrls);
 
-        currentDocumentUrls.forEach(newDocument -> applicationEventPublisher.publishEvent(
-            new NoticeOfPlacementOrderUploadedEvent(
-                callbackRequest,
-                requestData.authorisation(),
-                requestData.userId())));
+        currentDocumentUrls.stream()
+            .map(documentDownloadService::downloadDocument)
+            .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
+                callbackRequest, requestData.authorisation(), requestData.userId(), documentContents))
+            .forEach(applicationEventPublisher::publishEvent);
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {

@@ -151,8 +151,7 @@ public class GeneratedOrderController {
         String mostRecentUploadedDocumentUrl = service.getMostRecentUploadedOrderDocumentUrl(
             caseData.getOrderCollection());
 
-        byte[] documentContents = documentDownloadService.downloadDocument(requestData.authorisation(),
-            requestData.userId(), mostRecentUploadedDocumentUrl);
+        byte[] documentContents = documentDownloadService.downloadDocument(mostRecentUploadedDocumentUrl);
 
         applicationEventPublisher.publishEvent(
             new GeneratedOrderEvent(callbackRequest, requestData.authorisation(), requestData.userId(),

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -17,6 +18,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.formatRepresentativesForPostNotification;
@@ -52,10 +54,10 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(representativesServedByPost);
 
         return ImmutableMap.<String, Object>builder()
-            .put("needsPosting", !representativesServedByPost.isEmpty() ? "Yes" : "No")
+            .put("needsPosting", isNotEmpty(representativesServedByPost) ? "Yes" : "No")
             .put("doesNotNeedPosting", representativesServedByPost.isEmpty() ? "Yes" : "No")
             .put("courtName", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .putAll(caseUrlOrDocumentLink(!representativesServedByPost.isEmpty(), documentContents,
+            .putAll(caseUrlOrDocumentLink(isNotEmpty(representativesServedByPost), documentContents,
                 caseDetails.getId()))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("representatives", formattedRepresentatives.isEmpty() ? "" : formattedRepresentatives)

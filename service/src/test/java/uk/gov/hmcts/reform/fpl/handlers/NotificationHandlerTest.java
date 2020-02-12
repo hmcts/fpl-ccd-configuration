@@ -101,6 +101,7 @@ class NotificationHandlerTest {
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String COURT_CODE = "11";
+    private final byte[] documentContents = {1, 2, 3};
 
     @Mock
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -167,7 +168,6 @@ class NotificationHandlerTest {
 
     @Nested
     class C2UploadedNotificationChecks {
-        private final byte[] documentContents = {1, 2, 3};
         final String mostRecentUploadedDocumentUrl =
             "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
@@ -259,7 +259,6 @@ class NotificationHandlerTest {
 
     @Nested
     class CaseManagementOrderNotificationTests {
-        private final byte[] documentContents = {1, 2, 3};
         private final Map<String, Object> expectedCMOIssuedNotificationParameters =
             getCMOIssuedCaseLinkNotificationParameters();
         private final Map<String, Object> expectedCMOIssuedNotificationParametersForRepresentative =
@@ -622,7 +621,7 @@ class NotificationHandlerTest {
                 callbackRequest().getCaseDetails())).willReturn(parameters);
 
             placementNotificationHandler.sendNotificationForNoticeOfPlacementOrderUploaded(
-                new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+                new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID, documentContents));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),

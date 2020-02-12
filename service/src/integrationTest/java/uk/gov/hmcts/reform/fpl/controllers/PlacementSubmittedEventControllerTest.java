@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -27,20 +28,25 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
@@ -50,8 +56,14 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 @OverrideAutoConfiguration(enabled = true)
 class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
+    private static final byte[] PDF = {1, 2, 3, 4, 5};
+    private static final String CASE_ID = "12345";
+
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
 
     PlacementSubmittedEventControllerTest() {
         super("placement");
@@ -155,25 +167,35 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
         @Test
         void shouldSendEmailNotificationsWhenNewNoticeOfPlacementOrder() throws NotificationClientException {
+            given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+
             postSubmittedEvent(callbackRequestWithEmptyCaseDetailsBefore());
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
                 eq("admin@family-court.com"),
                 eq(expectedParameters()),
-                eq("1"));
+                eq(CASE_ID));
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
                 eq("local-authority@local-authority.com"),
                 eq(expectedParameters()),
-                eq("1"));
+                eq(CASE_ID));
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
                 eq("representative@example.com"),
                 eq(expectedParameters()),
-                eq("1"));
+                eq(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq("admin@family-court.com"),
+                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq(CASE_ID));
+
+            verifyZeroInteractions(notificationClient);
         }
 
         @Test
@@ -184,26 +206,26 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
                 eq("local-authority@local-authority.com"),
                 eq(expectedParameters()),
-                eq("1"));
+                eq(CASE_ID));
 
             verify(notificationClient, never()).sendEmail(
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
                 eq("representative@example.com"),
                 eq(expectedParameters()),
-                eq("1"));
+                eq(CASE_ID));
         }
 
         private Map<String, Object> expectedParameters() {
             return Map.of(
-                "respondentLastName", "Nelson",
-                "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
+                "respondentLastName", "Jones",
+                "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 12345L));
         }
 
         private Respondent respondent() {
             return Respondent.builder()
                 .party(RespondentParty.builder()
                     .firstName("James")
-                    .lastName("Nelson")
+                    .lastName("Jones")
                     .build())
                 .build();
         }
@@ -232,7 +254,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
         private CaseDetails populatedCaseDetails(UUID representativeId, Respondent respondent) {
             return CaseDetails.builder()
-                .id(1L)
+                .id(12345L)
                 .data(Map.of(
                     "caseLocalAuthority", "example",
                     "confidentialPlacements", List.of(element(Placement.builder()

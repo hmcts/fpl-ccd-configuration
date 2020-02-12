@@ -169,8 +169,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
         @Test
         void submittedShouldNotifyAdminAndLAWhenRepresentativesNeedServingByPost() throws Exception {
-            given(documentDownloadService.downloadDocument(anyString(), anyString(), anyString()))
-                .willReturn(PDF);
+            given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
 
             postSubmittedEvent(buildCallbackRequestWithRepresentatives());
 

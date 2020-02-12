@@ -224,6 +224,8 @@ public class NotificationHandler {
 
         sendNotification(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters, eventData.reference);
         sendNotificationToRepresentativesServedThroughDigitalService(eventData, parameters);
+        sendOrderIssuedNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+            event.getDocumentContents());
     }
 
     //TODO: refactor to common method to send to parties. i.e sendNotificationToRepresentative(NotificationId,
@@ -342,14 +344,12 @@ public class NotificationHandler {
     private void sendOrderIssuedNotificationToHmctsAdmin(final CaseDetails caseDetails,
                                                          final String localAuthorityCode,
                                                          final byte[] documentContents) {
-        Map<String, Object> hmctsParameters =
-            orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
-                caseDetails, localAuthorityCode, documentContents);
+        Map<String, Object> parameters = orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
+            caseDetails, localAuthorityCode, documentContents);
 
-        String hmctsEmail = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
+        String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 
-        sendNotification(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN, hmctsEmail, hmctsParameters,
-            Long.toString(caseDetails.getId()));
+        sendNotification(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters, Long.toString(caseDetails.getId()));
     }
 
     @Getter

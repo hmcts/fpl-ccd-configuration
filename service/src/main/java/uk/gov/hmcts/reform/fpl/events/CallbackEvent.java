@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 public class CallbackEvent {
 
+    //TODO use RequestData here
     private final CallbackRequest callbackRequest;
     private final String authorization;
     private final String userId;

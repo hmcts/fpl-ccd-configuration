@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -40,6 +41,9 @@ public class DocumentDownloadServiceTest {
     @Mock
     private ResponseEntity<Resource> resourceResponseEntity;
 
+    @Mock
+    private RequestData requestData;
+
     private DocumentDownloadService documentDownloadService;
 
     private String userId;
@@ -47,7 +51,7 @@ public class DocumentDownloadServiceTest {
     private Document document;
 
     @BeforeEach
-    void setup() throws Exception {
+    void setup() {
         document = document();
 
         given(authTokenGenerator.generate())
@@ -64,13 +68,14 @@ public class DocumentDownloadServiceTest {
         given(idamApi.retrieveUserInfo(token))
             .willReturn(userInfo);
 
-        documentDownloadService = new DocumentDownloadService(authTokenGenerator, documentDownloadClient, idamApi);
+        documentDownloadService = new DocumentDownloadService(authTokenGenerator, documentDownloadClient, idamApi,
+            requestData);
     }
 
     @Test
-    public void shouldDownloadDocumentFromDocumentManagement() throws Exception {
+    public void shouldDownloadDocumentFromDocumentManagement() {
         Document document = document();
-        byte[] expectedDocumentContents = "test".getBytes();
+        byte[] expectedDocumentContents = "test" .getBytes();
 
         ResponseEntity<Resource> expectedResponse = ResponseEntity.ok(new ByteArrayResource(expectedDocumentContents));
         given(resourceResponseEntity.getStatusCode())
@@ -83,7 +88,7 @@ public class DocumentDownloadServiceTest {
             eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
             .willReturn(resourceResponseEntity);
 
-        byte[] documentContents = documentDownloadService.downloadDocument(token, userId, document.links.binary.href);
+        byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
 
         assertThat(documentContents).isNotEmpty();
         assertThat(documentContents).isEqualTo(expectedDocumentContents);
@@ -102,7 +107,7 @@ public class DocumentDownloadServiceTest {
             eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
             .willReturn(null);
 
-        assertThrows(IllegalArgumentException.class, () -> documentDownloadService.downloadDocument(
-            token, userId, document.links.binary.href));
+        assertThrows(IllegalArgumentException.class,
+            () -> documentDownloadService.downloadDocument(document.links.binary.href));
     }
 }
