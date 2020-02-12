@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
@@ -386,7 +387,7 @@ public class RoboticsDataServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("blankAndNull")
+    @NullAndEmptySource
     void shouldNotThrowRoboticsDataExceptionWhenApplicantMobileNumberIsNullOrEmpty(final String value)
         throws IOException {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(value);
@@ -424,7 +425,7 @@ public class RoboticsDataServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("blankAndNull")
+    @NullAndEmptySource
     void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsNullOrEmpty(final String value)
         throws IOException {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(value);
@@ -469,10 +470,6 @@ public class RoboticsDataServiceTest {
 
     private static Stream<String> inValidInternationalMobileNumbers() {
         return Stream.of("+1800801920777777777888886565557778888", "c/o");
-    }
-
-    private static Stream<String> blankAndNull() {
-        return Stream.of("", null);
     }
 
     private CaseData prepareCaseData(LocalDate date) throws IOException {
