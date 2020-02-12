@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -28,16 +29,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 
 @Api
 @RestController
 @RequestMapping("/callback/placement")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PlacementController {
-
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final ObjectMapper mapper;
     private final PlacementService placementService;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final RequestData requestData;
     private final CoreCaseDataService coreCaseDataService;
 
@@ -107,6 +108,7 @@ public class PlacementController {
             .build();
     }
 
+    //TODO: where should private methods for send notifications exist?
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -115,12 +117,21 @@ public class PlacementController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
+        sendNotificationForNewPlacementOrder(callbackRequest, caseDetails, caseData, caseDataBefore);
+        sendNotificationForNewNoticeOfPlacementOrder(callbackRequest, caseData, caseDataBefore);
+    }
+
+    private void sendNotificationForNewPlacementOrder(CallbackRequest callbackRequest,
+                                                      CaseDetails caseDetails,
+                                                      CaseData caseData,
+                                                      CaseData caseDataBefore) {
         UUID childId = getSelectedChildId(caseDetails, caseData);
         Element<Child> child = placementService.getChild(caseData, childId);
 
         Placement currentPlacement = placementService.getPlacement(caseData, child);
         Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
 
+        // TODO refactor: this logic is confusing. Suggested: new method isNewOrUpdated...
         if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest);
         }
@@ -133,6 +144,20 @@ public class PlacementController {
             "internal-change:SEND_DOCUMENT",
             Map.of("documentToBeSent", placement.getApplication())
         );
+    }
+
+    private void sendNotificationForNewNoticeOfPlacementOrder(CallbackRequest callbackRequest,
+                                                              CaseData caseData,
+                                                              CaseData caseDataBefore) {
+        List<String> currentDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseData.getPlacements());
+        List<String> previousDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseDataBefore.getPlacements());
+        currentDocumentUrls.removeAll(previousDocumentUrls);
+
+        currentDocumentUrls.forEach(newDocument -> applicationEventPublisher.publishEvent(
+            new NoticeOfPlacementOrderUploadedEvent(
+                callbackRequest,
+                requestData.authorisation(),
+                requestData.userId())));
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {
@@ -160,8 +185,13 @@ public class PlacementController {
             new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
+    //TODO: refactor logic. Double negative for !isNotEmpty currently.
     private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
         return isNotEmpty(previousPlacement)
             && newPlacement.getApplication().equals(previousPlacement.getApplication());
+    }
+
+    private List<String> getBinaryUrlsForNoticeOfPlacementOrder(List<Element<Placement>> placements) {
+        return placementService.getBinaryUrlsForOrderAndNotices(placements, NOTICE_OF_PLACEMENT_ORDER);
     }
 }

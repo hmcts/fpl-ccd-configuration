@@ -27,7 +27,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 @ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
+class PlacementSubmittedControllerTest extends AbstractControllerTest {
     @MockBean
     private NotificationClient notificationClient;
     @MockBean
@@ -50,7 +50,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
     private final DocumentReference documentReference = DocumentReference.builder().build();
 
-    PlacementSubmittedEventControllerTest() {
+    PlacementSubmittedControllerTest() {
         super("placement");
     }
 
@@ -80,7 +80,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient).sendEmail(
-            eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
         verify(coreCaseDataService).triggerEvent(null, null, CASE_ID, SEND_DOCUMENT_EVENT, Map.of(
             "documentToBeSent", documentReference
@@ -107,7 +107,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient, never()).sendEmail(
-            eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
         verify(coreCaseDataService).triggerEvent(null, null, CASE_ID, SEND_DOCUMENT_EVENT, Map.of(
             "documentToBeSent", documentReference
