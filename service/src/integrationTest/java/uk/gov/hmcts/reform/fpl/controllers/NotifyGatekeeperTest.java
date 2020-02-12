@@ -52,8 +52,7 @@ class NotifyGatekeeperTest extends AbstractControllerTest {
     void shouldReturnPopulatedDirectionsByRoleInSubmittedCallback() throws Exception {
         postSubmittedEvent(callbackRequest());
 
-        verify(populateStandardDirectionsHandler, times(1)).populateStandardDirections(
-            any(PopulateStandardDirectionsEvent.class));
+        verify(populateStandardDirectionsHandler, times(1)).populateStandardDirections(any());
     }
 
     @Test

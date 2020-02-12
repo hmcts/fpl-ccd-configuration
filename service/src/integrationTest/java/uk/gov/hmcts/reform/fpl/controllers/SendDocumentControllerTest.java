@@ -60,7 +60,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setupStoppedClock() {
-        given(ldClient.boolVariation(anyString(), any(LDUser.class), anyBoolean())).willReturn(true);
+        given(ldClient.boolVariation(anyString(), any(), anyBoolean())).willReturn(true);
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
         given(docmosisCoverDocumentsService.createCoverDocuments(anyString(), anyLong(), any())).willReturn(
             DocmosisDocument.builder().bytes(PDF).build());
@@ -84,7 +84,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotSendDocumentWhenFeatureToggleIsOff() {
-        given(ldClient.boolVariation(anyString(), any(LDUser.class), anyBoolean())).willReturn(false);
+        given(ldClient.boolVariation(anyString(), any(), anyBoolean())).willReturn(false);
         DocumentReference documentToBeSend = testDocument();
         CaseDetails caseDetails = buildCaseData(documentToBeSend);
 

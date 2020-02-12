@@ -29,7 +29,7 @@ public class DocumentSenderService {
 
     public List<SentDocument> send(DocumentReference mainDocument, List<Representative> representativesServedByPost,
                                    Long caseId, String familyManCaseNumber) {
-        List<SentDocument> printedDocuments = new ArrayList<>();
+        List<SentDocument> sentDocuments = new ArrayList<>();
         for (Representative representative : representativesServedByPost) {
             byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocument.getBinaryUrl());
             byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,
@@ -39,13 +39,13 @@ public class DocumentSenderService {
             sendLetterApi.sendLetter(SEND_LETTER_SERVICE_AUTH,
                 new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary), SEND_LETTER_TYPE, Map.of()));
 
-            printedDocuments.add(SentDocument.builder()
+            sentDocuments.add(SentDocument.builder()
                 .partyName(representative.getFullName())
                 .document(mainDocument)
                 .sentAt(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .build());
         }
 
-        return printedDocuments;
+        return sentDocuments;
     }
 }
