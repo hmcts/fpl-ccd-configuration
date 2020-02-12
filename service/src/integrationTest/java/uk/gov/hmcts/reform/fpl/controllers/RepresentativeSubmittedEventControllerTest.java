@@ -103,5 +103,4 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
                 "respondents1", wrapElements(respondent)))
             .build();
     }
-
 }
