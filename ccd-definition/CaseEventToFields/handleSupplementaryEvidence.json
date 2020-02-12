@@ -7,6 +7,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
+    "PageLabel": "Bulk Scanning ",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   }
