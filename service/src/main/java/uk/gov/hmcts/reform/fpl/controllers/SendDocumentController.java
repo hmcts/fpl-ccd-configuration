@@ -25,6 +25,8 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SendDocumentController {
 
+    private static final String DOCUMENT_TO_BE_SENT_KEY = "documentToBeSent";
+
     private final ObjectMapper mapper;
 
     private final DocumentSenderService documentSenderService;
@@ -41,13 +43,14 @@ public class SendDocumentController {
 
         if (featureToggleService.isXeroxPrintingEnabled() && !representativesServedByPost.isEmpty()) {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData()
-                .remove("documentToBeSent"), DocumentReference.class);
+                .get(DOCUMENT_TO_BE_SENT_KEY), DocumentReference.class);
 
             documentSenderService.send(documentToBeSent,
                 representativesServedByPost,
                 caseDetails.getId(),
                 caseData.getFamilyManCaseNumber());
         }
+        caseDetails.getData().remove(DOCUMENT_TO_BE_SENT_KEY);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
