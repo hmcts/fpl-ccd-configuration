@@ -125,7 +125,8 @@ public class RoboticsDataService {
     }
 
     private String getApplicantPartyNumber(final Telephone telephone) {
-        return isNotEmpty(telephone) ? formatContactNumber(telephone.getTelephoneNumber()) : null;
+        return telephone != null && isNotBlank(telephone.getTelephoneNumber())
+            ? formatContactNumber(telephone.getTelephoneNumber()) : null;
     }
 
     private String getApplicantContactName(final Telephone mobileNumber) {
