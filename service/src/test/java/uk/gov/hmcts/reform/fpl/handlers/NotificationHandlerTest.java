@@ -660,7 +660,7 @@ class NotificationHandlerTest {
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE), eq(PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
     }
