@@ -3,10 +3,10 @@ const { I } = inject();
 module.exports = {
 
   fields: {
-    supplementaryEvidenceHandled: '#supplementaryEvidenceHandled-Yes',
+    evidenceHandled: '#evidenceHandled-Yes',
   },
 
   handleSupplementaryEvidence() {
-    I.click(this.fields.supplementaryEvidenceHandled);
+    I.click(this.fields.evidenceHandled);
   },
 };
