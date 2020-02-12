@@ -205,7 +205,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "placements",
+    "CaseFieldID": "confidentialPlacements",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
   }

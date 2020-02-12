@@ -1,5 +1,6 @@
 const createBlankOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type);
+  await selectChildren(I, createOrderEventPage, order);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.title);
   await createOrderEventPage.enterC21OrderDetails();
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
@@ -7,17 +8,9 @@ const createBlankOrder = async (I, createOrderEventPage, order) => {
   await I.completeEvent('Save and continue');
 };
 
-const fillInterimEndDate = async (I, createOrderEventPage, order) => {
-  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.interimEndDate.id);
-  if (order.interimEndDate.isNamedDate) {
-    await createOrderEventPage.selectAndEnterNamedDate(order.interimEndDate.endDate);
-  } else {
-    await createOrderEventPage.selectEndOfProceedings();
-  }
-};
-
 const createCareOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type, order.subtype);
+  await selectChildren(I, createOrderEventPage, order);
   if (order.subtype === 'Interim') {
     await fillInterimEndDate(I, createOrderEventPage, order);
   }
@@ -30,6 +23,7 @@ const createCareOrder = async (I, createOrderEventPage, order) => {
 
 const createSupervisionOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type, order.subtype);
+  await selectChildren(I, createOrderEventPage, order);
   if (order.subtype === 'Final') {
     await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.months);
     await createOrderEventPage.enterNumberOfMonths(order.months);
@@ -47,6 +41,7 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order) =>
   const tomorrow = new Date(Date.now() + (3600 * 1000 * 24));
 
   await createOrderEventPage.selectType(order.type);
+  await selectChildren(I, createOrderEventPage, order);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.epo.childrenDescription.radioGroup);
   await createOrderEventPage.enterChildrenDescription(order.childrenDescription);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.epo.type);
@@ -61,6 +56,26 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order) =>
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
+};
+
+const fillInterimEndDate = async (I, createOrderEventPage, order) => {
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.interimEndDate.id);
+  if (order.interimEndDate.isNamedDate) {
+    await createOrderEventPage.selectAndEnterNamedDate(order.interimEndDate.endDate);
+  } else {
+    await createOrderEventPage.selectEndOfProceedings();
+  }
+};
+
+const selectChildren = async (I, createOrderEventPage, order) => {
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.allChildren.id);
+  if (order.children === 'All') {
+    await createOrderEventPage.useAllChildren();
+  } else {
+    await createOrderEventPage.notAllChildren();
+    await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.childSelector.id);
+    await createOrderEventPage.selectChildren(order.children);
+  }
 };
 
 module.exports = {
