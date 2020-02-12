@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 @ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementSubmittedControllerTest extends AbstractControllerTest {
+class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
     @MockBean
     private NotificationClient notificationClient;
     @MockBean
@@ -50,7 +50,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
 
     private final DocumentReference documentReference = DocumentReference.builder().build();
 
-    PlacementSubmittedControllerTest() {
+    PlacementSubmittedEventControllerTest() {
         super("placement");
     }
 
