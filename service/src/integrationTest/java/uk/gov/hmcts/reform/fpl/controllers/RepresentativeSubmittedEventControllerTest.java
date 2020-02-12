@@ -48,11 +48,31 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
     void shouldSendNotificationWhenNewPartyIsAddedOrUpdatedToCase() throws NotificationClientException {
         final UUID representativeId = UUID.randomUUID();
 
-        Respondent respondent = Respondent.builder().party(RespondentParty.builder()
-            .lastName(RESPONDENT_SURNAME).build())
-            .build();
+        Respondent respondent = buildRespondent();
 
-        Representative representative = Representative.builder()
+        Representative representative = buildRepresentative();
+
+        CaseDetails originalCaseDetails = buildCaseData(respondent, emptyList());
+        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)));
+
+        CallbackRequest callbackRequest = buildCallbackRequest(originalCaseDetails, caseDetails);
+
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient).sendEmail(
+            eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE), eq("test@test.com"),
+            eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
+    }
+
+    private CallbackRequest buildCallbackRequest(CaseDetails originalCaseDetails, CaseDetails caseDetails) {
+        return CallbackRequest.builder()
+            .caseDetailsBefore(originalCaseDetails)
+            .caseDetails(caseDetails)
+            .build();
+    }
+
+    private Representative buildRepresentative() {
+        return Representative.builder()
             .fullName("John Smith")
             .positionInACase("Position")
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
@@ -60,20 +80,12 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
             .email("test@test.com")
             .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
             .build();
+    }
 
-        CaseDetails originalCaseDetails = buildCaseData(respondent, emptyList());
-        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)));
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetailsBefore(originalCaseDetails)
-            .caseDetails(caseDetails)
+    private Respondent buildRespondent() {
+        return Respondent.builder().party(RespondentParty.builder()
+            .lastName(RESPONDENT_SURNAME).build())
             .build();
-
-        postSubmittedEvent(callbackRequest);
-
-        verify(notificationClient).sendEmail(
-            eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE), eq("test@test.com"),
-            eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
     }
 
     private Map<String, Object> expectedTemplateParameters() {
