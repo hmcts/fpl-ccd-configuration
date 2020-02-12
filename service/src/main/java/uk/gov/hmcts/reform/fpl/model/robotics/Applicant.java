@@ -16,11 +16,11 @@ public class Applicant {
     private final String jobTitle;
     private final Address address;
 
-    @Pattern(regexp = "^\\+?\\d+$", message = "has invalid %s")
+    @Pattern(regexp = "^\\+?\\d+$", message = "is invalid")
     @Size(max = 24, message = "exceeds maximum number of characters")
     private final String mobileNumber;
 
-    @Pattern(regexp = "^\\+?\\d+$", message = "has invalid %s")
+    @Pattern(regexp = "^\\+?\\d+$", message = "is invalid")
     @Size(max = 24, message = "exceeds maximum number of characters")
     private final String telephoneNumber;
 
