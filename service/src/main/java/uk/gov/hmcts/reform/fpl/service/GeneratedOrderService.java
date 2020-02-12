@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.Objects.requireNonNull;
@@ -40,6 +42,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 // REFACTOR: 27/01/2020 Extract docmosis logic into a new service that extends DocmosisTemplateDataGeneration
 
@@ -129,11 +132,15 @@ public class GeneratedOrderService {
 
     public Map<String, Object> getOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
+
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         InterimEndDate interimEndDate = caseData.getInterimEndDate();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
-        List<Map<String, String>> childrenDetails = getChildrenDetails(caseData);
+
+        List<Child> children = getSelectedChildren(unwrapElements(caseData.getAllChildren()),
+            caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren());
+        List<Map<String, String>> childrenDetails = getChildrenDetails(children);
 
         switch (orderType) {
             case BLANK_ORDER:
@@ -153,7 +160,7 @@ public class GeneratedOrderService {
                         .put("childrenAct", "Section 31 Children Act 1989");
                 }
                 orderTemplateBuilder
-                    .put("orderDetails", getFormattedCareOrderDetails(getChildrenDetails(caseData).size(),
+                    .put("orderDetails", getFormattedCareOrderDetails(children.size(),
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
                 break;
             case SUPERVISION_ORDER:
@@ -162,14 +169,14 @@ public class GeneratedOrderService {
                         .put("orderTitle", orderTypeAndDocument.getFullType(INTERIM))
                         .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                         .put("orderDetails",
-                            getFormattedInterimSupervisionOrderDetails(childrenDetails.size(),
+                            getFormattedInterimSupervisionOrderDetails(children.size(),
                                 caseData.getCaseLocalAuthority(), interimEndDate));
                 } else {
                     orderTemplateBuilder
                         .put("orderTitle", orderTypeAndDocument.getFullType())
                         .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                         .put("orderDetails",
-                            getFormattedFinalSupervisionOrderDetails(childrenDetails.size(),
+                            getFormattedFinalSupervisionOrderDetails(children.size(),
                                 caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
                 }
                 break;
@@ -180,7 +187,7 @@ public class GeneratedOrderService {
                     .put("epoType", caseData.getEpoType())
                     .put("includePhrase", caseData.getEpoPhrase().getIncludePhrase())
                     .put("removalAddress", getFormattedRemovalAddress(caseData))
-                    .put("childrenCount", caseData.getChildren1() != null ? caseData.getChildren1().size() : 0)
+                    .put("childrenCount", children.size())
                     .put("epoStartDateTime", formatEPODateTime(time.now()))
                     .put("epoEndDateTime", formatEPODateTime(caseData.getEpoEndDate()));
                 break;
@@ -295,9 +302,18 @@ public class GeneratedOrderService {
                 "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y"));
     }
 
-    private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
-        return caseData.getAllChildren().stream()
-            .map(Element::getValue)
+    private List<Child> getSelectedChildren(List<Child> allChildren, ChildSelector selector, String choice) {
+        if (useAllChildren(choice)) {
+            return allChildren;
+        }
+
+        return selector.getSelected().stream()
+            .map(allChildren::get)
+            .collect(Collectors.toList());
+    }
+
+    private List<Map<String, String>> getChildrenDetails(List<Child> children) {
+        return children.stream()
             .map(Child::getParty)
             .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
@@ -305,6 +321,11 @@ public class GeneratedOrderService {
                 "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
                     .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
+    }
+
+    private boolean useAllChildren(String choice) {
+        // If there is only one child in the case then the choice will be null
+        return choice == null || "Yes".equals(choice);
     }
 
     private String getChildrenDescription(EPOChildren epoChildren) {
