@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Data
 @Builder(toBuilder = true)
@@ -15,10 +16,12 @@ public class Applicant {
     private final String jobTitle;
     private final Address address;
 
-    @Pattern(regexp = "^\\+?\\d{10,24}$", message = "is invalid")
+    @Pattern(regexp = "^\\+?\\d+$", message = "has invalid %s")
+    @Size(max = 24, message = "exceeds maximum number of characters")
     private final String mobileNumber;
 
-    @Pattern(regexp = "^\\+?\\d{10,24}$", message = "is invalid")
+    @Pattern(regexp = "^\\+?\\d+$", message = "has invalid %s")
+    @Size(max = 24, message = "exceeds maximum number of characters")
     private final String telephoneNumber;
 
     private final String email;

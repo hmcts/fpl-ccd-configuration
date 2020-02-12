@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.of;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -75,8 +76,9 @@ public class RoboticsDataService {
 
         List<String> validationErrors = validatorService.validate(roboticsData);
         if (isNotEmpty(validationErrors)) {
-            throw new RoboticsDataException(String.format("failed validation with these error(s) %s",
-                validationErrors));
+            throw new RoboticsDataException(
+                format("Robotics data validation failed for caseId %s and familyManNumber %s with these error(s) %s",
+                roboticsData.getCaseId(), roboticsData.getCaseNumber(), validationErrors));
         }
 
         return roboticsData;
