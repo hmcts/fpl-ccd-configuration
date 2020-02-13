@@ -16,7 +16,7 @@ locals {
   DOCUMENT_MANAGEMENT_URL = "http://dm-store-${local.local_env}.service.${local.local_ase}.internal"
   CORE_CASE_DATA_API_URL  = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
   RD_PROFESSIONAL_API_URL = "http://rd-professional-api-${local.local_env}.service.${local.local_ase}.internal"
-  SEND_LETTER_URL     = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
+  SEND_LETTER_URL         = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
   DOCMOSIS_API_URL        = "https://docmosis-development.platform.hmcts.net"
 }
 
