@@ -73,6 +73,8 @@ exports.config = {
     complyOnBehalfOfOthersEventPage: './e2e/pages/events/complyOnBehalfOfOthersEvent.page.js',
     actionCaseManagementOrderEventPage: './e2e/pages/events/actionCaseManagementOrderEvent.page.js',
     placementEventPage: './e2e/pages/events/placementEvent.page.js',
+    handleSupplementaryEvidenceEventPage: './e2e/pages/events/handleSupplementaryEvidenceEvent.page.js',
+    attachScannedDocsEventPage: './e2e/pages/events/attachScannedDocsEvent.page.js',
   },
   plugins: {
     autoDelay: {

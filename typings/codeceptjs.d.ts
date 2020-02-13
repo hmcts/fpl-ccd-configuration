@@ -1,5 +1,4 @@
-
-type ICodeceptCallback = (i: CodeceptJS.I, config:any, loginPage:any, caseListPage:any, createCasePage:any, addEventSummaryPage:any, caseViewPage:any, selectHearingPage:any, enterGroundsPage:any, enterFactorsAffectingParentingPage:any, enterInternationalElementsPage:any, enterRiskAndHarmToChildPage:any, uploadDocumentsPage:any, enterApplicantPage:any, enterChildrenPage:any, enterOtherProceedingsPage:any, attendingHearingPage:any, enterAllocationProposalPage:any, enterRespondentsPage:any, enterOthersPage:any, ordersNeededPage:any, enterFamilyManPage:any, changeCaseNamePage:any, deleteApplicationPage:any) => void;
+type ICodeceptCallback = (i: CodeceptJS.I, config: any, loginPage: any, caseListPage: any, createCasePage: any, addEventSummaryPage: any, caseViewPage: any, selectHearingPage: any, enterGroundsPage: any, enterFactorsAffectingParentingPage: any, enterInternationalElementsPage: any, enterRiskAndHarmToChildPage: any, uploadDocumentsPage: any, enterApplicantPage: any, enterChildrenPage: any, enterOtherProceedingsPage: any, attendingHearingPage: any, enterAllocationProposalPage: any, enterRespondentsPage: any, enterOthersPage: any, ordersNeededPage: any, enterFamilyManPage: any, changeCaseNamePage: any, deleteApplicationPage: any, handleSupplementaryEvidencePage: any, attachScannedDocsPage: any) => void;
 
 declare class FeatureConfig {
   retry(times:number): FeatureConfig
@@ -482,6 +481,16 @@ declare namespace CodeceptJS {
 
   export interface deleteApplicationPage {
     tickDeletionConsent() : void,
+
+  }
+
+  export interface handleSupplementaryEvidencePage {
+    handleSupplementaryEvidence(): void,
+
+  }
+
+  export interface attachScannedDocsPage {
+    enterScannedDocument(): void,
 
   }
 }
