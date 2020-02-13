@@ -212,7 +212,7 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
 });
 
 Scenario('HMCTS admin handles supplementary evidence', async (I, caseViewPage, handleSupplementaryEvidenceEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
+  await caseViewPage.goToNewActions(config.administrationActions.handleSupplementaryEvidence);
   handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
