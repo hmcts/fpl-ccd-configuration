@@ -395,6 +395,14 @@ public class RoboticsDataServiceTest {
     }
 
     @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsNullOrEmpty(final String telephoneNumber)
+        throws IOException {
+        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(telephoneNumber);
+        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+    }
+
+    @ParameterizedTest
     @MethodSource("inValidPhoneNumbers")
     void shouldThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsInValid(String phoneNumber) throws IOException {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
@@ -413,7 +421,11 @@ public class RoboticsDataServiceTest {
     @MethodSource("validPhoneNumbers")
     void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsValid(String phoneNumber) throws IOException {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
-        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+
+        RoboticsData roboticsData = assertDoesNotThrow(
+            () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+
+        assertApplicantContactNumber(roboticsData.getApplicant().getTelephoneNumber());
     }
 
     @ParameterizedTest
@@ -421,15 +433,11 @@ public class RoboticsDataServiceTest {
     void shouldNotThrowRoboticsDataExceptionWhenApplicantInternationalPhoneNumberIsValid(String phoneNumber)
         throws IOException {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
-        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-    }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsNullOrEmpty(final String telephoneNumber)
-        throws IOException {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(telephoneNumber);
-        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+        RoboticsData roboticsData = assertDoesNotThrow(
+            () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+
+        assertApplicantContactNumber(roboticsData.getApplicant().getTelephoneNumber());
     }
 
     @ParameterizedTest
@@ -534,5 +542,11 @@ public class RoboticsDataServiceTest {
                     .build())
                 .build()))
             .build();
+    }
+
+    private void assertApplicantContactNumber(final String contactNumber) {
+        String expectedFormattedNumber = contactNumber.replaceAll("(?!^)\\+|[^+\\d]+", "");
+
+        assertThat(contactNumber).isEqualTo(expectedFormattedNumber);
     }
 }
