@@ -388,9 +388,9 @@ public class RoboticsDataServiceTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantMobileNumberIsNullOrEmpty(final String value)
+    void shouldNotThrowRoboticsDataExceptionWhenApplicantMobileNumberIsNullOrEmpty(final String mobileNumber)
         throws IOException {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(value);
+        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(mobileNumber);
         assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
     }
 
@@ -426,9 +426,9 @@ public class RoboticsDataServiceTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsNullOrEmpty(final String value)
+    void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsNullOrEmpty(final String telephoneNumber)
         throws IOException {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(value);
+        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(telephoneNumber);
         assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
     }
 
@@ -448,7 +448,7 @@ public class RoboticsDataServiceTest {
     }
 
     private static Stream<String> inValidPhoneNumbers() {
-        return Stream.of("01222233343444545556778889999887776655555544", "c/o");
+        return Stream.of("01222233343444545556778889999887776655555544", "c/o", " ?.+ ");
     }
 
     private static Stream<String> inValidInternationalPhoneNumbers() {

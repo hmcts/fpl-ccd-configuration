@@ -42,27 +42,6 @@ public class SampleRoboticsTestDataHelper {
             .build();
     }
 
-    public static RoboticsData expectedRoboticsData(final String applicationType, final String phoneNumber) {
-        return RoboticsData.builder()
-            .caseNumber("12345")
-            .applicationType(applicationType)
-            .feePaid(2055.00)
-            .children(expectedChildren())
-            .respondents(expectedRespondents())
-            .solicitor(Solicitor.builder()
-                .firstName("Brian")
-                .lastName("Banks")
-                .build())
-            .harmAlleged(true)
-            .internationalElement(true)
-            .allocation("Section 9 circuit judge")
-            .issueDate(dateFormatterService.formatLocalDateToString(NOW, "dd-MM-yyyy"))
-            .applicant(expectedApplicant(phoneNumber))
-            .owningCourt(11)
-            .caseId(12345L)
-            .build();
-    }
-
     public static RoboticsData invalidRoboticsDataWithZeroOwningCourt() {
         return expectedRoboticsData(CARE_ORDER.getLabel()).toBuilder()
             .owningCourt(0)
@@ -173,26 +152,6 @@ public class SampleRoboticsTestDataHelper {
                 .build())
             .mobileNumber("2020202020")
             .telephoneNumber("02120202020")
-            .email("jane@smith.com")
-            .build();
-    }
-
-    public static Applicant expectedApplicant(final String number) {
-        return Applicant.builder()
-            .name("London Borough of Southwark")
-            .contactName("Jane Smith")
-            .jobTitle("Legal adviser")
-            .address(Address.builder()
-                .addressLine1("160 Tooley St")
-                .addressLine2("Tooley road")
-                .addressLine3("Tooley")
-                .postTown("Limerick")
-                .county("Galway")
-                .country("Ireland")
-                .postcode("SE1 2QH")
-                .build())
-            .mobileNumber(number)
-            .telephoneNumber(number)
             .email("jane@smith.com")
             .build();
     }

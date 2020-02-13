@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
+import uk.gov.hmcts.reform.fpl.model.robotics.Applicant;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
 
@@ -98,7 +99,9 @@ public class RoboticsNotificationServiceTest {
     @NullAndEmptySource
     void notifyRoboticsOfSubmittedCaseDataShouldSendNotificationToRoboticsWhenApplicantContactNumberIsNullOrEmpty(
         final String number) throws IOException {
-        RoboticsData expectedRoboticsData = expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel(), number);
+        RoboticsData expectedRoboticsData = expectedRoboticsDataWithUpdatedContactNumber(
+            EMERGENCY_PROTECTION_ORDER.getLabel(), number);
+
         given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
             .willReturn(expectedRoboticsData);
 
@@ -178,5 +181,19 @@ public class RoboticsNotificationServiceTest {
             .extracting("data", "filename")
             .containsExactly(tuple(new ByteArrayResource(expectedRoboticsDataJson.getBytes()),
                 "CaseSubmitted_12345.json"));
+    }
+
+    private RoboticsData expectedRoboticsDataWithUpdatedContactNumber(final String applicationType,
+                                                                      final String number) {
+        RoboticsData roboticsData = expectedRoboticsData(applicationType);
+
+        Applicant roboticsUpdatedApplicant = roboticsData.getApplicant().toBuilder()
+            .mobileNumber(number)
+            .telephoneNumber(number)
+            .build();
+
+        return roboticsData.toBuilder()
+            .applicant(roboticsUpdatedApplicant)
+            .build();
     }
 }
