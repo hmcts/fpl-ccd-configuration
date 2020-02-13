@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.verify;
 @ContextConfiguration(classes = {FixedTimeConfiguration.class,  DateFormatterService.class})
 class DocumentSenderServiceTest {
 
+    private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
     private static final String FORMATTED_DATE = "12:00pm, 1 January 2019";
     private static final String FAMILY_CASE_NUMBER = "familyCaseNumber";
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
@@ -63,6 +65,9 @@ class DocumentSenderServiceTest {
     @Mock
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
+    @Mock
+    private AuthTokenGenerator authTokenGenerator;
+
     @Captor
     private ArgumentCaptor<Representative> representativeArgumentCaptor;
 
@@ -85,13 +90,15 @@ class DocumentSenderServiceTest {
             .bytes(COVER_DOCUMENTS_BYTES.get(1))
             .build());
         given(dateFormatterService.formatLocalDateTimeBaseUsingFormat(any(), anyString())).willReturn(FORMATTED_DATE);
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
 
         documentSenderService = new DocumentSenderService(time,
             dateFormatterService,
             sendLetterApi,
             documentDownloadService,
-            docmosisCoverDocumentsService);
+            docmosisCoverDocumentsService,
+            authTokenGenerator);
     }
 
 

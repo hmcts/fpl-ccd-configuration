@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 @OverrideAutoConfiguration(enabled = true)
 class SendDocumentControllerTest extends AbstractControllerTest {
 
+    private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
 
     @MockBean
@@ -53,16 +55,20 @@ class SendDocumentControllerTest extends AbstractControllerTest {
     @MockBean
     private SendLetterApi sendLetterApi;
 
+    @MockBean
+    private AuthTokenGenerator authTokenGenerator;
+
     SendDocumentControllerTest() {
         super("send-document");
     }
 
     @BeforeEach
-    void setupStoppedClock() {
+    void setup() {
         given(ldClient.boolVariation(anyString(), any(), anyBoolean())).willReturn(true);
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
         given(docmosisCoverDocumentsService.createCoverDocuments(anyString(), anyLong(), any())).willReturn(
             DocmosisDocument.builder().bytes(PDF).build());
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
     @Test
