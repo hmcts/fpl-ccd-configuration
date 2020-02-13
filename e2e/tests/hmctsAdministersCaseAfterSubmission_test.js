@@ -214,10 +214,10 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
 
 xScenario('HMCTS admin can see Documents scanned in with Bulk Scan', async (I, caseViewPage) => {
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document Type', scannedDocument.type);
-  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document Subtype', scannedDocument.subtype);
-  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Scanned document url', scannedDocument.url);
-  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document Control Number', scannedDocument.controlNumber);
-  I.seeAnswerInTab(1, 'Scanned Documents 1', 'File Name', scannedDocument.fileName);
-  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Scanned Date', scannedDocument.scannedDate);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document type', scannedDocument.type);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document subtype', scannedDocument.subtype);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document url', scannedDocument.url);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document control number', scannedDocument.controlNumber);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'File name', scannedDocument.fileName);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Scanned date', scannedDocument.scannedDate);
 });

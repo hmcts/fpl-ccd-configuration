@@ -4,8 +4,8 @@
     "ID": "ScannedDocument",
     "ListElementCode": "# Record Meta data",
     "FieldType": "Label",
-    "ElementLabel": "Scanned Records",
-    "SecurityClassification": "PUBLIC"
+    "ElementLabel": "Scanned records",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -13,56 +13,56 @@
     "ListElementCode": "type",
     "FieldType": "FixedList",
     "FieldTypeParameter": "ScannedDocumentType",
-    "ElementLabel": "Document Type",
-    "SecurityClassification": "PUBLIC"
+    "ElementLabel": "Document type",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
     "ID": "ScannedDocument",
     "ListElementCode": "subtype",
     "FieldType": "Text",
-    "ElementLabel": "Document Subtype",
-    "SecurityClassification": "PUBLIC"
+    "ElementLabel": "Document subtype",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
     "ID": "ScannedDocument",
     "ListElementCode": "url",
     "FieldType": "Document",
-    "ElementLabel": "Scanned document url",
-    "SecurityClassification": "PUBLIC"
+    "ElementLabel": "Document url",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
     "ID": "ScannedDocument",
     "ListElementCode": "controlNumber",
     "FieldType": "Text",
-    "ElementLabel": "Document Control Number",
-    "SecurityClassification": "PUBLIC"
+    "ElementLabel": "Document control number",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
     "ID": "ScannedDocument",
     "ListElementCode": "fileName",
     "FieldType": "Text",
-    "ElementLabel": "File Name",
-    "SecurityClassification": "PUBLIC"
+    "ElementLabel": "File name",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
     "ID": "ScannedDocument",
     "ListElementCode": "scannedDate",
     "FieldType": "DateTime",
-    "ElementLabel": "Scanned Date",
-    "SecurityClassification": "PUBLIC"
+    "ElementLabel": "Scanned date",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
     "ID": "ScannedDocument",
     "ListElementCode": "deliveryDate",
     "FieldType": "DateTime",
-    "ElementLabel": "Delivery Date",
-    "SecurityClassification": "PUBLIC"
+    "ElementLabel": "Delivery date",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
