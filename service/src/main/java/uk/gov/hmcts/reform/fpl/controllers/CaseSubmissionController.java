@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,12 +19,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.payment.FeeType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.payment.fee.FeeResponse;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
 import java.time.ZoneId;
@@ -39,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFil
 @Api
 @RestController
 @RequestMapping("/callback/case-submission")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseSubmissionController {
 
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
@@ -49,39 +54,28 @@ public class CaseSubmissionController {
     private final CaseValidatorService caseValidatorService;
     private final ObjectMapper mapper;
     private final RestrictionsConfiguration restrictionsConfiguration;
-
-    @Autowired
-    public CaseSubmissionController(
-        UserDetailsService userDetailsService,
-        DocumentGeneratorService documentGeneratorService,
-        UploadDocumentService uploadDocumentService,
-        CaseValidatorService caseValidatorService,
-        ObjectMapper mapper,
-        ApplicationEventPublisher applicationEventPublisher,
-        RestrictionsConfiguration restrictionsConfiguration) {
-        this.userDetailsService = userDetailsService;
-        this.documentGeneratorService = documentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.caseValidatorService = caseValidatorService;
-        this.mapper = mapper;
-        this.restrictionsConfiguration = restrictionsConfiguration;
-    }
+    private final FeeService feeService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackRequest) {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        List<FeeResponse> fees = feeService.getFees(FeeType.fromOrderType(caseData.getOrders().getOrderType()));
+        FeeResponse fee = feeService.calculateFeeToUse(fees);
 
         String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
-        Map<String, Object> data = caseDetails.getData();
         data.put("submissionConsentLabel", label);
+        data.put("amountToPay", fee.getAmount());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(validate(mapper.convertValue(data, CaseData.class)))
+            .errors(validate(caseData))
             .build();
     }
 
@@ -138,6 +132,8 @@ public class CaseSubmissionController {
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", document.originalDocumentName)
             .build());
+
+        data.remove("amountToPay");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

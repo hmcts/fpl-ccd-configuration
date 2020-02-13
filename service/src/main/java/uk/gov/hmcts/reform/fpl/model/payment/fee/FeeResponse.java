@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class FeeResponse {
     private String code;
     private String description;
-    private String version;
+    private Integer version;
     @JsonProperty(value = "fee_amount")
     private BigDecimal amount;
 }
