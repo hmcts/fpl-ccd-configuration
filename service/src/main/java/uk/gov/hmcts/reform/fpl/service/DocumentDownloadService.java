@@ -5,18 +5,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
+import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import java.net.URI;
+import java.util.Optional;
 
 import static java.lang.String.join;
-import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Slf4j
@@ -39,8 +41,11 @@ public class DocumentDownloadService {
             URI.create(documentUrlString).getPath());
 
         if (isNotEmpty(documentDownloadResponse) && HttpStatus.OK == documentDownloadResponse.getStatusCode()) {
-            ByteArrayResource resourceByte = (ByteArrayResource) documentDownloadResponse.getBody();
-            return requireNonNull(resourceByte).getByteArray();
+            return Optional.of(documentDownloadResponse)
+                .map(HttpEntity::getBody)
+                .map(ByteArrayResource.class::cast)
+                .map(ByteArrayResource::getByteArray)
+                .orElseThrow(EmptyFileException::new);
         }
         throw new IllegalArgumentException(String.format("Download of document from %s unsuccessful.",
             documentUrlString));

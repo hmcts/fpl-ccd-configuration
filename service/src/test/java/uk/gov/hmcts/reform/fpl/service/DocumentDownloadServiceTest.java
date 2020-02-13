@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -43,6 +44,9 @@ public class DocumentDownloadServiceTest {
     @Mock
     private ResponseEntity<Resource> resourceResponseEntity;
 
+    @Mock
+    private ByteArrayResource byteArrayResource;
+
     private DocumentDownloadService documentDownloadService;
 
     private Document document = document();
@@ -69,7 +73,7 @@ public class DocumentDownloadServiceTest {
     }
 
     @Test
-    public void shouldDownloadDocumentFromDocumentManagement() {
+    void shouldDownloadDocumentFromDocumentManagement() {
         Document document = document();
         byte[] expectedDocumentContents = "test".getBytes();
 
@@ -94,16 +98,28 @@ public class DocumentDownloadServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenDownloadFromDocumentManagement() {
-        ResponseEntity<Resource> expectedResponse = ResponseEntity.notFound().build();
-        given(resourceResponseEntity.getStatusCode())
-            .willReturn(expectedResponse.getStatusCode());
-
-        given(documentDownloadClient.downloadBinary(anyString(), anyString(),
-            eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
+    void shouldThrowExceptionWhenDownloadBinaryReturnsNull() {
+        ResponseEntity<Resource> responseEntity = ResponseEntity.notFound().build();
+        given(resourceResponseEntity.getStatusCode()).willReturn(responseEntity.getStatusCode());
+        given(documentDownloadClient.downloadBinary(anyString(), anyString(), anyString(), anyString(), anyString()))
             .willReturn(null);
 
-        assertThrows(IllegalArgumentException.class,
+        IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class,
             () -> documentDownloadService.downloadDocument(document.links.binary.href));
+        assertThat(thrownException.getMessage()).contains("85d97996-22a5-40d7-882e-3a382c8ae1b4")
+            .contains("/binary unsuccessful.");
     }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentIsEmpty() {
+        ResponseEntity<Resource> responseEntity = ResponseEntity.ok().body(byteArrayResource);
+        given(byteArrayResource.getByteArray()).willReturn(null);
+        given(documentDownloadClient.downloadBinary(anyString(), anyString(), anyString(), anyString(), anyString()))
+            .willReturn(responseEntity);
+
+        EmptyFileException exceptionThrown = assertThrows(EmptyFileException.class,
+            () -> documentDownloadService.downloadDocument(document.links.binary.href));
+        assertThat(exceptionThrown.getMessage()).isEqualTo("File cannot be empty");
+    }
+
 }
