@@ -1,0 +1,14 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "attachScannedDocs",
+    "Name": "Attach scanned docs",
+    "Description": "Attach scanned docs",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N"
+  }
+]

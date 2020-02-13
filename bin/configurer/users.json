@@ -12,5 +12,6 @@
   {"email": "cafcass@example.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-cafcass", "lastName": "(cafcass)"},
   {"email": "judiciary@mailnesia.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-courtadmin,caseworker-publiclaw-judiciary,caseworker-publiclaw-gatekeeper", "lastName": "(judiciary)"},
   {"email": "gatekeeper@mailnesia.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-gatekeeper,caseworker-publiclaw-courtadmin", "lastName": "(gatekeeper)"},
-  {"email": "fpl-system-update@mailnesia.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-systemupdate", "lastName": "(system-update)"}
+  {"email": "fpl-system-update@mailnesia.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-systemupdate", "lastName": "(system-update)"},
+  {"email": "fpl-bulkscan@mailnesia.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-bulkscan", "lastName": "(bulkscan)"}
 ]
