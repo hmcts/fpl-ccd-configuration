@@ -83,6 +83,11 @@ public class UploadC2DocumentsController {
             errors.add("You need to upload a file.");
         }
 
+        if(isNull(caseData.getAllocatedJudge()))
+        {
+            errors.add("Enter allocated judge");
+        }
+
         return errors.build();
     }
 
