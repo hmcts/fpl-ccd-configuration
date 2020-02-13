@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.payment.fee.FeeResponse;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -32,12 +32,14 @@ public class FeeService {
     private final RestTemplate restTemplate;
     private final FeesConfig feesConfig;
 
-    public FeeResponse calculateFeeToUse(List<FeeResponse> feeResponses) {
+    public Optional<FeeResponse> extractFeeToUse(List<FeeResponse> feeResponses) {
         if (feeResponses == null) {
-            throw new NoSuchElementException("feeResponses is null");
+            return Optional.empty();
         }
 
-        return feeResponses.stream().max(Comparator.comparing(FeeResponse::getAmount)).orElseThrow();
+        return feeResponses.stream()
+            .filter(Objects::nonNull)
+            .max(Comparator.comparing(FeeResponse::getAmount));
     }
 
     public List<FeeResponse> getFees(List<FeeType> feeTypes) {
