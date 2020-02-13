@@ -3,7 +3,7 @@ const scannedDocument = require('../fixtures/scannedDocument.js');
 
 let caseId;
 
-Feature('Case administration after submission');
+Feature('Uploading bulk scan document');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
 
