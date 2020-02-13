@@ -28,8 +28,10 @@ import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -56,6 +58,7 @@ public class CaseSubmissionController {
     private final RestrictionsConfiguration restrictionsConfiguration;
     private final FeeService feeService;
 
+    // TODO: 13/02/2020 update tests
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestHeader(value = "authorization") String authorization,
@@ -66,12 +69,14 @@ public class CaseSubmissionController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         List<FeeResponse> fees = feeService.getFees(FeeType.fromOrderType(caseData.getOrders().getOrderType()));
-        FeeResponse fee = feeService.calculateFeeToUse(fees);
+        BigDecimal amount = feeService.extractFeeToUse(fees)
+            .map(FeeResponse::getAmount)
+            .orElse(BigDecimal.ZERO);
 
         String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
         data.put("submissionConsentLabel", label);
-        data.put("amountToPay", fee.getAmount());
+        data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
