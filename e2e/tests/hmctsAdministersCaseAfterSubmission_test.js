@@ -3,6 +3,7 @@ const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const orders = require('../fixtures/orders.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
+const scannedDocument = require('../fixtures/scannedDocument.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -209,4 +210,14 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+});
+
+xScenario('HMCTS admin can see Documents scanned in with Bulk Scan', async (I, caseViewPage) => {
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document Type', scannedDocument.type);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document Subtype', scannedDocument.subtype);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Scanned document url', scannedDocument.url);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document Control Number', scannedDocument.controlNumber);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'File Name', scannedDocument.fileName);
+  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Scanned Date', scannedDocument.scannedDate);
 });
