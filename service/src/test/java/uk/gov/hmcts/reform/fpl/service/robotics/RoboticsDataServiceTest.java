@@ -428,7 +428,7 @@ public class RoboticsDataServiceTest {
     @NullAndEmptySource
     void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsNullOrEmpty(final String value)
         throws IOException {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(value);
+        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(value);
         assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
     }
 
