@@ -374,10 +374,16 @@ public class RoboticsDataServiceTest {
         }
     }
 
-    @Test
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantMobileNumberIsValid() throws IOException {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber("(0) 777 977 777");
-        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+    @ParameterizedTest
+    @MethodSource("validInternationalMobileNumbers")
+    void shouldNotThrowRoboticsDataExceptionWhenApplicantMobileNumberIsValid(final String mobileNumber)
+        throws IOException {
+        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(mobileNumber);
+
+        RoboticsData returnedRoboticsData = assertDoesNotThrow(
+            () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+
+        assertApplicantContactNumber(returnedRoboticsData.getApplicant().getMobileNumber());
     }
 
     @Test
@@ -422,10 +428,10 @@ public class RoboticsDataServiceTest {
     void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsValid(String phoneNumber) throws IOException {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
 
-        RoboticsData roboticsData = assertDoesNotThrow(
+        RoboticsData returnedRoboticsData = assertDoesNotThrow(
             () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
 
-        assertApplicantContactNumber(roboticsData.getApplicant().getTelephoneNumber());
+        assertApplicantContactNumber(returnedRoboticsData.getApplicant().getTelephoneNumber());
     }
 
     @ParameterizedTest
@@ -434,10 +440,10 @@ public class RoboticsDataServiceTest {
         throws IOException {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
 
-        RoboticsData roboticsData = assertDoesNotThrow(
+        RoboticsData returnedRoboticsData = assertDoesNotThrow(
             () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
 
-        assertApplicantContactNumber(roboticsData.getApplicant().getTelephoneNumber());
+        assertApplicantContactNumber(returnedRoboticsData.getApplicant().getTelephoneNumber());
     }
 
     @ParameterizedTest
@@ -478,6 +484,14 @@ public class RoboticsDataServiceTest {
 
     private static Stream<String> inValidInternationalMobileNumbers() {
         return Stream.of("+1800801920777777777888886565557778888", "c/o");
+    }
+
+    private static Stream<String> validInternationalMobileNumbers() {
+        return Stream.of("+447788999777 c/o",
+            "+234-804-677-9090",
+            "+71 (908) (7888)",
+            "+1.677.9898.888",
+            "C/+o 34 9090 7877");
     }
 
     private CaseData prepareCaseData(LocalDate date) throws IOException {
