@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.MapDifference;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -71,58 +70,54 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         super("create-order");
     }
 
-    @Nested
-    class Submitted {
+    @AfterEach
+    void resetInvocations() {
+        reset(notificationClient);
+    }
 
-        @AfterEach
-        void resetInvocations() {
-            reset(notificationClient);
-        }
+    @Test
+    void submittedShouldNotifyAdminAndLAWhenNoRepresentativesNeedServing() throws Exception {
+        postSubmittedEvent(buildCallbackRequest());
 
-        @Test
-        void submittedShouldNotifyAdminAndLAWhenNoRepresentativesNeedServing() throws Exception {
-            postSubmittedEvent(buildCallbackRequest());
+        verify(notificationClient).sendEmail(
+            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA),
+            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(expectedOrderLocalAuthorityParameters()),
+            eq(CASE_ID));
 
-            verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(expectedOrderLocalAuthorityParameters()),
-                eq(CASE_ID));
+        verify(notificationClient).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq("admin@family-court.com"),
+            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
+            eq(CASE_ID));
 
-            verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("admin@family-court.com"),
-                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq(CASE_ID));
+        verifyZeroInteractions(notificationClient);
+    }
 
-            verifyZeroInteractions(notificationClient);
-        }
+    @Test
+    void submittedShouldNotifyAdminAndLAWhenRepresentativesNeedServingByPost() throws Exception {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
 
-        @Test
-        void submittedShouldNotifyAdminAndLAWhenRepresentativesNeedServingByPost() throws Exception {
-            given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+        postSubmittedEvent(buildCallbackRequestWithRepresentatives());
 
-            postSubmittedEvent(buildCallbackRequestWithRepresentatives());
+        verify(notificationClient).sendEmail(
+            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA),
+            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(expectedOrderLocalAuthorityParameters()),
+            eq(CASE_ID));
 
-            verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(expectedOrderLocalAuthorityParameters()),
-                eq(CASE_ID));
+        verify(notificationClient).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq("admin@family-court.com"),
+            dataCaptor.capture(),
+            eq(CASE_ID));
 
-            verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("admin@family-court.com"),
-                dataCaptor.capture(),
-                eq(CASE_ID));
+        MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor,
+            IssuedOrderType.GENERATED_ORDER);
 
-            MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor,
-                IssuedOrderType.GENERATED_ORDER);
+        assertThat(difference.areEqual()).isTrue();
 
-            assertThat(difference.areEqual()).isTrue();
-
-            verifyZeroInteractions(notificationClient);
-        }
+        verifyZeroInteractions(notificationClient);
     }
 
     private CallbackRequest buildCallbackRequest() {

@@ -11,7 +11,7 @@ public class NotifyTemplates {
     public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "a79cffc8-7aec-445c-b310-7bed5fb479bc";
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE = "c06968ea-048b-49d6-a4b5-1f13ee995ba1";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "6b961e81-c5ff-4f6f-8c56-f90d932a2f9b";
-    public static final String ORDER_NOTIFICATION_TEMPLATE_FOR_LA = "1f7c134e-f9c0-44ba-aa50-fce53eb208f7";
+    public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA = "1f7c134e-f9c0-44ba-aa50-fce53eb208f7";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "c652061a-31db-4ec5-bcf7-4acec5943658";
     public static final String CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE =
         "64cc7ea5-ca74-4679-912f-6d84d1c7e4cd";
