@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -38,10 +39,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @RestController
@@ -64,6 +69,14 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        List<Element<HearingBooking>> element = defaultIfNull(
+            caseData.getHearingDetails(), wrapElements(HearingBooking.builder().build()));
+
+        String hearingDate = getHearingDate(element);
+
+        Stream.of(DirectionAssignee.values()).forEach(assignee ->
+            caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
+
         if (!isNull(caseData.getStandardDirectionOrder())) {
             Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
 
@@ -76,6 +89,17 @@ public class DraftOrdersController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private String getHearingDate(List<Element<HearingBooking>> element) {
+        String date;
+
+        if (element.get(0).getValue().getStartDate() != null) {
+            date = formatLocalDateTimeBaseUsingFormat(element.get(0).getValue().getStartDate(), "d MMMM yyyy, h:mma");
+        } else {
+            date = "Please enter a hearing date";
+        }
+        return date;
     }
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {

@@ -18,7 +18,7 @@ public class DateFormatterService {
         return date.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
 
-    public String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {
+    public static String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {
         return dateTime.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
 
