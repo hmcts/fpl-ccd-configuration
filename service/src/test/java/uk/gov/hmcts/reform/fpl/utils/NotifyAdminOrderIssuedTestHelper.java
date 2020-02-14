@@ -81,29 +81,24 @@ public class NotifyAdminOrderIssuedTestHelper {
     }
 
     private static Map<String, Object> commonParametersNoPostingNeeded() {
-        return ImmutableMap.<String, Object>builder()
-            .put("needsPosting", "No")
-            .put("doesNotNeedPosting", "Yes")
-            .put("courtName", LOCAL_AUTHORITY_NAME)
-            .put("caseUrlOrDocumentLink", formatCaseUrl("http://fake-url", 12345L))
-            .put("respondentLastName", "Jones")
-            .put("representatives", "")
-            .build();
+        return Map.of("needsPosting", "No",
+            "doesNotNeedPosting", "Yes",
+            "courtName", LOCAL_AUTHORITY_NAME,
+            "caseUrlOrDocumentLink", formatCaseUrl("http://fake-url", 12345L),
+            "respondentLastName", "Jones",
+            "representatives", "");
     }
 
     private static Map<String, Object> commonParametersPostingNeeded() {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
-        Map<String, Object> expectedMap = new HashMap<>();
-        expectedMap.put("needsPosting", "Yes");
-        expectedMap.put("doesNotNeedPosting", "No");
-        expectedMap.put("courtName", LOCAL_AUTHORITY_NAME);
-        expectedMap.put("respondentLastName", "Jones");
-        expectedMap.put("representatives", List.of("Paul Blart\nStreet, Town, Postcode"));
-        expectedMap.put("caseUrlOrDocumentLink", jsonFileObject);
-
-        return expectedMap;
+        return Map.of("needsPosting", "Yes",
+            "doesNotNeedPosting", "No",
+            "courtName", LOCAL_AUTHORITY_NAME,
+            "respondentLastName", "Jones",
+            "representatives", List.of("Paul Blart\nStreet, Town, Postcode"),
+            "caseUrlOrDocumentLink", jsonFileObject);
     }
 
     private static Map<String, Object> getExpectedParametersForAdminWhenRepresentativesNeedServingByPost() {
