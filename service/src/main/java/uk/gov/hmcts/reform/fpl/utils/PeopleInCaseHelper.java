@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 public class PeopleInCaseHelper {
 
     private PeopleInCaseHelper() {
@@ -29,6 +31,6 @@ public class PeopleInCaseHelper {
         return representatives.stream()
             .map(representative -> representative.getFullName() + "\n" + representative.getAddress().getAddressAsString(
                 ", "))
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 }

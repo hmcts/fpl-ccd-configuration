@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.Long.parseLong;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -90,7 +91,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
             CallbackRequest callbackRequest = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
-                    .id(12345L)
+                    .id(parseLong(CASE_ID))
                     .data(ImmutableMap.<String, Object>builder()
                         .putAll(buildNotificationData())
                         .putAll(buildPlacementData(List.of(child1, child2), List.of(child2Placement, child1Placement),
@@ -106,7 +107,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
                 eq("admin@family-court.com"),
                 eq(expectedTemplateParameters()),
-                eq("12345"));
+                eq(CASE_ID));
         }
 
         @Test
@@ -130,7 +131,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
                 eq("admin@family-court.com"),
                 eq(expectedTemplateParameters()),
-                eq("12345"));
+                eq(CASE_ID));
         }
 
         private Map<String, Object> buildPlacementData(List<Element<Child>> children,
@@ -145,7 +146,8 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         private Map<String, Object> expectedTemplateParameters() {
             return Map.of(
                 "respondentLastName", "Watson",
-                "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 12345L));
+                "caseUrl",
+                String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, parseLong(CASE_ID)));
         }
 
         private Map<String, Object> buildNotificationData() {
@@ -190,7 +192,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 eq(CASE_ID));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq("admin@family-court.com"),
                 eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
                 eq(CASE_ID));
@@ -218,7 +220,8 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         private Map<String, Object> expectedParameters() {
             return Map.of(
                 "respondentLastName", "Jones",
-                "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 12345L));
+                "caseUrl",
+                String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, parseLong(CASE_ID)));
         }
 
         private Respondent respondent() {
@@ -254,7 +257,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
         private CaseDetails populatedCaseDetails(UUID representativeId, Respondent respondent) {
             return CaseDetails.builder()
-                .id(12345L)
+                .id(parseLong(CASE_ID))
                 .data(Map.of(
                     "caseLocalAuthority", "example",
                     "confidentialPlacements", List.of(element(Placement.builder()

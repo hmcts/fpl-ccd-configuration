@@ -56,7 +56,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMP
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
@@ -80,7 +80,7 @@ public class NotificationHandler {
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
-    private final GeneratedOrderEmailContentProvider generatedOrderEmailContentProvider;
+    private final GeneratedOrderEmailContentProvider orderEmailContentProvider;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
@@ -336,7 +336,7 @@ public class NotificationHandler {
                                                                 final String localAuthorityCode,
                                                                 final String mostRecentUploadedDocumentUrl) {
         Map<String, Object> localAuthorityParameters =
-            generatedOrderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
+            orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
 
         String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
@@ -354,7 +354,7 @@ public class NotificationHandler {
 
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 
-        sendNotification(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters, Long.toString(caseDetails.getId()));
+        sendNotification(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters, Long.toString(caseDetails.getId()));
     }
 
     @Getter

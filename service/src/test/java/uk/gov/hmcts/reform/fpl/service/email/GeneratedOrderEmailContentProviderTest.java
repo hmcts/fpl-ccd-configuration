@@ -54,7 +54,7 @@ class GeneratedOrderEmailContentProviderTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private GeneratedOrderEmailContentProvider generatedOrderEmailContentProvider;
+    private GeneratedOrderEmailContentProvider orderEmailContentProvider;
 
     private String familyManCaseNumber;
     private UUID documentId;
@@ -62,7 +62,7 @@ class GeneratedOrderEmailContentProviderTest {
 
     @BeforeEach
     void setup() {
-        this.generatedOrderEmailContentProvider = new GeneratedOrderEmailContentProvider("",
+        this.orderEmailContentProvider = new GeneratedOrderEmailContentProvider("",
             objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService);
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
@@ -79,7 +79,7 @@ class GeneratedOrderEmailContentProviderTest {
         CaseDetails caseDetails = createCaseDetailsWithSingleOrderElement();
 
         Map<String, Object> returnedLocalAuthorityParameters =
-            generatedOrderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
+            orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
                 caseDetails, LOCAL_AUTHORITY_CODE, documentUrl);
 
         assertThat(returnedLocalAuthorityParameters)

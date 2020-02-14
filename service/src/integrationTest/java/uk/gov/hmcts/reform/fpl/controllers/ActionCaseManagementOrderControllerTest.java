@@ -60,7 +60,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -311,12 +311,16 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
 
         verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(), eq(CASE_ID));
+            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
+            eq(CAFCASS_EMAIL_ADDRESS),
+            anyMap(),
+            eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq("admin@family-court.com"),
-            dataCaptor.capture(), eq(CASE_ID));
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq("admin@family-court.com"),
+            dataCaptor.capture(),
+            eq(CASE_ID));
 
         MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor, CMO);
         assertThat(difference.areEqual()).isTrue();
@@ -483,7 +487,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     private void verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded() throws NotificationClientException {
         verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq("admin@family-court.com"),
             eq(getExpectedCMOParametersForAdminWhenNoRepresentativesServedByPost()),
             eq(CASE_ID));

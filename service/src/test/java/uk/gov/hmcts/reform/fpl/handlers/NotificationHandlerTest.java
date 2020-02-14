@@ -77,7 +77,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMP
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
@@ -137,7 +137,7 @@ class NotificationHandlerTest {
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @Mock
-    private GeneratedOrderEmailContentProvider generatedOrderEmailContentProvider;
+    private GeneratedOrderEmailContentProvider orderEmailContentProvider;
 
     @Mock
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
@@ -212,7 +212,7 @@ class NotificationHandlerTest {
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
                 .willReturn(c2Parameters);
 
-            given(generatedOrderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
+            given(orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
                 .willReturn(orderLocalAuthorityParameters);
 
@@ -254,13 +254,17 @@ class NotificationHandlerTest {
             notificationHandler.sendNotificationsForGeneratedOrder(new GeneratedOrderEvent(callbackRequest(),
                 AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, documentContents));
 
-            verify(notificationClient, times(1)).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(orderLocalAuthorityParameters), eq("12345"));
+            verify(notificationClient).sendEmail(
+                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_LA),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(orderLocalAuthorityParameters),
+                eq("12345"));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(COURT_EMAIL_ADDRESS),
-                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()), eq("12345"));
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(COURT_EMAIL_ADDRESS),
+                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq("12345"));
         }
     }
 
@@ -289,14 +293,14 @@ class NotificationHandlerTest {
             // TODO: 17/12/2019 nice to refactor to make cleaner
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
                 hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
-                gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, generatedOrderEmailContentProvider,
+                gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
                 orderIssuedEmailContentProvider, localAuthorityEmailContentProvider, notificationClient, idamApi,
                 inboxLookupService, caseManagementOrderEmailContentProvider, placementApplicationContentProvider,
                 representativeService, localAuthorityNameLookupConfiguration, objectMapper);
         }
 
         @Test
-        void shouldNotifyAdminAndLAOfCMOIssued() throws Exception {
+        void shouldNotifyAdminAndLocalAuthorityOfCMOIssued() throws Exception {
             CallbackRequest callbackRequest = callbackRequest();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -318,12 +322,16 @@ class NotificationHandlerTest {
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(expectedCMOIssuedNotificationParameters), eq("12345"));
+                eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(expectedCMOIssuedNotificationParameters),
+                eq("12345"));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(COURT_EMAIL_ADDRESS),
-                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()), eq("12345"));
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(COURT_EMAIL_ADDRESS),
+                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq("12345"));
         }
 
         @Test
@@ -348,8 +356,10 @@ class NotificationHandlerTest {
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
-                eq(expectedCMOIssuedNotificationParametersForRepresentative), eq("12345"));
+                eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE),
+                eq("abc@example.com"),
+                eq(expectedCMOIssuedNotificationParametersForRepresentative),
+                eq("12345"));
         }
 
         @Test
@@ -367,8 +377,10 @@ class NotificationHandlerTest {
                 new CaseManagementOrderRejectedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(expectedCMORejectedNotificationParameters), eq("12345"));
+                eq(CMO_REJECTED_BY_JUDGE_TEMPLATE),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(expectedCMORejectedNotificationParameters),
+                eq("12345"));
         }
 
         @Test
@@ -617,7 +629,7 @@ class NotificationHandlerTest {
             placementNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
                 cafcassLookupConfiguration, hmctsEmailContentProvider, cafcassEmailContentProvider,
                 cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider, c2UploadedEmailContentProvider,
-                generatedOrderEmailContentProvider, orderIssuedEmailContentProvider, localAuthorityEmailContentProvider,
+                orderEmailContentProvider, orderIssuedEmailContentProvider, localAuthorityEmailContentProvider,
                 notificationClient, idamApi, inboxLookupService, caseManagementOrderEmailContentProvider,
                 placementApplicationContentProvider, representativeService, localAuthorityNameLookupConfiguration,
                 objectMapper);
@@ -648,7 +660,7 @@ class NotificationHandlerTest {
                 eq("12345"));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq(COURT_EMAIL_ADDRESS),
                 eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
                 eq("12345"));

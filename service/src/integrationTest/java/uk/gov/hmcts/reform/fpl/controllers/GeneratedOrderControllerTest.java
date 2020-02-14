@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.lang.Long.parseLong;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,7 +73,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
@@ -135,7 +136,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
+            .id(parseLong(CASE_ID))
             .data(Map.of("data", "some data"))
             .build();
 
@@ -163,9 +164,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 eq(CASE_ID));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq("admin@family-court.com"),
-                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()), eq(CASE_ID));
+                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq(CASE_ID));
 
             verifyZeroInteractions(notificationClient);
         }
@@ -183,7 +185,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 eq(CASE_ID));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq("admin@family-court.com"),
                 dataCaptor.capture(),
                 eq(CASE_ID));
@@ -200,7 +202,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     private CallbackRequest buildCallbackRequest() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .id(12345L)
+                .id(parseLong(CASE_ID))
                 .data(ImmutableMap.of(
                     "orderCollection", createOrders(),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
@@ -214,7 +216,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     private CallbackRequest buildCallbackRequestWithRepresentatives() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .id(12345L)
+                .id(parseLong(CASE_ID))
                 .data(Map.of(
                     "orderCollection", createOrders(),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),

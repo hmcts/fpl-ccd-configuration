@@ -23,10 +23,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 public class NotifyAdminOrderIssuedTestHelper {
-
-    private NotifyAdminOrderIssuedTestHelper() {
-    }
-
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
 
@@ -34,9 +30,7 @@ public class NotifyAdminOrderIssuedTestHelper {
         ArgumentCaptor<Map<String, Object>> dataCaptor, IssuedOrderType issuedOrderType) {
 
         Map<String, Object> resultData = new HashMap<>(dataCaptor.getValue());
-        Map<String, Object> expectedParameters = issuedOrderType == CMO
-            ? getExpectedCMOParametersForAdminWhenRepresentativesNeedServingByPost() :
-            getExpectedParametersForAdminWhenRepresentativesNeedServingByPost();
+        Map<String, Object> expectedParameters = getExpectedParameters(issuedOrderType);
 
         assertThat(((JSONObject) resultData.get("caseUrlOrDocumentLink")).get("file")).isEqualTo(
             ((JSONObject) expectedParameters.get("caseUrlOrDocumentLink")).get("file"));
@@ -49,14 +43,14 @@ public class NotifyAdminOrderIssuedTestHelper {
 
     public static Map<String, Object> getExpectedParametersForAdminWhenNoRepresentativesServedByPost() {
         return ImmutableMap.<String, Object>builder()
-            .put("cmoCallout", "")
+            .put("callout", "")
             .putAll(commonParametersNoPostingNeeded())
             .build();
     }
 
     public static Map<String, Object> getExpectedCMOParametersForAdminWhenNoRepresentativesServedByPost() {
         return ImmutableMap.<String, Object>builder()
-            .put("cmoCallout", "^Jones, SACCCCCCCC5676576567")
+            .put("callout", "^Jones, SACCCCCCCC5676576567")
             .putAll(commonParametersNoPostingNeeded())
             .build();
     }
@@ -72,6 +66,13 @@ public class NotifyAdminOrderIssuedTestHelper {
                 .build())
             .servingPreferences(POST)
             .build());
+    }
+
+    private static Map<String, Object> getExpectedParameters(IssuedOrderType issuedOrderType) {
+        if (issuedOrderType == CMO) {
+            return getExpectedCMOParametersForAdminWhenRepresentativesNeedServingByPost();
+        }
+        else return getExpectedParametersForAdminWhenRepresentativesNeedServingByPost();
     }
 
     private static Map<String, Object> commonParametersNoPostingNeeded() {
@@ -102,7 +103,7 @@ public class NotifyAdminOrderIssuedTestHelper {
 
     private static Map<String, Object> getExpectedParametersForAdminWhenRepresentativesNeedServingByPost() {
         Map<String, Object> expectedMap = new HashMap<>();
-        expectedMap.put("cmoCallout", "");
+        expectedMap.put("callout", "");
         expectedMap.putAll(commonParametersPostingNeeded());
 
         return expectedMap;
@@ -110,7 +111,7 @@ public class NotifyAdminOrderIssuedTestHelper {
 
     private static Map<String, Object> getExpectedCMOParametersForAdminWhenRepresentativesNeedServingByPost() {
         Map<String, Object> expectedMap = new HashMap<>();
-        expectedMap.put("cmoCallout", "^Jones, SACCCCCCCC5676576567");
+        expectedMap.put("callout", "^Jones, SACCCCCCCC5676576567");
         expectedMap.putAll(commonParametersPostingNeeded());
 
         return expectedMap;
