@@ -221,7 +221,7 @@ class CaseDataExtractionServiceTest {
                 "name", "Bran Stark",
                 "gender", "Male",
                 "dateOfBirth",
-                dateFormatterService.formatLocalDateToString(TODAYS_DATE.minusDays(1), FormatStyle.LONG)),
+                dateFormatterService.formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG)),
             Map.of(
                 "name", "Sansa Stark",
                 "gender", EMPTY_PLACEHOLDER,

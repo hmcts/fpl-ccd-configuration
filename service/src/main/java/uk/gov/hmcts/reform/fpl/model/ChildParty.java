@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Past;
+import javax.validation.constraints.PastOrPresent;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -52,7 +52,7 @@ public final class ChildParty extends Party {
         return super.getLastName();
     }
 
-    @Past(message = "Date of birth is in the future. You cannot send this application until that date")
+    @PastOrPresent(message = "Date of birth is in the future. You cannot send this application until that date")
     public LocalDate getDateOfBirth() {
         return super.getDateOfBirth();
     }
