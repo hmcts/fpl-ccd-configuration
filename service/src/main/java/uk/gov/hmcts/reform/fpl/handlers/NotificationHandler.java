@@ -9,6 +9,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
@@ -84,13 +86,15 @@ public class NotificationHandler {
     private final RepresentativeService representativeService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final ObjectMapper objectMapper;
+    private final FeatureToggleService featureToggleService;
+    private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
         EventData eventData = new EventData(event);
         Map<String, Object> parameters = hmctsEmailContentProvider
             .buildHmctsSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
-        String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
+        String email = getAdminEmail(eventData);
 
         sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, eventData.getReference());
     }
@@ -102,7 +106,7 @@ public class NotificationHandler {
             EventData eventData = new EventData(event);
             Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotification(
                 eventData.getCaseDetails());
-            String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
+            String email = getAdminEmail(eventData);
 
             sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
         }
@@ -166,7 +170,7 @@ public class NotificationHandler {
         Map<String, Object> parameters = placementApplicationContentProvider
             .buildPlacementApplicationNotificationParameters(eventData.getCaseDetails());
 
-        String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
+        String email = getAdminEmail(eventData);
 
         sendNotification(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
     }
@@ -187,7 +191,7 @@ public class NotificationHandler {
         Map<String, Object> parameters = caseManagementOrderEmailContentProvider
             .buildCMOReadyForJudgeReviewNotificationParameters(eventData.getCaseDetails());
 
-        String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
+        String email = getAdminEmail(eventData);
 
         sendNotification(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
     }
@@ -328,6 +332,14 @@ public class NotificationHandler {
 
         sendNotification(ORDER_NOTIFICATION_TEMPLATE, recipientEmail, localAuthorityParameters,
             Long.toString(caseDetails.getId()));
+    }
+
+    private String getAdminEmail(EventData eventData) {
+        if (featureToggleService.isCtscEnabled()) {
+            return ctscEmailLookupConfiguration.getEmail();
+        }
+
+        return hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
     }
 
     @Getter

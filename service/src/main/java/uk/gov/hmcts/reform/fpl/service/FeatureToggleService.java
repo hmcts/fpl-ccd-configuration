@@ -22,6 +22,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("xerox-printing", getUser(), false);
     }
 
+    public boolean isCtscEnabled() {
+        return ldClient.boolVariation("ctsc", getUser(), false);
+    }
+
     private LDUser getUser() {
         return new LDUser.Builder(ldUserKey)
             .custom("timestamp", String.valueOf(System.currentTimeMillis()))
