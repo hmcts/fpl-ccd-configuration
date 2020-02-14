@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -377,6 +378,7 @@ public class CaseDataGeneratorHelper {
     private static Direction createDirection(DirectionAssignee assignee) {
         return Direction.builder()
             .directionText("Mock direction text")
+            .directionNeeded(YesNo.YES.getValue())
             .assignee(assignee)
             .build();
     }
@@ -384,6 +386,7 @@ public class CaseDataGeneratorHelper {
     private static Direction createCustomDirection(DirectionAssignee assignee) {
         return Direction.builder()
             .directionText("Mock direction text")
+            .directionNeeded(YesNo.YES.getValue())
             .assignee(assignee)
             .readOnly("No")
             .custom("Yes")
