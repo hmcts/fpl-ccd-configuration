@@ -53,14 +53,13 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
                                                                              final byte[] documentContents,
                                                                              final IssuedOrderType issuedOrderType) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        final String callout = buildSubjectLine(caseData);
         List<Representative> representativesServedByPost = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), POST);
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(representativesServedByPost);
 
         return ImmutableMap.<String, Object>builder()
             .put("callout", issuedOrderType == CMO ? "^" + buildSubjectLineWithHearingBookingDateSuffix(
-                callout, caseData.getHearingDetails()) : "")
+                buildSubjectLine(caseData), caseData.getHearingDetails()) : "")
             .put("needsPosting", isNotEmpty(representativesServedByPost) ? "Yes" : "No")
             .put("doesNotNeedPosting", representativesServedByPost.isEmpty() ? "Yes" : "No")
             .put("courtName", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
