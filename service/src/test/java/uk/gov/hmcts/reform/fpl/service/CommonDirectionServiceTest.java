@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -155,6 +156,23 @@ class CommonDirectionServiceTest {
             .dateToBeCompletedBy(null)
             .assignee(LOCAL_AUTHORITY)
             .build());
+    }
+
+    @Test
+    void numberDirections_shouldApplyCorrectNumberingWhenDirectionsAreMarkedAsRemoved() {
+        CaseData caseData = populateCaseDataWithSomeDirectionsMarkedAsRemoved().build();
+
+        List<Element<Direction>> directions = service.combineAllDirections(caseData);
+
+        List<String> numberedDirectionTypes = service.numberDirections(directions).stream()
+            .map(direction -> direction.getValue().getDirectionType())
+            .collect(toList());
+
+        List<String> expectedDirectionsTypes = IntStream.range(0, numberedDirectionTypes.size())
+            .mapToObj(x -> (x + 2) + ". direction")
+            .collect(toList());
+
+        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionsTypes);
     }
 
     private DirectionConfiguration getDirectionConfig() {
@@ -443,6 +461,15 @@ class CommonDirectionServiceTest {
             .build()));
     }
 
+    private List<Element<Direction>> buildDirections(DirectionAssignee assignee, String directionNeeded) {
+        return Lists.newArrayList(element(Direction.builder()
+            .directionType("direction")
+            .directionText("example direction text")
+            .directionNeeded(directionNeeded)
+            .assignee(assignee)
+            .build()));
+    }
+
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee, UUID directionId) {
         return Lists.newArrayList(element(directionId, Direction.builder()
             .directionType("direction")
@@ -458,5 +485,15 @@ class CommonDirectionServiceTest {
                 .directionText("example direction text")
                 .custom("Yes")
                 .build()));
+    }
+
+    private CaseData.CaseDataBuilder populateCaseDataWithSomeDirectionsMarkedAsRemoved() {
+        return CaseData.builder()
+            .allParties(buildDirections(ALL_PARTIES, YES.getValue()))
+            .localAuthorityDirections(buildDirections(LOCAL_AUTHORITY))
+            .respondentDirections(buildDirections(PARENTS_AND_RESPONDENTS))
+            .cafcassDirections(buildDirections(CAFCASS, YES.getValue()))
+            .otherPartiesDirections(buildDirections(OTHERS))
+            .courtDirections(buildDirections(COURT, YES.getValue()));
     }
 }
