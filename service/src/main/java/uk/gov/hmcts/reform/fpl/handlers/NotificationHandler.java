@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
@@ -86,7 +85,6 @@ public class NotificationHandler {
     private final RepresentativeService representativeService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final ObjectMapper objectMapper;
-    private final FeatureToggleService featureToggleService;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     @EventListener
@@ -335,11 +333,17 @@ public class NotificationHandler {
     }
 
     private String getAdminEmail(EventData eventData) {
-        if (featureToggleService.isCtscEnabled()) {
+        String ctscValue = getCtscValue(eventData.getCaseDetails().getData());
+
+        if (ctscValue.equals("Yes")) {
             return ctscEmailLookupConfiguration.getEmail();
         }
 
         return hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
+    }
+
+    private String getCtscValue(Map<String, Object> caseData) {
+        return caseData.get("sendToCtsc") != null ? caseData.get("sendToCtsc").toString() : "No";
     }
 
     @Getter

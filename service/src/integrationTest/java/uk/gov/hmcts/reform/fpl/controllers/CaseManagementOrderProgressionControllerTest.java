@@ -53,6 +53,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
+    private static final String HMCTS_ADMIN_INBOX = "admin@family-court.com";
+    private static final String CTSC_ADMIN_INBOX = "admin@ctsc.com";
 
     private static final Long caseId = 12345L;
     private final LocalDateTime testDate = LocalDateTime.of(2020, 2, 1, 12, 30);
@@ -79,7 +81,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                 .build())
             .build();
 
-        CaseDetails caseDetails = buildCaseDetails(order, ACTION_CASE_MANAGEMENT_ORDER);
+        CaseDetails caseDetails = buildCaseDetails(order, ACTION_CASE_MANAGEMENT_ORDER, "No");
 
         CaseData caseDataBefore = mapper.convertValue(caseDetails.getData(), CaseData.class);
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
@@ -123,7 +125,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     void aboutToSubmitShouldPopulateListServedCaseManagementOrdersWhenSendsToAllParties() {
         CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, SEND_TO_ALL_PARTIES);
 
-        CaseDetails caseDetails = buildCaseDetails(order, ACTION_CASE_MANAGEMENT_ORDER);
+        CaseDetails caseDetails = buildCaseDetails(order, ACTION_CASE_MANAGEMENT_ORDER, "No");
 
         CaseData caseDataBefore = mapper.convertValue(caseDetails.getData(), CaseData.class);
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCallbackRequest(caseDetails,
@@ -139,29 +141,55 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     }
 
     @Test
-    void aboutToSubmitShouldSendNotificationWhenStatusIsSendToJudge() throws Exception {
+    void aboutToSubmitShouldNotifyHmctsAdminWhenStatusIsSendToJudgeAndCtscIsDisabled() throws Exception {
         CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, SEND_TO_ALL_PARTIES);
 
-        CaseDetails caseDetails = buildCaseDetails(order, DRAFT_CASE_MANAGEMENT_ORDER);
+        CaseDetails caseDetails = buildCaseDetails(order, DRAFT_CASE_MANAGEMENT_ORDER, "No");
 
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(HMCTS_ADMIN_INBOX),
+            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_ADMIN_INBOX),
             eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
     }
 
     @Test
-    void aboutToSubmitShouldNotSendNotificationWhenStatusIsNotSendToJudge() throws Exception {
-        CaseManagementOrder order = buildOrder(SELF_REVIEW, SEND_TO_ALL_PARTIES);
+    void aboutToSubmitShouldNotifyCtscAdminWhenStatusIsSendToJudgeAndCtscIsEnabled() throws Exception {
+        CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, SEND_TO_ALL_PARTIES);
 
-        CaseDetails caseDetails = buildCaseDetails(order, DRAFT_CASE_MANAGEMENT_ORDER);
+        CaseDetails caseDetails = buildCaseDetails(order, DRAFT_CASE_MANAGEMENT_ORDER, "Yes");
 
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(HMCTS_ADMIN_INBOX),
             eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_ADMIN_INBOX),
+            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+    }
+
+    @Test
+    void aboutToSubmitShouldNotNotifyAdminsWhenStatusIsNotSendToJudge() throws Exception {
+        CaseManagementOrder order = buildOrder(SELF_REVIEW, SEND_TO_ALL_PARTIES);
+
+        CaseDetails caseDetails = buildCaseDetails(order, DRAFT_CASE_MANAGEMENT_ORDER, "No");
+
+        postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(HMCTS_ADMIN_INBOX),
+            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_ADMIN_INBOX),
+            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString())
+        );
     }
 
     private Map<String, Object> expectedJudgeRejectedNotificationParameters() {
@@ -197,7 +225,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .build();
     }
 
-    private CaseDetails buildCaseDetails(CaseManagementOrder order, Event cmoEvent) {
+    private CaseDetails buildCaseDetails(CaseManagementOrder order, Event cmoEvent, String enableCtsc) {
         return CaseDetails.builder()
             .id(12345L)
             .data(Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
@@ -205,7 +233,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                 "hearingDetails", createHearingBookings(testDate, testDate.plusHours(4)),
                 "respondents1", createRespondents(),
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-                "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
+                "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
+                "sendToCtsc", enableCtsc))
             .build();
     }
 

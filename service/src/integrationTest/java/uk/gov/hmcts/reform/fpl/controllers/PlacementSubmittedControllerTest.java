@@ -55,7 +55,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldSendNotificationWhenAddingNewChildPlacement() throws Exception {
+    void shouldNotifyHmctsAdminWhenAddingNewChildPlacementAndCtscIsDisabled() throws Exception {
         Element<Child> child1 = testChild();
         Element<Child> child2 = testChild();
 
@@ -82,9 +82,51 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@ctsc.com"),
+            eq(expectedTemplateParameters()), eq(CASE_REFERENCE)
+        );
+
         verify(coreCaseDataService).triggerEvent(null, null, CASE_ID, SEND_DOCUMENT_EVENT, Map.of(
             "documentToBeSent", documentReference
         ));
+    }
+
+    @Test
+    void shouldNotifyCtscAdminWhenAddingNewChildPlacementAndCtscIsEnabled() throws Exception {
+        Element<Child> child1 = testChild();
+        Element<Child> child2 = testChild();
+
+        DocumentReference child1Application = testDocument();
+        DocumentReference child2Application = testDocument();
+
+        Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
+        Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(CASE_ID)
+                .data(ImmutableMap.<String, Object>builder()
+                    .putAll(buildNotificationData())
+                    .putAll(buildPlacementData(List.of(child1, child2), List.of(child2Placement, child1Placement),
+                        child2.getId()))
+                    .put("sendToCtsc", "Yes")
+                    .build())
+                .build())
+            .caseDetailsBefore(CaseDetails.builder().data(new HashMap<>()).build())
+            .build();
+
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient, never()).sendEmail(
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"),
+            eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
+
+        verify(notificationClient).sendEmail(
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@ctsc.com"),
+            eq(expectedTemplateParameters()), eq(CASE_REFERENCE)
+        );
     }
 
     @Test

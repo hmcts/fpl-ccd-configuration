@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
@@ -160,14 +159,11 @@ class NotificationHandlerTest {
     @Mock
     private RepresentativeService representativeService;
 
-    @Mock
-    private FeatureToggleService featureToggleService;
+    @InjectMocks
+    private NotificationHandler notificationHandler;
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @InjectMocks
-    private NotificationHandler notificationHandler;
 
     @Nested
     class C2UploadedNotificationChecks {
@@ -247,15 +243,22 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() throws IOException, NotificationClientException {
+            CallbackRequest callbackRequest = appendEnableCtscOnCallback(callbackRequest());
+            CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
-            given(featureToggleService.isCtscEnabled()).willReturn(true);
-
             given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
 
+            given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+
+            given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
+                .willReturn(c2Parameters);
+
             notificationHandler.sendNotificationForC2Upload(
-                new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+                new C2UploadedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq(CTSC_INBOX), eq(c2Parameters), eq("12345"));
@@ -301,8 +304,7 @@ class NotificationHandlerTest {
                 gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
                 localAuthorityEmailContentProvider, notificationClient, idamApi, inboxLookupService,
                 caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
-                localAuthorityNameLookupConfiguration, objectMapper, featureToggleService,
-                ctscEmailLookupConfiguration);
+                localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration);
         }
 
         @Test
@@ -372,8 +374,6 @@ class NotificationHandlerTest {
             CallbackRequest callbackRequest = callbackRequest();
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
-            given(featureToggleService.isCtscEnabled()).willReturn(false);
-
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
@@ -390,10 +390,8 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyCtscAdminOfCMOReadyForJudgeReviewWhenCtscIsEnabled() throws Exception {
-            CallbackRequest callbackRequest = callbackRequest();
-            CaseDetails caseDetails = callbackRequest().getCaseDetails();
-
-            given(featureToggleService.isCtscEnabled()).willReturn(true);
+            CallbackRequest callbackRequest = appendEnableCtscOnCallback(callbackRequest());
+            CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
             given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
 
@@ -493,8 +491,6 @@ class NotificationHandlerTest {
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
-        given(featureToggleService.isCtscEnabled()).willReturn(false);
-
         given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
             .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
@@ -514,6 +510,9 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendEmailToCtscAdminWhenCtscIsEnabled() throws IOException, NotificationClientException {
+        CallbackRequest callbackRequest = appendEnableCtscOnCallback(callbackRequest());
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("localAuthority", "Example Local Authority")
@@ -531,15 +530,13 @@ class NotificationHandlerTest {
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
-        given(featureToggleService.isCtscEnabled()).willReturn(true);
-
         given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
 
-        given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(callbackRequest().getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
+        given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseDetails, LOCAL_AUTHORITY_CODE))
+            .willReturn(expectedParameters);
 
         notificationHandler.sendNotificationToHmctsAdmin(
-            new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+            new SubmittedCaseEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq(CTSC_INBOX),
@@ -673,7 +670,7 @@ class NotificationHandlerTest {
                 cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider, c2UploadedEmailContentProvider,
                 orderEmailContentProvider, localAuthorityEmailContentProvider, notificationClient, idamApi,
                 inboxLookupService, caseManagementOrderEmailContentProvider, placementApplicationContentProvider,
-                representativeService, localAuthorityNameLookupConfiguration, objectMapper, featureToggleService,
+                representativeService, localAuthorityNameLookupConfiguration, objectMapper,
                 ctscEmailLookupConfiguration);
         }
 
@@ -702,8 +699,6 @@ class NotificationHandlerTest {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
         final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
 
-        given(featureToggleService.isCtscEnabled()).willReturn(false);
-
         given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
             .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
@@ -720,11 +715,10 @@ class NotificationHandlerTest {
 
     @Test
     void shouldNotifyCtscAdminOfPlacementApplicationUploadWhenCtscIsEnabled() throws Exception {
-        CallbackRequest callbackRequest = callbackRequest();
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
+        CallbackRequest callbackRequest = appendEnableCtscOnCallback(callbackRequest());
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        given(featureToggleService.isCtscEnabled()).willReturn(true);
+        final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
 
         given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
 
@@ -754,5 +748,19 @@ class NotificationHandlerTest {
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
+    }
+
+    private CallbackRequest appendEnableCtscOnCallback(CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        Map<String, Object> updatedCaseData = ImmutableMap.<String, Object>builder()
+            .putAll(caseDetails.getData())
+            .put("sendToCtsc", "Yes")
+            .build();
+
+        caseDetails.setData(updatedCaseData);
+        callbackRequest.setCaseDetails(caseDetails);
+
+        return callbackRequest;
     }
 }
