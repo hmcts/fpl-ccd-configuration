@@ -27,7 +27,7 @@ public class BigDecimalHelper {
             int integer = Integer.parseInt(amount);
             return BigDecimal.valueOf(integer, 2);
         } catch (NumberFormatException ex) {
-            log.error("couldn't convert {} to int", amount);
+            log.error("couldn't convert \"{}\" to int", amount);
         }
         return null;
     }
