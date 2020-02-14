@@ -116,10 +116,10 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationsForGeneratedOrder(final GeneratedOrderEvent event) {
+    public void sendNotificationsForOrder(final GeneratedOrderEvent event) {
         EventData eventData = new EventData(event);
 
-        sendGeneratedOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+        sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             event.getMostRecentUploadedDocumentUrl());
 
         sendOrderIssuedNotificationToHmctsAdmin(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
@@ -332,9 +332,9 @@ public class NotificationHandler {
         }
     }
 
-    private void sendGeneratedOrderNotificationToLocalAuthority(final CaseDetails caseDetails,
-                                                                final String localAuthorityCode,
-                                                                final String mostRecentUploadedDocumentUrl) {
+    private void sendOrderNotificationToLocalAuthority(final CaseDetails caseDetails,
+                                                       final String localAuthorityCode,
+                                                       final String mostRecentUploadedDocumentUrl) {
         Map<String, Object> localAuthorityParameters =
             orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);

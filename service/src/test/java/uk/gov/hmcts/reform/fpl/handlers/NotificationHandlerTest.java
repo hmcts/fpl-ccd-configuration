@@ -251,7 +251,7 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyPartiesOnOrderSubmission() throws IOException, NotificationClientException {
-            notificationHandler.sendNotificationsForGeneratedOrder(new GeneratedOrderEvent(callbackRequest(),
+            notificationHandler.sendNotificationsForOrder(new GeneratedOrderEvent(callbackRequest(),
                 AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, documentContents));
 
             verify(notificationClient).sendEmail(
