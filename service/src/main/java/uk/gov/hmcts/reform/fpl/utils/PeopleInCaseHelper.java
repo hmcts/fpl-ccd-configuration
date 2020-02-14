@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 

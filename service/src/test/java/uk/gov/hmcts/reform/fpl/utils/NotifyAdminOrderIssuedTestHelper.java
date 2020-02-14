@@ -23,6 +23,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 public class NotifyAdminOrderIssuedTestHelper {
+
+    private NotifyAdminOrderIssuedTestHelper() {
+    }
+
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
 
@@ -71,8 +75,9 @@ public class NotifyAdminOrderIssuedTestHelper {
     private static Map<String, Object> getExpectedParameters(IssuedOrderType issuedOrderType) {
         if (issuedOrderType == CMO) {
             return getExpectedCMOParametersForAdminWhenRepresentativesNeedServingByPost();
+        } else {
+            return getExpectedParametersForAdminWhenRepresentativesNeedServingByPost();
         }
-        else return getExpectedParametersForAdminWhenRepresentativesNeedServingByPost();
     }
 
     private static Map<String, Object> commonParametersNoPostingNeeded() {

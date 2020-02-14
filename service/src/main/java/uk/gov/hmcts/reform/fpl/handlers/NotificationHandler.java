@@ -354,7 +354,8 @@ public class NotificationHandler {
 
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 
-        sendNotification(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters, Long.toString(caseDetails.getId()));
+        sendNotification(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters,
+            Long.toString(caseDetails.getId()));
     }
 
     @Getter
