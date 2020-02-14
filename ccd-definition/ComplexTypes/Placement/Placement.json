@@ -22,7 +22,8 @@
     "ListElementCode": "placementApplication",
     "FieldType": "Document",
     "ElementLabel": "Application document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "RegularExpression": ".pdf"
   },
   {
     "LiveFrom": "01/01/2017",

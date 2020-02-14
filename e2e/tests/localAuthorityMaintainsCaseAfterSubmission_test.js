@@ -70,37 +70,37 @@ Scenario('local authority upload placement application', async (I, caseViewPage,
 
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('Timothy Jones');
-  await placementEventPage.addApplication(config.testFile);
-  await placementEventPage.addSupportingDocument(0, 'Statement of facts', config.testFile);
-  await placementEventPage.addConfidentialDocument(0, 'Annex B', config.testFile);
-  await placementEventPage.addOrderOrNotice(0, 'Placement order', config.testFile, 'test note');
+  await placementEventPage.addApplication(config.testNonEmptyPdfFile);
+  await placementEventPage.addSupportingDocument(0, 'Statement of facts', config.testNonEmptyPdfFile);
+  await placementEventPage.addConfidentialDocument(0, 'Annex B', config.testNonEmptyPdfFile);
+  await placementEventPage.addOrderOrNotice(0, 'Placement order', config.testNonEmptyPdfFile, 'test note');
   await I.completeEvent('Save and continue');
 
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('John Black');
-  await placementEventPage.addApplication(config.testFile);
-  await placementEventPage.addSupportingDocument(0, 'Other final orders', config.testFile);
-  await placementEventPage.addConfidentialDocument(0, 'Other confidential documents', config.testFile);
+  await placementEventPage.addApplication(config.testNonEmptyPdfFile);
+  await placementEventPage.addSupportingDocument(0, 'Other final orders', config.testNonEmptyPdfFile);
+  await placementEventPage.addConfidentialDocument(0, 'Other confidential documents', config.testNonEmptyPdfFile);
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.placement);
 
   I.seeAnswerInTab(2, 'Child 1', 'Name', 'Timothy Jones');
-  I.seeAnswerInTab(3, 'Child 1', 'Application document', 'mockFile.txt');
+  I.seeAnswerInTab(3, 'Child 1', 'Application document', 'mockFile.pdf');
   I.seeNestedAnswerInTab(1, 'Child 1', 'Supporting document 1', 'Document type', 'Statement of facts');
-  I.seeNestedAnswerInTab(2, 'Child 1', 'Supporting document 1', 'Document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(2, 'Child 1', 'Supporting document 1', 'Document', 'mockFile.pdf');
   I.seeNestedAnswerInTab(1, 'Child 1', 'Confidential document 1', 'Document type', 'Annex B');
-  I.seeNestedAnswerInTab(2, 'Child 1', 'Confidential document 1', 'Document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(2, 'Child 1', 'Confidential document 1', 'Document', 'mockFile.pdf');
   I.seeNestedAnswerInTab(1, 'Child 1', 'Order and notices 1', 'Document type', 'Placement order');
-  I.seeNestedAnswerInTab(2, 'Child 1', 'Order and notices 1', 'Document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(2, 'Child 1', 'Order and notices 1', 'Document', 'mockFile.pdf');
   I.seeNestedAnswerInTab(3, 'Child 1', 'Order and notices 1', 'Description', 'test note');
 
   I.seeAnswerInTab(2, 'Child 2', 'Name', 'John Black');
-  I.seeAnswerInTab(3, 'Child 2', 'Application document', 'mockFile.txt');
+  I.seeAnswerInTab(3, 'Child 2', 'Application document', 'mockFile.pdf');
   I.seeNestedAnswerInTab(1, 'Child 2', 'Supporting document 1', 'Document type', 'Other final orders');
-  I.seeNestedAnswerInTab(2, 'Child 2', 'Supporting document 1', 'Document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(2, 'Child 2', 'Supporting document 1', 'Document', 'mockFile.pdf');
   I.seeNestedAnswerInTab(1, 'Child 2', 'Confidential document 1', 'Document type', 'Other confidential documents');
-  I.seeNestedAnswerInTab(2, 'Child 2', 'Confidential document 1', 'Document', 'mockFile.txt');
+  I.seeNestedAnswerInTab(2, 'Child 2', 'Confidential document 1', 'Document', 'mockFile.pdf');
 
   await placementHelper.assertCafcassCannotSeePlacementOrder(I, caseViewPage, caseId);
 });
