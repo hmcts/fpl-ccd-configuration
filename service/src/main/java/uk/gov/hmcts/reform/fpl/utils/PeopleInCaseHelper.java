@@ -24,7 +24,7 @@ public class PeopleInCaseHelper {
             .orElse("");
     }
 
-    //To be deleted when print and post is available to use (before March 3rd)
+    //To be deleted when print and post is available to use as part of FPLA-1287
     public static List<String> formatRepresentativesForPostNotification(List<Representative> representatives) {
         return representatives.stream()
             .map(representative -> representative.getFullName() + "\n" + representative.getAddress().getAddressAsString(
