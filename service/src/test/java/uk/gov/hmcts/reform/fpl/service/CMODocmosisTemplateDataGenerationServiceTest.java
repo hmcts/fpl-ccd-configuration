@@ -245,7 +245,8 @@ class CMODocmosisTemplateDataGenerationServiceTest {
             Map.of(
                 "name", "Bran Stark",
                 "gender", "Male",
-                "dateOfBirth", dateFormatterService.formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
+                "dateOfBirth",
+                dateFormatterService.formatLocalDateToString(NOW.toLocalDate().minusDays(1), FormatStyle.LONG)),
             Map.of(
                 "name", "Sansa Stark",
                 "gender", EMPTY_PLACEHOLDER,

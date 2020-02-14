@@ -10,13 +10,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.time.LocalDate;
-
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Past;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public final class ChildParty extends Party {
     private final String gender;
     private final String genderIdentification;
@@ -51,6 +50,11 @@ public final class ChildParty extends Party {
     @NotBlank(message = "Tell us the names of all children in the case")
     public String getLastName() {
         return super.getLastName();
+    }
+
+    @Past(message = "Date of birth is in the future. You cannot send this application until that date")
+    public LocalDate getDateOfBirth() {
+        return super.getDateOfBirth();
     }
 
     @Builder(toBuilder = true)

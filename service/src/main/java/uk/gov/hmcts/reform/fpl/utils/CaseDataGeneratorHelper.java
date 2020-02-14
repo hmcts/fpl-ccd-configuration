@@ -147,34 +147,25 @@ public class CaseDataGeneratorHelper {
     }
 
     public static List<Element<Child>> createPopulatedChildren() {
-        return ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Bran")
-                        .lastName("Stark")
-                        .gender("Male")
-                        .dateOfBirth(LocalDate.now())
-                        .build())
+        return wrapElements(
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Bran")
+                    .lastName("Stark")
+                    .gender("Male")
+                    .dateOfBirth(LocalDate.now().minusDays(1))
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Sansa")
-                        .lastName("Stark")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Sansa")
+                    .lastName("Stark")
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Jon")
-                        .lastName("Snow")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Jon")
+                    .lastName("Snow")
                     .build())
                 .build());
     }
