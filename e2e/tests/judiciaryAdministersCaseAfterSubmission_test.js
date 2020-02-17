@@ -85,6 +85,6 @@ Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPag
 
 Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge();
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
   await I.completeEvent('Save and continue');
 });

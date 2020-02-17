@@ -9,9 +9,9 @@ module.exports = {
     },
   },
 
-  async enterAllocatedJudge() {
+  async enterAllocatedJudge(judeLastName) {
     I.click(this.fields.allocatedJudge.judgeTitle);
-    I.fillField(this.fields.allocatedJudge.judgeLastName, 'Moley');
+    I.fillField(this.fields.allocatedJudge.judgeLastName, judeLastName);
   },
 
 };
