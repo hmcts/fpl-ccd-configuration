@@ -20,6 +20,23 @@ idam:
 fpl:
   local_authority_codes_forbidden_case_submission:
 
+fee:
+  url: 'http://fees-register-api-aat.service.core-compute-aat.internal'
+  api: '/fees-register/fees/lookup'
+  type:
+    # if these change be sure to update the appropriate wiremocks
+    # dummy data needs to change
+    c2_with_notice: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+    c2_without_notice: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+    care_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+    education_supervision_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+    emergency_protection_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+    interim_care_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+    interim_supervision_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+    other: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+    placement: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+    supervision_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
+
 ---
 
 spring:
