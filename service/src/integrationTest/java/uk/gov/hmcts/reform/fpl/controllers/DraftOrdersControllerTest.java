@@ -127,20 +127,6 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                 .isEqualTo("1 January 2020, 12:00am"));
     }
 
-    private List<Direction> createDirections() {
-        String title = "example direction";
-
-        return List.of(
-            Direction.builder().directionType(title).assignee(ALL_PARTIES).build(),
-            Direction.builder().directionType(title).assignee(LOCAL_AUTHORITY).build(),
-            Direction.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).build(),
-            Direction.builder().directionType(title).assignee(CAFCASS).build(),
-            Direction.builder().directionType(title).assignee(OTHERS).build(),
-            Direction.builder().directionType(title).assignee(COURT).build(),
-            Direction.builder().directionType(title).custom("Yes").assignee(COURT).build()
-        );
-    }
-
     @Test
     void shouldNotTriggerSDOEventWhenDraft() {
         postSubmittedEvent(buildCallbackRequest(DRAFT));
@@ -155,6 +141,20 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq("cafcass@cafcass.com"),
             eq(cafcassParameters()), eq("12345")
+        );
+    }
+
+    private List<Direction> createDirections() {
+        String title = "example direction";
+
+        return List.of(
+            Direction.builder().directionType(title).assignee(ALL_PARTIES).build(),
+            Direction.builder().directionType(title).assignee(LOCAL_AUTHORITY).build(),
+            Direction.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).build(),
+            Direction.builder().directionType(title).assignee(CAFCASS).build(),
+            Direction.builder().directionType(title).assignee(OTHERS).build(),
+            Direction.builder().directionType(title).assignee(COURT).build(),
+            Direction.builder().directionType(title).custom("Yes").assignee(COURT).build()
         );
     }
 

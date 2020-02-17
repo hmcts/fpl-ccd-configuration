@@ -10,6 +10,8 @@ import java.util.Locale;
 
 @Service
 public class DateFormatterService {
+    public static final String FULL_DATE = "d MMMM yyyy, h:mma";
+
     public String formatLocalDateToString(LocalDate date, FormatStyle style) {
         return date.format(DateTimeFormatter.ofLocalizedDate(style).localizedBy(Locale.UK));
     }

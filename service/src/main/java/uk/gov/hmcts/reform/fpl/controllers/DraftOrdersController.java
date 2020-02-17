@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
@@ -42,11 +43,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.FULL_DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @RestController
@@ -63,16 +63,14 @@ public class DraftOrdersController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final OrderValidationService orderValidationService;
+    private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> element = defaultIfNull(
-            caseData.getHearingDetails(), wrapElements(HearingBooking.builder().build()));
-
-        String hearingDate = getHearingDate(element);
+        String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
@@ -91,15 +89,17 @@ public class DraftOrdersController {
             .build();
     }
 
-    private String getHearingDate(List<Element<HearingBooking>> element) {
-        String date;
+    private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
+        String hearingDate;
 
-        if (element.get(0).getValue().getStartDate() != null) {
-            date = formatLocalDateTimeBaseUsingFormat(element.get(0).getValue().getStartDate(), "d MMMM yyyy, h:mma");
-        } else {
-            date = "Please enter a hearing date";
+        try {
+            LocalDateTime startDate = hearingBookingService.getMostUrgentHearingBooking(hearings).getStartDate();
+            hearingDate = formatLocalDateTimeBaseUsingFormat(startDate, FULL_DATE);
+        } catch (IllegalStateException e) {
+            hearingDate = "Please enter a hearing date";
         }
-        return date;
+
+        return hearingDate;
     }
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {
