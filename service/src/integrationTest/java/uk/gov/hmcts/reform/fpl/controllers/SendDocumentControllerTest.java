@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -64,7 +65,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(ldClient.boolVariation(anyString(), any(), anyBoolean())).willReturn(true);
+        given(ldClient.boolVariation(eq("xerox-printing"), any(), anyBoolean())).willReturn(true);
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
         given(docmosisCoverDocumentsService.createCoverDocuments(anyString(), anyLong(), any())).willReturn(
             DocmosisDocument.builder().bytes(PDF).build());
@@ -89,13 +90,13 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotSendDocumentWhenFeatureToggleIsOff() {
-        given(ldClient.boolVariation(anyString(), any(), anyBoolean())).willReturn(false);
+        given(ldClient.boolVariation(eq("xerox-printing"), any(), anyBoolean())).willReturn(false);
         DocumentReference documentToBeSend = testDocument();
         CaseDetails caseDetails = buildCaseData(documentToBeSend);
 
         postAboutToSubmitEvent(caseDetails);
 
-        verify(documentDownloadService, never()).downloadDocument(documentToBeSend.getBinaryUrl());
+        verify(documentDownloadService, never()).downloadDocument(any());
         verify(sendLetterApi, never()).sendLetter(anyString(), any(LetterWithPdfsRequest.class));
     }
 

@@ -68,7 +68,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -245,7 +244,7 @@ class NotificationHandlerTest {
             notificationHandler.sendNotificationForC2Upload(
                 new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(c2Parameters), eq("12345"));
         }
 
@@ -254,7 +253,7 @@ class NotificationHandlerTest {
             notificationHandler.sendNotificationForOrder(
                 new GeneratedOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl));
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(orderLocalAuthorityParameters), eq("12345"));
         }
@@ -470,7 +469,7 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToHmctsAdmin(
             new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
     }
@@ -503,7 +502,7 @@ class NotificationHandlerTest {
 
         notificationHandler.sendNotificationToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(CAFCASS_SUBMISSION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
     }
@@ -535,7 +534,7 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToGatekeeper(
             new NotifyGatekeeperEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
     }
@@ -557,7 +556,7 @@ class NotificationHandlerTest {
         notificationHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters),
             eq("12345"));
     }
@@ -583,7 +582,7 @@ class NotificationHandlerTest {
         notificationHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters),
             eq("12345"));
     }
@@ -616,7 +615,7 @@ class NotificationHandlerTest {
             placementNotificationHandler.sendNotificationForNoticeOfPlacementOrderUploaded(
                 new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
                 eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(parameters),
@@ -677,7 +676,7 @@ class NotificationHandlerTest {
 
         notificationHandler.sendNotificationToPartiesAddedToCase(new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID, representatives));
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE), eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
             eq(expectedParameters), eq("12345"));
     }

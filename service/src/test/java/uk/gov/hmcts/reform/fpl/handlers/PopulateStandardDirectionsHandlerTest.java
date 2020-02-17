@@ -37,7 +37,6 @@ import java.util.Map;
 import static java.util.Collections.EMPTY_LIST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -129,7 +128,7 @@ class PopulateStandardDirectionsHandlerTest {
         populateStandardDirectionsHandler.populateStandardDirections(
             new PopulateStandardDirectionsEvent(callbackRequest, "", ""));
 
-        verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
+        verify(coreCaseDataApi).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
                 .eventToken(TOKEN)
                 .event(Event.builder()
@@ -170,7 +169,7 @@ class PopulateStandardDirectionsHandlerTest {
         populateStandardDirectionsHandler.populateStandardDirections(
             new PopulateStandardDirectionsEvent(callbackRequest, "", ""));
 
-        verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
+        verify(coreCaseDataApi).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
                 .eventToken(TOKEN)
                 .event(Event.builder()
@@ -222,7 +221,7 @@ class PopulateStandardDirectionsHandlerTest {
                 "readOnly", "No",
                 "responses", EMPTY_LIST));
 
-        verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
+        verify(coreCaseDataApi).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
                 .eventToken(TOKEN)
                 .event(Event.builder()
