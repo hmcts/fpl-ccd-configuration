@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.AllocatedJudge;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -66,6 +67,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
+            .put("JudgeTitle", "")
             .build();
     }
 
