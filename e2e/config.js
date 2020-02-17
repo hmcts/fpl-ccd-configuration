@@ -77,6 +77,7 @@ module.exports = {
     draftStandardDirections: 'Draft standard directions',
     createOrder: 'Create an order',
     placement: 'Placement',
+    handleSupplementaryEvidence: 'Handle supplementary evidence',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
