@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -41,6 +43,7 @@ public class RepresentativeService {
     private final CaseService caseService;
     private final OrganisationService organisationService;
     private final RepresentativeCaseRoleService representativeCaseRoleService;
+    private final ObjectMapper mapper;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -210,5 +213,35 @@ public class RepresentativeService {
             default:
                 return Optional.empty();
         }
+    }
+
+    public List<Element<Representative>> getRepresentativePartiesToNotify(List<Element<Representative>>
+                                                                              currentRepresentatives,
+        List<Element<Representative>> representativesBefore) {
+        if (isNotEmpty(representativesBefore)) {
+            List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(currentRepresentatives,
+                representativesBefore);
+            return getRepresentativesWhoseServingPreferenceIsNotPost(changedRepresentatives);
+        } else {
+            if (isNotEmpty(currentRepresentatives)) {
+                return getRepresentativesWhoseServingPreferenceIsNotPost(currentRepresentatives);
+            }
+        }
+        return emptyList();
+    }
+
+    private List<Element<Representative>> getRepresentativesWhoseServingPreferenceIsNotPost(
+        List<Element<Representative>> representatives) {
+        return representatives.stream()
+            .filter(representative -> representative.getValue().getServingPreferences() != POST)
+            .collect(Collectors.toList());
+    }
+
+    private List<Element<Representative>> getChangedRepresentatives(List<Element<Representative>>
+                                                                        currentRepresentatives,
+        List<Element<Representative>> representativesBefore) {
+
+        currentRepresentatives.removeAll(representativesBefore);
+        return currentRepresentatives;
     }
 }
