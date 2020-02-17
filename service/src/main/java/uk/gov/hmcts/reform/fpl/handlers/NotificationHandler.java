@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
+import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -35,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvi
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.service.notify.NotificationClient;
@@ -70,6 +73,7 @@ public class NotificationHandler {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
+    private final PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
@@ -240,6 +244,29 @@ public class NotificationHandler {
     private void sendCMOCaseLinkNotifications(final EventData eventData) {
         sendCMOCaseLinkNotificationForLocalAuthority(eventData);
         sendCMOCaseLinkNotificationToRepresentatives(eventData);
+    }
+
+    @EventListener
+    public void sendNotificationToPartiesAddedToCase(PartyAddedToCaseEvent event) {
+        List<Representative> representatives = event.getRepresentativesToNotify();
+        EventData eventData = new EventData(event);
+
+        representatives.stream().forEach(representative -> {
+            String email = representative.getEmail();
+            RepresentativeServingPreferences servingPreferences
+                = representative.getServingPreferences();
+
+            Map<String, Object> parameters = partyAddedToCaseContentProvider
+                    .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(),
+                        servingPreferences);
+
+            String template = partyAddedToCaseContentProvider
+                    .getPartyAddedToCaseNotificationTemplate(servingPreferences);
+
+            sendNotification(template, email, parameters,
+                    eventData.getReference());
+
+        });
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
