@@ -424,7 +424,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "allPartiesHearingDate",
-    "Label": "The next hearing: ",
+    "Label": "Hearing date",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -432,7 +432,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorityDirectionsHearingDate",
-    "Label": "The next hearing: ",
+    "Label": "Hearing date",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -440,7 +440,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondentDirectionsHearingDate",
-    "Label": "The next hearing: ",
+    "Label": "Hearing date",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -448,7 +448,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cafcassDirectionsHearingDate",
-    "Label": "The next hearing: ",
+    "Label": "Hearing date",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -456,7 +456,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherPartiesDirectionsHearingDate",
-    "Label": "The next hearing: ",
+    "Label": "Hearing date",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -464,7 +464,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "courtDirectionsHearingDate",
-    "Label": "The next hearing: ",
+    "Label": "Hearing date",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
