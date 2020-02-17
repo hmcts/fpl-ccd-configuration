@@ -1,36 +1,30 @@
 package uk.gov.hmcts.reform.fpl.service.payment;
 
 import com.google.common.collect.ImmutableList;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
-import uk.gov.hmcts.reform.fpl.enums.payment.FeeType;
-import uk.gov.hmcts.reform.fpl.model.payment.fee.FeeParameters;
-import uk.gov.hmcts.reform.fpl.model.payment.fee.FeeResponse;
 
-import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
+import static com.google.common.collect.ImmutableList.toImmutableList;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FeeService {
 
-    private final RestTemplate restTemplate;
     private final FeesConfig feesConfig;
+    private final FeesRegisterApi feesRegisterApi;
 
     public Optional<FeeResponse> extractFeeToUse(List<FeeResponse> feeResponses) {
         if (feeResponses == null) {
@@ -48,41 +42,31 @@ public class FeeService {
         }
 
         return feeTypes.stream()
-            .map(feeType -> makeRequest(buildUri(feeType)))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+            .map(this::makeRequest)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(toImmutableList());
     }
 
-    private FeeResponse makeRequest(URI uri) {
+    private Optional<FeeResponse> makeRequest(FeeType feeType) {
         try {
-            log.info("Making request to Fee Register with uri : {} ", uri);
-            ResponseEntity<FeeResponse> response = restTemplate.getForEntity(uri, FeeResponse.class);
-            log.info("Fee response : {} ", response);
-            return response.getBody();
-        } catch (HttpClientErrorException ex) {
+            FeesConfig.FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
+            log.debug("Making request to Fee Register with parameters : {} ", parameters);
+
+            FeeResponse fee = feesRegisterApi.findFee(parameters.getChannel(),
+                parameters.getEvent(),
+                parameters.getJurisdiction1(),
+                parameters.getJurisdiction2(),
+                parameters.getKeyword(),
+                parameters.getService());
+
+            log.debug("Fee response: {} ", fee);
+
+            return Optional.of(fee);
+        } catch (FeignException ex) {
             log.error("Fee response error: {} => body: \"{}\"",
-                ex.getRawStatusCode(), ex.getResponseBodyAsString());
-            return null;
+                ex.status(), ex.getMessage());
         }
-    }
-
-    private URI buildUri(FeeType feeType) {
-        FeeParameters parameters = feesConfig.getFeeParameters(feeType);
-        UriComponentsBuilder uriComponentsBuilder = fromHttpUrl(feesConfig.getUrl() + feesConfig.getApi());
-
-        addParameterIfPresent(uriComponentsBuilder, "service", parameters.getService());
-        addParameterIfPresent(uriComponentsBuilder, "jurisdiction1", parameters.getJurisdiction1());
-        addParameterIfPresent(uriComponentsBuilder, "jurisdiction2", parameters.getJurisdiction2());
-        addParameterIfPresent(uriComponentsBuilder, "channel", parameters.getChannel());
-        addParameterIfPresent(uriComponentsBuilder, "event", parameters.getEvent());
-        addParameterIfPresent(uriComponentsBuilder, "keyword", parameters.getKeyword());
-
-        return uriComponentsBuilder.build().encode().toUri();
-    }
-
-    private void addParameterIfPresent(UriComponentsBuilder builder, String name, String parameter) {
-        if (isNotEmpty(parameter)) {
-            builder.queryParam(name, parameter);
-        }
+        return Optional.empty();
     }
 }

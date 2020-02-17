@@ -17,12 +17,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.enums.payment.FeeType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.payment.fee.FeeResponse;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -71,7 +71,7 @@ public class CaseSubmissionController {
         List<FeeResponse> fees = feeService.getFees(FeeType.fromOrderType(caseData.getOrders().getOrderType()));
         BigDecimal amount = feeService.extractFeeToUse(fees)
             .map(FeeResponse::getAmount)
-            .orElse(BigDecimal.ZERO);
+            .orElse(BigDecimal.ZERO); // todo is this the right thing to do
 
         String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 

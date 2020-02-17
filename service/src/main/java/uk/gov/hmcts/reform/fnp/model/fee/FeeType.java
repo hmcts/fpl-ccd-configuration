@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.enums.payment;
+package uk.gov.hmcts.reform.fnp.model.fee;
 
 import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;

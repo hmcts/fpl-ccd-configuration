@@ -25,16 +25,72 @@ fee:
   api: /fees-register/fees/lookup
   parameters:
     # if these change be sure to update the appropriate wiremocks
-    c2_with_notice: 'channel=>default;event=>general application;jurisdiction1=>family;jurisdiction2=>family court;keyword=>notice;service=>other'
-    c2_without_notice: 'channel=>default;event=>general application;jurisdiction1=>family;jurisdiction2=>family court;keyword=>without-notice;service=>other'
-    care_order: 'channel=>default;event=>issue;jurisdiction1=>family;jurisdiction2=>family court;service=>public law'
-    education_supervision_order: 'channel=>default;event=>miscellaneous;jurisdiction1=>family;jurisdiction2=>family court;keyword=>TUV;service=>private law'
-    emergency_protection_order: 'channel=>default;event=>miscellaneous;jurisdiction1=>family;jurisdiction2=>family court;keyword=>KLM;service=>private law'
-    interim_care_order: 'channel=>default;event=>issue;jurisdiction1=>family;jurisdiction2=>family court;service=>public law'
-    interim_supervision_order: 'channel=>default;event=>issue;jurisdiction1=>family;jurisdiction2=>family court;service=>public law'
-    other: 'channel=>default;event=>miscellaneous;jurisdiction1=>family;jurisdiction2=>family court;keyword=>QRS;service=>private law'
-    placement: 'channel=>default;event=>miscellaneous;jurisdiction1=>family;jurisdiction2=>family court;keyword=>DEF;service=>adoption'
-    supervision_order: 'channel=>default;event=>issue;jurisdiction1=>family;jurisdiction2=>family court;service=>public law'
+    C2_WITHOUT_NOTICE:
+      channel: default
+      event: general application
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: without-notice
+      service: other
+    C2_WITH_NOTICE:
+      channel: default
+      event: general application
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: notice
+      service: other
+    CARE_ORDER:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      service: public law
+    EDUCATION_SUPERVISION_ORDER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: TUV
+      service: private law
+    EMERGENCY_PROTECTION_ORDER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: KLM
+      service: private law
+    INTERIM_CARE_ORDER:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      service: public law
+    INTERIM_SUPERVISION_ORDER:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      service: public law
+    OTHER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: QRS
+      service: private law
+    PLACEMENT:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: DEF
+      service: adoption
+    SUPERVISION_ORDER:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      service: public law
 
 ---
 
@@ -228,22 +284,6 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
 
-fee:
-  url: 'http://fees-register-api-aat.service.core-compute-aat.internal'
-  api: '/fees-register/fees/lookup'
-  types:
-    # dummy data, to be updated
-    c2_with_notice: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-    c2_without_notice: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-    care_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-    education_supervision_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-    emergency_protection_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-    interim_care_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-    interim_supervision_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-    other: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-    placement: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-    supervision_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
-
 robotics:
   notification:
     sender: sender@example.com
@@ -258,3 +298,7 @@ feature:
       support:
         api:
           enabled: true
+
+logging:
+  level:
+    uk.gov.hmcts.reform.fpl: debug

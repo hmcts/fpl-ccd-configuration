@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.payment.fee;
+package uk.gov.hmcts.reform.fnp.model.fee;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
