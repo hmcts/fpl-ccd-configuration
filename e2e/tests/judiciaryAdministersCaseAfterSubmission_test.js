@@ -82,3 +82,9 @@ Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPag
     await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
   }
 });
+
+Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+  await allocatedJudgeEventPage.enterAllocatedJudge();
+  await I.completeEvent('Save and continue');
+});
