@@ -210,10 +210,10 @@ fpl:
     password: 'Password12'
 
 fee:
-#  What are we doing about local environment etc for the url?
   url: 'http://fees-register-api-aat.service.core-compute-aat.internal'
   api: '/fees-register/fees/lookup'
   types:
+    # dummy data, to be updated
     c2_with_notice: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
     c2_without_notice: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
     care_order: 'channel=>default;service=>private law;jurisdiction1=>family;jurisdiction2=>family court;event=>miscellaneous;keyword=>TUV'
