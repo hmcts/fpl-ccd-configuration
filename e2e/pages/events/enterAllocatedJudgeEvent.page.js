@@ -8,8 +8,8 @@ module.exports = {
     },
   },
 
-  async enterAllocatedJudge(judeLastName) {
+  async enterAllocatedJudge(judgeLastName) {
     I.click(this.fields.allocatedJudge.judgeTitle);
-    I.fillField(this.fields.allocatedJudge.judgeLastName, judeLastName);
+    I.fillField(this.fields.allocatedJudge.judgeLastName, judgeLastName);
   },
 };
