@@ -1,7 +1,6 @@
 const { I } = inject();
 
 module.exports = {
-
   fields: {
     allocatedJudge: {
       judgeTitle: '#allocatedJudge_judgeTitle-HER_HONOUR_JUDGE',
