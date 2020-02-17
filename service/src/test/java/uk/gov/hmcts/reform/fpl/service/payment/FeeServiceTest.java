@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.payment;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,13 +7,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.fpl.enums.payment.FeeType;
-import uk.gov.hmcts.reform.fpl.model.payment.fee.FeeResponse;
+import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.math.BigDecimal;
@@ -22,33 +20,22 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-import static uk.gov.hmcts.reform.fpl.enums.payment.FeeType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    FeeService.class, RestTemplate.class, LookupTestConfig.class
+    FeeService.class, LookupTestConfig.class,
 })
 class FeeServiceTest {
+
+    @MockBean
+    private FeesRegisterApi feesRegisterApi;
 
     @Autowired
     private FeeService feeService;
 
-    @Autowired
-    private RestTemplate restTemplate;
-
     @Nested
     class MakeRequest {
-        private MockRestServiceServer mockServer;
-
-        @BeforeEach
-        void setUp() {
-            mockServer = MockRestServiceServer.createServer(restTemplate);
-        }
 
         @ParameterizedTest
         @NullAndEmptySource
@@ -59,10 +46,7 @@ class FeeServiceTest {
         @ParameterizedTest
         @EnumSource(FeeType.class)
         void shouldGetAFeeResponseWhenGivenAPopulated(FeeType feeType) {
-            mockServer.expect(requestTo(buildURI()))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{ \"code\" : \"FEE0327\", \"fee_amount\" : 255, "
-                    + "\"description\" : \"example\", \"version\" : 1 }", APPLICATION_JSON));
+            // TODO: 17/02/2020 mock something
 
             List<FeeResponse> fees = feeService.getFees(List.of(feeType));
             FeeResponse actual = fees.get(0);
@@ -72,13 +56,12 @@ class FeeServiceTest {
             assertThat(actual.getDescription()).isEqualTo("example");
             assertThat(actual.getVersion()).isEqualTo(1);
             assertThat(actual.getAmount()).isEqualTo(BigDecimal.valueOf(255));
+            FeeResponse feeResponse = new FeeResponse();
         }
 
         @Test
         void shouldFilterOutNullValuesWhenThereIsAnErrorInTheResponse() {
-            mockServer.expect(requestTo(buildURI()))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withBadRequest());
+            // TODO: 17/02/2020 mock something
 
             List<FeeResponse> feeResponses = feeService.getFees(List.of(CARE_ORDER));
 
@@ -86,8 +69,8 @@ class FeeServiceTest {
         }
 
         private String buildURI() {
-            return "http://localhost:8080/fees-register/fees/lookup?service=private%20law&jurisdiction1=family" +
-                "&jurisdiction2=family%20court&channel=default&event=miscellaneous&keyword=KLM";
+            return "http://localhost:8080/fees-register/fees/lookup?service=private%20law&jurisdiction1=family"
+                + "&jurisdiction2=family%20court&channel=default&event=miscellaneous&keyword=KLM";
         }
     }
 
