@@ -266,7 +266,8 @@ appinsights:
   instrumentationkey: fake-key
 
 fee:
-  url: http://localhost:8765
+  api:
+    url: http://localhost:8765
 
 fpl:
   local_authority_email_to_code:

@@ -35,5 +35,4 @@ public class FeesConfig {
         private String keyword;
         private String service;
     }
-
 }
