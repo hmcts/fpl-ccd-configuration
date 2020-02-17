@@ -16,12 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Order;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -338,6 +333,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                     .data(createCaseDataMap(directionWithShowHideValuesRemoved)
                         .put("standardDirectionOrder", order)
                         .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                        .put("allocatedJudge", AllocatedJudge.builder().build())
                         .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
                             .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
                             .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
@@ -380,6 +376,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                     .data(createCaseDataMap(directionWithShowHideValuesRemoved)
                         .put("standardDirectionOrder", order)
                         .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                        .put("allocatedJudge", AllocatedJudge.builder().build())
                         .build())
                     .build())
                 .build();
@@ -389,6 +386,39 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             assertThat(response.getErrors())
                 .containsOnly("This standard directions order does not have a hearing associated with it. "
                     + "Please enter a hearing date and resubmit the SDO");
+        }
+
+        @Test
+        void aboutToSubmitShouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
+            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
+                .willReturn(document());
+
+            UUID uuid = UUID.randomUUID();
+
+            List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(uuid);
+
+            Order order = Order.builder()
+                .orderStatus(OrderStatus.SEALED)
+                .build();
+
+            CallbackRequest request = CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                    .data(createCaseDataMap(directionWithShowHideValuesRemoved)
+                        .put("standardDirectionOrder", order)
+                        .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                        .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
+                            .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
+                            .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
+                            .venue("EXAMPLE")
+                            .build()))
+                        .build())
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
+
+            assertThat(response.getErrors())
+                .containsOnly("Enter allocated judge");
         }
 
         private List<Element<Direction>> buildDirectionWithShowHideValuesRemoved(UUID uuid) {
