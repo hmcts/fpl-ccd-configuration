@@ -6,8 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -22,8 +20,8 @@ public class OrderValidationService {
                 + "Please enter a hearing date and resubmit the SDO");
         }
 
-        if(SEALED == caseData.getStandardDirectionOrder().getOrderStatus()
-            && isNull(caseData.getAllocatedJudge())){
+        if (SEALED == caseData.getStandardDirectionOrder().getOrderStatus()
+            && isNull(caseData.getAllocatedJudge())) {
             validationErrors.add("Enter allocated judge");
         }
 
