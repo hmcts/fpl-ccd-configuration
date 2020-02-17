@@ -14,7 +14,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.enterMandatoryFields();
+    await I.enterMandatoryFields({multipleChildren: true});
     await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit');
@@ -209,4 +209,11 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+});
+
+Scenario('HMCTS admin handles supplementary evidence', async (I, caseViewPage, handleSupplementaryEvidenceEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.handleSupplementaryEvidence);
+  handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 });

@@ -10,6 +10,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -19,6 +22,9 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.OTHER;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -27,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ObjectMapper.class, PlacementService.class})
-public class PlacementServiceTest {
+class PlacementServiceTest {
 
     @Autowired
     private PlacementService placementService;
@@ -36,19 +42,19 @@ public class PlacementServiceTest {
     class HasSingleChild {
 
         @Test
-        public void shouldReturnFalseWhenCaseHasNoChild() {
+        void shouldReturnFalseWhenCaseHasNoChild() {
             CaseData caseData = caseWithChildren(emptyList());
             assertThat(placementService.hasSingleChild(caseData)).isFalse();
         }
 
         @Test
-        public void shouldReturnFalseWhenCaseHasMoreThanOneChild() {
+        void shouldReturnFalseWhenCaseHasMoreThanOneChild() {
             CaseData caseData = caseWithChildren(testChild(), testChild());
             assertThat(placementService.hasSingleChild(caseData)).isFalse();
         }
 
         @Test
-        public void shouldReturnTrueWhenCaseHasOneChild() {
+        void shouldReturnTrueWhenCaseHasOneChild() {
             CaseData caseData = caseWithChildren(testChild());
             assertThat(placementService.hasSingleChild(caseData)).isTrue();
         }
@@ -58,7 +64,7 @@ public class PlacementServiceTest {
     class GetChild {
 
         @Test
-        public void shouldGetChild() {
+        void shouldGetChild() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -69,7 +75,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldReturnNullIfChildIsNotFound() {
+        void shouldReturnNullIfChildIsNotFound() {
             Element<Child> child1 = testChild();
 
             CaseData caseData = caseWithChildren(child1);
@@ -82,7 +88,7 @@ public class PlacementServiceTest {
     class GetChildrenList {
 
         @Test
-        public void shouldGetChildrenList() {
+        void shouldGetChildrenList() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -95,7 +101,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldGetPreselectedChildrenList() {
+        void shouldGetPreselectedChildrenList() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -109,7 +115,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldGetEmptyChildrenList() {
+        void shouldGetEmptyChildrenList() {
             List<Element<Child>> children = emptyList();
 
             CaseData caseData = caseWithChildren(children);
@@ -123,7 +129,7 @@ public class PlacementServiceTest {
     class GetPlacement {
 
         @Test
-        public void shouldGetDefaultPlacement() {
+        void shouldGetDefaultPlacement() {
             Element<Child> child = testChild();
 
             CaseData caseData = caseWithChildren(child);
@@ -137,7 +143,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldGetExistingPlacement() {
+        void shouldGetExistingPlacement() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -157,7 +163,7 @@ public class PlacementServiceTest {
     class SetPlacement {
 
         @Test
-        public void shouldAddNewPlacement() {
+        void shouldAddNewPlacement() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -172,7 +178,7 @@ public class PlacementServiceTest {
         }
 
         @Test
-        public void shouldUpdateExistingPlacement() {
+        void shouldUpdateExistingPlacement() {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -189,6 +195,64 @@ public class PlacementServiceTest {
             List<Element<Placement>> updatedPlacements = placementService.setPlacement(caseData, updatedChild2);
 
             assertThat(unwrapElements(updatedPlacements)).containsExactlyInAnyOrder(child1Placement, updatedChild2);
+        }
+    }
+
+    @Nested
+    class GetBinaryUrlsForOrderAndNotices {
+
+        @Test
+        void shouldReturnEmptyListWhenNoPlacementsExist() {
+            assertThat(placementService.getBinaryUrlsForOrderAndNotices(emptyList(), PLACEMENT_ORDER)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenPlacementDoesNotContainOrderAndNotices() {
+            List<Element<Placement>> placements = wrapElements(placementWithoutOrderAndNotices());
+
+            assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, PLACEMENT_ORDER)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnListOfIdsForSpecifiedTypeWhenPlacementsIsPopulated() {
+            String binaryUrl = "example binary url link";
+            PlacementOrderAndNotices.PlacementOrderAndNoticesType type = PLACEMENT_ORDER;
+
+            List<Element<Placement>> placements = wrapElements(
+                placement(binaryUrl, type),
+                placement("other url", OTHER));
+
+            assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, type)).containsOnly(binaryUrl);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenBinaryUrlIsNotPresent() {
+            PlacementOrderAndNotices.PlacementOrderAndNoticesType type = PLACEMENT_ORDER;
+
+            List<Element<Placement>> placements = wrapElements(placement(null, type));
+
+            assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, type)).isEmpty();
+        }
+
+        private Placement placementWithoutOrderAndNotices() {
+            return Placement.builder()
+                .application(DocumentReference.buildFromDocument(document()))
+                .childName("child name")
+                .confidentialDocuments(wrapElements(PlacementConfidentialDocument.builder()
+                    .document(DocumentReference.buildFromDocument(document()))
+                    .build()))
+                .build();
+        }
+
+        private Placement placement(String binaryUrl, PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
+            return Placement.builder()
+                .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
+                    .type(type)
+                    .document(DocumentReference.builder()
+                        .binaryUrl(binaryUrl)
+                        .build())
+                    .build()))
+                .build();
         }
     }
 

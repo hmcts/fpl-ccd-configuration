@@ -20,6 +20,22 @@ idam:
 fpl:
   local_authority_codes_forbidden_case_submission:
 
+fee:
+  url: http://fees-register-api-aat.service.core-compute-aat.internal
+  api: /fees-register/fees/lookup
+  parameters:
+    # if these change be sure to update the appropriate wiremocks
+    c2_with_notice: 'channel=>default;event=>general application;jurisdiction1=>family;jurisdiction2=>family court;keyword=>notice;service=>other'
+    c2_without_notice: 'channel=>default;event=>general application;jurisdiction1=>family;jurisdiction2=>family court;keyword=>without-notice;service=>other'
+    care_order: 'channel=>default;event=>issue;jurisdiction1=>family;jurisdiction2=>family court;service=>public law'
+    education_supervision_order: 'channel=>default;event=>miscellaneous;jurisdiction1=>family;jurisdiction2=>family court;keyword=>TUV;service=>private law'
+    emergency_protection_order: 'channel=>default;event=>miscellaneous;jurisdiction1=>family;jurisdiction2=>family court;keyword=>KLM;service=>private law'
+    interim_care_order: 'channel=>default;event=>issue;jurisdiction1=>family;jurisdiction2=>family court;service=>public law'
+    interim_supervision_order: 'channel=>default;event=>issue;jurisdiction1=>family;jurisdiction2=>family court;service=>public law'
+    other: 'channel=>default;event=>miscellaneous;jurisdiction1=>family;jurisdiction2=>family court;keyword=>QRS;service=>private law'
+    placement: 'channel=>default;event=>miscellaneous;jurisdiction1=>family;jurisdiction2=>family court;keyword=>DEF;service=>adoption'
+    supervision_order: 'channel=>default;event=>issue;jurisdiction1=>family;jurisdiction2=>family court;service=>public law'
+
 ---
 
 spring:
@@ -192,6 +208,9 @@ ccd:
 
 appinsights:
   instrumentationkey: fake-key
+
+fee:
+  url: http://localhost:8765
 
 fpl:
   local_authority_email_to_code:

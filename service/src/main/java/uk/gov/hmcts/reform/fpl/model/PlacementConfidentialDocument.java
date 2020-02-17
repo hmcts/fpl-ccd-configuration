@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class PlacementConfidentialDocument {
+public class PlacementConfidentialDocument {
     private PlacementDocumentType type;
     private DocumentReference document;
     private String description;
