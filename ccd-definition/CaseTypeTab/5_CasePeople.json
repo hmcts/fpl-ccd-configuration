@@ -65,7 +65,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "Allocated Judge",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "allocatedJudge",
     "TabFieldDisplayOrder": 7
   }

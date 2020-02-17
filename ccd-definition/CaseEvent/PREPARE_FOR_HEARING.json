@@ -341,7 +341,7 @@
     "ID": "allocatedJudge-PREPARE_FOR_HEARING",
     "Name": "Allocated Judge",
     "Description": "Add allocated judge to a case",
-    "DisplayOrder": 18,
+    "DisplayOrder": 15,
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",

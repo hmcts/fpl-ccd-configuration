@@ -279,7 +279,7 @@
     "ID": "allocatedJudgeGatekeeping",
     "Name": "Allocated Judge",
     "Description": "Add allocated judge to a case",
-    "DisplayOrder": 18,
+    "DisplayOrder": 17,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",

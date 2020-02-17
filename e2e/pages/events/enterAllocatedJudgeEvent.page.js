@@ -13,5 +13,4 @@ module.exports = {
     I.click(this.fields.allocatedJudge.judgeTitle);
     I.fillField(this.fields.allocatedJudge.judgeLastName, judeLastName);
   },
-
 };
