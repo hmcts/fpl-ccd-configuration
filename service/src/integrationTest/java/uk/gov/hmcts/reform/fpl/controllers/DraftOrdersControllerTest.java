@@ -399,27 +399,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
                 .willReturn(document());
 
-            UUID uuid = UUID.randomUUID();
-
-            List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(uuid);
-
-            Order order = Order.builder()
-                .orderStatus(OrderStatus.SEALED)
-                .build();
-
-            CallbackRequest request = CallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                    .data(createCaseDataMap(directionWithShowHideValuesRemoved)
-                        .put("standardDirectionOrder", order)
-                        .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                        .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                            .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
-                            .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
-                            .venue("EXAMPLE")
-                            .build()))
-                        .build())
-                    .build())
-                .build();
+            CallbackRequest request = buildCallbackRequest(SEALED);
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
 
