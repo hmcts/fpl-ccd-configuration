@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.model.AllocatedJudge;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -42,13 +43,24 @@ public class OrderValidationServiceTest {
         List<String> returnedErrors = validationService.validate(caseData);
 
         assertThat(returnedErrors)
-            .containsOnly("This standard directions order does not have a hearing associated with it. "
+            .contains("This standard directions order does not have a hearing associated with it. "
                 + "Please enter a hearing date and resubmit the SDO");
     }
 
     @Test
+    void shouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
+        CaseDetails caseDetails = buildCaseDetails(SEALED);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<String> returnedErrors = validationService.validate(caseData);
+
+        assertThat(returnedErrors)
+            .contains("Enter allocated judge");
+    }
+
+    @Test
     void shouldNotReturnErrorsWhenHearingDetailsExistsForSealedOrder() {
-        CaseDetails caseDetails = buildCaseDetailsWithHearingDetails(SEALED);
+        CaseDetails caseDetails = buildCaseDetailsWithMandatoryFields(SEALED);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<String> returnedErrors = validationService.validate(caseData);
@@ -57,7 +69,27 @@ public class OrderValidationServiceTest {
     }
 
     @Test
-    void shouldNotReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
+    void shouldNotReturnErrorsWhenAllocatedJudgeExistsForSealedOrder() {
+        CaseDetails caseDetails = buildCaseDetailsWithMandatoryFields(SEALED);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<String> returnedErrors = validationService.validate(caseData);
+
+        assertThat(returnedErrors).isEmpty();
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenNoHearingDetailsExistsForDraftOrder() {
+        CaseDetails caseDetails = buildCaseDetails(DRAFT);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<String> returnedErrors = validationService.validate(caseData);
+
+        assertThat(returnedErrors).isEmpty();
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenNoAllocatedJudgeExistsForDraftOrder() {
         CaseDetails caseDetails = buildCaseDetails(DRAFT);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -68,7 +100,7 @@ public class OrderValidationServiceTest {
 
     @Test
     void shouldNotReturnErrorsWhenHearingDetailsExistsForDraftOrder() {
-        CaseDetails caseDetails = buildCaseDetailsWithHearingDetails(DRAFT);
+        CaseDetails caseDetails = buildCaseDetailsWithMandatoryFields(DRAFT);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<String> returnedErrors = validationService.validate(caseData);
@@ -76,7 +108,17 @@ public class OrderValidationServiceTest {
         assertThat(returnedErrors).isEmpty();
     }
 
-    private CaseDetails buildCaseDetailsWithHearingDetails(final OrderStatus orderStatus) {
+    @Test
+    void shouldNotReturnErrorsWhenAllocatedJudgeExistsForDraftOrder() {
+        CaseDetails caseDetails = buildCaseDetailsWithMandatoryFields(DRAFT);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<String> returnedErrors = validationService.validate(caseData);
+
+        assertThat(returnedErrors).isEmpty();
+    }
+
+    private CaseDetails buildCaseDetailsWithMandatoryFields(final OrderStatus orderStatus) {
         CaseDetails caseDetails = buildCaseDetails(orderStatus);
 
         Map<String, Object> caseDataMap = caseDetails.getData();
@@ -85,6 +127,7 @@ public class OrderValidationServiceTest {
             .data(ImmutableMap.<String, Object>builder()
                 .putAll(caseDataMap)
                 .putAll(Map.of(HEARING_DETAILS_KEY, createHearingBookings(LocalDateTime.now())))
+                .put("allocatedJudge", AllocatedJudge.builder().build())
                 .build())
             .build();
     }
