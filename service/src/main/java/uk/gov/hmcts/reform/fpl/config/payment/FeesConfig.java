@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.config.payment;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -22,6 +24,8 @@ public class FeesConfig {
 
     @Getter
     @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     @ToString
     public static class FeeParameters {
         private String channel;

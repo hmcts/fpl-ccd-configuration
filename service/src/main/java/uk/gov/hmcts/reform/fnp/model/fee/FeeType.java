@@ -30,6 +30,23 @@ public enum FeeType {
     }
 
     public static FeeType fromOrderType(OrderType orderType) {
-        return FeeType.valueOf(orderType.name());
+        switch (orderType) {
+            case CARE_ORDER:
+                return CARE_ORDER;
+            case INTERIM_CARE_ORDER:
+                return INTERIM_CARE_ORDER;
+            case SUPERVISION_ORDER:
+                return SUPERVISION_ORDER;
+            case INTERIM_SUPERVISION_ORDER:
+                return INTERIM_SUPERVISION_ORDER;
+            case EDUCATION_SUPERVISION_ORDER:
+                return EDUCATION_SUPERVISION_ORDER;
+            case EMERGENCY_PROTECTION_ORDER:
+                return EMERGENCY_PROTECTION_ORDER;
+            case OTHER:
+                return OTHER;
+            default:
+                throw new IllegalStateException("Unexpected value: " + orderType);
+        }
     }
 }
