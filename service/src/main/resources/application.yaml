@@ -21,8 +21,8 @@ fpl:
   local_authority_codes_forbidden_case_submission:
 
 fee:
-  url: 'http://fees-register-api-aat.service.core-compute-aat.internal'
-  api: '/fees-register/fees/lookup'
+  url: http://fees-register-api-aat.service.core-compute-aat.internal
+  api: /fees-register/fees/lookup
   type:
     # if these change be sure to update the appropriate wiremocks
     # dummy data needs to change
@@ -209,6 +209,9 @@ ccd:
 
 appinsights:
   instrumentationkey: fake-key
+
+fee:
+  url: http://localhost:8765
 
 fpl:
   local_authority_email_to_code:
