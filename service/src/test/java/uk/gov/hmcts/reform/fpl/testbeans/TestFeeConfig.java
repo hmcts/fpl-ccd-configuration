@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.testbeans;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
@@ -12,6 +13,8 @@ import java.util.Arrays;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toMap;
 
+@Configuration
+@SuppressWarnings("HideUtilityClassConstructor") // Needs a constructor
 public class TestFeeConfig {
     @ConditionalOnMissingBean
     @Bean
