@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,8 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -21,6 +26,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Api
 @RestController
@@ -32,6 +38,8 @@ public class RepresentativesController {
     private final RepresentativeService representativeService;
     private final RespondentService respondentService;
     private final OthersService othersService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -76,6 +84,22 @@ public class RepresentativesController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(updatedCaseDetails.getData())
             .build();
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+
+        List<Element<Representative>> representativesBefore = caseDataBefore.getRepresentatives();
+        List<Element<Representative>> currentRepresentatives = caseData.getRepresentatives();
+
+        List<Element<Representative>> representativeParties = representativeService
+            .getRepresentativePartiesToNotify(currentRepresentatives, representativesBefore);
+
+        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(
+            callbackRequest, requestData.authorisation(), requestData.userId(),
+            unwrapElements(representativeParties)));
     }
 
     private String getRespondentsLabel(CaseData caseData) {
