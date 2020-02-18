@@ -84,7 +84,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
 
         verify(notificationClient, never()).sendEmail(
-            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@ctsc.com"),
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("FamilyPublicLaw+ctsc@gmail.com"),
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE)
         );
 
@@ -124,7 +124,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE));
 
         verify(notificationClient).sendEmail(
-            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("admin@ctsc.com"),
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq("FamilyPublicLaw+ctsc@gmail.com"),
             eq(expectedTemplateParameters()), eq(CASE_REFERENCE)
         );
     }

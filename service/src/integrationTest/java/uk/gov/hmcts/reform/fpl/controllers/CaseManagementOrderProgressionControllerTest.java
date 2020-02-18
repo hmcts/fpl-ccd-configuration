@@ -54,7 +54,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String HMCTS_ADMIN_INBOX = "admin@family-court.com";
-    private static final String CTSC_ADMIN_INBOX = "admin@ctsc.com";
+    private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
 
     private static final Long caseId = 12345L;
     private final LocalDateTime testDate = LocalDateTime.of(2020, 2, 1, 12, 30);

@@ -23,7 +23,7 @@ public class FeatureToggleService {
     }
 
     public boolean isCtscEnabled() {
-        return ldClient.boolVariation("ctsc", getUser(), false);
+        return ldClient.boolVariation("CTSC", getUser(), false);
     }
 
     private LDUser getUser() {

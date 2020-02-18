@@ -160,7 +160,7 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
         );
 
         verify(notificationClient, never()).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("admin@ctsc.com"), eq(expectedNotificationParams()),
+            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("FamilyPublicLaw+ctsc@gmail.com"), eq(expectedNotificationParams()),
             eq(CASE_REFERENCE)
         );
     }
@@ -177,7 +177,7 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
         );
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("admin@ctsc.com"), eq(expectedNotificationParams()),
+            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("FamilyPublicLaw+ctsc@gmail.com"), eq(expectedNotificationParams()),
             eq(CASE_REFERENCE)
         );
     }

@@ -88,7 +88,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         );
 
         verify(notificationClient, never()).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@ctsc.com"), eq(expectedHmctsParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(expectedHmctsParameters), eq("12345")
         );
     }
 
@@ -137,7 +138,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         );
 
         verify(notificationClient, never()).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@ctsc.com"), eq(expectedHmctsParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(expectedHmctsParameters), eq("12345")
         );
     }
 
@@ -167,7 +169,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         );
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@ctsc.com"), eq(expectedHmctsParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(expectedHmctsParameters), eq("12345")
         );
     }
 
