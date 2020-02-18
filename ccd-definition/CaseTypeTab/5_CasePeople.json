@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "Allocated Judge",
+    "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
     "CaseFieldID": "allocatedJudge",
     "TabFieldDisplayOrder": 7
