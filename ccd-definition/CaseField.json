@@ -416,7 +416,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "allocatedJudge",
     "Label": "Allocated Judge",
-    "FieldType": "AllocatedJudge",
+    "FieldType": "JudgeAndLegalAdvisor",
     "SecurityClassification": "Public"
   },
   {
