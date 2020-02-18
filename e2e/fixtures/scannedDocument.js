@@ -1,4 +1,5 @@
 module.exports = {
+  type: 'Form',
   subtype: 'Example subtype',
   controlNumber: 'Example control number',
   fileName: 'Example file name',

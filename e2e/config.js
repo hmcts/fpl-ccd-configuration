@@ -30,8 +30,6 @@ module.exports = {
   judiciaryPassword: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
   smokeTestLocalAuthorityEmail: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
   smokeTestLocalAuthorityPassword: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
-  bulkScanEmail: process.env.BULKSCAN_USERNAME || 'fpl-bulkscan@mailnesia.com',
-  bulkScanPassword: process.env.BULKSCAN_PASSWORD || defaultPassword,
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'CARE_SUPERVISION_EPO',
