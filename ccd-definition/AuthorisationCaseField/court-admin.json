@@ -648,6 +648,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sendToCtsc",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
+    "CRUD": "R"
   }
 ]

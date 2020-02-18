@@ -166,7 +166,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sendToCtsc",
     "UserRole": "[SOLICITOR]",
-    "CRUD": "CRU"
+    "CRUD": "R"
   }
 ]
 

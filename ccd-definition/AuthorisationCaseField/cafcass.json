@@ -327,6 +327,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sendToCtsc",
     "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "CRU"
+    "CRUD": "R"
   }
 ]
