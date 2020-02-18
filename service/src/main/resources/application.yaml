@@ -12,8 +12,6 @@ management:
 spring:
   application:
     name: fpl-service
-  main:
-    allow-bean-definition-overriding: true
 
 idam:
   s2s-auth:
