@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
@@ -41,7 +43,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -159,20 +160,16 @@ class CommonDirectionServiceTest {
     }
 
     @Test
-    void numberDirections_shouldApplyCorrectNumberingWhenDirectionsAreMarkedAsRemoved() {
-        CaseData caseData = populateCaseDataWithSomeDirectionsMarkedAsRemoved().build();
-
-        List<Element<Direction>> directions = service.combineAllDirections(caseData);
+    void numberDirections_shouldApplyCorrectNumberingWhenDirectionsAreMarkedAsNotNeeded() {
+        List<Element<Direction>> directions = directionsMarkedAsRemoved();
 
         List<String> numberedDirectionTypes = service.numberDirections(directions).stream()
             .map(direction -> direction.getValue().getDirectionType())
             .collect(toList());
 
-        List<String> expectedDirectionsTypes = IntStream.range(0, numberedDirectionTypes.size())
-            .mapToObj(x -> (x + 2) + ". direction")
-            .collect(toList());
+        List<String> expectedDirectionTypes = asList("2. direction", "3. direction", "4. direction");
 
-        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionsTypes);
+        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionTypes);
     }
 
     private DirectionConfiguration getDirectionConfig() {
@@ -487,13 +484,14 @@ class CommonDirectionServiceTest {
                 .build()));
     }
 
-    private CaseData.CaseDataBuilder populateCaseDataWithSomeDirectionsMarkedAsRemoved() {
-        return CaseData.builder()
-            .allParties(buildDirections(ALL_PARTIES, YES.getValue()))
-            .localAuthorityDirections(buildDirections(LOCAL_AUTHORITY))
-            .respondentDirections(buildDirections(PARENTS_AND_RESPONDENTS))
-            .cafcassDirections(buildDirections(CAFCASS, YES.getValue()))
-            .otherPartiesDirections(buildDirections(OTHERS))
-            .courtDirections(buildDirections(COURT, YES.getValue()));
+    private List<Element<Direction>> directionsMarkedAsRemoved() {
+        return Stream.of(buildDirections(ALL_PARTIES, "Yes"),
+            buildDirections(LOCAL_AUTHORITY, "No"),
+            buildDirections(PARENTS_AND_RESPONDENTS, "No"),
+            buildDirections(CAFCASS, "Yes"),
+            buildDirections(OTHERS, "No"),
+            buildDirections(COURT, "Yes"))
+            .flatMap(Collection::stream)
+            .collect(toList());
     }
 }
