@@ -22,8 +22,7 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Document",
-    "SecurityClassification": "Public",
-    "RegularExpression": ".pdf"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
