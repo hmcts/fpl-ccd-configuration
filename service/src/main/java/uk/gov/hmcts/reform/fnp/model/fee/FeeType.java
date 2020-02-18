@@ -24,7 +24,7 @@ public enum FeeType {
     private static final Map<OrderType, FeeType> orderToFeeMap = buildOrderFeeMap();
 
     public static FeeType fromOrderType(OrderType orderType) {
-        return orderToFeeMap.get(orderType);
+        return orderType != null ? orderToFeeMap.get(orderType) : null;
     }
 
     public static List<FeeType> fromOrderType(List<OrderType> orderTypes) {
@@ -41,11 +41,11 @@ public enum FeeType {
     private static Map<OrderType, FeeType> buildOrderFeeMap() {
         return Map.of(
             OrderType.CARE_ORDER, CARE_ORDER,
-            OrderType.INTERIM_CARE_ORDER, INTERIM_CARE_ORDER,
-            OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER,
-            OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER,
             OrderType.EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER,
             OrderType.EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER,
+            OrderType.INTERIM_CARE_ORDER, INTERIM_CARE_ORDER,
+            OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER,
+            OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER,
             OrderType.OTHER, OTHER
         );
     }
