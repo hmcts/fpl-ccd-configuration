@@ -23,16 +23,16 @@ class BigDecimalHelperTest {
     @ParameterizedTest
     @NullAndEmptySource
     void shouldReturnNullWhenGivenNullOrEmptyString(String amount) {
-        assertThat(BigDecimalHelper.fromCCDMoneyGBP(amount)).isNull();
+        assertThat(BigDecimalHelper.fromCCDMoneyGBP(amount)).isEmpty();
     }
 
     @Test
     void shouldReturnNullWhenStringIsNotANumber() {
-        assertThat(BigDecimalHelper.fromCCDMoneyGBP("1qazdert")).isNull();
+        assertThat(BigDecimalHelper.fromCCDMoneyGBP("1qazdert")).isEmpty();
     }
 
     @Test
     void shouldReturnBigDecimalRepresentationInMajorForm() {
-        assertThat(BigDecimalHelper.fromCCDMoneyGBP("1221")).isEqualTo(BigDecimal.valueOf(12.21));
+        assertThat(BigDecimalHelper.fromCCDMoneyGBP("1221")).contains(BigDecimal.valueOf(12.21));
     }
 }

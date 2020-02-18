@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Slf4j
 public class BigDecimalHelper {
@@ -22,13 +23,13 @@ public class BigDecimalHelper {
         return String.valueOf(pence.longValue());
     }
 
-    public static BigDecimal fromCCDMoneyGBP(String amount) {
+    public static Optional<BigDecimal> fromCCDMoneyGBP(String amount) {
         try {
             int integer = Integer.parseInt(amount);
-            return BigDecimal.valueOf(integer, 2);
+            return Optional.of(BigDecimal.valueOf(integer, 2));
         } catch (NumberFormatException ex) {
             log.error("couldn't convert \"{}\" to int", amount);
+            return Optional.empty();
         }
-        return null;
     }
 }
