@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -125,7 +126,11 @@ public class RoboticsDataService {
     }
 
     private String getApplicantPartyNumber(final Telephone telephone) {
-        return isNotEmpty(telephone) ? formatContactNumber(telephone.getTelephoneNumber()) : null;
+        return Optional.ofNullable(telephone)
+            .map(Telephone::getTelephoneNumber)
+            .filter(StringUtils::isNotBlank)
+            .map(this::formatContactNumber)
+            .orElse(null);
     }
 
     private String getApplicantContactName(final Telephone mobileNumber) {
