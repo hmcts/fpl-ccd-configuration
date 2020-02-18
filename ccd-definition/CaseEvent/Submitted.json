@@ -281,8 +281,8 @@
     "Name": "Allocated Judge",
     "Description": "Add allocated judge to a case",
     "DisplayOrder": 18,
-    "PreConditionState(s)": "Submitted",
-    "PostConditionState": "Submitted",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "EndButtonLabel": "Save and continue"
