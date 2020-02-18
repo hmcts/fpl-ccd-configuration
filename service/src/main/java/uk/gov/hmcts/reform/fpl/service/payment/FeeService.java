@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
+import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
 
 import java.util.Comparator;
 import java.util.List;
@@ -43,30 +44,33 @@ public class FeeService {
 
         return feeTypes.stream()
             .map(this::makeRequest)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .filter(Objects::nonNull)
             .collect(toImmutableList());
     }
 
-    private Optional<FeeResponse> makeRequest(FeeType feeType) {
+    private FeeResponse makeRequest(FeeType feeType) {
+        // TODO: 18/02/2020 what to do in event of error?
+        //  currently return null which is then filtered out
         try {
-            FeesConfig.FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
+            FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
             log.debug("Making request to Fee Register with parameters : {} ", parameters);
 
-            FeeResponse fee = feesRegisterApi.findFee(parameters.getChannel(),
+            FeeResponse fee = feesRegisterApi.findFee(
+                parameters.getChannel(),
                 parameters.getEvent(),
                 parameters.getJurisdiction1(),
                 parameters.getJurisdiction2(),
                 parameters.getKeyword(),
-                parameters.getService());
+                parameters.getService()
+            );
 
             log.debug("Fee response: {} ", fee);
 
-            return Optional.of(fee);
+            return fee;
         } catch (FeignException ex) {
             log.error("Fee response error: {} => body: \"{}\"",
                 ex.status(), ex.getMessage());
+            return null;
         }
-        return Optional.empty();
     }
 }
