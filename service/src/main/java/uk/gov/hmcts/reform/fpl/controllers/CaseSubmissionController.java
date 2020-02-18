@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -58,7 +59,6 @@ public class CaseSubmissionController {
     private final RestrictionsConfiguration restrictionsConfiguration;
     private final FeeService feeService;
 
-    // TODO: 13/02/2020 update tests
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestHeader(value = "authorization") String authorization,
@@ -68,10 +68,7 @@ public class CaseSubmissionController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        List<FeeResponse> fees = feeService.getFees(FeeType.fromOrderType(caseData.getOrders().getOrderType()));
-        BigDecimal amount = feeService.extractFeeToUse(fees)
-            .map(FeeResponse::getAmount)
-            .orElse(BigDecimal.ZERO); // todo is this the right thing to do
+        BigDecimal amount = getAmountToPay(caseData.getOrders());
 
         String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
@@ -82,6 +79,15 @@ public class CaseSubmissionController {
             .data(data)
             .errors(validate(caseData))
             .build();
+    }
+
+    private BigDecimal getAmountToPay(Orders orders) {
+        List<FeeResponse> fees = feeService.getFees(FeeType.fromOrderType(
+            orders == null ? null : orders.getOrderType()));
+
+        return feeService.extractFeeToUse(fees)
+            .map(FeeResponse::getAmount)
+            .orElse(BigDecimal.ZERO);
     }
 
     private List<String> validate(CaseData caseData) {

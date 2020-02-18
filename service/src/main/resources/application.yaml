@@ -155,6 +155,11 @@ ccd:
     base:
       url: http://fake-url
 
+fee:
+  api:
+    url: http://fake-fees-register-api
+
+
 fpl:
   local_authority_codes_forbidden_case_submission: FPLA
   local_authority_email_to_code:

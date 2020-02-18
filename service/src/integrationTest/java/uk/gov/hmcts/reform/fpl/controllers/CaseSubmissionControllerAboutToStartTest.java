@@ -45,6 +45,15 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
                 "I, Emma Taylor, believe that the facts stated in this application are true.");
     }
 
+    @Test
+    void shouldAddAmountToPayField() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
+            .data(Map.of())
+            .build());
+
+        assertThat(response.getData()).containsEntry("amountToPay", "0");
+    }
+
     @Nested
     class LocalAuthorityValidation {
         @Test
