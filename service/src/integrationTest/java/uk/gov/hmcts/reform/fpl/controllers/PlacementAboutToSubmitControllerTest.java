@@ -66,7 +66,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractControllerTest {
 
         Map<String, Object> updatedCaseDetails = callbackResponse.getData();
 
-        assertThat(updatedCaseDetails).containsKey("placement");
+        assertThat(updatedCaseDetails).doesNotContainKey("placement");
         assertThat(updatedCaseDetails).doesNotContainKey("placementChildName");
         assertThat(updatedCaseDetails).doesNotContainKey("singleChild");
 
@@ -97,7 +97,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractControllerTest {
 
         CaseData caseData = mapper.convertValue(updatedCaseDetails, CaseData.class);
 
-        assertThat(updatedCaseDetails).containsKey("placement");
+        assertThat(updatedCaseDetails).doesNotContainKey("placement");
         assertThat(updatedCaseDetails).doesNotContainKey("placementChildName");
         assertThat(updatedCaseDetails).doesNotContainKey("singleChild");
 

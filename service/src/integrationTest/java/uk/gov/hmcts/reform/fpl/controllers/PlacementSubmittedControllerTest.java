@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
@@ -48,7 +49,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
 
-    private final DocumentReference documentReference = DocumentReference.builder().build();
+    private final DocumentReference documentReference = testDocument();
 
     PlacementSubmittedControllerTest() {
         super("placement");
@@ -82,11 +83,6 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
             "admin@family-court.com",
             expectedTemplateParameters(),
             String.valueOf(CASE_ID));
-        verify(coreCaseDataService).triggerEvent("PUBLICLAW",
-            "CARE_SUPERVISION_EPO",
-            CASE_ID,
-            SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", documentReference));
     }
 
     @Test
@@ -97,7 +93,9 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
             .id(CASE_ID)
             .jurisdiction("PUBLICLAW")
             .caseTypeId("CARE_SUPERVISION_EPO")
-            .data(buildPlacementData(List.of(child1), List.of(child1Placement), child1.getId()))
+            .data(ImmutableMap.<String, Object>builder().putAll(buildNotificationData())
+                .putAll(buildPlacementData(List.of(child1), List.of(child1Placement), child1.getId()))
+                .build())
             .build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
@@ -108,11 +106,70 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient, never()).sendEmail(anyString(), any(), any(), any());
+    }
+
+    @Test
+    void shouldTriggerSendDocumentIfPlacementApplicationHasChanged() {
+        DocumentReference expectedDocumentReference = DocumentReference.builder().binaryUrl("binary_url_new").build();
+        Element<Child> child = testChild();
+
+        Placement placementBefore = testPlacement(child, DocumentReference.builder().binaryUrl("binary_url").build());
+        Placement placement = testPlacement(child, expectedDocumentReference);
+
+        Map<String, Object> caseDataBefore = buildPlacementData(List.of(child),
+            wrapElements(placementBefore),
+            child.getId());
+        Map<String, Object> caseData = buildPlacementData(List.of(child), wrapElements(placement), child.getId());
+
+        CaseDetails caseDetailsBefore = CaseDetails.builder()
+            .id(CASE_ID)
+            .jurisdiction("PUBLICLAW")
+            .caseTypeId("CARE_SUPERVISION_EPO")
+            .data(ImmutableMap.<String, Object>builder()
+                .putAll(buildNotificationData())
+                .putAll(caseDataBefore)
+                .build())
+            .build();
+        CaseDetails caseDetails = caseDetailsBefore.toBuilder()
+            .data(ImmutableMap.<String, Object>builder().putAll(buildNotificationData()).putAll(caseData).build())
+            .build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore)
+            .build();
+
+        postSubmittedEvent(callbackRequest);
+
         verify(coreCaseDataService).triggerEvent("PUBLICLAW",
             "CARE_SUPERVISION_EPO",
             CASE_ID,
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", documentReference));
+            Map.of("documentToBeSent", expectedDocumentReference));
+    }
+
+    @Test
+    void shouldNotTriggerSendDocumentIfPlacementApplicationHasNotChanged() {
+        Element<Child> child = testChild();
+        Element<Placement> childPlacement = element(testPlacement(child, testDocument()));
+        CaseDetails unchangedCaseDetails = CaseDetails.builder()
+            .id(CASE_ID)
+            .jurisdiction("PUBLICLAW")
+            .caseTypeId("CARE_SUPERVISION_EPO")
+            .data(ImmutableMap.<String, Object>builder()
+                .putAll(buildNotificationData())
+                .putAll(buildPlacementData(List.of(child), List.of(childPlacement), child.getId()))
+                .build())
+            .build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(unchangedCaseDetails)
+            .caseDetailsBefore(unchangedCaseDetails.toBuilder().build())
+            .build();
+
+        postSubmittedEvent(callbackRequest);
+
+        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any());
     }
 
     private Map<String, Object> buildPlacementData(List<Element<Child>> children,
