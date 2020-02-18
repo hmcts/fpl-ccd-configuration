@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOr
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacementOrderAndNotices;
 
@@ -55,7 +55,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
 
-    private final DocumentReference documentReference = testDocument();
+    private final DocumentReference documentReference = testDocumentReference();
 
     PlacementSubmittedControllerTest() {
         super("placement");
@@ -66,8 +66,8 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         Element<Child> child1 = testChild();
         Element<Child> child2 = testChild();
 
-        Element<Placement> child1Placement = element(testPlacement(child1, testDocument()));
-        Element<Placement> child2Placement = element(testPlacement(child2, testDocument()));
+        Element<Placement> child1Placement = element(testPlacement(child1, testDocumentReference()));
+        Element<Placement> child2Placement = element(testPlacement(child2, testDocumentReference()));
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(buildCaseDetails(buildPlacementData(List.of(child1, child2),
@@ -87,7 +87,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     @Test
     void shouldNotSendANotificationWhenUploadingPreviousChildPlacement() throws Exception {
         Element<Child> child1 = testChild();
-        Element<Placement> child1Placement = element(testPlacement(child1, testDocument()));
+        Element<Placement> child1Placement = element(testPlacement(child1, testDocumentReference()));
         CaseDetails unchangedCaseDetails = buildCaseDetails((buildPlacementData(List.of(child1),
             List.of(child1Placement),
             child1.getId())));
@@ -165,8 +165,8 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     }
 
     private Map<String, Object> buildPlacementData(List<Element<Child>> children,
-                                                  List<Element<Placement>> placements,
-                                                  UUID childID) {
+                                                   List<Element<Placement>> placements,
+                                                   UUID childID) {
         return Map.of(
             "children1", children,
             "placements", placements,

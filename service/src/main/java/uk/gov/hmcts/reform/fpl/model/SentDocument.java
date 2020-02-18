@@ -11,5 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 public class SentDocument {
     String partyName;
     DocumentReference document;
+    DocumentReference coversheet;
     String sentAt;
 }

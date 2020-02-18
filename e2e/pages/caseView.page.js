@@ -10,6 +10,7 @@ module.exports = {
     casePeople: 'People in the case',
     legalBasis: 'Legal basis',
     documents: 'Documents',
+    documentsSentToParties: 'Documents sent to parties',
     confidential: 'Confidential',
     placement: 'Placement',
   },

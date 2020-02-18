@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ComplyOnBehalfController.class)
@@ -181,9 +182,7 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
 
     private List<Element<Representative>> representativeServedByPost() {
         return List.of(ElementUtils.element(ComplyOnBehalfControllerAboutToStartTest.REPRESENTATIVE_ID,
-            Representative.builder()
-                .servingPreferences(POST)
-                .build()));
+            testRepresentative(POST)));
     }
 
     private List<Element<Direction>> directionsForRespondentsCafcassOthersAndAllParties() {

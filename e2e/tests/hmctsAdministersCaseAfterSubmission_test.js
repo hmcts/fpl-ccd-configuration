@@ -138,48 +138,37 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
-  for (let i = 0; i < orders.length; i++) {
-    await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-    await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
-    I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-    await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
-  }
-});
-
-Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
-  await createNoticeOfProceedingsEventPage.checkC6();
-  await createNoticeOfProceedingsEventPage.checkC6A();
-  await createNoticeOfProceedingsEventPage.selectJudgeTitle();
-  await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
-  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');
-  I.seeAnswerInTab('1', 'Notice of proceedings 2', 'File name', 'Notice_of_proceedings_c6a.pdf');
-});
-
 Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
   await I.navigateToCaseDetails(caseId);
+  const representative1 = representatives.servedByDigitalService;
+  const representative2 = representatives.servedByPost;
+
   await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
-  const representative = {...representatives[0], email: config.hillingdonLocalAuthorityEmailUserOne};
-  await enterRepresentativesEventPage.enterRepresentative(representative);
+
+  await enterRepresentativesEventPage.enterRepresentative(representative1);
+  await I.addAnotherElementToCollection('Representatives');
+  await enterRepresentativesEventPage.enterRepresentative(representative2);
 
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeAnswerInTab(1, 'Representatives 1', 'Full name', representative.fullName);
-  I.seeAnswerInTab(2, 'Representatives 1', 'Position in a case', representative.positionInACase);
-  I.seeAnswerInTab(3, 'Representatives 1', 'Email address', representative.email);
-  I.seeAnswerInTab(4, 'Representatives 1', 'Phone number', representative.telephone);
-  I.seeAnswerInTab(6, 'Representatives 1', 'How do they want to get case information?', representative.servingPreferences);
-  I.seeAnswerInTab(7, 'Representatives 1', 'Who are they?', representative.role);
+  I.seeAnswerInTab(1, 'Representatives 1', 'Full name', representative1.fullName);
+  I.seeAnswerInTab(2, 'Representatives 1', 'Position in a case', representative1.positionInACase);
+  I.seeAnswerInTab(3, 'Representatives 1', 'Email address', representative1.email);
+  I.seeAnswerInTab(4, 'Representatives 1', 'Phone number', representative1.telephone);
+  I.seeAnswerInTab(5, 'Representatives 1', 'How do they want to get case information?', representative1.servingPreferences);
+  I.seeAnswerInTab(6, 'Representatives 1', 'Who are they?', representative1.role);
+
+  I.seeAnswerInTab(1, 'Representatives 2', 'Full name', representative2.fullName);
+  I.seeAnswerInTab(2, 'Representatives 2', 'Position in a case', representative2.positionInACase);
+  I.seeAnswerInTab(3, 'Representatives 1', 'Email address', representative1.email);
+  I.seeAnswerInTab(4, 'Representatives 2', 'Phone number', representative2.telephone);
+  I.seeAnswerInTab(6, 'Representatives 2', 'How do they want to get case information?', representative2.servingPreferences);
+  I.seeAnswerInTab(7, 'Representatives 2', 'Who are they?', representative2.role);
 
   I.signOut();
-  await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  await I.signIn(representative1.email, config.localAuthorityPassword);
   await I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
@@ -196,12 +185,37 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
 
   I.signOut();
-  await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  await I.signIn(representatives.servedByDigitalService.email, config.localAuthorityPassword);
   await I.navigateToCaseDetails(caseId);
   I.seeInCurrentUrl('error');
 
   I.signOut();
   await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+});
+
+Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
+  for (let i = 0; i < orders.length; i++) {
+    const order = orders[i];
+    await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+    await orderFunctions.createOrder(I, createOrderEventPage, order);
+    I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+    await orderFunctions.assertOrder(I, caseViewPage, order, i + 1);
+    await orderFunctions.assertOrderSentToParty(I, caseViewPage,  representatives.servedByPost.fullName, order, i + 1);
+  }
+});
+
+Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  await createNoticeOfProceedingsEventPage.checkC6();
+  await createNoticeOfProceedingsEventPage.checkC6A();
+  await createNoticeOfProceedingsEventPage.selectJudgeTitle();
+  await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');
+  I.seeAnswerInTab('1', 'Notice of proceedings 2', 'File name', 'Notice_of_proceedings_c6a.pdf');
 });
 
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
