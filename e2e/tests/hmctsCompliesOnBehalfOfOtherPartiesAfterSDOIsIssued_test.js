@@ -6,7 +6,8 @@ let caseId;
 
 Feature('Comply with directions');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, addHearingBookingDetailsEventPage, sendCaseToGatekeeperEventPage, draftStandardDirectionsEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, addHearingBookingDetailsEventPage, sendCaseToGatekeeperEventPage, draftStandardDirectionsEventPage,
+  allocatedJudgeEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -20,7 +21,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 
     I.signOut();
 
-    //hmcts login, add case number, add hearing details and send to gatekeeper
+    //hmcts login, add case number, add hearing details, allocated judge and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
     caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
@@ -29,6 +30,9 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
     await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
     await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+    await I.completeEvent('Save and continue');
     caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
