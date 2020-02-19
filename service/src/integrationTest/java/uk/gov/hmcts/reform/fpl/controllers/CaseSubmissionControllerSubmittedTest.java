@@ -30,6 +30,10 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final String FAMILY_COURT = "Family Court";
     private static final String CAFCASS_COURT = "cafcass";
+    private static final Long CASE_REFERENCE = 12345L;
+    private static final String HMCTS_ADMIN_EMAIL = "admin@family-court.com";
+    private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
+    private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -62,29 +66,26 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq("admin@family-court.com"),
+            eq(HMCTS_ADMIN_EMAIL),
             eq(completeHmctsParameters),
-            eq("12345")
-        );
+            eq(CASE_REFERENCE.toString()));
 
         verify(notificationClient).sendEmail(
             eq(CAFCASS_SUBMISSION_TEMPLATE),
-            eq("cafcass@cafcass.com"),
+            eq(CAFCASS_EMAIL),
             eq(completeCafcassParameters),
-            eq("12345")
-        );
+            eq(CASE_REFERENCE.toString()));
 
         verify(notificationClient, never()).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             eq(completeHmctsParameters),
-            eq("12345")
-        );
+            eq(CASE_REFERENCE.toString()));
     }
 
     @Test
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() throws Exception {
-        CaseDetails caseDetails = enabledSendToCtscOnCaseDetails(NO);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
 
         Map<String, Object> expectedHmctsParameters = getInCompleteParameters()
             .put("court", FAMILY_COURT)
@@ -98,29 +99,26 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq("admin@family-court.com"),
+            eq(HMCTS_ADMIN_EMAIL),
             eq(expectedHmctsParameters),
-            eq("12345")
-        );
+            eq(CASE_REFERENCE.toString()));
 
         verify(notificationClient).sendEmail(
             eq(CAFCASS_SUBMISSION_TEMPLATE),
-            eq("cafcass@cafcass.com"),
+            eq(CAFCASS_EMAIL),
             eq(expectedCafcassParameters),
-            eq("12345")
-        );
+            eq(CASE_REFERENCE.toString()));
 
         verify(notificationClient, never()).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(CTSC_EMAIL),
             eq(expectedHmctsParameters),
-            eq("12345")
-        );
+            eq(CASE_REFERENCE.toString()));
     }
 
     @Test
     void shouldSendNotificationToCtscAdminWhenCtscIsEnabledWithinCaseDetails() throws Exception {
-        CaseDetails caseDetails = enabledSendToCtscOnCaseDetails(YES);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         Map<String, Object> expectedHmctsParameters = getInCompleteParameters()
             .put("court", FAMILY_COURT)
             .build();
@@ -129,22 +127,22 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient, never()).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq("admin@family-court.com"),
+            eq(HMCTS_ADMIN_EMAIL),
             eq(expectedHmctsParameters),
-            eq("12345")
+            eq(CASE_REFERENCE.toString())
         );
 
         verify(notificationClient).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(CTSC_EMAIL),
             eq(expectedHmctsParameters),
-            eq("12345")
+            eq(CASE_REFERENCE.toString())
         );
     }
 
-    private CaseDetails enabledSendToCtscOnCaseDetails(YesNo enableCtsc) {
+    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
         return CaseDetails.builder()
-            .id(12345L)
+            .id(CASE_REFERENCE)
             .data(Map.of(
                 "caseLocalAuthority", "example",
                 "sendToCtsc", enableCtsc.getValue()
@@ -155,7 +153,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         List<String> ordersAndDirections = List.of("Emergency protection order", "Contact with any named person");
 
         return ImmutableMap.<String, Object>builder()
-            .put("localAuthority", "Example Local Authority")
+            .putAll(getCommonParameters())
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
             .put("ordersAndDirections", ordersAndDirections)
@@ -163,14 +161,12 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             .put("timeFrameValue", "same day")
             .put("urgentHearing", "Yes")
             .put("nonUrgentHearing", "No")
-            .put("firstRespondentName", "Smith")
-            .put("reference", "12345")
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+            .put("firstRespondentName", "Smith");
     }
 
     private ImmutableMap.Builder<String, Object> getInCompleteParameters() {
         return ImmutableMap.<String, Object>builder()
-            .put("localAuthority", "Example Local Authority")
+            .putAll(getCommonParameters())
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
             .put("ordersAndDirections", "")
@@ -178,8 +174,14 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             .put("timeFrameValue", "")
             .put("urgentHearing", "No")
             .put("nonUrgentHearing", "No")
-            .put("firstRespondentName", "")
-            .put("reference", "12345")
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+            .put("firstRespondentName", "");
+    }
+
+    private Map<String, Object> getCommonParameters() {
+        return Map.of(
+            "localAuthority", "Example Local Authority",
+            "reference", CASE_REFERENCE.toString(),
+            "caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_REFERENCE)
+        );
     }
 }
