@@ -30,9 +30,6 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
     await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
     await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
-    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
-    await I.completeEvent('Save and continue');
     caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
@@ -42,6 +39,9 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     //gatekeeper login, draft sdo and select issued
     await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
     await I.navigateToCaseDetails(caseId);
+    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+    await I.completeEvent('Save and continue');
     await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
     await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
     await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
