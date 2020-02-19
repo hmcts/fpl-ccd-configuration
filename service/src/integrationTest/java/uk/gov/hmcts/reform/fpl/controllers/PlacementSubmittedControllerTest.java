@@ -55,9 +55,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
     private static final String JURISDICTION = "PUBLICLAW";
-    private static final String CASE_TYPE_ID = "CARE_SUPERVISION_EPO";
-
-    private final DocumentReference documentReference = testDocument();
+    private static final DocumentReference DOCUMENT = testDocument();
 
     PlacementSubmittedControllerTest() {
         super("placement");
@@ -68,8 +66,8 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         Element<Child> child1 = testChild();
         Element<Child> child2 = testChild();
 
-        Element<Placement> child1Placement = element(testPlacement(child1, documentReference));
-        Element<Placement> child2Placement = element(testPlacement(child2, documentReference));
+        Element<Placement> child1Placement = element(testPlacement(child1, DOCUMENT));
+        Element<Placement> child2Placement = element(testPlacement(child2, DOCUMENT));
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(buildCaseDetails(buildPlacementData(List.of(child1, child2),
@@ -233,7 +231,7 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         return Map.of(
             "children1", children,
             "placements", placements,
-            "placement", Placement.builder().application(documentReference).build(),
+            "placement", Placement.builder().application(DOCUMENT).build(),
             "childrenList", childID);
     }
 
