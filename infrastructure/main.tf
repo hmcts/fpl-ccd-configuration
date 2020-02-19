@@ -117,7 +117,7 @@ data "azurerm_key_vault_secret" "ld-sdk-key" {
 }
 
 data "azurerm_key_vault_secret" "ctsc-inbox" {
-  name          = "ctsc-inbox"
+  name      = "ctsc-inbox"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 

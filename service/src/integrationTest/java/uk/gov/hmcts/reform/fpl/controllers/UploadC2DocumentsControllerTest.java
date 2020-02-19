@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -38,9 +39,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -53,7 +55,6 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
     private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK);
     private static final Long CASE_ID = 12345L;
-    private static final String CASE_REFERENCE = "12345";
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String ERROR_MESSAGE = "You need to upload a file.";
@@ -152,16 +153,20 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
     void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() throws Exception {
         given(idamApi.retrieveUserInfo(any())).willReturn(USER_INFO_CAFCASS);
 
-        postSubmittedEvent(createNotificationCaseDetails(false));
+        postSubmittedEvent(enableSendToCtscOnCaseDetails(NO));
 
-        verify(notificationClient, times(1)).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"), eq(expectedNotificationParams()),
-            eq(CASE_REFERENCE)
+        verify(notificationClient).sendEmail(
+            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("admin@family-court.com"),
+            eq(expectedNotificationParams()),
+            eq(CASE_ID.toString())
         );
 
         verify(notificationClient, never()).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("FamilyPublicLaw+ctsc@gmail.com"), eq(expectedNotificationParams()),
-            eq(CASE_REFERENCE)
+            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(expectedNotificationParams()),
+            eq(CASE_ID.toString())
         );
     }
 
@@ -169,16 +174,19 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() throws Exception {
         given(idamApi.retrieveUserInfo(any())).willReturn(USER_INFO_CAFCASS);
 
-        postSubmittedEvent(createNotificationCaseDetails(true));
+        postSubmittedEvent(enableSendToCtscOnCaseDetails(YES));
 
         verify(notificationClient, never()).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("admin@family-court.com"), eq(expectedNotificationParams()),
-            eq(CASE_REFERENCE)
+            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("admin@family-court.com"),
+            eq(expectedNotificationParams()),
+            eq(CASE_ID.toString())
         );
 
-        verify(notificationClient, times(1)).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("FamilyPublicLaw+ctsc@gmail.com"), eq(expectedNotificationParams()),
-            eq(CASE_REFERENCE)
+        verify(notificationClient).sendEmail(
+            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("FamilyPublicLaw+ctsc@gmail.com"), eq(expectedNotificationParams()),
+            eq(CASE_ID.toString())
         );
     }
 
@@ -202,23 +210,19 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
                 "description", "Test description"));
     }
 
-    private CaseDetails createNotificationCaseDetails(boolean enableCtsc) {
-        ImmutableMap.Builder<String, Object> notificationParams = ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters());
-
-        if (enableCtsc) {
-            notificationParams.put("sendToCtsc", "Yes");
-        }
-
-        return createCase(notificationParams.build());
+    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
+        return createCase(ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("sendToCtsc", enableCtsc.getValue())
+            .build());
     }
 
     private Map<String, Object> buildCommonNotificationParameters() {
-        return ImmutableMap.of(
+        return Map.of(
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
             "familyManCaseNumber", "12345",
             "respondents1", List.of(
-                ImmutableMap.of(
+                Map.of(
                     "value", Respondent.builder()
                         .party(RespondentParty.builder()
                             .lastName(RESPONDENT_SURNAME)
@@ -228,10 +232,10 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
     }
 
     private Map<String, Object> expectedNotificationParams() {
-        return ImmutableMap.of(
-            "reference", CASE_REFERENCE,
-            "hearingDetailsCallout", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID),
-            "subjectLine", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID),
+        return Map.of(
+            "reference", CASE_ID.toString(),
+            "hearingDetailsCallout", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()),
+            "subjectLine", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()),
             "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345"
         );
     }

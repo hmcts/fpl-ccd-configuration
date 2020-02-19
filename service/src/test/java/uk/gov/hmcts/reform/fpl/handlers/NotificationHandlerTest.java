@@ -68,7 +68,6 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -255,7 +254,7 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() throws IOException, NotificationClientException {
-            CallbackRequest callbackRequest = appendEnableCtscOnCallback(callbackRequest());
+            CallbackRequest callbackRequest = appendEnableCtscOnCallback();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
@@ -272,8 +271,11 @@ class NotificationHandlerTest {
             notificationHandler.sendNotificationForC2Upload(
                 new C2UploadedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
-            verify(notificationClient, times(1)).sendEmail(
-                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq(CTSC_INBOX), eq(c2Parameters), eq("12345"));
+            verify(notificationClient).sendEmail(
+                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
+                eq(CTSC_INBOX),
+                eq(c2Parameters),
+                eq("12345"));
         }
 
         @Test
@@ -402,7 +404,7 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyCtscAdminOfCMOReadyForJudgeReviewWhenCtscIsEnabled() throws Exception {
-            CallbackRequest callbackRequest = appendEnableCtscOnCallback(callbackRequest());
+            CallbackRequest callbackRequest = appendEnableCtscOnCallback();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
             given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
@@ -522,7 +524,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendEmailToCtscAdminWhenCtscIsEnabled() throws IOException, NotificationClientException {
-        CallbackRequest callbackRequest = appendEnableCtscOnCallback(callbackRequest());
+        CallbackRequest callbackRequest = appendEnableCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
@@ -550,7 +552,7 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToHmctsAdmin(
             new SubmittedCaseEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq(CTSC_INBOX),
             eq(expectedParameters), eq("12345"));
     }
@@ -765,7 +767,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldNotifyCtscAdminOfPlacementApplicationUploadWhenCtscIsEnabled() throws Exception {
-        CallbackRequest callbackRequest = appendEnableCtscOnCallback(callbackRequest());
+        CallbackRequest callbackRequest = appendEnableCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
@@ -818,7 +820,8 @@ class NotificationHandlerTest {
             .build();
     }
 
-    private CallbackRequest appendEnableCtscOnCallback(CallbackRequest callbackRequest) {
+    private CallbackRequest appendEnableCtscOnCallback() throws IOException {
+        CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         Map<String, Object> updatedCaseData = ImmutableMap.<String, Object>builder()

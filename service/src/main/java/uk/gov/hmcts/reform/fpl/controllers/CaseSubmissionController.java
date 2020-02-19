@@ -35,6 +35,8 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
 @Api
@@ -137,7 +139,7 @@ public class CaseSubmissionController {
         Map<String, Object> data = caseDetails.getData();
         data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
         data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
-        data.put("sendToCtsc", setCtscToggle());
+        data.put("sendToCtsc", setSendToCtsc());
         data.put("submittedForm", ImmutableMap.<String, String>builder()
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)
@@ -158,11 +160,7 @@ public class CaseSubmissionController {
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
     }
 
-    private String setCtscToggle() {
-        if (featureToggleService.isCtscEnabled()) {
-            return "Yes";
-        }
-
-        return "No";
+    private String setSendToCtsc() {
+        return featureToggleService.isCtscEnabled() ? YES.getValue() : NO.getValue();
     }
 }

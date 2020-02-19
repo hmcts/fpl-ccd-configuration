@@ -51,7 +51,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAppendDocumentAndToggleCtscOffWhenProvidedValidCaseDataAndCtscIsToggledOff() {
+    void shouldSetCtscPropertyToYesWhenCtscLaunchDarklyVariableIsEnabled() {
         byte[] pdf = {1, 2, 3, 4, 5};
         Document document = document();
 
@@ -76,7 +76,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldToggleCtscCaseFlagOnWhenTheCtscFeatureIsEnabled() {
+    void shouldSetCtscPropertyToNoWhenCtscLaunchDarklyVariableIsDisabled() {
         byte[] pdf = {1, 2, 3, 4, 5};
         Document document = document();
 

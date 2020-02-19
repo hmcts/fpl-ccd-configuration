@@ -96,7 +96,7 @@ public class NotificationHandler {
         EventData eventData = new EventData(event);
         Map<String, Object> parameters = hmctsEmailContentProvider
             .buildHmctsSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
-        String email = getAdminEmail(eventData);
+        String email = getHmctsAdminEmail(eventData);
 
         sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, eventData.getReference());
     }
@@ -108,7 +108,7 @@ public class NotificationHandler {
             EventData eventData = new EventData(event);
             Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotification(
                 eventData.getCaseDetails());
-            String email = getAdminEmail(eventData);
+            String email = getHmctsAdminEmail(eventData);
 
             sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
         }
@@ -172,7 +172,7 @@ public class NotificationHandler {
         Map<String, Object> parameters = placementApplicationContentProvider
             .buildPlacementApplicationNotificationParameters(eventData.getCaseDetails());
 
-        String email = getAdminEmail(eventData);
+        String email = getHmctsAdminEmail(eventData);
 
         sendNotification(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
     }
@@ -193,7 +193,7 @@ public class NotificationHandler {
         Map<String, Object> parameters = caseManagementOrderEmailContentProvider
             .buildCMOReadyForJudgeReviewNotificationParameters(eventData.getCaseDetails());
 
-        String email = getAdminEmail(eventData);
+        String email = getHmctsAdminEmail(eventData);
 
         sendNotification(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
     }
@@ -359,7 +359,7 @@ public class NotificationHandler {
             Long.toString(caseDetails.getId()));
     }
 
-    private String getAdminEmail(EventData eventData) {
+    private String getHmctsAdminEmail(EventData eventData) {
         String ctscValue = getCtscValue(eventData.getCaseDetails().getData());
 
         if (ctscValue.equals("Yes")) {

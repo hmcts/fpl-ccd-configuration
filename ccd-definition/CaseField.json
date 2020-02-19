@@ -1147,6 +1147,6 @@
     "Label": " ",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Comment": "Flag to support wether case has been sent to CTSC"
+    "Comment": "Used to record wether a case has been sent to CTSC. Move to CTSC set for 30th March 2020."
   }
 ]
