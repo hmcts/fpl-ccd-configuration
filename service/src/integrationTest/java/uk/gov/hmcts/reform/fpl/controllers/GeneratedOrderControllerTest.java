@@ -131,8 +131,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldTriggerOrderEventWhenSubmitted() throws Exception {
+    void shouldTriggerOrderAndSendDocumentEventsWhenSubmitted() throws Exception {
         String expectedCaseReference = "19898989";
+        String event = "internal-change:SEND_DOCUMENT";
         DocumentReference lastOrderDocumentReference = DocumentReference.builder()
             .filename("C21 3.pdf")
             .url("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
@@ -145,19 +146,6 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
             expectedOrderLocalAuthorityParameters(lastOrderDocumentReference),
             expectedCaseReference);
-    }
-
-    @Test
-    void shouldTriggerSendDocumentEventWhenSubmitted() {
-        String event = "internal-change:SEND_DOCUMENT";
-        DocumentReference lastOrderDocumentReference = DocumentReference.builder()
-            .filename("C21 3.pdf")
-            .url("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
-            .binaryUrl("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
-            .build();
-
-        postSubmittedEvent(buildCallbackRequest(lastOrderDocumentReference));
-
         verify(coreCaseDataService).triggerEvent(JURISDICTION,
             CASE_TYPE,
             CASE_ID,

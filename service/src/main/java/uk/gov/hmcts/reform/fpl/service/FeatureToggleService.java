@@ -10,21 +10,17 @@ import org.springframework.stereotype.Service;
 public class FeatureToggleService {
 
     private final LDClient ldClient;
-    private final String ldUserKey;
+    private final LDUser ldUser;
 
     @Autowired
     public FeatureToggleService(LDClient ldClient, @Value("${ld.user_key}") String ldUserKey) {
         this.ldClient = ldClient;
-        this.ldUserKey = ldUserKey;
+        this.ldUser = new LDUser.Builder(ldUserKey)
+            .custom("timestamp", String.valueOf(System.currentTimeMillis()))
+            .build();
     }
 
     public boolean isXeroxPrintingEnabled() {
-        return ldClient.boolVariation("xerox-printing", getUser(), false);
-    }
-
-    private LDUser getUser() {
-        return new LDUser.Builder(ldUserKey)
-            .custom("timestamp", String.valueOf(System.currentTimeMillis()))
-            .build();
+        return ldClient.boolVariation("xerox-printing", ldUser, false);
     }
 }

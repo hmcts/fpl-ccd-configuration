@@ -29,6 +29,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @ExtendWith(SpringExtension.class)
 public class DocumentDownloadServiceTest {
 
+    private static final String AUTH_TOKEN = "token";
+    private static final String SERVICE_AUTH_TOKEN = "service-token";
+    private static final String USER_ID = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
+
     @Mock
     private DocumentDownloadClientApi documentDownloadClient;
 
@@ -53,18 +57,16 @@ public class DocumentDownloadServiceTest {
 
     @BeforeEach
     void setup() {
-        String authToken = "token";
-        String userId = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
         UserInfo userInfo = UserInfo.builder()
             .sub("cafcass@cafcass.com")
             .roles(CAFCASS.getRoles())
-            .uid(userId)
+            .uid(USER_ID)
             .build();
 
-        given(authTokenGenerator.generate()).willReturn(authToken);
-        given(idamApi.retrieveUserInfo(authToken)).willReturn(userInfo);
-        given(requestData.authorisation()).willReturn(authToken);
-        given(requestData.userId()).willReturn(userId);
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(userInfo);
+        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+        given(requestData.userId()).willReturn(USER_ID);
 
         documentDownloadService = new DocumentDownloadService(authTokenGenerator,
             documentDownloadClient,
@@ -93,8 +95,11 @@ public class DocumentDownloadServiceTest {
         assertThat(documentContents).isNotEmpty();
         assertThat(documentContents).isEqualTo(expectedDocumentContents);
 
-        verify(documentDownloadClient).downloadBinary(anyString(), anyString(),
-            eq(join(",", CAFCASS.getRoles())), anyString(), anyString());
+        verify(documentDownloadClient).downloadBinary(AUTH_TOKEN,
+            SERVICE_AUTH_TOKEN,
+            join(",", CAFCASS.getRoles()),
+            USER_ID,
+            "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary");
     }
 
     @Test

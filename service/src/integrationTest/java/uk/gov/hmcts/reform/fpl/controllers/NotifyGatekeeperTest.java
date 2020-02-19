@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.handlers.PopulateStandardDirectionsHandler;
 import uk.gov.service.notify.NotificationClient;
 
@@ -50,7 +51,8 @@ class NotifyGatekeeperTest extends AbstractControllerTest {
     void shouldReturnPopulatedDirectionsByRoleInSubmittedCallback() throws Exception {
         postSubmittedEvent(callbackRequest());
 
-        verify(populateStandardDirectionsHandler).populateStandardDirections(any());
+        verify(populateStandardDirectionsHandler).populateStandardDirections(any(
+            PopulateStandardDirectionsEvent.class));
     }
 
     @Test
