@@ -34,5 +34,14 @@
     "ElementLabel": "Full name",
     "FieldShowCondition": "judgeTitle=\"MAGISTRATES\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "JudgeAndLegalAdvisor",
+    "ListElementCode": "legalAdvisorName",
+    "ElementLabel": "Legal advisor's full name",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
   }
 ]
