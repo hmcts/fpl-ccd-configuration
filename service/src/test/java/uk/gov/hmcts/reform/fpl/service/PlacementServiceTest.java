@@ -126,49 +126,6 @@ class PlacementServiceTest {
     }
 
     @Nested
-    class HasPlacementApplicationChanged {
-
-        @Test
-        void shouldReturnTrueForNoApplicationInCaseDataBefore() {
-            Element<Child> child = testChild();
-            Placement placement = testPlacement(child);
-            Placement placementBefore = placement.toBuilder().application(null).build();
-
-            CaseData caseData = caseWithPlacement(List.of(child), wrapElements(placement));
-            CaseData caseDataBefore = caseWithPlacement(List.of(child), wrapElements(placementBefore));
-
-            assertThat(placementService.hasPlacementApplicationChanged(caseData, caseDataBefore, child))
-                .isEqualTo(true);
-        }
-
-        @Test
-        void shouldReturnFalseForUnchangedPlacement() {
-            Element<Child> child = testChild();
-            List<Element<Placement>> placements = wrapElements(testPlacement(child));
-
-            CaseData caseData = caseWithPlacement(List.of(child), placements);
-            CaseData caseDataBefore = caseWithPlacement(List.of(child), placements);
-
-            assertThat(placementService.hasPlacementApplicationChanged(caseData, caseDataBefore, child))
-                .isEqualTo(false);
-        }
-
-        @Test
-        void shouldReturnTrueForChangedPlacement() {
-            Element<Child> child = testChild();
-            Placement placement = testPlacement(child, DocumentReference.builder().binaryUrl("binary_url_new").build());
-            Placement placementBefore = testPlacement(child,
-                DocumentReference.builder().binaryUrl("binary_url_before").build());
-
-            CaseData caseData = caseWithPlacement(List.of(child), wrapElements(placement));
-            CaseData caseDataBefore = caseWithPlacement(List.of(child), wrapElements(placementBefore));
-
-            assertThat(placementService.hasPlacementApplicationChanged(caseData, caseDataBefore, child))
-                .isEqualTo(true);
-        }
-    }
-
-    @Nested
     class GetPlacement {
 
         @Test

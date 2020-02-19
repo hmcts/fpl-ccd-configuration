@@ -10,11 +10,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -29,8 +32,12 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.OTHER;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
@@ -64,17 +71,10 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         Element<Placement> child2Placement = element(testPlacement(child2, testDocument()));
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(CASE_ID)
-                .jurisdiction("PUBLICLAW")
-                .caseTypeId("CARE_SUPERVISION_EPO")
-                .data(ImmutableMap.<String, Object>builder()
-                    .putAll(buildNotificationData())
-                    .putAll(buildPlacementData(List.of(child1, child2), List.of(child2Placement, child1Placement),
-                        child2.getId()))
-                    .build())
-                .build())
-            .caseDetailsBefore(CaseDetails.builder().data(new HashMap<>()).build())
+            .caseDetails(buildCaseDetails(buildPlacementData(List.of(child1, child2),
+                List.of(child2Placement, child1Placement),
+                child2.getId())))
+            .caseDetailsBefore(buildCaseDetails(new HashMap<>()))
             .build();
 
         postSubmittedEvent(callbackRequest);
@@ -89,14 +89,9 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     void shouldNotSendANotificationWhenUploadingPreviousChildPlacement() throws Exception {
         Element<Child> child1 = testChild();
         Element<Placement> child1Placement = element(testPlacement(child1, testDocument()));
-        CaseDetails unchangedCaseDetails = CaseDetails.builder()
-            .id(CASE_ID)
-            .jurisdiction("PUBLICLAW")
-            .caseTypeId("CARE_SUPERVISION_EPO")
-            .data(ImmutableMap.<String, Object>builder().putAll(buildNotificationData())
-                .putAll(buildPlacementData(List.of(child1), List.of(child1Placement), child1.getId()))
-                .build())
-            .build();
+        CaseDetails unchangedCaseDetails = buildCaseDetails((buildPlacementData(List.of(child1),
+            List.of(child1Placement),
+            child1.getId())));
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(unchangedCaseDetails)
@@ -109,30 +104,49 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldTriggerSendDocumentIfPlacementApplicationHasChanged() {
-        DocumentReference expectedDocumentReference = DocumentReference.builder().binaryUrl("binary_url_new").build();
+    void shouldTriggerSendDocumentForUpdatedPlacementOrderDocuments() {
         Element<Child> child = testChild();
-
-        Placement placementBefore = testPlacement(child, DocumentReference.builder().binaryUrl("binary_url").build());
-        Placement placement = testPlacement(child, expectedDocumentReference);
-
-        Map<String, Object> caseDataBefore = buildPlacementData(List.of(child),
-            wrapElements(placementBefore),
-            child.getId());
-        Map<String, Object> caseData = buildPlacementData(List.of(child), wrapElements(placement), child.getId());
-
-        CaseDetails caseDetailsBefore = CaseDetails.builder()
-            .id(CASE_ID)
-            .jurisdiction("PUBLICLAW")
-            .caseTypeId("CARE_SUPERVISION_EPO")
-            .data(ImmutableMap.<String, Object>builder()
-                .putAll(buildNotificationData())
-                .putAll(caseDataBefore)
-                .build())
+        Placement placementBefore = testPlacement(child);
+        Placement placement = testPlacement(child);
+        DocumentReference updatedDocumentReference = DocumentReference.builder().binaryUrl("updated_url0").build();
+        PlacementOrderAndNotices updatedPlacementOrderAndNotices = PlacementOrderAndNotices.builder()
+            .type(PLACEMENT_ORDER)
+            .document(updatedDocumentReference)
             .build();
-        CaseDetails caseDetails = caseDetailsBefore.toBuilder()
-            .data(ImmutableMap.<String, Object>builder().putAll(buildNotificationData()).putAll(caseData).build())
-            .build();
+
+        List<PlacementOrderAndNotices> placementOrderAndNoticesBefore = List.of(
+            testPlacementOrderAndNotices(PLACEMENT_ORDER, "url0"),
+            testPlacementOrderAndNotices(PLACEMENT_ORDER, "url1"),
+            testPlacementOrderAndNotices(NOTICE_OF_PROCEEDINGS, "url2"),
+            testPlacementOrderAndNotices(NOTICE_OF_HEARING, "url3"),
+            testPlacementOrderAndNotices(OTHER, "url4"),
+            testPlacementOrderAndNotices(NOTICE_OF_PLACEMENT_ORDER, "url5"));
+        List<PlacementOrderAndNotices> placementOrderAndNotices = List.of(
+            updatedPlacementOrderAndNotices,
+            testPlacementOrderAndNotices(PLACEMENT_ORDER, "url1"),
+            testPlacementOrderAndNotices(NOTICE_OF_PROCEEDINGS, "updated_url2"),
+            testPlacementOrderAndNotices(NOTICE_OF_HEARING, "updated_url3"),
+            testPlacementOrderAndNotices(OTHER, "updated_url4"),
+            testPlacementOrderAndNotices(NOTICE_OF_PLACEMENT_ORDER, "updated_url5"));
+
+        List<Element<PlacementOrderAndNotices>> placementOrderAndNoticesElementsBefore =
+            placementOrderAndNoticesBefore.stream()
+            .map(ElementUtils::element)
+            .collect(toList());
+        List<Element<PlacementOrderAndNotices>> placementOrderAndNoticesElements =
+            placementOrderAndNotices
+            .stream()
+            .map(ElementUtils::element)
+            .collect(toList());
+        placementBefore.setOrderAndNotices(placementOrderAndNoticesElementsBefore);
+        placement.setOrderAndNotices(placementOrderAndNoticesElements);
+
+        CaseDetails caseDetailsBefore = buildCaseDetails((buildPlacementData(List.of(child),
+            List.of(element(placementBefore)),
+            child.getId())));
+        CaseDetails caseDetails = buildCaseDetails((buildPlacementData(List.of(child),
+            List.of(element(placement)),
+            child.getId())));
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -145,31 +159,26 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
             "CARE_SUPERVISION_EPO",
             CASE_ID,
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", expectedDocumentReference));
+            Map.of("documentToBeSent", updatedDocumentReference));
     }
 
-    @Test
-    void shouldNotTriggerSendDocumentIfPlacementApplicationHasNotChanged() {
-        Element<Child> child = testChild();
-        Element<Placement> childPlacement = element(testPlacement(child, testDocument()));
-        CaseDetails unchangedCaseDetails = CaseDetails.builder()
+    private PlacementOrderAndNotices testPlacementOrderAndNotices(
+        PlacementOrderAndNotices.PlacementOrderAndNoticesType type, String documentBinaryUrl) {
+        return PlacementOrderAndNotices.builder()
+            .type(type)
+            .document(DocumentReference.builder().binaryUrl(documentBinaryUrl).build())
+            .build();
+    }
+
+    private CaseDetails buildCaseDetails(Map<String, Object> data) {
+        return CaseDetails.builder()
             .id(CASE_ID)
             .jurisdiction("PUBLICLAW")
             .caseTypeId("CARE_SUPERVISION_EPO")
-            .data(ImmutableMap.<String, Object>builder()
-                .putAll(buildNotificationData())
-                .putAll(buildPlacementData(List.of(child), List.of(childPlacement), child.getId()))
+            .data(ImmutableMap.<String, Object>builder().putAll(buildNotificationData())
+                .putAll(data)
                 .build())
             .build();
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(unchangedCaseDetails)
-            .caseDetailsBefore(unchangedCaseDetails.toBuilder().build())
-            .build();
-
-        postSubmittedEvent(callbackRequest);
-
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any());
     }
 
     private Map<String, Object> buildPlacementData(List<Element<Child>> children,

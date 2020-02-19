@@ -42,16 +42,6 @@ public class PlacementService {
         return ElementUtils.asDynamicList(children, selectedChildId, labelProducer);
     }
 
-    public boolean hasPlacementApplicationChanged(CaseData caseData, CaseData caseDataBefore, Element<Child> child) {
-        DocumentReference beforePlacementApplication = getPlacement(caseDataBefore, child).getApplication();
-        if (beforePlacementApplication == null) {
-            return true;
-        }
-
-        return !getPlacement(caseData, child).getApplication().getBinaryUrl()
-            .equals(beforePlacementApplication.getBinaryUrl());
-    }
-
     public Placement getPlacement(CaseData caseData, Element<Child> child) {
         return findPlacement(caseData.getPlacements(), child.getId())
             .map(Element::getValue)
