@@ -135,20 +135,17 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
     void shouldNotTriggerSendDocumentEventWhenDraft() {
         postSubmittedEvent(buildCallbackRequest(DRAFT));
 
-        verify(coreCaseDataService, never()).triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", documentReference));
+        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), eq(SEND_DOCUMENT_EVENT), any());
     }
 
     @Test
     void shouldTriggerSDOEventWhenSubmitted() throws Exception {
         postSubmittedEvent(buildCallbackRequest(SEALED));
 
-        verify(notificationClient).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq("cafcass@cafcass.com"),
-            eq(cafcassParameters()), eq(String.valueOf(CASE_ID))
+        verify(notificationClient).sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
+            "cafcass@cafcass.com",
+            cafcassParameters(),
+            String.valueOf(CASE_ID)
         );
     }
 
@@ -171,8 +168,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             .put("leadRespondentsName", "Moley,")
             .put("hearingDate", "20 October 2020")
             .put("reference", String.valueOf(CASE_ID))
-            .put("caseUrl",
-                String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, String.valueOf(CASE_ID)))
+            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_ID))
             .build();
     }
 
@@ -259,8 +255,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
         void submittedCallbackShouldNotTriggerStateChangeWhenOrderIsStillInDraftState() {
             makeRequestWithOrderStatus(OrderStatus.DRAFT);
 
-            verify(coreCaseDataService, never()).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID,
-                PREPARE_FOR_HEARING_EVENT);
+            verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), eq(PREPARE_FOR_HEARING_EVENT));
         }
 
         private void makeRequestWithOrderStatus(OrderStatus status) {

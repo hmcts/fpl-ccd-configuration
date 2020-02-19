@@ -12,8 +12,6 @@ management:
 spring:
   application:
     name: fpl-service
-  main:
-    allow-bean-definition-overriding: true
 
 idam:
   s2s-auth:
@@ -30,8 +28,6 @@ ld:
 
 spring:
   profiles: integration-test
-  main:
-    allow-bean-definition-overriding: true
   mail:
     host: 127.0.0.1
     port: 1025
@@ -136,8 +132,6 @@ feature:
 
 spring:
   profiles: local
-  main:
-    allow-bean-definition-overriding: true
   security:
     enabled: true
     oauth2:

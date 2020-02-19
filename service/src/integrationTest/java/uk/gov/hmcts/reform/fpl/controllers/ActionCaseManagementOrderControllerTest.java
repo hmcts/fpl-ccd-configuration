@@ -95,7 +95,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     private static final String SEND_DOCUMENT_KEY = "internal-change:SEND_DOCUMENT";
     private static final UUID ID = randomUUID();
 
-    private final DocumentReference documentReference = buildFromDocument(document());
+    private final DocumentReference cmoDocument = buildFromDocument(document());
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
     @Autowired
@@ -340,7 +340,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     private CaseManagementOrder expectedCaseManagementOrder() {
         return CaseManagementOrder.builder()
-            .orderDoc(documentReference)
+            .orderDoc(cmoDocument)
             .id(ID)
             .directions(emptyList())
             .action(OrderAction.builder()
@@ -432,7 +432,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             REPRESENTATIVES, representatives,
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)
-                .orderDoc(documentReference)
+                .orderDoc(cmoDocument)
                 .action(OrderAction.builder()
                     .type(SEND_TO_ALL_PARTIES)
                     .build())
@@ -468,7 +468,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             CASE_TYPE,
             12345L,
             SEND_DOCUMENT_KEY,
-            Map.of("documentToBeSent", documentReference));
+            Map.of("documentToBeSent", cmoDocument));
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),

@@ -101,7 +101,7 @@ public class PlacementController {
         caseProperties.put("placementsWithoutPlacementOrder", placementService.withoutPlacementOrder(updatedPlacement));
         caseProperties.put("placements", placementService.withoutConfidentialData(updatedPlacement));
 
-        removeTemporaryFields(caseDetails, "placementChildName", "singleChild");
+        removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
@@ -119,6 +119,13 @@ public class PlacementController {
 
         sendNotificationForNewPlacementOrder(callbackRequest, caseDetails, caseData, caseDataBefore);
         sendNotificationForNewNoticeOfPlacementOrder(callbackRequest, caseData, caseDataBefore);
+
+        UUID childId = getSelectedChildId(caseDetails, caseData);
+        Element<Child> child = placementService.getChild(caseData, childId);
+        if (placementService.hasPlacementApplicationChanged(caseData, caseDataBefore, child)) {
+            triggerSendDocumentEvent(caseDetails,
+                placementService.getPlacement(caseData, child));
+        }
     }
 
     private void sendNotificationForNewPlacementOrder(CallbackRequest callbackRequest,
@@ -135,15 +142,6 @@ public class PlacementController {
         if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest);
         }
-
-        var placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class);
-        coreCaseDataService.triggerEvent(
-            callbackRequest.getCaseDetails().getJurisdiction(),
-            callbackRequest.getCaseDetails().getCaseTypeId(),
-            callbackRequest.getCaseDetails().getId(),
-            "internal-change:SEND_DOCUMENT",
-            Map.of("documentToBeSent", placement.getApplication())
-        );
     }
 
     private void sendNotificationForNewNoticeOfPlacementOrder(CallbackRequest callbackRequest,
@@ -158,6 +156,14 @@ public class PlacementController {
                 callbackRequest,
                 requestData.authorisation(),
                 requestData.userId())));
+    }
+
+    private void triggerSendDocumentEvent(CaseDetails caseDetails, Placement placement) {
+        coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
+            caseDetails.getCaseTypeId(),
+            caseDetails.getId(),
+            "internal-change:SEND_DOCUMENT",
+            Map.of("documentToBeSent", placement.getApplication()));
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {

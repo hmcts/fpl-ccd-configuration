@@ -131,37 +131,36 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldTriggerOrderEventWhenSubmitted() throws Exception {
+    void shouldTriggerOrderAndSendDocumentEventsWhenSubmitted() throws Exception {
         String expectedCaseReference = "19898989";
-        postSubmittedEvent(buildCallbackRequest());
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
-    }
-
-    @Test
-    void submittedCallbackShouldTriggerSendDocumentEvent() {
         String event = "internal-change:SEND_DOCUMENT";
-        postSubmittedEvent(buildCallbackRequest());
+        DocumentReference lastOrderDocumentReference = DocumentReference.builder()
+            .filename("C21 3.pdf")
+            .url("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
+            .binaryUrl("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
+            .build();
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, event, Map.of(
-            "documentToBeSent", DocumentReference.builder()
-                .filename("C21 3.pdf")
-                .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
-                .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
-                .build()
-        ));
+        postSubmittedEvent(buildCallbackRequest(lastOrderDocumentReference));
+
+        verify(notificationClient).sendEmail(ORDER_NOTIFICATION_TEMPLATE,
+            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            expectedOrderLocalAuthorityParameters(lastOrderDocumentReference),
+            expectedCaseReference);
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            CASE_ID,
+            event,
+            Map.of("documentToBeSent", lastOrderDocumentReference));
     }
 
-    private CallbackRequest buildCallbackRequest() {
+    private CallbackRequest buildCallbackRequest(DocumentReference lastOrderDocumentReference) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(CASE_ID)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .data(ImmutableMap.of(
-                    "orderCollection", createOrders(),
+                    "orderCollection", createOrders(lastOrderDocumentReference),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
                     "respondents1", createRespondents(),
                     "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
@@ -170,13 +169,12 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private Map<String, Object> commonNotificationParameters() {
-        final String documentUrl = "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+    private Map<String, Object> commonNotificationParameters(DocumentReference documentReference) {
         final String subjectLine = "Jones, " + FAMILY_MAN_CASE_NUMBER;
 
         return ImmutableMap.<String, Object>builder()
             .put("subjectLine", subjectLine)
-            .put("linkToDocument", documentUrl)
+            .put("linkToDocument", documentReference.getBinaryUrl())
             .put("hearingDetailsCallout", subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(
                 dateIn3Months.toLocalDate(), FormatStyle.MEDIUM))
             .put("reference", "19898989")
@@ -184,9 +182,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private Map<String, Object> expectedOrderLocalAuthorityParameters() {
+    private Map<String, Object> expectedOrderLocalAuthorityParameters(DocumentReference documentReference) {
         return ImmutableMap.<String, Object>builder()
-            .putAll(commonNotificationParameters())
+            .putAll(commonNotificationParameters(documentReference))
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
             .build();
     }

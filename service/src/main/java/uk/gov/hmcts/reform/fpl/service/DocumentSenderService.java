@@ -31,8 +31,8 @@ public class DocumentSenderService {
     public List<SentDocument> send(DocumentReference mainDocument, List<Representative> representativesServedByPost,
                                    Long caseId, String familyManCaseNumber) {
         List<SentDocument> sentDocuments = new ArrayList<>();
+        byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocument.getBinaryUrl());
         for (Representative representative : representativesServedByPost) {
-            byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocument.getBinaryUrl());
             byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,
                 caseId,
                 representative).getBytes();
