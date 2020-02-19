@@ -29,8 +29,8 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
@@ -159,13 +159,14 @@ public class PlacementController {
         Element<Child> child = placementService.getChild(caseData, childId);
         Placement placement = placementService.getPlacement(caseData, child);
 
-        Stream<DocumentReference> placementOrdersDocuments = unwrapElements(placement.getOrderAndNotices())
+        List<DocumentReference> placementOrdersDocuments = unwrapElements(placement.getOrderAndNotices())
             .stream()
             .filter(p -> p.getType() == PLACEMENT_ORDER)
-            .map(PlacementOrderAndNotices::getDocument);
+            .map(PlacementOrderAndNotices::getDocument)
+            .collect(toList());
 
         getUpdatedDocumentsUrls(caseData, caseDataBefore, PLACEMENT_ORDER)
-            .forEach(url -> placementOrdersDocuments.filter(
+            .forEach(url -> placementOrdersDocuments.stream().filter(
                 documentReference -> url.equals(documentReference.getBinaryUrl()))
                 .findFirst()
                 .ifPresent(updatedDocumentReference -> triggerSendDocumentEvent(caseDetails,
