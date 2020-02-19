@@ -1,4 +1,5 @@
-  [{
+[
+  {
     "LiveFrom": "01/01/2017",
     "ID": "AllocatedJudge",
     "CaseEventID": "allocatedJudge",
@@ -7,5 +8,38 @@
     "EventElementLabel": "Judge or magistrate's title",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
-  }
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocatedJudge",
+    "CaseEventID": "allocatedJudge",
+    "CaseFieldID": "allocatedJudge",
+    "ListElementCode": "otherTitle",
+    "EventElementLabel": "Title",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "judgeTitle=\"OTHER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocatedJudge",
+    "CaseEventID": "allocatedJudge",
+    "CaseFieldID": "allocatedJudge",
+    "ListElementCode": "judgeLastName",
+    "EventElementLabel": "Last name",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "judgeTitle!=\"MAGISTRATES\" AND judgeTitle!=\"\""
+  },
+    {
+      "LiveFrom": "01/01/2017",
+      "ID": "AllocatedJudge",
+      "CaseEventID": "allocatedJudge",
+      "CaseFieldID": "allocatedJudge",
+      "ListElementCode": "judgeFullName",
+      "EventElementLabel": "Full name",
+      "FieldDisplayOrder": 3,
+      "DisplayContext": "MANDATORY",
+      "FieldShowCondition": "judgeTitle=\"MAGISTRATES\""
+    }
   ]
