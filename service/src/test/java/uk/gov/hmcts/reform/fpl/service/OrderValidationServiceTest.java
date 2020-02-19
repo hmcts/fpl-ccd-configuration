@@ -43,8 +43,7 @@ public class OrderValidationServiceTest {
         List<String> returnedErrors = validationService.validate(caseData);
 
         assertThat(returnedErrors)
-            .contains("This standard directions order does not have a hearing associated with it. "
-                + "Please enter a hearing date and resubmit the SDO");
+            .contains("You need to enter a hearing date.");
     }
 
     @Test
@@ -55,7 +54,7 @@ public class OrderValidationServiceTest {
         List<String> returnedErrors = validationService.validate(caseData);
 
         assertThat(returnedErrors)
-            .contains("Enter allocated judge");
+            .contains("You need to enter the allocated judge.");
     }
 
     @Test

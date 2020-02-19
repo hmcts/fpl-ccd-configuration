@@ -390,8 +390,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
 
             assertThat(response.getErrors())
-                .containsOnly("This standard directions order does not have a hearing associated with it. "
-                    + "Please enter a hearing date and resubmit the SDO");
+                .containsOnly("You need to enter a hearing date.");
         }
 
         @Test
@@ -404,7 +403,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
 
             assertThat(response.getErrors())
-                .containsOnly("Enter allocated judge");
+                .containsOnly("You need to enter the allocated judge.");
         }
 
         private List<Element<Direction>> buildDirectionWithShowHideValuesRemoved(UUID uuid) {

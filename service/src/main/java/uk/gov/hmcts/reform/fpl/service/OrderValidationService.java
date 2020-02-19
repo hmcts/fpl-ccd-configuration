@@ -16,13 +16,12 @@ public class OrderValidationService {
         List<String> validationErrors = new ArrayList<>();
         if (SEALED == caseData.getStandardDirectionOrder().getOrderStatus()
             && isEmpty(caseData.getHearingDetails())) {
-            validationErrors.add("This standard directions order does not have a hearing associated with it. "
-                + "Please enter a hearing date and resubmit the SDO");
+            validationErrors.add("You need to enter a hearing date.");
         }
 
         if (SEALED == caseData.getStandardDirectionOrder().getOrderStatus()
             && isNull(caseData.getAllocatedJudge())) {
-            validationErrors.add("Enter allocated judge");
+            validationErrors.add("You need to enter the allocated judge.");
         }
 
         return validationErrors;
