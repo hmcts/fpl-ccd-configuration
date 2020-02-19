@@ -17,8 +17,7 @@
     "ListElementCode": "otherTitle",
     "EventElementLabel": "Title",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "judgeTitle=\"OTHER\""
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -28,8 +27,7 @@
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "judgeTitle!=\"MAGISTRATES\" AND judgeTitle!=\"\""
+    "DisplayContext": "MANDATORY"
   },
     {
       "LiveFrom": "01/01/2017",
@@ -39,7 +37,6 @@
       "ListElementCode": "judgeFullName",
       "EventElementLabel": "Full name",
       "FieldDisplayOrder": 3,
-      "DisplayContext": "MANDATORY",
-      "FieldShowCondition": "judgeTitle=\"MAGISTRATES\""
+      "DisplayContext": "MANDATORY"
     }
   ]
