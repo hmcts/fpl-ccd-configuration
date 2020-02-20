@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
@@ -32,20 +32,20 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @Service
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final RepresentativeService representativeService;
     private final ObjectMapper objectMapper;
 
     public OrderIssuedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                            ObjectMapper objectMapper,
                                            HearingBookingService hearingBookingService,
-                                           LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
+                                           HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                            DateFormatterService dateFormatterService,
                                            RepresentativeService representativeService) {
         super(uiBaseUrl, dateFormatterService, hearingBookingService);
         this.objectMapper = objectMapper;
         this.representativeService = representativeService;
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
+        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
     public Map<String, Object> buildOrderNotificationParametersForHmctsAdmin(final CaseDetails caseDetails,
@@ -58,11 +58,12 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(representativesServedByPost);
 
         return ImmutableMap.<String, Object>builder()
-            .put("callout", issuedOrderType == CMO ? "^" + buildSubjectLineWithHearingBookingDateSuffix(
-                buildSubjectLine(caseData), caseData.getHearingDetails()) : "")
+            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
+                ? "^" + buildSubjectLineWithHearingBookingDateSuffix(buildSubjectLine(caseData),
+                caseData.getHearingDetails()) : "")
             .put("needsPosting", isNotEmpty(representativesServedByPost) ? "Yes" : "No")
             .put("doesNotNeedPosting", representativesServedByPost.isEmpty() ? "Yes" : "No")
-            .put("courtName", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
+            .put("courtName", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
             .putAll(caseUrlOrDocumentLink(isNotEmpty(representativesServedByPost), documentContents,
                 caseDetails.getId()))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))

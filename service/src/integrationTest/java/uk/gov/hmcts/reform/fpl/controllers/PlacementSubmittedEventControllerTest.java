@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOr
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
@@ -194,7 +194,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq("admin@family-court.com"),
-                eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
                 eq(CASE_ID));
 
             verifyZeroInteractions(notificationClient);

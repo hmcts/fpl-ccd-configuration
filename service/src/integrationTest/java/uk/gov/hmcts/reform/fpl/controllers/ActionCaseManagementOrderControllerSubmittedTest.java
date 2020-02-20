@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,11 +20,14 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -50,13 +54,14 @@ import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HE
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedCMOParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
 
 @ActiveProfiles("integration-test")
@@ -73,6 +78,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     private static final String EVENT_KEY = "internal-change:CMO_PROGRESSION";
     private static final UUID ID = randomUUID();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
+    private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -82,6 +88,9 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @Autowired
+    private DateFormatterService dateFormatterService;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> dataCaptor;
@@ -230,7 +239,8 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     }
 
     private Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParameters(String recipientName) {
-        final String subjectLine = "Jones, SACCCCCCCC5676576567";
+        final String subjectLine = "Jones, SACCCCCCCC5676576567, hearing "
+            + dateFormatterService.formatLocalDateToString(dateIn3Months.toLocalDate(), FormatStyle.MEDIUM);
         return ImmutableMap.<String, Object>builder()
             .put("localAuthorityNameOrRepresentativeFullName", recipientName)
             .put("subjectLineWithHearingDate", subjectLine)
@@ -245,6 +255,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+            "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
             REPRESENTATIVES, representatives,
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)
@@ -289,7 +300,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq("admin@family-court.com"),
-            eq(getExpectedCMOParametersForAdminWhenNoRepresentativesServedByPost()),
+            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
             eq(CASE_ID));
     }
 
