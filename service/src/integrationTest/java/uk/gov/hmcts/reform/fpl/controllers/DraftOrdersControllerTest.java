@@ -292,6 +292,8 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                 .caseDetails(CaseDetails.builder()
                     .data(createCaseDataMap(directions)
                         .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                        .put("caseLocalAuthority", "example")
+                        .put("dateSubmitted", LocalDate.now().toString())
                         .build())
                     .build())
                 .build();
@@ -343,6 +345,8 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                             .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
                             .venue("EXAMPLE")
                             .build()))
+                        .put("caseLocalAuthority", "example")
+                        .put("dateSubmitted", LocalDate.now().toString())
                         .build())
                     .build())
                 .build();

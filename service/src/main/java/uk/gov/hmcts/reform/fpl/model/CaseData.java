@@ -279,6 +279,11 @@ public class CaseData {
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
     }
 
+    public Optional<Applicant> findApplicant(int seqNo) {
+        return isEmpty(getApplicants()) || getApplicants().size() <= seqNo
+            ? empty() : Optional.of(getApplicants().get(seqNo).getValue());
+    }
+
     @JsonIgnore
     public String getFurtherDirectionsText() {
         return Optional.ofNullable(orderFurtherDirections).map(FurtherDirections::getDirections).orElse("");

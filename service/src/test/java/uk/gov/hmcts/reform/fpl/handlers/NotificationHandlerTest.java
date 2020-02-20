@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
@@ -55,12 +54,8 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -144,9 +139,6 @@ class NotificationHandlerTest {
     private GeneratedOrderEmailContentProvider orderEmailContentProvider;
 
     @Mock
-    private DateFormatterService dateFormatterService;
-
-    @Mock
     private IdamApi idamApi;
 
     @Mock
@@ -197,12 +189,6 @@ class NotificationHandlerTest {
 
             given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
                 .willReturn("Example Local Authority");
-
-            final LocalDate hearingDate = LocalDate.now().plusMonths(4);
-
-            given(dateFormatterService.formatLocalDateToString(hearingDate, FormatStyle.MEDIUM))
-                .willReturn(hearingDate.format(
-                    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK)));
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));

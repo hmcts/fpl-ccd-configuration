@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
@@ -83,8 +83,8 @@ public class CommonCaseDataExtractionService {
 
     public Map<String, Object> getJudgeAndLegalAdvisorData(final JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return ImmutableMap.of(
-            "judgeTitleAndName", defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor), EMPTY_PLACEHOLDER),
-            "legalAdvisorName", defaultIfBlank(getLegalAdvisorName(judgeAndLegalAdvisor), EMPTY_PLACEHOLDER)
+            "judgeTitleAndName", defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor), DEFAULT),
+            "legalAdvisorName", defaultIfBlank(getLegalAdvisorName(judgeAndLegalAdvisor), DEFAULT)
         );
     }
 
