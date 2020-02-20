@@ -147,7 +147,7 @@ class CommonCaseDataExtractionServiceTest {
             .getJudgeAndLegalAdvisorData(null);
 
         assertThat(judgeAndLegalAdvisorData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(judgeAndLegalAdvisorData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(judgeAndLegalAdvisorData.get("legalAdvisorName")).isEqualTo("");
     }
 
 
