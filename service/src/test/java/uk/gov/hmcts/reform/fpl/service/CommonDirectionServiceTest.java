@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
@@ -155,6 +157,19 @@ class CommonDirectionServiceTest {
             .dateToBeCompletedBy(null)
             .assignee(LOCAL_AUTHORITY)
             .build());
+    }
+
+    @Test
+    void numberDirections_shouldApplyCorrectNumberingWhenDirectionsAreMarkedAsNotNeeded() {
+        List<Element<Direction>> directions = directionsMarkedAsRemoved();
+
+        List<String> numberedDirectionTypes = service.numberDirections(directions).stream()
+            .map(direction -> direction.getValue().getDirectionType())
+            .collect(toList());
+
+        List<String> expectedDirectionTypes = asList("2. direction", "3. direction", "4. direction");
+
+        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionTypes);
     }
 
     private DirectionConfiguration getDirectionConfig() {
@@ -443,6 +458,15 @@ class CommonDirectionServiceTest {
             .build()));
     }
 
+    private List<Element<Direction>> buildDirections(DirectionAssignee assignee, String directionNeeded) {
+        return Lists.newArrayList(element(Direction.builder()
+            .directionType("direction")
+            .directionText("example direction text")
+            .directionNeeded(directionNeeded)
+            .assignee(assignee)
+            .build()));
+    }
+
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee, UUID directionId) {
         return Lists.newArrayList(element(directionId, Direction.builder()
             .directionType("direction")
@@ -458,5 +482,16 @@ class CommonDirectionServiceTest {
                 .directionText("example direction text")
                 .custom("Yes")
                 .build()));
+    }
+
+    private List<Element<Direction>> directionsMarkedAsRemoved() {
+        return Stream.of(buildDirections(ALL_PARTIES, "Yes"),
+            buildDirections(LOCAL_AUTHORITY, "No"),
+            buildDirections(PARENTS_AND_RESPONDENTS, "No"),
+            buildDirections(CAFCASS, "Yes"),
+            buildDirections(OTHERS, "No"),
+            buildDirections(COURT, "Yes"))
+            .flatMap(Collection::stream)
+            .collect(toList());
     }
 }
