@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.HashMap;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -41,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacementOrderAndNotices;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
@@ -106,8 +105,6 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     @Test
     void shouldTriggerSendDocumentForUpdatedPlacementOrderDocuments() {
         Element<Child> child = testChild();
-        Placement placementBefore = testPlacement(child);
-        Placement placement = testPlacement(child);
         DocumentReference updatedDocumentReference = DocumentReference.builder().binaryUrl("updated_url0").build();
         PlacementOrderAndNotices updatedPlacementOrderAndNotices = PlacementOrderAndNotices.builder()
             .type(PLACEMENT_ORDER)
@@ -129,24 +126,9 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
             testPlacementOrderAndNotices(OTHER, "updated_url4"),
             testPlacementOrderAndNotices(NOTICE_OF_PLACEMENT_ORDER, "updated_url5"));
 
-        List<Element<PlacementOrderAndNotices>> placementOrderAndNoticesElementsBefore =
-            placementOrderAndNoticesBefore.stream()
-            .map(ElementUtils::element)
-            .collect(toList());
-        List<Element<PlacementOrderAndNotices>> placementOrderAndNoticesElements =
-            placementOrderAndNotices
-            .stream()
-            .map(ElementUtils::element)
-            .collect(toList());
-        placementBefore.setOrderAndNotices(placementOrderAndNoticesElementsBefore);
-        placement.setOrderAndNotices(placementOrderAndNoticesElements);
-
-        CaseDetails caseDetailsBefore = buildCaseDetails((buildPlacementData(List.of(child),
-            List.of(element(placementBefore)),
-            child.getId())));
-        CaseDetails caseDetails = buildCaseDetails((buildPlacementData(List.of(child),
-            List.of(element(placement)),
-            child.getId())));
+        CaseDetails caseDetailsBefore = buildCaseDetailsWithPlacementOrderAndNotices(placementOrderAndNoticesBefore,
+            child);
+        CaseDetails caseDetails = buildCaseDetailsWithPlacementOrderAndNotices(placementOrderAndNotices, child);
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -162,12 +144,13 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
             Map.of("documentToBeSent", updatedDocumentReference));
     }
 
-    private PlacementOrderAndNotices testPlacementOrderAndNotices(
-        PlacementOrderAndNotices.PlacementOrderAndNoticesType type, String documentBinaryUrl) {
-        return PlacementOrderAndNotices.builder()
-            .type(type)
-            .document(DocumentReference.builder().binaryUrl(documentBinaryUrl).build())
-            .build();
+    private CaseDetails buildCaseDetailsWithPlacementOrderAndNotices(
+        List<PlacementOrderAndNotices> placementOrderAndNoticesList, Element<Child> child) {
+        Placement placement = testPlacement(child, placementOrderAndNoticesList);
+
+        return buildCaseDetails((buildPlacementData(List.of(child),
+            List.of(element(placement)),
+            child.getId())));
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {

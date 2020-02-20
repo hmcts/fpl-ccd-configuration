@@ -18,8 +18,6 @@ import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -30,11 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Api
 @RestController
@@ -124,7 +120,7 @@ public class PlacementController {
 
         sendNotificationForNewPlacementOrder(callbackRequest, caseDetails, caseData, caseDataBefore);
         sendNotificationForNewNoticeOfPlacementOrder(callbackRequest, caseData, caseDataBefore);
-        triggerSendDocumentsEventForUpdatedPlacementOrderDocuments(caseDetails, caseData, caseDataBefore);
+        triggerSendDocumentEventForUpdatedPlacementOrderDocuments(caseDetails, caseData, caseDataBefore);
     }
 
     private void sendNotificationForNewPlacementOrder(CallbackRequest callbackRequest,
@@ -146,40 +142,22 @@ public class PlacementController {
     private void sendNotificationForNewNoticeOfPlacementOrder(CallbackRequest callbackRequest,
                                                               CaseData caseData,
                                                               CaseData caseDataBefore) {
-        getUpdatedDocumentsUrls(caseData, caseDataBefore, NOTICE_OF_PLACEMENT_ORDER)
+        placementService.getUpdatedDocuments(caseData, caseDataBefore, NOTICE_OF_PLACEMENT_ORDER)
             .forEach(newDocument -> applicationEventPublisher.publishEvent(new NoticeOfPlacementOrderUploadedEvent(
                 callbackRequest,
                 requestData.authorisation(),
                 requestData.userId())));
     }
 
-    private void triggerSendDocumentsEventForUpdatedPlacementOrderDocuments(CaseDetails caseDetails, CaseData caseData,
-                                                                            CaseData caseDataBefore) {
-        UUID childId = getSelectedChildId(caseDetails, caseData);
-        Element<Child> child = placementService.getChild(caseData, childId);
-        Placement placement = placementService.getPlacement(caseData, child);
-
-        List<DocumentReference> placementOrdersDocuments = unwrapElements(placement.getOrderAndNotices())
-            .stream()
-            .filter(p -> p.getType() == PLACEMENT_ORDER)
-            .map(PlacementOrderAndNotices::getDocument)
-            .collect(toList());
-
-        getUpdatedDocumentsUrls(caseData, caseDataBefore, PLACEMENT_ORDER)
-            .forEach(url -> placementOrdersDocuments.stream().filter(
-                documentReference -> url.equals(documentReference.getBinaryUrl()))
-                .findFirst()
-                .ifPresent(updatedDocumentReference -> triggerSendDocumentEvent(caseDetails,
-                    updatedDocumentReference)));
-
-    }
-
-    private void triggerSendDocumentEvent(CaseDetails caseDetails, DocumentReference documentReference) {
-        coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
-            caseDetails.getCaseTypeId(),
-            caseDetails.getId(),
-            "internal-change:SEND_DOCUMENT",
-            Map.of("documentToBeSent", documentReference));
+    private void triggerSendDocumentEventForUpdatedPlacementOrderDocuments(CaseDetails caseDetails, CaseData caseData,
+                                                                           CaseData caseDataBefore) {
+        placementService.getUpdatedDocuments(caseData, caseDataBefore, PLACEMENT_ORDER)
+            .forEach(documentReference -> coreCaseDataService.triggerEvent(
+                caseDetails.getJurisdiction(),
+                caseDetails.getCaseTypeId(),
+                caseDetails.getId(),
+                "internal-change:SEND_DOCUMENT",
+                Map.of("documentToBeSent", documentReference)));
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {
@@ -211,15 +189,5 @@ public class PlacementController {
     private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
         return isNotEmpty(previousPlacement)
             && newPlacement.getApplication().equals(previousPlacement.getApplication());
-    }
-
-    private List<String> getUpdatedDocumentsUrls(CaseData caseData, CaseData caseDataBefore,
-                                                 PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
-        List<String> documentsUrls = placementService.getBinaryUrlsForOrderAndNotices(caseData.getPlacements(), type);
-        List<String> previousDocumentsUrls =
-            placementService.getBinaryUrlsForOrderAndNotices(caseDataBefore.getPlacements(), type);
-        documentsUrls.removeAll(previousDocumentsUrls);
-
-        return documentsUrls;
     }
 }
