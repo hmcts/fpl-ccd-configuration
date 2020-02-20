@@ -29,14 +29,14 @@
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
-    {
-      "LiveFrom": "01/01/2017",
-      "ID": "AllocatedJudge",
-      "CaseEventID": "allocatedJudge",
-      "CaseFieldID": "allocatedJudge",
-      "ListElementCode": "judgeFullName",
-      "EventElementLabel": "Full name",
-      "FieldDisplayOrder": 3,
-      "DisplayContext": "MANDATORY"
-    }
-  ]
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocatedJudge",
+    "CaseEventID": "allocatedJudge",
+    "CaseFieldID": "allocatedJudge",
+    "ListElementCode": "judgeFullName",
+    "EventElementLabel": "Full name",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  }
+]
