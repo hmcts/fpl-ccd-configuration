@@ -10,7 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
-import uk.gov.hmcts.reform.fpl.model.AllocatedJudge;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -126,7 +126,7 @@ public class OrderValidationServiceTest {
             .data(ImmutableMap.<String, Object>builder()
                 .putAll(caseDataMap)
                 .putAll(Map.of(HEARING_DETAILS_KEY, createHearingBookings(LocalDateTime.now())))
-                .put("allocatedJudge", AllocatedJudge.builder().build())
+                .put("allocatedJudge", Judge.builder().build())
                 .build())
             .build();
     }

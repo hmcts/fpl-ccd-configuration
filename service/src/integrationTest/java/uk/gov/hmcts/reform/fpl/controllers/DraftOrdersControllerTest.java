@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.model.AllocatedJudge;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -25,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -339,7 +339,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                     .data(createCaseDataMap(directionWithShowHideValuesRemoved)
                         .put("standardDirectionOrder", order)
                         .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                        .put("allocatedJudge", AllocatedJudge.builder().build())
+                        .put("allocatedJudge", Judge.builder().build())
                         .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
                             .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
                             .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
@@ -382,7 +382,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                     .data(createCaseDataMap(directionWithShowHideValuesRemoved)
                         .put("standardDirectionOrder", order)
                         .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                        .put("allocatedJudge", AllocatedJudge.builder().build())
+                        .put("allocatedJudge", Judge.builder().build())
                         .build())
                     .build())
                 .build();

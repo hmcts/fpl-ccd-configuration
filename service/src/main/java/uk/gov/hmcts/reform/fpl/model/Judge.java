@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 @Data
 @Builder
 @AllArgsConstructor
-public class AllocatedJudge {
+public class Judge {
     private final JudgeOrMagistrateTitle judgeTitle;
     private final String otherTitle;
     private final String judgeLastName;
