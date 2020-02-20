@@ -18,16 +18,17 @@ Before(async (I, caseViewPage, submitApplicationEventPage, handleSupplementaryEv
     console.log(`Case ${caseId} has been submitted`);
 
     I.signOut();
-    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-    await I.navigateToCaseDetails(caseId);
-
-    await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
-    attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
-    await I.click('Continue');
-    handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
-    await I.completeEvent('Submit');
-    I.seeEventSubmissionConfirmation(config.administrationActions.bulkScan);
   }
+
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+  await I.navigateToCaseDetails(caseId);
+
+  await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
+  attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
+  await I.click('Continue');
+  handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
+  await I.completeEvent('Submit');
+  I.seeEventSubmissionConfirmation(config.administrationActions.bulkScan);
 });
 
 Scenario('HMCTS admin can see Documents scanned in with Bulk Scan', async (I, caseViewPage) => {

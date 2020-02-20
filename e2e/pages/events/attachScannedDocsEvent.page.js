@@ -32,8 +32,8 @@ module.exports = {
   enterScannedDocument(scannedDocument, file) {
     I.click('Add new');
     I.selectOption(this.fields.scannedDoc.type, scannedDocument.type);
-    I.fillField(this.fields.scannedDoc.subtype, scannedDocument.subtype);
     I.attachFile(this.fields.scannedDoc.url, file);
+    I.fillField(this.fields.scannedDoc.subtype, scannedDocument.subtype);
     I.fillField(this.fields.scannedDoc.controlNumber, scannedDocument.controlNumber);
     I.fillField(this.fields.scannedDoc.fileName, scannedDocument.fileName);
     I.fillField(this.fields.scannedDoc.scannedDate.second, scannedDocument.scannedDate.second);
