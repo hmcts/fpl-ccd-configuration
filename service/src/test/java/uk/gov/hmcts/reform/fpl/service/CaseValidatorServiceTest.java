@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.validation.Validation;
 
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -96,6 +97,7 @@ class CaseValidatorServiceTest {
             "• Enter the solicitor's email",
             "In the children section:",
             "• Tell us the names of all children in the case",
+            "• Date of birth is in the future. You cannot send this application until that date",
             "In the documents section:",
             "• Tell us the status of all documents including those that you haven't uploaded",
             "In the hearing needed section:",
@@ -259,7 +261,9 @@ class CaseValidatorServiceTest {
         return CaseData.builder()
             .caseName("Test case")
             .children1(wrapElements(Child.builder()
-                .party(ChildParty.builder().build())
+                .party(ChildParty.builder()
+                    .dateOfBirth(now().plusDays(10))
+                    .build())
                 .build()))
             .hearing(Hearing.builder().build())
             .applicants(wrapElements(Applicant.builder()
