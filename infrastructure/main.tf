@@ -162,7 +162,7 @@ module "case-service" {
     DOCUMENT_MANAGEMENT_URL                                     = "${local.DOCUMENT_MANAGEMENT_URL}"
     CORE_CASE_DATA_API_URL                                      = "${local.CORE_CASE_DATA_API_URL}"
     RD_PROFESSIONAL_API_URL                                     = "${local.RD_PROFESSIONAL_API_URL}"
-    SEND_LETTER_URL                                         = "${local.SEND_LETTER_API_URL}"
+    SEND_LETTER_URL                                             = "${local.SEND_LETTER_API_URL}"
     CCD_UI_BASE_URL                                             = "${var.ccd_ui_base_url}"
     FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING                   = "${data.azurerm_key_vault_secret.local_authority_email_to_code_mapping.value}"
     FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING                    = "${data.azurerm_key_vault_secret.local_authority_code_to_name_mapping.value}"

@@ -944,7 +944,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documentToBeSent",
-    "Label": "Documents to be sent",
+    "Label": "Document to be sent",
     "FieldType": "Document",
     "SecurityClassification": "Public"
   },

@@ -186,6 +186,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentToBeSent",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   }
 ]
