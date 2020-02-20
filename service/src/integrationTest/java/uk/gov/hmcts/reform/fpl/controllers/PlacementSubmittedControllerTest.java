@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
@@ -54,7 +55,6 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
-    private static final String JURISDICTION = "PUBLICLAW";
 
     PlacementSubmittedControllerTest() {
         super("placement");
@@ -81,15 +81,14 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient).sendEmail(
-            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, "admin@family-court.com",
-            expectedTemplateParameters(), String.valueOf(CASE_ID));
+            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            "admin@family-court.com",
+            expectedTemplateParameters(),
+            String.valueOf(CASE_ID));
 
         verify(notificationClient, never()).sendEmail(
-            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, "FamilyPublicLaw+ctsc@gmail.com",
-            expectedTemplateParameters(), String.valueOf(CASE_ID));
-
-        verify(notificationClient).sendEmail(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-            "admin@family-court.com",
+            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
             expectedTemplateParameters(),
             String.valueOf(CASE_ID));
     }
@@ -121,12 +120,16 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient, never()).sendEmail(
-            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, "admin@family-court.com",
-            expectedTemplateParameters(), String.valueOf(CASE_ID));
+            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            "admin@family-court.com",
+            expectedTemplateParameters(),
+            String.valueOf(CASE_ID));
 
         verify(notificationClient).sendEmail(
-            (NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), "FamilyPublicLaw+ctsc@gmail.com",
-            expectedTemplateParameters(), String.valueOf(CASE_ID));
+            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedTemplateParameters(),
+            String.valueOf(CASE_ID));
     }
 
     @Test

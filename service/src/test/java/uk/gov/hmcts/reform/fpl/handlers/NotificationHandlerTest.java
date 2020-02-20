@@ -398,8 +398,10 @@ class NotificationHandlerTest {
                 new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
-                eq(expectedCMOReadyForJudgeNotificationParameters), eq("12345"));
+                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE),
+                eq(COURT_EMAIL_ADDRESS),
+                eq(expectedCMOReadyForJudgeNotificationParameters),
+                eq("12345"));
         }
 
         @Test
@@ -416,8 +418,10 @@ class NotificationHandlerTest {
                 new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_INBOX),
-                eq(expectedCMOReadyForJudgeNotificationParameters), eq("12345"));
+                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE),
+                eq(CTSC_INBOX),
+                eq(expectedCMOReadyForJudgeNotificationParameters),
+                eq("12345"));
         }
 
         private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
@@ -553,8 +557,10 @@ class NotificationHandlerTest {
             new SubmittedCaseEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq(CTSC_INBOX),
-            eq(expectedParameters), eq("12345"));
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
+            eq(CTSC_INBOX),
+            eq(expectedParameters),
+            eq("12345"));
     }
 
     @Test
@@ -640,7 +646,9 @@ class NotificationHandlerTest {
             new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters),
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE),
+            eq(CAFCASS_EMAIL_ADDRESS),
+            eq(expectedParameters),
             eq("12345"));
     }
 
@@ -723,8 +731,10 @@ class NotificationHandlerTest {
             new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
-            eq(expectedParameters), eq("12345"));
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
+            eq(COURT_EMAIL_ADDRESS),
+            eq(expectedParameters),
+            eq("12345"));
     }
 
     @Test
@@ -781,8 +791,10 @@ class NotificationHandlerTest {
             new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE), eq(CTSC_INBOX),
-            eq(expectedParameters), eq("12345"));
+            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
+            eq(CTSC_INBOX),
+            eq(expectedParameters),
+            eq("12345"));
     }
 
     private Map<String, Object> getExpectedPlacementNotificationParameters() {
