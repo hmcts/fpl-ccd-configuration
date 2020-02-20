@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.AllocatedJudge;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -14,6 +14,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
@@ -67,8 +68,17 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
-            .put("JudgeTitle", "")
+            .put("judgeTitle", getJudgeTitle(caseData))
             .build();
+    }
+
+    private String getJudgeTitle(CaseData data){
+        if(data.getAllocatedJudge().getJudgeTitle() == OTHER)
+        {
+            return data.getAllocatedJudge().getOtherTitle();
+        }
+
+        return data.getAllocatedJudge().getJudgeTitle().toString();
     }
 
     private Map<String, Object> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
