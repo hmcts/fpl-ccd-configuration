@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.docmosis;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Data;
@@ -8,9 +8,11 @@ import lombok.Data;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.groupingBy;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 @Data
 @Builder(builderClassName = "Builder")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisStandardDirectionOrder {
     private final DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final String courtName;
@@ -25,9 +27,16 @@ public class DocmosisStandardDirectionOrder {
     private final List<DocmosisDirection> directions;
     private final String draftbackground;
 
-    @SuppressWarnings("unchecked")
     public Map<String, Object> toMap() {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.convertValue(this, Map.class);
+        Map<String, Object> map = mapper.convertValue(this, new TypeReference<>() {});
+
+        if (isNotEmpty(this.directions)) {
+            map.putAll(this.directions.stream().collect(groupingBy(direction -> direction.assignee.getValue())));
+        }
+
+        map.remove("directions");
+
+        return map;
     }
 }
