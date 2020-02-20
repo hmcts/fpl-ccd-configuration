@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -27,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
@@ -62,28 +59,6 @@ public class UploadC2DocumentsController {
         data.remove("temporaryC2Document");
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
-    }
-
-    @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(validateDocumentUpload(caseDetails))
-            .build();
-    }
-
-    private List<String> validateDocumentUpload(CaseDetails caseDetails) {
-        ImmutableList.Builder<String> errors = ImmutableList.builder();
-
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        if (isNull(caseData.getTemporaryC2Document().getDocument())) {
-            errors.add("You need to upload a file.");
-        }
-
-        return errors.build();
     }
 
     @PostMapping("/submitted")

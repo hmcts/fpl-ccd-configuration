@@ -24,7 +24,6 @@ import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Map;
 
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -38,8 +37,6 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
 
     private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK);
-
-    private static final String ERROR_MESSAGE = "You need to upload a file.";
 
     @MockBean
     private UserDetailsService userDetailsService;
@@ -104,24 +101,6 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
 
         assertThat(dateFormatterService.formatLocalDateToString(uploadedDateTime.toLocalDate(), FormatStyle.MEDIUM))
             .isEqualTo(dateFormatterService.formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
-    }
-
-    @Test
-    void midEventShouldNotReturnAnErrorWhenDocumentIsUploaded() {
-        Map<String, Object> data = createTemporaryC2Document();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(createCase(data));
-
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
-    }
-
-    @Test
-    void midEventShouldReturnAnErrorWhenDocumentIsNotUploaded() {
-        Map<String, Object> data = Map.of("temporaryC2Document", emptyMap());
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(createCase(data));
-
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws IOException {
