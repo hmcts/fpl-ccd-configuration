@@ -678,6 +678,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2ApplicationType",
+    "Label": "Upload C2",
+    "FieldType": "C2ApplicationType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondents_label",
     "Label": " ",
     "FieldType": "TextArea",

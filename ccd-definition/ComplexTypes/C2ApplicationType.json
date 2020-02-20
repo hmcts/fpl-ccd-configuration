@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2ApplicationType",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationTypeList",
+    "ElementLabel": "What kind of application are you making?",
+    "SecurityClassification": "Public"
+  }
+]
