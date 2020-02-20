@@ -97,11 +97,8 @@ class PlacementSubmittedControllerTest extends AbstractControllerTest {
         Element<Child> child1 = testChild();
         Element<Child> child2 = testChild();
 
-        DocumentReference child1Application = testDocument();
-        DocumentReference child2Application = testDocument();
-
-        Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
-        Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
+        Element<Placement> child1Placement = element(testPlacement(child1, DOCUMENT));
+        Element<Placement> child2Placement = element(testPlacement(child2, DOCUMENT));
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
