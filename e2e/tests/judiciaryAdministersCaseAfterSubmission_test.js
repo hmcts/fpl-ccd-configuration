@@ -87,4 +87,8 @@ Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudg
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
   await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeAnswerInTab(1, 'Allocated Judge', 'Judge or magistrate\'s title', 'Her Honour Judge');
+  I.seeAnswerInTab(2, 'Allocated Judge', 'Last name', 'Moley');
 });

@@ -117,7 +117,7 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirectionsCustomCMO;
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
-    private final AllocatedJudge allocatedJudge;
+    private final Judge allocatedJudge;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
     private final Hearing hearing;
