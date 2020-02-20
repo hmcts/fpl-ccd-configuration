@@ -254,7 +254,7 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() throws IOException, NotificationClientException {
-            CallbackRequest callbackRequest = appendEnableCtscOnCallback();
+            CallbackRequest callbackRequest = appendSendToCtscOnCallback();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
@@ -404,7 +404,7 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyCtscAdminOfCMOReadyForJudgeReviewWhenCtscIsEnabled() throws Exception {
-            CallbackRequest callbackRequest = appendEnableCtscOnCallback();
+            CallbackRequest callbackRequest = appendSendToCtscOnCallback();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
             given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
@@ -524,7 +524,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendEmailToCtscAdminWhenCtscIsEnabled() throws IOException, NotificationClientException {
-        CallbackRequest callbackRequest = appendEnableCtscOnCallback();
+        CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
@@ -767,7 +767,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldNotifyCtscAdminOfPlacementApplicationUploadWhenCtscIsEnabled() throws Exception {
-        CallbackRequest callbackRequest = appendEnableCtscOnCallback();
+        CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
@@ -820,7 +820,7 @@ class NotificationHandlerTest {
             .build();
     }
 
-    private CallbackRequest appendEnableCtscOnCallback() throws IOException {
+    private CallbackRequest appendSendToCtscOnCallback() throws IOException {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
