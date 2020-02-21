@@ -9,30 +9,20 @@ import org.junit.jupiter.params.provider.NullSource;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EDUCATION_SUPERVISION_ORDER;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EMERGENCY_PROTECTION_ORDER;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.INTERIM_CARE_ORDER;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.OTHER;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
 
 class FeeTypeTest {
     private static Stream<Arguments> orderToFeeTypeSource() {
-        return Stream.of(
-            Arguments.of(OrderType.CARE_ORDER, CARE_ORDER),
-            Arguments.of(OrderType.EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER),
-            Arguments.of(OrderType.EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER),
-            Arguments.of(OrderType.INTERIM_CARE_ORDER, INTERIM_CARE_ORDER),
-            Arguments.of(OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER),
-            Arguments.of(OrderType.OTHER, OTHER),
-            Arguments.of(OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER)
-        );
+        // Will throw an IllegalArgumentException if there is no corresponding FeeType
+        return Arrays.stream(OrderType.values())
+            .map(orderType -> Arguments.of(orderType, FeeType.valueOf(orderType.name())));
     }
 
     @ParameterizedTest

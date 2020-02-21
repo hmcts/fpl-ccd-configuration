@@ -10,6 +10,7 @@ import java.util.Objects;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 public enum FeeType {
+    // Names should match OrderType enum names exactly
     C2_WITHOUT_NOTICE,
     C2_WITH_NOTICE,
     CARE_ORDER,

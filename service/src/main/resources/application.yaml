@@ -22,7 +22,8 @@ fpl:
 
 fee:
   api:
-    url: http://fees-register-api-aat.service.core-compute-aat.internal
+    # looks like fnp are requesting that we use demo for the time being
+    url: http://fees-register-api-demo.service.core-compute-demo.internal
   parameters:
     # if these change be sure to update the appropriate wiremocks
     C2_WITHOUT_NOTICE:

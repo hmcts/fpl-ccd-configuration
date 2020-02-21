@@ -37,7 +37,7 @@ public class FeeService {
             .max(Comparator.comparing(FeeResponse::getAmount));
     }
 
-    public List<FeeResponse> getFees(List<FeeType> feeTypes) {
+    public List<FeeResponse> getFees(List<FeeType> feeTypes) throws FeignException {
         if (feeTypes == null) {
             return ImmutableList.of();
         }
@@ -49,8 +49,6 @@ public class FeeService {
     }
 
     private FeeResponse makeRequest(FeeType feeType) {
-        // TODO: 18/02/2020 what to do in event of error?
-        //  currently return null which is then filtered out
         try {
             FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
             log.debug("Making request to Fee Register with parameters : {} ", parameters);
@@ -70,7 +68,7 @@ public class FeeService {
         } catch (FeignException ex) {
             log.error("Fee response error: {} => body: \"{}\"",
                 ex.status(), ex.getMessage());
-            return null;
+            throw ex;
         }
     }
 }

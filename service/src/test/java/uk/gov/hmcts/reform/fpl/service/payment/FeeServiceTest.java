@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -42,8 +43,6 @@ class FeeServiceTest {
 
     @Nested
     class MakeRequest {
-
-
         @ParameterizedTest
         @NullAndEmptySource
         void shouldReturnAnEmptyListWhenNullOrEmptyListIsPassed(List<FeeType> list) {
@@ -64,14 +63,11 @@ class FeeServiceTest {
         }
 
         @Test
-        void shouldFilterOutValuesWhenThereIsAnErrorInTheResponse() {
-            // TODO: 18/02/2020 what do in case of error
+        void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
             when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new FeignException.BadRequest("", null));
 
-            List<FeeResponse> feeResponses = feeService.getFees(List.of(CARE_ORDER));
-
-            assertThat(feeResponses).isEmpty();
+            assertThrows(FeignException.class, () -> feeService.getFees(List.of(CARE_ORDER)));
         }
 
         @AfterEach

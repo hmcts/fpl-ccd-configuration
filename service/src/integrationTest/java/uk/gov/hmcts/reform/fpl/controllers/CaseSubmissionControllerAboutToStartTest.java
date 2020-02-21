@@ -9,11 +9,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ActiveProfiles("integration-test")
@@ -24,12 +32,15 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     @MockBean
     private UserDetailsService userDetailsService;
 
+    @MockBean
+    private FeeService feeService;
+
     CaseSubmissionControllerAboutToStartTest() {
         super("case-submission");
     }
 
     @BeforeEach
-    void mockUserNameRetrieval() {
+    void mocking() {
         given(userDetailsService.getUserName(userAuthToken)).willReturn("Emma Taylor");
     }
 
@@ -47,11 +58,20 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void shouldAddAmountToPayField() {
+        FeeResponse feeResponse = new FeeResponse();
+        feeResponse.setAmount(BigDecimal.valueOf(123));
+        feeResponse.setCode("FEE0231");
+        feeResponse.setDescription("description");
+        feeResponse.setVersion(1);
+
+        given(feeService.getFees(List.of(FeeType.CARE_ORDER))).willReturn(List.of(feeResponse));
+        given(feeService.extractFeeToUse(any())).willCallRealMethod();
+
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(Map.of())
+            .data(Map.of("orders", Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build()))
             .build());
 
-        assertThat(response.getData()).containsEntry("amountToPay", "0");
+        assertThat(response.getData()).containsEntry("amountToPay", "12300");
     }
 
     @Nested

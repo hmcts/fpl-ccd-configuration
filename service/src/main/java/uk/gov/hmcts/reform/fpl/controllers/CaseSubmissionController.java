@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import feign.FeignException;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,6 +36,7 @@ import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -68,20 +69,31 @@ public class CaseSubmissionController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        BigDecimal amount = getAmountToPay(caseData.getOrders());
+        List<String> errors = validate(caseData);
+        BigDecimal amount = null;
 
-        String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
+        try {
+            amount = getAmountToPay(caseData.getOrders());
+        } catch (FeignException ex) {
+            // TODO: 21/02/2020 Replace me in a new story
+            //  this is an error message for when the Fee Register is unavailable
+            errors.add("XXX");
+        }
 
-        data.put("submissionConsentLabel", label);
-        data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
+        if (errors.isEmpty()) {
+            String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
+
+            data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
+            data.put("submissionConsentLabel", label);
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(validate(caseData))
+            .errors(errors)
             .build();
     }
 
-    private BigDecimal getAmountToPay(Orders orders) {
+    private BigDecimal getAmountToPay(Orders orders) throws FeignException {
         List<FeeResponse> fees = feeService.getFees(FeeType.fromOrderType(
             orders == null ? null : orders.getOrderType()));
 
@@ -91,14 +103,14 @@ public class CaseSubmissionController {
     }
 
     private List<String> validate(CaseData caseData) {
-        ImmutableList.Builder<String> builder = ImmutableList.builder();
+        List<String> errors = new ArrayList<>();
 
         if (restrictionsConfiguration.getLocalAuthorityCodesForbiddenCaseSubmission()
             .contains(caseData.getCaseLocalAuthority())) {
-            builder.add("Test local authority cannot submit cases");
+            errors.add("Test local authority cannot submit cases");
         }
 
-        return builder.build();
+        return errors;
     }
 
     @PostMapping("/mid-event")
