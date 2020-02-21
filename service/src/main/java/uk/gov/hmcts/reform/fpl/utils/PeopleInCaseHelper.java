@@ -31,8 +31,7 @@ public class PeopleInCaseHelper {
         {
             return data.getAllocatedJudge().getOtherTitle();
         }
-
-        return data.getAllocatedJudge().getJudgeTitle().toString();
+        return data.getAllocatedJudge().getJudgeTitle().getLabel();
     }
 
     public static String getAllocatedJudgeName(CaseData data){

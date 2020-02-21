@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContent
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -339,6 +340,8 @@ public class NotificationHandler {
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
         log.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
+            SendEmailResponse response = notificationClient.sendEmail(templateId, email, parameters, reference);
+            System.out.println(response.getBody() + email);
             notificationClient.sendEmail(templateId, email, parameters, reference);
         } catch (NotificationClientException e) {
             log.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
