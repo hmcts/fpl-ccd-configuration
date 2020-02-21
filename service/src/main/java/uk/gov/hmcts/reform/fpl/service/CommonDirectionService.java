@@ -169,6 +169,7 @@ public class CommonDirectionService {
             .collect(toList());
     }
 
+    //TODO: numbering done for SDO in formatTitle method. Is this method needed anymore?
     /**
      * Iterates over a list of directions and adds numbers to the directionType starting from 2.
      *
