@@ -92,6 +92,10 @@ fee:
       jurisdiction2: family court
       service: public law
 
+ld:
+  user_key: FPLA
+  sdk_key:
+
 ---
 
 spring:
@@ -145,10 +149,12 @@ gateway:
 notify:
   api_key: testApiKey
 
-
 rd_professional:
   api:
     url: http://fake-rd-professional-api
+
+send-letter:
+  url: http://fake-send-letter
 
 ccd:
   ui:
@@ -262,6 +268,13 @@ rd_professional:
   api:
     url: http://localhost:8765
 
+fee:
+  api:
+    url: http://localhost:8765
+
+send-letter:
+  url: http://localhost:8765
+
 ccd:
   ui:
     base:
@@ -269,10 +282,6 @@ ccd:
 
 appinsights:
   instrumentationkey: fake-key
-
-fee:
-  api:
-    url: http://localhost:8765
 
 fpl:
   local_authority_email_to_code:
@@ -304,7 +313,3 @@ feature:
       support:
         api:
           enabled: true
-
-logging:
-  level:
-    uk.gov.hmcts.reform.fpl: debug

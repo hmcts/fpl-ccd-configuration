@@ -14,8 +14,10 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
@@ -50,12 +52,21 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String CASE_ID = "12345";
+    private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
 
     private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
+    private final DocumentReference lastOrderDocumentReference = DocumentReference.builder()
+        .filename("C21 3.pdf")
+        .url("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
+        .binaryUrl("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
+        .build();
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Autowired
     private DateFormatterService dateFormatterService;
@@ -92,6 +103,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             eq(CASE_ID));
 
         verifyZeroInteractions(notificationClient);
+        verifySendDocumentEventTriggered();
     }
 
     @Test
@@ -118,14 +130,17 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         assertThat(difference.areEqual()).isTrue();
 
         verifyZeroInteractions(notificationClient);
+        verifySendDocumentEventTriggered();
     }
 
     private CallbackRequest buildCallbackRequest() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(parseLong(CASE_ID))
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
                 .data(ImmutableMap.of(
-                    "orderCollection", createOrders(),
+                    "orderCollection", createOrders(lastOrderDocumentReference),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
                     "respondents1", createRespondents(),
                     "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
@@ -138,8 +153,10 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(parseLong(CASE_ID))
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
                 .data(Map.of(
-                    "orderCollection", createOrders(),
+                    "orderCollection", createOrders(lastOrderDocumentReference),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
                     "respondents1", createRespondents(),
                     "representatives", buildRepresentativesServedByPost(),
@@ -168,5 +185,14 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
             .build();
+    }
+
+    private void verifySendDocumentEventTriggered() {
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            parseLong(CASE_ID),
+            SEND_DOCUMENT_EVENT,
+            Map.of("documentToBeSent", lastOrderDocumentReference));
+
     }
 }

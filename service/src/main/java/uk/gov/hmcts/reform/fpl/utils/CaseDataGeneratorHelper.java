@@ -280,7 +280,7 @@ public class CaseDataGeneratorHelper {
             )).build();
     }
 
-    public static List<Element<GeneratedOrder>> createOrders() {
+    public static List<Element<GeneratedOrder>> createOrders(DocumentReference lastOrderDocumentReference) {
         return ImmutableList.of(
             Element.<GeneratedOrder>builder()
                 .value(GeneratedOrder.builder()
@@ -314,11 +314,7 @@ public class CaseDataGeneratorHelper {
                         LocalDateTime.now().plusDays(60), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
                         "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
-                    .document(DocumentReference.builder()
-                        .filename("C21 3.pdf")
-                        .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
-                        .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
-                        .build())
+                    .document(lastOrderDocumentReference)
                     .build())
                 .build());
     }

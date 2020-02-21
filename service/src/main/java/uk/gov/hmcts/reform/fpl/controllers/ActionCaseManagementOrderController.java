@@ -160,7 +160,8 @@ public class ActionCaseManagementOrderController {
                                 @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (caseData.getCaseManagementOrder() != null && caseData.getCaseManagementOrder().isInJudgeReview()) {
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+        if (caseManagementOrder != null && caseManagementOrder.isInJudgeReview()) {
             coreCaseDataService.triggerEvent(
                 callbackRequest.getCaseDetails().getJurisdiction(),
                 callbackRequest.getCaseDetails().getCaseTypeId(),
@@ -168,6 +169,13 @@ public class ActionCaseManagementOrderController {
                 "internal-change:CMO_PROGRESSION"
             );
 
+            coreCaseDataService.triggerEvent(
+                callbackRequest.getCaseDetails().getJurisdiction(),
+                callbackRequest.getCaseDetails().getCaseTypeId(),
+                callbackRequest.getCaseDetails().getId(),
+                "internal-change:SEND_DOCUMENT",
+                Map.of("documentToBeSent", caseManagementOrder.getOrderDoc())
+            );
             publishEventOnApprovedCMO(authorization, userId, callbackRequest);
         }
     }

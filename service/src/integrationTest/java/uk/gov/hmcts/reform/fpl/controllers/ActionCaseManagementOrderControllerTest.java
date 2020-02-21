@@ -11,7 +11,6 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -69,6 +68,8 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final UUID ID = randomUUID();
+
+    private final DocumentReference cmoDocument = buildFromDocument(document());
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
     @Autowired
@@ -205,7 +206,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     private CaseManagementOrder expectedCaseManagementOrder() {
         return CaseManagementOrder.builder()
-            .orderDoc(buildFromDocument(document()))
+            .orderDoc(cmoDocument)
             .id(ID)
             .directions(emptyList())
             .action(OrderAction.builder()
@@ -239,10 +240,11 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     private CaseManagementOrder getCaseManagementOrder() {
         return CaseManagementOrder.builder()
             .id(ID)
-            .status(CMOStatus.SEND_TO_JUDGE)
+            .status(SEND_TO_JUDGE)
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())
+            .orderDoc(DocumentReference.builder().build())
             .build();
     }
 
