@@ -58,6 +58,7 @@ module.exports = {
     actionCaseManagementOrder: 'Action CMO',
     complyWithDirections: 'Comply with directions',
     complyOnBehalfOf: 'Comply on behalf of others',
+    allocatedJudge: 'Allocated Judge',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
