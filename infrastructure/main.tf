@@ -112,7 +112,7 @@ data "azurerm_key_vault_secret" "robotics-notification-sender" {
 }
 
 data "azurerm_key_vault_secret" "ld-sdk-key" {
-  name          = "ld-sdk-key"
+  name      = "ld-sdk-key"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
