@@ -106,7 +106,7 @@ public class DraftOrdersController {
         Document document = getDocument(
             authorization,
             userId,
-            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap()
+            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
@@ -154,7 +154,7 @@ public class DraftOrdersController {
         Document document = getDocument(
             authorization,
             userId,
-            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap()
+            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()

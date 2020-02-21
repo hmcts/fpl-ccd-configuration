@@ -173,6 +173,13 @@ class CaseDataTest {
         assertThat(caseData.findApplicant(1)).isEqualTo(Optional.empty());
     }
 
+    @Test
+    void shouldNotFindApplicantWhenNull() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(caseData.findApplicant(0)).isEqualTo(Optional.empty());
+    }
+
     private CaseData caseData(Others.OthersBuilder othersBuilder) {
         return CaseData.builder().others(othersBuilder.build()).build();
     }

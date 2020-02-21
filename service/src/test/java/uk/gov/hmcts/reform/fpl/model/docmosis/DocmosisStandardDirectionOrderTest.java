@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.docmosis;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
@@ -25,13 +26,15 @@ class DocmosisStandardDirectionOrderTest {
         "respondentsProvided", "applicantName", "hearingBooking", "allParties", "localAuthorityDirections",
         "respondentDirections", "cafcassDirections", "otherPartiesDirections", "courtDirections", "draftbackground");
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Test
     void shouldConvertStandardDirectionOrderDirectionsToExpectedMapWhenDirectionsForAllAssignees() {
         List<DocmosisDirection> directions = directionsForAllAssignees();
 
         DocmosisStandardDirectionOrder order = order(directions);
 
-        assertThat(order.toMap()).containsExactlyInAnyOrderEntriesOf(expectedMap());
+        assertThat(order.toMap(mapper)).containsExactlyInAnyOrderEntriesOf(expectedMap());
     }
 
     @Test
@@ -42,7 +45,7 @@ class DocmosisStandardDirectionOrderTest {
             .directions(directions)
             .build();
 
-        assertThat(order.toMap()).containsOnlyKeys(DOCMOSIS_KEYS);
+        assertThat(order.toMap(mapper)).containsOnlyKeys(DOCMOSIS_KEYS);
     }
 
     @Test
@@ -53,7 +56,7 @@ class DocmosisStandardDirectionOrderTest {
 
         Stream.of(DirectionAssignee.values()).forEach(assignee -> modifiedKeys.remove(assignee.getValue()));
 
-        assertThat(order.toMap()).containsOnlyKeys(modifiedKeys);
+        assertThat(order.toMap(mapper)).containsOnlyKeys(modifiedKeys);
     }
 
     private List<DocmosisDirection> directionsForAllAssignees() {

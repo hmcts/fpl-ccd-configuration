@@ -27,8 +27,7 @@ public class DocmosisStandardDirectionOrder {
     private final List<DocmosisDirection> directions;
     private final String draftbackground;
 
-    public Map<String, Object> toMap() {
-        ObjectMapper mapper = new ObjectMapper();
+    public Map<String, Object> toMap(ObjectMapper mapper) {
         Map<String, Object> map = mapper.convertValue(this, new TypeReference<>() {});
 
         if (isNotEmpty(this.directions)) {

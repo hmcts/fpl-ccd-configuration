@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -22,13 +21,13 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static java.time.LocalTime.NOON;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.time.format.FormatStyle.LONG;
@@ -42,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.LOCAL_DATE_TIME_BY;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.LOCAL_DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -55,21 +54,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class
+    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
+    LookupTestConfig.class, CaseDataExtractionService.class, HearingBookingService.class, CommonDirectionService.class,
+    CommonCaseDataExtractionService.class, DateFormatterService.class
 })
 class CaseDataExtractionServiceTest {
-    @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
-
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String COURT_NAME = "Example Court";
-    private static final String COURT_EMAIL = "example@court.com";
-    private static final String COURT_CODE = "11";
-    private static final String CONFIG = format("%s=>%s:%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL,
-        COURT_CODE);
+    private static final String COURT_NAME = "Family Court";
     private static final LocalDate TODAY = LocalDate.now();
-
-    @Autowired
-    private HearingVenueLookUpService hearingVenueLookUpService;
 
     @MockBean
     private UserDetailsService userDetailsService;
@@ -77,24 +69,12 @@ class CaseDataExtractionServiceTest {
     @InjectMocks
     private CommonDirectionService commonDirectionService;
 
-    private DateFormatterService dateFormatterService = new DateFormatterService();
-    private HearingBookingService hearingBookingService = new HearingBookingService();
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
-    private CommonCaseDataExtractionService commonCaseDataExtraction = new CommonCaseDataExtractionService(
-        dateFormatterService, hearingVenueLookUpService);
-
     @Autowired
-    private OrdersLookupService ordersLookupService;
-
     private CaseDataExtractionService caseDataExtractionService;
 
     @BeforeEach
     void setup() {
         given(userDetailsService.getUserName(any())).willReturn("Emma Taylor");
-
-        this.caseDataExtractionService = new CaseDataExtractionService(hearingBookingService,
-            hmctsCourtLookupConfiguration, ordersLookupService, commonDirectionService, hearingVenueLookUpService,
-            commonCaseDataExtraction);
     }
 
     //TODO: there needs to be some clarity around what should happen when values are missing from template.
@@ -145,7 +125,6 @@ class CaseDataExtractionServiceTest {
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .familyManCaseNumber("123")
             .children1(emptyList())
-            .hearingDetails(emptyList())
             .dateSubmitted(TODAY)
             .respondents1(emptyList())
             .applicants(emptyList())
@@ -220,7 +199,7 @@ class CaseDataExtractionServiceTest {
         return List.of(
             DocmosisDirection.builder()
                 .assignee(ALL_PARTIES)
-                .title("2. Test SDO type 1 on " + TODAY.atStartOfDay().format(ofPattern(LOCAL_DATE_TIME_BY, UK)))
+                .title("2. Test SDO type 1 on " + TODAY.atStartOfDay().format(ofPattern(LOCAL_DATE_TIME_AT, UK)))
                 .body("Test body 1")
                 .build(),
             DocmosisDirection.builder()
@@ -244,7 +223,7 @@ class CaseDataExtractionServiceTest {
 
         return directions.stream()
             .map(direction -> DocmosisDirection.builder()
-                .title(direction.getValue().getDirectionType() + " by unknown")
+                .title(direction.getValue().getDirectionType() + " by ")
                 .assignee(direction.getValue().getAssignee())
                 .build())
             .collect(toList());
