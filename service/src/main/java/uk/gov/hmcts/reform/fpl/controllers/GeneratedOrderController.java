@@ -27,8 +27,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -61,6 +63,8 @@ public class GeneratedOrderController {
     private final GatewayConfiguration gatewayConfiguration;
     private final CoreCaseDataService coreCaseDataService;
     private final ChildrenService childrenService;
+    private final DocumentDownloadService documentDownloadService;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -146,9 +150,7 @@ public class GeneratedOrderController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
-                                     @RequestHeader(value = "user-id") String userId,
-                                     @RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         DocumentReference mostRecentUploadedDocument = service.getMostRecentUploadedOrderDocument(
             caseData.getOrderCollection());
@@ -161,10 +163,11 @@ public class GeneratedOrderController {
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
-            authorization,
-            userId,
+            requestData.authorisation(),
+            requestData.userId(),
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
-                mostRecentUploadedDocument.getBinaryUrl())));
+                mostRecentUploadedDocument.getBinaryUrl()),
+            documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
     }
 
     private Document getDocument(String authorization,
@@ -174,7 +177,7 @@ public class GeneratedOrderController {
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-                service.getOrderTemplateData(caseData), templateType);
+            service.getOrderTemplateData(caseData), templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
