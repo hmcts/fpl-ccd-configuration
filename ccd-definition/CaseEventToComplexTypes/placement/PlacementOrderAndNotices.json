@@ -25,7 +25,7 @@
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.document",
-    "EventElementLabel": "Add document",
+    "EventElementLabel": "Add PDF document",
     "SecurityClassification": "Public",
     "DisplayContext": "MANDATORY"
   },

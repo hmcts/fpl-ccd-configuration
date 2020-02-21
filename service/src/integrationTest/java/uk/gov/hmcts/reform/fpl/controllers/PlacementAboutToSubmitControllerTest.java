@@ -32,10 +32,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 @ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementAboutToSubmitEventControllerTest extends AbstractControllerTest {
+class PlacementAboutToSubmitControllerTest extends AbstractControllerTest {
     private static final UUID CONFIDENTIAL_DOC_ID = randomUUID();
 
-    PlacementAboutToSubmitEventControllerTest() {
+    PlacementAboutToSubmitControllerTest() {
         super("placement");
     }
 

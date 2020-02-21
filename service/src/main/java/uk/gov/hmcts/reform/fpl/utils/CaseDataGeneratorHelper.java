@@ -66,6 +66,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -187,6 +188,7 @@ public class CaseDataGeneratorHelper {
                     .value(Direction.builder()
                         .directionType("Test SDO type 1")
                         .directionText("Test body 1")
+                        .directionNeeded(YES.getValue())
                         .dateToBeCompletedBy(today)
                         .assignee(ALL_PARTIES)
                         .build())
@@ -196,6 +198,7 @@ public class CaseDataGeneratorHelper {
                     .value(Direction.builder()
                         .directionType("Test SDO type 2")
                         .directionText("Test body 2")
+                        .directionNeeded(YES.getValue())
                         .dateToBeCompletedBy(today)
                         .assignee(ALL_PARTIES)
                         .build())
@@ -277,7 +280,7 @@ public class CaseDataGeneratorHelper {
             )).build();
     }
 
-    public static List<Element<GeneratedOrder>> createOrders() {
+    public static List<Element<GeneratedOrder>> createOrders(DocumentReference lastOrderDocumentReference) {
         return ImmutableList.of(
             Element.<GeneratedOrder>builder()
                 .value(GeneratedOrder.builder()
@@ -311,11 +314,7 @@ public class CaseDataGeneratorHelper {
                         LocalDateTime.now().plusDays(60), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
                         "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
-                    .document(DocumentReference.builder()
-                        .filename("C21 3.pdf")
-                        .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
-                        .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
-                        .build())
+                    .document(lastOrderDocumentReference)
                     .build())
                 .build());
     }
@@ -377,6 +376,7 @@ public class CaseDataGeneratorHelper {
     private static Direction createDirection(DirectionAssignee assignee) {
         return Direction.builder()
             .directionText("Mock direction text")
+            .directionNeeded(YES.getValue())
             .assignee(assignee)
             .build();
     }
@@ -384,6 +384,7 @@ public class CaseDataGeneratorHelper {
     private static Direction createCustomDirection(DirectionAssignee assignee) {
         return Direction.builder()
             .directionText("Mock direction text")
+            .directionNeeded(YES.getValue())
             .assignee(assignee)
             .readOnly("No")
             .custom("Yes")
