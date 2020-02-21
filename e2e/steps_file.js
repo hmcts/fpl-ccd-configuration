@@ -5,6 +5,7 @@ const config = require('./config');
 
 const loginPage = require('./pages/login.page');
 const caseViewPage = require('./pages/caseView.page');
+const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
 const ordersAndDirectionsNeededEventPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
@@ -19,6 +20,7 @@ const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.
 const applicant = require('./fixtures/applicant');
 const solicitor = require('./fixtures/solicitor');
 const respondent = require('./fixtures/respondents');
+const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -120,13 +122,21 @@ module.exports = function () {
       this.seeElement(answerLocator.withText(answer));
     },
 
+    seeCaseInSearchResult(caseId) {
+      this.seeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    },
+
+    dontSeeCaseInSearchResult(caseId) {
+      this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    },
+
     signOut() {
       this.click('Sign Out');
       this.wait(2); // in seconds
     },
 
     async navigateToCaseDetails(caseId) {
-      const normalisedCaseId = caseId.replace(/\D/g, '');
+      const normalisedCaseId = normalizeCaseId(caseId);
 
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
@@ -134,6 +144,10 @@ module.exports = function () {
           this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
         }, '#sign-out');
       }
+    },
+
+    async navigateToCaseList(){
+      await caseListPage.navigate();
     },
 
     async enterAllocationProposal () {
