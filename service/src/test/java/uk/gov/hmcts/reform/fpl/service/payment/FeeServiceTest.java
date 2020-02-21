@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.payment;
 
 import feign.FeignException;
+import feign.Request;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,8 +19,12 @@ import uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static feign.Request.HttpMethod.GET;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -65,7 +70,9 @@ class FeeServiceTest {
         @Test
         void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
             when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
-                .thenThrow(new FeignException.BadRequest("", null));
+                .thenThrow(new FeignException.BadRequest(
+                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8), new byte[]{})
+                );
 
             assertThrows(FeignException.class, () -> feeService.getFees(List.of(CARE_ORDER)));
         }
