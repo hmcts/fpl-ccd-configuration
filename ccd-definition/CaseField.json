@@ -686,6 +686,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "amountToPay",
+    "Label": "Application fee to pay",
+    "FieldType": "MoneyGBP",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondents_label",
     "Label": " ",
     "FieldType": "TextArea",

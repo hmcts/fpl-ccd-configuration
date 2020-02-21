@@ -48,6 +48,17 @@ public class UploadC2DocumentsController {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        Map<String, Object> data = callbackrequest.getCaseDetails().getData();
+        //TODO: call Fees Register
+        data.put("amountToPay", "500");
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackrequest,
