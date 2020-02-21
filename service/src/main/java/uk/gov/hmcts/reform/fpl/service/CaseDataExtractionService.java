@@ -52,14 +52,15 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
-
-    //TODO: when should this be used? see FPLA-1087
-    public static final String DEFAULT = "BLANK - please complete";
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService dataExtractionService;
+
+    //TODO: when should this be used? see FPLA-1087
+    public static final String DEFAULT = "BLANK - please complete";
+    private static final int SDO_DIRECTION_INDEX_START = 2;
 
     public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData) throws IOException {
         DocmosisStandardDirectionOrder.Builder standardDirectionOrder = DocmosisStandardDirectionOrder.builder();
@@ -99,7 +100,7 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    // TODO: default value is used here for gender, is this correct?
+    // TODO: see FPLA-1087
     private DocmosisChildren buildChild(ChildParty child) {
         return DocmosisChildren.builder()
             .name(child.getFullName())
@@ -108,7 +109,7 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    // TODO: default value is used here for date of birth, is this correct?
+    // TODO: see FPLA-1087
     private String getDateOfBirth(ChildParty child) {
         return ofNullable(child.getDateOfBirth())
             .map(dateOfBirth -> formatLocalDateToString(dateOfBirth, LONG))
@@ -122,7 +123,7 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    // TODO: default value is used for relationship to child, is this correct?
+    // TODO: see FPLA-1087
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
@@ -137,17 +138,17 @@ public class CaseDataExtractionService {
     }
 
     private List<DocmosisDirection> getGroupedDirections(CaseData caseData) throws IOException {
-        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
+        OrderDefinition order = ordersLookupService.getStandardDirectionOrder();
 
         return ofNullable(caseData.getStandardDirectionOrder().getDirections()).map(directions -> {
                 ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
 
-                int index = 2;
+                int directionNumber = SDO_DIRECTION_INDEX_START;
                 for (Element<Direction> direction : directions) {
                     if (!"No".equals(direction.getValue().getDirectionNeeded())) {
                         formattedDirections.add(DocmosisDirection.builder()
                             .assignee(direction.getValue().getAssignee())
-                            .title(formatTitle(index++, direction.getValue(), standardDirectionOrder.getDirections()))
+                            .title(formatTitle(directionNumber++, direction.getValue(), order.getDirections()))
                             .body(direction.getValue().getDirectionText())
                             .build());
                     }
@@ -179,7 +180,7 @@ public class CaseDataExtractionService {
         }
 
         // create direction display title for docmosis in format "index. directionTitle (by / on) date"
-        //TODO: what should be added when not complete by date
+        // TODO: see FPLA-1087
         return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
             ofNullable(direction.getDateToBeCompletedBy())
                 .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
