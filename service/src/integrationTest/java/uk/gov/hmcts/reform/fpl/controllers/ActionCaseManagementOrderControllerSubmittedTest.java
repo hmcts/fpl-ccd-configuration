@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -75,10 +76,13 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     private static final String CASE_ID = "12345";
     private static final String REPRESENTATIVES = "representatives";
     private static final String CAFCASS_EMAIL_ADDRESS = "cafcass@cafcass.com";
-    private static final String EVENT_KEY = "internal-change:CMO_PROGRESSION";
+    private static final String CMO_EVENT_KEY = "internal-change:CMO_PROGRESSION";
+    private static final String SEND_DOCUMENT_KEY = "internal-change:SEND_DOCUMENT";
     private static final UUID ID = randomUUID();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
+    private final DocumentReference cmoDocument = DocumentReference.buildFromDocument(document());
+
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -118,7 +122,8 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
         postSubmittedEvent(caseDetails);
 
-        verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
+        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
+        verifySentDocumentEventTriggered();
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
@@ -146,7 +151,8 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
         postSubmittedEvent(caseDetails);
 
-        verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
+        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
+        verifySentDocumentEventTriggered();
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
@@ -173,7 +179,8 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
         postSubmittedEvent(caseDetails);
 
-        verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
+        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
+        verifySentDocumentEventTriggered();
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
@@ -210,6 +217,8 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         postSubmittedEvent(caseDetails);
 
         verifyZeroInteractions(notificationClient);
+        verify(coreCaseDataService).triggerEvent(any(), any(), any(), any());
+        verify(coreCaseDataService).triggerEvent(any(), any(), any(), any(), any());
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {
@@ -235,6 +244,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())
+            .orderDoc(cmoDocument)
             .build();
     }
 
@@ -259,7 +269,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             REPRESENTATIVES, representatives,
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)
-                .orderDoc(DocumentReference.buildFromDocument(document))
+                .orderDoc(cmoDocument)
                 .action(OrderAction.builder()
                     .type(SEND_TO_ALL_PARTIES)
                     .build())
@@ -286,10 +296,10 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         return buildCaseDetails(data);
     }
 
-    private void verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO()
+    private void verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO()
         throws NotificationClientException {
         verify(coreCaseDataService)
-            .triggerEvent(JURISDICTION, CASE_TYPE, 12345L, EVENT_KEY);
+            .triggerEvent(JURISDICTION, CASE_TYPE, 12345L, CMO_EVENT_KEY);
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
@@ -302,6 +312,14 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             eq("admin@family-court.com"),
             eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
             eq(CASE_ID));
+    }
+
+    private void verifySentDocumentEventTriggered() {
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            12345L,
+            SEND_DOCUMENT_KEY,
+            Map.of("documentToBeSent", cmoDocument));
     }
 
     private List<Element<Representative>> buildRepresentativesServedByEmail() {

@@ -37,4 +37,5 @@ java:
         - system-update-user-password
         - robotics-notification-sender
         - robotics-notification-recipient
+        - ld-sdk-key
 

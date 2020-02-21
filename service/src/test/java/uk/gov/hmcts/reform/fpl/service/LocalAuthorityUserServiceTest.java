@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import feign.Request;
 import feign.RetryableException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,12 @@ import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import static feign.Request.HttpMethod.GET;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
@@ -117,8 +122,11 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldNotThrowExceptionWhenCallToUpdateCaseRoleEndpointFailsForOneUser() {
-        willThrow(new RetryableException(500, "Some error", null, null)).given(caseUserApi).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("1"), refEq(new CaseUser("1", caseRoles)));
+
+        willThrow(new RetryableException(500,
+            "Some error", GET, null, Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8))).given(caseUserApi)
+            .updateCaseRolesForUser(
+                eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("1"), refEq(new CaseUser("1", caseRoles)));
 
         localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
@@ -132,7 +140,6 @@ class LocalAuthorityUserServiceTest {
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(2, USER_IDS);
     }
-
 
     private void verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(int times, List<String> userIds) {
         for (String userId : userIds) {

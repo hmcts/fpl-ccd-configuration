@@ -18,11 +18,13 @@ import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,7 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
 
 @Api
 @RestController
@@ -40,6 +43,7 @@ public class PlacementController {
     private final ObjectMapper mapper;
     private final PlacementService placementService;
     private final RequestData requestData;
+    private final CoreCaseDataService coreCaseDataService;
     private final DocumentDownloadService documentDownloadService;
 
     @PostMapping("/about-to-start")
@@ -119,6 +123,7 @@ public class PlacementController {
 
         sendNotificationForNewPlacementOrder(callbackRequest, caseDetails, caseData, caseDataBefore);
         sendNotificationForNewNoticeOfPlacementOrder(callbackRequest, caseData, caseDataBefore);
+        triggerSendDocumentEventForUpdatedPlacementOrderDocuments(caseDetails, caseData, caseDataBefore);
     }
 
     private void sendNotificationForNewPlacementOrder(CallbackRequest callbackRequest,
@@ -140,15 +145,24 @@ public class PlacementController {
     private void sendNotificationForNewNoticeOfPlacementOrder(CallbackRequest callbackRequest,
                                                               CaseData caseData,
                                                               CaseData caseDataBefore) {
-        List<String> currentDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseData.getPlacements());
-        List<String> previousDocumentUrls = getBinaryUrlsForNoticeOfPlacementOrder(caseDataBefore.getPlacements());
-        currentDocumentUrls.removeAll(previousDocumentUrls);
-
-        currentDocumentUrls.stream()
+        placementService.getUpdatedDocuments(caseData, caseDataBefore, NOTICE_OF_PLACEMENT_ORDER)
+            .stream()
+            .map(DocumentReference::getBinaryUrl)
             .map(documentDownloadService::downloadDocument)
             .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
-                callbackRequest, requestData.authorisation(), requestData.userId(), documentContents))
+            callbackRequest, requestData.authorisation(), requestData.userId(), documentContents))
             .forEach(applicationEventPublisher::publishEvent);
+    }
+
+    private void triggerSendDocumentEventForUpdatedPlacementOrderDocuments(CaseDetails caseDetails, CaseData caseData,
+                                                                           CaseData caseDataBefore) {
+        placementService.getUpdatedDocuments(caseData, caseDataBefore, PLACEMENT_ORDER)
+            .forEach(documentReference -> coreCaseDataService.triggerEvent(
+                caseDetails.getJurisdiction(),
+                caseDetails.getCaseTypeId(),
+                caseDetails.getId(),
+                "internal-change:SEND_DOCUMENT",
+                Map.of("documentToBeSent", documentReference)));
     }
 
     private UUID getSelectedChildId(CaseDetails caseDetails, CaseData caseData) {
@@ -180,9 +194,5 @@ public class PlacementController {
     private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
         return isNotEmpty(previousPlacement)
             && newPlacement.getApplication().equals(previousPlacement.getApplication());
-    }
-
-    private List<String> getBinaryUrlsForNoticeOfPlacementOrder(List<Element<Placement>> placements) {
-        return placementService.getBinaryUrlsForOrderAndNotices(placements, NOTICE_OF_PLACEMENT_ORDER);
     }
 }

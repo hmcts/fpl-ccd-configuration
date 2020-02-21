@@ -73,7 +73,7 @@ Scenario('local authority upload placement application', async (I, caseViewPage,
   await placementEventPage.addApplication(config.testFile);
   await placementEventPage.addSupportingDocument(0, 'Statement of facts', config.testFile);
   await placementEventPage.addConfidentialDocument(0, 'Annex B', config.testFile);
-  await placementEventPage.addOrderOrNotice(0, 'Placement order', config.testFile, 'test note');
+  await placementEventPage.addOrderOrNotice(0, 'Placement order', config.testNonEmptyPdfFile, 'test note');
   await I.completeEvent('Save and continue');
 
   await caseViewPage.goToNewActions(config.administrationActions.placement);

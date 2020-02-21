@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -45,7 +46,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -67,6 +67,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 @SuppressWarnings("unchecked")
 class DraftOrdersControllerTest extends AbstractControllerTest {
+
+    private static final Long CASE_ID = 1L;
+    private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
+
+    private final DocumentReference documentReference = DocumentReference.builder().build();
 
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
@@ -124,18 +129,38 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
     void shouldNotTriggerSDOEventWhenDraft() {
         postSubmittedEvent(buildCallbackRequest(DRAFT));
 
-        verify(applicationEventPublisher, times(0)).publishEvent(StandardDirectionsOrderIssuedEvent.class);
+        verify(applicationEventPublisher, never()).publishEvent(StandardDirectionsOrderIssuedEvent.class);
+    }
+
+    @Test
+    void shouldNotTriggerSendDocumentEventWhenDraft() {
+        postSubmittedEvent(buildCallbackRequest(DRAFT));
+
+        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), eq(SEND_DOCUMENT_EVENT), any());
     }
 
     @Test
     void shouldTriggerSDOEventWhenSubmitted() throws Exception {
         postSubmittedEvent(buildCallbackRequest(SEALED));
 
-        verify(notificationClient, times(1)).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq("cafcass@cafcass.com"),
-            eq(cafcassParameters()), eq("12345")
+        verify(notificationClient).sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
+            "cafcass@cafcass.com",
+            cafcassParameters(),
+            String.valueOf(CASE_ID)
         );
     }
+
+    @Test
+    void shouldTriggerSendDocumentEventWhenSubmitted() {
+        postSubmittedEvent(buildCallbackRequest(SEALED));
+
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            CASE_ID,
+            SEND_DOCUMENT_EVENT,
+            Map.of("documentToBeSent", documentReference));
+    }
+
 
     private Map<String, Object> cafcassParameters() {
         return ImmutableMap.<String, Object>builder()
@@ -143,8 +168,8 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             .put("familyManCaseNumber", "")
             .put("leadRespondentsName", "Moley,")
             .put("hearingDate", "20 October 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .put("reference", String.valueOf(CASE_ID))
+            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_ID))
             .build();
     }
 
@@ -183,11 +208,14 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
     private CallbackRequest buildCallbackRequest(OrderStatus status) {
         Order order = Order.builder()
             .orderStatus(status)
+            .orderDoc(documentReference)
             .build();
 
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .id(12345L)
+                .id(CASE_ID)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
                 .data(Map.of(
                     HEARING_DETAILS_KEY, List.of(
                         Element.builder()
@@ -215,29 +243,28 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
     @Nested
     class StateChangeTests {
-        private final String event = "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING";
-        private final Long caseId = 1L;
+        private static final String PREPARE_FOR_HEARING_EVENT = "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING";
 
         @Test
         void submittedCallbackShouldTriggerStateChangeWhenOrderIsMarkedAsFinal() {
             makeRequestWithOrderStatus(OrderStatus.SEALED);
 
-            verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, caseId, event);
+            verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, PREPARE_FOR_HEARING_EVENT);
         }
 
         @Test
         void submittedCallbackShouldNotTriggerStateChangeWhenOrderIsStillInDraftState() {
             makeRequestWithOrderStatus(OrderStatus.DRAFT);
 
-            verify(coreCaseDataService, never()).triggerEvent(JURISDICTION, CASE_TYPE, caseId, event);
+            verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), eq(PREPARE_FOR_HEARING_EVENT));
         }
 
         private void makeRequestWithOrderStatus(OrderStatus status) {
-            Order order = Order.builder().orderStatus(status).build();
+            Order order = Order.builder().orderStatus(status).orderDoc(documentReference).build();
 
             CallbackRequest request = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
-                    .id(caseId)
+                    .id(CASE_ID)
                     .jurisdiction(JURISDICTION)
                     .caseTypeId(CASE_TYPE)
                     .data(Map.of("standardDirectionOrder", order,
