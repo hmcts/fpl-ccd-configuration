@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
@@ -138,6 +139,7 @@ class CaseDataExtractionServiceTest {
             .map(assignee -> Element.<Direction>builder()
                 .value(Direction.builder()
                     .directionType("Direction")
+                    .directionNeeded(YES.getValue())
                     .assignee(assignee)
                     .build())
                 .build())

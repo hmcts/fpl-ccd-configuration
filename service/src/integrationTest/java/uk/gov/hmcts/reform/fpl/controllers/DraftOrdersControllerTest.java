@@ -358,7 +358,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             CallbackRequest request = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
                     .data(createCaseDataMap(directionWithShowHideValuesRemoved)
-                        .put("standardDirectionOrder", order)
+                        .put("standardDireDaectionOrder", order)
                         .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                         .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
                             .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))

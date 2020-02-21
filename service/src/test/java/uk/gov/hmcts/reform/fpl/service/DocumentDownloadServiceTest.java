@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -26,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 
 @ExtendWith(SpringExtension.class)
 public class DocumentDownloadServiceTest {
-    private final String token = "token";
 
     @Mock
     private DocumentDownloadClientApi documentDownloadClient;
@@ -40,35 +40,42 @@ public class DocumentDownloadServiceTest {
     @Mock
     private ResponseEntity<Resource> resourceResponseEntity;
 
-    private DocumentDownloadService documentDownloadService;
+    @Mock
+    private RequestData requestData;
 
-    private String userId;
+    private DocumentDownloadService documentDownloadService;
 
     private Document document;
 
     @BeforeEach
-    void setup() throws Exception {
+    void setup() {
         document = document();
 
+        String token = "token";
         given(authTokenGenerator.generate())
+            .willReturn("token");
+
+        given(requestData.authorisation())
             .willReturn(token);
 
-        userId = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
+        given(requestData.userId())
+            .willReturn("8a0a7c46-631c-4a55-9b81-4cc9fb9798f4");
 
         UserInfo userInfo = UserInfo.builder()
             .sub("cafcass@cafcass.com")
             .roles(CAFCASS.getRoles())
-            .uid(userId)
+            .uid(requestData.userId())
             .build();
 
         given(idamApi.retrieveUserInfo(token))
             .willReturn(userInfo);
 
-        documentDownloadService = new DocumentDownloadService(authTokenGenerator, documentDownloadClient, idamApi);
+        documentDownloadService = new DocumentDownloadService(authTokenGenerator, documentDownloadClient, idamApi,
+            requestData);
     }
 
     @Test
-    public void shouldDownloadDocumentFromDocumentManagement() throws Exception {
+    public void shouldDownloadDocumentFromDocumentManagement() {
         Document document = document();
         byte[] expectedDocumentContents = "test".getBytes();
 
@@ -83,7 +90,7 @@ public class DocumentDownloadServiceTest {
             eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
             .willReturn(resourceResponseEntity);
 
-        byte[] documentContents = documentDownloadService.downloadDocument(token, userId, document.links.binary.href);
+        byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
 
         assertThat(documentContents).isNotEmpty();
         assertThat(documentContents).isEqualTo(expectedDocumentContents);
@@ -102,7 +109,7 @@ public class DocumentDownloadServiceTest {
             eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
             .willReturn(null);
 
-        assertThrows(IllegalArgumentException.class, () -> documentDownloadService.downloadDocument(
-            token, userId, document.links.binary.href));
+        assertThrows(IllegalArgumentException.class,
+            () -> documentDownloadService.downloadDocument(document.links.binary.href));
     }
 }
