@@ -230,7 +230,48 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
                 eq(CASE_ID));
 
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq("FamilyPublicLaw+ctsc@gmail.com"),
+                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq(CASE_ID));
+
             verifyZeroInteractions(notificationClient);
+        }
+
+        @Test
+        void shouldSendNotificationToCtscAdminWhenNewNoticeOfPlacementOrderAndCtscIsEnabled()
+            throws NotificationClientException {
+            given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+
+            UUID representativeId = randomUUID();
+            Respondent respondent = respondent();
+
+            CaseDetails caseDetails = populatedCaseDetails(representativeId, respondent);
+
+            caseDetails.setData(ImmutableMap.<String, Object>builder()
+                .putAll(caseDetails.getData())
+                .put("sendToCtsc", "Yes")
+                .build());
+
+            CallbackRequest callbackRequest = CallbackRequest.builder()
+                .caseDetails(caseDetails)
+                .caseDetailsBefore(CaseDetails.builder().data(new HashMap<>()).build())
+                .build();
+
+            postSubmittedEvent(callbackRequest);
+
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq("admin@family-court.com"),
+                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq("FamilyPublicLaw+ctsc@gmail.com"),
+                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq(CASE_ID));
         }
 
         @Test
