@@ -67,7 +67,7 @@
           "childInformation": "Cousin",
           "litigationIssues": "NO",
           "genderIdentification": "Unknown",
-          "representedBy" : []
+          "representedBy": []
         },
         "additionalOthers": [
           {
@@ -495,7 +495,29 @@
         "title": "Example Order",
         "details": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
       },
-      "familyManCaseNumber": "12345L"
+      "familyManCaseNumber": "12345L",
+      "representatives": [
+        {
+          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
+          "value": {
+            "fullName": "Fred Flinstone",
+            "positionInACase": "Cafcass Guardian",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": "fred@flinstone.com"
+          },
+          "telephoneNumber": "0717171717",
+          "servingPreferences": "DIGITAL_SERVICE",
+          "role" : "CAFCASS_GUARDIAN"
+        }
+      ]
     }
   },
   "case_details_before": {

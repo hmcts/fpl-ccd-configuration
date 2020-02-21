@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -18,19 +17,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
-import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,16 +41,10 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -65,19 +53,14 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEM
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -85,14 +68,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-    private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
-    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
-    private static final String CASE_ID = "12345";
-    private static final String REPRESENTATIVES = "representatives";
-    private static final String CAFCASS_EMAIL_ADDRESS = "cafcass@cafcass.com";
-    private static final String EVENT_KEY = "internal-change:CMO_PROGRESSION";
     private static final UUID ID = randomUUID();
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
@@ -105,31 +80,17 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
-    private CoreCaseDataService coreCaseDataService;
-
-    @MockBean
-    private NotificationClient notificationClient;
-
-    @MockBean
-    private DocumentDownloadService documentDownloadService;
-
-    private Document document;
-
     ActionCaseManagementOrderControllerTest() {
         super("action-cmo");
     }
 
+    //TODO TECHDEBT refactor into separate files for each callback endpoint
     @BeforeEach
     void setup() {
-        document = document();
         DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
-
-        given(documentDownloadService.downloadDocument(anyString(), anyString(), anyString()))
-            .willReturn(PDF);
+        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document());
     }
 
     @Test
@@ -158,7 +119,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartShouldNotProgressOrderWhenOrderActionIsNotSet() {
-        CaseDetails caseDetails = createCaseDetailstWithEmptyCMO();
+        CaseDetails caseDetails = createCaseDetailsWithEmptyCMO();
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -227,108 +188,14 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldRemoveOrderWhenOrderActionIsNotJudgeReview() {
-        CaseDetails caseDetails = createCaseDetailstWithEmptyCMO();
+        CaseDetails caseDetails = createCaseDetailsWithEmptyCMO();
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(caseData.getCaseManagementOrder()).isEqualTo(null);
     }
 
-    @Test
-    void submittedShouldTriggerCMOProgressionEventAndSendCaseLinkNotificationsWhenIssuedOrderApproved()
-        throws Exception {
-        List<Element<Representative>> representativesServedByDigitalService =
-            buildRepresentativesServedByDigitalService();
-
-        CaseDetails caseDetails =
-            populateRepresentativesByServedPreferenceData(representativesServedByDigitalService);
-
-        postSubmittedEvent(caseDetails);
-
-        verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
-            eq(getExpectedCMOIssuedCaseLinkNotificationParameters("Jon Snow")), eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("xyz@example.com"),
-            eq(getExpectedCMOIssuedCaseLinkNotificationParameters("Hodo")), eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(), eq(CASE_ID));
-
-        verifyZeroInteractions(notificationClient);
-    }
-
-    @Test
-    void submittedShouldTriggerCMOProgressionEventAndSendDocumentLinkNotificationsWhenIssuedOrderApproved()
-        throws Exception {
-        List<Element<Representative>> representativesServedByEmail = buildRepresentativesServedByEmail();
-
-        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativesServedByEmail);
-
-        postSubmittedEvent(caseDetails);
-
-        verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(), eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq("jamie@example.com"),
-            anyMap(), eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq("ragnar@example.com"),
-            anyMap(), eq(CASE_ID));
-
-        verifyZeroInteractions(notificationClient);
-    }
-
-    @Test
-    void submittedShouldTriggerCMOProgressionAndSendNotificationsToOnlyLocalAuthorityAndCafcass() throws Exception {
-        List<Element<Representative>> representativeServedByPost = wrapElements(Representative.builder()
-            .email("bien@example.com")
-            .fullName("Bien")
-            .servingPreferences(POST)
-            .build());
-
-        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativeServedByPost);
-
-        postSubmittedEvent(caseDetails);
-
-        verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(), eq(CASE_ID));
-
-        verifyZeroInteractions(notificationClient);
-    }
-
-    @Test
-    void submittedShouldNotSendNotificationsWhenIssuedOrderNotApproved() {
-        CaseManagementOrder caseManagementOrder = getCaseManagementOrder();
-
-        Map<String, Object> data = Map.of(
-            "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
-            "respondents1", createRespondents(),
-            "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), caseManagementOrder.toBuilder()
-                .action(getOrderAction(JUDGE_REQUESTED_CHANGE))
-                .build());
-
-        CaseDetails caseDetails = buildCaseDetails(data);
-
-        postSubmittedEvent(caseDetails);
-
-        verifyZeroInteractions(notificationClient);
-    }
-
-    private CaseDetails createCaseDetailstWithEmptyCMO() {
+    private CaseDetails createCaseDetailsWithEmptyCMO() {
         Map<String, Object> data = new HashMap<>();
         final CaseManagementOrder order = CaseManagementOrder.builder().build();
 
@@ -408,73 +275,5 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             .label(NOW.toString())
             .build());
         return dynamicHearingDates;
-    }
-
-    private Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParameters(String recipientName) {
-        final String subjectLine = "Jones, SACCCCCCCC5676576567";
-        return ImmutableMap.<String, Object>builder()
-            .put("localAuthorityNameOrRepresentativeFullName", recipientName)
-            .put("subjectLineWithHearingDate", subjectLine)
-            .put("reference", CASE_ID)
-            .put("caseUrl", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
-            .build();
-    }
-
-    private Map<String, Object> buildSubmittedRequestData(final List<Element<Representative>>
-                                                              representatives) {
-        return Map.of(
-            "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
-            "respondents1", createRespondents(),
-            "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-            REPRESENTATIVES, representatives,
-            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
-                .status(SEND_TO_JUDGE)
-                .orderDoc(DocumentReference.buildFromDocument(document))
-                .action(OrderAction.builder()
-                    .type(SEND_TO_ALL_PARTIES)
-                    .build())
-                .build());
-    }
-
-    private List<Element<Representative>> buildRepresentativesServedByDigitalService() {
-        return wrapElements(Representative.builder()
-            .email("abc@example.com")
-            .fullName("Jon Snow")
-            .servingPreferences(DIGITAL_SERVICE)
-            .build(), Representative.builder()
-            .build(), Representative.builder()
-            .email("xyz@example.com")
-            .fullName("Hodo")
-            .servingPreferences(DIGITAL_SERVICE)
-            .build());
-    }
-
-    private CaseDetails populateRepresentativesByServedPreferenceData(
-        List<Element<Representative>> representativesServedByDigitalService) {
-        Map<String, Object> data = buildSubmittedRequestData(representativesServedByDigitalService);
-
-        return buildCaseDetails(data);
-    }
-
-    private void verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO()
-        throws NotificationClientException {
-        verify(coreCaseDataService)
-            .triggerEvent(JURISDICTION, CASE_TYPE, 12345L, EVENT_KEY);
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME)), eq(CASE_ID));
-    }
-
-    private List<Element<Representative>> buildRepresentativesServedByEmail() {
-        return wrapElements(Representative.builder()
-            .email("jamie@example.com")
-            .fullName("Jamie Lannister")
-            .servingPreferences(EMAIL)
-            .build(), Representative.builder()
-            .email("ragnar@example.com")
-            .fullName("Ragnar")
-            .servingPreferences(EMAIL)
-            .build());
     }
 }
