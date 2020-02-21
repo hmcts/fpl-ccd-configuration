@@ -24,8 +24,8 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     console.log(`Case ${caseId} has been submitted`);
 
     I.signOut();
-    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   }
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
 
   await I.navigateToCaseDetails(caseId);
 });
@@ -204,16 +204,25 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
   await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
 });
 
+Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage) => {
+  await I.navigateToCaseList();
+  await caseListPage.searchForCasesWithHandledEvidences();
+  await I.dontSeeCaseInSearchResult(caseId);
+
+  await I.navigateToCaseDetails(caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.handleSupplementaryEvidence);
+  handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
+  await I.completeEvent('Save and continue');
+  await I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
+
+  await I.navigateToCaseList();
+  await caseListPage.searchForCasesWithHandledEvidences();
+  await I.seeCaseInSearchResult(caseId);
+});
+
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-});
-
-Scenario('HMCTS admin handles supplementary evidence', async (I, caseViewPage, handleSupplementaryEvidenceEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.handleSupplementaryEvidence);
-  handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 });
