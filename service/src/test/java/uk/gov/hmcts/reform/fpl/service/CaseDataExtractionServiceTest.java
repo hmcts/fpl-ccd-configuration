@@ -223,7 +223,7 @@ class CaseDataExtractionServiceTest {
 
         return directions.stream()
             .map(direction -> DocmosisDirection.builder()
-                .title(direction.getValue().getDirectionType() + " by ")
+                .title(direction.getValue().getDirectionType() + " by unknown")
                 .assignee(direction.getValue().getAssignee())
                 .build())
             .collect(toList());

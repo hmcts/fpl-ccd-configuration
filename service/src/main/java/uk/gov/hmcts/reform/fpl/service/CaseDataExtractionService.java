@@ -53,7 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
 
-    //TODO: when should this be used?
+    //TODO: when should this be used? see FPLA-1087
     public static final String DEFAULT = "BLANK - please complete";
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -183,7 +183,7 @@ public class CaseDataExtractionService {
         return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
             ofNullable(direction.getDateToBeCompletedBy())
                 .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
-                .orElse(""));
+                .orElse("unknown"));
     }
 
     private DocmosisHearingBooking getHearingBookingData(CaseData caseData) {
