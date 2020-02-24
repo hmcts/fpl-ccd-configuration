@@ -64,25 +64,25 @@ class PeopleInCaseHelperTest {
     @Test
     void shouldReturnAllocatedJudgeTitleWhenOtherIsNotSelected() {
         CaseData data = buildCaseDataWithAllocatedJudge(DISTRICT_JUDGE);
-
         String title = getAllocatedJudgeTitle(data);
+
         assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
     }
 
     @Test
     void shouldReturnAllocatedJudgeFullNameWhenMagistratesSelected() {
         CaseData data = buildCaseDataWithAllocatedJudge(MAGISTRATES);
+        String judgeFullName = getAllocatedJudgeName(data);
 
-        String title = getAllocatedJudgeName(data);
-        assertThat(title).isEqualTo("Judge full name");
+        assertThat(judgeFullName).isEqualTo("Judge Full Name");
     }
 
     @Test
     void shouldReturnAllocatedJudgeLastName() {
         CaseData data = buildCaseDataWithAllocatedJudge(DEPUTY_DISTRICT_JUDGE);
+        String judgeLastName = getAllocatedJudgeName(data);
 
-        String title = getAllocatedJudgeName(data);
-        assertThat(title).isEqualTo("Judge last name");
+        assertThat(judgeLastName).isEqualTo("Judge Last Name");
     }
 
     private CaseData buildCaseDataWithAllocatedJudge(JudgeOrMagistrateTitle title) {

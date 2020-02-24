@@ -210,10 +210,14 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                 "respondents1", createRespondents(),
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                 "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
-                "allocatedJudge", Judge.builder()
-                    .judgeLastName("Moley")
-                    .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
-                    .build()))
+                "allocatedJudge", buildAllocatedJudge()))
+            .build();
+    }
+
+    private Judge buildAllocatedJudge(){
+        return Judge.builder()
+            .judgeLastName("Moley")
+            .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
             .build();
     }
 

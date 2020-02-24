@@ -48,7 +48,6 @@ public class PeopleInCaseHelper {
         if (data.getAllocatedJudge().getJudgeTitle() == MAGISTRATES) {
             return data.getAllocatedJudge().getJudgeFullName();
         }
-
         return data.getAllocatedJudge().getJudgeLastName();
     }
 }
