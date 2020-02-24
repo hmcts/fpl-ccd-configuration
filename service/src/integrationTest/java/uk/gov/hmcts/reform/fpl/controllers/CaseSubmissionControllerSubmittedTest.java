@@ -15,7 +15,6 @@ import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -79,11 +78,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent("core-case-data-store-api/callback-request.json");
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
         );
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(CAFCASS_SUBMISSION_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
         );
     }
@@ -130,11 +129,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(request);
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
         );
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(CAFCASS_SUBMISSION_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
         );
     }

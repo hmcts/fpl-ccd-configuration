@@ -180,6 +180,7 @@ public class CommonDirectionService {
         AtomicInteger at = new AtomicInteger(2);
 
         return directions.stream()
+            .filter(direction -> "Yes".equals(direction.getValue().getDirectionNeeded()))
             .map(direction -> element(direction.getId(), direction.getValue().toBuilder()
                 .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
                 .build()))

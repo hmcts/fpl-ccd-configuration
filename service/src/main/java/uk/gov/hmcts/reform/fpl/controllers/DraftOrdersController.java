@@ -180,7 +180,8 @@ public class DraftOrdersController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (caseData.getStandardDirectionOrder().getOrderStatus() != OrderStatus.SEALED) {
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
             return;
         }
 
@@ -191,7 +192,14 @@ public class DraftOrdersController {
             "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
         );
 
-        if (caseData.getStandardDirectionOrder().getOrderStatus() == SEALED) {
+        if (standardDirectionOrder.getOrderStatus() == SEALED) {
+            coreCaseDataService.triggerEvent(
+                callbackRequest.getCaseDetails().getJurisdiction(),
+                callbackRequest.getCaseDetails().getCaseTypeId(),
+                callbackRequest.getCaseDetails().getId(),
+                "internal-change:SEND_DOCUMENT",
+                Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
+            );
             applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
                 authorization,
                 userId));

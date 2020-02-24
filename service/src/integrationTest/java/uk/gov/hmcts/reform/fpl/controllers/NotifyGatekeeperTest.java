@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -52,8 +51,8 @@ class NotifyGatekeeperTest extends AbstractControllerTest {
     void shouldReturnPopulatedDirectionsByRoleInSubmittedCallback() throws Exception {
         postSubmittedEvent(callbackRequest());
 
-        verify(populateStandardDirectionsHandler, times(1)).populateStandardDirections(
-            any(PopulateStandardDirectionsEvent.class));
+        verify(populateStandardDirectionsHandler).populateStandardDirections(any(
+            PopulateStandardDirectionsEvent.class));
     }
 
     @Test
@@ -76,7 +75,7 @@ class NotifyGatekeeperTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest());
 
-        verify(notificationClient, times(1)).sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL,
+        verify(notificationClient).sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL,
             expectedGatekeeperParameters, "12345");
     }
 

@@ -8,7 +8,8 @@ let caseId;
 
 Feature('Case Management Order Journey');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage,
+  allocatedJudgeEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -44,6 +45,11 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
     I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
     caseViewPage.selectTab(caseViewPage.tabs.hearings);
+
+    //gatekeeper adds allocated judge
+    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+    await I.completeEvent('Save and continue');
 
     // gatekeeper login and create sdo
     await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);

@@ -84,7 +84,7 @@ public class CommonCaseDataExtractionService {
     public Map<String, Object> getJudgeAndLegalAdvisorData(final JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return ImmutableMap.of(
             "judgeTitleAndName", defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor), DEFAULT),
-            "legalAdvisorName", defaultIfBlank(getLegalAdvisorName(judgeAndLegalAdvisor), DEFAULT)
+            "legalAdvisorName", getLegalAdvisorName(judgeAndLegalAdvisor)
         );
     }
 

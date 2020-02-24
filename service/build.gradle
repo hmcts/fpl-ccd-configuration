@@ -157,8 +157,6 @@ sonarqube {
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.coverage.exclusions", "**/model/**, **/config/*Configuration.java"
-    // Excludes sonar cloud testing to avoid duplication of code warning
-    property "sonar.exclusions", "**/model/OldChild.java, **/model/ChildParty.java"
   }
 }
 
@@ -191,6 +189,10 @@ dependencies {
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
   compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.6' // override to fix vulnerability issue (CVE-2019-17195)
+  compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.3.1'
+  compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.10.1'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.11.1', classifier: 'thin'
+  compile group: 'io.github.openfeign', name: 'feign-core', version: '10.4.0'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
@@ -210,6 +212,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.6.4'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.1'
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
 
   compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'

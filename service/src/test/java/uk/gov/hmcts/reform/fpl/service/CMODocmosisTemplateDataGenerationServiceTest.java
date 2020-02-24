@@ -79,8 +79,8 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     @BeforeEach
     void setUp() {
         templateDataGenerationService = new CMODocmosisTemplateDataGenerationService(
-            commonCaseDataExtractionService, commonDirectionService,
-            draftCMOService, hearingBookingService, hmctsCourtLookupConfiguration, mapper);
+            commonCaseDataExtractionService, commonDirectionService, draftCMOService, hearingBookingService,
+            hmctsCourtLookupConfiguration, mapper);
     }
 
     @Test
@@ -103,7 +103,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("preHearingAttendance")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("hearingTime")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo(DEFAULT);
-        assertThat(templateData.get("legalAdvisorName")).isEqualTo(DEFAULT);
+        assertThat(templateData.get("legalAdvisorName")).isEqualTo("");
         assertThat(templateData.get("allParties")).isNull();
         assertThat(templateData.get("localAuthorityDirections")).isNull();
         assertThat(templateData.get("respondentDirections")).isNull();
