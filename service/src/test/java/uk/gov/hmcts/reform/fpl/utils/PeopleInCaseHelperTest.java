@@ -89,8 +89,8 @@ class PeopleInCaseHelperTest {
         return CaseData.builder().allocatedJudge(Judge.builder()
             .judgeTitle(title)
             .otherTitle("Other title")
-            .judgeFullName("Judge full name")
-            .judgeLastName("Judge last name")
+            .judgeFullName("Judge Full Name")
+            .judgeLastName("Judge Last Name")
             .build())
             .build();
     }
