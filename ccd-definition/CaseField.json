@@ -414,6 +414,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "allocatedJudge",
+    "Label": "Allocated Judge",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingDetails",
     "Label": "Hearing",
     "FieldType": "Collection",
@@ -938,6 +946,14 @@
     "Label": "Respondents",
     "FieldType": "Collection",
     "FieldTypeParameter": "RespondentNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentToBeSent",
+    "Label": "Document to be sent",
+    "FieldType": "Document",
     "SecurityClassification": "Public"
   },
   {

@@ -10,7 +10,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -22,14 +21,16 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.OTHER;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacementOrderAndNotices;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ObjectMapper.class, PlacementService.class})
@@ -199,60 +200,50 @@ class PlacementServiceTest {
     }
 
     @Nested
-    class GetBinaryUrlsForOrderAndNotices {
+    class GetUpdatedDocuments {
 
         @Test
-        void shouldReturnEmptyListWhenNoPlacementsExist() {
-            assertThat(placementService.getBinaryUrlsForOrderAndNotices(emptyList(), PLACEMENT_ORDER)).isEmpty();
-        }
+        void shouldReturnEmptyListForNoDocumentsUpdated() {
+            Element<Child> child = testChild();
+            List<PlacementOrderAndNotices> placementOrderAndNotices = List.of(
+                testPlacementOrderAndNotices(PLACEMENT_ORDER, "url1"),
+                testPlacementOrderAndNotices(NOTICE_OF_PROCEEDINGS, "url2"),
+                testPlacementOrderAndNotices(NOTICE_OF_HEARING, "url3"));
+            CaseData caseData = caseData(child, placementOrderAndNotices);
 
-        @Test
-        void shouldReturnEmptyListWhenPlacementDoesNotContainOrderAndNotices() {
-            List<Element<Placement>> placements = wrapElements(placementWithoutOrderAndNotices());
-
-            assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, PLACEMENT_ORDER)).isEmpty();
-        }
-
-        @Test
-        void shouldReturnListOfIdsForSpecifiedTypeWhenPlacementsIsPopulated() {
-            String binaryUrl = "example binary url link";
-            PlacementOrderAndNotices.PlacementOrderAndNoticesType type = PLACEMENT_ORDER;
-
-            List<Element<Placement>> placements = wrapElements(
-                placement(binaryUrl, type),
-                placement("other url", OTHER));
-
-            assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, type)).containsOnly(binaryUrl);
+            assertThat(placementService.getUpdatedDocuments(caseData, caseData, PLACEMENT_ORDER)).isEmpty();
         }
 
         @Test
-        void shouldReturnEmptyListWhenBinaryUrlIsNotPresent() {
-            PlacementOrderAndNotices.PlacementOrderAndNoticesType type = PLACEMENT_ORDER;
+        void shouldReturnUpdatedAndNewDocumentsOfType() {
+            Element<Child> child = testChild();
+            DocumentReference updatedDocumentReference = DocumentReference.builder().binaryUrl("updated_url1").build();
+            DocumentReference newDocumentReference = DocumentReference.builder().binaryUrl("new_document_url").build();
 
-            List<Element<Placement>> placements = wrapElements(placement(null, type));
+            List<PlacementOrderAndNotices> placementOrderAndNoticesBefore = List.of(
+                testPlacementOrderAndNotices(PLACEMENT_ORDER, "url0"),
+                testPlacementOrderAndNotices(PLACEMENT_ORDER, "url1"),
+                testPlacementOrderAndNotices(NOTICE_OF_PROCEEDINGS, "url2"),
+                testPlacementOrderAndNotices(NOTICE_OF_HEARING, "url3"));
+            List<PlacementOrderAndNotices> placementOrderAndNotices = List.of(
+                testPlacementOrderAndNotices(PLACEMENT_ORDER, "url0"),
+                testPlacementOrderAndNotices(PLACEMENT_ORDER, updatedDocumentReference),
+                testPlacementOrderAndNotices(PLACEMENT_ORDER, newDocumentReference),
+                testPlacementOrderAndNotices(NOTICE_OF_PROCEEDINGS, "updated_url2"),
+                testPlacementOrderAndNotices(NOTICE_OF_HEARING, "updated_url3"),
+                testPlacementOrderAndNotices(NOTICE_OF_HEARING, "new_document_url4"));
+            CaseData caseDataBefore = caseData(child, placementOrderAndNoticesBefore);
+            CaseData caseData = caseData(child, placementOrderAndNotices);
 
-            assertThat(placementService.getBinaryUrlsForOrderAndNotices(placements, type)).isEmpty();
+            assertThat(placementService.getUpdatedDocuments(caseData, caseDataBefore, PLACEMENT_ORDER)).containsExactly(
+                updatedDocumentReference,
+                newDocumentReference);
         }
 
-        private Placement placementWithoutOrderAndNotices() {
-            return Placement.builder()
-                .application(DocumentReference.buildFromDocument(document()))
-                .childName("child name")
-                .confidentialDocuments(wrapElements(PlacementConfidentialDocument.builder()
-                    .document(DocumentReference.buildFromDocument(document()))
-                    .build()))
-                .build();
-        }
+        private CaseData caseData(Element<Child> child, List<PlacementOrderAndNotices> placementOrderAndNotices) {
+            Placement placement = testPlacement(child, placementOrderAndNotices);
 
-        private Placement placement(String binaryUrl, PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
-            return Placement.builder()
-                .orderAndNotices(wrapElements(PlacementOrderAndNotices.builder()
-                    .type(type)
-                    .document(DocumentReference.builder()
-                        .binaryUrl(binaryUrl)
-                        .build())
-                    .build()))
-                .build();
+            return CaseData.builder().placements(List.of(element(placement))).build();
         }
     }
 
