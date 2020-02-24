@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -36,17 +33,17 @@ public class PeopleInCaseHelper {
             .collect(toList());
     }
 
-    public static String getAllocatedJudgeTitle(CaseData data) {
-        if (data.getAllocatedJudge().getJudgeTitle() == OTHER) {
-            return data.getAllocatedJudge().getOtherTitle();
+    public static String getAllocatedJudgeTitle(Judge judge) {
+        if (judge.getJudgeTitle() == OTHER) {
+            return judge.getOtherTitle();
         }
-        return data.getAllocatedJudge().getJudgeTitle().getLabel();
+        return judge.getJudgeTitle().getLabel();
     }
 
-    public static String getAllocatedJudgeName(CaseData data) {
-        if (data.getAllocatedJudge().getJudgeTitle() == MAGISTRATES) {
-            return data.getAllocatedJudge().getJudgeFullName();
+    public static String getAllocatedJudgeName(Judge judge) {
+        if (judge.getJudgeTitle() == MAGISTRATES) {
+            return judge.getJudgeFullName();
         }
-        return data.getAllocatedJudge().getJudgeLastName();
+        return judge.getJudgeLastName();
     }
 }
