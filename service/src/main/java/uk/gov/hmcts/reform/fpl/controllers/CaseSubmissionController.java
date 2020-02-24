@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
@@ -78,7 +79,7 @@ public class CaseSubmissionController {
 
                 data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
                 data.put("submissionConsentLabel", label);
-            } catch (FeignException ex) {
+            } catch (FeeRegisterException ignore) {
                 // TODO: 21/02/2020 Replace me in FPLA-1353
                 //  this is an error message for when the Fee Register is unavailable
                 errors.add("XXX");

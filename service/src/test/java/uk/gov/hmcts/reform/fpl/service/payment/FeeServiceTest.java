@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
+import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig;
@@ -74,7 +75,7 @@ class FeeServiceTest {
                     "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8), new byte[]{})
                 );
 
-            assertThrows(FeignException.class, () -> feeService.getFees(List.of(CARE_ORDER)));
+            assertThrows(FeeRegisterException.class, () -> feeService.getFees(List.of(CARE_ORDER)));
         }
 
         @AfterEach

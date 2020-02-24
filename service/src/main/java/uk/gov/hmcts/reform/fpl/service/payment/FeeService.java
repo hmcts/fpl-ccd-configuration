@@ -7,17 +7,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
+import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static java.util.Optional.ofNullable;
 
 @Slf4j
 @Service
@@ -28,11 +31,8 @@ public class FeeService {
     private final FeesRegisterApi feesRegisterApi;
 
     public Optional<FeeResponse> extractFeeToUse(List<FeeResponse> feeResponses) {
-        if (feeResponses == null) {
-            return Optional.empty();
-        }
-
-        return feeResponses.stream()
+        return ofNullable(feeResponses).stream()
+            .flatMap(Collection::stream)
             .filter(Objects::nonNull)
             .max(Comparator.comparing(FeeResponse::getAmount));
     }
@@ -48,7 +48,7 @@ public class FeeService {
             .collect(toImmutableList());
     }
 
-    private FeeResponse makeRequest(FeeType feeType) {
+    private FeeResponse makeRequest(FeeType feeType) throws FeeRegisterException {
         try {
             FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
             log.debug("Making request to Fee Register with parameters : {} ", parameters);
@@ -68,7 +68,7 @@ public class FeeService {
         } catch (FeignException ex) {
             log.error("Fee response error: {} => body: \"{}\"",
                 ex.status(), ex.getMessage());
-            throw ex;
+            throw new FeeRegisterException(ex.status(), ex.getMessage(), ex);
         }
     }
 }
