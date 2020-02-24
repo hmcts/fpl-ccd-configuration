@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 
 @Data
 @Builder
@@ -13,4 +17,20 @@ public class Judge {
     private final String otherTitle;
     private final String judgeLastName;
     private final String judgeFullName;
+
+    @JsonIgnore
+    public String getAllocatedJudgeTitle() {
+        if (judgeTitle == OTHER) {
+            return otherTitle;
+        }
+        return judgeTitle.getLabel();
+    }
+
+    @JsonIgnore
+    public String getAllocatedJudgeName() {
+        if (judgeTitle == MAGISTRATES) {
+            return judgeFullName;
+        }
+        return judgeLastName;
+    }
 }
