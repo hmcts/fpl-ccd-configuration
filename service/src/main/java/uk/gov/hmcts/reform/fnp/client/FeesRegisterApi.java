@@ -10,11 +10,11 @@ import uk.gov.hmcts.reform.fpl.config.FeignConfiguration;
 public interface FeesRegisterApi {
     @GetMapping("/fees-register/fees/lookup")
     FeeResponse findFee(
-        @RequestParam(name = "channel") final String channel,
-        @RequestParam(name = "event") final String event,
-        @RequestParam(name = "jurisdiction1") final String jurisdiction1,
-        @RequestParam(name = "jurisdiction2") final String jurisdiction2,
-        @RequestParam(name = "keyword", required = false) final String keyword,
-        @RequestParam(name = "service") final String service
+        @RequestParam(name = "channel") String channel,
+        @RequestParam(name = "event") String event,
+        @RequestParam(name = "jurisdiction1") String jurisdiction1,
+        @RequestParam(name = "jurisdiction2") String jurisdiction2,
+        @RequestParam(name = "keyword", required = false) String keyword,
+        @RequestParam(name = "service") String service
     );
 }
