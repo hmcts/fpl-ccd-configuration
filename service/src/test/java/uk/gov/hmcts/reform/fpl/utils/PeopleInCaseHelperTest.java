@@ -11,10 +11,15 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.*;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.*;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getAllocatedJudgeName;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getAllocatedJudgeTitle;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 class PeopleInCaseHelperTest {
     @Test
@@ -61,7 +66,7 @@ class PeopleInCaseHelperTest {
         CaseData data = buildCaseDataWithAllocatedJudge(DISTRICT_JUDGE);
 
         String title = getAllocatedJudgeTitle(data);
-        assertThat(title).isEqualTo(DISTRICT_JUDGE.toString());
+        assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
     }
 
     @Test
@@ -80,7 +85,7 @@ class PeopleInCaseHelperTest {
         assertThat(title).isEqualTo("Judge last name");
     }
 
-    private CaseData buildCaseDataWithAllocatedJudge(JudgeOrMagistrateTitle title){
+    private CaseData buildCaseDataWithAllocatedJudge(JudgeOrMagistrateTitle title) {
         return CaseData.builder().allocatedJudge(Judge.builder()
             .judgeTitle(title)
             .otherTitle("Other title")

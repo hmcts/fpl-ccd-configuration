@@ -14,8 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.Event;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
@@ -175,6 +177,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         return ImmutableMap.<String, Object>builder()
             .putAll(commonNotificationParameters())
             .put("respondentLastName", "Jones")
+            .put("judgeTitle", "Her Honour Judge")
+            .put("judgeName", "Moley")
             .build();
     }
 
@@ -205,7 +209,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                 "hearingDetails", createHearingBookings(testDate, testDate.plusHours(4)),
                 "respondents1", createRespondents(),
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-                "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
+                "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
+                "allocatedJudge", Judge.builder()
+                    .judgeLastName("Moley")
+                    .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+                    .build()))
             .build();
     }
 

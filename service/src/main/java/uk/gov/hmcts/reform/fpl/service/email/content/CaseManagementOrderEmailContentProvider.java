@@ -16,9 +16,9 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getAllocatedJudgeTitle;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getAllocatedJudgeName;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getAllocatedJudgeTitle;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 @Slf4j

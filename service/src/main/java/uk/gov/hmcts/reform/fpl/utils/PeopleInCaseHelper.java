@@ -26,17 +26,15 @@ public class PeopleInCaseHelper {
             .orElse("");
     }
 
-    public static String getAllocatedJudgeTitle(CaseData data){
-        if(data.getAllocatedJudge().getJudgeTitle() == OTHER)
-        {
+    public static String getAllocatedJudgeTitle(CaseData data) {
+        if (data.getAllocatedJudge().getJudgeTitle() == OTHER) {
             return data.getAllocatedJudge().getOtherTitle();
         }
         return data.getAllocatedJudge().getJudgeTitle().getLabel();
     }
 
-    public static String getAllocatedJudgeName(CaseData data){
-        if(data.getAllocatedJudge().getJudgeTitle() == MAGISTRATES)
-        {
+    public static String getAllocatedJudgeName(CaseData data) {
+        if (data.getAllocatedJudge().getJudgeTitle() == MAGISTRATES) {
             return data.getAllocatedJudge().getJudgeFullName();
         }
 

@@ -42,7 +42,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContent
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
-import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.List;
 import java.util.Map;
