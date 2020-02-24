@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -33,11 +34,13 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
@@ -48,8 +51,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 @Slf4j
 @Api
 @RequestMapping("/callback/create-order")
-@RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RestController
 public class GeneratedOrderController {
     private final ObjectMapper mapper;
     private final GeneratedOrderService service;
@@ -58,6 +61,7 @@ public class GeneratedOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
+    private final CoreCaseDataService coreCaseDataService;
     private final ChildrenService childrenService;
     private final DocumentDownloadService documentDownloadService;
     private final RequestData requestData;
@@ -148,15 +152,22 @@ public class GeneratedOrderController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        String mostRecentUploadedDocumentUrl = service.getMostRecentUploadedOrderDocumentUrl(
+        DocumentReference mostRecentUploadedDocument = service.getMostRecentUploadedOrderDocument(
             caseData.getOrderCollection());
 
-        byte[] documentContents = documentDownloadService.downloadDocument(mostRecentUploadedDocumentUrl);
-
-        applicationEventPublisher.publishEvent(
-            new GeneratedOrderEvent(callbackRequest, requestData.authorisation(), requestData.userId(),
-                concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl),
-                documentContents));
+        coreCaseDataService.triggerEvent(
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId(),
+            "internal-change:SEND_DOCUMENT",
+            Map.of("documentToBeSent", mostRecentUploadedDocument)
+        );
+        applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
+            requestData.authorisation(),
+            requestData.userId(),
+            concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
+                mostRecentUploadedDocument.getBinaryUrl()),
+            documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
     }
 
     private Document getDocument(String authorization,

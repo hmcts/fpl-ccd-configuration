@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,17 +19,11 @@ import java.util.Map;
 @Api
 @RestController
 @RequestMapping("/callback/case-initiation")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseInitiationController {
 
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
-
-    @Autowired
-    public CaseInitiationController(LocalAuthorityService localAuthorityNameService,
-                                    LocalAuthorityUserService localAuthorityUserService) {
-        this.localAuthorityNameService = localAuthorityNameService;
-        this.localAuthorityUserService = localAuthorityUserService;
-    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(

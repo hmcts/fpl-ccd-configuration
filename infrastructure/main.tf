@@ -15,7 +15,8 @@ locals {
   IDAM_S2S_AUTH_URL       = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
   DOCUMENT_MANAGEMENT_URL = "http://dm-store-${local.local_env}.service.${local.local_ase}.internal"
   CORE_CASE_DATA_API_URL  = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
-  RD_PROFESSIONAL_API_URL  = "http://rd-professional-api-${local.local_env}.service.${local.local_ase}.internal"
+  RD_PROFESSIONAL_API_URL = "http://rd-professional-api-${local.local_env}.service.${local.local_ase}.internal"
+  SEND_LETTER_URL         = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
   DOCMOSIS_API_URL        = "https://docmosis-development.platform.hmcts.net"
 }
 
@@ -110,6 +111,11 @@ data "azurerm_key_vault_secret" "robotics-notification-sender" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "ld-sdk-key" {
+  name          = "ld-sdk-key"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
 module "key-vault" {
   source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   name                    = "fpl-${var.env}"
@@ -151,6 +157,7 @@ module "case-service" {
     DOCUMENT_MANAGEMENT_URL                                     = "${local.DOCUMENT_MANAGEMENT_URL}"
     CORE_CASE_DATA_API_URL                                      = "${local.CORE_CASE_DATA_API_URL}"
     RD_PROFESSIONAL_API_URL                                     = "${local.RD_PROFESSIONAL_API_URL}"
+    SEND_LETTER_URL                                             = "${local.SEND_LETTER_URL}"
     CCD_UI_BASE_URL                                             = "${var.ccd_ui_base_url}"
     FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING                   = "${data.azurerm_key_vault_secret.local_authority_email_to_code_mapping.value}"
     FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING                    = "${data.azurerm_key_vault_secret.local_authority_code_to_name_mapping.value}"
@@ -164,6 +171,7 @@ module "case-service" {
     FPL_SYSTEM_UPDATE_PASSWORD                                  = "${data.azurerm_key_vault_secret.system_update_user_password.value}"
     ROBOTICS_NOTIFICATION_SENDER                                = "${data.azurerm_key_vault_secret.robotics-notification-sender.value}"
     ROBOTICS_NOTIFICATION_RECIPIENT                             = "${data.azurerm_key_vault_secret.robotics-notification-recipient.value}"
+    LD_SDK_KEY                                                  = "${data.azurerm_key_vault_secret.ld-sdk-key.value}"
     SPRING_SECURITY_ENABLED                                     = "${var.security_enabled}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI         = "${var.idam_token_issuer_uri}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI         = "${var.idam_token_jwk_set_uri}"

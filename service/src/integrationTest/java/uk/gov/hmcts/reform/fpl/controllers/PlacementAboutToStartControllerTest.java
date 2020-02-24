@@ -26,9 +26,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 @ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementAboutToStartEventControllerTest extends AbstractControllerTest {
+class PlacementAboutToStartControllerTest extends AbstractControllerTest {
 
-    PlacementAboutToStartEventControllerTest() {
+    PlacementAboutToStartControllerTest() {
         super("placement");
     }
 
