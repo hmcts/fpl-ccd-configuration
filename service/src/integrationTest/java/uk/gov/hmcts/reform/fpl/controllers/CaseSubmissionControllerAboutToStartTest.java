@@ -64,8 +64,10 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
         feeResponse.setDescription("description");
         feeResponse.setVersion(1);
 
+        // Nicer way to do this?
         given(feeService.getFees(List.of(FeeType.CARE_ORDER))).willReturn(List.of(feeResponse));
         given(feeService.extractFeeToUse(any())).willCallRealMethod();
+        given(feeService.getFeeAmountForOrders(any())).willCallRealMethod();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(Map.of("orders", Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build()))

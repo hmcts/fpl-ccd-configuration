@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import feign.FeignException;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,13 +17,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
-import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
-import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -74,7 +70,9 @@ public class CaseSubmissionController {
 
         if (errors.isEmpty()) {
             try {
-                BigDecimal amount = getAmountToPay(caseData.getOrders());
+                List<OrderType> orderTypes = caseData.getOrders() == null ? null : caseData.getOrders().getOrderType();
+
+                BigDecimal amount = feeService.getFeeAmountForOrders(orderTypes);
                 String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
                 data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
@@ -90,15 +88,6 @@ public class CaseSubmissionController {
             .data(data)
             .errors(errors)
             .build();
-    }
-
-    private BigDecimal getAmountToPay(Orders orders) throws FeignException {
-        List<FeeResponse> fees = feeService.getFees(FeeType.fromOrderType(
-            orders == null ? null : orders.getOrderType()));
-
-        return feeService.extractFeeToUse(fees)
-            .map(FeeResponse::getAmount)
-            .orElse(BigDecimal.ZERO);
     }
 
     private List<String> validate(CaseData caseData) {

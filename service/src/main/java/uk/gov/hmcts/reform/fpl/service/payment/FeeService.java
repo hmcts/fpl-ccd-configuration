@@ -11,7 +11,9 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
 
 @Slf4j
 @Service
@@ -28,6 +31,15 @@ public class FeeService {
 
     private final FeesConfig feesConfig;
     private final FeesRegisterApi feesRegisterApi;
+
+    public BigDecimal getFeeAmountForOrders(List<OrderType> orderTypes) throws FeignException {
+        return Optional.ofNullable(orderTypes)
+            .map(orderTypeList -> getFees(fromOrderType(orderTypeList)))
+            .map(this::extractFeeToUse)
+            .filter(Optional::isPresent)
+            .map(feeResponse -> feeResponse.get().getAmount())
+            .orElse(BigDecimal.ZERO);
+    }
 
     public Optional<FeeResponse> extractFeeToUse(List<FeeResponse> feeResponses) {
         return ofNullable(feeResponses).stream()

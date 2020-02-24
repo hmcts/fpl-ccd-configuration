@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig;
 
 import java.math.BigDecimal;
@@ -48,7 +49,7 @@ class FeeServiceTest {
     private FeeService feeService;
 
     @Nested
-    class MakeRequest {
+    class GetFees {
         @ParameterizedTest
         @NullAndEmptySource
         void shouldReturnAnEmptyListWhenNullOrEmptyListIsPassed(List<FeeType> list) {
@@ -113,6 +114,30 @@ class FeeServiceTest {
             FeeResponse response = new FeeResponse();
             response.setAmount(BigDecimal.valueOf(amount));
             return response;
+        }
+    }
+
+    @Nested
+    class GetFeeAmountForOrders {
+        @Test
+        void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
+            when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenThrow(new FeignException.BadRequest(
+                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8), new byte[]{})
+                );
+
+            assertThrows(FeeRegisterException.class, () -> feeService.getFees(List.of(CARE_ORDER)));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnAnZeroIfEmptyOrNullListPassed(List<OrderType> list) {
+            assertThat(feeService.getFeeAmountForOrders(list)).isEqualTo(BigDecimal.ZERO);
+        }
+
+        @AfterEach
+        void resetInvocations() {
+            reset(feesRegisterApi);
         }
     }
 }
