@@ -161,7 +161,7 @@ ccd:
     base:
       url: http://fake-url
 
-fee:
+fees_register:
   api:
     url: http://fake-fees-register-api
 
@@ -268,7 +268,7 @@ rd_professional:
   api:
     url: http://localhost:8765
 
-fee:
+fees_register:
   api:
     url: http://localhost:8765
 
