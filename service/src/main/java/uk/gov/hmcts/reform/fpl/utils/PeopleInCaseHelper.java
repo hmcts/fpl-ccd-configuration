@@ -9,10 +9,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 import java.util.Objects;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
-
-import static java.util.stream.Collectors.toList;
 
 public class PeopleInCaseHelper {
 
