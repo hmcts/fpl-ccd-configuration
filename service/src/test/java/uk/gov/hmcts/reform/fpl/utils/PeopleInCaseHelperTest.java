@@ -56,8 +56,8 @@ class PeopleInCaseHelperTest {
     @Test
     void shouldReturnAllocatedJudgeOtherTitleWhenOtherIsSelected() {
         CaseData data = buildCaseDataWithAllocatedJudge(OTHER);
-
         String title = getAllocatedJudgeTitle(data);
+
         assertThat(title).isEqualTo("Other title");
     }
 
