@@ -214,7 +214,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .build();
     }
 
-    private Judge buildAllocatedJudge(){
+    private Judge buildAllocatedJudge() {
         return Judge.builder()
             .judgeLastName("Moley")
             .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
