@@ -103,9 +103,9 @@ class FeeServiceTest {
         @Test
         void shouldReturnTheFeeResponseWithMaxFeeWhenPassedAPopulatedList() {
             List<FeeResponse> feeResponses = List.of(buildFee(12), buildFee(73.4), buildFee(45));
-            Optional<FeeResponse> actual = feeService.extractFeeToUse(feeResponses);
-            assertThat(actual).isPresent();
-            assertThat(actual.get()).isEqualTo(feeResponses.get(1));
+            Optional<FeeResponse> mostExpensive = feeService.extractFeeToUse(feeResponses);
+            assertThat(mostExpensive).isPresent();
+            assertThat(mostExpensive.get()).isEqualTo(feeResponses.get(1));
         }
 
         private FeeResponse buildFee(double amount) {

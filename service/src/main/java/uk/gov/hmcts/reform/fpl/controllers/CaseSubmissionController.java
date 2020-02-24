@@ -70,21 +70,19 @@ public class CaseSubmissionController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         List<String> errors = validate(caseData);
-        BigDecimal amount = null;
-
-        try {
-            amount = getAmountToPay(caseData.getOrders());
-        } catch (FeignException ex) {
-            // TODO: 21/02/2020 Replace me in a new story
-            //  this is an error message for when the Fee Register is unavailable
-            errors.add("XXX");
-        }
 
         if (errors.isEmpty()) {
-            String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
+            try {
+                BigDecimal amount = getAmountToPay(caseData.getOrders());
+                String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
-            data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
-            data.put("submissionConsentLabel", label);
+                data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
+                data.put("submissionConsentLabel", label);
+            } catch (FeignException ex) {
+                // TODO: 21/02/2020 Replace me in FPLA-1353
+                //  this is an error message for when the Fee Register is unavailable
+                errors.add("XXX");
+            }
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
