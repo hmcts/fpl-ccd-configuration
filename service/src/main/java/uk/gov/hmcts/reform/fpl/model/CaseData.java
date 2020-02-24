@@ -280,8 +280,11 @@ public class CaseData {
     }
 
     public Optional<Applicant> findApplicant(int seqNo) {
-        return isEmpty(getApplicants()) || getApplicants().size() <= seqNo
-            ? empty() : Optional.of(getApplicants().get(seqNo).getValue());
+        if (isEmpty(applicants) || applicants.size() <= seqNo) {
+            return empty();
+        } else {
+            return Optional.of(applicants.get(seqNo).getValue());
+        }
     }
 
     @JsonIgnore

@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -63,10 +65,11 @@ public class CaseDataExtractionService {
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
     public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData) throws IOException {
-        DocmosisStandardDirectionOrder.Builder standardDirectionOrder = DocmosisStandardDirectionOrder.builder();
+        DocmosisStandardDirectionOrder.Builder orderBuilder = DocmosisStandardDirectionOrder.builder();
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
-        standardDirectionOrder
-            .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(caseData.getStandardDirectionOrder()))
+        orderBuilder
+            .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder))
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .generationDate(formatLocalDateToString(LocalDate.now(), LONG))
@@ -74,14 +77,14 @@ public class CaseDataExtractionService {
             .children(getChildrenDetails(caseData.getAllChildren()))
             .respondents(getRespondentsNameAndRelationship(caseData.getAllRespondents()))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
-            .applicantName(getApplicantName(caseData))
-            .directions(getGroupedDirections(caseData))
-            .hearingBooking(getHearingBookingData(caseData));
+            .applicantName(getApplicantName(caseData.findApplicant(0).orElse(Applicant.builder().build())))
+            .directions(getGroupedDirections(standardDirectionOrder))
+            .hearingBooking(getHearingBookingData(caseData.getHearingDetails()));
 
-        if (caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
-            standardDirectionOrder.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
+        if (SEALED != standardDirectionOrder.getOrderStatus()) {
+            orderBuilder.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
         }
-        return standardDirectionOrder.build();
+        return orderBuilder.build();
     }
 
     private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(Order standardDirectionOrder) {
@@ -131,16 +134,10 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    private String getApplicantName(CaseData caseData) {
-        return caseData.findApplicant(0)
-            .map(applicant -> applicant.getParty().getOrganisationName())
-            .orElse("");
-    }
+    private List<DocmosisDirection> getGroupedDirections(Order order) throws IOException {
+        OrderDefinition configOrder = ordersLookupService.getStandardDirectionOrder();
 
-    private List<DocmosisDirection> getGroupedDirections(CaseData caseData) throws IOException {
-        OrderDefinition order = ordersLookupService.getStandardDirectionOrder();
-
-        return ofNullable(caseData.getStandardDirectionOrder().getDirections()).map(directions -> {
+        return ofNullable(order.getDirections()).map(directions -> {
                 ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
 
                 int directionNumber = SDO_DIRECTION_INDEX_START;
@@ -148,7 +145,7 @@ public class CaseDataExtractionService {
                     if (!"No".equals(direction.getValue().getDirectionNeeded())) {
                         formattedDirections.add(DocmosisDirection.builder()
                             .assignee(direction.getValue().getAssignee())
-                            .title(formatTitle(directionNumber++, direction.getValue(), order.getDirections()))
+                            .title(formatTitle(directionNumber++, direction.getValue(), configOrder.getDirections()))
                             .body(direction.getValue().getDirectionText())
                             .build());
                     }
@@ -156,6 +153,12 @@ public class CaseDataExtractionService {
                 return formattedDirections.build();
             }
         ).orElse(ImmutableList.of());
+    }
+
+    private String getApplicantName(Applicant applicant) {
+        return ofNullable(applicant.getParty())
+            .map(ApplicantParty::getOrganisationName)
+            .orElse("");
     }
 
     private String formatTitle(int index, Direction direction, List<DirectionConfiguration> directionConfigurations) {
@@ -187,8 +190,8 @@ public class CaseDataExtractionService {
                 .orElse("unknown"));
     }
 
-    private DocmosisHearingBooking getHearingBookingData(CaseData caseData) {
-        return ofNullable(caseData.getHearingDetails()).map(hearingBookings -> {
+    private DocmosisHearingBooking getHearingBookingData(List<Element<HearingBooking>> hearingDetails) {
+        return ofNullable(hearingDetails).map(hearingBookings -> {
                 HearingBooking hearing = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
                 HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing.getVenue());
 

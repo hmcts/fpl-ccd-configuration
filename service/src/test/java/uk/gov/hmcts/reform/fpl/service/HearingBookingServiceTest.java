@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -12,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -187,6 +190,18 @@ class HearingBookingServiceTest {
             assertThat(service.combineHearingDetails(futureHearingBooking, pastHearingBooking))
                 .isEqualTo(expectedHearingBooking);
         }
+    }
+
+    @Test
+    void shouldReturnFirstHearingWhenHearingExists() {
+        assertThat(service.getFirstHearing(createHearingBookings()))
+            .isEqualTo(Optional.of(createHearingBooking(TODAY, TODAY.plusDays(1))));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnEmptyWhenEmptyListOfHearings(List<Element<HearingBooking>> hearings) {
+        assertThat(service.getFirstHearing(hearings)).isEmpty();
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
