@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.payment;
 
-import com.google.common.collect.ImmutableList;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,11 +37,8 @@ public class FeeService {
     }
 
     public List<FeeResponse> getFees(List<FeeType> feeTypes) throws FeignException {
-        if (feeTypes == null) {
-            return ImmutableList.of();
-        }
-
-        return feeTypes.stream()
+        return ofNullable(feeTypes).stream()
+            .flatMap(Collection::stream)
             .map(this::makeRequest)
             .filter(Objects::nonNull)
             .collect(toImmutableList());

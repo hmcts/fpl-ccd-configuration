@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -15,21 +16,27 @@ public class BigDecimalHelper {
     }
 
     public static String toCCDMoneyGBP(BigDecimal amount) {
-        if (amount == null) {
-            return "";
-        }
-
-        BigDecimal pence = amount.multiply(HUNDRED);
-        return String.valueOf(pence.longValue());
+        return Optional.ofNullable(amount)
+            .map(BigDecimalHelper::toPence)
+            .map(String::valueOf)
+            .orElse(StringUtils.EMPTY);
     }
 
     public static Optional<BigDecimal> fromCCDMoneyGBP(String amount) {
         try {
-            int integer = Integer.parseInt(amount);
-            return Optional.of(BigDecimal.valueOf(integer, 2));
+            return Optional.of(fromPence(amount));
         } catch (NumberFormatException ex) {
             log.error("couldn't convert \"{}\" to int", amount);
             return Optional.empty();
         }
+    }
+
+    private static Long toPence(BigDecimal amount) {
+        return amount.multiply(HUNDRED).longValue();
+    }
+
+    private static BigDecimal fromPence(String amount) {
+        long pence = Long.parseLong(amount);
+        return BigDecimal.valueOf(pence, 2);
     }
 }
