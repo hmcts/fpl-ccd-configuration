@@ -6,8 +6,10 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
 import static java.util.stream.Collectors.toUnmodifiableList;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 public enum FeeType {
     // Names should match OrderType enum names exactly
@@ -24,12 +26,12 @@ public enum FeeType {
 
     private static final Map<OrderType, FeeType> orderToFeeMap = buildOrderFeeMap();
 
-    public static FeeType fromOrderType(OrderType orderType) {
-        return orderType != null ? orderToFeeMap.get(orderType) : null;
+    public static FeeType fromOrderType(@Nonnull OrderType orderType) {
+        return orderToFeeMap.get(orderType);
     }
 
     public static List<FeeType> fromOrderType(List<OrderType> orderTypes) {
-        if (orderTypes == null) {
+        if (isEmpty(orderTypes)) {
             return ImmutableList.of();
         }
 

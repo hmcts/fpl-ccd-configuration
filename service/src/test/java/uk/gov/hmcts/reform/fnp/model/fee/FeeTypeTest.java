@@ -1,21 +1,16 @@
 package uk.gov.hmcts.reform.fnp.model.fee;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.OTHER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
 
 class FeeTypeTest {
@@ -31,25 +26,9 @@ class FeeTypeTest {
         assertThat(fromOrderType(list)).isEmpty();
     }
 
-    @Test
-    void shouldReturnAListWithoutNullsWhenSourceListHasNulls() {
-        List<OrderType> orderTypeList = new ArrayList<>();
-        orderTypeList.add(OrderType.CARE_ORDER);
-        orderTypeList.add(null);
-        orderTypeList.add(OrderType.OTHER);
-
-        assertThat(fromOrderType(orderTypeList)).containsOnly(CARE_ORDER, OTHER);
-    }
-
     @ParameterizedTest
     @MethodSource("orderToFeeTypeSource")
     void shouldReturnCorrespondingFeeTypeForOrderType(OrderType orderType, FeeType feeType) {
         assertThat(fromOrderType(orderType)).isEqualTo(feeType);
-    }
-
-    @ParameterizedTest
-    @NullSource
-    void shouldReturnNullWhenNullIsPassed(OrderType undefined) {
-        assertThat(fromOrderType(undefined)).isNull();
     }
 }
