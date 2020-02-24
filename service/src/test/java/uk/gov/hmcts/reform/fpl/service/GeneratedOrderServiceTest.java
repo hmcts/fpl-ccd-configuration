@@ -287,13 +287,17 @@ class GeneratedOrderServiceTest {
 
     @Test
     void shouldReturnMostRecentUploadedOrderDocumentUrl() {
-        final String expectedMostRecentUploadedOrderDocumentUrl =
-            "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
-        final String returnedMostRecentUploadedOrderDocumentUrl = service.getMostRecentUploadedOrderDocumentUrl(
-            createOrders());
+        DocumentReference lastOrderDocumentReference = DocumentReference.builder()
+            .filename("C21 3.pdf")
+            .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
+            .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
+            .build();
+        final DocumentReference mostRecentDocument = service.getMostRecentUploadedOrderDocument(createOrders(
+            lastOrderDocumentReference));
 
-        assertThat(expectedMostRecentUploadedOrderDocumentUrl).isEqualTo(
-            returnedMostRecentUploadedOrderDocumentUrl);
+        assertThat(mostRecentDocument.getFilename()).isEqualTo(lastOrderDocumentReference.getFilename());
+        assertThat(mostRecentDocument.getUrl()).isEqualTo(lastOrderDocumentReference.getUrl());
+        assertThat(mostRecentDocument.getBinaryUrl()).isEqualTo(lastOrderDocumentReference.getBinaryUrl());
     }
 
     @Test

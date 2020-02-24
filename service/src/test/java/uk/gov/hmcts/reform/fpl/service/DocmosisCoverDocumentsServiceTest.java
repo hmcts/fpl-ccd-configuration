@@ -58,6 +58,15 @@ class DocmosisCoverDocumentsServiceTest {
         assertThat(generalLetterData).isEqualTo(expectedMap);
     }
 
+    @Test
+    void shouldDefaultNullFamilyManCaseNumberToEmptyString() {
+        Long ccdCaseNumber = 1234123412341234L;
+        Map<String, Object> generalLetterData = documentsService.buildCoverDocumentsData(null,
+            ccdCaseNumber,  buildRepresentative());
+
+        assertThat(generalLetterData.get("familyManCaseNumber")).isEqualTo("");
+    }
+
     private Representative buildRepresentative() {
         return Representative.builder()
             .fullName("Mark Jones")

@@ -25,7 +25,7 @@
     "CaseEventID": "placement-PREPARE_FOR_HEARING",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.document",
-    "EventElementLabel": "Add document",
+    "EventElementLabel": "Add PDF document",
     "SecurityClassification": "Public",
     "DisplayContext": "MANDATORY"
   },

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.COVER_DOCS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 
@@ -28,7 +29,7 @@ public class DocmosisCoverDocumentsService {
                                                 Long caseNumber,
                                                 Representative representative) {
         return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", familyManCaseNumber)
+            .put("familyManCaseNumber", defaultIfNull(familyManCaseNumber, ""))
             .put("ccdCaseNumber", formatCCDCaseNumber(caseNumber))
             .put("representativeName", representative.getFullName())
             .put("representativeAddress", representative.getAddress().getAddressAsString("\n"))
