@@ -23,4 +23,8 @@ public class FeatureToggleService {
     public boolean isXeroxPrintingEnabled() {
         return ldClient.boolVariation("xerox-printing", ldUser, false);
     }
+
+    public boolean isCtscEnabled() {
+        return ldClient.boolVariation("CTSC", ldUser, false);
+    }
 }

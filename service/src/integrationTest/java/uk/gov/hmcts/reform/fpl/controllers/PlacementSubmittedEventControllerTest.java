@@ -87,7 +87,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
     class PlacementOrderNotification {
 
         @Test
-        void shouldSendNotificationWhenAddingNewChildPlacement() throws Exception {
+        void shouldNotifyHmctsAdminWhenAddingNewChildPlacementAndCtscIsDisabled() throws Exception {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
@@ -112,10 +112,55 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequest);
 
             verify(notificationClient).sendEmail(
+                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                "admin@family-court.com",
+                expectedTemplateParameters(),
+                CASE_ID);
+
+            verify(notificationClient, never()).sendEmail(
+                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                "FamilyPublicLaw+ctsc@gmail.com",
+                expectedTemplateParameters(),
+                CASE_ID);
+        }
+
+        @Test
+        void shouldNotifyCtscAdminWhenAddingNewChildPlacementAndCtscIsEnabled() throws Exception {
+            Element<Child> child1 = testChild();
+            Element<Child> child2 = testChild();
+
+            DocumentReference child1Application = testDocument();
+            DocumentReference child2Application = testDocument();
+
+            Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
+            Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
+
+            CallbackRequest callbackRequest = CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                    .id(parseLong(CASE_ID))
+                    .data(ImmutableMap.<String, Object>builder()
+                        .putAll(buildNotificationData())
+                        .putAll(buildPlacementData(List.of(child1, child2), List.of(child2Placement, child1Placement),
+                            child2.getId()))
+                        .put("sendToCtsc", "Yes")
+                        .build())
+                    .build())
+                .caseDetailsBefore(CaseDetails.builder().data(new HashMap<>()).build())
+                .build();
+
+            postSubmittedEvent(callbackRequest);
+
+            verify(notificationClient, never()).sendEmail(
                 eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
                 eq("admin@family-court.com"),
                 eq(expectedTemplateParameters()),
                 eq(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                "FamilyPublicLaw+ctsc@gmail.com",
+                expectedTemplateParameters(),
+                String.valueOf(CASE_ID));
         }
 
         @Test
@@ -185,7 +230,48 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
                 eq(CASE_ID));
 
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq("FamilyPublicLaw+ctsc@gmail.com"),
+                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq(CASE_ID));
+
             verifyZeroInteractions(notificationClient);
+        }
+
+        @Test
+        void shouldSendNotificationToCtscAdminWhenNewNoticeOfPlacementOrderAndCtscIsEnabled()
+            throws NotificationClientException {
+            given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+
+            UUID representativeId = randomUUID();
+            Respondent respondent = respondent();
+
+            CaseDetails caseDetails = populatedCaseDetails(representativeId, respondent);
+
+            caseDetails.setData(ImmutableMap.<String, Object>builder()
+                .putAll(caseDetails.getData())
+                .put("sendToCtsc", "Yes")
+                .build());
+
+            CallbackRequest callbackRequest = CallbackRequest.builder()
+                .caseDetails(caseDetails)
+                .caseDetailsBefore(CaseDetails.builder().data(new HashMap<>()).build())
+                .build();
+
+            postSubmittedEvent(callbackRequest);
+
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq("admin@family-court.com"),
+                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq(CASE_ID));
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq("FamilyPublicLaw+ctsc@gmail.com"),
+                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
+                eq(CASE_ID));
         }
 
         @Test
