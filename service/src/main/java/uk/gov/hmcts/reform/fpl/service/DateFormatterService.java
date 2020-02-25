@@ -11,8 +11,9 @@ import java.util.Locale;
 //TODO: decouple from services and refactor to Helper class.
 @Service
 public class DateFormatterService {
-    public static final String LOCAL_DATE_TIME_AT = "d MMMM yyyy 'at' h:mma";
+    public static final String DATE_TIME_AT = "d MMMM yyyy 'at' h:mma";
     public static final String TIME_DATE = "h:mma, d MMMM yyyy";
+    public static final String DATE_TIME = "d MMMM yyyy, h:mma";
 
     public static String formatLocalDateToString(LocalDate date, FormatStyle style) {
         return date.format(DateTimeFormatter.ofLocalizedDate(style).localizedBy(Locale.UK));

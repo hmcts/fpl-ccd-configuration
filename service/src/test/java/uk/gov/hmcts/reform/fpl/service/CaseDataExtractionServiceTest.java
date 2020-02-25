@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.LOCAL_DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -199,7 +199,7 @@ class CaseDataExtractionServiceTest {
         return List.of(
             DocmosisDirection.builder()
                 .assignee(ALL_PARTIES)
-                .title("2. Test SDO type 1 on " + TODAY.atStartOfDay().format(ofPattern(LOCAL_DATE_TIME_AT, UK)))
+                .title("2. Test SDO type 1 on " + TODAY.atStartOfDay().format(ofPattern(DATE_TIME_AT, UK)))
                 .body("Test body 1")
                 .build(),
             DocmosisDirection.builder()
