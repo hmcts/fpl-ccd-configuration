@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
@@ -39,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFil
 @Api
 @RestController
 @RequestMapping("/callback/case-submission")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseSubmissionController {
 
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
@@ -49,35 +52,21 @@ public class CaseSubmissionController {
     private final CaseValidatorService caseValidatorService;
     private final ObjectMapper mapper;
     private final RestrictionsConfiguration restrictionsConfiguration;
-
-    @Autowired
-    public CaseSubmissionController(
-        UserDetailsService userDetailsService,
-        DocumentGeneratorService documentGeneratorService,
-        UploadDocumentService uploadDocumentService,
-        CaseValidatorService caseValidatorService,
-        ObjectMapper mapper,
-        ApplicationEventPublisher applicationEventPublisher,
-        RestrictionsConfiguration restrictionsConfiguration) {
-        this.userDetailsService = userDetailsService;
-        this.documentGeneratorService = documentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.caseValidatorService = caseValidatorService;
-        this.mapper = mapper;
-        this.restrictionsConfiguration = restrictionsConfiguration;
-    }
+    private final PaymentService paymentService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
         Map<String, Object> data = caseDetails.getData();
         data.put("submissionConsentLabel", label);
+        //TODO: call Fees Register
+        data.put("amountToPay", "123");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -149,7 +138,10 @@ public class CaseSubmissionController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody @NotNull CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        paymentService.makePayment(caseDetails.getId(), caseData);
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
     }
 }

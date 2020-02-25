@@ -84,6 +84,10 @@ rd_professional:
 send-letter:
   url: http://fake-send-letter
 
+payment:
+  api:
+    url: http://fake-send-letter
+
 ccd:
   ui:
     base:
@@ -193,6 +197,10 @@ rd_professional:
 
 send-letter:
   url: http://localhost:8765
+
+send-payment:
+  api:
+    url: http://localhost:8765
 
 ccd:
   ui:
