@@ -66,8 +66,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
-            .put("judgeTitle", caseData.getAllocatedJudge().getAllocatedJudgeTitle())
-            .put("judgeName", caseData.getAllocatedJudge().getAllocatedJudgeName())
+            .put("judgeTitle", caseData.getAllocatedJudge().getJudgeOrMagistrateTitle())
+            .put("judgeName", caseData.getAllocatedJudge().getJudgeName())
             .build();
     }
 

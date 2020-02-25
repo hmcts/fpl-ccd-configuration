@@ -13,43 +13,42 @@ class JudgeTest {
 
     @Test
     void shouldReturnAllocatedJudgeOtherTitleWhenOtherIsSelected() {
-        CaseData data = buildCaseDataWithAllocatedJudge(OTHER);
-        String title = data.getAllocatedJudge().getAllocatedJudgeTitle();
+        Judge allocatedJudge = buildCaseDataWithAllocatedJudge(OTHER);
+        String title = allocatedJudge.getJudgeOrMagistrateTitle();
 
         assertThat(title).isEqualTo("Other title");
     }
 
     @Test
     void shouldReturnAllocatedJudgeTitleWhenOtherIsNotSelected() {
-        CaseData data = buildCaseDataWithAllocatedJudge(DISTRICT_JUDGE);
-        String title = data.getAllocatedJudge().getAllocatedJudgeTitle();
+        Judge allocatedJudge = buildCaseDataWithAllocatedJudge(DISTRICT_JUDGE);
+        String title = allocatedJudge.getJudgeOrMagistrateTitle();
 
         assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
     }
 
     @Test
     void shouldReturnAllocatedJudgeFullNameWhenMagistratesSelected() {
-        CaseData data = buildCaseDataWithAllocatedJudge(MAGISTRATES);
-        String judgeFullName = data.getAllocatedJudge().getAllocatedJudgeName();
+        Judge allocatedJudge = buildCaseDataWithAllocatedJudge(MAGISTRATES);
+        String fullName = allocatedJudge.getJudgeName();
 
-        assertThat(judgeFullName).isEqualTo("Judge Full Name");
+        assertThat(fullName).isEqualTo("Judge Full Name");
     }
 
     @Test
     void shouldReturnAllocatedJudgeLastNameWhenMagistratesIsNotSelected() {
-        CaseData data = buildCaseDataWithAllocatedJudge(DEPUTY_DISTRICT_JUDGE);
-        String judgeLastName = data.getAllocatedJudge().getAllocatedJudgeName();
+        Judge allocatedJudge = buildCaseDataWithAllocatedJudge(DEPUTY_DISTRICT_JUDGE);
+        String lastName = allocatedJudge.getJudgeName();
 
-        assertThat(judgeLastName).isEqualTo("Judge Last Name");
+        assertThat(lastName).isEqualTo("Judge Last Name");
     }
 
-    private CaseData buildCaseDataWithAllocatedJudge(JudgeOrMagistrateTitle title) {
-        return CaseData.builder().allocatedJudge(Judge.builder()
+    private Judge buildCaseDataWithAllocatedJudge(JudgeOrMagistrateTitle title) {
+        return Judge.builder()
             .judgeTitle(title)
             .otherTitle("Other title")
             .judgeFullName("Judge Full Name")
             .judgeLastName("Judge Last Name")
-            .build())
             .build();
     }
 }

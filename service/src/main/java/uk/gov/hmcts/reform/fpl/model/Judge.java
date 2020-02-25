@@ -19,7 +19,7 @@ public class Judge {
     private final String judgeFullName;
 
     @JsonIgnore
-    public String getAllocatedJudgeTitle() {
+    public String getJudgeOrMagistrateTitle() {
         if (judgeTitle == OTHER) {
             return otherTitle;
         }
@@ -27,7 +27,7 @@ public class Judge {
     }
 
     @JsonIgnore
-    public String getAllocatedJudgeName() {
+    public String getJudgeName() {
         if (judgeTitle == MAGISTRATES) {
             return judgeFullName;
         }
