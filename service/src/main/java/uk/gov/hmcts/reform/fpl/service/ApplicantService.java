@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -16,7 +18,9 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicantService {
+    private final OrganisationService organisationService;
 
     public List<Element<Applicant>> expandApplicantCollection(CaseData caseData) {
         if (isEmpty(caseData.getApplicants())) {
@@ -25,7 +29,7 @@ public class ApplicantService {
                     .party(ApplicantParty.builder()
                         // A value within applicant party needs to be set in order to expand UI view.
                         .partyId(UUID.randomUUID().toString())
-                        .organisationName(prepopulateLocalAuthorityApplicant())
+                        .organisationName(prepopulateLocalAuthorityApplicant(caseData))
                         .build())
                     .build())
                 .build());
@@ -35,7 +39,8 @@ public class ApplicantService {
         }
     }
 
-    private String prepopulateLocalAuthorityApplicant() {
+    private String prepopulateLocalAuthorityApplicant(CaseData caseData) {
+        organisationService.findUserByEmail("email");
         return "Local Authority Name";
     }
 
