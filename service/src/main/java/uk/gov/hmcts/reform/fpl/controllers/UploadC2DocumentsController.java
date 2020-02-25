@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,23 +31,11 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Api
 @RestController
 @RequestMapping("/callback/upload-c2")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadC2DocumentsController {
     private final ObjectMapper mapper;
     private final UserDetailsService userDetailsService;
-    private final DateFormatterService dateFormatterService;
     private final ApplicationEventPublisher applicationEventPublisher;
-
-    @Autowired
-    private UploadC2DocumentsController(
-        ObjectMapper mapper,
-        UserDetailsService userDetailsService,
-        DateFormatterService dateFormatterService,
-        ApplicationEventPublisher applicationEventPublisher) {
-        this.mapper = mapper;
-        this.userDetailsService = userDetailsService;
-        this.dateFormatterService = dateFormatterService;
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
@@ -93,7 +82,7 @@ public class UploadC2DocumentsController {
                 .author(userDetailsService.getUserName(authorization))
                 .description(caseData.getTemporaryC2Document().getDescription())
                 .document(caseData.getTemporaryC2Document().getDocument())
-                .uploadedDateTime(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
+                .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                         .toLocalDateTime(), "h:mma, d MMMM yyyy"))
                 .build())
             .build());
