@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,9 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
+
+import java.util.UUID;
+import java.util.List;
 
 @Api
 @RestController
@@ -36,6 +43,18 @@ public class ApplicantController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Element<Applicant>> applicants = ImmutableList.of(Element.<Applicant>builder()
+            .value(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    // A value within applicant party needs to be set in order to expand UI view.
+                    .organisationName("Name")
+                    .partyId(UUID.randomUUID().toString())
+                    .build())
+                .build())
+            .build());
+
+        caseData.toBuilder().applicants(applicants);
 
         caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData));
 
