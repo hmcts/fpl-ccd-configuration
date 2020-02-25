@@ -44,18 +44,6 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Applicant>> applicants = ImmutableList.of(Element.<Applicant>builder()
-            .value(Applicant.builder()
-                .party(ApplicantParty.builder()
-                    // A value within applicant party needs to be set in order to expand UI view.
-                    .organisationName("Name")
-                    .partyId(UUID.randomUUID().toString())
-                    .build())
-                .build())
-            .build());
-
-        caseData.toBuilder().applicants(applicants);
-
         caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
