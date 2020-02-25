@@ -70,9 +70,7 @@ public class CaseSubmissionController {
 
         if (errors.isEmpty()) {
             try {
-                List<OrderType> orderTypes = caseData.getOrders() == null ? null : caseData.getOrders().getOrderType();
-
-                BigDecimal amount = feeService.getFeeAmountForOrders(orderTypes);
+                BigDecimal amount = feeService.getFeeAmountForOrders(caseData.getOrders());
                 String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
                 data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));

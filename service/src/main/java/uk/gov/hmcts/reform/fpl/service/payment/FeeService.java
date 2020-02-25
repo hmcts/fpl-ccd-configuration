@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.payment;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
@@ -11,7 +12,7 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -32,8 +33,10 @@ public class FeeService {
     private final FeesConfig feesConfig;
     private final FeesRegisterApi feesRegisterApi;
 
-    public BigDecimal getFeeAmountForOrders(List<OrderType> orderTypes) throws FeignException {
-        return Optional.ofNullable(orderTypes)
+    public BigDecimal getFeeAmountForOrders(Orders orders) throws FeignException {
+        return Optional.ofNullable(orders)
+            .map(Orders::getOrderType)
+            .filter(ObjectUtils::isNotEmpty)
             .map(orderTypeList -> getFees(fromOrderType(orderTypeList)))
             .map(this::extractFeeToUse)
             .filter(Optional::isPresent)

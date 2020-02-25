@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig;
 
 import java.math.BigDecimal;
@@ -33,8 +33,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.OTHER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PLACEMENT;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CARE_ORDER_KEYWORD;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CHANNEL;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.EVENT;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.JURISDICTION_1;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.JURISDICTION_2;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.OTHER_KEYWORD;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.PLACEMENT_KEYWORD;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SERVICE;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -58,15 +66,21 @@ class FeeServiceTest {
 
         @Test
         void shouldGetAFeeResponseWhenGivenAPopulated() {
-            FeeResponse expectedFeeResponse = expectedFeeResponse();
+            FeeResponse careOrderResponse = expectedFeeResponse(123);
+            FeeResponse otherResponse = expectedFeeResponse(231);
+            FeeResponse placementResponse = expectedFeeResponse(321);
 
-            when(feesRegisterApi.findFee("default", "miscellaneous", "family", "family court", "KLM", "private law"))
-                .thenReturn(expectedFeeResponse);
+            when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, CARE_ORDER_KEYWORD, SERVICE))
+                .thenReturn(careOrderResponse);
+            when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, OTHER_KEYWORD, SERVICE))
+                .thenReturn(otherResponse);
+            when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, PLACEMENT_KEYWORD, SERVICE))
+                .thenReturn(placementResponse);
 
-            List<FeeResponse> fees = feeService.getFees(List.of(CARE_ORDER, SUPERVISION_ORDER, PLACEMENT));
+            List<FeeResponse> fees = feeService.getFees(List.of(CARE_ORDER, OTHER, PLACEMENT));
 
             assertThat(fees).hasSize(3);
-            assertThat(fees).containsOnly(expectedFeeResponse);
+            assertThat(fees).containsOnly(careOrderResponse, otherResponse, placementResponse);
         }
 
         @Test
@@ -84,10 +98,10 @@ class FeeServiceTest {
             reset(feesRegisterApi);
         }
 
-        private FeeResponse expectedFeeResponse() {
+        private FeeResponse expectedFeeResponse(double amount) {
             FeeResponse feeResponse = new FeeResponse();
             feeResponse.setCode("FEE0327");
-            feeResponse.setAmount(BigDecimal.valueOf(255));
+            feeResponse.setAmount(BigDecimal.valueOf(amount));
             feeResponse.setDescription("example");
             feeResponse.setVersion(1);
             return feeResponse;
@@ -129,10 +143,20 @@ class FeeServiceTest {
             assertThrows(FeeRegisterException.class, () -> feeService.getFees(List.of(CARE_ORDER)));
         }
 
-        @ParameterizedTest
-        @NullAndEmptySource
-        void shouldReturnAnZeroIfEmptyOrNullListPassed(List<OrderType> list) {
-            assertThat(feeService.getFeeAmountForOrders(list)).isEqualTo(BigDecimal.ZERO);
+        @Test
+        void shouldReturnAnZeroIfNullIsPassed() {
+            assertThat(feeService.getFeeAmountForOrders(null)).isEqualTo(BigDecimal.ZERO);
+        }
+
+        @Test
+        void shouldReturnAnZeroIfNullListIsPassed() {
+            assertThat(feeService.getFeeAmountForOrders(Orders.builder().build())).isEqualTo(BigDecimal.ZERO);
+        }
+
+        @Test
+        void shouldReturnAnZeroIfEmptyListIsPassed() {
+            Orders orders = Orders.builder().orderType(List.of()).build();
+            assertThat(feeService.getFeeAmountForOrders(orders)).isEqualTo(BigDecimal.ZERO);
         }
 
         @AfterEach

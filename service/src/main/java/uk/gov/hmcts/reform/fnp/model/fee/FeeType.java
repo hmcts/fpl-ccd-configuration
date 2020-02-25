@@ -22,7 +22,19 @@ public enum FeeType {
     PLACEMENT,
     SUPERVISION_ORDER;
 
-    private static final Map<OrderType, FeeType> orderToFeeMap = buildOrderFeeMap();
+    private static final Map<OrderType, FeeType> orderToFeeMap;
+
+    static {
+        orderToFeeMap = Map.of(
+            OrderType.CARE_ORDER, CARE_ORDER,
+            OrderType.EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER,
+            OrderType.EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER,
+            OrderType.INTERIM_CARE_ORDER, INTERIM_CARE_ORDER,
+            OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER,
+            OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER,
+            OrderType.OTHER, OTHER
+        );
+    }
 
     public static List<FeeType> fromOrderType(List<OrderType> orderTypes) {
         if (isEmpty(orderTypes)) {
@@ -32,17 +44,5 @@ public enum FeeType {
         return orderTypes.stream()
             .map(orderToFeeMap::get)
             .collect(toUnmodifiableList());
-    }
-
-    private static Map<OrderType, FeeType> buildOrderFeeMap() {
-        return Map.of(
-            OrderType.CARE_ORDER, CARE_ORDER,
-            OrderType.EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER,
-            OrderType.EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER,
-            OrderType.INTERIM_CARE_ORDER, INTERIM_CARE_ORDER,
-            OrderType.INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER,
-            OrderType.SUPERVISION_ORDER, SUPERVISION_ORDER,
-            OrderType.OTHER, OTHER
-        );
     }
 }
