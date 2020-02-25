@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -29,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -87,8 +87,9 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedShouldNotifyAdminAndLAWhenNoRepresentativesNeedServing() throws Exception {
-        postSubmittedEvent(buildCallbackRequest());
+    void submittedShouldNotifyHmctsAdminAndLAWhenNoRepresentativesNeedServing() throws Exception {
+        CaseDetails caseDetails = buildCaseDetails(getCommonCaseData().build());
+        postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA),
@@ -107,10 +108,38 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedShouldNotifyAdminAndLAWhenRepresentativesNeedServingByPost() throws Exception {
+    void submittedShouldNotifyCtscAdminAWhenNoRepresentativesNeedServingAndCtscIsEnabled() throws Exception {
+        Map<String, Object> caseData = getCommonCaseData().put("sendToCtsc", "Yes").build();
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
+            eq(CASE_ID));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq("admin@family-court.com"),
+            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
+            eq(CASE_ID));
+
+        verifySendDocumentEventTriggered();
+    }
+
+    @Test
+    void submittedShouldNotifyHmctsAdminAndLAWhenRepresentativesNeedServingByPost() throws Exception {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
 
-        postSubmittedEvent(buildCallbackRequestWithRepresentatives());
+        Map<String, Object> caseData = getCommonCaseData()
+            .put("representatives", buildRepresentativesServedByPost())
+            .build();
+
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA),
@@ -133,37 +162,53 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         verifySendDocumentEventTriggered();
     }
 
-    private CallbackRequest buildCallbackRequest() {
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(parseLong(CASE_ID))
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .data(ImmutableMap.of(
-                    "orderCollection", createOrders(lastOrderDocumentReference),
-                    "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
-                    "respondents1", createRespondents(),
-                    "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-                    "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
-                .build())
+    @Test
+    void submittedShouldNotifyCtscAdminAndLAWhenRepresentativesNeedServingByPostAndCtscIsEnabled() throws Exception {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+
+        Map<String, Object> caseData = getCommonCaseData()
+            .put("representatives", buildRepresentativesServedByPost())
+            .put("sendToCtsc", "Yes")
             .build();
+
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            dataCaptor.capture(),
+            eq(CASE_ID));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq("admin@family-court.com"),
+            dataCaptor.capture(),
+            eq(CASE_ID));
+
+        verifySendDocumentEventTriggered();
     }
 
-    private CallbackRequest buildCallbackRequestWithRepresentatives() {
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
+    private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
+        return CaseDetails.builder()
                 .id(parseLong(CASE_ID))
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
-                .data(Map.of(
-                    "orderCollection", createOrders(lastOrderDocumentReference),
-                    "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
-                    "respondents1", createRespondents(),
-                    "representatives", buildRepresentativesServedByPost(),
-                    "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-                    "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
-                .build())
-            .build();
+                .data(caseData)
+                .build();
+    }
+
+    private ImmutableMap.Builder<String, Object> getCommonCaseData() {
+        Map<String, Object> caseData = Map.of(
+            "orderCollection", createOrders(lastOrderDocumentReference),
+            "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+            "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
+            "respondents1", createRespondents(),
+            "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4))
+        );
+
+        return ImmutableMap.<String, Object>builder().putAll(caseData);
     }
 
     private Map<String, Object> commonNotificationParameters() {
@@ -193,6 +238,5 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             parseLong(CASE_ID),
             SEND_DOCUMENT_EVENT,
             Map.of("documentToBeSent", lastOrderDocumentReference));
-
     }
 }
