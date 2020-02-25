@@ -14,7 +14,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties("fee")
+@ConfigurationProperties("fees_register")
 public class FeesConfig {
     private Map<FeeType, FeeParameters> parameters;
 
