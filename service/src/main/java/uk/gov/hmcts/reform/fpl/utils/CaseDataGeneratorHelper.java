@@ -67,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -287,7 +288,7 @@ public class CaseDataGeneratorHelper {
                     .title("Example Order")
                     .details(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                    .date(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                    .date(formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(57), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
                         "Judy", null, HER_HONOUR_JUDGE))
@@ -298,7 +299,7 @@ public class CaseDataGeneratorHelper {
                 .value(GeneratedOrder.builder()
                     .title("Winter is here")
                     .details("Westeros")
-                    .date(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                    .date(formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(59), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
                         "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
@@ -310,7 +311,7 @@ public class CaseDataGeneratorHelper {
                 .value(GeneratedOrder.builder()
                     .title("Black Sails")
                     .details("Long John Silver")
-                    .date(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                    .date(formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(60), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
                         "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
