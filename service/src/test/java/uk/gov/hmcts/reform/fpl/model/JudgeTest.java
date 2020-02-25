@@ -13,7 +13,7 @@ class JudgeTest {
 
     @Test
     void shouldReturnAllocatedJudgeOtherTitleWhenOtherIsSelected() {
-        Judge allocatedJudge = buildCaseDataWithAllocatedJudge(OTHER);
+        Judge allocatedJudge = buildAllocatedJudge(OTHER);
         String title = allocatedJudge.getJudgeOrMagistrateTitle();
 
         assertThat(title).isEqualTo("Other title");
@@ -21,7 +21,7 @@ class JudgeTest {
 
     @Test
     void shouldReturnAllocatedJudgeTitleWhenOtherIsNotSelected() {
-        Judge allocatedJudge = buildCaseDataWithAllocatedJudge(DISTRICT_JUDGE);
+        Judge allocatedJudge = buildAllocatedJudge(DISTRICT_JUDGE);
         String title = allocatedJudge.getJudgeOrMagistrateTitle();
 
         assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
@@ -29,7 +29,7 @@ class JudgeTest {
 
     @Test
     void shouldReturnAllocatedJudgeFullNameWhenMagistratesSelected() {
-        Judge allocatedJudge = buildCaseDataWithAllocatedJudge(MAGISTRATES);
+        Judge allocatedJudge = buildAllocatedJudge(MAGISTRATES);
         String fullName = allocatedJudge.getJudgeName();
 
         assertThat(fullName).isEqualTo("Judge Full Name");
@@ -37,13 +37,13 @@ class JudgeTest {
 
     @Test
     void shouldReturnAllocatedJudgeLastNameWhenMagistratesIsNotSelected() {
-        Judge allocatedJudge = buildCaseDataWithAllocatedJudge(DEPUTY_DISTRICT_JUDGE);
+        Judge allocatedJudge = buildAllocatedJudge(DEPUTY_DISTRICT_JUDGE);
         String lastName = allocatedJudge.getJudgeName();
 
         assertThat(lastName).isEqualTo("Judge Last Name");
     }
 
-    private Judge buildCaseDataWithAllocatedJudge(JudgeOrMagistrateTitle title) {
+    private Judge buildAllocatedJudge(JudgeOrMagistrateTitle title) {
         return Judge.builder()
             .judgeTitle(title)
             .otherTitle("Other title")
