@@ -17,7 +17,7 @@ class FeeTypeTest {
     private static Stream<Arguments> orderToFeeTypeSource() {
         // Will throw an IllegalArgumentException if there is no corresponding FeeType
         return Arrays.stream(OrderType.values())
-            .map(orderType -> Arguments.of(orderType, FeeType.valueOf(orderType.name())));
+            .map(orderType -> Arguments.of(List.of(orderType), List.of(FeeType.valueOf(orderType.name()))));
     }
 
     @ParameterizedTest
@@ -28,7 +28,7 @@ class FeeTypeTest {
 
     @ParameterizedTest
     @MethodSource("orderToFeeTypeSource")
-    void shouldReturnCorrespondingFeeTypeForOrderType(OrderType orderType, FeeType feeType) {
+    void shouldReturnCorrespondingFeeTypeForOrderType(List<OrderType> orderType, List<FeeType> feeType) {
         assertThat(fromOrderType(orderType)).isEqualTo(feeType);
     }
 }
