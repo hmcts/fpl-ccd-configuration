@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentSenderService {
@@ -22,7 +24,6 @@ public class DocumentSenderService {
     private static final String SEND_LETTER_TYPE = "FPLA001";
 
     private final Time time;
-    private final DateFormatterService dateFormatterService;
     private final SendLetterApi sendLetterApi;
     private final DocumentDownloadService documentDownloadService;
     private final DocmosisCoverDocumentsService docmosisCoverDocumentsService;
@@ -43,7 +44,7 @@ public class DocumentSenderService {
             sentDocuments.add(SentDocument.builder()
                 .partyName(representative.getFullName())
                 .document(mainDocument)
-                .sentAt(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
+                .sentAt(formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .build());
         }
 
