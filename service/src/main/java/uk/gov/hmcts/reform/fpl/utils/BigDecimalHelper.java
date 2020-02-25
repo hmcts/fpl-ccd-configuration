@@ -10,6 +10,7 @@ import java.util.Optional;
 public class BigDecimalHelper {
 
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
+    private static final int SCALE = 2;
 
     private BigDecimalHelper() {
 
@@ -37,6 +38,6 @@ public class BigDecimalHelper {
 
     private static BigDecimal fromPence(String amount) {
         long pence = Long.parseLong(amount);
-        return BigDecimal.valueOf(pence, 2);
+        return BigDecimal.valueOf(pence, SCALE);
     }
 }
