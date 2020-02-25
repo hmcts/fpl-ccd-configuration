@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
@@ -32,6 +33,9 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     CaseSubmissionControllerAboutToSubmitTest() {
         super("case-submission");
     }
@@ -47,7 +51,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldReturnSuccessfulResponseWithValidCaseData() {
+    void shouldSetCtscPropertyToYesWhenCtscLaunchDarklyVariableIsEnabled() {
         byte[] pdf = {1, 2, 3, 4, 5};
         Document document = document();
 
@@ -57,15 +61,35 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
             .willReturn(pdf);
         given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, "2313.pdf"))
             .willReturn(document);
+        given(featureToggleService.isCtscEnabled()).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
         assertThat(callbackResponse.getData())
             .containsEntry("caseLocalAuthority", "example")
+            .containsEntry("sendToCtsc", "No")
             .containsEntry("submittedForm", ImmutableMap.<String, String>builder()
                 .put("document_url", document.links.self.href)
                 .put("document_binary_url", document.links.binary.href)
                 .put("document_filename", document.originalDocumentName)
                 .build());
+    }
+
+    @Test
+    void shouldSetCtscPropertyToNoWhenCtscLaunchDarklyVariableIsDisabled() {
+        byte[] pdf = {1, 2, 3, 4, 5};
+        Document document = document();
+
+        given(userDetailsService.getUserName(userAuthToken))
+            .willReturn("Emma Taylor");
+        given(documentGeneratorService.generateSubmittedFormPDF(any(), any()))
+            .willReturn(pdf);
+        given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, "2313.pdf"))
+            .willReturn(document);
+        given(featureToggleService.isCtscEnabled()).willReturn(true);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
+
+        assertThat(callbackResponse.getData()).containsEntry("sendToCtsc", "Yes");
     }
 }

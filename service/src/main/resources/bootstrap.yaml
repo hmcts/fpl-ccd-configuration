@@ -19,3 +19,5 @@ spring:
         system-update-user-username: fpl.system_update.username
         robotics-notification-sender: robotics.notification.sender
         robotics-notification-recipient: robotics.notification.recipient
+        ld-sdk-key: ld.sdk_key
+        ctsc-inbox: fpl.ctsc_inbox

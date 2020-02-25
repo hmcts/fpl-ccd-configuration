@@ -20,6 +20,10 @@ idam:
 fpl:
   local_authority_codes_forbidden_case_submission:
 
+ld:
+  user_key: FPLA
+  sdk_key:
+
 ---
 
 spring:
@@ -73,10 +77,12 @@ gateway:
 notify:
   api_key: testApiKey
 
-
 rd_professional:
   api:
     url: http://fake-rd-professional-api
+
+send-letter:
+  url: http://fake-send-letter
 
 ccd:
   ui:
@@ -101,6 +107,7 @@ fpl:
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
+  ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
 
 robotics:
   notification:
@@ -185,6 +192,9 @@ rd_professional:
   api:
     url: http://localhost:8765
 
+send-letter:
+  url: http://localhost:8765
+
 ccd:
   ui:
     base:
@@ -208,6 +218,7 @@ fpl:
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
+  ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
 
 robotics:
   notification:
