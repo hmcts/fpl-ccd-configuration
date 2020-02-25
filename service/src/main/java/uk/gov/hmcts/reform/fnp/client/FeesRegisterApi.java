@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fpl.config.FeignConfiguration;
 
-@FeignClient(name = "fees-register-api", url = "${fees_register.api.url}", configuration = FeignConfiguration.class)
+@FeignClient(name = "fees-register-api", url = "${fees-register.api.url}", configuration = FeignConfiguration.class)
 public interface FeesRegisterApi {
     @GetMapping("/fees-register/fees/lookup")
     FeeResponse findFee(

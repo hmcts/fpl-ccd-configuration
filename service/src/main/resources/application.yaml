@@ -20,7 +20,7 @@ idam:
 fpl:
   local_authority_codes_forbidden_case_submission:
 
-fees_register:
+fees-register:
   api:
     url: http://fees-register-api-aat.service.core-compute-aat.internal
   parameters:
@@ -161,7 +161,7 @@ ccd:
     base:
       url: http://fake-url
 
-fees_register:
+fees-register:
   api:
     url: http://fake-fees-register-api
 
@@ -269,7 +269,7 @@ rd_professional:
   api:
     url: http://localhost:8765
 
-fees_register:
+fees-register:
   api:
     url: http://localhost:8765
 
