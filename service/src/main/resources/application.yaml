@@ -20,7 +20,7 @@ idam:
 fpl:
   local_authority_codes_forbidden_case_submission:
 
-fee:
+fees_register:
   api:
     url: http://fees-register-api-aat.service.core-compute-aat.internal
   parameters:
