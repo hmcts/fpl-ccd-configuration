@@ -30,7 +30,7 @@ public interface OrganisationApi {
     );
 
     @GetMapping("/refdata/external/v1/organisations")
-    Organisation findOrganisationById(
+    Object findOrganisationById(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization
     );

@@ -48,7 +48,7 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Organisation organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
+        Object organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
 
         caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData));
 
