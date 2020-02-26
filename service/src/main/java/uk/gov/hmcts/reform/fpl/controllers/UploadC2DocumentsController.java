@@ -24,6 +24,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -40,8 +41,10 @@ public class UploadC2DocumentsController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
-        //TODO: call Fees Register
+        //TODO: call Fees Register, set amountToPay and store fee data to make payment in /submitted
         data.put("amountToPay", "500");
+        //removing to avoid bug on previous-continue
+        data.remove("temporaryC2Document");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -56,7 +59,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.put("c2DocumentBundle", buildC2DocumentBundle(caseData, authorization));
-        data.remove("temporaryC2Document");
+        data.keySet().removeAll(Set.of("temporaryC2Document", "c2ApplicationType", "amountToPay"));
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
@@ -67,6 +70,7 @@ public class UploadC2DocumentsController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
+        // TODO: make payment here
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
 
@@ -84,6 +88,7 @@ public class UploadC2DocumentsController {
                 .document(caseData.getTemporaryC2Document().getDocument())
                 .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                         .toLocalDateTime(), "h:mma, d MMMM yyyy"))
+                .type(caseData.getC2ApplicationType())
                 .build())
             .build());
 
