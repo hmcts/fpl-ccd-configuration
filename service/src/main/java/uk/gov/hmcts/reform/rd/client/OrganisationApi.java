@@ -27,4 +27,10 @@ public interface OrganisationApi {
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "email") final String email
     );
+
+    @GetMapping("refdata/external/v1/organisations")
+    Object findOrganisationById(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization
+    );
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
+import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 
 import java.util.UUID;
 import java.util.List;
@@ -28,16 +30,22 @@ public class ApplicantController {
     private final UpdateAndValidatePbaService updateAndValidatePbaService;
     private final ObjectMapper mapper;
     private final OrganisationService organisationService;
+    private final AuthTokenGenerator authTokenGenerator;
+    private final OrganisationApi organisationApi;
 
     @Autowired
     public ApplicantController(ApplicantService applicantService,
                                UpdateAndValidatePbaService updateAndValidatePbaService,
                                ObjectMapper mapper,
-                               OrganisationService organisationService) {
+                               OrganisationService organisationService,
+                               OrganisationApi organisationApi,
+                               AuthTokenGenerator authTokenGenerator) {
         this.applicantService = applicantService;
         this.updateAndValidatePbaService = updateAndValidatePbaService;
         this.mapper = mapper;
         this.organisationService = organisationService;
+        this.organisationApi = organisationApi;
+        this.authTokenGenerator = authTokenGenerator;
     }
 
     @PostMapping("/about-to-start")
@@ -46,7 +54,8 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        organisationService.findUserByEmail()
+        Object organisation = organisationApi.findOrganisation(authorisation, authTokenGenerator.generate());
+
         caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
