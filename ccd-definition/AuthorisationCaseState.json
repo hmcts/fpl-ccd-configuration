@@ -166,5 +166,26 @@
     "CaseStateID": "PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-bulkscan",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "Submitted",
+    "UserRole": "caseworker-publiclaw-bulkscansystemupdate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "Gatekeeping",
+    "UserRole": "caseworker-publiclaw-bulkscansystemupdate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "PREPARE_FOR_HEARING",
+    "UserRole": "caseworker-publiclaw-bulkscansystemupdate",
+    "CRUD": "CRU"
   }
 ]

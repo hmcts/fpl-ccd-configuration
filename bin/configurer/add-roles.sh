@@ -11,7 +11,7 @@ ${dir}/utils/idam-add-role.sh "caseworker-publiclaw"
 # User used during the CCD import and ccd-role creation
 ${dir}/utils/idam-create-caseworker.sh "ccd.docker.default@hmcts.net" "ccd-import"
 
-roles=("solicitor" "courtadmin" "cafcass" "gatekeeper" "systemupdate" "judiciary" "bulkscan")
+roles=("solicitor" "courtadmin" "cafcass" "gatekeeper" "systemupdate" "judiciary" "bulkscan" "bulkscansystemupdate")
 for role in "${roles[@]}"
 do
 	${dir}/utils/idam-add-role.sh "caseworker-publiclaw-${role}"
