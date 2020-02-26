@@ -16,6 +16,6 @@ public class ContactInformation {
     private String addressLine2;
     private String townCity;
     private String county;
-    private String postcode;
+    private String postCode;
     private ArrayList dxAddress;
 }
