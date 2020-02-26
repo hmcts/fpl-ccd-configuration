@@ -21,8 +21,6 @@ fpl:
   local_authority_codes_forbidden_case_submission:
 
 fees-register:
-  api:
-    url: http://fees-register-api-aat.service.core-compute-aat.internal
   parameters:
     # if these change be sure to update the appropriate wiremocks
     C2_WITHOUT_NOTICE:
