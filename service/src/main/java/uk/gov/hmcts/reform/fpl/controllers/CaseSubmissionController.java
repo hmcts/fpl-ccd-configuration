@@ -63,7 +63,6 @@ public class CaseSubmissionController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 

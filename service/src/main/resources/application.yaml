@@ -199,7 +199,7 @@ rd_professional:
 send-letter:
   url: http://localhost:8765
 
-send-payment:
+payment:
   api:
     url: http://localhost:8765
 

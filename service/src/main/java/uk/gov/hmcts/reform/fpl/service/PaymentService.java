@@ -36,7 +36,7 @@ public class PaymentService {
             .customerReference("TBC") //TODO
             .description("FREETEXT") //TODO
             .organisationName("FREETEXT") //TODO
-            .service(FPL) // TODO: FPL not added yet (enum from Payments)
+            .service(FPL)
             .siteId(SITE_ID)
             .fees(fees)
             .build();

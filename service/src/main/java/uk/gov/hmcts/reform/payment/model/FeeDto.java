@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class FeeDto {
     private double calculatedAmount;
