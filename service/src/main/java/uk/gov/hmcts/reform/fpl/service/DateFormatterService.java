@@ -8,15 +8,18 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
+//TODO: decouple from services and refactor to Helper class.
 @Service
 public class DateFormatterService {
-    public static final String FULL_DATE = "d MMMM yyyy, h:mma";
+    public static final String DATE_TIME_AT = "d MMMM yyyy 'at' h:mma";
+    public static final String TIME_DATE = "h:mma, d MMMM yyyy";
+    public static final String DATE_TIME = "d MMMM yyyy, h:mma";
 
-    public String formatLocalDateToString(LocalDate date, FormatStyle style) {
+    public static String formatLocalDateToString(LocalDate date, FormatStyle style) {
         return date.format(DateTimeFormatter.ofLocalizedDate(style).localizedBy(Locale.UK));
     }
 
-    public String formatLocalDateToString(LocalDate date, String format) {
+    public static String formatLocalDateToString(LocalDate date, String format) {
         return date.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
 
