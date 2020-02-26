@@ -15,4 +15,5 @@ public class Organisation {
     private String status;
     private boolean sraRegulated;
     private SuperUser superUser;
+    private ContactInformation[] contactInformation;
 }
