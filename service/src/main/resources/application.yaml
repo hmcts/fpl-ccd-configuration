@@ -107,7 +107,7 @@ fpl:
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
-  ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
+  ctsc-inbox: 'FamilyPublicLaw+ctsc@gmail.com'
 
 robotics:
   notification:
@@ -218,7 +218,7 @@ fpl:
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
-  ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
+  ctsc-inbox: 'FamilyPublicLaw+ctsc@gmail.com'
 
 robotics:
   notification:
