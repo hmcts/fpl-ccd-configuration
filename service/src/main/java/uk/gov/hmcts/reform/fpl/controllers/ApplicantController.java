@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.applicationinsights.boot.dependencies.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,11 +13,18 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+
+import java.util.UUID;
+
+import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -50,11 +58,27 @@ public class ApplicantController {
 
         Organisation organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
 
+        if(isNotEmpty(organisation)){
+            caseData = buildCaseDataWithOrganisationDetails(caseData, organisation);
+        }
+
         caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private CaseData buildCaseDataWithOrganisationDetails(CaseData caseData, Organisation organisation){
+        return caseData.toBuilder().applicants(ImmutableList.of(Element.<Applicant>builder()
+            .value(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    // A value within applicant party needs to be set in order to expand UI view.
+                    .partyId(UUID.randomUUID().toString())
+                    .organisationName(organisation.getName())
+                    .build())
+                .build())
+            .build())).build();
     }
 
     @PostMapping("/mid-event")
