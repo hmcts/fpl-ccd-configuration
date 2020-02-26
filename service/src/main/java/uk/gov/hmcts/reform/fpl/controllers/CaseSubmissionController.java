@@ -74,10 +74,13 @@ public class CaseSubmissionController {
 
         if (errors.isEmpty()) {
             try {
-                BigDecimal amount = feeService.getFeeAmountForOrders(caseData.getOrders());
                 String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
-                data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
+                if (featureToggleService.isFeesAndPaymentsEnabled()) {
+                    BigDecimal amount = feeService.getFeeAmountForOrders(caseData.getOrders());
+                    data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
+                }
+
                 data.put("submissionConsentLabel", label);
             } catch (FeeRegisterException ignore) {
                 // TODO: 21/02/2020 Replace me in FPLA-1353

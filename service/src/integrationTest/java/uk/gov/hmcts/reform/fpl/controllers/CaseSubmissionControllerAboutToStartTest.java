@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.launchdarkly.client.LDClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -32,6 +37,9 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @MockBean
     private FeeService feeService;
+
+    @MockBean
+    private LDClient ldClient;
 
     CaseSubmissionControllerAboutToStartTest() {
         super("case-submission");
@@ -55,9 +63,10 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddAmountToPayField() {
+    void shouldAddAmountToPayFieldWhenFeatureToggleIsTrue() {
         Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
 
+        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
         given(feeService.getFeeAmountForOrders(eq(orders))).willReturn(BigDecimal.valueOf(123));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
@@ -65,6 +74,22 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
             .build());
 
         assertThat(response.getData()).containsEntry("amountToPay", "12300");
+    }
+
+    @Test
+    void shouldNotAddAmountToPayFieldWhenFeatureToggleIsFalse() {
+        Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
+
+        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(false);
+        given(feeService.getFeeAmountForOrders(eq(orders))).willReturn(BigDecimal.valueOf(123));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
+            .data(Map.of("orders", orders))
+            .build());
+
+        verify(feeService, never()).getFeeAmountForOrders(any());
+
+        assertThat(response.getData()).doesNotContainKey("amountToPay");
     }
 
     @Nested
