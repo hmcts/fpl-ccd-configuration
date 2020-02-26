@@ -29,7 +29,6 @@ public class ApplicantService {
                     .party(ApplicantParty.builder()
                         // A value within applicant party needs to be set in order to expand UI view.
                         .partyId(UUID.randomUUID().toString())
-                        .organisationName(prepopulateLocalAuthorityApplicant(caseData))
                         .build())
                     .build())
                 .build());
@@ -37,11 +36,6 @@ public class ApplicantService {
         } else {
             return caseData.getApplicants();
         }
-    }
-
-    private String prepopulateLocalAuthorityApplicant(CaseData caseData) {
-        organisationService.getUsersFromSameOrganisationBasedOnReferenceData()
-        return "Local Authority Name";
     }
 
     public List<Element<Applicant>> addHiddenValues(CaseData caseData) {
