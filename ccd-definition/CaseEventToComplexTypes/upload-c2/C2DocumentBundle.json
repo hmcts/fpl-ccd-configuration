@@ -4,9 +4,49 @@
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "nameOfRepresentative",
+    "EventElementLabel": "Name of representative",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadC2",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "pbaNumber",
+    "EventElementLabel": "Payment by account (PBA) number",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadC2",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "clientCode",
+    "EventElementLabel": "Client code",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadC2",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "fileReference",
+    "EventElementLabel": "File reference",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadC2",
+    "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "document",
     "EventElementLabel": "Upload a file",
-    "FieldDisplayOrder": 1,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -16,8 +56,48 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "description",
     "EventElementLabel": "Description",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadC2Gatekeeping",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "nameOfRepresentative",
+    "EventElementLabel": "Name of representative",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadC2Gatekeeping",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "pbaNumber",
+    "EventElementLabel": "Payment by account (PBA) number",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadC2Gatekeeping",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "clientCode",
+    "EventElementLabel": "Client code",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadC2Gatekeeping",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "fileReference",
+    "EventElementLabel": "File reference",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -26,7 +106,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "document",
     "EventElementLabel": "Upload a file",
-    "FieldDisplayOrder": 1,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -36,7 +116,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "description",
     "EventElementLabel": "Description",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   }
 ]

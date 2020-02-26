@@ -12,4 +12,8 @@ public class C2DocumentBundle {
     private final String uploadedDateTime;
     private final String author;
     private final C2ApplicationType type;
+    private final String nameOfRepresentative;
+    private final String pbaNumber;
+    private final String clientCode;
+    private final String fileReference;
 }
