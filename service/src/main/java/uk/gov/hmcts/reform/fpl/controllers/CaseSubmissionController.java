@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
@@ -34,6 +35,8 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
 @Api
@@ -49,6 +52,7 @@ public class CaseSubmissionController {
     private final CaseValidatorService caseValidatorService;
     private final ObjectMapper mapper;
     private final RestrictionsConfiguration restrictionsConfiguration;
+    private final FeatureToggleService featureToggleService;
 
     @Autowired
     public CaseSubmissionController(
@@ -58,7 +62,8 @@ public class CaseSubmissionController {
         CaseValidatorService caseValidatorService,
         ObjectMapper mapper,
         ApplicationEventPublisher applicationEventPublisher,
-        RestrictionsConfiguration restrictionsConfiguration) {
+        RestrictionsConfiguration restrictionsConfiguration,
+        FeatureToggleService featureToggleService) {
         this.userDetailsService = userDetailsService;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
@@ -66,6 +71,7 @@ public class CaseSubmissionController {
         this.caseValidatorService = caseValidatorService;
         this.mapper = mapper;
         this.restrictionsConfiguration = restrictionsConfiguration;
+        this.featureToggleService = featureToggleService;
     }
 
     @PostMapping("/about-to-start")
@@ -133,6 +139,7 @@ public class CaseSubmissionController {
         Map<String, Object> data = caseDetails.getData();
         data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
         data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
+        data.put("sendToCtsc", setSendToCtsc());
         data.put("submittedForm", ImmutableMap.<String, String>builder()
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)
@@ -151,5 +158,9 @@ public class CaseSubmissionController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
+    }
+
+    private String setSendToCtsc() {
+        return featureToggleService.isCtscEnabled() ? YES.getValue() : NO.getValue();
     }
 }
