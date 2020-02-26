@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 @Api
 @RestController
@@ -47,7 +48,7 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Object organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
+        Organisation organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
 
         caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData));
 

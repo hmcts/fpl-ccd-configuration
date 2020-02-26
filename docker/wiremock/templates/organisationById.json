@@ -8,6 +8,6 @@
     "headers": {
       "Content-Type": "application/json"
     },
-    "body": ""
+    "bodyFileName": "organisationMockResponse.json"
   }
 }

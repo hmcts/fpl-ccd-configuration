@@ -1,0 +1,22 @@
+{
+  "organisationIdentifier": "62LYJRF",
+  "name": "fpla_test_friday27",
+  "status": "ACTIVE",
+  "sraRegulated": false,
+  "superUser": {
+    "firstName": "Tomasz",
+    "lastName": "Powroznik",
+    "email": "fpla.team3.aat@mailinator.com"
+  },
+  "paymentAccount": [],
+  "contactInformation": [
+    {
+      "addressLine1": "Flat 12, Pinnacle Apartments",
+      "addressLine2": "Saffron Central Square 11",
+      "townCity": "London",
+      "county": "United Kingdom",
+      "postCode": "CR0 2GE",
+      "dxAddress": []
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.fpl.config.FeignConfiguration;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
 import uk.gov.hmcts.reform.rd.model.Users;
@@ -29,7 +30,7 @@ public interface OrganisationApi {
     );
 
     @GetMapping("refdata/external/v1/organisations")
-    Object findOrganisationById(
+    Organisation findOrganisationById(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization
     );
