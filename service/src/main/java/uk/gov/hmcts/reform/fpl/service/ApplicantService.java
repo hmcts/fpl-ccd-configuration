@@ -40,7 +40,7 @@ public class ApplicantService {
     }
 
     private String prepopulateLocalAuthorityApplicant(CaseData caseData) {
-        organisationService.findUserByEmail("email");
+        organisationService.getUsersFromSameOrganisationBasedOnReferenceData()
         return "Local Authority Name";
     }
 
