@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
-import static org.springframework.util.ObjectUtils.identityToString;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
@@ -22,7 +21,7 @@ public class ApplicantService {
 
     public List<Element<Applicant>> expandApplicantCollection(CaseData caseData, Organisation organisation) {
         if (isEmpty(caseData.getApplicants())) {
-            if(isEmpty(organisation)){
+            if (isEmpty(organisation)) {
                 return ImmutableList.of(Element.<Applicant>builder()
                     .value(Applicant.builder()
                         .party(ApplicantParty.builder()
@@ -39,7 +38,7 @@ public class ApplicantService {
         }
     }
 
-    private List<Element<Applicant>> buildApplicantWithOrganisationDetails(Organisation organisation){
+    private List<Element<Applicant>> buildApplicantWithOrganisationDetails(Organisation organisation) {
         return ImmutableList.of(Element.<Applicant>builder()
             .value(Applicant.builder()
                 .party(ApplicantParty.builder()

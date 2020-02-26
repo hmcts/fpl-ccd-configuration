@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,14 +29,17 @@ class ApplicantServiceTest {
     @Test
     void shouldExpandApplicantCollectionWhenNoApplicants() {
         CaseData caseData = CaseData.builder().build();
+        Organisation organisation = Organisation.builder().build();
 
         assertThat(caseData.getApplicants()).isNull();
-        assertThat(service.expandApplicantCollection(caseData)).hasSize(1);
+        assertThat(service.expandApplicantCollection(caseData, organisation)).hasSize(1);
     }
 
     @Test
     void shouldNotExpandApplicantCollectionWhenApplicantsAlreadyExists() {
         String uuid = UUID.randomUUID().toString();
+
+        Organisation organisation = Organisation.builder().build();
 
         CaseData caseData = CaseData.builder().applicants(ImmutableList.of(
             Element.<Applicant>builder()
@@ -47,8 +51,9 @@ class ApplicantServiceTest {
                 .build()))
             .build();
 
-        assertThat(service.expandApplicantCollection(caseData)).hasSize(1);
-        assertThat(service.expandApplicantCollection(caseData).get(0).getValue().getParty().partyId).isEqualTo(uuid);
+        assertThat(service.expandApplicantCollection(caseData, organisation)).hasSize(1);
+        assertThat(service.expandApplicantCollection(caseData, organisation)
+            .get(0).getValue().getParty().partyId).isEqualTo(uuid);
     }
 
     @Test
