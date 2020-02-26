@@ -17,6 +17,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 public class ApplicantService {
+
     public List<Element<Applicant>> expandApplicantCollection(CaseData caseData) {
         if (isEmpty(caseData.getApplicants())) {
             return ImmutableList.of(Element.<Applicant>builder()
