@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
@@ -57,12 +56,8 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -156,9 +151,6 @@ class NotificationHandlerTest {
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
     @Mock
-    private DateFormatterService dateFormatterService;
-
-    @Mock
     private IdamApi idamApi;
 
     @Mock
@@ -176,14 +168,14 @@ class NotificationHandlerTest {
     @Mock
     private RepresentativeService representativeService;
 
-    @InjectMocks
-    private NotificationHandler notificationHandler;
-
     @Mock
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @InjectMocks
+    private NotificationHandler notificationHandler;
 
     @Nested
     class C2UploadedNotificationChecks {
@@ -209,12 +201,6 @@ class NotificationHandlerTest {
 
             given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
                 .willReturn("Example Local Authority");
-
-            final LocalDate hearingDate = LocalDate.now().plusMonths(4);
-
-            given(dateFormatterService.formatLocalDateToString(hearingDate, FormatStyle.MEDIUM))
-                .willReturn(hearingDate.format(
-                    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK)));
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
@@ -358,12 +344,11 @@ class NotificationHandlerTest {
             // TODO: 17/12/2019 nice to refactor to make cleaner
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
                 hmctsEmailContentProvider, partyAddedToCaseContentProvider, cafcassEmailContentProvider,
-                cafcassEmailContentProviderSDOIssued,
-                gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
-                orderIssuedEmailContentProvider, localAuthorityEmailContentProvider, notificationClient, idamApi,
-                inboxLookupService, caseManagementOrderEmailContentProvider, placementApplicationContentProvider,
-                representativeService, localAuthorityNameLookupConfiguration, objectMapper,
-                ctscEmailLookupConfiguration);
+                cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider, c2UploadedEmailContentProvider,
+                orderEmailContentProvider, orderIssuedEmailContentProvider, localAuthorityEmailContentProvider,
+                notificationClient, idamApi, inboxLookupService, caseManagementOrderEmailContentProvider,
+                placementApplicationContentProvider, representativeService, localAuthorityNameLookupConfiguration,
+                objectMapper, ctscEmailLookupConfiguration);
         }
 
         @Test
@@ -615,8 +600,10 @@ class NotificationHandlerTest {
             new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
-            eq(expectedParameters), eq("12345"));
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
+            eq(COURT_EMAIL_ADDRESS),
+            eq(expectedParameters),
+            eq("12345"));
     }
 
     @Test
@@ -782,12 +769,11 @@ class NotificationHandlerTest {
 
             placementNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
                 cafcassLookupConfiguration, hmctsEmailContentProvider, partyAddedToCaseContentProvider,
-                cafcassEmailContentProvider,
-                cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider, c2UploadedEmailContentProvider,
-                orderEmailContentProvider, orderIssuedEmailContentProvider, localAuthorityEmailContentProvider,
-                notificationClient, idamApi, inboxLookupService, caseManagementOrderEmailContentProvider,
-                placementApplicationContentProvider, representativeService, localAuthorityNameLookupConfiguration,
-                objectMapper, ctscEmailLookupConfiguration);
+                cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
+                c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
+                localAuthorityEmailContentProvider, notificationClient, idamApi, inboxLookupService,
+                caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
+                localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration);
         }
 
         @Test

@@ -157,6 +157,29 @@ class CaseDataTest {
         assertThat(caseData.findRespondent(1)).isEqualTo(Optional.empty());
     }
 
+    @Test
+    void shouldFindExistingApplicant() {
+        Applicant applicant = Applicant.builder().build();
+        CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
+
+        assertThat(caseData.findApplicant(0)).isEqualTo(Optional.of(applicant));
+    }
+
+    @Test
+    void shouldNotFindNonExistingApplicant() {
+        Applicant applicant = Applicant.builder().build();
+        CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
+
+        assertThat(caseData.findApplicant(1)).isEqualTo(Optional.empty());
+    }
+
+    @Test
+    void shouldNotFindApplicantWhenNull() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(caseData.findApplicant(0)).isEqualTo(Optional.empty());
+    }
+
     private CaseData caseData(Others.OthersBuilder othersBuilder) {
         return CaseData.builder().others(othersBuilder.build()).build();
     }
