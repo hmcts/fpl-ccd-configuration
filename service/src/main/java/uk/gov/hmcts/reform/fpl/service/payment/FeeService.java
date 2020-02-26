@@ -58,8 +58,8 @@ public class FeeService {
     }
 
     private FeeResponse makeRequest(FeeType feeType) throws FeeRegisterException {
+        FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
         try {
-            FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
             log.debug("Making request to Fee Register with parameters : {} ", parameters);
 
             FeeResponse fee = feesRegisterApi.findFee(
@@ -75,8 +75,9 @@ public class FeeService {
 
             return fee;
         } catch (FeignException ex) {
-            log.error("Fee response error: {} => body: \"{}\"",
-                ex.status(), ex.getMessage());
+            log.error("Fee response error for {}\n\tstatus: {} => message: \"{}\"",
+                parameters, ex.status(), ex.getMessage(), ex);
+
             throw new FeeRegisterException(ex.status(), ex.getMessage(), ex);
         }
     }
