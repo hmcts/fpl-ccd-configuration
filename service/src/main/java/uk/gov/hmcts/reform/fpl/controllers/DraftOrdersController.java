@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
@@ -38,10 +40,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.FULL_DATE;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 
 @Api
 @RestController
@@ -58,11 +63,17 @@ public class DraftOrdersController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final OrderValidationService orderValidationService;
+    private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
+
+        Stream.of(DirectionAssignee.values()).forEach(assignee ->
+            caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
 
         if (!isNull(caseData.getStandardDirectionOrder())) {
             Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
@@ -76,6 +87,19 @@ public class DraftOrdersController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
+        String hearingDate;
+
+        try {
+            LocalDateTime startDate = hearingBookingService.getMostUrgentHearingBooking(hearings).getStartDate();
+            hearingDate = formatLocalDateTimeBaseUsingFormat(startDate, FULL_DATE);
+        } catch (IllegalStateException e) {
+            hearingDate = "Please enter a hearing date";
+        }
+
+        return hearingDate;
     }
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {
@@ -180,7 +204,8 @@ public class DraftOrdersController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (caseData.getStandardDirectionOrder().getOrderStatus() != OrderStatus.SEALED) {
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
             return;
         }
 
@@ -191,7 +216,14 @@ public class DraftOrdersController {
             "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
         );
 
-        if (caseData.getStandardDirectionOrder().getOrderStatus() == SEALED) {
+        if (standardDirectionOrder.getOrderStatus() == SEALED) {
+            coreCaseDataService.triggerEvent(
+                callbackRequest.getCaseDetails().getJurisdiction(),
+                callbackRequest.getCaseDetails().getCaseTypeId(),
+                callbackRequest.getCaseDetails().getId(),
+                "internal-change:SEND_DOCUMENT",
+                Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
+            );
             applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
                 authorization,
                 userId));

@@ -35,6 +35,8 @@ java:
         - system-update-user-password
         - robotics-notification-sender
         - robotics-notification-recipient
+        - ld-sdk-key
+        - ctsc-inbox
 
 ccd:
   ingressHost: ${SERVICE_FQDN}

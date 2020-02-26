@@ -82,3 +82,13 @@ Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPag
     await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
   }
 });
+
+Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeAnswerInTab(1, 'Allocated Judge', 'Judge or magistrate\'s title', 'Her Honour Judge');
+  I.seeAnswerInTab(2, 'Allocated Judge', 'Last name', 'Moley');
+});

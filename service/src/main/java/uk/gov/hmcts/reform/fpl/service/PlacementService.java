@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -86,19 +85,28 @@ public class PlacementService {
             .findFirst();
     }
 
-    public List<String> getBinaryUrlsForOrderAndNotices(List<Element<Placement>> placements,
+    public List<DocumentReference> getUpdatedDocuments(CaseData caseData, CaseData caseDataBefore,
+                                                       PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
+        List<DocumentReference> documents = getDocumentsForOrderAndNotices(caseData.getPlacements(), type);
+        List<DocumentReference> previousDocuments = getDocumentsForOrderAndNotices(caseDataBefore.getPlacements(),
+            type);
+        documents.removeAll(previousDocuments);
+
+        return documents;
+    }
+
+    private List<DocumentReference> getDocumentsForOrderAndNotices(List<Element<Placement>> placements,
                                                         PlacementOrderAndNotices.PlacementOrderAndNoticesType type) {
         return placements.stream()
             .filter(element -> element.getValue().getOrderAndNotices() != null)
             .map(element -> element.getValue().getOrderAndNotices())
             .flatMap(Collection::stream)
             .filter(element -> element.getValue().getType() == type)
-            .map(this::getBinaryUrl)
-            .filter(Strings::isNotEmpty)
+            .map(this::getDocumentReference)
             .collect(toList());
     }
 
-    private String getBinaryUrl(Element<PlacementOrderAndNotices> element) {
-        return ofNullable(element.getValue().getDocument()).orElse(DocumentReference.builder().build()).getBinaryUrl();
+    private DocumentReference getDocumentReference(Element<PlacementOrderAndNotices> element) {
+        return ofNullable(element.getValue().getDocument()).orElse(DocumentReference.builder().build());
     }
 }

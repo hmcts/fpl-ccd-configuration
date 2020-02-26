@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.ccd;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -17,7 +18,9 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.io.IOException;
+import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,24 +55,46 @@ class CoreCaseDataServiceTest {
         when(authTokenGenerator.generate()).thenReturn(serviceAuthToken);
     }
 
-    @Test
-    void shouldMakeAppropriateApiCalls() {
+    @Nested
+    class StartAndSubmitEvent {
         String eventId = "sample-event";
         String eventToken = "t-xyz";
-
         String userId = "u1-xyz";
-        when(idamClient.getUserDetails(userAuthToken)).thenReturn(UserDetails.builder().id(userId).build());
-        when(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).thenReturn(userAuthToken);
 
-        when(coreCaseDataApi.startEventForCaseWorker(userAuthToken, serviceAuthToken, userId, JURISDICTION,
-            CASE_TYPE, Long.toString(caseId), eventId)).thenReturn(buildStartEventResponse(eventId, eventToken));
+        @BeforeEach
+        void setUp() {
+            when(idamClient.getUserDetails(userAuthToken))
+                .thenReturn(UserDetails.builder().id(userId).build());
+            when(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword()))
+                .thenReturn(userAuthToken);
 
-        service.triggerEvent(JURISDICTION, CASE_TYPE, caseId, eventId);
+            when(coreCaseDataApi.startEventForCaseWorker(userAuthToken, serviceAuthToken, userId, JURISDICTION,
+                CASE_TYPE, Long.toString(caseId), eventId))
+                .thenReturn(buildStartEventResponse(eventId, eventToken));
+        }
 
-        verify(coreCaseDataApi).startEventForCaseWorker(userAuthToken, serviceAuthToken, userId,
-            JURISDICTION, CASE_TYPE, Long.toString(caseId), eventId);
-        verify(coreCaseDataApi).submitEventForCaseWorker(userAuthToken, serviceAuthToken, userId, JURISDICTION,
-            CASE_TYPE, Long.toString(caseId), true, buildCaseDataContent(eventId, eventToken));
+        @Test
+        void shouldStartAndSubmitEventWithoutEventData() {
+            service.triggerEvent(JURISDICTION, CASE_TYPE, caseId, eventId);
+
+            verify(coreCaseDataApi).startEventForCaseWorker(userAuthToken, serviceAuthToken, userId,
+                JURISDICTION, CASE_TYPE, Long.toString(caseId), eventId);
+            verify(coreCaseDataApi).submitEventForCaseWorker(userAuthToken, serviceAuthToken, userId, JURISDICTION,
+                CASE_TYPE, Long.toString(caseId), true,
+                buildCaseDataContent(eventId, eventToken, emptyMap()));
+        }
+
+        @Test
+        void shouldStartAndSubmitEventWithEventData() {
+            Map<String, Object> eventData = Map.of("A", "B");
+            service.triggerEvent(JURISDICTION, CASE_TYPE, caseId, eventId, eventData);
+
+            verify(coreCaseDataApi).startEventForCaseWorker(userAuthToken, serviceAuthToken, userId,
+                JURISDICTION, CASE_TYPE, Long.toString(caseId), eventId);
+            verify(coreCaseDataApi).submitEventForCaseWorker(userAuthToken, serviceAuthToken, userId, JURISDICTION,
+                CASE_TYPE, Long.toString(caseId), true,
+                buildCaseDataContent(eventId, eventToken, eventData));
+        }
     }
 
     @Test
@@ -100,12 +125,13 @@ class CoreCaseDataServiceTest {
         return StartEventResponse.builder().eventId(eventId).token(eventToken).build();
     }
 
-    private CaseDataContent buildCaseDataContent(String eventId, String eventToken) {
+    private CaseDataContent buildCaseDataContent(String eventId, String eventToken, Object eventData) {
         return CaseDataContent.builder()
             .eventToken(eventToken)
             .event(Event.builder()
                 .id(eventId)
                 .build())
+            .data(eventData)
             .build();
     }
 }

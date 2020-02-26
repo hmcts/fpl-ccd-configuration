@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import feign.FeignException;
+import feign.Request;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,8 @@ import uk.gov.hmcts.reform.rd.model.User;
 
 import java.util.Map;
 
+import static feign.Request.HttpMethod.GET;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -65,7 +68,9 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
         given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail))
-            .willThrow(new FeignException.NotFound("User not found", null));
+            .willThrow(new FeignException.NotFound("User not found",
+                Request.create(GET, "", Map.of(), new byte[] {}, UTF_8),
+                new byte[] {}));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
