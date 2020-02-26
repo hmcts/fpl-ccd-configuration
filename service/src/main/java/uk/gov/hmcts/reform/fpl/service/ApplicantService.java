@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -18,10 +16,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicantService {
-    private final OrganisationService organisationService;
-
     public List<Element<Applicant>> expandApplicantCollection(CaseData caseData) {
         if (isEmpty(caseData.getApplicants())) {
             return ImmutableList.of(Element.<Applicant>builder()
