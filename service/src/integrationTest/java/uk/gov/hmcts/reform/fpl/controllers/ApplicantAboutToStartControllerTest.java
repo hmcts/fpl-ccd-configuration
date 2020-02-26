@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -43,7 +42,8 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
             .build();
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(Organisation.builder().build());
+        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
+            .willReturn(Organisation.builder().build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
