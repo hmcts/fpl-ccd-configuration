@@ -58,11 +58,7 @@ public class ApplicantController {
 
         Organisation organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
 
-        if(isNotEmpty(organisation)){
-            caseData = buildCaseDataWithOrganisationDetails(caseData, organisation);
-        }
-
-        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData));
+        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData, organisation));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
