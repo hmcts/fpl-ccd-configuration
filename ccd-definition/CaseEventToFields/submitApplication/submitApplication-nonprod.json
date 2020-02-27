@@ -8,6 +8,8 @@
     "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-submission/mid-event",
+    "Comment": "Due to the way the definition files are parsed this file is read first and the callback needs to be here, when the 2 files are merged the mid event callback should go back onto the consent label"
   }
 ]
