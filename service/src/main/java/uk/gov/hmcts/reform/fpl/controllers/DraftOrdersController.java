@@ -45,7 +45,7 @@ import java.util.stream.Stream;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.FULL_DATE;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 
 @Api
@@ -94,7 +94,7 @@ public class DraftOrdersController {
 
         try {
             LocalDateTime startDate = hearingBookingService.getMostUrgentHearingBooking(hearings).getStartDate();
-            hearingDate = formatLocalDateTimeBaseUsingFormat(startDate, FULL_DATE);
+            hearingDate = formatLocalDateTimeBaseUsingFormat(startDate, DATE_TIME);
         } catch (IllegalStateException e) {
             hearingDate = "Please enter a hearing date";
         }
@@ -130,7 +130,7 @@ public class DraftOrdersController {
         Document document = getDocument(
             authorization,
             userId,
-            caseDataExtractionService.getStandardOrderDirectionData(updated)
+            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
@@ -178,7 +178,7 @@ public class DraftOrdersController {
         Document document = getDocument(
             authorization,
             userId,
-            caseDataExtractionService.getStandardOrderDirectionData(updated)
+            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
