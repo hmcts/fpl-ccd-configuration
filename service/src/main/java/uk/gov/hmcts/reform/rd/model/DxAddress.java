@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SuperUser {
-    private String email;
-    private String firstName;
-    private String lastName;
+public class DxAddress {
+    private String dxExchange;
+    private String dxNumber;
 }

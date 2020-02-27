@@ -12,10 +12,14 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Organisation {
-    private String organisationIdentifier;
-    private String name;
-    private String status;
-    private boolean sraRegulated;
-    private SuperUser superUser;
+    private String companyNumber;
+    private String companyUrl;
     private ArrayList<ContactInformation> contactInformation;
+    private String name;
+    private String organisationIdentifier;
+    private ArrayList<PaymentAccount> paymentAccount;
+    private String sraId;
+    private boolean sraRegulated;
+    private String status;
+    private SuperUser superUser;
 }

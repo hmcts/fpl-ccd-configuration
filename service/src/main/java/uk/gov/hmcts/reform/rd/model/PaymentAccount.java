@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SuperUser {
-    private String email;
-    private String firstName;
-    private String lastName;
+public class PaymentAccount {
+    private String paymentAccount;
 }

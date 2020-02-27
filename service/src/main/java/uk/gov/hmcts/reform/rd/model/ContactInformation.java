@@ -14,8 +14,10 @@ import java.util.ArrayList;
 public class ContactInformation {
     private String addressLine1;
     private String addressLine2;
-    private String townCity;
+    private String addressLine3;
+    private String country;
     private String county;
+    private ArrayList<DxAddress> dxAddress;
     private String postCode;
-    private ArrayList dxAddress;
+    private String townCity;
 }
