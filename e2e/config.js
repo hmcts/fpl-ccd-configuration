@@ -78,6 +78,7 @@ module.exports = {
     createOrder: 'Create an order',
     placement: 'Placement',
     handleSupplementaryEvidence: 'Handle supplementary evidence',
+    bulkScan: 'Attach scanned docs',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
