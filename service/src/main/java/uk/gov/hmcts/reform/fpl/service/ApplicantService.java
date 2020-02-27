@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -45,6 +46,12 @@ public class ApplicantService {
                     // A value within applicant party needs to be set in order to expand UI view.
                     .partyId(UUID.randomUUID().toString())
                     .organisationName(organisation.getName())
+                    .address(Address.builder()
+                        .addressLine1(organisation.getContactInformation().get(0).getAddressLine1())
+                        .addressLine2(organisation.getContactInformation().get(0).getAddressLine2())
+                        .postTown(organisation.getContactInformation().get(0).getPostCode())
+                        .country(organisation.getContactInformation().get(0).getCounty())
+                        .build())
                     .build())
                 .build())
             .build());

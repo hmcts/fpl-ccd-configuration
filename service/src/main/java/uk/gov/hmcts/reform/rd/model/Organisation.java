@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,5 +17,5 @@ public class Organisation {
     private String status;
     private boolean sraRegulated;
     private SuperUser superUser;
-    private ContactInformation[] contactInformation;
+    private ArrayList<ContactInformation> contactInformation;
 }
