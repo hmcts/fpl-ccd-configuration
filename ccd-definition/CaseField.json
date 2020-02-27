@@ -1195,7 +1195,7 @@
     "Label": " ",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Comment": "Used to record wether a case has been sent to CTSC. Move to CTSC set for 30th March 2020."
+    "Comment": "Used to record whether a case has been sent to CTSC. Move to CTSC set for 30th March 2020."
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1204,5 +1204,14 @@
     "Label": "Application fee to pay",
     "FieldType": "MoneyGBP",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "displayAmountToPay",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Comment": "Used to hide the amountToPay field, mainly in the event of an error with the Fee Register"
   }
 ]

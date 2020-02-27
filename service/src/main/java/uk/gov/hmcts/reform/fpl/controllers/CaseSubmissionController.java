@@ -83,9 +83,7 @@ public class CaseSubmissionController {
 
                 data.put("submissionConsentLabel", label);
             } catch (FeeRegisterException ignore) {
-                // TODO: 21/02/2020 Replace me in FPLA-1353
-                //  this is an error message for when the Fee Register is unavailable
-                errors.add("XXX");
+                data.put("displayAmountToPay", NO.getValue());
             }
         }
 
