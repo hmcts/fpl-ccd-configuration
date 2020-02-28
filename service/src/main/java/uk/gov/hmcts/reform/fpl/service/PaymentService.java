@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.payment.client.PaymentApi;
 import uk.gov.hmcts.reform.payment.model.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.payment.model.FeeDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.payment.model.enums.Currency.GBP;
@@ -26,11 +27,12 @@ public class PaymentService {
     private final RequestData requestData;
 
     public void makePayment(Long caseId, CaseData caseData) {
+        Double totalFeeAmount = BigDecimal.ZERO.doubleValue(); //TODO: store and get from caseData
         List<FeeDto> fees = List.of(FeeDto.builder().build());
 
         CreditAccountPaymentRequest paymentRequest = CreditAccountPaymentRequest.builder()
             .accountNumber("PBA0082848") //TODO: test PBA number, replace with real one
-            .amount(getSumOfFees(fees))
+            .amount(totalFeeAmount)
             .caseReference(String.valueOf(caseId))
             .currency(GBP)
             .customerReference("TBC") //TODO: take from c2 screen?
@@ -45,9 +47,4 @@ public class PaymentService {
             authTokenGenerator.generate(),
             paymentRequest);
     }
-
-    private double getSumOfFees(List<FeeDto> fees) {
-        return fees.stream().map(FeeDto::getCalculatedAmount).mapToDouble(Double::doubleValue).sum();
-    }
-
 }

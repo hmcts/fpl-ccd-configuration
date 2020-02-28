@@ -10,23 +10,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Fee",
-    "ListElementCode": "description",
-    "FieldType": "Text",
-    "ElementLabel": "Fee description",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Fee",
     "ListElementCode": "version",
-    "FieldType": "Text",
+    "FieldType": "Number",
     "ElementLabel": "Fee version",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Fee",
-    "ListElementCode": "amount",
+    "ListElementCode": "calculatedAmount",
     "FieldType": "Text",
     "ElementLabel": "Fee amount",
     "SecurityClassification": "Public"
