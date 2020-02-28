@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 
 @ActiveProfiles("integration-test")
@@ -44,13 +44,13 @@ class PlacementAboutToSubmitControllerTest extends AbstractControllerTest {
         Element<Child> child1 = testChild();
         Element<Child> child2 = testChild();
 
-        DocumentReference child1Application = testDocument();
-        DocumentReference child2Application = testDocument();
+        DocumentReference child1Application = testDocumentReference();
+        DocumentReference child2Application = testDocumentReference();
 
         Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
         Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
 
-        DocumentReference child2NewApplication = testDocument();
+        DocumentReference child2NewApplication = testDocumentReference();
         Element<Placement> child2NewPlacement = element(child2Placement.getId(),
             testPlacement(child2, child2NewApplication));
 
@@ -81,7 +81,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractControllerTest {
     @Test
     void shouldAddConfidentialPlacementAndPlacementsWithoutPlacementOrderToCaseDetailsWhenBothArePresentInPlacement() {
         Element<Child> child = testChild();
-        DocumentReference childApplication = testDocument();
+        DocumentReference childApplication = testDocumentReference();
         Element<Placement> childPlacement = element(placement(child, childApplication));
 
         CaseDetails caseDetails = CaseDetails.builder()

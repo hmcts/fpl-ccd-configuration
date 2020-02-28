@@ -53,7 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacementOrderAndNotices;
 
@@ -91,8 +91,8 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
-            DocumentReference child1Application = testDocument();
-            DocumentReference child2Application = testDocument();
+            DocumentReference child1Application = testDocumentReference();
+            DocumentReference child2Application = testDocumentReference();
 
             Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
             Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
@@ -129,8 +129,8 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             Element<Child> child1 = testChild();
             Element<Child> child2 = testChild();
 
-            DocumentReference child1Application = testDocument();
-            DocumentReference child2Application = testDocument();
+            DocumentReference child1Application = testDocumentReference();
+            DocumentReference child2Application = testDocumentReference();
 
             Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
             Element<Placement> child2Placement = element(testPlacement(child2, child2Application));
@@ -166,7 +166,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         @Test
         void shouldNotSendANotificationWhenUploadingPreviousChildPlacement() throws Exception {
             Element<Child> child1 = testChild();
-            DocumentReference child1Application = testDocument();
+            DocumentReference child1Application = testDocumentReference();
             Element<Placement> child1Placement = element(testPlacement(child1, child1Application));
 
             CallbackRequest callbackRequest = CallbackRequest.builder()
@@ -198,7 +198,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
     @Nested
     class NoticeOfPlacementOrderNotification {
         private final Element<Child> childElement = testChild();
-        private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocument()));
+        private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocumentReference()));
 
         @Test
         void shouldSendEmailNotificationsWhenNewNoticeOfPlacementOrder() throws NotificationClientException {
