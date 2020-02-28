@@ -33,9 +33,9 @@ public class PaymentService {
             .amount(getSumOfFees(fees))
             .caseReference(String.valueOf(caseId))
             .currency(GBP)
-            .customerReference("TBC") //TODO
-            .description("FREETEXT") //TODO
-            .organisationName("FREETEXT") //TODO
+            .customerReference("TBC") //TODO: take from c2 screen?
+            .description("FREETEXT") //TODO: order type: EPO, Care Order...
+            .organisationName("FREETEXT") //TODO: Local Authority name
             .service(FPL)
             .siteId(SITE_ID)
             .fees(fees)

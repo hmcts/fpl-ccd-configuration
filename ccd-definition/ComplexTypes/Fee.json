@@ -1,0 +1,34 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Fee",
+    "ListElementCode": "code",
+    "FieldType": "Text",
+    "ElementLabel": "Fee code",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Fee",
+    "ListElementCode": "description",
+    "FieldType": "Text",
+    "ElementLabel": "Fee description",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Fee",
+    "ListElementCode": "version",
+    "FieldType": "Text",
+    "ElementLabel": "Fee version",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Fee",
+    "ListElementCode": "amount",
+    "FieldType": "Text",
+    "ElementLabel": "Fee amount",
+    "SecurityClassification": "Public"
+  }
+]

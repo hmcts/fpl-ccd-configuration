@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 
 import java.math.BigDecimal;
@@ -55,6 +56,10 @@ public class FeeService {
             .map(this::makeRequest)
             .filter(Objects::nonNull)
             .collect(toImmutableList());
+    }
+
+    public FeeResponse getC2Fee(C2ApplicationType c2ApplicationType) {
+        return makeRequest(FeeType.fromC2ApplicationType(c2ApplicationType));
     }
 
     private FeeResponse makeRequest(FeeType feeType) throws FeeRegisterException {

@@ -13,13 +13,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.service.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -37,12 +45,18 @@ public class UploadC2DocumentsController {
     private final ObjectMapper mapper;
     private final UserDetailsService userDetailsService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final FeeService feeService;
+    private final PaymentService paymentService;
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
         //TODO: call Fees Register, set amountToPay and store fee data to make payment in /submitted
-        data.put("amountToPay", "500");
+
+        FeeResponse feeResponse = feeService.getC2Fee(caseData.getC2ApplicationType());
+        data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feeResponse.getAmount()));
+        data.put("c2Fee", feeResponse);
         //removing to avoid bug on previous-continue
         data.remove("temporaryC2Document");
 
@@ -69,8 +83,11 @@ public class UploadC2DocumentsController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
-
         // TODO: make payment here
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        paymentService.makePayment(caseDetails.getId(), caseData);
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
 
