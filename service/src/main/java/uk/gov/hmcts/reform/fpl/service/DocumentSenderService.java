@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -26,12 +27,11 @@ public class DocumentSenderService {
     private static final String SEND_LETTER_TYPE = "FPLA001";
 
     private final Time time;
-    private final DateFormatterService dateFormatterService;
     private final SendLetterApi sendLetterApi;
     private final DocumentDownloadService documentDownloadService;
-    private final UploadDocumentService uploadDocumentService;
     private final DocmosisCoverDocumentsService docmosisCoverDocumentsService;
     private final AuthTokenGenerator authTokenGenerator;
+    private final UploadDocumentService uploadDocumentService;
     private final RequestData requestData;
 
     public List<SentDocument> send(DocumentReference mainDocument, List<Representative> representativesServedByPost,
@@ -39,9 +39,9 @@ public class DocumentSenderService {
         List<SentDocument> sentDocuments = new ArrayList<>();
         byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocument.getBinaryUrl());
         for (Representative representative : representativesServedByPost) {
-
-            byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(
-                familyManCaseNumber, caseId, representative).getBytes();
+            byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,
+                caseId,
+                representative).getBytes();
 
             sendLetterApi.sendLetter(authTokenGenerator.generate(),
                 new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary), SEND_LETTER_TYPE, Map.of()));
@@ -53,7 +53,7 @@ public class DocumentSenderService {
                 .partyName(representative.getFullName())
                 .document(mainDocument)
                 .coversheet(buildFromDocument(coversheet))
-                .sentAt(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
+                .sentAt(formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .build());
         }
 

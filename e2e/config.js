@@ -58,6 +58,7 @@ module.exports = {
     actionCaseManagementOrder: 'Action CMO',
     complyWithDirections: 'Comply with directions',
     complyOnBehalfOf: 'Comply on behalf of others',
+    allocatedJudge: 'Allocated Judge',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
@@ -77,6 +78,7 @@ module.exports = {
     createOrder: 'Create an order',
     placement: 'Placement',
     handleSupplementaryEvidence: 'Handle supplementary evidence',
+    bulkScan: 'Attach scanned docs',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

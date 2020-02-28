@@ -18,9 +18,11 @@ import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -42,6 +44,7 @@ public class PlacementController {
     private final PlacementService placementService;
     private final RequestData requestData;
     private final CoreCaseDataService coreCaseDataService;
+    private final DocumentDownloadService documentDownloadService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -143,10 +146,12 @@ public class PlacementController {
                                                               CaseData caseData,
                                                               CaseData caseDataBefore) {
         placementService.getUpdatedDocuments(caseData, caseDataBefore, NOTICE_OF_PLACEMENT_ORDER)
-            .forEach(newDocument -> applicationEventPublisher.publishEvent(new NoticeOfPlacementOrderUploadedEvent(
-                callbackRequest,
-                requestData.authorisation(),
-                requestData.userId())));
+            .stream()
+            .map(DocumentReference::getBinaryUrl)
+            .map(documentDownloadService::downloadDocument)
+            .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
+            callbackRequest, requestData.authorisation(), requestData.userId(), documentContents))
+            .forEach(applicationEventPublisher::publishEvent);
     }
 
     private void triggerSendDocumentEventForUpdatedPlacementOrderDocuments(CaseDetails caseDetails, CaseData caseData,

@@ -414,6 +414,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "allocatedJudge",
+    "Label": "Allocated Judge",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingDetails",
     "Label": "Hearing",
     "FieldType": "Collection",
@@ -423,9 +431,49 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingDate",
-    "Label": "The next hearing is on ${hearingDetails.startDate}.",
-    "FieldType": "Label",
+    "ID": "allPartiesHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cafcassDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherPartiesDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {
@@ -1147,6 +1195,24 @@
     "ID": "evidenceHandled",
     "Label": "Supplementary evidence handled",
     "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sendToCtsc",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Comment": "Used to record wether a case has been sent to CTSC. Move to CTSC set for 30th March 2020."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "scannedDocuments",
+    "Label": "Scanned Documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ScannedDocument",
     "SecurityClassification": "Public"
   }
 ]

@@ -112,7 +112,12 @@ data "azurerm_key_vault_secret" "robotics-notification-sender" {
 }
 
 data "azurerm_key_vault_secret" "ld-sdk-key" {
-  name          = "ld-sdk-key"
+  name      = "ld-sdk-key"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "ctsc-inbox" {
+  name      = "ctsc-inbox"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
@@ -157,7 +162,7 @@ module "case-service" {
     DOCUMENT_MANAGEMENT_URL                                     = "${local.DOCUMENT_MANAGEMENT_URL}"
     CORE_CASE_DATA_API_URL                                      = "${local.CORE_CASE_DATA_API_URL}"
     RD_PROFESSIONAL_API_URL                                     = "${local.RD_PROFESSIONAL_API_URL}"
-    SEND_LETTER_URL                                             = "${local.SEND_LETTER_API_URL}"
+    SEND_LETTER_URL                                             = "${local.SEND_LETTER_URL}"
     CCD_UI_BASE_URL                                             = "${var.ccd_ui_base_url}"
     FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING                   = "${data.azurerm_key_vault_secret.local_authority_email_to_code_mapping.value}"
     FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING                    = "${data.azurerm_key_vault_secret.local_authority_code_to_name_mapping.value}"
@@ -184,6 +189,7 @@ module "case-service" {
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED                 = "${var.feature_toggle_robotics_support_api_enabled}"
     AUTH_IDAM_CLIENT_BASEURL                                    = "${var.idam_api_url}"
     AUTH_PROVIDER_SERVICE_CLIENT_BASEURL                        = "${local.IDAM_S2S_AUTH_URL}"
+    CTSC_INBOX                                                  = "${data.azurerm_key_vault_secret.ctsc-inbox.value}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false

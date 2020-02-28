@@ -169,6 +169,7 @@ public class CommonDirectionService {
             .collect(toList());
     }
 
+    //TODO: numbering done for SDO in formatTitle method. CMO to do the same?
     /**
      * Iterates over a list of directions and adds numbers to the directionType starting from 2.
      *
@@ -179,6 +180,7 @@ public class CommonDirectionService {
         AtomicInteger at = new AtomicInteger(2);
 
         return directions.stream()
+            .filter(direction -> "Yes".equals(direction.getValue().getDirectionNeeded()))
             .map(direction -> element(direction.getId(), direction.getValue().toBuilder()
                 .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
                 .build()))

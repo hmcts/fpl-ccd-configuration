@@ -20,3 +20,4 @@ spring:
         robotics-notification-sender: robotics.notification.sender
         robotics-notification-recipient: robotics.notification.recipient
         ld-sdk-key: ld.sdk_key
+        ctsc-inbox: fpl.ctsc-inbox

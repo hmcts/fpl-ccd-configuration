@@ -117,6 +117,7 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirectionsCustomCMO;
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
+    private final Judge allocatedJudge;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
     private final Hearing hearing;
@@ -277,6 +278,14 @@ public class CaseData {
     public Optional<Respondent> findRespondent(int seqNo) {
         return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+    }
+
+    public Optional<Applicant> findApplicant(int seqNo) {
+        if (isEmpty(applicants) || applicants.size() <= seqNo) {
+            return empty();
+        } else {
+            return Optional.of(applicants.get(seqNo).getValue());
+        }
     }
 
     @JsonIgnore

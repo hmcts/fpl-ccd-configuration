@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -21,6 +20,7 @@ import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,6 +44,7 @@ class DocumentSenderServiceTest {
     private static final String SERVICE_AUTH_TOKEN = "Service token";
     private static final String AUTH_TOKEN = "User token";
     private static final String USER_ID = UUID.randomUUID().toString();
+    private static final LocalDateTime DATE = LocalDateTime.of(2019, 1, 1, 12, 0, 0);
     private static final String FORMATTED_DATE = "12:00pm, 1 January 2019";
     private static final String FAMILY_CASE_NUMBER = "familyCaseNumber";
     private static final String COVERSHEET_NAME = "Coversheet.pdf";
@@ -56,11 +57,8 @@ class DocumentSenderServiceTest {
 
     private DocumentSenderService documentSenderService;
 
-    @Autowired
-    private Time time;
-
     @Mock
-    private DateFormatterService dateFormatterService;
+    private Time time;
 
     @Mock
     private SendLetterApi sendLetterApi;
@@ -85,6 +83,7 @@ class DocumentSenderServiceTest {
 
     @BeforeEach
     void setup() {
+        given(time.now()).willReturn(DATE);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(requestData.userId()).willReturn(USER_ID);
         given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME))
@@ -98,16 +97,16 @@ class DocumentSenderServiceTest {
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(0)));
         given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, REPRESENTATIVES.get(1)))
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(1)));
-        given(dateFormatterService.formatLocalDateTimeBaseUsingFormat(any(), anyString())).willReturn(FORMATTED_DATE);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
-        documentSenderService = new DocumentSenderService(time,
-            dateFormatterService,
+        documentSenderService = new DocumentSenderService(
+            time,
             sendLetterApi,
             documentDownloadService,
-            uploadDocumentService,
             docmosisCoverDocumentsService,
-            authTokenGenerator, requestData);
+            authTokenGenerator,
+            uploadDocumentService,
+            requestData);
     }
 
     @Test
@@ -137,9 +136,6 @@ class DocumentSenderServiceTest {
     void shouldReturnSentDocumentsData() {
         List<SentDocument> sentDocuments = documentSenderService.send(DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID,
             FAMILY_CASE_NUMBER);
-
-        verify(dateFormatterService, times(2)).formatLocalDateTimeBaseUsingFormat(time.now(),
-            "h:mma, d MMMM yyyy");
 
         assertThat(sentDocuments.get(0)).isEqualTo(SentDocument.builder()
             .partyName(REPRESENTATIVES.get(0).getFullName())
