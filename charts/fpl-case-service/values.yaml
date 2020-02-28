@@ -11,6 +11,7 @@ java:
     CORE_CASE_DATA_API_URL: http://ccd-data-store-api-aat.service.core-compute-aat.internal
     SEND_LETTER_URL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
+    FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
     CCD_UI_BASE_URL: https://ccd-case-management-web-aat.service.core-compute-aat.internal
     DOCMOSIS_TORNADO_URL: https://docmosis-development.platform.hmcts.net

@@ -1,0 +1,33 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/fees-register/fees/lookup",
+    "queryParameters": {
+      "channel": {
+        "equalTo": "default"
+      },
+      "event": {
+        "equalTo": "miscellaneous"
+      },
+      "jurisdiction1": {
+        "equalTo": "family"
+      },
+      "jurisdiction2": {
+        "equalTo": "family court"
+      },
+      "keyword": {
+        "equalTo": "KLM"
+      },
+      "service": {
+        "equalTo": "private law"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"code\": \"FEE0326\", \"description\": \"Emergency protection orders (sections 44, 45 and 46)\", \"version\": 1, \"fee_amount\": 215}"
+  }
+}

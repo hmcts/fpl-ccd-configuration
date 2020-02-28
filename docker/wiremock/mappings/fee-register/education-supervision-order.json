@@ -1,0 +1,33 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/fees-register/fees/lookup",
+    "queryParameters": {
+      "channel": {
+        "equalTo": "default"
+      },
+      "event": {
+        "equalTo": "miscellaneous"
+      },
+      "jurisdiction1": {
+        "equalTo": "family"
+      },
+      "jurisdiction2": {
+        "equalTo": "family court"
+      },
+      "keyword": {
+        "equalTo": "TUV"
+      },
+      "service": {
+        "equalTo": "private law"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"code\": \"FEE0329\", \"description\": \"Education supervision order (section 36(1))\", \"version\": 1, \"fee_amount\": 215}"
+  }
+}
