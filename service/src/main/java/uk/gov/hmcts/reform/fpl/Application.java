@@ -7,7 +7,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-@EnableFeignClients(basePackages = {"uk.gov.hmcts.reform.idam.client", "uk.gov.hmcts.reform.rd.client"})
+@EnableFeignClients(basePackages = {
+    "uk.gov.hmcts.reform.idam.client",
+    "uk.gov.hmcts.reform.rd.client",
+    "uk.gov.hmcts.reform.fnp.client"
+})
 @ComponentScan
 @EnableAsync
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class

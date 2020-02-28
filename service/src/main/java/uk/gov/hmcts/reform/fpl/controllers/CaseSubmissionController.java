@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -25,11 +26,15 @@ import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -42,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFil
 @Api
 @RestController
 @RequestMapping("/callback/case-submission")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseSubmissionController {
 
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
@@ -52,54 +58,52 @@ public class CaseSubmissionController {
     private final CaseValidatorService caseValidatorService;
     private final ObjectMapper mapper;
     private final RestrictionsConfiguration restrictionsConfiguration;
+    private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
-
-    @Autowired
-    public CaseSubmissionController(
-        UserDetailsService userDetailsService,
-        DocumentGeneratorService documentGeneratorService,
-        UploadDocumentService uploadDocumentService,
-        CaseValidatorService caseValidatorService,
-        ObjectMapper mapper,
-        ApplicationEventPublisher applicationEventPublisher,
-        RestrictionsConfiguration restrictionsConfiguration,
-        FeatureToggleService featureToggleService) {
-        this.userDetailsService = userDetailsService;
-        this.documentGeneratorService = documentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.caseValidatorService = caseValidatorService;
-        this.mapper = mapper;
-        this.restrictionsConfiguration = restrictionsConfiguration;
-        this.featureToggleService = featureToggleService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackRequest) {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-        String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
-
         Map<String, Object> data = caseDetails.getData();
-        data.put("submissionConsentLabel", label);
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        List<String> errors = validate(caseData);
+
+        if (errors.isEmpty()) {
+            try {
+                String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
+
+                if (featureToggleService.isFeesAndPaymentsEnabled()) {
+                    BigDecimal amount = feeService.getFeeAmountForOrders(caseData.getOrders());
+                    data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
+                }
+
+                data.put("submissionConsentLabel", label);
+            } catch (FeeRegisterException ignore) {
+                // TODO: 21/02/2020 Replace me in FPLA-1353
+                //  this is an error message for when the Fee Register is unavailable
+                errors.add("XXX");
+            }
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(validate(mapper.convertValue(data, CaseData.class)))
+            .errors(errors)
             .build();
     }
 
     private List<String> validate(CaseData caseData) {
-        ImmutableList.Builder<String> builder = ImmutableList.builder();
+        List<String> errors = new ArrayList<>();
 
         if (restrictionsConfiguration.getLocalAuthorityCodesForbiddenCaseSubmission()
             .contains(caseData.getCaseLocalAuthority())) {
-            builder.add("Test local authority cannot submit cases");
+            errors.add("Test local authority cannot submit cases");
         }
 
-        return builder.build();
+        return errors;
     }
 
     @PostMapping("/mid-event")
@@ -145,6 +149,8 @@ public class CaseSubmissionController {
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", document.originalDocumentName)
             .build());
+
+        data.remove("amountToPay");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
