@@ -718,17 +718,18 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "c2Fee",
-    "Label": "C2 Fee",
-    "FieldType": "Fee",
+    "ID": "fees",
+    "Label": "Fees data",
+    "FieldType": "Fees",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2ApplicationType",
-    "Label": "Upload C2",
-    "FieldType": "C2ApplicationType",
+    "Label": "What kind of application are you making?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationType",
     "SecurityClassification": "Public"
   },
   {

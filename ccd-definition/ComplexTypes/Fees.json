@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Fees",
+    "ListElementCode": "totalAmount",
+    "FieldType": "Number",
+    "ElementLabel": "Fees total amount",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Fees",
+    "ListElementCode": "fees",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Fee",
+    "ElementLabel": "Fees collection",
+    "SecurityClassification": "Public"
+  }
+]

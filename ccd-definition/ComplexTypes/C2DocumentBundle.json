@@ -63,5 +63,14 @@
     "FieldType": "Text",
     "ElementLabel": "Description",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationType",
+    "ElementLabel": "Application type",
+    "SecurityClassification": "Public"
   }
 ]

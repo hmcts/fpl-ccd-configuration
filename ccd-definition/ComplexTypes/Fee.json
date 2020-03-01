@@ -19,7 +19,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Fee",
     "ListElementCode": "calculatedAmount",
-    "FieldType": "Text",
+    "FieldType": "Number",
     "ElementLabel": "Fee amount",
     "SecurityClassification": "Public"
   }

@@ -17,8 +17,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Fees;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -34,6 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @RestController
@@ -45,18 +48,23 @@ public class UploadC2DocumentsController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FeeService feeService;
     private final PaymentService paymentService;
+    private final RequestData requestData;
+    //TODO: pass local authority name to payments
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        //TODO: call Fees Register, set amountToPay and store fee data to make payment in /submitted
 
         FeeResponse feeResponse = feeService.getC2Fee(caseData.getC2ApplicationType());
         data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feeResponse.getAmount()));
-        data.put("c2Fee", FeeDto.fromFeeResponse(feeResponse));
+        FeeDto feeDto = FeeDto.fromFeeResponse(feeResponse);
+        Fees fees = Fees.builder().totalAmount(feeDto.getCalculatedAmount()).fees(wrapElements(feeDto)).build();
+        data.put("fees", fees);
         //removing to avoid bug on previous-continue
         data.remove("temporaryC2Document");
+        //TODO: PBA nubmer validation
+        //TODO: log payments with data
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
