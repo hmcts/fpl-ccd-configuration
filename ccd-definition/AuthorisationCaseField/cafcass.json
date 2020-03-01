@@ -339,14 +339,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "c2ApplicationType",
+    "CaseFieldID": "amountToPay",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "amountToPay",
+    "CaseFieldID": "c2ApplicationType",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
