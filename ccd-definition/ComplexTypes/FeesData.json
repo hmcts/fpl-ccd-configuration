@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Fees",
+    "ID": "FeesData",
     "ListElementCode": "totalAmount",
     "FieldType": "Number",
     "ElementLabel": "Fees total amount",
@@ -9,7 +9,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Fees",
+    "ID": "FeesData",
     "ListElementCode": "fees",
     "FieldType": "Collection",
     "FieldTypeParameter": "Fee",

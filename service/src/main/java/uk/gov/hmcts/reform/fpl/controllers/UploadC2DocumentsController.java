@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Fees;
+import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -51,6 +51,7 @@ public class UploadC2DocumentsController {
     private final RequestData requestData;
     //TODO: pass local authority name to payments
 
+    //TODO: add about to submit to clear c2ApplicationType + ccd changes
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
@@ -59,8 +60,8 @@ public class UploadC2DocumentsController {
         FeeResponse feeResponse = feeService.getC2Fee(caseData.getC2ApplicationType());
         data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feeResponse.getAmount()));
         FeeDto feeDto = FeeDto.fromFeeResponse(feeResponse);
-        Fees fees = Fees.builder().totalAmount(feeDto.getCalculatedAmount()).fees(wrapElements(feeDto)).build();
-        data.put("fees", fees);
+        FeesData feesData = FeesData.builder().totalAmount(feeDto.getCalculatedAmount()).fees(wrapElements(feeDto)).build();
+        data.put("feesData", feesData);
         //removing to avoid bug on previous-continue
         data.remove("temporaryC2Document");
         //TODO: PBA nubmer validation
@@ -79,7 +80,6 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.put("c2DocumentBundle", buildC2DocumentBundle(caseData, authorization));
-        //TODO: clear c2ApplicationType in aboutToSubmit
         data.keySet().removeAll(Set.of("temporaryC2Document", "c2ApplicationType", "amountToPay"));
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();

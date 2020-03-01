@@ -81,6 +81,8 @@ public class CaseSubmissionController {
                 if (featureToggleService.isFeesAndPaymentsEnabled()) {
                     BigDecimal amount = feeService.getFeeAmountForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
+                    //TODO: check if total amount always equals to amountToPay displayed
+                    //TODO: store feesData in caseData
                 }
 
                 data.put("submissionConsentLabel", label);

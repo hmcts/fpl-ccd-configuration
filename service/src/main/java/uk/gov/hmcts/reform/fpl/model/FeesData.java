@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class Fees {
+public class FeesData {
 
     private BigDecimal totalAmount;
     private List<Element<FeeDto>> fees;
