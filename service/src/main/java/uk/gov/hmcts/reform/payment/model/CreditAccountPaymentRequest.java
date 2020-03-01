@@ -16,7 +16,7 @@ public class CreditAccountPaymentRequest {
     private String accountNumber;
     private double amount;
     private String caseReference;
-    private String ccdCaseNumber; // optional
+    private String ccdCaseNumber; // this or caseReference is optional
     private Currency currency;
     private String customerReference;
     private String description;
