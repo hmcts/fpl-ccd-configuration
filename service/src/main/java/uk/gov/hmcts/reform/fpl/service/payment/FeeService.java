@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
-import uk.gov.hmcts.reform.payment.model.FeeDto;
+import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 
 import java.math.BigDecimal;
 import java.util.Collection;

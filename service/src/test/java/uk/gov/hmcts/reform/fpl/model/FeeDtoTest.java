@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
-import uk.gov.hmcts.reform.payment.model.FeeDto;
+import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 
 import java.math.BigDecimal;
 

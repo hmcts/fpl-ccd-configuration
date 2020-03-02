@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -9,24 +9,34 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.payment.client.PaymentApi;
-import uk.gov.hmcts.reform.payment.model.CreditAccountPaymentRequest;
+import uk.gov.hmcts.reform.fnp.client.PaymentApi;
+import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.payment.model.enums.Currency.GBP;
-import static uk.gov.hmcts.reform.payment.model.enums.Service.FPL;
+import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
+import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PaymentService {
 
-    private static final String SITE_ID = "ABA3";
     private static final String DESCRIPTION_TEMPLATE = "Payment for case %s";
 
     private final PaymentApi paymentApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final RequestData requestData;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final String siteId;
+
+    @Autowired
+    public PaymentService(PaymentApi paymentApi, AuthTokenGenerator authTokenGenerator, RequestData requestData,
+                          LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
+                          @Value("${payment.site_id}") String siteId) {
+        this.paymentApi = paymentApi;
+        this.authTokenGenerator = authTokenGenerator;
+        this.requestData = requestData;
+        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
+        this.siteId = siteId;
+    }
 
     public void makePayment(Long caseId, CaseData caseData) {
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId, caseData);
@@ -51,7 +61,7 @@ public class PaymentService {
             .description(String.format(DESCRIPTION_TEMPLATE, caseId))
             .organisationName(localAuthorityName)
             .service(FPL)
-            .siteId(SITE_ID)
+            .siteId(siteId)
             .fees(unwrapElements(feesData.getFees()))
             .build();
     }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.payment.model;
+package uk.gov.hmcts.reform.fnp.model.payment;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

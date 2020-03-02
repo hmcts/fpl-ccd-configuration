@@ -10,8 +10,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableFeignClients(basePackages = {
     "uk.gov.hmcts.reform.idam.client",
     "uk.gov.hmcts.reform.rd.client",
-    "uk.gov.hmcts.reform.fnp.client",
-    "uk.gov.hmcts.reform.payment.client"
+    "uk.gov.hmcts.reform.fnp.client"
 })
 @ComponentScan
 @EnableAsync
