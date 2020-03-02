@@ -52,8 +52,6 @@ public class ApplicantService {
         return ImmutableList.of(Element.<Applicant>builder()
             .value(Applicant.builder()
                 .party(ApplicantParty.builder()
-                    // A value within applicant party needs to be set in order to expand UI view.
-                    .partyId(UUID.randomUUID().toString())
                     .organisationName(organisation.getName())
                     .address(buildApplicantAddressWithOrganisationDetails(contactInformation))
                     .build())
@@ -66,8 +64,10 @@ public class ApplicantService {
             .addressLine1(contactInformation.getAddressLine1())
             .addressLine2(contactInformation.getAddressLine2())
             .addressLine3(contactInformation.getAddressLine3())
-            .postTown(contactInformation.getPostCode())
-            .country(contactInformation.getCounty())
+            .county(contactInformation.getCounty())
+            .country(contactInformation.getCountry())
+            .postcode(contactInformation.getPostCode())
+            .postTown(contactInformation.getTownCity())
             .build();
     }
 
