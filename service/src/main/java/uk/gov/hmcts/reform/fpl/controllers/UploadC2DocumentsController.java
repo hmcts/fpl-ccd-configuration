@@ -14,19 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
-import uk.gov.hmcts.reform.payment.model.FeeDto;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -36,7 +34,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @RestController
@@ -48,24 +45,18 @@ public class UploadC2DocumentsController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FeeService feeService;
     private final PaymentService paymentService;
-    private final RequestData requestData;
-    //TODO: pass local authority name to payments
+    private final FeatureToggleService featureToggleService;
 
-    //TODO: add about to submit to clear c2ApplicationType + ccd changes
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        FeeResponse feeResponse = feeService.getC2Fee(caseData.getC2ApplicationType());
-        data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feeResponse.getAmount()));
-        FeeDto feeDto = FeeDto.fromFeeResponse(feeResponse);
-        FeesData feesData = FeesData.builder().totalAmount(feeDto.getCalculatedAmount()).fees(wrapElements(feeDto)).build();
+        FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType());
+        data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
         data.put("feesData", feesData);
         //removing to avoid bug on previous-continue
         data.remove("temporaryC2Document");
-        //TODO: PBA nubmer validation
-        //TODO: log payments with data
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -93,24 +84,23 @@ public class UploadC2DocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        paymentService.makePayment(caseDetails.getId(), caseData);
+        if (featureToggleService.isFeesAndPaymentsEnabled()) {
+            paymentService.makePayment(caseDetails.getId(), caseData);
+        }
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
 
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData, String authorization) {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
-
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
         c2DocumentBundle.add(Element.<C2DocumentBundle>builder()
             .id(UUID.randomUUID())
-            .value(C2DocumentBundle.builder()
+            .value(caseData.getTemporaryC2Document().toBuilder()
                 .author(userDetailsService.getUserName(authorization))
-                .description(caseData.getTemporaryC2Document().getDescription())
-                .document(caseData.getTemporaryC2Document().getDocument())
                 .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
-                        .toLocalDateTime(), "h:mma, d MMMM yyyy"))
+                    .toLocalDateTime(), "h:mma, d MMMM yyyy"))
                 .type(caseData.getC2ApplicationType())
                 .build())
             .build());
