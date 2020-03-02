@@ -4,22 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.fnp.client.PaymentApi;
+import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fnp.client.PaymentApi;
-import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 public class PaymentService {
 
-    private static final String DESCRIPTION_TEMPLATE = "Payment for case %s";
+    private static final String DESCRIPTION_TEMPLATE = "Payment for case: %s";
 
     private final PaymentApi paymentApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -56,6 +56,7 @@ public class PaymentService {
             .accountNumber(c2DocumentBundle.getPbaNumber())
             .amount(feesData.getTotalAmount().doubleValue())
             .caseReference(String.valueOf(caseId))
+            .ccdCaseNumber(String.valueOf(caseId))
             .currency(GBP)
             .customerReference(c2DocumentBundle.getClientCode())
             .description(String.format(DESCRIPTION_TEMPLATE, caseId))

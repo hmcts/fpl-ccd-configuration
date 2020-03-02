@@ -9,15 +9,14 @@ import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
+import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
-import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -44,16 +43,6 @@ public class FeeService {
             .map(orderTypeList -> getFees(fromOrderType(orderTypeList)))
             .map(this::buildFeesDataFromFeeResponses)
             .get();
-    }
-
-    public BigDecimal getFeeAmountForOrders(Orders orders) throws FeignException {
-        return Optional.ofNullable(orders)
-            .map(Orders::getOrderType)
-            .map(orderTypeList -> getFees(fromOrderType(orderTypeList)))
-            .map(this::extractFeeToUse)
-            .filter(Optional::isPresent)
-            .map(feeResponse -> feeResponse.get().getAmount())
-            .orElse(BigDecimal.ZERO);
     }
 
     public Optional<FeeResponse> extractFeeToUse(List<FeeResponse> feeResponses) {
