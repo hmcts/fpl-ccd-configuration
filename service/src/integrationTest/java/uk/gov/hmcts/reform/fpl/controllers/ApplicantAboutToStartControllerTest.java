@@ -75,6 +75,5 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         CaseData data = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(data.getApplicants()).contains(Element.<Applicant>builder().value(applicant).build());
-
     }
 }
