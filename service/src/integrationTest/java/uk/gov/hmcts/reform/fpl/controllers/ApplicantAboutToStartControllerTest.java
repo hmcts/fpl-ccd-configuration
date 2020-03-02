@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -58,22 +60,40 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getData()).containsKey("applicants");
     }
 
+    @BeforeEach
+    void setup(){
+        Organisation organisation = buildOrganisation();
+
+        given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
+        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(organisation);
+    }
+
     @Test
     void shouldAddOrganisationDetailsToApplicantWhenOrganisationExists() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("data", "some data"))
             .build();
 
-        Organisation organisation = Organisation.builder().name("Organisation").build();
-        Applicant applicant = Applicant.builder().party(ApplicantParty.builder()
-            .organisationName("Organisation").address(Address.builder().build()).build()).build();
-
-        given(organisationApi.findOrganisationById(any(), any())).willReturn(organisation);
-
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         CaseData data = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(data.getApplicants()).contains(Element.<Applicant>builder().value(applicant).build());
+        assertThat(data.getApplicants()).contains(buildApplicant());
+    }
+
+    private Organisation buildOrganisation(){
+        return Organisation.builder().name("Organisation").build();
+    }
+
+    private Element<Applicant> buildApplicant(){
+        return Element.<Applicant>builder()
+            .value(Applicant.builder()
+                .party(ApplicantParty.builder()
+            .organisationName("Organisation")
+                    .address(Address.builder()
+                        .build())
+                    .build())
+                .build())
+            .build();
     }
 }
