@@ -5,7 +5,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class C2DocumentBundle {
     private final C2ApplicationType type;
     private final String nameOfRepresentative;
