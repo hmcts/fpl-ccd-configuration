@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/enter-applicant")
 public class ApplicantController {
@@ -48,7 +50,13 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Organisation organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
+        Organisation organisation = Organisation.builder().build();
+
+        try {
+            organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
+        } catch (Exception ex) {
+            log.error("Could not find the associated organisation from reference data", ex);
+        }
 
         caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData, organisation));
 
