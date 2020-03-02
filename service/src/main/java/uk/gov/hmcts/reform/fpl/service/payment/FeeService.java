@@ -108,7 +108,10 @@ public class FeeService {
     private FeesData buildFeesDataFromFeeResponses(List<FeeResponse> feeResponses) {
         return FeesData.builder()
             .totalAmount(extractFeeToUse(feeResponses).map(FeeResponse::getAmount).get())
-            .fees(feeResponses.stream().map(FeeDto::fromFeeResponse).map(ElementUtils::element).collect(toList()))
+            .fees(feeResponses.stream()
+                .map(FeeDto::fromFeeResponse)
+                .map(ElementUtils::element)
+                .collect(toList()))
             .build();
     }
 }
