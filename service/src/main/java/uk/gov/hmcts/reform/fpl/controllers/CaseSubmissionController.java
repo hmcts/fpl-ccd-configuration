@@ -148,7 +148,7 @@ public class CaseSubmissionController {
             .put("document_filename", document.originalDocumentName)
             .build());
 
-        data.remove("amountToPay");
+        removeTemporaryFields(caseDetails, "amountToPay", "displayAmountToPay");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -166,5 +166,11 @@ public class CaseSubmissionController {
 
     private String setSendToCtsc() {
         return featureToggleService.isCtscEnabled() ? YES.getValue() : NO.getValue();
+    }
+
+    private void removeTemporaryFields(CaseDetails caseDetails, String... fields) {
+        for (String field : fields) {
+            caseDetails.getData().remove(field);
+        }
     }
 }
