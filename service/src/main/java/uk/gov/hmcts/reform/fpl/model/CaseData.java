@@ -41,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
@@ -185,7 +186,7 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
-    private final C2ApplicationType c2ApplicationType;
+    private final Map<String, C2ApplicationType> c2ApplicationType;
     private final FeesData feesData;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
@@ -198,6 +199,10 @@ public class CaseData {
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
         return orderCollection != null ? orderCollection : new ArrayList<>();
+    }
+
+    public C2ApplicationType getC2ApplicationType() {
+        return c2ApplicationType.get("type");
     }
 
     @JsonIgnore

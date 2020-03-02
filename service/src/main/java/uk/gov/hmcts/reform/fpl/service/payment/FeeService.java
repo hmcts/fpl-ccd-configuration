@@ -12,7 +12,10 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.payment.model.FeeDto;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -23,7 +26,9 @@ import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
 @Service
@@ -32,6 +37,14 @@ public class FeeService {
 
     private final FeesConfig feesConfig;
     private final FeesRegisterApi feesRegisterApi;
+
+    public FeesData getFeesDataForOrders(Orders orders) throws FeignException {
+        return Optional.ofNullable(orders)
+            .map(Orders::getOrderType)
+            .map(orderTypeList -> getFees(fromOrderType(orderTypeList)))
+            .map(this::buildFeesDataFromFeeResponses)
+            .get();
+    }
 
     public BigDecimal getFeeAmountForOrders(Orders orders) throws FeignException {
         return Optional.ofNullable(orders)
@@ -58,8 +71,13 @@ public class FeeService {
             .collect(toImmutableList());
     }
 
-    public FeeResponse getC2Fee(C2ApplicationType c2ApplicationType) {
-        return makeRequest(FeeType.fromC2ApplicationType(c2ApplicationType));
+    public FeesData getFeesDataForC2(C2ApplicationType c2ApplicationType) {
+        FeeResponse feeResponse = makeRequest(FeeType.fromC2ApplicationType(c2ApplicationType));
+
+        return FeesData.builder()
+            .totalAmount(feeResponse.getAmount())
+            .fees(List.of(element(FeeDto.fromFeeResponse(feeResponse))))
+            .build();
     }
 
     private FeeResponse makeRequest(FeeType feeType) throws FeeRegisterException {
@@ -85,5 +103,12 @@ public class FeeService {
 
             throw new FeeRegisterException(ex.status(), ex.getMessage(), ex);
         }
+    }
+
+    private FeesData buildFeesDataFromFeeResponses(List<FeeResponse> feeResponses) {
+        return FeesData.builder()
+            .totalAmount(extractFeeToUse(feeResponses).map(FeeResponse::getAmount).get())
+            .fees(feeResponses.stream().map(FeeDto::fromFeeResponse).map(ElementUtils::element).collect(toList()))
+            .build();
     }
 }
