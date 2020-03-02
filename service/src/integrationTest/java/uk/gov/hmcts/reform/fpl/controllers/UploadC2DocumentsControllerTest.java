@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -132,24 +131,6 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void midEventShouldNotReturnAnErrorWhenDocumentIsUploaded() {
-        Map<String, Object> data = createTemporaryC2Document();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(createCase(data));
-
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
-    }
-
-    @Test
-    void midEventShouldReturnAnErrorWhenDocumentIsNotUploaded() {
-        Map<String, Object> data = Map.of("temporaryC2Document", emptyMap());
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(createCase(data));
-
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
-    }
-
-    @Test
     void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() throws Exception {
         given(idamApi.retrieveUserInfo(any())).willReturn(USER_INFO_CAFCASS);
 
@@ -201,6 +182,8 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
 
     private Map<String, Object> createTemporaryC2Document() {
         return Map.of(
+                "c2ApplicationType", Map.of(
+                    "type", "WITH_NOTICE"),
             "temporaryC2Document", Map.of(
                 "document", Map.of(
                     "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
