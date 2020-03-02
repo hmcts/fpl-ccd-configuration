@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.launchdarkly.client.LDClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -9,12 +10,22 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -24,12 +35,18 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     @MockBean
     private UserDetailsService userDetailsService;
 
+    @MockBean
+    private FeeService feeService;
+
+    @MockBean
+    private LDClient ldClient;
+
     CaseSubmissionControllerAboutToStartTest() {
         super("case-submission");
     }
 
     @BeforeEach
-    void mockUserNameRetrieval() {
+    void mocking() {
         given(userDetailsService.getUserName(userAuthToken)).willReturn("Emma Taylor");
     }
 
@@ -43,6 +60,36 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
             .containsEntry("caseName", "title")
             .containsEntry("submissionConsentLabel",
                 "I, Emma Taylor, believe that the facts stated in this application are true.");
+    }
+
+    @Test
+    void shouldAddAmountToPayFieldWhenFeatureToggleIsTrue() {
+        Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
+
+        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
+        given(feeService.getFeeAmountForOrders(eq(orders))).willReturn(BigDecimal.valueOf(123));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
+            .data(Map.of("orders", orders))
+            .build());
+
+        assertThat(response.getData()).containsEntry("amountToPay", "12300");
+    }
+
+    @Test
+    void shouldNotAddAmountToPayFieldWhenFeatureToggleIsFalse() {
+        Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
+
+        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(false);
+        given(feeService.getFeeAmountForOrders(eq(orders))).willReturn(BigDecimal.valueOf(123));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
+            .data(Map.of("orders", orders))
+            .build());
+
+        verify(feeService, never()).getFeeAmountForOrders(any());
+
+        assertThat(response.getData()).doesNotContainKey("amountToPay");
     }
 
     @Nested
