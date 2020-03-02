@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class ApplicantController {
 
         try {
             organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
-        } catch (Exception ex) {
+        } catch (FeignException.NotFound ex) {
             log.error("Could not find the associated organisation from reference data", ex);
         }
 
