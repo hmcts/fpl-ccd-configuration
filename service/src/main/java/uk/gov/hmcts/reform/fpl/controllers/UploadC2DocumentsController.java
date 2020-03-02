@@ -52,7 +52,7 @@ public class UploadC2DocumentsController {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType());
+        FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
         data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
         data.put("feesData", feesData);
         //removing to avoid bug on previous-continue
@@ -101,7 +101,7 @@ public class UploadC2DocumentsController {
                 .author(userDetailsService.getUserName(authorization))
                 .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                     .toLocalDateTime(), "h:mma, d MMMM yyyy"))
-                .type(caseData.getC2ApplicationType())
+                .type(caseData.getC2ApplicationType().get("type"))
                 .build())
             .build());
 

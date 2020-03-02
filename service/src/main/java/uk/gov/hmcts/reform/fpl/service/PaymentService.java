@@ -38,7 +38,8 @@ public class PaymentService {
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, CaseData caseData) {
         FeesData feesData = caseData.getFeesData();
-        String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
+        String localAuthorityName =
+            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
         C2DocumentBundle c2DocumentBundle = getLastC2DocumentBundle(caseData);
 
         return CreditAccountPaymentRequest.builder()

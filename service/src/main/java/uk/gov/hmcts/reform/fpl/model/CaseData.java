@@ -201,10 +201,6 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    public C2ApplicationType getC2ApplicationType() {
-        return c2ApplicationType.get("type");
-    }
-
     @JsonIgnore
     private CaseManagementOrder caseManagementOrder;
 
