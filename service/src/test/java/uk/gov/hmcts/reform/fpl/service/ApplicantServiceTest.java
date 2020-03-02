@@ -135,4 +135,24 @@ class ApplicantServiceTest {
 
         assertThat(applicant.getParty().partyId).isEqualTo(uuid);
     }
+
+    @Test
+    void shouldReturnApplicantCollectionWithOrganisationDetailsWhenOrganisationExists(){
+        CaseData caseData = CaseData.builder().build();
+
+        List<Element<Applicant>> applicants = service.expandApplicantCollection(caseData, buildOrganisation());
+        assertThat(applicants.get(0).getValue().getParty().getOrganisationName()).isEqualTo(buildOrganisation().getName());
+    }
+
+    @Test
+    void shouldReturnApplicantCollectionWithoutOrganisationDetailsWhenNoOrganisationExists(){
+        CaseData caseData = CaseData.builder().build();
+
+        List<Element<Applicant>> applicants = service.expandApplicantCollection(caseData, Organisation.builder().build());
+        assertThat(applicants.get(0).getValue().getParty().getOrganisationName()).isNull();
+    }
+
+    private Organisation buildOrganisation(){
+        return Organisation.builder().name("Organisation").build();
+    }
 }
