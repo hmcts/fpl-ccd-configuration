@@ -59,7 +59,6 @@ public class FeeService {
 
     private FeeResponse makeRequest(FeeType feeType) throws FeeRegisterException {
         FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
-        parameters = new FeeParameters(); // Just here for testing remove me later
         try {
             log.debug("Making request to Fee Register with parameters : {} ", parameters);
 

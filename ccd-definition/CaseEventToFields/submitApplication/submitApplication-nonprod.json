@@ -23,6 +23,6 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "displayAmountToPay=\"No\""
+    "FieldShowCondition": "displayAmountToPay=\"Yes\""
   }
 ]

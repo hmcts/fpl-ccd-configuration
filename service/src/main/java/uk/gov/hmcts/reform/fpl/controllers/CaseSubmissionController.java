@@ -74,16 +74,16 @@ public class CaseSubmissionController {
 
         if (errors.isEmpty()) {
             try {
-                String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
-
                 if (featureToggleService.isFeesAndPaymentsEnabled()) {
                     BigDecimal amount = feeService.getFeeAmountForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
+                    data.put("displayAmountToPay", YES.getValue());
                 }
-
-                data.put("submissionConsentLabel", label);
             } catch (FeeRegisterException ignore) {
                 data.put("displayAmountToPay", NO.getValue());
+            } finally {
+                String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
+                data.put("submissionConsentLabel", label);
             }
         }
 
