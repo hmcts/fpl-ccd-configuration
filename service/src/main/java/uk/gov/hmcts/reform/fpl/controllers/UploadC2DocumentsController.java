@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -25,11 +26,13 @@ import uk.gov.hmcts.reform.fpl.service.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
+import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -58,11 +61,13 @@ public class UploadC2DocumentsController {
             data.put("feesData", feesData);
         }
 
-        //removing to avoid bug on previous-continue
-        data.remove("temporaryC2Document");
+        if (isTemporaryDocumentUrlEmpty(caseData)) {
+            data.remove("temporaryC2Document");
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
+            .errors(validatePbaNumber(caseData))
             .build();
     }
 
@@ -91,6 +96,20 @@ public class UploadC2DocumentsController {
             paymentService.makePayment(caseDetails.getId(), caseData);
         }
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
+    }
+
+    private boolean isTemporaryDocumentUrlEmpty(CaseData caseData) {
+        return Optional.ofNullable(caseData.getTemporaryC2Document())
+            .map(C2DocumentBundle::getDocument)
+            .map(DocumentReference::getUrl)
+            .isEmpty();
+    }
+
+    private List<String> validatePbaNumber(CaseData caseData) {
+        return Optional.ofNullable(caseData.getTemporaryC2Document())
+            .map(C2DocumentBundle::getPbaNumber)
+            .map(PBANumberHelper::validatePBANumber)
+            .orElse(List.of());
     }
 
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData, String authorization) {

@@ -56,7 +56,6 @@ class UploadC2DocumentsControllerTest extends AbstractControllerTest {
     private static final Long CASE_ID = 12345L;
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String ERROR_MESSAGE = "You need to upload a file.";
     private static final UserInfo USER_INFO_CAFCASS = UserInfo.builder().roles(UserRole.CAFCASS.getRoles()).build();
 
     @MockBean
