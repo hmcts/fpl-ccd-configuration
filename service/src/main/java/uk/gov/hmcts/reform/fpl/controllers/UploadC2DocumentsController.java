@@ -52,9 +52,12 @@ public class UploadC2DocumentsController {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
-        data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-        data.put("feesData", feesData);
+        if (featureToggleService.isFeesAndPaymentsEnabled()) {
+            FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
+            data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+            data.put("feesData", feesData);
+        }
+
         //removing to avoid bug on previous-continue
         data.remove("temporaryC2Document");
 
@@ -95,14 +98,18 @@ public class UploadC2DocumentsController {
             Lists.newArrayList());
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
+        var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
+            .author(userDetailsService.getUserName(authorization))
+            .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
+                .toLocalDateTime(), "h:mma, d MMMM yyyy"));
+
+        if (featureToggleService.isFeesAndPaymentsEnabled()) {
+            c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
+        }
+
         c2DocumentBundle.add(Element.<C2DocumentBundle>builder()
             .id(UUID.randomUUID())
-            .value(caseData.getTemporaryC2Document().toBuilder()
-                .author(userDetailsService.getUserName(authorization))
-                .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
-                    .toLocalDateTime(), "h:mma, d MMMM yyyy"))
-                .type(caseData.getC2ApplicationType().get("type"))
-                .build())
+            .value(c2DocumentBundleBuilder.build())
             .build());
 
         return c2DocumentBundle;
