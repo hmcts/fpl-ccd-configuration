@@ -112,4 +112,10 @@ module.exports = {
     I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', order.judgeAndLegalAdvisor.judgeLastName);
     I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', order.judgeAndLegalAdvisor.legalAdvisorName);
   },
+
+  async assertOrderSentToParty(I, caseViewPage, partyName, order, orderNum) {
+    caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
+    I.seeAnswerInTab(1, 'Party 1', 'Representative name', partyName);
+    I.seeNestedAnswerInTab(2, 'Party 1', `Document ${orderNum}`, 'File', order.document);
+  },
 };

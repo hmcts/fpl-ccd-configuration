@@ -189,7 +189,7 @@ module "case-service" {
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED                 = "${var.feature_toggle_robotics_support_api_enabled}"
     AUTH_IDAM_CLIENT_BASEURL                                    = "${var.idam_api_url}"
     AUTH_PROVIDER_SERVICE_CLIENT_BASEURL                        = "${local.IDAM_S2S_AUTH_URL}"
-    CTSC_INBOX                                                  = "${data.azurerm_key_vault_secret.ctsc-inbox.value}"
+    FPL_CTSC_INBOX                                              = "${data.azurerm_key_vault_secret.ctsc-inbox.value}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false

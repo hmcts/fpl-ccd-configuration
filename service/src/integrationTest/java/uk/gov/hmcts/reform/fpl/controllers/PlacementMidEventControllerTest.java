@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 
 @ActiveProfiles("integration-test")
@@ -59,7 +59,7 @@ class PlacementMidEventControllerTest extends AbstractControllerTest {
         Element<Child> child2 = testChild();
 
         List<Element<Child>> children = List.of(child1, child2);
-        DocumentReference application = testDocument();
+        DocumentReference application = testDocumentReference();
 
         Element<Placement> child1Placement = element(testPlacement(child1, application));
         Element<Placement> child2Placement = element(testPlacement(child2, application));

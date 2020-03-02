@@ -1,0 +1,30 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/fees-register/fees/lookup",
+    "queryParameters": {
+      "channel": {
+        "equalTo": "default"
+      },
+      "event": {
+        "equalTo": "issue"
+      },
+      "jurisdiction1": {
+        "equalTo": "family"
+      },
+      "jurisdiction2": {
+        "equalTo": "family court"
+      },
+      "service": {
+        "equalTo": "public law"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"code\": \"FEE0314\", \"description\": \"Application for proceedings under Section 31 of Act\", \"version\": 1, \"fee_amount\": 2055}"
+  }
+}
