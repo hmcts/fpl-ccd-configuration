@@ -43,10 +43,9 @@ public class ApplicantService {
     }
 
     private List<Element<Applicant>> buildApplicantWithOrganisationDetails(Organisation organisation) {
-        ContactInformation contactInformation;
-        if (isNull(organisation.getContactInformation())) {
-            contactInformation = ContactInformation.builder().build();
-        } else {
+        ContactInformation contactInformation = ContactInformation.builder().build();
+
+        if (!isNull(organisation.getContactInformation())) {
             contactInformation = organisation.getContactInformation().get(0);
         }
 
@@ -55,7 +54,7 @@ public class ApplicantService {
                 .party(ApplicantParty.builder()
                     // A value within applicant party needs to be set in order to expand UI view.
                     .partyId(UUID.randomUUID().toString())
-                    .organisationName(defaultIfNull(organisation.getName(), ""))
+                    .organisationName(organisation.getName())
                     .address(buildApplicantAddressWithOrganisationDetails(contactInformation))
                     .build())
                 .build())
@@ -66,6 +65,7 @@ public class ApplicantService {
         return Address.builder()
             .addressLine1(contactInformation.getAddressLine1())
             .addressLine2(contactInformation.getAddressLine2())
+            .addressLine3(contactInformation.getAddressLine3())
             .postTown(contactInformation.getPostCode())
             .country(contactInformation.getCounty())
             .build();
