@@ -999,6 +999,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsSentToParties",
+    "Label": "Party",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsSentToParty",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "confidentialOthers",
     "Label": "Others",
     "FieldType": "Collection",
@@ -1213,5 +1222,14 @@
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Comment": "Used to hide the amountToPay field, mainly in the event of an error with the Fee Register"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "scannedDocuments",
+    "Label": "Scanned Documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ScannedDocument",
+    "SecurityClassification": "Public"
   }
 ]

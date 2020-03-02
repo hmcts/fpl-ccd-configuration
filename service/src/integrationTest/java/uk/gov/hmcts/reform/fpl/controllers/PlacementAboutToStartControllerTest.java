@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 
 @ActiveProfiles("integration-test")
@@ -56,7 +56,7 @@ class PlacementAboutToStartControllerTest extends AbstractControllerTest {
     @Test
     void shouldProvideExistingPlacementForSingleChild() {
         Element<Child> child = testChild();
-        DocumentReference application = testDocument();
+        DocumentReference application = testDocumentReference();
         Element<Placement> placement = element(testPlacement(child, application));
 
         CaseDetails caseDetails = CaseDetails.builder()
