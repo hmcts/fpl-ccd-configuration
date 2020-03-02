@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.PaymentService;
@@ -31,7 +32,6 @@ import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
-import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -79,10 +79,9 @@ public class CaseSubmissionController {
                 String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
                 if (featureToggleService.isFeesAndPaymentsEnabled()) {
-                    BigDecimal amount = feeService.getFeeAmountForOrders(caseData.getOrders());
-                    data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
-                    //TODO: check if total amount always equals to amountToPay displayed
-                    //TODO: store feesData in caseData
+                    FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
+                    data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+                    data.put("feesData", feesData);
                 }
 
                 data.put("submissionConsentLabel", label);
@@ -168,8 +167,9 @@ public class CaseSubmissionController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        paymentService.makePayment(caseDetails.getId(), caseData);
+        if (featureToggleService.isFeesAndPaymentsEnabled()) {
+            paymentService.makePayment(caseDetails.getId(), caseData);
+        }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
     }
 
