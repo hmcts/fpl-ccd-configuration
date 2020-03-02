@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadC2Gatekeeping",
+    "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "c2ApplicationType",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
@@ -14,18 +14,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadC2Gatekeeping",
-    "CaseFieldID": "temporaryC2Document",
-    "PageFieldDisplayOrder": 1,
-    "DisplayContext": "COMPLEX",
-    "PageID": 2,
-    "PageDisplayOrder": 2,
-    "PageColumnNumber": 1
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadC2Gatekeeping",
+    "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "amountToPay",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
