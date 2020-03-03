@@ -11,7 +11,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 public class SentDocumentHistoryServiceTest {
 
@@ -87,7 +87,7 @@ public class SentDocumentHistoryServiceTest {
     private static SentDocument sentDocument(String partyName) {
         return SentDocument.builder()
             .partyName(partyName)
-            .document(testDocument())
+            .document(testDocumentReference())
             .build();
     }
 

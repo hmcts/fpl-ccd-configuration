@@ -1,7 +1,7 @@
 module.exports = [
   {
     caseManagement: 'Case management',
-    venue: 'Cardiff, Aberdare Hearing Centre',
+    venue: 'Aberdeen Tribunal Hearing Centre',
     startDate: {
       second: '00',
       minute: '15',
@@ -32,7 +32,7 @@ module.exports = [
   },
   {
     caseManagement: 'Case management',
-    venue: 'Cardiff, Blackwood Hearing Centre, NP2 2XB',
+    venue: 'Aberystwyth Justice Centre',
     startDate: {
       second: '00',
       minute: '00',

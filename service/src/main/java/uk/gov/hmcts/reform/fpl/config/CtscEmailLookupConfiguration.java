@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class CtscEmailLookupConfiguration {
     private final String email;
 
-    public CtscEmailLookupConfiguration(@Value("${fpl.ctsc-inbox}") String email) {
+    public CtscEmailLookupConfiguration(@Value("${fpl.ctsc_inbox}") String email) {
         this.email = email;
     }
 }

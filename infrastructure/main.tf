@@ -18,6 +18,7 @@ locals {
   RD_PROFESSIONAL_API_URL = "http://rd-professional-api-${local.local_env}.service.${local.local_ase}.internal"
   SEND_LETTER_URL         = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
   DOCMOSIS_API_URL        = "https://docmosis-development.platform.hmcts.net"
+  FEES_REGISTER_API_URL   = "http://fees-register-api-${local.local_env}.service.${local.local_ase}.internal"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -189,8 +190,8 @@ module "case-service" {
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED                 = "${var.feature_toggle_robotics_support_api_enabled}"
     AUTH_IDAM_CLIENT_BASEURL                                    = "${var.idam_api_url}"
     AUTH_PROVIDER_SERVICE_CLIENT_BASEURL                        = "${local.IDAM_S2S_AUTH_URL}"
-    CTSC_INBOX                                                  = "${data.azurerm_key_vault_secret.ctsc-inbox.value}"
-
+    FPL_CTSC_INBOX                                              = "${data.azurerm_key_vault_secret.ctsc-inbox.value}"
+    FEES_REGISTER_API_URL                                       = "${local.FEES_REGISTER_API_URL}"
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false
   }
