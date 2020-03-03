@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
+import java.math.BigDecimal;
+
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -39,11 +41,13 @@ public class PaymentService {
     }
 
     public void makePayment(Long caseId, CaseData caseData) {
-        CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId, caseData);
+        if (shouldMakePayment(caseData)) {
+            CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId, caseData);
 
-        paymentApi.createCreditAccountPayment(requestData.authorisation(),
-            authTokenGenerator.generate(),
-            paymentRequest);
+            paymentApi.createCreditAccountPayment(requestData.authorisation(),
+                authTokenGenerator.generate(),
+                paymentRequest);
+        }
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, CaseData caseData) {
@@ -71,5 +75,9 @@ public class PaymentService {
         var c2DocumentBundle = unwrapElements(caseData.getC2DocumentBundle());
 
         return c2DocumentBundle.get(c2DocumentBundle.size() - 1);
+    }
+
+    private boolean shouldMakePayment(CaseData caseData) {
+        return !caseData.getFeesData().getTotalAmount().equals(BigDecimal.ZERO);
     }
 }

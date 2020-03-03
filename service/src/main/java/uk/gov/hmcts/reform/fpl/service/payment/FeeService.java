@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -42,7 +43,7 @@ public class FeeService {
             .map(Orders::getOrderType)
             .map(orderTypeList -> getFees(fromOrderType(orderTypeList)))
             .map(this::buildFeesDataFromFeeResponses)
-            .get();
+            .orElse(FeesData.builder().totalAmount(BigDecimal.ZERO).build());
     }
 
     public Optional<FeeResponse> extractFeeToUse(List<FeeResponse> feeResponses) {
