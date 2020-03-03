@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
+import feign.FeignException.NotFound;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -31,31 +31,34 @@ public class ApplicantController {
     private final ObjectMapper mapper;
     private final AuthTokenGenerator authTokenGenerator;
     private final OrganisationApi organisationApi;
+    private final RequestData requestData;
 
     @Autowired
     public ApplicantController(ApplicantService applicantService,
                                UpdateAndValidatePbaService updateAndValidatePbaService,
                                ObjectMapper mapper,
                                OrganisationApi organisationApi,
-                               AuthTokenGenerator authTokenGenerator) {
+                               AuthTokenGenerator authTokenGenerator,
+                               RequestData requestData) {
         this.applicantService = applicantService;
         this.updateAndValidatePbaService = updateAndValidatePbaService;
         this.mapper = mapper;
         this.organisationApi = organisationApi;
         this.authTokenGenerator = authTokenGenerator;
+        this.requestData = requestData;
     }
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest,
-        @RequestHeader(value = "authorization") String authorisation) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         Organisation organisation = Organisation.builder().build();
 
         try {
-            organisation = organisationApi.findOrganisationById(authorisation, authTokenGenerator.generate());
-        } catch (FeignException.NotFound ex) {
+            organisation = organisationApi.findOrganisationById(requestData.authorisation(),
+                authTokenGenerator.generate());
+        } catch (NotFound ex) {
             log.error("Could not find the associated organisation from reference data", ex);
         }
 

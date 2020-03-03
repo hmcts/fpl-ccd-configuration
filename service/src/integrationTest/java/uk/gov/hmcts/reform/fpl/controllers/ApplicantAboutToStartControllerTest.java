@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import feign.FeignException;
+import feign.Request;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,11 +19,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.User;
 
 import java.util.Map;
+import java.util.Optional;
 
+import static feign.Request.HttpMethod.GET;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
@@ -30,6 +37,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     private final String serviceAuthToken = RandomStringUtils.randomAlphanumeric(10);
     final String userAuthToken = "Bearer token";
+    private static final Request REQUEST = Request.create(GET, "", Map.of(), new byte[]{}, UTF_8);
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -74,6 +82,30 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         CaseData data = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(data.getAllApplicants()).contains(buildApplicant());
+    }
+
+    @Test
+    void shouldFindOrganisation() {
+        Organisation organisation = buildOrganisation();
+        given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
+        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(organisation);
+
+        Organisation actualOrganisation = organisationApi.findOrganisationById(userAuthToken, serviceAuthToken);
+
+        assertThat(actualOrganisation).isEqualTo(organisation);
+    }
+
+    @Test
+    public void shouldCatchExceptionWhenOrganisationNotFound() {
+        Exception exception = new FeignException.NotFound("", REQUEST, new byte[]{});
+        when(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).thenThrow(exception);
+
+        try {
+            organisationApi.findOrganisationById(userAuthToken, serviceAuthToken);
+        } catch (FeignException notFound) {
+            assertThat(notFound)
+                .isInstanceOf(FeignException.class);
+        }
     }
 
     private Organisation buildOrganisation() {
