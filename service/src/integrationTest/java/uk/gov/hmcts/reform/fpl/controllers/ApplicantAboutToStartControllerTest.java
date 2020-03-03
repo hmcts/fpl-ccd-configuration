@@ -1,13 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
-import feign.FeignException;
-import feign.Request;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,21 +15,13 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
-import java.util.List;
 import java.util.Map;
 
-import static feign.Request.HttpMethod.GET;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
@@ -70,7 +57,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     }
 
     @BeforeEach
-    void setup(){
+    void setup() {
         Organisation organisation = buildOrganisation();
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
         given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(organisation);
@@ -89,11 +76,11 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         assertThat(data.getAllApplicants()).contains(buildApplicant());
     }
 
-    private Organisation buildOrganisation(){
+    private Organisation buildOrganisation() {
         return Organisation.builder().name("Organisation").build();
     }
 
-    private Element<Applicant> buildApplicant(){
+    private Element<Applicant> buildApplicant() {
         return Element.<Applicant>builder()
             .value(Applicant.builder()
                 .party(ApplicantParty.builder()
