@@ -18,15 +18,16 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
-import uk.gov.hmcts.reform.rd.model.User;
 
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Optional;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
@@ -96,20 +97,32 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void shouldCatchExceptionWhenOrganisationNotFound() {
+    public void shouldThrowExceptionWhenOrganisationNotFound() {
         Exception exception = new FeignException.NotFound("", REQUEST, new byte[]{});
         when(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).thenThrow(exception);
 
-        try {
-            organisationApi.findOrganisationById(userAuthToken, serviceAuthToken);
-        } catch (FeignException notFound) {
-            assertThat(notFound)
-                .isInstanceOf(FeignException.class);
-        }
+        assertThatThrownBy(() -> organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
+            .isInstanceOf(FeignException.class);
+
     }
 
     private Organisation buildOrganisation() {
-        return Organisation.builder().name("Organisation").build();
+        return Organisation.builder().name("Organisation")
+        .contactInformation(buildOrganisationContactInformation())
+            .build();
+    }
+
+    private ArrayList<ContactInformation> buildOrganisationContactInformation() {
+        ArrayList<ContactInformation> contactInformation = new ArrayList<>();
+        contactInformation.add(ContactInformation.builder()
+            .addressLine1("Flat 12, Pinnacle Apartments")
+            .addressLine1("Saffron Central")
+            .county("London")
+            .country("United Kingdom")
+            .postCode("CR0 2GE")
+            .build());
+
+        return  contactInformation;
     }
 
     private Element<Applicant> buildApplicant() {
@@ -117,10 +130,20 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
             .value(Applicant.builder()
                 .party(ApplicantParty.builder()
             .organisationName("Organisation")
-                    .address(Address.builder()
-                        .build())
+                    .address(buildApplicantContactInformation())
                     .build())
                 .build())
             .build();
     }
+
+    private Address buildApplicantContactInformation() {
+        return Address.builder()
+            .addressLine1("Flat 12, Pinnacle Apartments")
+            .addressLine1("Saffron Central")
+            .county("London")
+            .country("United Kingdom")
+            .postcode("CR0 2GE")
+            .build();
+    }
+
 }
