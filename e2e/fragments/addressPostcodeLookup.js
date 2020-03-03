@@ -33,7 +33,7 @@ module.exports = {
   },
 
   enterAddressManually(address) {
-    I.click(this.cantEnterPostcodeLink);
+    //I.click(this.cantEnterPostcodeLink);
     I.fillField(this.fields.buildingAndStreet.lineOne, address.buildingAndStreet.lineOne);
     I.fillField(this.fields.buildingAndStreet.lineTwo, address.buildingAndStreet.lineTwo);
     I.fillField(this.fields.buildingAndStreet.lineThree, address.buildingAndStreet.lineThree);
