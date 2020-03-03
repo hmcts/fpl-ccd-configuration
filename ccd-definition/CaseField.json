@@ -999,6 +999,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsSentToParties",
+    "Label": "Party",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsSentToParty",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "confidentialOthers",
     "Label": "Others",
     "FieldType": "Collection",
@@ -1196,5 +1205,22 @@
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Comment": "Used to record wether a case has been sent to CTSC. Move to CTSC set for 30th March 2020."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "amountToPay",
+    "Label": "Application fee to pay",
+    "FieldType": "MoneyGBP",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "scannedDocuments",
+    "Label": "Scanned Documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ScannedDocument",
+    "SecurityClassification": "Public"
   }
 ]

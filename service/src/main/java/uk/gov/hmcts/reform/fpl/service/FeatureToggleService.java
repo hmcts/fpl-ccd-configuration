@@ -27,4 +27,8 @@ public class FeatureToggleService {
     public boolean isCtscEnabled() {
         return ldClient.boolVariation("CTSC", ldUser, false);
     }
+
+    public boolean isFeesAndPaymentsEnabled() {
+        return ldClient.boolVariation("FNP", ldUser, false);
+    }
 }
