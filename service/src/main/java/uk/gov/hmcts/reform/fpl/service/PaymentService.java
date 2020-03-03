@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
@@ -24,6 +24,7 @@ public class PaymentService {
 
     private static final String DESCRIPTION_TEMPLATE = "Payment for case: %s";
 
+    private final FeeService feeService;
     private final PaymentApi paymentApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final RequestData requestData;
@@ -31,9 +32,11 @@ public class PaymentService {
     private final String siteId;
 
     @Autowired
-    public PaymentService(PaymentApi paymentApi, AuthTokenGenerator authTokenGenerator, RequestData requestData,
+    public PaymentService(FeeService feeService, PaymentApi paymentApi, AuthTokenGenerator authTokenGenerator,
+                          RequestData requestData,
                           LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                           @Value("${payment.site_id}") String siteId) {
+        this.feeService = feeService;
         this.paymentApi = paymentApi;
         this.authTokenGenerator = authTokenGenerator;
         this.requestData = requestData;
@@ -41,9 +44,20 @@ public class PaymentService {
         this.siteId = siteId;
     }
 
-    public void makePayment(Long caseId, CaseData caseData) {
-        if (shouldMakePayment(caseData)) {
-            CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId, caseData);
+    public void makePaymentForCase(Long caseId, CaseData caseData) {
+        FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
+        String localAuthorityName =
+            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
+        String pbaNumber = "?"; //TODO:
+        String clientCode = "?"; //TODO:
+
+        if (!feesData.getTotalAmount().equals(BigDecimal.ZERO)) {
+            CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
+                pbaNumber,
+                clientCode,
+                localAuthorityName,
+                feesData);
+
 
             paymentApi.createCreditAccountPayment(requestData.authorisation(),
                 authTokenGenerator.generate(),
@@ -51,19 +65,34 @@ public class PaymentService {
         }
     }
 
-    private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, CaseData caseData) {
-        FeesData feesData = caseData.getFeesData();
+    public void makePaymentForC2(Long caseId, CaseData caseData) {
+        C2DocumentBundle c2DocumentBundle = getLastC2DocumentBundle(caseData);
         String localAuthorityName =
             localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
-        C2DocumentBundle c2DocumentBundle = getLastC2DocumentBundle(caseData);
+        FeesData feesData = feeService.getFeesDataForC2(c2DocumentBundle.getType());
 
+        CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
+            c2DocumentBundle.getPbaNumber(),
+            c2DocumentBundle.getClientCode(),
+            localAuthorityName,
+            feesData);
+
+        paymentApi.createCreditAccountPayment(requestData.authorisation(),
+            authTokenGenerator.generate(),
+            paymentRequest);
+    }
+
+    private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
+                                                                       String customerReference,
+                                                                       String localAuthorityName,
+                                                                       FeesData feesData) {
         return CreditAccountPaymentRequest.builder()
-            .accountNumber(c2DocumentBundle.getPbaNumber())
+            .accountNumber(pbaNumber)
             .amount(feesData.getTotalAmount().doubleValue())
             .caseReference(String.valueOf(caseId))
             .ccdCaseNumber(String.valueOf(caseId))
             .currency(GBP)
-            .customerReference(c2DocumentBundle.getClientCode())
+            .customerReference(customerReference)
             .description(String.format(DESCRIPTION_TEMPLATE, caseId))
             .organisationName(localAuthorityName)
             .service(FPL)
@@ -76,12 +105,5 @@ public class PaymentService {
         var c2DocumentBundle = unwrapElements(caseData.getC2DocumentBundle());
 
         return c2DocumentBundle.get(c2DocumentBundle.size() - 1);
-    }
-
-    private boolean shouldMakePayment(CaseData caseData) {
-        return Optional.ofNullable(caseData.getFeesData())
-            .map(FeesData::getTotalAmount)
-            .map(totalAmount -> !totalAmount.equals(BigDecimal.ZERO))
-            .orElse(false);
     }
 }

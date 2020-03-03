@@ -187,7 +187,6 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final Map<String, C2ApplicationType> c2ApplicationType;
-    private final FeesData feesData;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;

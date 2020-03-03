@@ -58,7 +58,6 @@ public class UploadC2DocumentsController {
         if (featureToggleService.isFeesAndPaymentsEnabled()) {
             FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
             data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-            data.put("feesData", feesData);
         }
 
         if (isTemporaryDocumentUrlEmpty(caseData)) {
@@ -93,7 +92,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (featureToggleService.isFeesAndPaymentsEnabled()) {
-            paymentService.makePayment(caseDetails.getId(), caseData);
+            paymentService.makePaymentForC2(caseDetails.getId(), caseData);
         }
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
