@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
@@ -78,6 +79,9 @@ public class PaymentService {
     }
 
     private boolean shouldMakePayment(CaseData caseData) {
-        return !caseData.getFeesData().getTotalAmount().equals(BigDecimal.ZERO);
+        return Optional.ofNullable(caseData.getFeesData())
+            .map(FeesData::getTotalAmount)
+            .map(totalAmount -> !totalAmount.equals(BigDecimal.ZERO))
+            .orElse(false);
     }
 }
