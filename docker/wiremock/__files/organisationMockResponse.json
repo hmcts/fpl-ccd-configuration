@@ -8,17 +8,5 @@
     "lastName": "Powroznik",
     "email": "fpla.team3.aat@mailinator.com"
   },
-  "paymentAccount": [],
-  "contactInformation": [
-    {
-      "addressLine1": "Flat 12, Pinnacle Apartments",
-      "addressLine2": "Saffron Central",
-      "addressLine3": "Square 11",
-      "townCity": "London",
-      "county": "County",
-      "country": "United Kingdom",
-      "postCode": "CR0 2GE",
-      "dxAddress": []
-    }
-  ]
+  "paymentAccount": []
 }

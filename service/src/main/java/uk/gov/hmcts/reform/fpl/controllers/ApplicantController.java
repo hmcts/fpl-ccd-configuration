@@ -1,10 +1,14 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
+import java.util.Optional;
 import feign.FeignException;
-import feign.FeignException.NotFound;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
+import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 @Api
@@ -54,20 +59,27 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Organisation organisation = Organisation.builder().build();
-
-        try {
-            organisation = organisationApi.findOrganisationById(requestData.authorisation(),
-                authTokenGenerator.generate());
-        } catch (FeignException ex) {
-            log.error("Could not find the associated organisation from reference data", ex);
-        }
-
-        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData, organisation));
+        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData, findOrganisation()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    public Organisation findOrganisation() {
+        try {
+            return organisationApi.findOrganisationById(requestData.authorisation(),
+                authTokenGenerator.generate());
+
+        } catch (FeignException ex) {
+            log.error("Could not find the associated organisation from reference data", ex);
+
+            return Organisation.builder()
+                .contactInformation(Lists
+                    .newArrayList(ContactInformation.builder()
+                    .build()))
+                .build();
+        }
     }
 
     @PostMapping("/mid-event")
