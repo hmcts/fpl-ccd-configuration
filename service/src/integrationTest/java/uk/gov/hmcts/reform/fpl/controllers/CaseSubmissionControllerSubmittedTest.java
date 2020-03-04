@@ -158,7 +158,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         @Test
         void shouldMakePaymentWhenFeatureToggleIsTrue() {
-            given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
+            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
             CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
 
             postSubmittedEvent(caseDetails);
@@ -169,7 +169,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         @Test
         void shouldNotMakePaymentWhenFeatureToggleIsFalse() {
-            given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(false);
+            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
 
             postSubmittedEvent(enableSendToCtscOnCaseDetails(YES));
 

@@ -79,7 +79,7 @@ public class CaseSubmissionController {
                 String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
                 data.put("submissionConsentLabel", label);
 
-                if (featureToggleService.isFeesAndPaymentsEnabled()) {
+                if (featureToggleService.isFeesEnabled()) {
                     FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
                 }
@@ -166,7 +166,7 @@ public class CaseSubmissionController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        if (featureToggleService.isFeesAndPaymentsEnabled()) {
+        if (featureToggleService.isPaymentsEnabled()) {
             paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
         }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));

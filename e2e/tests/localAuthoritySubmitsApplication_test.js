@@ -475,8 +475,7 @@ Scenario('local authority tries to submit without giving consent', async (I, cas
 
 Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  // TODO: enable once F&P deploy to AAT
-  // I.see('£2,055.00');
+  I.see('£2,055.00');
   submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);

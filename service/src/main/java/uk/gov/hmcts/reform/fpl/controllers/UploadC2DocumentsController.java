@@ -55,7 +55,7 @@ public class UploadC2DocumentsController {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        if (featureToggleService.isFeesAndPaymentsEnabled()) {
+        if (featureToggleService.isFeesEnabled()) {
             FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
             data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
         }
@@ -91,7 +91,7 @@ public class UploadC2DocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (featureToggleService.isFeesAndPaymentsEnabled()) {
+        if (featureToggleService.isPaymentsEnabled()) {
             paymentService.makePaymentForC2(caseDetails.getId(), caseData);
         }
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
@@ -121,7 +121,7 @@ public class UploadC2DocumentsController {
             .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                 .toLocalDateTime(), "h:mma, d MMMM yyyy"));
 
-        if (featureToggleService.isFeesAndPaymentsEnabled()) {
+        if (featureToggleService.isFeesEnabled()) {
             c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
         }
 
