@@ -32,7 +32,7 @@ public class ApplicantService {
                             // A value within applicant party needs to be set in order to expand UI view.
                             .partyId(UUID.randomUUID().toString())
                             .organisationName(organisation.getName())
-                            .address(buildApplicantAddressWithOrganisationDetails(organisation))
+                            .address(getOrganisationContactDetails(organisation))
                         .build())
                     .build()).build());
         } else {
@@ -40,21 +40,13 @@ public class ApplicantService {
         }
     }
 
-    private Address buildApplicantAddressWithOrganisationDetails(Organisation organisation) {
+    private Address getOrganisationContactDetails(Organisation organisation) {
         ContactInformation contactInformation = ContactInformation.builder().build();
 
         if (!isNull(organisation.getContactInformation())) {
             contactInformation = organisation.getContactInformation().get(0);
         }
-        return Address.builder()
-            .addressLine1(contactInformation.getAddressLine1())
-            .addressLine2(contactInformation.getAddressLine2())
-            .addressLine3(contactInformation.getAddressLine3())
-            .county(contactInformation.getCounty())
-            .country(contactInformation.getCountry())
-            .postcode(contactInformation.getPostCode())
-            .postTown(contactInformation.getTownCity())
-            .build();
+        return contactInformation.getContactInformationAsAddress();
     }
 
     public List<Element<Applicant>> addHiddenValues(CaseData caseData) {
