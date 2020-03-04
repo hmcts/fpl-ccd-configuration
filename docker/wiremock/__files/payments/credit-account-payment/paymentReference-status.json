@@ -1,0 +1,30 @@
+{
+  "amount": 2055,
+  "description": "Payment for case: 1566910397443346",
+  "reference": "RC-1583-3266-6491-6683",
+  "date_created": "2020-03-04T12:57:44.973+0000",
+  "currency": "GBP",
+  "ccd_case_number": "1566910397443346",
+  "channel": "online",
+  "method": "payment by account",
+  "status": "Success",
+  "site_id": "ABA3",
+  "service_name": "Family Public Law",
+  "customer_reference": "12345678",
+  "account_number": "PBA0082848",
+  "organisation_name": "Swansea City Council",
+  "fees": [
+    {
+      "code": "FEE0314",
+      "version": "1",
+      "volume": 1,
+      "calculated_amount": 2055
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "http://some.payment.api/credit-account-payments/RC-1583-3266-6491-6683",
+      "method": "GET"
+    }
+  }
+}
