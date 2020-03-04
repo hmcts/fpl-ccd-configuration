@@ -12,12 +12,14 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ApplicantService.class, ObjectMapper.class})
@@ -140,21 +142,40 @@ class ApplicantServiceTest {
     void shouldReturnApplicantCollectionWithOrganisationDetailsWhenOrganisationExists() {
         CaseData caseData = CaseData.builder().build();
 
-        List<Element<Applicant>> applicants = service.expandApplicantCollection(caseData, buildOrganisation());
-        assertThat(applicants.get(0).getValue().getParty().getOrganisationName())
+        List<Applicant> applicants = unwrapElements(service.expandApplicantCollection(
+            caseData, buildOrganisation()));
+
+        assertThat(applicants.get(0).getParty().getOrganisationName())
             .isEqualTo(buildOrganisation().getName());
+        assertThat(applicants.get(0).getParty().getAddress()).isEqualTo(buildOrganisation()
+            .getContactInformation().get(0).toAddress());
     }
 
     @Test
     void shouldReturnApplicantCollectionWithoutOrganisationDetailsWhenNoOrganisationExists() {
         CaseData caseData = CaseData.builder().build();
 
-        List<Element<Applicant>> applicants = service.expandApplicantCollection(caseData,
-            Organisation.builder().build());
-        assertThat(applicants.get(0).getValue().getParty().getOrganisationName()).isNull();
+        List<Applicant> applicants = unwrapElements(service.expandApplicantCollection(
+            caseData, Organisation.builder().build()));
+        assertThat(applicants.get(0).getParty().getOrganisationName()).isNull();
     }
 
     private Organisation buildOrganisation() {
-        return Organisation.builder().name("Organisation").build();
+        return Organisation.builder()
+            .name("Organisation")
+            .contactInformation(buildOrganisationAddress())
+            .build();
+    }
+
+    private List<ContactInformation> buildOrganisationAddress(){
+        return List.of(ContactInformation.builder()
+            .addressLine1("Flat 12, Pinnacle Apartments")
+            .addressLine2("Saffron Central")
+            .addressLine3("Square 11")
+            .townCity("London")
+            .county("County")
+            .country("United Kingdom")
+            .postCode("CR0 2GE")
+            .build());
     }
 }

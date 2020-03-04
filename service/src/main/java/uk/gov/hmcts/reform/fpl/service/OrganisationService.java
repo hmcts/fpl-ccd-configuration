@@ -79,7 +79,6 @@ public class OrganisationService {
 
         } catch (FeignException ex) {
             log.error("Could not find the associated organisation from reference data", ex);
-
             return Organisation.builder().build();
         }
     }

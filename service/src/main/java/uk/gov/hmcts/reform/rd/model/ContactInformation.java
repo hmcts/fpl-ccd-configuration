@@ -1,18 +1,13 @@
 package uk.gov.hmcts.reform.rd.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.Address;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import java.util.List;
 
 @Data
 @Builder
@@ -24,12 +19,12 @@ public class ContactInformation {
     private String addressLine3;
     private String country;
     private String county;
-    private ArrayList<DxAddress> dxAddress;
+    private List<DxAddress> dxAddress;
     private String postCode;
     private String townCity;
 
     @JsonIgnore
-    public Address getContactInformationAsAddress() {
+    public Address toAddress() {
         return Address.builder()
             .addressLine1(getAddressLine1())
             .addressLine2(getAddressLine2())

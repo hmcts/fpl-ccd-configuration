@@ -2,58 +2,33 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import feign.FeignException;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
-import uk.gov.hmcts.reform.rd.client.OrganisationApi;
-import uk.gov.hmcts.reform.rd.model.ContactInformation;
-import uk.gov.hmcts.reform.rd.model.Organisation;
 
 @Api
 @Slf4j
 @RestController
 @RequestMapping("/callback/enter-applicant")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicantController {
 
     private final ApplicantService applicantService;
     private final UpdateAndValidatePbaService updateAndValidatePbaService;
     private final ObjectMapper mapper;
-    private final AuthTokenGenerator authTokenGenerator;
     private final OrganisationService organisationService;
-    private final RequestData requestData;
-
-    @Autowired
-    public ApplicantController(ApplicantService applicantService,
-                               UpdateAndValidatePbaService updateAndValidatePbaService,
-                               ObjectMapper mapper,
-                               OrganisationService organisationService,
-                               AuthTokenGenerator authTokenGenerator,
-                               RequestData requestData) {
-        this.applicantService = applicantService;
-        this.updateAndValidatePbaService = updateAndValidatePbaService;
-        this.mapper = mapper;
-        this.organisationService = organisationService;
-        this.authTokenGenerator = authTokenGenerator;
-        this.requestData = requestData;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {

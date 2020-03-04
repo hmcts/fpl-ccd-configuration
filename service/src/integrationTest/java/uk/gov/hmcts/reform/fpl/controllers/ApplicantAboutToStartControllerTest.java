@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import feign.FeignException;
 import feign.Request;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -13,16 +12,13 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static feign.Request.HttpMethod.GET;
@@ -37,9 +33,9 @@ import static org.mockito.Mockito.when;
 @OverrideAutoConfiguration(enabled = true)
 class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
-    private final String serviceAuthToken = RandomStringUtils.randomAlphanumeric(10);
-    final String userAuthToken = "Bearer token";
-    private static final Request REQUEST = Request.create(GET, "", Map.of(), new byte[]{}, UTF_8);
+    private String serviceAuthToken = "Bearer service token";
+    private final String userAuthToken = "Bearer token";
+    private final Request request = Request.create(GET, "", Map.of(), new byte[]{}, UTF_8);
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -96,52 +92,35 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     @Test
     void shouldFindOrganisation() {
         Organisation organisation = buildOrganisation();
-        given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(organisation);
-
         Organisation actualOrganisation = organisationApi.findOrganisationById(userAuthToken, serviceAuthToken);
 
         assertThat(actualOrganisation).isEqualTo(organisation);
     }
 
     @Test
-    public void shouldThrowExceptionWhenOrganisationNotFound() {
-        Exception exception = new FeignException.NotFound("", REQUEST, new byte[]{});
-        when(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).thenThrow(exception);
+    void shouldThrowExceptionWhenOrganisationNotFound() {
+        when(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
+            .thenThrow(new FeignException.NotFound("Organisation not found", request, new byte[]{}));
 
         assertThatThrownBy(() -> organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
-            .isInstanceOf(FeignException.class);
-
+            .isInstanceOf(FeignException.NotFound.class);
     }
 
     private Organisation buildOrganisation() {
-        return Organisation.builder().name("Organisation")
-        .contactInformation(buildOrganisationContactInformation())
+        return Organisation.builder()
+            .name("Organisation")
+            .contactInformation(buildOrganisationContactInformation())
             .build();
     }
 
-    private ArrayList<ContactInformation> buildOrganisationContactInformation() {
-        ArrayList<ContactInformation> contactInformation = new ArrayList<>();
-        contactInformation.add(ContactInformation.builder()
+    private List<ContactInformation> buildOrganisationContactInformation() {
+        return List.of(ContactInformation.builder()
             .addressLine1("Flat 12, Pinnacle Apartments")
             .addressLine1("Saffron Central")
             .county("London")
             .country("United Kingdom")
             .postCode("CR0 2GE")
             .build());
-
-        return  contactInformation;
-    }
-
-    private Element<Applicant> buildApplicant() {
-        return Element.<Applicant>builder()
-            .value(Applicant.builder()
-                .party(ApplicantParty.builder()
-            .organisationName("Organisation")
-                    .address(buildApplicantContactInformation())
-                    .build())
-                .build())
-            .build();
     }
 
     private Address buildApplicantContactInformation() {

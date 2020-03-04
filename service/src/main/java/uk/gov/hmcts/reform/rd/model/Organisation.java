@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -14,10 +14,10 @@ import java.util.ArrayList;
 public class Organisation {
     private String companyNumber;
     private String companyUrl;
-    private ArrayList<ContactInformation> contactInformation;
+    private List<ContactInformation> contactInformation;
     private String name;
     private String organisationIdentifier;
-    private ArrayList<PaymentAccount> paymentAccount;
+    private List<PaymentAccount> paymentAccount;
     private String sraId;
     private boolean sraRegulated;
     private String status;

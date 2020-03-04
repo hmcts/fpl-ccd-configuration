@@ -8,5 +8,14 @@
     "lastName": "Powroznik",
     "email": "fpla.team3.aat@mailinator.com"
   },
-  "paymentAccount": []
+  "paymentAccount": [],
+  "contactInformation": [
+    {
+      "townCity": "London",
+      "county": "County",
+      "country": "United Kingdom",
+      "postCode": "CR0 2GE",
+      "dxAddress": []
+    }
+  ]
 }
