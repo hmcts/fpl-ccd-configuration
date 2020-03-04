@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.ContactInformation;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
 import uk.gov.hmcts.reform.rd.model.Users;
@@ -26,6 +28,7 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -137,5 +140,51 @@ class OrganisationServiceTest {
         Exception actualException = assertThrows(FeignException.InternalServerError.class,
             () -> organisationService.findUserByEmail(USER_EMAIL));
         assertThat(actualException).isEqualTo(exception);
+    }
+
+    @Test
+    void shouldFindOrganisation() {
+        when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
+            .thenReturn(buildOrganisation());
+
+        Organisation actualOrganisation = organisationService.findOrganisation();
+
+        assertThat(actualOrganisation).isEqualTo(buildOrganisation());
+    }
+
+    @Test
+    void shouldReturnEmptyOrganisationBuilderWhenOrganisationNotFound() {
+        when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
+            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[]{}));
+
+        Organisation organisation = organisationService.findOrganisation();
+
+        assertThat(organisation).isEqualTo(Organisation.builder().build());
+    }
+
+    @Test
+    void shouldThrowFeignExceptionWhenOrganisationIsNotFound() {
+        when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
+            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[]{}));
+
+        assertThatThrownBy(() -> organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
+            .isInstanceOf(FeignException.NotFound.class);
+    }
+
+    private Organisation buildOrganisation() {
+        return Organisation.builder()
+            .name("Organisation")
+            .contactInformation(buildOrganisationContactInformation())
+            .build();
+    }
+
+    private List<ContactInformation> buildOrganisationContactInformation() {
+        return List.of(ContactInformation.builder()
+            .addressLine1("Flat 12, Pinnacle Apartments")
+            .addressLine1("Saffron Central")
+            .county("London")
+            .country("United Kingdom")
+            .postCode("CR0 2GE")
+            .build());
     }
 }

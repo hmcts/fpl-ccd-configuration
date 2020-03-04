@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import feign.FeignException;
-import feign.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -11,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -21,12 +18,8 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import java.util.List;
 import java.util.Map;
 
-import static feign.Request.HttpMethod.GET;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
@@ -35,7 +28,6 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     private String serviceAuthToken = "Bearer service token";
     private final String userAuthToken = "Bearer token";
-    private final Request request = Request.create(GET, "", Map.of(), new byte[]{}, UTF_8);
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -89,23 +81,6 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         assertThat(applicantOrganisationName).isEqualTo(organisationName);
     }
 
-    @Test
-    void shouldFindOrganisation() {
-        Organisation organisation = buildOrganisation();
-        Organisation actualOrganisation = organisationApi.findOrganisationById(userAuthToken, serviceAuthToken);
-
-        assertThat(actualOrganisation).isEqualTo(organisation);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenOrganisationNotFound() {
-        when(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
-            .thenThrow(new FeignException.NotFound("Organisation not found", request, new byte[]{}));
-
-        assertThatThrownBy(() -> organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
-            .isInstanceOf(FeignException.NotFound.class);
-    }
-
     private Organisation buildOrganisation() {
         return Organisation.builder()
             .name("Organisation")
@@ -122,15 +97,4 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
             .postCode("CR0 2GE")
             .build());
     }
-
-    private Address buildApplicantContactInformation() {
-        return Address.builder()
-            .addressLine1("Flat 12, Pinnacle Apartments")
-            .addressLine1("Saffron Central")
-            .county("London")
-            .country("United Kingdom")
-            .postcode("CR0 2GE")
-            .build();
-    }
-
 }

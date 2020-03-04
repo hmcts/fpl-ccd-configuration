@@ -54,8 +54,8 @@ class ApplicantServiceTest {
             .build();
 
         assertThat(service.expandApplicantCollection(caseData, organisation)).hasSize(1);
-        assertThat(service.expandApplicantCollection(caseData, organisation)
-            .get(0).getValue().getParty().partyId).isEqualTo(uuid);
+        assertThat(unwrapElements(service.expandApplicantCollection(caseData, organisation))
+            .get(0).getParty().partyId).isEqualTo(uuid);
     }
 
     @Test
