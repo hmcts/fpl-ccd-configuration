@@ -104,7 +104,7 @@ public class PaymentService {
                                                                        FeesData feesData) {
         return CreditAccountPaymentRequest.builder()
             .accountNumber(pbaNumber)
-            .amount(feesData.getTotalAmount().doubleValue())
+            .amount(feesData.getTotalAmount())
             .caseReference(caseReference)
             .ccdCaseNumber(String.valueOf(caseId))
             .currency(GBP)

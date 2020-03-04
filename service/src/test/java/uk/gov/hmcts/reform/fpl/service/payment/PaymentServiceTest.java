@@ -97,7 +97,7 @@ class PaymentServiceTest {
                     .build())))
                 .build();
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .amount(feeForC2WithNotice.getCalculatedAmount().doubleValue())
+                .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
 
@@ -120,7 +120,7 @@ class PaymentServiceTest {
                     .build())))
                 .build();
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .amount(feeForC2WithoutNotice.getCalculatedAmount().doubleValue())
+                .amount(feeForC2WithoutNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithoutNotice))
                 .build();
 
@@ -165,7 +165,7 @@ class PaymentServiceTest {
                 .build();
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .amount(BigDecimal.TEN.doubleValue())
+                .amount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build();
 
