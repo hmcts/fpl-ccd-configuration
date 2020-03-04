@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service.payment;
 
+import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -20,6 +23,7 @@ import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
+@Slf4j
 public class PaymentService {
 
     private static final String DESCRIPTION_TEMPLATE = "Payment for case: %s";
@@ -81,9 +85,16 @@ public class PaymentService {
             localAuthorityName,
             feesData);
 
-        paymentApi.createCreditAccountPayment(requestData.authorisation(),
-            authTokenGenerator.generate(),
-            paymentRequest);
+        try {
+            paymentApi.createCreditAccountPayment(requestData.authorisation(),
+                authTokenGenerator.generate(),
+                paymentRequest);
+        } catch (FeignException ex) {
+            log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
+                paymentRequest, ex.status(), ex.getMessage(), ex);
+
+            throw new PaymentsApiException(ex.status(), ex.getMessage(), ex);
+        }
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,

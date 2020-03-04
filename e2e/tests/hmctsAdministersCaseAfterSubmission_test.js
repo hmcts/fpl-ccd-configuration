@@ -99,10 +99,8 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'C2 1', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('4', 'C2 1', 'Description', 'Rachel Zane C2');
-  I.seeAnswerInTab('5', 'C2 1', 'Application type', 'Application with notice. The other party will be notified about this application, even if there is not hearing.');
   I.seeAnswerInTab('1', 'C2 2', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('4', 'C2 2', 'Description', 'Jessica Pearson C2');
-  I.seeAnswerInTab('5', 'C2 2', 'Application type', 'Application by consent or without notice. No notice will be sent to the other party, even if there is a hearing.');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
