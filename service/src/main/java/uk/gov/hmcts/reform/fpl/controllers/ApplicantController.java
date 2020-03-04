@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
@@ -36,20 +37,20 @@ public class ApplicantController {
     private final UpdateAndValidatePbaService updateAndValidatePbaService;
     private final ObjectMapper mapper;
     private final AuthTokenGenerator authTokenGenerator;
-    private final OrganisationApi organisationApi;
+    private final OrganisationService organisationService;
     private final RequestData requestData;
 
     @Autowired
     public ApplicantController(ApplicantService applicantService,
                                UpdateAndValidatePbaService updateAndValidatePbaService,
                                ObjectMapper mapper,
-                               OrganisationApi organisationApi,
+                               OrganisationService organisationService,
                                AuthTokenGenerator authTokenGenerator,
                                RequestData requestData) {
         this.applicantService = applicantService;
         this.updateAndValidatePbaService = updateAndValidatePbaService;
         this.mapper = mapper;
-        this.organisationApi = organisationApi;
+        this.organisationService = organisationService;
         this.authTokenGenerator = authTokenGenerator;
         this.requestData = requestData;
     }
@@ -59,27 +60,12 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData, findOrganisation()));
+        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData,
+            organisationService.findOrganisation()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    public Organisation findOrganisation() {
-        try {
-            return organisationApi.findOrganisationById(requestData.authorisation(),
-                authTokenGenerator.generate());
-
-        } catch (FeignException ex) {
-            log.error("Could not find the associated organisation from reference data", ex);
-
-            return Organisation.builder()
-                .contactInformation(Lists
-                    .newArrayList(ContactInformation.builder()
-                    .build()))
-                .build();
-        }
     }
 
     @PostMapping("/mid-event")

@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -44,6 +45,9 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     private OrganisationApi organisationApi;
 
     @MockBean
+    private OrganisationService organisationService;
+
+    @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
     ApplicantAboutToStartControllerTest() {
@@ -68,6 +72,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setup() {
         Organisation organisation = buildOrganisation();
+        given(organisationService.findOrganisation()).willReturn(organisation);
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
         given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(organisation);
     }
@@ -82,7 +87,10 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
         CaseData data = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(data.getAllApplicants()).contains(buildApplicant());
+        String applicantOrganisationName = data.getAllApplicants().get(0).getValue().getParty().getOrganisationName();
+        String organisationName = buildOrganisation().getName();
+
+        assertThat(applicantOrganisationName).isEqualTo(organisationName);
     }
 
     @Test

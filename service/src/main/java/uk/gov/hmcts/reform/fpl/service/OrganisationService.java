@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
 
@@ -68,6 +69,18 @@ public class OrganisationService {
         } catch (FeignException.NotFound notFoundException) {
             log.debug("User with email {} not found", email);
             return Optional.empty();
+        }
+    }
+
+    public Organisation findOrganisation() {
+        try {
+            return organisationApi.findOrganisationById(requestData.authorisation(),
+                authTokenGenerator.generate());
+
+        } catch (FeignException ex) {
+            log.error("Could not find the associated organisation from reference data", ex);
+
+            return Organisation.builder().build();
         }
     }
 }
