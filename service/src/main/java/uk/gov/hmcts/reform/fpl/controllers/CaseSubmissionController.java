@@ -77,13 +77,13 @@ public class CaseSubmissionController {
         if (errors.isEmpty()) {
             try {
                 String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
+                data.put("submissionConsentLabel", label);
 
                 if (featureToggleService.isFeesAndPaymentsEnabled()) {
                     FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
                 }
 
-                data.put("submissionConsentLabel", label);
             } catch (FeeRegisterException ignore) {
                 // TODO: 21/02/2020 Replace me in FPLA-1353
                 //  this is an error message for when the Fee Register is unavailable

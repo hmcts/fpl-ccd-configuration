@@ -70,7 +70,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
             .totalAmount(BigDecimal.valueOf(123))
             .build();
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
-        given(feeService.getFeesDataForOrders(eq(orders))).willReturn(feesData);
+        given(feeService.getFeesDataForOrders(orders)).willReturn(feesData);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(Map.of("orders", orders))
@@ -81,19 +81,13 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void shouldNotAddAmountToPayFieldWhenFeatureToggleIsFalse() {
-        Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
-        FeesData feesData = FeesData.builder()
-            .totalAmount(BigDecimal.valueOf(123))
-            .build();
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(false);
-        given(feeService.getFeesDataForOrders(eq(orders))).willReturn(feesData);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(Map.of("orders", orders))
+            .data(Map.of())
             .build());
 
         verify(feeService, never()).getFeesDataForOrders(any());
-
         assertThat(response.getData()).doesNotContainKey("amountToPay");
     }
 
