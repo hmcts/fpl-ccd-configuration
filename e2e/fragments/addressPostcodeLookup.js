@@ -33,7 +33,10 @@ module.exports = {
   },
 
   enterAddressManually(address) {
-    //I.click(this.cantEnterPostcodeLink);
+    if (this.cantEnterPostcodeLink.length > 0) {
+      // as applicant is sometimes auto populated this link doesn't always exist
+      I.click(this.cantEnterPostcodeLink);
+    }
     I.fillField(this.fields.buildingAndStreet.lineOne, address.buildingAndStreet.lineOne);
     I.fillField(this.fields.buildingAndStreet.lineTwo, address.buildingAndStreet.lineTwo);
     I.fillField(this.fields.buildingAndStreet.lineThree, address.buildingAndStreet.lineThree);
