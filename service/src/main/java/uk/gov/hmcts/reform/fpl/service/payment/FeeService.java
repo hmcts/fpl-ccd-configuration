@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -28,7 +27,6 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
 @Service
@@ -66,7 +64,7 @@ public class FeeService {
 
         return FeesData.builder()
             .totalAmount(feeResponse.getAmount())
-            .fees(List.of(element(FeeDto.fromFeeResponse(feeResponse))))
+            .fees(List.of(FeeDto.fromFeeResponse(feeResponse)))
             .build();
     }
 
@@ -100,7 +98,6 @@ public class FeeService {
             .totalAmount(extractFeeToUse(feeResponses).map(FeeResponse::getAmount).get())
             .fees(feeResponses.stream()
                 .map(FeeDto::fromFeeResponse)
-                .map(ElementUtils::element)
                 .collect(toList()))
             .build();
     }

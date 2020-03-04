@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,5 +14,5 @@ import java.util.List;
 public class FeesData {
 
     private BigDecimal totalAmount;
-    private List<Element<FeeDto>> fees;
+    private List<FeeDto> fees;
 }

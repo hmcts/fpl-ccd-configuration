@@ -25,10 +25,10 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
@@ -167,7 +167,7 @@ public class CaseSubmissionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         if (featureToggleService.isFeesAndPaymentsEnabled()) {
-            paymentService.makePaymentForCase(caseDetails.getId(), caseData);
+            paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
         }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
     }

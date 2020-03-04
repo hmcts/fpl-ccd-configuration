@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.payment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,11 +7,11 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
 
@@ -44,25 +44,28 @@ public class PaymentService {
         this.siteId = siteId;
     }
 
-    public void makePaymentForCase(Long caseId, CaseData caseData) {
+    public void makePaymentForCaseOrders(Long caseId, CaseData caseData) {
         FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
-        String localAuthorityName =
-            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
-        String pbaNumber = "?"; //TODO:
-        String clientCode = "?"; //TODO:
 
         if (!feesData.getTotalAmount().equals(BigDecimal.ZERO)) {
+            String localAuthorityName =
+                localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
+            ApplicantParty applicantParty = getFirstApplicantParty(caseData);
             CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
-                pbaNumber,
-                clientCode,
+                applicantParty.getPbaNumber(),
+                applicantParty.getClientCode(),
+                applicantParty.getCustomerReference(),
                 localAuthorityName,
                 feesData);
-
 
             paymentApi.createCreditAccountPayment(requestData.authorisation(),
                 authTokenGenerator.generate(),
                 paymentRequest);
         }
+    }
+
+    private ApplicantParty getFirstApplicantParty(CaseData caseData) {
+        return caseData.getApplicants().get(0).getValue().getParty();
     }
 
     public void makePaymentForC2(Long caseId, CaseData caseData) {
@@ -74,6 +77,7 @@ public class PaymentService {
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             c2DocumentBundle.getPbaNumber(),
             c2DocumentBundle.getClientCode(),
+            c2DocumentBundle.getFileReference(),
             localAuthorityName,
             feesData);
 
@@ -83,13 +87,14 @@ public class PaymentService {
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
+                                                                       String caseReference,
                                                                        String customerReference,
                                                                        String localAuthorityName,
                                                                        FeesData feesData) {
         return CreditAccountPaymentRequest.builder()
             .accountNumber(pbaNumber)
             .amount(feesData.getTotalAmount().doubleValue())
-            .caseReference(String.valueOf(caseId))
+            .caseReference(caseReference)
             .ccdCaseNumber(String.valueOf(caseId))
             .currency(GBP)
             .customerReference(customerReference)
@@ -97,7 +102,7 @@ public class PaymentService {
             .organisationName(localAuthorityName)
             .service(FPL)
             .siteId(siteId)
-            .fees(unwrapElements(feesData.getFees()))
+            .fees(feesData.getFees())
             .build();
     }
 

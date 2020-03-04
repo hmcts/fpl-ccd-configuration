@@ -51,7 +51,6 @@ import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.OTHER_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.PLACEMENT_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SERVICE;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SUPERVISION_ORDER_KEYWORD;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -179,7 +178,7 @@ class FeeServiceTest {
                 .build();
 
             FeesData feesData = feeService.getFeesDataForOrders(orders);
-            List<FeeDto> fees = unwrapElements(feesData.getFees());
+            List<FeeDto> fees = feesData.getFees();
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.TEN);
             assertThat(fees.get(0).getCode()).isEqualTo(CARE_ORDER_CODE);
@@ -229,7 +228,7 @@ class FeeServiceTest {
         }
 
         private String getFirstFeeCode(FeesData feesData) {
-            return feesData.getFees().get(0).getValue().getCode();
+            return feesData.getFees().get(0).getCode();
         }
 
         @AfterEach
