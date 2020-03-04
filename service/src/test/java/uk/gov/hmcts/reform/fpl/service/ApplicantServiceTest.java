@@ -167,7 +167,7 @@ class ApplicantServiceTest {
             .build();
     }
 
-    private List<ContactInformation> buildOrganisationAddress(){
+    private List<ContactInformation> buildOrganisationAddress() {
         return List.of(ContactInformation.builder()
             .addressLine1("Flat 12, Pinnacle Apartments")
             .addressLine2("Saffron Central")
