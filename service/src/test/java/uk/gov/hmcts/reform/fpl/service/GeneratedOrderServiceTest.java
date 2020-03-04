@@ -91,7 +91,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), LocalDate.now(), null, null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Order");
@@ -109,7 +109,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), LocalDate.now(), null, null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Order");
@@ -127,7 +127,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), LocalDate.now(), null, null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Order");
@@ -145,7 +145,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), LocalDate.now(), null, null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Example Title");
@@ -171,7 +171,7 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build(), LocalDate.now(), null, null).getValue();
+                .build(), time.now().toLocalDate(), null, null).getValue();
 
         assertThat(builtOrder.getType()).isEqualTo("Final care order");
         assertThat(builtOrder.getTitle()).isNull();
@@ -196,7 +196,7 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build(), LocalDate.now(), null,
+                .build(), time.now().toLocalDate(), null,
             InterimEndDate.builder().type(END_OF_PROCEEDINGS).build()).getValue();
 
         assertThat(builtOrder.getExpiryDate()).isEqualTo("End of the proceedings");
@@ -216,7 +216,7 @@ class GeneratedOrderServiceTest {
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
                 .build(),
-            LocalDate.now(),
+            time.now().toLocalDate(),
             null,
             InterimEndDate.builder()
                 .type(NAMED_DATE)
@@ -239,7 +239,7 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HIS_HONOUR_JUDGE)
                 .judgeLastName("Dredd")
                 .legalAdvisorName("Frank N. Stein")
-                .build(), LocalDate.now(), 5, null).getValue();
+                .build(), time.now().toLocalDate(), 5, null).getValue();
 
         final LocalDateTime orderExpiration = time.now().plusMonths(5);
         final String expectedExpiryDate = dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
