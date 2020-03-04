@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "FPL CCD e2e tests",
   "devDependencies": {
-    "babel-eslint": "^10.0.3",
+    "babel-eslint": "^10.1.0",
     "codeceptjs": "2.4.3",
     "dateformat": "^3.0.3",
     "eslint": "6.7.2",
