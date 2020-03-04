@@ -110,6 +110,19 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
 
+    @Test
+    void aboutToStartShouldSetDateOfIssueAsTodayByDefault() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(parseLong(CASE_ID))
+            .data(mapper.convertValue(CaseData.builder().familyManCaseNumber("123").build(), new TypeReference<>() {}))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(time.now().toLocalDate().toString());
+    }
+
     //TODO TECHDEBT move tests for each callback to separate file as done with GeneratedOrderControllerSubmittedTest
     @Nested
     class AboutToSubmit {
