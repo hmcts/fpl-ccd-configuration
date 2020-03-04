@@ -205,13 +205,15 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                         .judgeLastName("Judy")
                         .legalAdvisorName("Peter Parker")
                         .build())
-                .familyManCaseNumber("12345L");
+                .familyManCaseNumber("12345L")
+                .dateOfIssue(time.now().toLocalDate());
         }
 
         private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
             return GeneratedOrder.builder()
                 .type(fullType)
                 .document(DocumentReference.builder().build())
+                .dateOfIssue(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
                 .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .judgeAndLegalAdvisor(
                     JudgeAndLegalAdvisor.builder()
@@ -352,7 +354,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
 
             dataBuilder.order(GeneratedOrder.builder().details("").build())
-                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build());
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
+                .dateOfIssue(time.now().toLocalDate());
 
             generateDefaultValues(dataBuilder);
             generateEpoValues(dataBuilder);
@@ -419,7 +422,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .orderTypeAndDocument(OrderTypeAndDocument.builder()
                     .type(type)
                     .subtype(subtype)
-                    .build());
+                    .build())
+                .dateOfIssue(time.now().toLocalDate());
 
             generateDefaultValues(builder);
 

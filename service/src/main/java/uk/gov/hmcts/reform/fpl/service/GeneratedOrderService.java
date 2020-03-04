@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
@@ -90,6 +91,7 @@ public class GeneratedOrderService {
     public Element<GeneratedOrder> buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
                                                       GeneratedOrder order,
                                                       JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                      LocalDate dateOfIssue,
                                                       Integer orderMonths,
                                                       InterimEndDate interimEndDate) {
         GeneratedOrder generatedOrder = defaultIfNull(order, GeneratedOrder.builder().build());
@@ -119,10 +121,11 @@ public class GeneratedOrderService {
         }
 
         orderBuilder.expiryDate(expiryDate)
+            .dateOfIssue(DateFormatterService.formatLocalDateToString(dateOfIssue, "d MMMM yyyy"))
             .type(typeAndDocument.getFullType(typeAndDocument.getSubtype()))
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"));
+            .date(DateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"));
 
         return Element.<GeneratedOrder>builder()
             .id(randomUUID())
@@ -199,7 +202,7 @@ public class GeneratedOrderService {
             .put("orderType", orderType)
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
-            .put("todaysDate", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
+            .put("dateOfIssue", DateFormatterService.formatLocalDateToString(caseData.getDateOfIssue(), "d MMMM yyyy"))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))

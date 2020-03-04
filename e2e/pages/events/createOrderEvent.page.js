@@ -17,6 +17,12 @@ module.exports = {
       },
     },
     directions: '#orderFurtherDirections_directions',
+    dateOfIssue: {
+      id: '#dateOfIssue',
+      day: '#dateOfIssue-day',
+      month: '#dateOfIssue-month',
+      year: '#dateOfIssue-year',
+    },
     interimEndDate: {
       id: '#interimEndDate_interimEndDate',
       options: {
@@ -25,8 +31,8 @@ module.exports = {
       },
       endDate: {
         day: '#interimEndDate_endDate-day',
-        month:'#interimEndDate_endDate-month',
-        year:'#interimEndDate_endDate-year',
+        month: '#interimEndDate_endDate-month',
+        year: '#interimEndDate_endDate-year',
       },
     },
     childSelector: {
@@ -134,6 +140,12 @@ module.exports = {
     within(this.fields.interimEndDate.id, () => {
       I.click(locate('label').withText(this.fields.interimEndDate.options.endOfProceedings));
     });
+  },
+
+  async enterDateOfIssue(date) {
+    I.fillField(this.fields.dateOfIssue.day, date.day);
+    I.fillField(this.fields.dateOfIssue.month, date.month);
+    I.fillField(this.fields.dateOfIssue.year, date.year);
   },
 
   async selectAndEnterNamedDate(date) {

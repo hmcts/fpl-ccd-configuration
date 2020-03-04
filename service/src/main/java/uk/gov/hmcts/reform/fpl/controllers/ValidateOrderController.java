@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.InterimEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
@@ -34,6 +35,19 @@ public class ValidateOrderController {
     public ValidateOrderController(ObjectMapper mapper, ValidateGroupService validateGroupService) {
         this.mapper = mapper;
         this.validateGroupService = validateGroupService;
+    }
+
+    @PostMapping("/date-of-issue/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventValidateDateOfIssue(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(validateGroupService.validateGroup(caseData, DateOfIssueGroup.class))
+            .build();
     }
 
     @PostMapping("/address/mid-event")
