@@ -15,6 +15,18 @@ module.exports = {
         clientCode: `input[id="applicants_${index}_party_clientCode"]`,
         customerReference: `input[id="applicants_${index}_party_customerReference"]`,
       },
+      address: {
+        addressList: 'select[id$="addressList"]',
+        buildingAndStreet: {
+          lineOne: 'input[id$="AddressLine1"]',
+          lineTwo: 'input[id$="AddressLine2"]',
+          lineThree: 'input[id$="AddressLine3"]',
+        },
+        town: 'input[id$="PostTown"]',
+        county: 'input[id$="County"]',
+        postcode: 'input[id$="PostCode"]',
+        country: 'input[id$="Country"]',
+      },
       solicitor: {
         name: '#solicitor_name',
         mobileNumber: '#solicitor_mobile',
@@ -35,12 +47,12 @@ module.exports = {
     I.fillField(this.fields(elementIndex).applicant.customerReference, applicant.customerReference);
     within(this.fields(elementIndex).applicant.address, () => {
       //XXX postcode lookup
-      I.fillField(this.fields.buildingAndStreet.lineOne, applicant.address.buildingAndStreet.lineOne);
-      I.fillField(this.fields.buildingAndStreet.lineTwo, applicant.address.buildingAndStreet.lineTwo);
-      I.fillField(this.fields.buildingAndStreet.lineThree, applicant.address.buildingAndStreet.lineThree);
-      I.fillField(this.fields.town, applicant.address.town);
-      I.fillField(this.fields.postcode, applicant.address.postcode);
-      I.fillField(this.fields.country, applicant.address.country);
+      I.fillField(this.fields(elementIndex).address.buildingAndStreet.lineOne, applicant.address.buildingAndStreet.lineOne);
+      I.fillField(this.fields(elementIndex).address.buildingAndStreet.lineTwo, applicant.address.buildingAndStreet.lineTwo);
+      I.fillField(this.fields(elementIndex).address.buildingAndStreet.lineThree, applicant.address.buildingAndStreet.lineThree);
+      I.fillField(this.fields(elementIndex).address.town, applicant.address.town);
+      I.fillField(this.fields(elementIndex).address.postcode, applicant.address.postcode);
+      I.fillField(this.fields(elementIndex).address.country, applicant.address.country);
     });
     I.fillField(this.fields(elementIndex).applicant.telephone, applicant.telephoneNumber);
     I.fillField(this.fields(elementIndex).applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
