@@ -143,9 +143,11 @@ module.exports = {
   },
 
   async enterDateOfIssue(date) {
-    I.fillField(this.fields.dateOfIssue.day, date.day);
-    I.fillField(this.fields.dateOfIssue.month, date.month);
-    I.fillField(this.fields.dateOfIssue.year, date.year);
+    if (date) {
+      I.fillField(this.fields.dateOfIssue.day, date.day);
+      I.fillField(this.fields.dateOfIssue.month, date.month);
+      I.fillField(this.fields.dateOfIssue.year, date.year);
+    }
   },
 
   async selectAndEnterNamedDate(date) {

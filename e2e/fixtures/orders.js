@@ -5,11 +5,6 @@ module.exports = [
     title: 'Example Order Title',
     details: 'Example order details here - Lorem ipsum dolor sit amet...',
     document: 'blank_order_c21.pdf',
-    dateOfIssue: {
-      day: '01',
-      month: '01',
-      year: '2020',
-    },
     //future work: extract judgeAndLegalAdvisor to separate fixture
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',

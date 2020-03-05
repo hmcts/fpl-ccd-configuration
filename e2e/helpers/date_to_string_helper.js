@@ -1,15 +1,4 @@
-module.exports = (date) => {
-  let hour = '00', minute = '00', second = '00';
+const zeroByDefault = (value) => value || '00';
 
-  if (date.hour) {
-    hour = date.hour;
-  }
-  if (date.minute) {
-    minute = date.minute;
-  }
-  if (date.second) {
-    second = date.second;
-  }
-
-  return date.year + '-' + date.month + '-' + date.day + ' ' + hour + ':' + minute + ':' + second;
-};
+module.exports = (date) => zeroByDefault(date.year) + '-' + zeroByDefault(date.month) + '-' + zeroByDefault(date.day)
+  + ' ' + zeroByDefault(date.hour) + ':' + zeroByDefault(date.minute) + ':' + zeroByDefault(date.second);
