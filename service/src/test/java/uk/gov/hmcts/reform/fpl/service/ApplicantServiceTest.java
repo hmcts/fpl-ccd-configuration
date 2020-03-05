@@ -25,23 +25,24 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @SpringBootTest(classes = {ApplicantService.class, ObjectMapper.class})
 class ApplicantServiceTest {
 
+    private static Organisation emptyOrganisation = Organisation.builder().build();
+
     @Autowired
     private ApplicantService service;
 
     @Test
     void shouldExpandApplicantCollectionWhenNoApplicants() {
         CaseData caseData = CaseData.builder().build();
-        Organisation organisation = Organisation.builder().build();
 
         assertThat(caseData.getApplicants()).isNull();
-        assertThat(service.expandApplicantCollection(caseData, organisation)).hasSize(1);
+        assertThat(service.expandApplicantCollection(caseData, emptyOrganisation)).hasSize(1);
     }
 
     @Test
     void shouldNotExpandApplicantCollectionWhenApplicantsAlreadyExists() {
         String uuid = UUID.randomUUID().toString();
 
-        Organisation organisation = Organisation.builder().build();
+        Organisation organisation = emptyOrganisation;
 
         CaseData caseData = CaseData.builder().applicants(ImmutableList.of(
             Element.<Applicant>builder()
@@ -141,13 +142,14 @@ class ApplicantServiceTest {
     @Test
     void shouldReturnApplicantCollectionWithOrganisationDetailsWhenOrganisationExists() {
         CaseData caseData = CaseData.builder().build();
+        Organisation organisation = buildOrganisation();
 
         List<Applicant> applicants = unwrapElements(service.expandApplicantCollection(
-            caseData, buildOrganisation()));
+            caseData, organisation));
 
         assertThat(applicants.get(0).getParty().getOrganisationName())
-            .isEqualTo(buildOrganisation().getName());
-        assertThat(applicants.get(0).getParty().getAddress()).isEqualTo(buildOrganisation()
+            .isEqualTo(organisation.getName());
+        assertThat(applicants.get(0).getParty().getAddress()).isEqualTo(organisation
             .getContactInformation().get(0).toAddress());
     }
 
@@ -156,7 +158,8 @@ class ApplicantServiceTest {
         CaseData caseData = CaseData.builder().build();
 
         List<Applicant> applicants = unwrapElements(service.expandApplicantCollection(
-            caseData, Organisation.builder().build()));
+            caseData, emptyOrganisation));
+
         assertThat(applicants.get(0).getParty().getOrganisationName()).isNull();
     }
 

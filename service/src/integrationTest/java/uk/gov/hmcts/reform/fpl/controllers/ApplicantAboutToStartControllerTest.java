@@ -20,14 +20,15 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
-    private String serviceAuthToken = "Bearer service token";
-    private final String userAuthToken = "Bearer token";
+    private Organisation organisation = buildOrganisation();
+    private Organisation emptyOrganisation = Organisation.builder().build();
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -42,43 +43,45 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         super("enter-applicant");
     }
 
-    @Test
-    void shouldPrepopulateApplicantDataWhenNoApplicantExists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("data", "some data"))
-            .build();
-
-        given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
-            .willReturn(Organisation.builder().build());
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-        assertThat(callbackResponse.getData()).containsKey("applicants");
-    }
-
     @BeforeEach
     void setup() {
-        Organisation organisation = buildOrganisation();
         given(organisationService.findOrganisation()).willReturn(organisation);
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
         given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(organisation);
     }
 
     @Test
+    void shouldPrepopulateApplicantDataWhenNoApplicantExists() {
+        CaseDetails caseDetails = buildCaseDetails();
+
+        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
+            .willReturn(emptyOrganisation);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        assertThat(callbackResponse.getData()).containsKey("applicants");
+    }
+
+    @Test
     void shouldAddOrganisationDetailsToApplicantWhenOrganisationExists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("data", "some data"))
-            .build();
+        CaseDetails caseDetails = buildCaseDetails();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         CaseData data = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        String applicantOrganisationName = data.getAllApplicants().get(0).getValue().getParty().getOrganisationName();
-        String organisationName = buildOrganisation().getName();
+        String applicantOrganisationName = unwrapElements(data.getAllApplicants()).get(0)
+            .getParty().getOrganisationName();
+
+        String organisationName = organisation.getName();
 
         assertThat(applicantOrganisationName).isEqualTo(organisationName);
+    }
+
+    private CaseDetails buildCaseDetails() {
+        return CaseDetails.builder()
+            .data(Map.of("data", "some data"))
+            .build();
     }
 
     private Organisation buildOrganisation() {

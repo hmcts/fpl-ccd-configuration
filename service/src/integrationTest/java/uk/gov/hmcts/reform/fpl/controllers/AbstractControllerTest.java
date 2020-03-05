@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 abstract class AbstractControllerTest {
 
     final String userAuthToken = "Bearer token";
+    final String serviceAuthToken = "Bearer service token";
     final String userId = "1";
 
     @Autowired

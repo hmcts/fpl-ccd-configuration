@@ -51,6 +51,8 @@ class OrganisationServiceTest {
     private static final String AUTH_TOKEN_ID = "Bearer authorisedBearer";
     private static final String SERVICE_AUTH_TOKEN_ID = "Bearer authorised service";
     private static final String USER_EMAIL = "test@test.com";
+    private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
+    private static final Organisation POPULATED_ORGANISATION = buildOrganisation();
 
     @BeforeEach
     void setup() {
@@ -145,11 +147,11 @@ class OrganisationServiceTest {
     @Test
     void shouldFindOrganisation() {
         when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
-            .thenReturn(buildOrganisation());
+            .thenReturn(POPULATED_ORGANISATION);
 
         Organisation actualOrganisation = organisationService.findOrganisation();
 
-        assertThat(actualOrganisation).isEqualTo(buildOrganisation());
+        assertThat(actualOrganisation).isEqualTo(POPULATED_ORGANISATION);
     }
 
     @Test
@@ -159,7 +161,7 @@ class OrganisationServiceTest {
 
         Organisation organisation = organisationService.findOrganisation();
 
-        assertThat(organisation).isEqualTo(Organisation.builder().build());
+        assertThat(organisation).isEqualTo(EMPTY_ORGANISATION);
     }
 
     @Test
@@ -171,14 +173,14 @@ class OrganisationServiceTest {
             .isInstanceOf(FeignException.NotFound.class);
     }
 
-    private Organisation buildOrganisation() {
+    private static Organisation buildOrganisation() {
         return Organisation.builder()
             .name("Organisation")
             .contactInformation(buildOrganisationContactInformation())
             .build();
     }
 
-    private List<ContactInformation> buildOrganisationContactInformation() {
+    private static List<ContactInformation> buildOrganisationContactInformation() {
         return List.of(ContactInformation.builder()
             .addressLine1("Flat 12, Pinnacle Apartments")
             .addressLine1("Saffron Central")

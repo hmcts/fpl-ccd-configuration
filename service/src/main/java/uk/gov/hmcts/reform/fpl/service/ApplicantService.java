@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.ObjectUtils.isEmpty;
@@ -30,7 +30,7 @@ public class ApplicantService {
                             // A value within applicant party needs to be set in order to expand UI view.
                             .partyId(randomUUID().toString())
                             .organisationName(organisation.getName())
-                            .address(getOrganisationContactDetails(organisation))
+                            .address(getOrganisationAddress(organisation))
                         .build())
                     .build()));
         } else {
@@ -38,10 +38,10 @@ public class ApplicantService {
         }
     }
 
-    private Address getOrganisationContactDetails(Organisation organisation) {
+    private Address getOrganisationAddress(Organisation organisation) {
         ContactInformation contactInformation = ContactInformation.builder().build();
 
-        if (!isNull(organisation.getContactInformation())) {
+        if (nonNull(organisation.getContactInformation())) {
             contactInformation = organisation.getContactInformation().get(0);
         }
         return contactInformation.toAddress();
