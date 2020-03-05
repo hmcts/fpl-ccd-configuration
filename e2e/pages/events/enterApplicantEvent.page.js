@@ -15,18 +15,6 @@ module.exports = {
         clientCode: `input[id="applicants_${index}_party_clientCode"]`,
         customerReference: `input[id="applicants_${index}_party_customerReference"]`,
       },
-      address: {
-        addressList: 'select[id$="addressList"]',
-        buildingAndStreet: {
-          lineOne: 'input[id$="AddressLine1"]',
-          lineTwo: 'input[id$="AddressLine2"]',
-          lineThree: 'input[id$="AddressLine3"]',
-        },
-        town: 'input[id$="PostTown"]',
-        county: 'input[id$="County"]',
-        postcode: 'input[id$="PostCode"]',
-        country: 'input[id$="Country"]',
-      },
       solicitor: {
         name: '#solicitor_name',
         mobileNumber: '#solicitor_mobile',
