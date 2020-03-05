@@ -12,7 +12,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class FeesData {
-
     private BigDecimal totalAmount;
     private List<FeeDto> fees;
 }

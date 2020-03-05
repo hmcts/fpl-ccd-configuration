@@ -13,7 +13,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class CreditAccountPaymentRequest {
-
     private String accountNumber;
     private BigDecimal amount;
     private String caseReference;
