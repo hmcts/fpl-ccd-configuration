@@ -131,7 +131,7 @@ public class NotificationHandler {
             orderEvent.getMostRecentUploadedDocumentUrl());
 
         sendOrderIssuedNotificationToAdmin(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
-        sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
+        //sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
     }
 
     @EventListener
@@ -240,23 +240,6 @@ public class NotificationHandler {
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE);
         sendOrderIssuedNotificationToAdmin(eventData, noticeOfPlacementEvent.getDocumentContents(),
             NOTICE_OF_PLACEMENT_ORDER);
-    }
-
-    //TODO: refactor to common method to send to parties. i.e sendNotificationToRepresentative(NotificationId,
-    private void sendNotificationToRepresentativesServedThroughDigitalService(EventData eventData,
-                                                                              Map<String, Object> parameters) {
-        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-
-        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
-            caseData.getRepresentatives(), DIGITAL_SERVICE);
-
-        representatives.stream()
-            .filter(representative -> isNotBlank(representative.getEmail()))
-            .forEach(representative -> sendNotification(
-                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                representative.getEmail(),
-                parameters,
-                eventData.getReference()));
     }
 
     private void sendNotificationToRepresentatives(EventData eventData,

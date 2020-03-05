@@ -106,7 +106,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
 
         try {
-            url.put("caseUrlOrDocumentLink",prepareUpload(documentContents));
+            url.put("caseUrlOrDocumentLink", prepareUpload(documentContents));
         } catch (NotificationClientException e) {
             log.error("Unable to send notification due to ", e);
         }
