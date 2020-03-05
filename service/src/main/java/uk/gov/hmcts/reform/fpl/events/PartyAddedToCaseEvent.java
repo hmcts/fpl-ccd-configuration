@@ -10,11 +10,8 @@ import java.util.List;
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class PartyAddedToCaseEvent extends CallbackEvent {
-    private final List<Representative> representativesToNotify;
 
-    public PartyAddedToCaseEvent(CallbackRequest callbackRequest, String authorization, String userId,
-                                 List<Representative> representativesToNotify) {
+    public PartyAddedToCaseEvent(CallbackRequest callbackRequest, String authorization, String userId) {
         super(callbackRequest, authorization, userId);
-        this.representativesToNotify = representativesToNotify;
     }
 }

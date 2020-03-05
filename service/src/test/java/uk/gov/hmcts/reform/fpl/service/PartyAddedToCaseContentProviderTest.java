@@ -65,16 +65,4 @@ class PartyAddedToCaseContentProviderTest {
         assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
             callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).isEqualTo(expectedParameters);
     }
-
-    @Test
-    void shouldGetPartyAddedToCaseByEmailNotificationTemplate() {
-        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(EMAIL))
-            .isEqualTo(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
-    }
-
-    @Test
-    void shouldGetPartyAddedThroughDigitalServiceNotificationTemplate() {
-        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(DIGITAL_SERVICE))
-            .isEqualTo(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
-    }
 }

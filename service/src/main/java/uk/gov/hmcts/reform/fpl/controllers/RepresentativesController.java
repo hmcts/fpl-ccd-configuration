@@ -88,18 +88,8 @@ public class RepresentativesController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-
-        List<Element<Representative>> representativesBefore = caseDataBefore.getRepresentatives();
-        List<Element<Representative>> currentRepresentatives = caseData.getRepresentatives();
-
-        List<Element<Representative>> representativeParties = representativeService
-            .getRepresentativePartiesToNotify(currentRepresentatives, representativesBefore);
-
         applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(
-            callbackRequest, requestData.authorisation(), requestData.userId(),
-            unwrapElements(representativeParties)));
+            callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
     private String getRespondentsLabel(CaseData caseData) {

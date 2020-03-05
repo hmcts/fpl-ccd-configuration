@@ -62,6 +62,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
@@ -129,6 +131,7 @@ public class NotificationHandler {
             orderEvent.getMostRecentUploadedDocumentUrl());
 
         sendOrderIssuedNotificationToAdmin(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
+        sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
     }
 
     @EventListener
@@ -233,7 +236,8 @@ public class NotificationHandler {
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(eventData.caseDetails);
 
         sendNotification(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters, eventData.reference);
-        sendNotificationToRepresentativesServedThroughDigitalService(eventData, parameters);
+        sendNotificationToRepresentatives(eventData, parameters, DIGITAL_SERVICE,
+            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE);
         sendOrderIssuedNotificationToAdmin(eventData, noticeOfPlacementEvent.getDocumentContents(),
             NOTICE_OF_PLACEMENT_ORDER);
     }
@@ -255,6 +259,24 @@ public class NotificationHandler {
                 eventData.getReference()));
     }
 
+    private void sendNotificationToRepresentatives(EventData eventData,
+                                                   Map<String, Object> parameters,
+                                                   RepresentativeServingPreferences servingPreference,
+                                                   String notificationId) {
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+
+        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), servingPreference);
+
+        representatives.stream()
+            .filter(representative -> isNotBlank(representative.getEmail()))
+            .forEach(representative -> sendNotification(
+                notificationId,
+                representative.getEmail(),
+                parameters,
+                eventData.getReference()));
+    }
+
     private void sendCMOCaseLinkNotifications(final EventData eventData) {
         sendCMOCaseLinkNotificationForLocalAuthority(eventData);
         sendCMOCaseLinkNotificationToRepresentatives(eventData);
@@ -262,25 +284,16 @@ public class NotificationHandler {
 
     @EventListener
     public void sendNotificationToPartiesAddedToCase(PartyAddedToCaseEvent event) {
-        List<Representative> representatives = event.getRepresentativesToNotify();
         EventData eventData = new EventData(event);
+        Map<String, Object> servedByEmailParameters = partyAddedToCaseContentProvider
+            .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(), EMAIL);
+        Map<String, Object> servedByDigitalServiceParameters = partyAddedToCaseContentProvider
+            .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(), DIGITAL_SERVICE);
 
-        representatives.stream().forEach(representative -> {
-            String email = representative.getEmail();
-            RepresentativeServingPreferences servingPreferences
-                = representative.getServingPreferences();
-
-            Map<String, Object> parameters = partyAddedToCaseContentProvider
-                .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(),
-                    servingPreferences);
-
-            String template = partyAddedToCaseContentProvider
-                .getPartyAddedToCaseNotificationTemplate(servingPreferences);
-
-            sendNotification(template, email, parameters,
-                eventData.getReference());
-
-        });
+        sendNotificationToRepresentatives(eventData, servedByEmailParameters, EMAIL,
+            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
+        sendNotificationToRepresentatives(eventData, servedByDigitalServiceParameters, DIGITAL_SERVICE,
+            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
@@ -378,6 +391,19 @@ public class NotificationHandler {
                                                     final IssuedOrderType issuedOrderType) {
         Map<String, Object> parameters = orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
             eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
+
+        String email = getHmctsAdminEmail(eventData);
+
+        sendNotification(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters,
+            Long.toString(eventData.getCaseDetails().getId()));
+    }
+
+    private void sendOrderIssuedNotificationToRepresentatives(final EventData eventData,
+                                                              final byte[] documentContents,
+                                                              final IssuedOrderType issuedOrderType) {
+        Map<String, Object> parameters =
+            orderIssuedEmailContentProvider.buildOrderNotificationParametersForRepresentatives(
+                eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
 
         String email = getHmctsAdminEmail(eventData);
 

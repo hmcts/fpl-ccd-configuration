@@ -498,7 +498,7 @@
       "familyManCaseNumber": "12345L",
       "representatives": [
         {
-          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
+          "id": "ca15c188-14d2-49a3-ac61-fdd7c6c7dc9b",
           "value": {
             "fullName": "Fred Flinstone",
             "positionInACase": "Cafcass Guardian",
@@ -516,6 +516,26 @@
           "telephoneNumber": "0717171717",
           "servingPreferences": "DIGITAL_SERVICE",
           "role" : "CAFCASS_GUARDIAN"
+        },
+        {
+          "id": "ca15c188-14d2-49a3-ac61-fdd7c6c7dc9b",
+          "value": {
+            "fullName": "Barney Rubble",
+            "positionInACase": "Cafcass Guardian",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": "barney@rubble.com"
+          },
+          "telephoneNumber": "0717171718",
+          "servingPreferences": "EMAIL",
+          "role" : "CAFCASS_SOLICITOR"
         }
       ]
     }

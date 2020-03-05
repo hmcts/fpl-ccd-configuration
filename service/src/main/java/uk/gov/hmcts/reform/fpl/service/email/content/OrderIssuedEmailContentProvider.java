@@ -71,6 +71,22 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
+    public Map<String, Object> buildOrderNotificationParametersForRepresentatives(final CaseDetails caseDetails,
+                                                                             final String localAuthorityCode,
+                                                                             final byte[] documentContents,
+                                                                             final IssuedOrderType issuedOrderType) {
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return ImmutableMap.<String, Object>builder()
+            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
+                ? "^" + buildSubjectLineWithHearingBookingDateSuffix(buildSubjectLine(caseData),
+                caseData.getHearingDetails()) : "")
+            .put("courtName", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
+            .putAll(linkToAttachedDocument(documentContents))
+            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
+            .build();
+    }
+
     private Map<String, Object> caseUrlOrDocumentLink(boolean needsServing,
                                                       final byte[] documentContents,
                                                       Long caseId) {
@@ -79,6 +95,18 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         try {
             url.put("caseUrlOrDocumentLink", needsServing ? prepareUpload(documentContents)
                 : formatCaseUrl(uiBaseUrl, caseId));
+        } catch (NotificationClientException e) {
+            log.error("Unable to send notification due to ", e);
+        }
+
+        return url.build();
+    }
+
+    private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
+        ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
+
+        try {
+            url.put("caseUrlOrDocumentLink",prepareUpload(documentContents));
         } catch (NotificationClientException e) {
             log.error("Unable to send notification due to ", e);
         }
