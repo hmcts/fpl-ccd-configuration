@@ -114,7 +114,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     void aboutToStartShouldSetDateOfIssueAsTodayByDefault() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
-            .data(mapper.convertValue(CaseData.builder().familyManCaseNumber("123").build(), new TypeReference<>() {}))
+            .data(Map.of("familyManCaseNumber", "123"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
