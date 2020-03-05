@@ -1,5 +1,4 @@
 const { I } = inject();
-const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
   fields: function (index) {
@@ -36,7 +35,12 @@ module.exports = {
     I.fillField(this.fields(elementIndex).applicant.customerReference, applicant.customerReference);
     within(this.fields(elementIndex).applicant.address, () => {
       //XXX postcode lookup
-      postcodeLookup.enterAddressManually(applicant.address);
+      I.fillField(this.fields.buildingAndStreet.lineOne, applicant.address.buildingAndStreet.lineOne);
+      I.fillField(this.fields.buildingAndStreet.lineTwo, applicant.address.buildingAndStreet.lineTwo);
+      I.fillField(this.fields.buildingAndStreet.lineThree, applicant.address.buildingAndStreet.lineThree);
+      I.fillField(this.fields.town, applicant.address.town);
+      I.fillField(this.fields.postcode, applicant.address.postcode);
+      I.fillField(this.fields.country, applicant.address.country);
     });
     I.fillField(this.fields(elementIndex).applicant.telephone, applicant.telephoneNumber);
     I.fillField(this.fields(elementIndex).applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
