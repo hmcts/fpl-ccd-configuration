@@ -45,15 +45,6 @@ module.exports = {
     I.fillField(this.fields(elementIndex).applicant.pbaNumber, applicant.pbaNumber);
     I.fillField(this.fields(elementIndex).applicant.clientCode, applicant.clientCode);
     I.fillField(this.fields(elementIndex).applicant.customerReference, applicant.customerReference);
-    within(this.fields(elementIndex).applicant.address, () => {
-      //XXX postcode lookup
-      I.fillField(this.fields(elementIndex).address.buildingAndStreet.lineOne, applicant.address.buildingAndStreet.lineOne);
-      I.fillField(this.fields(elementIndex).address.buildingAndStreet.lineTwo, applicant.address.buildingAndStreet.lineTwo);
-      I.fillField(this.fields(elementIndex).address.buildingAndStreet.lineThree, applicant.address.buildingAndStreet.lineThree);
-      I.fillField(this.fields(elementIndex).address.town, applicant.address.town);
-      I.fillField(this.fields(elementIndex).address.postcode, applicant.address.postcode);
-      I.fillField(this.fields(elementIndex).address.country, applicant.address.country);
-    });
     I.fillField(this.fields(elementIndex).applicant.telephone, applicant.telephoneNumber);
     I.fillField(this.fields(elementIndex).applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
     I.fillField(this.fields(elementIndex).applicant.mobileNumber, applicant.mobileNumber);
