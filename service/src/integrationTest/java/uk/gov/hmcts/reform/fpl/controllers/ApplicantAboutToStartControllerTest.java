@@ -27,8 +27,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
-    private Organisation organisation = buildOrganisation();
-    private Organisation emptyOrganisation = Organisation.builder().build();
+    private static final Organisation POPULATED_ORGANISATION = buildOrganisation();
+    private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -45,9 +45,9 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(organisationService.findOrganisation()).willReturn(organisation);
+        given(organisationService.findOrganisation()).willReturn(POPULATED_ORGANISATION);
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(organisation);
+        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(POPULATED_ORGANISATION);
     }
 
     @Test
@@ -55,7 +55,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = buildCaseDetails();
 
         given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
-            .willReturn(emptyOrganisation);
+            .willReturn(EMPTY_ORGANISATION);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
@@ -73,7 +73,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         String applicantOrganisationName = unwrapElements(data.getAllApplicants()).get(0)
             .getParty().getOrganisationName();
 
-        String organisationName = organisation.getName();
+        String organisationName = POPULATED_ORGANISATION.getName();
 
         assertThat(applicantOrganisationName).isEqualTo(organisationName);
     }
@@ -84,14 +84,14 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private Organisation buildOrganisation() {
+    private static Organisation buildOrganisation() {
         return Organisation.builder()
             .name("Organisation")
             .contactInformation(buildOrganisationContactInformation())
             .build();
     }
 
-    private List<ContactInformation> buildOrganisationContactInformation() {
+    private static List<ContactInformation> buildOrganisationContactInformation() {
         return List.of(ContactInformation.builder()
             .addressLine1("Flat 12, Pinnacle Apartments")
             .addressLine1("Saffron Central")

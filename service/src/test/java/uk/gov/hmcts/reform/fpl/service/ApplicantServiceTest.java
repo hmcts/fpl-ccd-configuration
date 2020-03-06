@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @SpringBootTest(classes = {ApplicantService.class, ObjectMapper.class})
 class ApplicantServiceTest {
 
-    private static Organisation emptyOrganisation = Organisation.builder().build();
+    private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
 
     @Autowired
     private ApplicantService service;
@@ -35,14 +35,14 @@ class ApplicantServiceTest {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(caseData.getApplicants()).isNull();
-        assertThat(service.expandApplicantCollection(caseData, emptyOrganisation)).hasSize(1);
+        assertThat(service.expandApplicantCollection(caseData, EMPTY_ORGANISATION)).hasSize(1);
     }
 
     @Test
     void shouldNotExpandApplicantCollectionWhenApplicantsAlreadyExists() {
         String uuid = UUID.randomUUID().toString();
 
-        Organisation organisation = emptyOrganisation;
+        Organisation organisation = EMPTY_ORGANISATION;
 
         CaseData caseData = CaseData.builder().applicants(ImmutableList.of(
             Element.<Applicant>builder()
@@ -158,7 +158,7 @@ class ApplicantServiceTest {
         CaseData caseData = CaseData.builder().build();
 
         List<Applicant> applicants = unwrapElements(service.expandApplicantCollection(
-            caseData, emptyOrganisation));
+            caseData, EMPTY_ORGANISATION));
 
         assertThat(applicants.get(0).getParty().getOrganisationName()).isNull();
     }
