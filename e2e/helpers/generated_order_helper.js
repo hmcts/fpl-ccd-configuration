@@ -108,7 +108,7 @@ module.exports = {
     }
   },
 
-  async assertOrder(I, caseViewPage, order, orderNum) {
+  async assertOrder(I, caseViewPage, order, orderNum, defaultIssuedDate) {
     const orderHeading = 'Order ' + orderNum;
     caseViewPage.selectTab(caseViewPage.tabs.orders);
     I.seeAnswerInTab(1, orderHeading, 'Type of order', order.fullType);
@@ -116,7 +116,7 @@ module.exports = {
     if (order.type === 'Blank order (C21)') {
       I.seeAnswerInTab(2, orderHeading, 'Order title', order.title);
       I.seeAnswerInTab(4, orderHeading, 'Order document', order.document);
-      I.seeAnswerInTab(5, orderHeading, 'Date of issue', dateFormat(new Date(), 'd mmmm yyyy'));
+      I.seeAnswerInTab(5, orderHeading, 'Date of issue', dateFormat(defaultIssuedDate, 'd mmmm yyyy'));
     } else {
       I.seeAnswerInTab(2, orderHeading, 'Order document', order.document);
       I.seeAnswerInTab(3, orderHeading, 'Date of issue', dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
