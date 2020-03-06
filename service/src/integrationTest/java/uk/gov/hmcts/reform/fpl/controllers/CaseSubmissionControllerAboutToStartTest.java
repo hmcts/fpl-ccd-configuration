@@ -98,7 +98,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     @Test
     void shouldNotDisplayAmountToPayFieldWhenErrorIsThrown() {
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
-        given(feeService.getFeeAmountForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
+        given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(409, "duplicate", null));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(Map.of())

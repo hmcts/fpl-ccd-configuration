@@ -43,6 +43,7 @@ import javax.validation.groups.Default;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ControllerHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
 @Api
@@ -171,11 +172,5 @@ public class CaseSubmissionController {
 
     private String setSendToCtsc() {
         return featureToggleService.isCtscEnabled() ? YES.getValue() : NO.getValue();
-    }
-
-    private void removeTemporaryFields(CaseDetails caseDetails, String... fields) {
-        for (String field : fields) {
-            caseDetails.getData().remove(field);
-        }
     }
 }

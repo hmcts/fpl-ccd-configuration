@@ -33,6 +33,7 @@ import java.util.UUID;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.ControllerHelper.removeTemporaryFields;
 
 @Api
 @RestController
@@ -177,12 +178,6 @@ public class PlacementController {
             return UUID.fromString(childrenList.toString());
         }
         return mapper.convertValue(childrenList, DynamicList.class).getValueCode();
-    }
-
-    private void removeTemporaryFields(CaseDetails caseDetails, String... fields) {
-        for (String field : fields) {
-            caseDetails.getData().remove(field);
-        }
     }
 
     private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
