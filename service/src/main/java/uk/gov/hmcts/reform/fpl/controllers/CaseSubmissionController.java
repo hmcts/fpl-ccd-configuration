@@ -21,16 +21,17 @@ import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
-import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -58,6 +59,7 @@ public class CaseSubmissionController {
     private final CaseValidatorService caseValidatorService;
     private final ObjectMapper mapper;
     private final RestrictionsConfiguration restrictionsConfiguration;
+    private final PaymentService paymentService;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
 
@@ -75,13 +77,13 @@ public class CaseSubmissionController {
         if (errors.isEmpty()) {
             try {
                 String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
+                data.put("submissionConsentLabel", label);
 
-                if (featureToggleService.isFeesAndPaymentsEnabled()) {
-                    BigDecimal amount = feeService.getFeeAmountForOrders(caseData.getOrders());
-                    data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(amount));
+                if (featureToggleService.isFeesEnabled()) {
+                    FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
+                    data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
                 }
 
-                data.put("submissionConsentLabel", label);
             } catch (FeeRegisterException ignore) {
                 // TODO: 21/02/2020 Replace me in FPLA-1353
                 //  this is an error message for when the Fee Register is unavailable
@@ -162,7 +164,11 @@ public class CaseSubmissionController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody @NotNull CallbackRequest callbackRequest) {
-
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        if (featureToggleService.isPaymentsEnabled()) {
+            paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
+        }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
     }
 

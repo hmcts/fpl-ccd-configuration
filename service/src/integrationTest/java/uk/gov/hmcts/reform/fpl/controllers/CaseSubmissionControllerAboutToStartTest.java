@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -65,9 +66,11 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     @Test
     void shouldAddAmountToPayFieldWhenFeatureToggleIsTrue() {
         Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
-
+        FeesData feesData = FeesData.builder()
+            .totalAmount(BigDecimal.valueOf(123))
+            .build();
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
-        given(feeService.getFeeAmountForOrders(eq(orders))).willReturn(BigDecimal.valueOf(123));
+        given(feeService.getFeesDataForOrders(orders)).willReturn(feesData);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(Map.of("orders", orders))
@@ -78,17 +81,13 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void shouldNotAddAmountToPayFieldWhenFeatureToggleIsFalse() {
-        Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
-
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(false);
-        given(feeService.getFeeAmountForOrders(eq(orders))).willReturn(BigDecimal.valueOf(123));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(Map.of("orders", orders))
+            .data(Map.of())
             .build());
 
-        verify(feeService, never()).getFeeAmountForOrders(any());
-
+        verify(feeService, never()).getFeesDataForOrders(any());
         assertThat(response.getData()).doesNotContainKey("amountToPay");
     }
 
