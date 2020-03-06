@@ -80,6 +80,7 @@ public class CaseSubmissionController {
                 if (featureToggleService.isFeesEnabled()) {
                     FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+                    data.put("displayAmountToPay", YES.getValue());
                 }
             } catch (FeeRegisterException ignore) {
                 data.put("displayAmountToPay", NO.getValue());
