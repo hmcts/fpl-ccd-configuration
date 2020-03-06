@@ -5,13 +5,12 @@ module.exports = {
   address: {
     lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',
     buildingAndStreet: {
-      lineOne: 'Flat 2',
-      lineTwo: 'Caversham House 15-17',
-      lineThree: 'Church Road',
+      lineOne: 'Flat 12, Pinnacle Apartments',
+      lineTwo: 'Saffron Central Square 11',
     },
-    town: 'Reading',
-    postcode: 'RG4 7AA',
-    country: 'United Kingdom',
+    town: 'London',
+    postcode: 'CR0 2GE',
+    county: 'United Kingdom',
   },
   mobileNumber: '07000000000',
   telephoneNumber: '00000000000',

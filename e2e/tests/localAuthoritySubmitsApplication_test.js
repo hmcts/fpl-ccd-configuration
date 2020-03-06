@@ -253,6 +253,11 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   I.seeAnswerInTab(4, 'Party', 'Payment by account (PBA) number', applicant.pbaNumber);
   I.seeAnswerInTab(5, 'Party', 'Client code', applicant.clientCode);
   I.seeAnswerInTab(6, 'Party', 'Customer reference', applicant.customerReference);
+  I.seeAnswerInTab(1, 'Address', 'Building and Street', applicant.address.buildingAndStreet.lineOne);
+  I.seeAnswerInTab(2, 'Address', '', applicant.address.buildingAndStreet.lineTwo);
+  I.seeAnswerInTab(3, 'Address', 'Town or City', applicant.address.town);
+  I.seeAnswerInTab(4, 'Address', 'County', applicant.address.county);
+  I.seeAnswerInTab(5, 'Address', 'Postcode/Zipcode', applicant.address.postcode);
   I.seeAnswerInTab(1, 'Telephone number', 'Telephone number', applicant.telephoneNumber);
   I.seeAnswerInTab(2, 'Telephone number', 'Name of person to contact', applicant.nameOfPersonToContact);
   I.seeAnswerInTab(9, 'Party', 'Job title', applicant.jobTitle);
