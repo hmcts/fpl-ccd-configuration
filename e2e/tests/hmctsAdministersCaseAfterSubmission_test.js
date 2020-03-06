@@ -85,10 +85,14 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
 
 Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
+  await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
+  await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
