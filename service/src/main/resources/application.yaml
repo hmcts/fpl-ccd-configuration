@@ -90,6 +90,9 @@ fees-register:
       jurisdiction2: family court
       service: public law
 
+payment:
+  site_id: ABA3
+
 ld:
   user_key: FPLA
   sdk_key:
@@ -153,6 +156,10 @@ rd_professional:
 
 send-letter:
   url: http://fake-send-letter
+
+payment:
+  api:
+    url: http://fake-payment-api
 
 ccd:
   ui:
@@ -273,6 +280,10 @@ fees-register:
 
 send-letter:
   url: http://localhost:8765
+
+payment:
+  api:
+    url: http://localhost:8765
 
 ccd:
   ui:
