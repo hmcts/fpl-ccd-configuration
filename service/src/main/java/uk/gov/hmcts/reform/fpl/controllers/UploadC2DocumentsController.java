@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,18 +57,25 @@ public class UploadC2DocumentsController {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        if (featureToggleService.isFeesEnabled()) {
-            FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
-            data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-        }
-
         if (isTemporaryDocumentUrlEmpty(caseData)) {
             data.remove("temporaryC2Document");
         }
 
+        List<String> errors = new ArrayList<>(validatePbaNumber(caseData));
+        if (featureToggleService.isFeesEnabled()) {
+            try {
+                FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
+                data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+            } catch (FeeRegisterException ignore) {
+                // TODO: 21/02/2020 Replace me in FPLA-1353
+                //  this is an error message for when the Fee Register is unavailable
+                errors.add("XXX");
+            }
+        }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(validatePbaNumber(caseData))
+            .errors(errors)
             .build();
     }
 
