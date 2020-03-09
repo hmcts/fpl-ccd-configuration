@@ -485,5 +485,6 @@ Scenario('local authority submits after giving consent @create-case-with-mandato
 
 Scenario('local authority confirms payment after submission', async  (I, caseViewPage) => {
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
+  I.refreshPage(); // Remove me
   I.see('2055');
 });
