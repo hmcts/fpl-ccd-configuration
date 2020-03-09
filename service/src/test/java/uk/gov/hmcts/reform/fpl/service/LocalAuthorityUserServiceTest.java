@@ -25,8 +25,6 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
@@ -126,7 +124,7 @@ class LocalAuthorityUserServiceTest {
         willThrow(new RetryableException(500,
             "Some error", GET, null, Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8))).given(caseUserApi)
             .updateCaseRolesForUser(
-                eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("1"), refEq(new CaseUser("1", caseRoles)));
+                AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, "1", new CaseUser("1", caseRoles));
 
         localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
@@ -144,8 +142,7 @@ class LocalAuthorityUserServiceTest {
     private void verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(int times, List<String> userIds) {
         for (String userId : userIds) {
             verify(caseUserApi, times(times)).updateCaseRolesForUser(
-                eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(userId),
-                refEq(new CaseUser(userId, caseRoles)));
+                AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, userId, new CaseUser(userId, caseRoles));
         }
     }
 }

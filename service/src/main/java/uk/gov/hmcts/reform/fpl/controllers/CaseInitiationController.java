@@ -21,7 +21,6 @@ import java.util.Map;
 @RequestMapping("/callback/case-initiation")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseInitiationController {
-
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
 
