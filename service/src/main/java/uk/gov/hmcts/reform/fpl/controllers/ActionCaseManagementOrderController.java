@@ -120,11 +120,11 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        if (sendToAllPartiesBeforeHearingDate(caseData)) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(ImmutableList.of(HEARING_NOT_COMPLETED.getValue()))
-                .build();
-        }
+//        if (sendToAllPartiesBeforeHearingDate(caseData)) {
+//            return AboutToStartOrSubmitCallbackResponse.builder()
+//                .errors(ImmutableList.of(HEARING_NOT_COMPLETED.getValue()))
+//                .build();
+//        }
 
         CaseManagementOrder order = caseData.getCaseManagementOrder();
 

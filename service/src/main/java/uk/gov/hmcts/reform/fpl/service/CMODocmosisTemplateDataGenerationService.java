@@ -124,6 +124,10 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             cmoTemplateData.putAll(getDraftWaterMarkData());
         }
 
+        if(!draft){
+            cmoTemplateData.putAll(getCourtSealData());
+        }
+
         List<Map<String, String>> recitals = buildRecitals(order.getRecitals());
         cmoTemplateData.put(RECITALS.getKey(), recitals);
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
