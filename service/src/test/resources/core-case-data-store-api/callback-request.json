@@ -332,6 +332,7 @@
               "dateOfBirth": "1933-04-02",
               "placeOfBirth": "Reading",
               "litigationIssues": "NO",
+              "relationshipToChild": "Brother",
               "address": {
                 "AddressLine1": "Flat 90",
                 "AddressLine2": "Surrey street",

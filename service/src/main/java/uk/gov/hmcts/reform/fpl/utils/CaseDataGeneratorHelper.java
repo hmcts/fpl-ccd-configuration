@@ -149,36 +149,32 @@ public class CaseDataGeneratorHelper {
     }
 
     public static List<Element<Child>> createPopulatedChildren() {
-        return ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Bran")
-                        .lastName("Stark")
-                        .gender("Male")
-                        .dateOfBirth(LocalDate.now())
-                        .build())
+        return ElementUtils.wrapElements(
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Bran")
+                    .lastName("Stark")
+                    .gender("Boy")
+                    .dateOfBirth(LocalDate.now())
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Sansa")
-                        .lastName("Stark")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Sansa")
+                    .lastName("Stark")
+                    .gender("Boy")
+                    .dateOfBirth(LocalDate.now())
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Jon")
-                        .lastName("Snow")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Jon")
+                    .lastName("Snow")
+                    .gender("Girl")
+                    .dateOfBirth(LocalDate.now())
                     .build())
-                .build());
+                .build()
+        );
     }
 
     public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {

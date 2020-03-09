@@ -40,7 +40,6 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
@@ -233,18 +232,18 @@ class CaseDataExtractionServiceTest {
         return List.of(
             DocmosisChildren.builder()
                 .name("Bran Stark")
-                .gender("Male")
+                .gender("Boy")
                 .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build(),
             DocmosisChildren.builder()
                 .name("Sansa Stark")
-                .gender(DEFAULT)
-                .dateOfBirth(DEFAULT)
+                .gender("Boy")
+                .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build(),
             DocmosisChildren.builder()
                 .name("Jon Snow")
-                .gender(DEFAULT)
-                .dateOfBirth(DEFAULT)
+                .gender("Girl")
+                .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build()
         );
     }

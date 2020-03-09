@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
@@ -46,6 +47,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -79,10 +81,11 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to applicant")
         Element<Applicant>> applicants;
+
+    @Valid
     @NotNull(message = "You need to add details to respondents")
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
 
-    @Valid
     private Optional<Respondent> getFirstRespondent() {
         return findRespondent(0);
     }
@@ -119,6 +122,8 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirectionsCustomCMO;
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
+
+    @NotNull(message = "You need to enter the allocated judge.", groups = SealedSDOGroup.class)
     private final Judge allocatedJudge;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
@@ -178,6 +183,7 @@ public class CaseData {
     }
 
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
+    @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
 
     private LocalDate dateSubmitted;
