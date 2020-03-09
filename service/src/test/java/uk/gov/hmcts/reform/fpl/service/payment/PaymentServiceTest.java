@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.payment;
 
+import feign.FeignException;
+import feign.Request;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -12,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -25,7 +29,11 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
+import static feign.Request.HttpMethod.GET;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -129,6 +137,28 @@ class PaymentServiceTest {
             verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
+        }
+
+        @Test
+        void shouldReturnPaymentsApiExceptionOnFeignException() {
+            String responseBodyContent = "Response message";
+            when(paymentApi.createCreditAccountPayment(any(), any(), any())).thenThrow(
+                new FeignException.UnprocessableEntity("",
+                Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8),
+                responseBodyContent.getBytes()));
+            CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA")
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
+                    .type(WITHOUT_NOTICE)
+                    .pbaNumber("PBA123")
+                    .clientCode("clientCode")
+                    .fileReference("fileReference")
+                    .build())))
+                .build();
+
+            AssertionsForClassTypes.assertThatThrownBy(() -> paymentService.makePaymentForC2(CASE_ID, caseData))
+                .isInstanceOf(PaymentsApiException.class)
+                .hasMessage(responseBodyContent);
         }
 
         private FeesData buildFeesData(FeeDto feeDto) {

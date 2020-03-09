@@ -87,9 +87,9 @@ public class FeeService {
             return fee;
         } catch (FeignException ex) {
             log.error("Fee response error for {}\n\tstatus: {} => message: \"{}\"",
-                parameters, ex.status(), ex.getMessage(), ex);
+                parameters, ex.status(), ex.contentUTF8(), ex);
 
-            throw new FeeRegisterException(ex.status(), ex.getMessage(), ex);
+            throw new FeeRegisterException(ex.status(), ex.contentUTF8(), ex);
         }
     }
 
