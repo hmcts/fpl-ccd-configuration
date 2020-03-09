@@ -24,7 +24,7 @@ You must run this command once to enable modules.
 ./ccd enable backend frontend sidam sidam-local sidam-local-ccd dm-store
 ```
 
-To ensure that the stub of payments make sure that following environmental variable is set:
+To enable the ccd gateway service to route payments requests to our wiremock service make sure that following environmental variable is set:
 ```shell script
 PROXY_PAYMENTS_STUB=http://wiremock:8080/payments
 ```
