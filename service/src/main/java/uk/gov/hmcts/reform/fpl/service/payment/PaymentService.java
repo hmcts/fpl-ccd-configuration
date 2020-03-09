@@ -62,9 +62,7 @@ public class PaymentService {
                 localAuthorityName,
                 feesData);
 
-            paymentApi.createCreditAccountPayment(requestData.authorisation(),
-                authTokenGenerator.generate(),
-                paymentRequest);
+            callPaymentsApi(paymentRequest);
         }
     }
 
@@ -85,16 +83,7 @@ public class PaymentService {
             localAuthorityName,
             feesData);
 
-        try {
-            paymentApi.createCreditAccountPayment(requestData.authorisation(),
-                authTokenGenerator.generate(),
-                paymentRequest);
-        } catch (FeignException ex) {
-            log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
-                paymentRequest, ex.status(), ex.getMessage(), ex);
-
-            throw new PaymentsApiException(ex.status(), ex.getMessage(), ex);
-        }
+        callPaymentsApi(paymentRequest);
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
@@ -121,5 +110,18 @@ public class PaymentService {
         var c2DocumentBundle = unwrapElements(caseData.getC2DocumentBundle());
 
         return c2DocumentBundle.get(c2DocumentBundle.size() - 1);
+    }
+
+    private void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
+        try {
+            paymentApi.createCreditAccountPayment(requestData.authorisation(),
+                authTokenGenerator.generate(),
+                creditAccountPaymentRequest);
+        } catch (FeignException ex) {
+            log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
+                creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
+
+            throw new PaymentsApiException(ex.status(), ex.contentUTF8(), ex);
+        }
     }
 }

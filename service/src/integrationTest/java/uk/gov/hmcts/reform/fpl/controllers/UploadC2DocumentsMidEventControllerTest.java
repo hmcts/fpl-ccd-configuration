@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
@@ -85,5 +86,18 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .build());
 
         assertThat(response.getData()).containsKey("temporaryC2Document");
+    }
+
+    @Test
+    void shouldAddErrorOnFeeRegisterException() {
+        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
+        given(feeService.getFeesDataForC2(any())).willThrow((new FeeRegisterException(1, "", new Throwable())));
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
+            .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
+            .build());
+
+        assertThat(response.getErrors()).contains("XXX");
+        assertThat(response.getData()).doesNotContainKeys("amountToPay");
     }
 }
