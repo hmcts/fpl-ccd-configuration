@@ -106,7 +106,6 @@ withPipeline(type, product, component) {
 
   before('smoketest:aat') {
     env.URL = "https://www-ccd.aat.platform.hmcts.net"
-    curl -k  ${service_base_url}/health -v
     archiveCoreCaseDataDefinitions('aat')
   }
 
