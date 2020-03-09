@@ -119,6 +119,6 @@
     "ListElementCode": "description",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   }
 ]
