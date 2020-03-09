@@ -13,7 +13,7 @@ java:
     PAYMENT_API_URL: http://payment-api-aat.service.core-compute-aat.internal
     FEES_REGISTER_API_URL: http://fees-register-api-aat.service.core-compute-aat.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
-    CCD_UI_BASE_URL: https://ccd-case-management-web-aat.service.core-compute-aat.internal
+    CCD_UI_BASE_URL: http://www-ccd.aat.platform.hmcts.net
     DOCMOSIS_TORNADO_URL: https://docmosis-development.platform.hmcts.net
     SPRING_MAIL_HOST: mta.reform.hmcts.net
     SPRING_MAIL_PORT: 25
