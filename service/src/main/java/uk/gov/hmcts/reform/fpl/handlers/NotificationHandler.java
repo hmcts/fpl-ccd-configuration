@@ -239,15 +239,15 @@ public class NotificationHandler {
         Map<String, Object> parameters =
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(eventData.caseDetails);
 
-        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-        List<Representative> representativesServedByEmail = representativeService.getRepresentativesByServedPreference(
-            caseData.getRepresentatives(), EMAIL);
-
         sendNotification(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters, eventData.reference);
         sendNotificationToRepresentatives(eventData, parameters, DIGITAL_SERVICE,
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE);
         sendOrderIssuedNotificationToAdmin(eventData, noticeOfPlacementEvent.getDocumentContents(),
             NOTICE_OF_PLACEMENT_ORDER);
+
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        List<Representative> representativesServedByEmail = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), EMAIL);
 
         if (!representativesServedByEmail.isEmpty()) {
             sendOrderIssuedNotificationToRepresentatives(eventData, noticeOfPlacementEvent.getDocumentContents(),
