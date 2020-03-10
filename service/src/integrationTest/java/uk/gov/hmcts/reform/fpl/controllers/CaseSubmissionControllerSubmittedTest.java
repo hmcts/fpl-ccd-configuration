@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import com.launchdarkly.client.LDClient;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -8,13 +10,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -34,6 +41,12 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final String HMCTS_ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
+
+    @MockBean
+    private LDClient ldClient;
+
+    @MockBean
+    private PaymentService paymentService;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -138,6 +151,30 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             eq(expectedHmctsParameters),
             eq(CASE_REFERENCE.toString())
         );
+    }
+
+    @Nested
+    class MakePaymentForCaseOrders {
+
+        @Test
+        void shouldMakePaymentWhenFeatureToggleIsTrue() {
+            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+
+            postSubmittedEvent(caseDetails);
+
+            verify(paymentService).makePaymentForCaseOrders(CASE_REFERENCE,
+                mapper.convertValue(caseDetails.getData(), CaseData.class));
+        }
+
+        @Test
+        void shouldNotMakePaymentWhenFeatureToggleIsFalse() {
+            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
+
+            postSubmittedEvent(enableSendToCtscOnCaseDetails(YES));
+
+            verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
+        }
     }
 
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
