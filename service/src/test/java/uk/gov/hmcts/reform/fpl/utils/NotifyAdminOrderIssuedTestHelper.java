@@ -21,7 +21,9 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
@@ -47,6 +49,21 @@ public class NotifyAdminOrderIssuedTestHelper {
 
         resultData.remove("caseUrlOrDocumentLink");
         expectedParameters.remove("caseUrlOrDocumentLink");
+
+        return Maps.difference(expectedParameters, resultData);
+    }
+
+    public static MapDifference<String, Object> verifyNotificationSentToRepresentativesWhenOrderIssued(
+        ArgumentCaptor<Map<String, Object>> dataCaptor, IssuedOrderType issuedOrderType) {
+
+        Map<String, Object> resultData = new HashMap<>(dataCaptor.getValue());
+        Map<String, Object> expectedParameters = getExpectedParametersForRepresentatives(issuedOrderType);
+
+        assertThat(((JSONObject) resultData.get("documentLink")).get("file")).isEqualTo(
+            ((JSONObject) expectedParameters.get("documentLink")).get("file"));
+
+        resultData.remove("documentLink");
+        expectedParameters.remove("documentLink");
 
         return Maps.difference(expectedParameters, resultData);
     }
@@ -78,11 +95,32 @@ public class NotifyAdminOrderIssuedTestHelper {
             .build());
     }
 
+    public static List<Element<Representative>> buildRepresentativesServedByEmail() {
+        return wrapElements(Representative.builder()
+            .email("bill@example.com")
+            .fullName("Bill Bailey")
+            .address(Address.builder()
+                .addressLine1("Street")
+                .postTown("Town")
+                .postcode("Postcode")
+                .build())
+            .servingPreferences(EMAIL)
+            .build());
+    }
+
     private static Map<String, Object> getExpectedParameters(IssuedOrderType issuedOrderType) {
         if (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) {
             return getExpectedParametersForAdminWhenRepresentativesNeedServingByPost();
         } else {
             return getExpectedPlacementParametersForAdminWhenRepresentativesNeedServingByPost();
+        }
+    }
+
+    private static Map<String, Object> getExpectedParametersForRepresentatives(IssuedOrderType issuedOrderType) {
+        if (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) {
+            return getExpectedParametersForRepresentativesServedByEmail();
+        } else {
+            return getExpectedPlacementParametersForRepresentativesServedByEmail();
         }
     }
 
@@ -105,6 +143,34 @@ public class NotifyAdminOrderIssuedTestHelper {
             "respondentLastName", "Jones",
             "representatives", List.of("Paul Blart\nStreet, Town, Postcode"),
             "caseUrlOrDocumentLink", jsonFileObject);
+    }
+
+    private static Map<String, Object> getExpectedParametersForRepresentativesServedByEmail() {
+        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+        Map<String, Object> expectedMap = new HashMap<>();
+
+        expectedMap.put("orderType", BLANK_ORDER.getLabel().toLowerCase());
+        expectedMap.put("respondentLastName", "Jones");
+        expectedMap.put("courtName", EXAMPLE_COURT);
+        expectedMap.put("callout", callout);
+        expectedMap.put("documentLink", jsonFileObject);
+
+        return expectedMap;
+    }
+
+    private static Map<String, Object> getExpectedPlacementParametersForRepresentativesServedByEmail() {
+        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+        Map<String, Object> expectedMap = new HashMap<>();
+
+        expectedMap.put("orderType", NOTICE_OF_PLACEMENT_ORDER.getLabel().toLowerCase());
+        expectedMap.put("respondentLastName", "Jones");
+        expectedMap.put("courtName", EXAMPLE_COURT);
+        expectedMap.put("callout", "");
+        expectedMap.put("documentLink", jsonFileObject);
+
+        return expectedMap;
     }
 
     private static Map<String, Object> getExpectedPlacementParametersForAdminWhenRepresentativesNeedServingByPost() {

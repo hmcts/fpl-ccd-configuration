@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
@@ -72,12 +73,13 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     }
 
     public Map<String, Object> buildOrderNotificationParametersForRepresentatives(final CaseDetails caseDetails,
-                                                                             final String localAuthorityCode,
-                                                                             final byte[] documentContents,
-                                                                             final IssuedOrderType issuedOrderType) {
+                                                                              final String localAuthorityCode,
+                                                                              final byte[] documentContents,
+                                                                              final IssuedOrderType issuedOrderType) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
+            .put("orderType", getTypeOfOrder(caseData, issuedOrderType))
             .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
                 ? "^" + buildSubjectLineWithHearingBookingDateSuffix(buildSubjectLine(caseData),
                 caseData.getHearingDetails()) : "")
@@ -85,6 +87,18 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .putAll(linkToAttachedDocument(documentContents))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .build();
+    }
+
+    private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {
+        String orderType;
+        if (issuedOrderType == GENERATED_ORDER) {
+            orderType = caseData.getOrderCollection().get(
+                caseData.getOrderCollection().size() - 1).getValue().getType().toLowerCase();
+        } else {
+            orderType = issuedOrderType.getLabel().toLowerCase();
+        }
+
+        return orderType;
     }
 
     private Map<String, Object> caseUrlOrDocumentLink(boolean needsServing,
@@ -106,7 +120,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
 
         try {
-            url.put("caseUrlOrDocumentLink", prepareUpload(documentContents));
+            url.put("documentLink", prepareUpload(documentContents));
         } catch (NotificationClientException e) {
             log.error("Unable to send notification due to ", e);
         }

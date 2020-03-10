@@ -62,6 +62,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
@@ -126,12 +127,16 @@ public class NotificationHandler {
     @EventListener
     public void sendNotificationsForOrder(final GeneratedOrderEvent orderEvent) {
         EventData eventData = new EventData(orderEvent);
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
         sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             orderEvent.getMostRecentUploadedDocumentUrl());
 
         sendOrderIssuedNotificationToAdmin(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
-        //sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
+        if (!representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL)
+            .isEmpty()) {
+            sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
+        }
     }
 
     @EventListener
@@ -240,6 +245,15 @@ public class NotificationHandler {
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE);
         sendOrderIssuedNotificationToAdmin(eventData, noticeOfPlacementEvent.getDocumentContents(),
             NOTICE_OF_PLACEMENT_ORDER);
+
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+
+        if (!representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL)
+            .isEmpty()) {
+            sendOrderIssuedNotificationToRepresentatives(eventData, noticeOfPlacementEvent.getDocumentContents(),
+                NOTICE_OF_PLACEMENT_ORDER);
+        }
+
     }
 
     private void sendNotificationToRepresentatives(EventData eventData,
@@ -388,10 +402,8 @@ public class NotificationHandler {
             orderIssuedEmailContentProvider.buildOrderNotificationParametersForRepresentatives(
                 eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
 
-        String email = getHmctsAdminEmail(eventData);
-
-        sendNotification(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters,
-            Long.toString(eventData.getCaseDetails().getId()));
+        sendNotificationToRepresentatives(eventData, parameters, EMAIL,
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES);
     }
 
     private String getHmctsAdminEmail(EventData eventData) {

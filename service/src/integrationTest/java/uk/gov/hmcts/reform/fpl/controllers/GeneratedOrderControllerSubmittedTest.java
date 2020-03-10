@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -36,12 +35,16 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByEmail;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.buildRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.verifyNotificationSentToRepresentativesWhenOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -154,7 +157,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             eq(CASE_ID));
 
         MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor,
-            IssuedOrderType.GENERATED_ORDER);
+            GENERATED_ORDER);
 
         assertThat(difference.areEqual()).isTrue();
 
@@ -190,13 +193,39 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         verifySendDocumentEventTriggered();
     }
 
+    @Test
+    void submittedShouldNotifyRepresentativesServedByEmail() throws Exception {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+
+        Map<String, Object> caseData = getCommonCaseData()
+            .put("representatives", buildRepresentativesServedByEmail())
+            .build();
+
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
+            eq("bill@example.com"),
+            dataCaptor.capture(),
+            eq(CASE_ID));
+
+        MapDifference<String, Object> difference = verifyNotificationSentToRepresentativesWhenOrderIssued(dataCaptor,
+            GENERATED_ORDER);
+
+        assertThat(difference.areEqual()).isTrue();
+
+        verifySendDocumentEventTriggered();
+    }
+
     private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
         return CaseDetails.builder()
-                .id(parseLong(CASE_ID))
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .data(caseData)
-                .build();
+            .id(parseLong(CASE_ID))
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .data(caseData)
+            .build();
     }
 
     private ImmutableMap.Builder<String, Object> getCommonCaseData() {
