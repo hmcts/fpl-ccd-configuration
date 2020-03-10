@@ -128,13 +128,14 @@ public class NotificationHandler {
     public void sendNotificationsForOrder(final GeneratedOrderEvent orderEvent) {
         EventData eventData = new EventData(orderEvent);
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        List<Representative> representativesServedByEmail = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), EMAIL);
 
         sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             orderEvent.getMostRecentUploadedDocumentUrl());
-
         sendOrderIssuedNotificationToAdmin(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
-        if (!representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL)
-            .isEmpty()) {
+
+        if (!representativesServedByEmail.isEmpty()) {
             sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
         }
     }
@@ -233,12 +234,14 @@ public class NotificationHandler {
     public void sendNotificationForNoticeOfPlacementOrderUploaded(
         NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
         EventData eventData = new EventData(noticeOfPlacementEvent);
-
         String recipientEmail = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
             eventData.getLocalAuthorityCode());
-
         Map<String, Object> parameters =
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(eventData.caseDetails);
+
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        List<Representative> representativesServedByEmail = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), EMAIL);
 
         sendNotification(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters, eventData.reference);
         sendNotificationToRepresentatives(eventData, parameters, DIGITAL_SERVICE,
@@ -246,10 +249,7 @@ public class NotificationHandler {
         sendOrderIssuedNotificationToAdmin(eventData, noticeOfPlacementEvent.getDocumentContents(),
             NOTICE_OF_PLACEMENT_ORDER);
 
-        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-
-        if (!representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL)
-            .isEmpty()) {
+        if (!representativesServedByEmail.isEmpty()) {
             sendOrderIssuedNotificationToRepresentatives(eventData, noticeOfPlacementEvent.getDocumentContents(),
                 NOTICE_OF_PLACEMENT_ORDER);
         }
