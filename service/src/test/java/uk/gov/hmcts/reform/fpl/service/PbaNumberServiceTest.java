@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper;
 
 import java.util.List;
 
@@ -21,12 +19,7 @@ class PbaNumberServiceTest {
     private static final String FIRST_NUMBER = "1234567";
     private static final String SECOND_NUMBER = "9876543";
 
-    private PbaNumberService pbaNumberService;
-
-    @BeforeEach
-    void setup() {
-        this.pbaNumberService = new PbaNumberService(new PbaNumberHelper());
-    }
+    private PbaNumberService pbaNumberService = new PbaNumberService();
 
     @Test
     void shouldUpdateForApplicants() {

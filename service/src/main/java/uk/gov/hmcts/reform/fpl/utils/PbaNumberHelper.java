@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -13,14 +11,15 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-@NoArgsConstructor
-@Component
 public class PbaNumberHelper {
 
-    private static final String PBA_NUMBER_REGEX = "PBA\\d{7}";
-    private final Pattern pbaNumberPattern = Pattern.compile(PBA_NUMBER_REGEX);
+    private PbaNumberHelper() {
+    }
 
-    public String setPrefix(String pbaNumber) {
+    private static final String PBA_NUMBER_REGEX = "PBA\\d{7}";
+    private static final Pattern PBA_NUMBER_PATTERN = Pattern.compile(PBA_NUMBER_REGEX);
+
+    public static String setPrefix(String pbaNumber) {
         if (pbaNumber.startsWith("PBA")) {
             return pbaNumber;
         } else if (pbaNumber.startsWith("pba")) {
@@ -29,7 +28,7 @@ public class PbaNumberHelper {
         return "PBA" + pbaNumber;
     }
 
-    public Stream<String> getNonEmptyPbaNumbers(List<Element<Applicant>> applicantElementsList) {
+    public static Stream<String> getNonEmptyPbaNumbers(List<Element<Applicant>> applicantElementsList) {
         return applicantElementsList.stream()
             .map(Element::getValue)
             .map(Applicant::getParty)
@@ -37,13 +36,13 @@ public class PbaNumberHelper {
             .filter(StringUtils::isNotEmpty);
     }
 
-    public Optional<String> getNonEmptyPbaNumber(C2DocumentBundle c2DocumentBundle) {
+    public static Optional<String> getNonEmptyPbaNumber(C2DocumentBundle c2DocumentBundle) {
         return Optional.ofNullable(c2DocumentBundle)
             .map(C2DocumentBundle::getPbaNumber)
             .filter(StringUtils::isNotEmpty);
     }
 
-    public boolean isInvalidPbaNumber(String pbaNumber) {
-        return !pbaNumberPattern.matcher(pbaNumber).matches();
+    public static boolean isInvalidPbaNumber(String pbaNumber) {
+        return !PBA_NUMBER_PATTERN.matcher(pbaNumber).matches();
     }
 }

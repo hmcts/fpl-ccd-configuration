@@ -12,24 +12,24 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumber;
+import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.setPrefix;
 
 class PbaNumberHelperTest {
 
-    private final PbaNumberHelper pbaNumberHelper = new PbaNumberHelper();
-
     @Test
     void shouldReturnUnchangedPbaNumberForCorrectPrefix() {
-        assertThat(pbaNumberHelper.setPrefix("PBA123")).isEqualTo("PBA123");
+        assertThat(setPrefix("PBA123")).isEqualTo("PBA123");
     }
 
     @Test
     void shouldReturnPbaNumberWithPrefixInUppercase() {
-        assertThat(pbaNumberHelper.setPrefix("pba456")).isEqualTo("PBA456");
+        assertThat(setPrefix("pba456")).isEqualTo("PBA456");
     }
 
     @Test
     void shouldReturnPbaNumberWithAddedPrefix() {
-        assertThat(pbaNumberHelper.setPrefix("789")).isEqualTo("PBA789");
+        assertThat(setPrefix("789")).isEqualTo("PBA789");
     }
 
     @Test
@@ -41,7 +41,7 @@ class PbaNumberHelperTest {
             buildApplicantElementWithPbaNumber("test")
         );
 
-        Stream<String> result = pbaNumberHelper.getNonEmptyPbaNumbers(applicantElementsList);
+        Stream<String> result = PbaNumberHelper.getNonEmptyPbaNumbers(applicantElementsList);
 
         assertThat(result).containsExactly("PBA123", "test");
     }
@@ -52,9 +52,9 @@ class PbaNumberHelperTest {
         C2DocumentBundle documentWithEmptyPbaNumber = C2DocumentBundle.builder().pbaNumber("").build();
         C2DocumentBundle documentWithNullPbaNumber = C2DocumentBundle.builder().build();
 
-        assertThat(pbaNumberHelper.getNonEmptyPbaNumber(documentWithNonEmptyPbaNumber)).isEqualTo(Optional.of("123"));
-        assertThat(pbaNumberHelper.getNonEmptyPbaNumber(documentWithEmptyPbaNumber)).isEqualTo(Optional.empty());
-        assertThat(pbaNumberHelper.getNonEmptyPbaNumber(documentWithNullPbaNumber)).isEqualTo(Optional.empty());
+        assertThat(getNonEmptyPbaNumber(documentWithNonEmptyPbaNumber)).isEqualTo(Optional.of("123"));
+        assertThat(getNonEmptyPbaNumber(documentWithEmptyPbaNumber)).isEqualTo(Optional.empty());
+        assertThat(getNonEmptyPbaNumber(documentWithNullPbaNumber)).isEqualTo(Optional.empty());
     }
 
     private Element<Applicant> buildApplicantElementWithPbaNumber(String pbaNumber) {

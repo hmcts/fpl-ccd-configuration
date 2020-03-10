@@ -14,14 +14,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumber;
+import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumbers;
+import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.setPrefix;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PbaNumberService {
 
     private static final String VALIDATION_ERROR_MESSAGE = "Payment by account (PBA) number must include 7 numbers";
-
-    private final PbaNumberHelper pbaNumberHelper;
 
     public List<Element<Applicant>> update(List<Element<Applicant>> applicantElementsList) {
         var applicantsPartitionedByEmptyPbaNumber = applicantElementsList.stream()
@@ -37,23 +38,23 @@ public class PbaNumberService {
     }
 
     public C2DocumentBundle update(C2DocumentBundle c2DocumentBundle) {
-        return pbaNumberHelper.getNonEmptyPbaNumber(c2DocumentBundle)
-            .map(pbaNumberHelper::setPrefix)
+        return getNonEmptyPbaNumber(c2DocumentBundle)
+            .map(PbaNumberHelper::setPrefix)
             .map(pbaNumber -> c2DocumentBundle.toBuilder().pbaNumber(pbaNumber).build())
             .orElse(c2DocumentBundle);
     }
 
     public List<String> validate(List<Element<Applicant>> applicantElementsList) {
-        if (pbaNumberHelper.getNonEmptyPbaNumbers(applicantElementsList)
-            .anyMatch(pbaNumberHelper::isInvalidPbaNumber)) {
+        if (getNonEmptyPbaNumbers(applicantElementsList)
+            .anyMatch(PbaNumberHelper::isInvalidPbaNumber)) {
             return List.of(VALIDATION_ERROR_MESSAGE);
         }
         return List.of();
     }
 
     public List<String> validate(C2DocumentBundle c2DocumentBundle) {
-        if (pbaNumberHelper.getNonEmptyPbaNumber(c2DocumentBundle)
-            .map(pbaNumberHelper::isInvalidPbaNumber)
+        if (getNonEmptyPbaNumber(c2DocumentBundle)
+            .map(PbaNumberHelper::isInvalidPbaNumber)
             .orElse(false)) {
             return List.of(VALIDATION_ERROR_MESSAGE);
         }
@@ -65,7 +66,7 @@ public class PbaNumberService {
     }
 
     private Element<Applicant> updatePbaNumber(Element<Applicant> applicantElement) {
-        var updatedPbaNumber = pbaNumberHelper.setPrefix(applicantElement.getValue().getParty().getPbaNumber());
+        var updatedPbaNumber = setPrefix(applicantElement.getValue().getParty().getPbaNumber());
 
         return Element.<Applicant>builder()
             .id(applicantElement.getId())
