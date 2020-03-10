@@ -478,6 +478,9 @@
           }
         }
       ],
+      "c2ApplicationType": {
+        "type": "WITH_NOTICE"
+      },
       "orderTypeAndDocument": {
         "type": "BLANK_ORDER",
         "document": {
