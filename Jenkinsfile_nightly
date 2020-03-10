@@ -22,7 +22,7 @@ withNightlyPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest') {
-    env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal'
+    env.URL = 'https://www-ccd.aat.platform.hmcts.net'
     env.PROXY_SERVER = 'proxyout.reform.hmcts.net:8080'
 
     try {
