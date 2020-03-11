@@ -31,7 +31,6 @@ import java.util.UUID;
 import static java.lang.Long.parseLong;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -151,10 +150,10 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequest);
 
             verify(notificationClient, never()).sendEmail(
-                eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
-                eq("admin@family-court.com"),
-                eq(expectedTemplateParameters()),
-                eq(CASE_ID));
+                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                "admin@family-court.com",
+                expectedTemplateParameters(),
+                CASE_ID);
 
             verify(notificationClient).sendEmail(
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
@@ -181,10 +180,10 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequest);
 
             verify(notificationClient, never()).sendEmail(
-                eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
-                eq("admin@family-court.com"),
-                eq(expectedTemplateParameters()),
-                eq(CASE_ID));
+                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                "admin@family-court.com",
+                expectedTemplateParameters(),
+                CASE_ID);
         }
 
         private Map<String, Object> expectedTemplateParameters() {
@@ -207,34 +206,34 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequestWithEmptyCaseDetailsBefore());
 
             verify(notificationClient).sendEmail(
-                eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
-                eq("admin@family-court.com"),
-                eq(expectedParameters()),
-                eq(CASE_ID));
+                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                "admin@family-court.com",
+                expectedParameters(),
+                CASE_ID);
 
             verify(notificationClient).sendEmail(
-                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-                eq("local-authority@local-authority.com"),
-                eq(expectedParameters()),
-                eq(CASE_ID));
+                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
+                "local-authority@local-authority.com",
+                expectedParameters(),
+                CASE_ID);
 
             verify(notificationClient).sendEmail(
-                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-                eq("representative@example.com"),
-                eq(expectedParameters()),
-                eq(CASE_ID));
+                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
+                "representative@example.com",
+                expectedParameters(),
+                CASE_ID);
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("admin@family-court.com"),
-                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq(CASE_ID));
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+                "admin@family-court.com",
+                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                CASE_ID);
 
             verify(notificationClient, never()).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("FamilyPublicLaw+ctsc@gmail.com"),
-                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq(CASE_ID));
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+                "FamilyPublicLaw+ctsc@gmail.com",
+                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                CASE_ID);
 
             verifyZeroInteractions(notificationClient);
         }
@@ -262,16 +261,16 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequest);
 
             verify(notificationClient, never()).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("admin@family-court.com"),
-                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq(CASE_ID));
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+                "admin@family-court.com",
+                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                CASE_ID);
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("FamilyPublicLaw+ctsc@gmail.com"),
-                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq(CASE_ID));
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+                "FamilyPublicLaw+ctsc@gmail.com",
+                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                CASE_ID);
         }
 
         @Test
@@ -279,16 +278,16 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequestWithMatchingCaseDetailsBefore());
 
             verify(notificationClient, never()).sendEmail(
-                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-                eq("local-authority@local-authority.com"),
-                eq(expectedParameters()),
-                eq(CASE_ID));
+                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
+                "local-authority@local-authority.com",
+                expectedParameters(),
+                CASE_ID);
 
             verify(notificationClient, never()).sendEmail(
-                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-                eq("representative@example.com"),
-                eq(expectedParameters()),
-                eq(CASE_ID));
+                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
+                "representative@example.com",
+                expectedParameters(),
+                CASE_ID);
         }
 
         private Map<String, Object> expectedParameters() {

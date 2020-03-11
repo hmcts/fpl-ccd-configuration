@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,13 +15,9 @@ import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderProgressionService;
 @Api
 @RestController
 @RequestMapping("/callback/cmo-progression")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderProgressionController {
     private final CaseManagementOrderProgressionService progressionService;
-
-    @Autowired
-    public CaseManagementOrderProgressionController(CaseManagementOrderProgressionService progressionService) {
-        this.progressionService = progressionService;
-    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {

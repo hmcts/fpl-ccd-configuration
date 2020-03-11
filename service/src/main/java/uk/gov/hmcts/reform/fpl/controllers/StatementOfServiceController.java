@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,21 +21,12 @@ import java.util.Map;
 @Api
 @RestController
 @RequestMapping("/callback/statement-of-service")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StatementOfServiceController {
-
     private static final String CONSENT_TEMPLATE = "I, %s, have served the documents as stated.";
     private final UserDetailsService userDetailsService;
     private final MapperService mapperService;
     private final StatementOfServiceService statementOfServiceService;
-
-    @Autowired
-    public StatementOfServiceController(UserDetailsService userDetailsService,
-                                        MapperService mapperService,
-                                        StatementOfServiceService statementOfServiceService) {
-        this.userDetailsService = userDetailsService;
-        this.statementOfServiceService = statementOfServiceService;
-        this.mapperService = mapperService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
