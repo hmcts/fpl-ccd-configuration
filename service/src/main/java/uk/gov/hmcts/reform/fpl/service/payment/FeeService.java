@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
 
 @Slf4j
