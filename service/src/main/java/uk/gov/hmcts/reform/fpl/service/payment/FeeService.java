@@ -94,11 +94,12 @@ public class FeeService {
     }
 
     private FeesData buildFeesDataFromFeeResponses(List<FeeResponse> feeResponses) {
+        var feeDto = extractFeeToUse(feeResponses).map(FeeDto::fromFeeResponse)
+            .orElse(FeeDto.builder().calculatedAmount(BigDecimal.ZERO).build());
+
         return FeesData.builder()
-            .totalAmount(extractFeeToUse(feeResponses).map(FeeResponse::getAmount).orElse(BigDecimal.ZERO))
-            .fees(feeResponses.stream()
-                .map(FeeDto::fromFeeResponse)
-                .collect(toList()))
+            .totalAmount(feeDto.getCalculatedAmount())
+            .fees(List.of(feeDto))
             .build();
     }
 }
