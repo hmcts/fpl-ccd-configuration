@@ -28,9 +28,9 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
-public class NotifyAdminOrderIssuedTestHelper {
+public class OrderIssuedNotificationTestHelper {
 
-    private NotifyAdminOrderIssuedTestHelper() {
+    private OrderIssuedNotificationTestHelper() {
     }
 
     private static final byte[] PDF = {1, 2, 3, 4, 5};
