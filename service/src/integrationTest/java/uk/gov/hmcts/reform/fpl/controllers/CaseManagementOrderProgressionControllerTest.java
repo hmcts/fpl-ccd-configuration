@@ -31,7 +31,6 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
@@ -94,8 +93,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         cmoCommonAssertions(responseData, caseDataBefore);
 
         verify(notificationClient).sendEmail(
-            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedJudgeRejectedNotificationParameters()), eq(caseId.toString()));
+            CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            expectedJudgeRejectedNotificationParameters(), caseId.toString());
     }
 
     private void cmoCommonAssertions(CaseData responseData, CaseData caseDataBefore) {
@@ -119,8 +118,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, ACTION_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedJudgeRejectedNotificationParameters()), eq(caseId.toString()));
+            CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            expectedJudgeRejectedNotificationParameters(), caseId.toString());
     }
 
     @Test
@@ -151,12 +150,12 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(HMCTS_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
     }
 
     @Test
@@ -168,12 +167,12 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(HMCTS_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
 
         verify(notificationClient).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
     }
 
     @Test
@@ -185,12 +184,12 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(HMCTS_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString())
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString()
         );
     }
 

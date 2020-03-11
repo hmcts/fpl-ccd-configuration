@@ -17,7 +17,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("callback/enter-other-proceedings")
 public class OtherProceedingsController {
-
     private static final String ERROR_MESSAGE = "You must say if there are any other proceedings relevant to this case";
 
     @SuppressWarnings("unchecked")

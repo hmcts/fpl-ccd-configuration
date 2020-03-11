@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -241,8 +240,8 @@ class NotificationHandlerTest {
                 new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, never())
-                .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-admin@test.com"),
-                    eq(c2Parameters), eq("12345"));
+                .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-admin@test.com",
+                    c2Parameters, "12345");
         }
 
         @Test
@@ -257,7 +256,7 @@ class NotificationHandlerTest {
                 new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient).sendEmail(
-                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(c2Parameters), eq("12345"));
+                C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-non-admin@test.com", c2Parameters, "12345");
         }
 
         @Test
@@ -280,10 +279,10 @@ class NotificationHandlerTest {
                 new C2UploadedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationClient).sendEmail(
-                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
-                eq(CTSC_INBOX),
-                eq(c2Parameters),
-                eq("12345"));
+                C2_UPLOAD_NOTIFICATION_TEMPLATE,
+                CTSC_INBOX,
+                c2Parameters,
+                "12345");
         }
 
         @Test
@@ -292,16 +291,16 @@ class NotificationHandlerTest {
                 AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, documentContents));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(orderLocalAuthorityParameters),
-                eq("12345"));
+                ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA,
+                LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                orderLocalAuthorityParameters,
+                "12345");
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(COURT_EMAIL_ADDRESS),
-                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq("12345"));
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+                COURT_EMAIL_ADDRESS,
+                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                "12345");
         }
 
         @Test
@@ -321,10 +320,10 @@ class NotificationHandlerTest {
                 AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, documentContents));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(CTSC_INBOX),
-                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq("12345"));
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+                CTSC_INBOX,
+                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                "12345");
         }
     }
 
@@ -371,16 +370,16 @@ class NotificationHandlerTest {
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(expectedCMOIssuedNotificationParameters),
-                eq("12345"));
+                CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
+                LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                expectedCMOIssuedNotificationParameters,
+                "12345");
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(COURT_EMAIL_ADDRESS),
-                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq("12345"));
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+                COURT_EMAIL_ADDRESS,
+                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                "12345");
         }
 
         @Test
@@ -402,10 +401,10 @@ class NotificationHandlerTest {
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(CTSC_INBOX),
-                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq("12345"));
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+                CTSC_INBOX,
+                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                "12345");
         }
 
         @Test
@@ -430,10 +429,10 @@ class NotificationHandlerTest {
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE),
-                eq("abc@example.com"),
-                eq(expectedCMOIssuedNotificationParametersForRepresentative),
-                eq("12345"));
+                CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
+                "abc@example.com",
+                expectedCMOIssuedNotificationParametersForRepresentative,
+                "12345");
         }
 
         @Test
@@ -451,10 +450,10 @@ class NotificationHandlerTest {
                 new CaseManagementOrderRejectedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_REJECTED_BY_JUDGE_TEMPLATE),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(expectedCMORejectedNotificationParameters),
-                eq("12345"));
+                CMO_REJECTED_BY_JUDGE_TEMPLATE,
+                LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                expectedCMORejectedNotificationParameters,
+                "12345");
         }
 
         @Test
@@ -473,10 +472,10 @@ class NotificationHandlerTest {
                 new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE),
-                eq(COURT_EMAIL_ADDRESS),
-                eq(expectedCMOReadyForJudgeNotificationParameters),
-                eq("12345"));
+                CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
+                COURT_EMAIL_ADDRESS,
+                expectedCMOReadyForJudgeNotificationParameters,
+                "12345");
         }
 
         @Test
@@ -494,10 +493,10 @@ class NotificationHandlerTest {
                 new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationClient).sendEmail(
-                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE),
-                eq(CTSC_INBOX),
-                eq(expectedCMOReadyForJudgeNotificationParameters),
-                eq("12345"));
+                CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
+                CTSC_INBOX,
+                expectedCMOReadyForJudgeNotificationParameters,
+                "12345");
         }
 
         private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
@@ -597,10 +596,10 @@ class NotificationHandlerTest {
             new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq(COURT_EMAIL_ADDRESS),
-            eq(expectedParameters),
-            eq("12345"));
+            HMCTS_COURT_SUBMISSION_TEMPLATE,
+            COURT_EMAIL_ADDRESS,
+            expectedParameters,
+            "12345");
     }
 
     @Test
@@ -634,10 +633,10 @@ class NotificationHandlerTest {
             new SubmittedCaseEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq(CTSC_INBOX),
-            eq(expectedParameters),
-            eq("12345"));
+            HMCTS_COURT_SUBMISSION_TEMPLATE,
+            CTSC_INBOX,
+            expectedParameters,
+            "12345");
     }
 
     @Test
@@ -669,8 +668,8 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            eq(expectedParameters), eq("12345"));
+            CAFCASS_SUBMISSION_TEMPLATE, CAFCASS_EMAIL_ADDRESS,
+            expectedParameters, "12345");
     }
 
     @Test
@@ -701,8 +700,8 @@ class NotificationHandlerTest {
             new NotifyGatekeeperEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS),
-            eq(expectedParameters), eq("12345"));
+            GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL_ADDRESS,
+            expectedParameters, "12345");
     }
 
     @Test
@@ -723,10 +722,10 @@ class NotificationHandlerTest {
             new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE),
-            eq(CAFCASS_EMAIL_ADDRESS),
-            eq(expectedParameters),
-            eq("12345"));
+            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
+            CAFCASS_EMAIL_ADDRESS,
+            expectedParameters,
+            "12345");
     }
 
     @Test
@@ -751,8 +750,8 @@ class NotificationHandlerTest {
             new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters),
-            eq("12345"));
+            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS, expectedParameters,
+            "12345");
     }
 
     @Nested
@@ -783,16 +782,16 @@ class NotificationHandlerTest {
                 new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID, documentContents));
 
             verify(notificationClient).sendEmail(
-                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(parameters),
-                eq("12345"));
+                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
+                LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                parameters,
+                "12345");
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq(COURT_EMAIL_ADDRESS),
-                eq(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost()),
-                eq("12345"));
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+                COURT_EMAIL_ADDRESS,
+                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                "12345");
         }
     }
 
@@ -812,10 +811,10 @@ class NotificationHandlerTest {
             new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
-            eq(COURT_EMAIL_ADDRESS),
-            eq(expectedParameters),
-            eq("12345"));
+            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            COURT_EMAIL_ADDRESS,
+            expectedParameters,
+            "12345");
     }
 
     @Test
@@ -843,16 +842,16 @@ class NotificationHandlerTest {
             new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE),
-            eq(PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS),
-            eq(expectedEmailParameters),
-            eq("12345"));
+            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+            PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS,
+            expectedEmailParameters,
+            "12345");
 
         verify(notificationClient).sendEmail(
-            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
-            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
-            eq(expectedDigitalParameters),
-            eq("12345"));
+            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE,
+            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL,
+            expectedDigitalParameters,
+            "12345");
     }
 
     @Test
@@ -871,10 +870,10 @@ class NotificationHandlerTest {
             new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationClient).sendEmail(
-            eq(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
-            eq(CTSC_INBOX),
-            eq(expectedParameters),
-            eq("12345"));
+            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            CTSC_INBOX,
+            expectedParameters,
+            "12345");
     }
 
     private List<Representative> getExpectedDigitalRepresentativesForAddingPartiesToCase() {

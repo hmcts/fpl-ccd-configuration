@@ -30,7 +30,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @RequestMapping("/callback/manage-representatives")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepresentativesController {
-
     private final ObjectMapper mapper;
     private final RepresentativeService representativeService;
     private final RespondentService respondentService;

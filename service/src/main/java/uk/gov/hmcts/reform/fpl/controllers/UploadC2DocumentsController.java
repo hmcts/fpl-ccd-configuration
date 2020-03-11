@@ -23,11 +23,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
-import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -51,17 +51,21 @@ public class UploadC2DocumentsController {
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final FeatureToggleService featureToggleService;
+    private final PbaNumberService pbaNumberService;
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
+        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
+        data.put("temporaryC2Document", updatedTemporaryC2Document);
+
         if (isTemporaryDocumentUrlEmpty(caseData)) {
             data.remove("temporaryC2Document");
         }
 
-        List<String> errors = new ArrayList<>(validatePbaNumber(caseData));
+        List<String> errors = new ArrayList<>(pbaNumberService.validate(updatedTemporaryC2Document));
         if (featureToggleService.isFeesEnabled()) {
             try {
                 FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
@@ -111,13 +115,6 @@ public class UploadC2DocumentsController {
             .map(C2DocumentBundle::getDocument)
             .map(DocumentReference::getUrl)
             .isEmpty();
-    }
-
-    private List<String> validatePbaNumber(CaseData caseData) {
-        return Optional.ofNullable(caseData.getTemporaryC2Document())
-            .map(C2DocumentBundle::getPbaNumber)
-            .map(PBANumberHelper::validatePBANumber)
-            .orElse(List.of());
     }
 
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData, String authorization) {
