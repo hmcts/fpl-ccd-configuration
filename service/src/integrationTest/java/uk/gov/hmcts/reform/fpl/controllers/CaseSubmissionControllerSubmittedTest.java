@@ -78,22 +78,22 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent("core-case-data-store-api/callback-request.json");
 
         verify(notificationClient).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq(HMCTS_ADMIN_EMAIL),
-            eq(completeHmctsParameters),
-            eq(CASE_REFERENCE.toString()));
+            HMCTS_COURT_SUBMISSION_TEMPLATE,
+            HMCTS_ADMIN_EMAIL,
+            completeHmctsParameters,
+            CASE_REFERENCE.toString());
 
         verify(notificationClient).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE),
-            eq(CAFCASS_EMAIL),
-            eq(completeCafcassParameters),
-            eq(CASE_REFERENCE.toString()));
+            CAFCASS_SUBMISSION_TEMPLATE,
+            CAFCASS_EMAIL,
+            completeCafcassParameters,
+            CASE_REFERENCE.toString());
 
         verify(notificationClient, never()).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            eq(completeHmctsParameters),
-            eq(CASE_REFERENCE.toString()));
+            HMCTS_COURT_SUBMISSION_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            completeHmctsParameters,
+            CASE_REFERENCE.toString());
     }
 
     @Test
@@ -111,22 +111,22 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq(HMCTS_ADMIN_EMAIL),
-            eq(expectedHmctsParameters),
-            eq(CASE_REFERENCE.toString()));
+            HMCTS_COURT_SUBMISSION_TEMPLATE,
+            HMCTS_ADMIN_EMAIL,
+            expectedHmctsParameters,
+            CASE_REFERENCE.toString());
 
         verify(notificationClient).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE),
-            eq(CAFCASS_EMAIL),
-            eq(expectedCafcassParameters),
-            eq(CASE_REFERENCE.toString()));
+            CAFCASS_SUBMISSION_TEMPLATE,
+            CAFCASS_EMAIL,
+            expectedCafcassParameters,
+            CASE_REFERENCE.toString());
 
         verify(notificationClient, never()).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq(CTSC_EMAIL),
-            eq(expectedHmctsParameters),
-            eq(CASE_REFERENCE.toString()));
+            HMCTS_COURT_SUBMISSION_TEMPLATE,
+            CTSC_EMAIL,
+            expectedHmctsParameters,
+            CASE_REFERENCE.toString());
     }
 
     @Test
@@ -139,17 +139,17 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient, never()).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq(HMCTS_ADMIN_EMAIL),
-            eq(expectedHmctsParameters),
-            eq(CASE_REFERENCE.toString())
+            HMCTS_COURT_SUBMISSION_TEMPLATE,
+            HMCTS_ADMIN_EMAIL,
+            expectedHmctsParameters,
+            CASE_REFERENCE.toString()
         );
 
         verify(notificationClient).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
-            eq(CTSC_EMAIL),
-            eq(expectedHmctsParameters),
-            eq(CASE_REFERENCE.toString())
+            HMCTS_COURT_SUBMISSION_TEMPLATE,
+            CTSC_EMAIL,
+            expectedHmctsParameters,
+            CASE_REFERENCE.toString()
         );
     }
 
