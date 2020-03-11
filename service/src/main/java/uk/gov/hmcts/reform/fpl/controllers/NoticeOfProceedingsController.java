@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,11 +39,11 @@ import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-@RequestMapping("/callback/notice-of-proceedings")
 @Api
 @RestController
+@RequestMapping("/callback/notice-of-proceedings")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfProceedingsController {
-
     private final ObjectMapper mapper;
     private final ValidateGroupService eventValidationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -50,23 +51,6 @@ public class NoticeOfProceedingsController {
     private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
     private final DateFormatterService dateFormatterService;
-
-    @Autowired
-    private NoticeOfProceedingsController(ObjectMapper mapper,
-                                          ValidateGroupService eventValidationService,
-                                          DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                                          UploadDocumentService uploadDocumentService,
-                                          HearingBookingService hearingBookingService,
-                                          DateFormatterService dateFormatterService,
-                                          NoticeOfProceedingsService noticeOfProceedingsService) {
-        this.mapper = mapper;
-        this.eventValidationService = eventValidationService;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.hearingBookingService = hearingBookingService;
-        this.dateFormatterService = dateFormatterService;
-        this.noticeOfProceedingsService = noticeOfProceedingsService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {

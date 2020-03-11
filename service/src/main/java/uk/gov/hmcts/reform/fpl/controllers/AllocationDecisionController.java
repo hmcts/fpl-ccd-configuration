@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,15 +21,10 @@ import java.util.Map;
 @Api
 @RestController
 @RequestMapping("/callback/allocation-decision")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AllocationDecisionController {
     private final ObjectMapper mapper;
     private final CourtLevelAllocationService service;
-
-    @Autowired
-    public AllocationDecisionController(ObjectMapper mapper, CourtLevelAllocationService service) {
-        this.mapper = mapper;
-        this.service = service;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
