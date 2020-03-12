@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MapDifference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -33,7 +32,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -65,7 +63,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdmin;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotification;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotificationForOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -195,9 +193,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        MapDifference<String, Object> difference = verifyNotification(dataCaptor,
-            () -> getExpectedParametersForAdmin(CMO), "caseUrlOrDocumentLink");
-        assertThat(difference.areEqual()).isTrue();
+        verifyNotificationForOrderIssued(dataCaptor, () -> getExpectedParametersForAdmin(CMO), "caseUrlOrDocumentLink");
 
         verifyZeroInteractions(notificationClient);
     }

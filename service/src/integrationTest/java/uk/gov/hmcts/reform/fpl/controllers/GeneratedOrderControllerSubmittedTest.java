@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MapDifference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,7 +22,6 @@ import java.time.format.FormatStyle;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -45,7 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.bu
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdmin;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotification;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotificationForOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -157,10 +155,8 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        MapDifference<String, Object> difference = verifyNotification(dataCaptor,
-            () -> getExpectedParametersForAdmin(GENERATED_ORDER), "caseUrlOrDocumentLink");
-
-        assertThat(difference.areEqual()).isTrue();
+        verifyNotificationForOrderIssued(dataCaptor, () -> getExpectedParametersForAdmin(GENERATED_ORDER),
+            "caseUrlOrDocumentLink");
 
         verifyZeroInteractions(notificationClient);
         verifySendDocumentEventTriggered();
@@ -212,10 +208,8 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        MapDifference<String, Object> difference = verifyNotification(dataCaptor,
-            () -> getExpectedParametersForRepresentatives(GENERATED_ORDER), "documentLink");
-
-        assertThat(difference.areEqual()).isTrue();
+        verifyNotificationForOrderIssued(dataCaptor, () -> getExpectedParametersForRepresentatives(GENERATED_ORDER),
+            "documentLink");
 
         verifySendDocumentEventTriggered();
     }

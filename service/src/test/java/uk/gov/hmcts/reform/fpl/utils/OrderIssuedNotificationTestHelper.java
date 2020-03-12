@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -39,10 +40,11 @@ public class OrderIssuedNotificationTestHelper {
     private static final String callout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().plusMonths(3)
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
-    public static MapDifference<String, Object> verifyNotification(ArgumentCaptor<Map<String, Object>> captor,
-        Supplier<Map<String, Object>> expectedParametersFunction, String jsonObjectFile) {
+    public static void verifyNotificationForOrderIssued(ArgumentCaptor<Map<String, Object>> captor,
+                                                        Supplier<Map<String, Object>> expectedParametersSupplier,
+                                                        String jsonObjectFile) {
         Map<String, Object> results = new HashMap<>(captor.getValue());
-        Map<String, Object> expected = expectedParametersFunction.get();
+        Map<String, Object> expected = expectedParametersSupplier.get();
 
         JSONAssert.assertEquals(((JSONObject) results.get(jsonObjectFile)), ((JSONObject) expected.get(jsonObjectFile)),
             true);
@@ -50,7 +52,8 @@ public class OrderIssuedNotificationTestHelper {
         results.remove(jsonObjectFile);
         expected.remove(jsonObjectFile);
 
-        return Maps.difference(expected, results);
+        MapDifference<String, Object> difference = Maps.difference(expected, results);
+        assertThat(difference.areEqual()).isTrue();
     }
 
     public static Map<String, Object> getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost() {
