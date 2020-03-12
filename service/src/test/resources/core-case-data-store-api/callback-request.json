@@ -501,7 +501,7 @@
       "familyManCaseNumber": "12345L",
       "representatives": [
         {
-          "id": "ca15c188-14d2-49a3-ac61-fdd7c6c7dc9b",
+          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
           "value": {
             "fullName": "Fred Flinstone",
             "positionInACase": "Cafcass Guardian",
@@ -521,7 +521,7 @@
           "role" : "CAFCASS_GUARDIAN"
         },
         {
-          "id": "ca15c188-14d2-49a3-ac61-fdd7c6c7dc9b",
+          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
           "value": {
             "fullName": "Barney Rubble",
             "positionInACase": "Cafcass Solicitor",

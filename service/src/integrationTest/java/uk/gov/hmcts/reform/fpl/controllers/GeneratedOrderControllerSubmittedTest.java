@@ -42,9 +42,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByEmail;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdmin;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotificationSentToRepresentativesWhenOrderIssued;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotification;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -156,8 +157,8 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor,
-            GENERATED_ORDER);
+        MapDifference<String, Object> difference = verifyNotification(dataCaptor,
+            () -> getExpectedParametersForAdmin(GENERATED_ORDER), "caseUrlOrDocumentLink");
 
         assertThat(difference.areEqual()).isTrue();
 
@@ -211,8 +212,8 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        MapDifference<String, Object> difference = verifyNotificationSentToRepresentativesWhenOrderIssued(dataCaptor,
-            GENERATED_ORDER);
+        MapDifference<String, Object> difference = verifyNotification(dataCaptor,
+            () -> getExpectedParametersForRepresentatives(GENERATED_ORDER), "documentLink");
 
         assertThat(difference.areEqual()).isTrue();
 

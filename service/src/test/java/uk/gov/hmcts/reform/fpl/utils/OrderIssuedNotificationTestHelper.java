@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.mockito.ArgumentCaptor;
+import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -18,9 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -38,34 +39,18 @@ public class OrderIssuedNotificationTestHelper {
     private static final String callout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().plusMonths(3)
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
-    public static MapDifference<String, Object> verifyNotificationSentToAdminWhenOrderIssued(
-        ArgumentCaptor<Map<String, Object>> dataCaptor, IssuedOrderType issuedOrderType) {
+    public static MapDifference<String, Object> verifyNotification(ArgumentCaptor<Map<String, Object>> captor,
+        Supplier<Map<String, Object>> expectedParametersFunction, String jsonObjectFile) {
+        Map<String, Object> results = new HashMap<>(captor.getValue());
+        Map<String, Object> expected = expectedParametersFunction.get();
 
-        Map<String, Object> resultData = new HashMap<>(dataCaptor.getValue());
-        Map<String, Object> expectedParameters = getExpectedParameters(issuedOrderType);
+        JSONAssert.assertEquals(((JSONObject) results.get(jsonObjectFile)), ((JSONObject) expected.get(jsonObjectFile)),
+            true);
 
-        assertThat(((JSONObject) resultData.get("caseUrlOrDocumentLink")).get("file")).isEqualTo(
-            ((JSONObject) expectedParameters.get("caseUrlOrDocumentLink")).get("file"));
+        results.remove(jsonObjectFile);
+        expected.remove(jsonObjectFile);
 
-        resultData.remove("caseUrlOrDocumentLink");
-        expectedParameters.remove("caseUrlOrDocumentLink");
-
-        return Maps.difference(expectedParameters, resultData);
-    }
-
-    public static MapDifference<String, Object> verifyNotificationSentToRepresentativesWhenOrderIssued(
-        ArgumentCaptor<Map<String, Object>> dataCaptor, IssuedOrderType issuedOrderType) {
-
-        Map<String, Object> resultData = new HashMap<>(dataCaptor.getValue());
-        Map<String, Object> expectedParameters = getExpectedParametersForRepresentatives(issuedOrderType);
-
-        assertThat(((JSONObject) resultData.get("documentLink")).get("file")).isEqualTo(
-            ((JSONObject) expectedParameters.get("documentLink")).get("file"));
-
-        resultData.remove("documentLink");
-        expectedParameters.remove("documentLink");
-
-        return Maps.difference(expectedParameters, resultData);
+        return Maps.difference(expected, results);
     }
 
     public static Map<String, Object> getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost() {
@@ -108,7 +93,7 @@ public class OrderIssuedNotificationTestHelper {
             .build());
     }
 
-    private static Map<String, Object> getExpectedParameters(IssuedOrderType issuedOrderType) {
+    public static Map<String, Object> getExpectedParametersForAdmin(IssuedOrderType issuedOrderType) {
         if (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) {
             return getExpectedParametersForAdminWhenRepresentativesNeedServingByPost();
         } else {
@@ -116,7 +101,7 @@ public class OrderIssuedNotificationTestHelper {
         }
     }
 
-    private static Map<String, Object> getExpectedParametersForRepresentatives(IssuedOrderType issuedOrderType) {
+    public static Map<String, Object> getExpectedParametersForRepresentatives(IssuedOrderType issuedOrderType) {
         if (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) {
             return getExpectedParametersForRepresentativesServedByEmail();
         } else {

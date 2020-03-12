@@ -63,8 +63,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedu
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdmin;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotificationSentToAdminWhenOrderIssued;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotification;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -83,7 +84,6 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
     private final DocumentReference cmoDocument = DocumentReference.buildFromDocument(document());
-
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -195,7 +195,8 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        MapDifference<String, Object> difference = verifyNotificationSentToAdminWhenOrderIssued(dataCaptor, CMO);
+        MapDifference<String, Object> difference = verifyNotification(dataCaptor,
+            () -> getExpectedParametersForAdmin(CMO), "caseUrlOrDocumentLink");
         assertThat(difference.areEqual()).isTrue();
 
         verifyZeroInteractions(notificationClient);
