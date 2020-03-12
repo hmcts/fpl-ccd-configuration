@@ -33,7 +33,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequestMapping("/callback/manage-representatives")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepresentativesController {
-
     private final ObjectMapper mapper;
     private final RepresentativeService representativeService;
     private final RespondentService respondentService;

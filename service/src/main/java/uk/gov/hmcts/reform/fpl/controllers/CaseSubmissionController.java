@@ -51,7 +51,6 @@ import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFil
 @RequestMapping("/callback/case-submission")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseSubmissionController {
-
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
     private final UserDetailsService userDetailsService;
     private final DocumentGeneratorService documentGeneratorService;
