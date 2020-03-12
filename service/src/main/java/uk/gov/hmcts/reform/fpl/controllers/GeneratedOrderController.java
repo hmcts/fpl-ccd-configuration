@@ -51,9 +51,9 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 
 @Slf4j
 @Api
+@RestController
 @RequestMapping("/callback/create-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@RestController
 public class GeneratedOrderController {
     private final ObjectMapper mapper;
     private final GeneratedOrderService service;

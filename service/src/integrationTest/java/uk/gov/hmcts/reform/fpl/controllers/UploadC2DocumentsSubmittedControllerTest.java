@@ -68,17 +68,17 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         postSubmittedEvent(enableSendToCtscOnCaseDetails(NO));
 
         verify(notificationClient).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
-            eq("admin@family-court.com"),
-            eq(expectedNotificationParams()),
-            eq(CASE_ID.toString())
+            C2_UPLOAD_NOTIFICATION_TEMPLATE,
+            "admin@family-court.com",
+            expectedNotificationParams(),
+            CASE_ID.toString()
         );
 
         verify(notificationClient, never()).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            eq(expectedNotificationParams()),
-            eq(CASE_ID.toString())
+            C2_UPLOAD_NOTIFICATION_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedNotificationParams(),
+            CASE_ID.toString()
         );
     }
 
@@ -87,16 +87,16 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         postSubmittedEvent(enableSendToCtscOnCaseDetails(YES));
 
         verify(notificationClient, never()).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
-            eq("admin@family-court.com"),
-            eq(expectedNotificationParams()),
-            eq(CASE_ID.toString())
+            C2_UPLOAD_NOTIFICATION_TEMPLATE,
+            "admin@family-court.com",
+            expectedNotificationParams(),
+            CASE_ID.toString()
         );
 
         verify(notificationClient).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
-            eq("FamilyPublicLaw+ctsc@gmail.com"), eq(expectedNotificationParams()),
-            eq(CASE_ID.toString())
+            C2_UPLOAD_NOTIFICATION_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com", expectedNotificationParams(),
+            CASE_ID.toString()
         );
     }
 

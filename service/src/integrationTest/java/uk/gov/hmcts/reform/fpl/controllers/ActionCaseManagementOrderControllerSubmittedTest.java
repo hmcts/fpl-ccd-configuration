@@ -127,12 +127,12 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verifySentDocumentEventTriggered();
 
         verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
-            eq(getExpectedCMOIssuedCaseLinkNotificationParameters("Jon Snow")), eq(CASE_ID));
+            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, "abc@example.com",
+            getExpectedCMOIssuedCaseLinkNotificationParameters("Jon Snow"), CASE_ID);
 
         verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("xyz@example.com"),
-            eq(getExpectedCMOIssuedCaseLinkNotificationParameters("Hodo")), eq(CASE_ID));
+            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, "xyz@example.com",
+            getExpectedCMOIssuedCaseLinkNotificationParameters("Hodo"), CASE_ID);
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
@@ -329,16 +329,16 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             .triggerEvent(JURISDICTION, CASE_TYPE, 12345L, CMO_EVENT_KEY);
 
         verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME)), eq(CASE_ID));
+            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME), CASE_ID);
     }
 
     private void verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded() throws NotificationClientException {
         verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
-            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
-            eq(CASE_ID));
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+            "admin@family-court.com",
+            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(),
+            CASE_ID);
     }
 
     private void verifySentDocumentEventTriggered() {

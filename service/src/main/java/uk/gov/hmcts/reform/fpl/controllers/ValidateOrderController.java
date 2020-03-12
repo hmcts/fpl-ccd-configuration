@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,15 +28,10 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NA
 @Api
 @RestController
 @RequestMapping("/callback/validate-order")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ValidateOrderController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
-
-    @Autowired
-    public ValidateOrderController(ObjectMapper mapper, ValidateGroupService validateGroupService) {
-        this.mapper = mapper;
-        this.validateGroupService = validateGroupService;
-    }
 
     @PostMapping("/date-of-issue/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateDateOfIssue(
