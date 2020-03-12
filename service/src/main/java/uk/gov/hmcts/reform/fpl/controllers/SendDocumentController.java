@@ -31,11 +31,8 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 @RequestMapping("/callback/send-document")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SendDocumentController {
-
     private static final String DOCUMENT_TO_BE_SENT_KEY = "documentToBeSent";
-
     private final ObjectMapper mapper;
-
     private final DocumentSenderService documentSenderService;
     private final SentDocumentHistoryService sentDocumentHistoryService;
     private final RepresentativeService representativeService;

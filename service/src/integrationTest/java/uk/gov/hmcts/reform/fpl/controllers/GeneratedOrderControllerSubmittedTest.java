@@ -92,16 +92,16 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
-            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedOrderLocalAuthorityParameters()),
-            eq(CASE_ID));
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA,
+            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            expectedOrderLocalAuthorityParameters(),
+            CASE_ID);
 
         verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
-            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
-            eq(CASE_ID));
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+            "admin@family-court.com",
+            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(),
+            CASE_ID);
 
         verifyZeroInteractions(notificationClient);
         verifySendDocumentEventTriggered();
@@ -115,16 +115,16 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
-            eq(CASE_ID));
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(),
+            CASE_ID);
 
         verify(notificationClient, never()).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
-            eq(getExpectedParametersForAdminWhenNoRepresentativesServedByPost()),
-            eq(CASE_ID));
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
+            "admin@family-court.com",
+            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(),
+            CASE_ID);
 
         verifySendDocumentEventTriggered();
     }
@@ -142,10 +142,10 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
-            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedOrderLocalAuthorityParameters()),
-            eq(CASE_ID));
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA,
+            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            expectedOrderLocalAuthorityParameters(),
+            CASE_ID);
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),

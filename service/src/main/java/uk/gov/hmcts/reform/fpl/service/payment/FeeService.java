@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
 
 @Slf4j
@@ -87,18 +86,19 @@ public class FeeService {
             return fee;
         } catch (FeignException ex) {
             log.error("Fee response error for {}\n\tstatus: {} => message: \"{}\"",
-                parameters, ex.status(), ex.getMessage(), ex);
+                parameters, ex.status(), ex.contentUTF8(), ex);
 
-            throw new FeeRegisterException(ex.status(), ex.getMessage(), ex);
+            throw new FeeRegisterException(ex.status(), ex.contentUTF8(), ex);
         }
     }
 
     private FeesData buildFeesDataFromFeeResponses(List<FeeResponse> feeResponses) {
+        var feeDto = extractFeeToUse(feeResponses).map(FeeDto::fromFeeResponse)
+            .orElse(FeeDto.builder().calculatedAmount(BigDecimal.ZERO).build());
+
         return FeesData.builder()
-            .totalAmount(extractFeeToUse(feeResponses).map(FeeResponse::getAmount).orElse(BigDecimal.ZERO))
-            .fees(feeResponses.stream()
-                .map(FeeDto::fromFeeResponse)
-                .collect(toList()))
+            .totalAmount(feeDto.getCalculatedAmount())
+            .fees(List.of(feeDto))
             .build();
     }
 }
