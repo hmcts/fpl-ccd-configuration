@@ -13,6 +13,7 @@ module.exports = {
     documentsSentToParties: 'Documents sent to parties',
     confidential: 'Confidential',
     placement: 'Placement',
+    paymentHistory: 'Payment History',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
