@@ -19,9 +19,6 @@ module.exports = {
     directions: '#orderFurtherDirections_directions',
     dateOfIssue: {
       id: '#dateOfIssue',
-      day: '#dateOfIssue-day',
-      month: '#dateOfIssue-month',
-      year: '#dateOfIssue-year',
     },
     interimEndDate: {
       id: '#interimEndDate_interimEndDate',
@@ -143,11 +140,7 @@ module.exports = {
   },
 
   async enterDateOfIssue(date) {
-    if (date) {
-      I.fillField(this.fields.dateOfIssue.day, date.day);
-      I.fillField(this.fields.dateOfIssue.month, date.month);
-      I.fillField(this.fields.dateOfIssue.year, date.year);
-    }
+    I.fillDate(date);
   },
 
   async selectAndEnterNamedDate(date) {
