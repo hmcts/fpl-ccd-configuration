@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ public class CaseManagementOrder {
     private final CMOStatus status;
     private final OrderAction action;
     private final NextHearing nextHearing;
+    private final LocalDate dateOfIssue;
 
     @JsonIgnore
     public boolean isDraft() {
@@ -36,7 +38,7 @@ public class CaseManagementOrder {
     }
 
     @JsonIgnore
-    public boolean isInJudgeReview() { 
+    public boolean isInJudgeReview() {
         return status == SEND_TO_JUDGE;
     }
 }
