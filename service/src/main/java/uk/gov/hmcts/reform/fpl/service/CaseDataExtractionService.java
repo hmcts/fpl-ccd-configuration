@@ -84,7 +84,7 @@ public class CaseDataExtractionService {
             orderBuilder.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
         }
 
-        if (SEALED != standardDirectionOrder.getOrderStatus()) {
+        if (SEALED == standardDirectionOrder.getOrderStatus()) {
             orderBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
         }
         return orderBuilder.build();
