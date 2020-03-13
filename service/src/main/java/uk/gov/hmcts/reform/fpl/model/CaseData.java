@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
@@ -47,6 +48,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Optional.empty;
@@ -194,6 +196,8 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final ChildSelector childSelector;
     private final String orderAppliesToAllChildren;
+    @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
+    private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
