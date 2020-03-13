@@ -37,6 +37,27 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void shouldReturnErrorsWhenTheDateOfIssueIsInFuture() {
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().plusDays(1), NAMED_DATE);
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date of issue cannot be in the future");
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenDateOfIssueIsToday() {
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now(), NAMED_DATE);
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenDateOfIssueIsInPast() {
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), NAMED_DATE);
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
     void shouldReturnErrorsWhenEPOTypeIsPreventRemovalButAddressIsIncomplete() {
         CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now());
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "address");
@@ -126,6 +147,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
                                           InterimEndDateType interimEndDateType) {
         return CaseDetails.builder()
             .data(Map.of(
+                "dateOfIssue", localDateTime.toLocalDate(),
                 "epoType", epoType,
                 "epoRemovalAddress", Address.builder().build(),
                 "epoEndDate", localDateTime,
