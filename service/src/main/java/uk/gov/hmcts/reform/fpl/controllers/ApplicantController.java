@@ -14,17 +14,17 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
-import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
+import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 
 @Api
 @RestController
 @RequestMapping("/callback/enter-applicant")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicantController {
-
     private final ApplicantService applicantService;
-    private final UpdateAndValidatePbaService updateAndValidatePbaService;
+    private final PbaNumberService pbaNumberService;
     private final ObjectMapper mapper;
+
     private final OrganisationService organisationService;
 
     @PostMapping("/about-to-start")
@@ -43,8 +43,16 @@ public class ApplicantController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        var data = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        return updateAndValidatePbaService.updateAndValidatePbaNumbers(caseDetails);
+        var updatedApplicants = pbaNumberService.update(caseData.getApplicants());
+        data.put("applicants", updatedApplicants);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .errors(pbaNumberService.validate(updatedApplicants))
+            .build();
     }
 
     @PostMapping("/about-to-submit")

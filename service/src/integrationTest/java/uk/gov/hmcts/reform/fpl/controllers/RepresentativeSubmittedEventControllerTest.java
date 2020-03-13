@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
@@ -65,8 +64,8 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient).sendEmail(
-            eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE), eq("test@test.com"),
-            eq(expectedTemplateParametersEmail()), eq(CASE_REFERENCE));
+            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, "test@test.com",
+            expectedTemplateParametersEmail(), CASE_REFERENCE);
     }
 
 
@@ -87,8 +86,8 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient).sendEmail(
-            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE), eq("test@test.com"),
-            eq(expectedTemplateParametersDigitalService()), eq(CASE_REFERENCE));
+            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, "test@test.com",
+            expectedTemplateParametersDigitalService(), CASE_REFERENCE);
     }
 
     @Test
@@ -107,8 +106,8 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient, never())
-            .sendEmail(eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE), eq("test@test.com"),
-                eq(expectedTemplateParametersEmail()), eq(CASE_REFERENCE));
+            .sendEmail(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, "test@test.com",
+                expectedTemplateParametersEmail(), CASE_REFERENCE);
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails originalCaseDetails, CaseDetails caseDetails) {
