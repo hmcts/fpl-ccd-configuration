@@ -24,7 +24,6 @@ public class ApplicantController {
     private final ApplicantService applicantService;
     private final PbaNumberService pbaNumberService;
     private final ObjectMapper mapper;
-
     private final OrganisationService organisationService;
 
     @PostMapping("/about-to-start")
