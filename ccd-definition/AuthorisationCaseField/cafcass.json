@@ -348,6 +348,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "amountToPay",
     "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
   }
 ]
