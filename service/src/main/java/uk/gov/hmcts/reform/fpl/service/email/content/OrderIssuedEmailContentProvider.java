@@ -74,9 +74,9 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     }
 
     public Map<String, Object> buildOrderNotificationParametersForRepresentatives(final CaseDetails caseDetails,
-                                                                                  final String localAuthorityCode,
-                                                                                  final byte[] documentContents,
-                                                                                  final IssuedOrderType issuedOrderType) {
+                                                                              final String localAuthorityCode,
+                                                                              final byte[] documentContents,
+                                                                              final IssuedOrderType issuedOrderType) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
