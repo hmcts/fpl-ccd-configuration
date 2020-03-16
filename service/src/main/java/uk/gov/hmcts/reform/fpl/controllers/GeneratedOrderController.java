@@ -122,7 +122,7 @@ public class GeneratedOrderController {
                 .document(DocumentReference.builder()
                     .url(document.links.self.href)
                     .binaryUrl(document.links.binary.href)
-                    .filename("draft" + document.originalDocumentName)
+                    .filename("draft-" + document.originalDocumentName)
                     .build())
                 .build();
 
