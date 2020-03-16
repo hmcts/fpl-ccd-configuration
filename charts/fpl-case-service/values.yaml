@@ -23,4 +23,25 @@ java:
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
     AUTH_IDAM_CLIENT_BASEURL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
     AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+  keyVaults:
+    fpl:
+      resourceGroup: fpl-case-service
+      secrets:
+        - notify-api-key
+        - docmosis-api-key
+        - fpl-case-service-s2s-secret
+        - fpl-case-service-idam-client-secret
+        - local-authority-email-to-code-mapping
+        - local-authority-code-to-name-mapping
+        - local-authority-user-mapping
+        - local-authority-code-to-hmcts-court-mapping
+        - local-authority-code-to-cafcass-mapping
+        - local-authority-code-to-shared-inbox-mapping
+        - local-authority-fallback-inbox
+        - system-update-user-username
+        - system-update-user-password
+        - robotics-notification-sender
+        - robotics-notification-recipient
+        - ld-sdk-key
+        - ctsc-inbox
   applicationPort: 4000
