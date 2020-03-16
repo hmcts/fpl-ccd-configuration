@@ -48,7 +48,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
-            .build());
+            .build(), "get-fee");
 
         verify(feeService).getFeesDataForC2(WITH_NOTICE);
         assertThat(response.getData()).containsEntry("amountToPay", "1000");
@@ -60,7 +60,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
-            .build());
+            .build(), "get-fee");
 
         verify(feeService, never()).getFeesDataForC2(WITH_NOTICE);
         assertThat(response.getData()).doesNotContainKey("amountToPay");
@@ -72,7 +72,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("c2Doc", Map.of()))
-            .build());
+            .build(), "get-fee");
 
         assertThat(response.getData()).doesNotContainKey("c2Doc");
     }
@@ -83,7 +83,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document", Map.of("document", Map.of("url", "example_url"))))
-            .build());
+            .build(), "get-fee");
 
         assertThat(response.getData()).containsKey("temporaryC2Document");
     }
@@ -95,7 +95,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
-            .build());
+            .build(), "get-fee");
 
         assertThat(response.getErrors()).contains("XXX");
         assertThat(response.getData()).doesNotContainKeys("amountToPay");

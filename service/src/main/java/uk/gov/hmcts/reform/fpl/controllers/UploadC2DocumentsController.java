@@ -53,19 +53,16 @@ public class UploadC2DocumentsController {
     private final FeatureToggleService featureToggleService;
     private final PbaNumberService pbaNumberService;
 
-    @PostMapping("/mid-event")
+    @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-
-        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
-        data.put("temporaryC2Document", updatedTemporaryC2Document);
 
         if (isC2DocumentUrlEmpty(data)) {
             data.remove("c2Doc");
         }
 
-        List<String> errors = new ArrayList<>(pbaNumberService.validate(updatedTemporaryC2Document));
+        List<String> errors = new ArrayList<>();
         if (featureToggleService.isFeesEnabled()) {
             try {
                 FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
@@ -80,6 +77,20 @@ public class UploadC2DocumentsController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .errors(errors)
+            .build();
+    }
+
+    @PostMapping("/validate-pba-number/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        Map<String, Object> data = callbackrequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
+        data.put("temporaryC2Document", updatedTemporaryC2Document);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .errors(pbaNumberService.validate(updatedTemporaryC2Document))
             .build();
     }
 
