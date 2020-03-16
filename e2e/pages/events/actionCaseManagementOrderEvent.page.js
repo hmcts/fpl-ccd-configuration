@@ -79,4 +79,9 @@ module.exports = {
     I.waitForElement(this.fields.nextHearingDateList);
     I.selectOption(this.fields.nextHearingDateList, date);
   },
+
+  async enterDateOfIssue(date){
+    I.fillDate(date);
+    await I.retryUntilExists(() => I.click('Continue'), '#allPartiesCustomCMO');
+  },
 };

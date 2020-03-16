@@ -22,11 +22,12 @@ const allOtherPartyDetails = [
 
 
 const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
-  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.see(fileName);
   I.seeAnswerInTab(1, 'Order actions', 'Is this ready to be sent to parties?', 'Yes, send this to all parties');
   I.seeAnswerInTab(2, 'Order actions', 'What is the next hearing?', 'Final hearing');
-  I.seeAnswerInTab(3, 'Case management orders 1', 'Which hearing is this order for?', '1 Jan 2050');
+  I.seeAnswerInTab(3, 'Case management orders 1', 'Date of issue', '12 December 2019');
+  I.seeAnswerInTab(4, 'Case management orders 1', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
@@ -137,6 +138,7 @@ const switchUserAndNavigateToCase = async (I, userDetails, caseId) => {
 
 const skipToReview = async (I) => {
   for (let id of ids) {
+    console.log(`Looking for ${id}`);
     await I.retryUntilExists(() => I.click('Continue'), id);
   }
 };
@@ -166,9 +168,10 @@ const sendDraftForPartyReview = async (I, draftCaseManagementOrderEventPage) => 
 };
 
 const actionDraft = async (I, actionCaseManagementOrderEventPage) => {
+  await actionCaseManagementOrderEventPage.enterDateOfIssue({day: 12, month: 12, year: 2019});
   await skipToSchedule(I);
   await I.retryUntilExists(() => I.click('Continue'), '#orderAction_type');
-  actionCaseManagementOrderEventPage.markToBeSentToLocalAuthority();
+  await actionCaseManagementOrderEventPage.markToBeSentToLocalAuthority();
   await I.completeEvent('Save and continue');
 };
 
