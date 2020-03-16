@@ -15,12 +15,12 @@ import java.util.Map;
 public class NotificationService {
     private final NotificationClient notificationClient;
 
-    public void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
-        log.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
+    public void sendEmail(String templateId, String email, Map<String, Object> parameters, String reference) {
+        log.debug("Sending notification (with template id: {}) to {}", templateId, email);
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);
         } catch (NotificationClientException e) {
-            log.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
+            log.error("Failed to send notification (with template id: {}) to {}", templateId, email, e);
         }
     }
 }

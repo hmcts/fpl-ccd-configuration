@@ -98,18 +98,18 @@ public class NotificationHandler {
     private final NotificationService notificationService;
 
     @EventListener
-    public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
+    public void sendEmailToHmctsAdmin(SubmittedCaseEvent event) {
         EventData eventData = new EventData(event);
         Map<String, Object> parameters = hmctsEmailContentProvider
             .buildHmctsSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
         String email = getHmctsAdminEmail(eventData);
 
-        notificationService.sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters,
+        notificationService.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters,
             eventData.getReference());
     }
 
     @EventListener
-    public void sendNotificationForC2Upload(final C2UploadedEvent event) {
+    public void sendEmailForC2Upload(final C2UploadedEvent event) {
         List<String> roles = idamApi.retrieveUserInfo(event.getAuthorization()).getRoles();
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             EventData eventData = new EventData(event);
@@ -117,13 +117,13 @@ public class NotificationHandler {
                 eventData.getCaseDetails());
             String email = getHmctsAdminEmail(eventData);
 
-            notificationService.sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters,
+            notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters,
                 eventData.getReference());
         }
     }
 
     @EventListener
-    public void sendNotificationsForOrder(final GeneratedOrderEvent orderEvent) {
+    public void sendEmailsForOrder(final GeneratedOrderEvent orderEvent) {
         EventData eventData = new EventData(orderEvent);
 
         sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
@@ -133,23 +133,23 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationToCafcass(SubmittedCaseEvent event) {
+    public void sendEmailToCafcass(SubmittedCaseEvent event) {
         EventData eventData = new EventData(event);
         Map<String, Object> parameters = cafcassEmailContentProvider
             .buildCafcassSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
         String email = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
 
-        notificationService.sendNotification(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, eventData.getReference());
+        notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, eventData.getReference());
     }
 
     @EventListener
-    public void sendNotificationToGatekeeper(NotifyGatekeeperEvent event) {
+    public void sendEmailToGatekeeper(NotifyGatekeeperEvent event) {
         EventData eventData = new EventData(event);
         String email = (String) eventData.getCaseDetails().getData().get("gateKeeperEmail");
         Map<String, Object> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(
             eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
 
-        notificationService.sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE, email, parameters,
+        notificationService.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, email, parameters,
             eventData.getReference());
     }
 
@@ -161,7 +161,7 @@ public class NotificationHandler {
                 eventData.getLocalAuthorityCode());
         String email = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
 
-        notificationService.sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters,
+        notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters,
             eventData.getReference());
     }
 
@@ -174,7 +174,7 @@ public class NotificationHandler {
         String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
             eventData.getLocalAuthorityCode());
 
-        notificationService.sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters,
+        notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters,
             eventData.getReference());
     }
 
@@ -187,12 +187,12 @@ public class NotificationHandler {
 
         String email = getHmctsAdminEmail(eventData);
 
-        notificationService.sendNotification(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters,
+        notificationService.sendEmail(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters,
             eventData.getReference());
     }
 
     @EventListener
-    public void sendNotificationsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
+    public void sendEmailsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
 
         sendCMOCaseLinkNotifications(eventData);
@@ -200,7 +200,7 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationForCaseManagementOrderReadyForJudgeReview(
+    public void sendEmailForCaseManagementOrderReadyForJudgeReview(
         final CaseManagementOrderReadyForJudgeReviewEvent event) {
         EventData eventData = new EventData(event);
 
@@ -209,7 +209,7 @@ public class NotificationHandler {
 
         String email = getHmctsAdminEmail(eventData);
 
-        notificationService.sendNotification(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, parameters,
+        notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, parameters,
             eventData.getReference());
     }
 
@@ -224,12 +224,12 @@ public class NotificationHandler {
         String recipientEmail = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
             eventData.getLocalAuthorityCode());
 
-        notificationService.sendNotification(CMO_REJECTED_BY_JUDGE_TEMPLATE, recipientEmail, parameters,
+        notificationService.sendEmail(CMO_REJECTED_BY_JUDGE_TEMPLATE, recipientEmail, parameters,
             eventData.getReference());
     }
 
     @EventListener
-    public void sendNotificationForNoticeOfPlacementOrderUploaded(
+    public void sendEmailForNoticeOfPlacementOrderUploaded(
         NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
         EventData eventData = new EventData(noticeOfPlacementEvent);
 
@@ -239,15 +239,15 @@ public class NotificationHandler {
         Map<String, Object> parameters =
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(eventData.caseDetails);
 
-        notificationService.sendNotification(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters,
+        notificationService.sendEmail(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters,
             eventData.reference);
-        sendNotificationToRepresentativesServedThroughDigitalService(eventData, parameters);
+        sendEmailToRepresentativesServedThroughDigitalService(eventData, parameters);
         sendOrderIssuedNotificationToAdmin(eventData, noticeOfPlacementEvent.getDocumentContents(),
             NOTICE_OF_PLACEMENT_ORDER);
     }
 
-    //TODO: refactor to common method to send to parties. i.e sendNotificationToRepresentative(NotificationId,
-    private void sendNotificationToRepresentativesServedThroughDigitalService(EventData eventData,
+    //TODO: refactor to common method to send to parties. i.e sendEmailToRepresentative(NotificationId,
+    private void sendEmailToRepresentativesServedThroughDigitalService(EventData eventData,
                                                                               Map<String, Object> parameters) {
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
@@ -256,7 +256,7 @@ public class NotificationHandler {
 
         representatives.stream()
             .filter(representative -> isNotBlank(representative.getEmail()))
-            .forEach(representative -> notificationService.sendNotification(
+            .forEach(representative -> notificationService.sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
                 representative.getEmail(),
                 parameters,
@@ -269,7 +269,7 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationToPartiesAddedToCase(PartyAddedToCaseEvent event) {
+    public void sendEmailToPartiesAddedToCase(PartyAddedToCaseEvent event) {
         List<Representative> representatives = event.getRepresentativesToNotify();
         EventData eventData = new EventData(event);
 
@@ -285,7 +285,7 @@ public class NotificationHandler {
             String template = partyAddedToCaseContentProvider
                 .getPartyAddedToCaseNotificationTemplate(servingPreferences);
 
-            notificationService.sendNotification(template, email, parameters,
+            notificationService.sendEmail(template, email, parameters,
                 eventData.getReference());
 
         });
@@ -301,7 +301,7 @@ public class NotificationHandler {
         String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
             eventData.getLocalAuthorityCode());
 
-        notificationService.sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email,
+        notificationService.sendEmail(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email,
             localAuthorityNotificationParameters, eventData.getReference());
     }
 
@@ -317,7 +317,7 @@ public class NotificationHandler {
                     caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(
                         eventData.getCaseDetails(), representative.getFullName());
 
-                notificationService.sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
+                notificationService.sendEmail(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
                     representative.getEmail(), representativeNotificationParameters, eventData.getReference());
             });
     }
@@ -337,7 +337,7 @@ public class NotificationHandler {
 
         String cafcassEmail = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
 
-        notificationService.sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail,
+        notificationService.sendEmail(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail,
             cafcassParameters, eventData.getReference());
     }
 
@@ -354,7 +354,7 @@ public class NotificationHandler {
                     caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
                         eventData.getCaseDetails(), representative.getFullName(), documentContents);
 
-                notificationService.sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE,
+                notificationService.sendEmail(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE,
                     representative.getEmail(), representativeNotificationParameters, eventData.getReference());
             });
     }
@@ -368,7 +368,7 @@ public class NotificationHandler {
 
         String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
 
-        notificationService.sendNotification(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA, recipientEmail,
+        notificationService.sendEmail(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA, recipientEmail,
             localAuthorityParameters, Long.toString(caseDetails.getId()));
     }
 
@@ -380,7 +380,7 @@ public class NotificationHandler {
 
         String email = getHmctsAdminEmail(eventData);
 
-        notificationService.sendNotification(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters,
+        notificationService.sendEmail(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters,
             Long.toString(eventData.getCaseDetails().getId()));
     }
 
