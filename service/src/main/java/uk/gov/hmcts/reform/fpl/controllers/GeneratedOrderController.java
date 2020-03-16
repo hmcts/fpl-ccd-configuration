@@ -116,18 +116,11 @@ public class GeneratedOrderController {
 
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
-            Document document = getDocument(authorization, userId, caseData);
-
-            orderTypeAndDocument = caseData.getOrderTypeAndDocument().toBuilder()
-                .document(DocumentReference.builder()
-                    .url(document.links.self.href)
-                    .binaryUrl(document.links.binary.href)
-                    .filename("draft-" + document.originalDocumentName)
-                    .build())
-                .build();
+            Document document = getDocument(authorization, userId, caseData, "draft");
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
-            caseDetails.getData().put("orderTypeAndDocument", orderTypeAndDocument);
+            caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
+                orderTypeAndDocument, document));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -143,13 +136,13 @@ public class GeneratedOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        Document document = getDocument(authorization, userId, caseData, "sealed");
+
+        OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData.getOrderTypeAndDocument(), document);
+
+        caseDetails.getData().put("orderTypeAndDocument", orderTypeAndDocument);
+
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
-
-        Document document = getDocument(authorization, userId, caseData);
-
-        OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument().toBuilder().document(
-            caseData.getOrderTypeAndDocument().getDocument().toBuilder().filename(document.originalDocumentName).build())
-            .build();
 
         // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(orderTypeAndDocument, caseData.getOrder(),
@@ -187,7 +180,8 @@ public class GeneratedOrderController {
 
     private Document getDocument(String authorization,
                                  String userId,
-                                 CaseData caseData) {
+                                 CaseData caseData,
+                                 String documentStatus) {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
@@ -195,8 +189,15 @@ public class GeneratedOrderController {
             service.getOrderTemplateData(caseData), templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
+
+        Document pdfDoc = uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
+
+        if(documentStatus.equals("draft")){
+            pdfDoc.originalDocumentName = "draft-" + pdfDoc.originalDocumentName;
+        }
+
+        return pdfDoc;
     }
 
     private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
