@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/payments/credit-account-payments/([\\w-]*)/statuses"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "payments/credit-account-payment/paymentReference-status.json"
+  }
+}
