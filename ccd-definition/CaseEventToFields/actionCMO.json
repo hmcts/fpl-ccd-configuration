@@ -134,7 +134,7 @@
     "DisplayContext": "READONLY",
     "PageID": "respondentsDirections",
     "PageLabel": " ",
-    "PageDisplayOrder": 4,
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
