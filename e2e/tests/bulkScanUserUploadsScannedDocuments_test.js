@@ -25,7 +25,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, handleSupplementaryEv
 
   await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
   attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
-  await I.click('Continue');
+  await I.retryUntilExists(() => I.click('Continue'), '#evidenceHandled');
   handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.administrationActions.bulkScan);
