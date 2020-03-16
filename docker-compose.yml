@@ -36,11 +36,14 @@ services:
     ports:
       - 5433:8080
   wiremock:
+    container_name: wiremock
     image: rodolpheche/wiremock
     volumes:
       - ./docker/wiremock:/home/wiremock:rw
     ports:
       - 8765:8080
+    networks:
+      - ccd-network
 networks:
   ccd-network:
       external: true

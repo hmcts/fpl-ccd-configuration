@@ -201,9 +201,10 @@ Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewP
   for (let i = 0; i < orders.length; i++) {
     const order = orders[i];
     await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+    const defaultIssuedDate = new Date();
     await orderFunctions.createOrder(I, createOrderEventPage, order);
     I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-    await orderFunctions.assertOrder(I, caseViewPage, order, i + 1);
+    await orderFunctions.assertOrder(I, caseViewPage, order, i + 1, defaultIssuedDate);
     await orderFunctions.assertOrderSentToParty(I, caseViewPage,  representatives.servedByPost.fullName, order, i + 1);
   }
 });
