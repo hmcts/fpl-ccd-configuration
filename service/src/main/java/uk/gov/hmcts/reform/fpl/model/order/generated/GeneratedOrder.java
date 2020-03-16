@@ -12,6 +12,7 @@ public class GeneratedOrder {
     private final String title;
     private final String details;
     private final DocumentReference document;
+    private final String dateOfIssue;
     private final String date;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final FurtherDirections furtherDirections;
