@@ -5,6 +5,7 @@ module.exports = [
     title: 'Example Order Title',
     details: 'Example order details here - Lorem ipsum dolor sit amet...',
     document: 'blank_order_c21.pdf',
+    //no date of issue to test default pre-population with today's date
     //future work: extract judgeAndLegalAdvisor to separate fixture
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
@@ -18,6 +19,11 @@ module.exports = [
     subtype: 'Interim',
     fullType: 'Interim care order',
     document: 'interim_care_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
     interimEndDate: {
       isNamedDate: false,
     },
@@ -33,6 +39,11 @@ module.exports = [
     subtype: 'Final',
     fullType: 'Final care order',
     document: 'final_care_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Judy',
@@ -45,6 +56,11 @@ module.exports = [
     subtype: 'Interim',
     fullType: 'Interim supervision order',
     document: 'interim_supervision_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
     interimEndDate: {
       isNamedDate: true,
       endDate: {
@@ -66,6 +82,11 @@ module.exports = [
     subtype: 'Final',
     fullType: 'Final supervision order',
     document: 'final_supervision_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
     months: '5',
     judgeAndLegalAdvisor: {
       judgeTitle: 'His Honour Judge',
@@ -79,6 +100,11 @@ module.exports = [
     type: 'Emergency protection order',
     fullType: 'Emergency protection order',
     document: 'emergency_protection_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Judy',
