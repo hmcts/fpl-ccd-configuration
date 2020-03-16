@@ -830,7 +830,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldsendEmailToPartiesWhenAddedToCaseByEmail() throws IOException, NotificationClientException {
+    void shouldsendEmailToPartiesWhenAddedToCaseByEmail() throws IOException {
         final Map<String, Object> expectedParameters = getPartyAddedByEmailNotificationParameters();
 
         List<Representative> representatives = getRepresentatives(EMAIL, PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS);

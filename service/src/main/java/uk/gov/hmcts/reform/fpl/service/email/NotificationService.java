@@ -16,11 +16,11 @@ public class NotificationService {
     private final NotificationClient notificationClient;
 
     public void sendEmail(String templateId, String email, Map<String, Object> parameters, String reference) {
-        log.debug("Sending notification (with template id: {}) to {}", templateId, email);
+        log.debug("Sending email (with template id: {}) to {}", templateId, email);
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);
         } catch (NotificationClientException e) {
-            log.error("Failed to send notification (with template id: {}) to {}", templateId, email, e);
+            log.error("Failed to send email (with template id: {}) to {}", templateId, email, e);
         }
     }
 }
