@@ -19,7 +19,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrder",
     "ListElementCode": "dateOfIssue",
-    "FieldType": "Date",
+    "FieldType": "Text",
     "ElementLabel": "Date of issue",
     "SecurityClassification": "Public"
   },
