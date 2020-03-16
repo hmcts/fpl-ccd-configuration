@@ -33,7 +33,8 @@ public class NotificationServiceTest {
 
     @Test
     void shouldSendNotificationSuccessfullyWhenDataValid() throws NotificationClientException {
-        Map<String, Object> templatePreference = TestNotificationPreferenceData.getDefaultForPartyAddedToCaseByEmailTemplate();
+        Map<String, Object> templatePreference =
+            TestNotificationPreferenceData.getDefaultForPartyAddedToCaseByEmailTemplate();
 
         notificationService.sendNotification(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
             "test@example.com", templatePreference, "12345L");
