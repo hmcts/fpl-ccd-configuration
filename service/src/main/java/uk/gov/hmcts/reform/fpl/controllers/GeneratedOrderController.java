@@ -118,9 +118,16 @@ public class GeneratedOrderController {
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
             Document document = getDocument(authorization, userId, caseData);
 
+            orderTypeAndDocument = caseData.getOrderTypeAndDocument().toBuilder()
+                .document(DocumentReference.builder()
+                    .url(document.links.self.href)
+                    .binaryUrl(document.links.binary.href)
+                    .filename("draft" + document.originalDocumentName)
+                    .build())
+                .build();
+
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
-            caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
-                orderTypeAndDocument, document));
+            caseDetails.getData().put("orderTypeAndDocument", orderTypeAndDocument);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -130,14 +137,22 @@ public class GeneratedOrderController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) {
+        @RequestBody CallbackRequest callbackRequest,
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
+        Document document = getDocument(authorization, userId, caseData);
+
+        OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument().toBuilder().document(
+            caseData.getOrderTypeAndDocument().getDocument().toBuilder().filename(document.originalDocumentName).build())
+            .build();
+
         // Builds an order with custom values based on order type and adds it to list of orders
-        orders.add(service.buildCompleteOrder(caseData.getOrderTypeAndDocument(), caseData.getOrder(),
+        orders.add(service.buildCompleteOrder(orderTypeAndDocument, caseData.getOrder(),
             caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths(), caseData.getInterimEndDate()));
 
         caseDetails.getData().put("orderCollection", orders);
