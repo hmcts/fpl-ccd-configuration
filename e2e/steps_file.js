@@ -123,7 +123,7 @@ module.exports = function () {
     },
 
     seeCaseInSearchResult(caseId) {
-      this.seeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+      this.retry().seeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
     },
 
     dontSeeCaseInSearchResult(caseId) {
