@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 
 @Api
@@ -23,13 +24,15 @@ public class ApplicantController {
     private final ApplicantService applicantService;
     private final PbaNumberService pbaNumberService;
     private final ObjectMapper mapper;
+    private final OrganisationService organisationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData));
+        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData,
+            organisationService.findOrganisation()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
