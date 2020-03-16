@@ -152,12 +152,20 @@ Scenario('Local Authority sends draft to Judge who requests corrections', async 
 // - Have dynamic config to disable validation when e2es are run so it will allow us to skip the rules about submitting.
 // - Invoke the endpoint (not sure if jenkins have got access) to set the data with hearing date in past?
 // This would either require new endpoint on FPL or invoke the ccd endpoints.
-Scenario('Local Authority sends draft to Judge who approves CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
+xScenario('Local Authority sends draft to Judge who approves CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
+  // LA sends to judge
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  await cmoHelper.skipToReview(I);
+  draftCaseManagementOrderEventPage.markToBeSentToJudge();
+  await I.completeEvent('Submit');
+  I.dontSee('Draft orders', '.tabs .tabs-list');
+
   // Login as Judge
   await cmoHelper.switchUserAndNavigateToCase(I, {
     email: config.judiciaryEmail,
     password: config.judiciaryPassword,
   }, caseId);
+  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge);
 
   // Approve CMO
   await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
