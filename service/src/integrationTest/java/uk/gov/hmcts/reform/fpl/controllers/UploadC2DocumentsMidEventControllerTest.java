@@ -71,10 +71,10 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("temporaryC2Document", Map.of("document", Map.of())))
+            .data(Map.of("c2Doc", Map.of()))
             .build());
 
-        assertThat(response.getData()).doesNotContainKey("temporaryC2Document");
+        assertThat(response.getData()).doesNotContainKey("c2Doc");
     }
 
     @Test
