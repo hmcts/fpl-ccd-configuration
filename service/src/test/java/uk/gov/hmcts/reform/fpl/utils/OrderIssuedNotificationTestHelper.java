@@ -1,12 +1,8 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MapDifference;
-import com.google.common.collect.Maps;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
-import org.mockito.ArgumentCaptor;
-import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -19,10 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -39,22 +33,6 @@ public class OrderIssuedNotificationTestHelper {
     private static final String EXAMPLE_COURT = "Family Court";
     private static final String callout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().plusMonths(3)
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
-
-    public static void verifyNotificationForOrderIssued(ArgumentCaptor<Map<String, Object>> captor,
-                                                        Supplier<Map<String, Object>> expectedParametersSupplier,
-                                                        String jsonObjectFile) {
-        Map<String, Object> results = new HashMap<>(captor.getValue());
-        Map<String, Object> expected = expectedParametersSupplier.get();
-
-        JSONAssert.assertEquals(((JSONObject) results.get(jsonObjectFile)), ((JSONObject) expected.get(jsonObjectFile)),
-            true);
-
-        results.remove(jsonObjectFile);
-        expected.remove(jsonObjectFile);
-
-        MapDifference<String, Object> difference = Maps.difference(expected, results);
-        assertThat(difference.areEqual()).isTrue();
-    }
 
     public static Map<String, Object> getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost() {
         return ImmutableMap.<String, Object>builder()

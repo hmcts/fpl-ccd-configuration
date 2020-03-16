@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
@@ -137,7 +136,8 @@ public class NotificationHandler {
             caseData.getRepresentatives(), EMAIL);
 
         if (!representativesServedByEmail.isEmpty()) {
-            sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
+            sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(),
+                representativesServedByEmail, GENERATED_ORDER);
         }
     }
 
@@ -241,31 +241,30 @@ public class NotificationHandler {
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(eventData.caseDetails);
 
         sendNotification(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters, eventData.reference);
-        sendNotificationToRepresentatives(eventData, parameters, DIGITAL_SERVICE,
-            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE);
         sendOrderIssuedNotificationToAdmin(eventData, noticeOfPlacementEvent.getDocumentContents(),
             NOTICE_OF_PLACEMENT_ORDER);
 
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-        List<Representative> representativesServedByEmail = representativeService.getRepresentativesByServedPreference(
-            caseData.getRepresentatives(), EMAIL);
+
+        List<Representative> representativesServedByDigitalService =
+            representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), DIGITAL_SERVICE);
+        List<Representative> representativesServedByEmail =
+            representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL);
+
+        sendNotificationToRepresentatives(eventData, parameters, representativesServedByDigitalService,
+            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE);
 
         if (!representativesServedByEmail.isEmpty()) {
             sendOrderIssuedNotificationToRepresentatives(eventData, noticeOfPlacementEvent.getDocumentContents(),
-                NOTICE_OF_PLACEMENT_ORDER);
+                representativesServedByEmail, NOTICE_OF_PLACEMENT_ORDER);
         }
 
     }
 
     private void sendNotificationToRepresentatives(EventData eventData,
                                                    Map<String, Object> parameters,
-                                                   RepresentativeServingPreferences servingPreference,
+                                                   List<Representative> representatives,
                                                    String templateId) {
-        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-
-        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
-            caseData.getRepresentatives(), servingPreference);
-
         representatives.stream()
             .filter(representative -> isNotBlank(representative.getEmail()))
             .forEach(representative -> sendNotification(
@@ -288,10 +287,19 @@ public class NotificationHandler {
         Map<String, Object> servedByDigitalServiceParameters = partyAddedToCaseContentProvider
             .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(), DIGITAL_SERVICE);
 
-        sendNotificationToRepresentatives(eventData, servedByEmailParameters, EMAIL,
-            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
-        sendNotificationToRepresentatives(eventData, servedByDigitalServiceParameters, DIGITAL_SERVICE,
-            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        CaseData caseDataBefore = objectMapper.convertValue(event.getCallbackRequest().getCaseDetailsBefore().getData(),
+            CaseData.class);
+
+        List<Representative> representativesServedByDigitalService = representativeService.getChangedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
+        List<Representative> representativesServedByEmail = representativeService.getChangedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
+
+        sendNotificationToRepresentatives(eventData, servedByEmailParameters,
+            representativesServedByEmail, PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
+        sendNotificationToRepresentatives(eventData, servedByDigitalServiceParameters,
+            representativesServedByDigitalService, PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
@@ -387,7 +395,7 @@ public class NotificationHandler {
     private void sendOrderIssuedNotificationToAdmin(final EventData eventData,
                                                     final byte[] documentContents,
                                                     final IssuedOrderType issuedOrderType) {
-        Map<String, Object> parameters = orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
+        Map<String, Object> parameters = orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
             eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
 
         String email = getHmctsAdminEmail(eventData);
@@ -398,13 +406,18 @@ public class NotificationHandler {
 
     private void sendOrderIssuedNotificationToRepresentatives(final EventData eventData,
                                                               final byte[] documentContents,
+                                                              final List<Representative> representatives,
                                                               final IssuedOrderType issuedOrderType) {
-        Map<String, Object> parameters =
-            orderIssuedEmailContentProvider.buildOrderNotificationParametersForRepresentatives(
-                eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
+        if (!representatives.isEmpty()) {
+            Map<String, Object> parameters =
+                orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
+                    eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
 
-        sendNotificationToRepresentatives(eventData, parameters, EMAIL,
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES);
+            sendNotificationToRepresentatives(eventData, parameters, representatives,
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES);
+        } else {
+            log.debug("No notification sent to representatives (none require serving by email)");
+        }
     }
 
     private String getHmctsAdminEmail(EventData eventData) {

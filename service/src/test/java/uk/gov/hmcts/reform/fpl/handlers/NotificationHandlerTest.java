@@ -226,7 +226,7 @@ class NotificationHandlerTest {
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
                 .willReturn(orderLocalAuthorityParameters);
 
-            given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
+            given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
         }
@@ -307,7 +307,7 @@ class NotificationHandlerTest {
         void shouldNotifyCtsAdminOnOrderSubmission() throws IOException, NotificationClientException {
             CallbackRequest callbackRequest = appendSendToCtscOnCallback();
 
-            given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
+            given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
 
@@ -362,7 +362,7 @@ class NotificationHandlerTest {
                 LOCAL_AUTHORITY_NAME))
                 .willReturn(expectedCMOIssuedNotificationParameters);
 
-            given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
+            given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
 
@@ -393,7 +393,7 @@ class NotificationHandlerTest {
                 LOCAL_AUTHORITY_NAME))
                 .willReturn(expectedCMOIssuedNotificationParameters);
 
-            given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
+            given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
 
@@ -774,7 +774,7 @@ class NotificationHandlerTest {
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
-            given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
+            given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER))
                 .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
 
@@ -820,7 +820,9 @@ class NotificationHandlerTest {
     @Test
     void shouldSendNotificationToPartiesWhenAddedToCase() throws IOException, NotificationClientException {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseDataBefore = objectMapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
         final Map<String, Object> expectedEmailParameters = getPartyAddedByEmailNotificationParameters();
         final Map<String, Object> expectedDigitalParameters = getPartyAddedByDigitalServiceNotificationParameters();
@@ -831,6 +833,14 @@ class NotificationHandlerTest {
 
         given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
             .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
+
+        given(representativeService.getChangedRepresentatives(caseData.getRepresentatives(),
+            caseDataBefore.getRepresentatives(), EMAIL))
+            .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
+
+        given(representativeService.getChangedRepresentatives(caseData.getRepresentatives(),
+            caseDataBefore.getRepresentatives(), DIGITAL_SERVICE))
+            .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
             callbackRequest().getCaseDetails(), EMAIL)).willReturn(expectedEmailParameters);

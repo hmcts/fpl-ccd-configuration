@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
@@ -63,7 +64,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdmin;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotificationForOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -193,7 +193,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        verifyNotificationForOrderIssued(dataCaptor, () -> getExpectedParametersForAdmin(CMO), "caseUrlOrDocumentLink");
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForAdmin(CMO));
 
         verifyZeroInteractions(notificationClient);
     }

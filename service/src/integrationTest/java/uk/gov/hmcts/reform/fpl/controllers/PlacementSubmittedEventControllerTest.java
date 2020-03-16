@@ -53,12 +53,12 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOr
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.OTHER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotificationForOrderIssued;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
@@ -252,9 +252,8 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 dataCaptor.capture(),
                 eq(CASE_ID));
 
-            verifyNotificationForOrderIssued(dataCaptor,
-                () -> getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER),
-                "documentLink");
+            assertEquals(dataCaptor.getValue(),
+                getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER));
 
             verifyZeroInteractions(notificationClient);
         }

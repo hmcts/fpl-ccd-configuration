@@ -50,19 +50,17 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
-    public Map<String, Object> buildOrderNotificationParametersForHmctsAdmin(final CaseDetails caseDetails,
-                                                                             final String localAuthorityCode,
-                                                                             final byte[] documentContents,
-                                                                             final IssuedOrderType issuedOrderType) {
+    public Map<String, Object> buildNotificationParametersForHmctsAdmin(final CaseDetails caseDetails,
+                                                                        final String localAuthorityCode,
+                                                                        final byte[] documentContents,
+                                                                        final IssuedOrderType issuedOrderType) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         List<Representative> representativesServedByPost = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), POST);
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(representativesServedByPost);
 
         return ImmutableMap.<String, Object>builder()
-            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
-                ? "^" + buildSubjectLineWithHearingBookingDateSuffix(buildSubjectLine(caseData),
-                caseData.getHearingDetails()) : "")
+            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
             .put("needsPosting", isNotEmpty(representativesServedByPost) ? "Yes" : "No")
             .put("doesNotNeedPosting", representativesServedByPost.isEmpty() ? "Yes" : "No")
             .put("courtName", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
@@ -73,32 +71,35 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
-    public Map<String, Object> buildOrderNotificationParametersForRepresentatives(final CaseDetails caseDetails,
-                                                                              final String localAuthorityCode,
-                                                                              final byte[] documentContents,
-                                                                              final IssuedOrderType issuedOrderType) {
+    public Map<String, Object> buildNotificationParametersForRepresentatives(final CaseDetails caseDetails,
+                                                                             final String localAuthorityCode,
+                                                                             final byte[] documentContents,
+                                                                             final IssuedOrderType issuedOrderType) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
             .put("orderType", getTypeOfOrder(caseData, issuedOrderType))
-            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
-                ? "^" + buildSubjectLineWithHearingBookingDateSuffix(buildSubjectLine(caseData),
-                caseData.getHearingDetails()) : "")
+            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
             .put("courtName", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
             .putAll(linkToAttachedDocument(documentContents))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .build();
     }
 
+    private String buildCallout(CaseData caseData) {
+        return "^" + buildSubjectLineWithHearingBookingDateSuffix(buildSubjectLine(caseData),
+            caseData.getHearingDetails());
+    }
+
     private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {
         String orderType;
         if (issuedOrderType == GENERATED_ORDER) {
-            orderType = Iterables.getLast(caseData.getOrderCollection()).getValue().getType().toLowerCase();
+            orderType = Iterables.getLast(caseData.getOrderCollection()).getValue().getType();
         } else {
-            orderType = issuedOrderType.getLabel().toLowerCase();
+            orderType = issuedOrderType.getLabel();
         }
 
-        return orderType;
+        return orderType.toLowerCase();
     }
 
     private Map<String, Object> caseUrlOrDocumentLink(boolean needsServing,

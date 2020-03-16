@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATI
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -43,7 +44,6 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.bu
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdmin;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.verifyNotificationForOrderIssued;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -155,8 +155,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        verifyNotificationForOrderIssued(dataCaptor, () -> getExpectedParametersForAdmin(GENERATED_ORDER),
-            "caseUrlOrDocumentLink");
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForAdmin(GENERATED_ORDER));
 
         verifyZeroInteractions(notificationClient);
         verifySendDocumentEventTriggered();
@@ -208,8 +207,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        verifyNotificationForOrderIssued(dataCaptor, () -> getExpectedParametersForRepresentatives(GENERATED_ORDER),
-            "documentLink");
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForRepresentatives(GENERATED_ORDER));
 
         verifySendDocumentEventTriggered();
     }

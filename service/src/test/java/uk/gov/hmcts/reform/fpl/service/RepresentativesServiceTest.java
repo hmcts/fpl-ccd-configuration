@@ -360,10 +360,10 @@ class RepresentativesServiceTest {
 
         List<Element<Representative>> expectedRepresentatives = createRepresentatives(DIGITAL_SERVICE);
 
-        List<Element<Representative>> representativesToNotify = representativesService
-            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
+        List<Representative> representativesToNotify = representativesService.getChangedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
 
-        assertThat(representativesToNotify.equals(expectedRepresentatives));
+        assertThat(representativesToNotify.equals(unwrapElements(expectedRepresentatives)));
     }
 
     @Test
@@ -371,8 +371,8 @@ class RepresentativesServiceTest {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
 
-        List<Element<Representative>> representativesToNotify = representativesService
-            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
+        List<Representative> representativesToNotify = representativesService.getChangedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
         assertThat(representativesToNotify.isEmpty());
     }
@@ -382,8 +382,8 @@ class RepresentativesServiceTest {
         CaseData caseDataBefore = CaseData.builder().build();
         CaseData caseData = CaseData.builder().build();
 
-        List<Element<Representative>> representativesToNotify = representativesService
-            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
+        List<Representative> representativesToNotify = representativesService.getChangedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
 
         assertThat(representativesToNotify.isEmpty());
     }
@@ -395,21 +395,10 @@ class RepresentativesServiceTest {
 
         List<Element<Representative>> expectedRepresentatives = createRepresentatives(EMAIL);
 
-        List<Element<Representative>> representativesToNotify = representativesService
-            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
+        List<Representative> representativesToNotify = representativesService.getChangedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(representativesToNotify.equals(expectedRepresentatives));
-    }
-
-    @Test
-    void shouldNotReturnRepresentativesWhoseServingPreferenceIsPost2() {
-        CaseData caseDataBefore = CaseData.builder().build();
-        CaseData caseData = buildCaseDataWithRepresentatives(POST);
-
-        List<Element<Representative>> representativesToNotify = representativesService
-            .getRepresentativePartiesToNotify(caseData.getRepresentatives(), caseDataBefore.getRepresentatives());
-
-        assertThat(representativesToNotify.isEmpty());
+        assertThat(representativesToNotify.equals(unwrapElements(expectedRepresentatives)));
     }
 
     private CaseData buildCaseDataWithRepresentatives(RepresentativeServingPreferences preference) {
