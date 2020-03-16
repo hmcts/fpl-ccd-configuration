@@ -191,6 +191,6 @@ public class DraftCMOService {
     }
 
     private String formatLocalDateToMediumStyle(LocalDate date) {
-        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+        return formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }

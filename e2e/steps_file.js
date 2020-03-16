@@ -202,9 +202,9 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
     },
 
-    async fillDate(date, dateId){
+    async fillDate(date, sectionId = 'form'){
       if(date) {
-        return within(dateId ? dateId : 'form', () => {
+        return within(sectionId, () => {
           this.fillField('Day', date.day);
           this.fillField('Month', date.month);
           this.fillField('Year', date.year);
