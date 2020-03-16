@@ -45,8 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.*;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 // REFACTOR: 27/01/2020 Extract docmosis logic into a new service that extends DocmosisTemplateDataGeneration
@@ -214,6 +213,10 @@ public class GeneratedOrderService {
 
         if (documentStatus.equals("draft")) {
             orderTemplateBuilder.put("draftbackground", format(BASE_64, generateDraftWatermarkEncodedString()));
+        }
+
+        if (documentStatus.equals("sealed")) {
+            orderTemplateBuilder.put("courtseal" , format(BASE_64, generateCourtSealEncodedString()));
         }
 
         return orderTemplateBuilder.build();
