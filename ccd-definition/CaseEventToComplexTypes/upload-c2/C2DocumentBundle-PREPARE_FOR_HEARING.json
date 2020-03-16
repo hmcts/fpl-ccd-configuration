@@ -3,8 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "document",
+    "CaseFieldID": "c2Doc",
     "EventElementLabel": "Upload a file",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"

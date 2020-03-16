@@ -710,6 +710,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2Doc",
+    "Label": "Upload a file",
+    "FieldType": "Document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "temporaryC2Document",
     "Label": "Upload C2",
     "FieldType": "C2DocumentBundle",

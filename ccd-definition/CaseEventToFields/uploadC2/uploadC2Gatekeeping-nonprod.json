@@ -16,7 +16,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2Gatekeeping",
     "CaseFieldID": "amountToPay",
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
     "PageID": 2,
     "PageDisplayOrder": 2,

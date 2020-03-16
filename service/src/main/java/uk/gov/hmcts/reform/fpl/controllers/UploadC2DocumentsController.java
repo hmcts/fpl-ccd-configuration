@@ -61,8 +61,8 @@ public class UploadC2DocumentsController {
         var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
         data.put("temporaryC2Document", updatedTemporaryC2Document);
 
-        if (isTemporaryDocumentUrlEmpty(caseData)) {
-            data.remove("temporaryC2Document");
+        if (isC2DocumentUrlEmpty(data)) {
+            data.remove("c2Doc");
         }
 
         List<String> errors = new ArrayList<>(pbaNumberService.validate(updatedTemporaryC2Document));
@@ -110,9 +110,9 @@ public class UploadC2DocumentsController {
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
 
-    private boolean isTemporaryDocumentUrlEmpty(CaseData caseData) {
-        return Optional.ofNullable(caseData.getTemporaryC2Document())
-            .map(C2DocumentBundle::getDocument)
+    private boolean isC2DocumentUrlEmpty(Map<String, Object> data) {
+        return Optional.ofNullable(data.get("c2Doc"))
+            .map(c2Doc -> mapper.convertValue(c2Doc, DocumentReference.class))
             .map(DocumentReference::getUrl)
             .isEmpty();
     }
