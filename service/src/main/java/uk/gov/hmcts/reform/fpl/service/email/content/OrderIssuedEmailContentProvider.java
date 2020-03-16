@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -73,9 +74,9 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     }
 
     public Map<String, Object> buildOrderNotificationParametersForRepresentatives(final CaseDetails caseDetails,
-                                                                              final String localAuthorityCode,
-                                                                              final byte[] documentContents,
-                                                                              final IssuedOrderType issuedOrderType) {
+                                                                                  final String localAuthorityCode,
+                                                                                  final byte[] documentContents,
+                                                                                  final IssuedOrderType issuedOrderType) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
@@ -92,8 +93,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {
         String orderType;
         if (issuedOrderType == GENERATED_ORDER) {
-            orderType = caseData.getOrderCollection().get(
-                caseData.getOrderCollection().size() - 1).getValue().getType().toLowerCase();
+            orderType = Iterables.getLast(caseData.getOrderCollection()).getValue().getType().toLowerCase();
         } else {
             orderType = issuedOrderType.getLabel().toLowerCase();
         }
