@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,27 +59,28 @@ public class ActionCaseManagementOrderController {
     private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
     private final DocumentDownloadService documentDownloadService;
-    private final Time time;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getCaseManagementOrder() == null || !caseData.getCaseManagementOrder().isInJudgeReview()) {
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+        if (caseManagementOrder == null || !caseManagementOrder.isInJudgeReview()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
                 .build();
         }
 
         caseDetails.getData().putAll(caseManagementOrderService
-                .extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
+                .extractMapFieldsFromCaseManagementOrder(caseManagementOrder));
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
+        draftCMOService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
         caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
 
-        caseDetails.getData().put(DATE_OF_ISSUE.getKey(), time.now().toLocalDate());
+        caseDetails.getData().put(DATE_OF_ISSUE.getKey(),
+            caseManagementOrderService.getIssuedDate(caseManagementOrder));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
