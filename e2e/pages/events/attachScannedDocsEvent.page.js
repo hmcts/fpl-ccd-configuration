@@ -30,8 +30,7 @@ module.exports = {
   },
 
   enterScannedDocument(scannedDocument, file) {
-    I.waitForElement('.form-group .button');
-    I.click('Add new');
+    I.addAnotherElementToCollection();
     I.selectOption(this.fields.scannedDoc.type, scannedDocument.type);
     I.attachFile(this.fields.scannedDoc.url, file);
     I.fillField(this.fields.scannedDoc.subtype, scannedDocument.subtype);
