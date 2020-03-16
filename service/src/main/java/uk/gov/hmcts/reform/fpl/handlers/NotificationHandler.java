@@ -127,13 +127,14 @@ public class NotificationHandler {
     @EventListener
     public void sendNotificationsForOrder(final GeneratedOrderEvent orderEvent) {
         EventData eventData = new EventData(orderEvent);
-        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-        List<Representative> representativesServedByEmail = representativeService.getRepresentativesByServedPreference(
-            caseData.getRepresentatives(), EMAIL);
 
         sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             orderEvent.getMostRecentUploadedDocumentUrl());
         sendOrderIssuedNotificationToAdmin(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
+
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        List<Representative> representativesServedByEmail = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), EMAIL);
 
         if (!representativesServedByEmail.isEmpty()) {
             sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
@@ -259,7 +260,7 @@ public class NotificationHandler {
     private void sendNotificationToRepresentatives(EventData eventData,
                                                    Map<String, Object> parameters,
                                                    RepresentativeServingPreferences servingPreference,
-                                                   String notificationId) {
+                                                   String templateId) {
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
         List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
@@ -268,7 +269,7 @@ public class NotificationHandler {
         representatives.stream()
             .filter(representative -> isNotBlank(representative.getEmail()))
             .forEach(representative -> sendNotification(
-                notificationId,
+                templateId,
                 representative.getEmail(),
                 parameters,
                 eventData.getReference()));
