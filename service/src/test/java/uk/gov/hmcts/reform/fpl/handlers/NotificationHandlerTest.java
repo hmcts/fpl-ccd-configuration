@@ -53,7 +53,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProv
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -277,7 +276,7 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotifyPartiesOnOrderSubmission() throws IOException, NotificationClientException {
+        void shouldNotifyPartiesOnOrderSubmission() throws IOException {
             notificationHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
                 AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, documentContents));
 
@@ -295,7 +294,7 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotifyCtsAdminOnOrderSubmission() throws IOException, NotificationClientException {
+        void shouldNotifyCtsAdminOnOrderSubmission() throws IOException {
             CallbackRequest callbackRequest = appendSendToCtscOnCallback();
 
             given(orderIssuedEmailContentProvider.buildOrderNotificationParametersForHmctsAdmin(
@@ -568,7 +567,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToHmctsAdminWhenCtscIsDisabled() throws IOException, NotificationClientException {
+    void shouldSendEmailToHmctsAdminWhenCtscIsDisabled() throws IOException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("localAuthority", "Example Local Authority")
@@ -606,7 +605,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToCtscAdminWhenCtscIsEnabled() throws IOException, NotificationClientException {
+    void shouldSendEmailToCtscAdminWhenCtscIsEnabled() throws IOException {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -643,7 +642,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToCafcass() throws IOException, NotificationClientException {
+    void shouldSendEmailToCafcass() throws IOException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("cafcass", CAFCASS_NAME)
             .put("localAuthority", "Example Local Authority")
@@ -676,7 +675,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToGatekeeper() throws IOException, NotificationClientException {
+    void shouldSendEmailToGatekeeper() throws IOException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
@@ -708,7 +707,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
+    void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() throws IOException {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
@@ -732,7 +731,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
+    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() throws IOException {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
@@ -776,7 +775,7 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldsendEmailForPlacementOrderUploaded() throws IOException, NotificationClientException {
+        void shouldsendEmailForPlacementOrderUploaded() throws IOException {
             Map<String, Object> parameters = Map.of("respondentLastName", "Nelson",
                 "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
 
@@ -852,7 +851,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldsendEmailToPartiesWhenAddedToCaseThroughDigitalService()
-        throws IOException, NotificationClientException {
+        throws IOException {
         final Map<String, Object> expectedParameters = getPartyAddedByEmailNotificationParameters();
 
         List<Representative> representatives = getRepresentatives(DIGITAL_SERVICE,
