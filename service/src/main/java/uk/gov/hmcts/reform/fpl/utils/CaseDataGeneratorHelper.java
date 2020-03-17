@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -68,13 +67,13 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CaseDataGeneratorHelper {
 
-    private static final DateFormatterService DATE_FORMATTER_SERVICE = new DateFormatterService();
     private static final String FORMAT_STYLE = "h:mma, d MMMM yyyy";
 
     private CaseDataGeneratorHelper() {
@@ -436,8 +435,7 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static ImmutableMap<String, Object> buildCaseDataMapForDraftCMODocmosisGeneration(
-        LocalDateTime localDateTime) {
+    public static ImmutableMap<String, Object> buildCaseDataMapForDraftCMODocmosisGeneration(LocalDateTime dateTime) {
 
         final List<Element<Direction>> cmoDirections = createCmoDirections();
 
@@ -456,15 +454,15 @@ public class CaseDataGeneratorHelper {
             .put("applicants", createPopulatedApplicants())
             .put("solicitor", createSolicitor())
             .put("children1", createPopulatedChildren())
-            .put(HEARING_DETAILS_KEY, createHearingBookings(localDateTime))
+            .put(HEARING_DETAILS_KEY, createHearingBookings(dateTime))
             .put("dateSubmitted", LocalDate.now())
             .put("respondents1", respondents)
             .put("others", others)
             .put(HEARING_DATE_LIST.getKey(), DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                    .label(DATE_FORMATTER_SERVICE.formatLocalDateToString(
-                        localDateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
+                    .label(formatLocalDateToString(
+                        dateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
                     .build())
                 .build())
             .put(SCHEDULE.getKey(), createSchedule(true))
@@ -480,6 +478,7 @@ public class CaseDataGeneratorHelper {
                 .build()))
             .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createApprovedCMO())
             .put("representatives", representatives)
+            .put("dateOfIssue", LocalDate.of(2020, 1, 15))
             .build();
     }
 

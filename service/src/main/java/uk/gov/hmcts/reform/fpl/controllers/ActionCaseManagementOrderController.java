@@ -150,6 +150,8 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addDocument(order, document);
 
+        caseDetails.getData().remove(DATE_OF_ISSUE.getKey());
+
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
         caseDetails.getData().put("cmoEventId", ACTION_CASE_MANAGEMENT_ORDER.getId());
