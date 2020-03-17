@@ -328,7 +328,7 @@ class NotificationHandlerTest {
                 .willReturn(LOCAL_AUTHORITY_NAME);
 
             // did this to enable ObjectMapper injection
-            // TODO: 17/12/2019 nice to refactor to make cleaner
+            // TODO: 17/12/2019 nice to refactor to make cleaner FPLA-1249
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
                 partyAddedToCaseContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
                 c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,

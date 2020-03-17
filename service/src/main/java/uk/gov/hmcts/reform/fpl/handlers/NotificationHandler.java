@@ -218,7 +218,8 @@ public class NotificationHandler {
             NOTICE_OF_PLACEMENT_ORDER);
     }
 
-    //TODO: refactor to common method to send to parties. i.e sendEmailToRepresentative(NotificationId,
+
+    //TODO: refactor to common method to send to parties. i.e sendEmailToRepresentative(NotificationId, FPLA-1249
     private void sendEmailToRepresentativesServedThroughDigitalService(EventData eventData,
                                                                               Map<String, Object> parameters) {
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
