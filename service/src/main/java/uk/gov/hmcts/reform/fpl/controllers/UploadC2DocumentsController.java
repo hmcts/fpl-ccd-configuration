@@ -60,7 +60,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         if (caseData.getTemporaryC2Document() != null && isTemporaryDocumentUrlEmpty(caseData)) {
-            ((Map <String, Object>) data.get("temporaryC2Document")).remove("document");
+            ((Map<String, Object>) data.get("temporaryC2Document")).remove("document");
         }
 
         List<String> errors = new ArrayList<>();
@@ -82,7 +82,8 @@ public class UploadC2DocumentsController {
     }
 
     @PostMapping("/validate-pba-number/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(@RequestBody CallbackRequest callbackrequest) {
+    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
+        @RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
