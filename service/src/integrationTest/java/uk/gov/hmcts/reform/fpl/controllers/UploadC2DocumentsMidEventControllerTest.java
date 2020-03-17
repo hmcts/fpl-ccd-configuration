@@ -75,7 +75,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .data(Map.of("temporaryC2Document", Map.of("document", Map.of())))
             .build(), "get-fee");
 
-        assertThat(response.getData()).doesNotContainKey("temporaryC2Document");
+        assertThat(((Map<String, Object>) response.getData().get("temporaryC2Document"))).doesNotContainKey("document");
     }
 
     @Test
@@ -86,8 +86,8 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .data(Map.of("temporaryC2Document", Map.of("document", Map.of("url", "example_url"))))
             .build(), "get-fee");
 
-        var temporaryC2Document = (Map<String, Object>) response.getData().get("temporaryC2Document");
-        assertThat(response.getData()).containsKey("temporaryC2Document");
+
+        assertThat(((Map<String, Object>) response.getData().get("temporaryC2Document"))).containsKey("document");
     }
 
     @Test

@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -34,7 +33,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -59,8 +57,9 @@ public class UploadC2DocumentsController {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        if (caseData.getTemporaryC2Document() != null && isTemporaryDocumentUrlEmpty(caseData)) {
-            data.remove(TEMPORARY_C2_DOCUMENT);
+        //workaround for previous-continue bug
+        if (shouldRemoveDocument(caseData)) {
+            removeDocumentFromData(data);
         }
 
         List<String> errors = new ArrayList<>();
@@ -123,11 +122,16 @@ public class UploadC2DocumentsController {
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
 
-    private boolean isTemporaryDocumentUrlEmpty(CaseData caseData) {
-        return Optional.ofNullable(caseData.getTemporaryC2Document())
-            .map(C2DocumentBundle::getDocument)
-            .map(DocumentReference::getUrl)
-            .isEmpty();
+    private boolean shouldRemoveDocument(CaseData caseData) {
+        return caseData.getTemporaryC2Document() != null
+            && caseData.getTemporaryC2Document().getDocument().getUrl() == null;
+    }
+
+
+    private void removeDocumentFromData(Map<String, Object> data) {
+        var updatedC2DocumentMap = mapper.convertValue(data.get(TEMPORARY_C2_DOCUMENT), Map.class);
+        updatedC2DocumentMap.remove("document");
+        data.put(TEMPORARY_C2_DOCUMENT, updatedC2DocumentMap);
     }
 
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData, String authorization) {
