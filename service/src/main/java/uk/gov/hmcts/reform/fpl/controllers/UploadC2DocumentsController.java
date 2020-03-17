@@ -44,8 +44,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @RestController
 @RequestMapping("/callback/upload-c2")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@SuppressWarnings("unchecked")
 public class UploadC2DocumentsController {
+    private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
     private final UserDetailsService userDetailsService;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -60,7 +60,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         if (caseData.getTemporaryC2Document() != null && isTemporaryDocumentUrlEmpty(caseData)) {
-            ((Map<String, Object>) data.get("temporaryC2Document")).remove("document");
+            data.remove(TEMPORARY_C2_DOCUMENT);
         }
 
         List<String> errors = new ArrayList<>();
@@ -88,7 +88,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
-        data.put("temporaryC2Document", updatedTemporaryC2Document);
+        data.put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -104,7 +104,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.put("c2DocumentBundle", buildC2DocumentBundle(caseData, authorization));
-        data.keySet().removeAll(Set.of("temporaryC2Document", "c2ApplicationType", "amountToPay"));
+        data.keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "amountToPay"));
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
