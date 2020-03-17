@@ -465,7 +465,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         private DocumentReference expectedDocument() {
             return DocumentReference.builder()
                 .binaryUrl(document.links.binary.href)
-                .filename(document.originalDocumentName)
+                .filename("draft-file.pdf")
                 .url(document.links.self.href)
                 .build();
         }
