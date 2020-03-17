@@ -57,8 +57,8 @@ import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
@@ -237,13 +237,13 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             verify(notificationClient).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 "admin@family-court.com",
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 CASE_ID);
 
             verify(notificationClient, never()).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 "FamilyPublicLaw+ctsc@gmail.com",
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 CASE_ID);
 
             verify(notificationClient).sendEmail(
@@ -253,7 +253,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 eq(CASE_ID));
 
             assertEquals(dataCaptor.getValue(),
-                getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER));
+                getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
             verifyZeroInteractions(notificationClient);
         }
@@ -283,13 +283,13 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             verify(notificationClient, never()).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 "admin@family-court.com",
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 CASE_ID);
 
             verify(notificationClient).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 "FamilyPublicLaw+ctsc@gmail.com",
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 CASE_ID);
         }
 

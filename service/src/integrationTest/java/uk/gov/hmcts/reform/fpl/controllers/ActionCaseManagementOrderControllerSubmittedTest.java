@@ -49,7 +49,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -62,8 +61,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedu
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdmin;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenRepresentativesServedByPost;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -193,7 +192,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForAdmin(CMO));
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForAdminWhenRepresentativesServedByPost(true));
 
         verifyZeroInteractions(notificationClient);
     }
@@ -334,7 +333,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
             "admin@family-court.com",
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(),
+            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
             CASE_ID);
     }
 

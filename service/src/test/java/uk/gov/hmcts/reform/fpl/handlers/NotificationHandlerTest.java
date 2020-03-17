@@ -87,7 +87,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -228,7 +228,7 @@ class NotificationHandlerTest {
 
             given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER))
-                .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
+                .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
         }
 
         @Test
@@ -299,7 +299,7 @@ class NotificationHandlerTest {
             verify(notificationClient).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 COURT_EMAIL_ADDRESS,
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
                 "12345");
         }
 
@@ -309,7 +309,7 @@ class NotificationHandlerTest {
 
             given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER))
-                .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
+                .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
 
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
@@ -322,7 +322,7 @@ class NotificationHandlerTest {
             verify(notificationClient).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 CTSC_INBOX,
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
                 "12345");
         }
     }
@@ -364,7 +364,7 @@ class NotificationHandlerTest {
 
             given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
-                .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
+                .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
 
             notificationHandler.sendNotificationsForIssuedCaseManagementOrder(
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
@@ -378,7 +378,7 @@ class NotificationHandlerTest {
             verify(notificationClient).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 COURT_EMAIL_ADDRESS,
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
                 "12345");
         }
 
@@ -395,7 +395,7 @@ class NotificationHandlerTest {
 
             given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
-                .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
+                .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
 
             notificationHandler.sendNotificationsForIssuedCaseManagementOrder(
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
@@ -403,7 +403,7 @@ class NotificationHandlerTest {
             verify(notificationClient).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 CTSC_INBOX,
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
                 "12345");
         }
 
@@ -776,7 +776,7 @@ class NotificationHandlerTest {
 
             given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER))
-                .willReturn(getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost());
+                .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false));
 
             notificationHandler.sendNotificationForNoticeOfPlacementOrderUploaded(
                 new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID, documentContents));
@@ -790,7 +790,7 @@ class NotificationHandlerTest {
             verify(notificationClient).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 COURT_EMAIL_ADDRESS,
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 "12345");
         }
     }

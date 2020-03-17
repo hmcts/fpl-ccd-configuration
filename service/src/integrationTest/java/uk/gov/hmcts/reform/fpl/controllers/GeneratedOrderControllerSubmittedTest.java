@@ -34,15 +34,15 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByEmail;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdmin;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
 @ActiveProfiles("integration-test")
@@ -102,7 +102,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
             "admin@family-court.com",
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(),
+            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
             CASE_ID);
 
         verifyZeroInteractions(notificationClient);
@@ -119,13 +119,13 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
             "FamilyPublicLaw+ctsc@gmail.com",
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(),
+            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
             CASE_ID);
 
         verify(notificationClient, never()).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
             "admin@family-court.com",
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(),
+            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
             CASE_ID);
 
         verifySendDocumentEventTriggered();
@@ -155,7 +155,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForAdmin(GENERATED_ORDER));
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForAdminWhenRepresentativesServedByPost(true));
 
         verifyZeroInteractions(notificationClient);
         verifySendDocumentEventTriggered();
@@ -207,7 +207,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForRepresentatives(GENERATED_ORDER));
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
 
         verifySendDocumentEventTriggered();
     }

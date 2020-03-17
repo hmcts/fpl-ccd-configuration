@@ -135,10 +135,8 @@ public class NotificationHandler {
         List<Representative> representativesServedByEmail = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), EMAIL);
 
-        if (!representativesServedByEmail.isEmpty()) {
-            sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(),
-                representativesServedByEmail, GENERATED_ORDER);
-        }
+        sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(),
+            representativesServedByEmail, GENERATED_ORDER);
     }
 
     @EventListener
@@ -254,10 +252,8 @@ public class NotificationHandler {
         sendNotificationToRepresentatives(eventData, parameters, representativesServedByDigitalService,
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE);
 
-        if (!representativesServedByEmail.isEmpty()) {
-            sendOrderIssuedNotificationToRepresentatives(eventData, noticeOfPlacementEvent.getDocumentContents(),
-                representativesServedByEmail, NOTICE_OF_PLACEMENT_ORDER);
-        }
+        sendOrderIssuedNotificationToRepresentatives(eventData, noticeOfPlacementEvent.getDocumentContents(),
+            representativesServedByEmail, NOTICE_OF_PLACEMENT_ORDER);
 
     }
 
@@ -282,12 +278,14 @@ public class NotificationHandler {
     @EventListener
     public void sendNotificationToPartiesAddedToCase(PartyAddedToCaseEvent event) {
         EventData eventData = new EventData(event);
-        Map<String, Object> servedByEmailParameters = partyAddedToCaseContentProvider
-            .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(), EMAIL);
-        Map<String, Object> servedByDigitalServiceParameters = partyAddedToCaseContentProvider
-            .getPartyAddedToCaseNotificationParameters(event.getCallbackRequest().getCaseDetails(), DIGITAL_SERVICE);
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
 
-        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        Map<String, Object> servedByEmailParameters = partyAddedToCaseContentProvider
+            .getPartyAddedToCaseNotificationParameters(caseDetails, EMAIL);
+        Map<String, Object> servedByDigitalServiceParameters = partyAddedToCaseContentProvider
+            .getPartyAddedToCaseNotificationParameters(caseDetails, DIGITAL_SERVICE);
+
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = objectMapper.convertValue(event.getCallbackRequest().getCaseDetailsBefore().getData(),
             CaseData.class);
 
@@ -416,7 +414,7 @@ public class NotificationHandler {
             sendNotificationToRepresentatives(eventData, parameters, representatives,
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES);
         } else {
-            log.debug("No notification sent to representatives (none require serving by email)");
+            log.debug("No notification sent to representatives (none require serving)");
         }
     }
 
