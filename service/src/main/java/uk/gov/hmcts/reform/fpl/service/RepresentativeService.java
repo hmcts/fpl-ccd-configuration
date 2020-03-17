@@ -215,7 +215,7 @@ public class RepresentativeService {
         }
     }
 
-    public List<Representative> getChangedRepresentatives(List<Element<Representative>> currentRepresentatives,
+    public List<Representative> getUpdatedRepresentatives(List<Element<Representative>> currentRepresentatives,
                                                           List<Element<Representative>> representativesBefore,
                                                           RepresentativeServingPreferences servingPreferences) {
         if (isNotEmpty(currentRepresentatives)) {

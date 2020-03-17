@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -354,16 +353,16 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    void shouldGetRepresentativePartiesToNotifyWhenNewRepresentativeAdded() {
+    void shouldGetUpdatedRepresentativesWhenNewRepresentativeAdded() {
         CaseData caseDataBefore = CaseData.builder().representatives(emptyList()).build();
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
 
-        List<Element<Representative>> expectedRepresentatives = createRepresentatives(DIGITAL_SERVICE);
+        List<Element<Representative>> expectedRepresentatives = createRepresentatives(EMAIL);
 
-        List<Representative> representativesToNotify = representativesService.getChangedRepresentatives(
-            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(representativesToNotify.equals(unwrapElements(expectedRepresentatives)));
+        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
     }
 
     @Test
@@ -371,34 +370,45 @@ class RepresentativesServiceTest {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
 
-        List<Representative> representativesToNotify = representativesService.getChangedRepresentatives(
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(representativesToNotify.isEmpty());
+        assertThat(updatedRepresentatives.isEmpty());
     }
 
     @Test
-    void shouldNotReturnAnyRepresentativesIfNoRepresentativesExist() throws IOException {
+    void shouldNotReturnAnyDigitalRepresentativesIfNewDigitalRepresentativeNotAdded() {
+        CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
+        CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
+
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
+
+        assertThat(updatedRepresentatives.isEmpty());
+    }
+
+    @Test
+    void shouldNotReturnAnyRepresentativesIfNoRepresentativesExist() {
         CaseData caseDataBefore = CaseData.builder().build();
         CaseData caseData = CaseData.builder().build();
 
-        List<Representative> representativesToNotify = representativesService.getChangedRepresentatives(
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
 
-        assertThat(representativesToNotify.isEmpty());
+        assertThat(updatedRepresentatives.isEmpty());
     }
 
     @Test
-    void shouldGetRepresentativePartiesToNotifyWhenRepresentativeChanged() throws IOException {
+    void shouldGetUpdatedRepresentativesWhenRepresentativeChanged() {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(DIGITAL_SERVICE);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
 
         List<Element<Representative>> expectedRepresentatives = createRepresentatives(EMAIL);
 
-        List<Representative> representativesToNotify = representativesService.getChangedRepresentatives(
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(representativesToNotify.equals(unwrapElements(expectedRepresentatives)));
+        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
     }
 
     private CaseData buildCaseDataWithRepresentatives(RepresentativeServingPreferences preference) {

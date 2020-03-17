@@ -291,9 +291,9 @@ public class NotificationHandler {
         CaseData caseDataBefore = objectMapper.convertValue(event.getCallbackRequest().getCaseDetailsBefore().getData(),
             CaseData.class);
 
-        List<Representative> representativesServedByDigitalService = representativeService.getChangedRepresentatives(
+        List<Representative> representativesServedByDigitalService = representativeService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
-        List<Representative> representativesServedByEmail = representativeService.getChangedRepresentatives(
+        List<Representative> representativesServedByEmail = representativeService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
         sendNotificationToRepresentatives(eventData, servedByEmailParameters,

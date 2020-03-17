@@ -834,11 +834,11 @@ class NotificationHandlerTest {
         given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
             .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
 
-        given(representativeService.getChangedRepresentatives(caseData.getRepresentatives(),
+        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
             caseDataBefore.getRepresentatives(), EMAIL))
             .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
 
-        given(representativeService.getChangedRepresentatives(caseData.getRepresentatives(),
+        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
             caseDataBefore.getRepresentatives(), DIGITAL_SERVICE))
             .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
 
