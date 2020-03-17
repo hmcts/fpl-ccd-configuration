@@ -142,11 +142,9 @@ public class GeneratedOrderController {
 
         Document document = getDocument(authorization, userId, caseData, SEALED);
 
-        OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData.getOrderTypeAndDocument(), document);
-
-        caseDetails.getData().put("orderTypeAndDocument", orderTypeAndDocument);
-
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+
+        OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData.getOrderTypeAndDocument(), document);
 
         // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(orderTypeAndDocument, caseData.getOrder(),
