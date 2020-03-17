@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
@@ -47,6 +48,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 
 @Slf4j
@@ -117,7 +120,7 @@ public class GeneratedOrderController {
 
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
-            Document document = getDocument(authorization, userId, caseData, "draft");
+            Document document = getDocument(authorization, userId, caseData, DRAFT);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
@@ -137,7 +140,7 @@ public class GeneratedOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document document = getDocument(authorization, userId, caseData, "sealed");
+        Document document = getDocument(authorization, userId, caseData, SEALED);
 
         OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData.getOrderTypeAndDocument(), document);
 
@@ -182,23 +185,23 @@ public class GeneratedOrderController {
     private Document getDocument(String authorization,
                                  String userId,
                                  CaseData caseData,
-                                 String documentStatus) throws IOException {
+                                 OrderStatus orderStatus) throws IOException {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
-        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            service.getOrderTemplateData(caseData, documentStatus), templateType);
+        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            service.getOrderTemplateData(caseData, orderStatus), templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 
-        Document pdfDoc = uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
+        Document document = uploadDocumentService.uploadPDF(userId, authorization, docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
 
-        if(documentStatus.equals("draft")){
-            pdfDoc.originalDocumentName = "draft-" + pdfDoc.originalDocumentName;
+        if(orderStatus == DRAFT) {
+            document.originalDocumentName = "draft-" + document.originalDocumentName;
         }
 
-        return pdfDoc;
+        return document;
     }
 
     private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(

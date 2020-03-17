@@ -6,11 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.*;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
@@ -43,6 +39,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.*;
@@ -134,7 +131,7 @@ public class GeneratedOrderService {
             .build();
     }
 
-    public Map<String, Object> getOrderTemplateData(CaseData caseData, String documentStatus) throws IOException {
+    public Map<String, Object> getOrderTemplateData(CaseData caseData, OrderStatus orderStatus) throws IOException {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
 
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
@@ -211,11 +208,11 @@ public class GeneratedOrderService {
             .put("furtherDirections", caseData.getFurtherDirectionsText())
             .build();
 
-        if (documentStatus.equals("draft")) {
+        if (orderStatus == DRAFT) {
             orderTemplateBuilder.put("draftbackground", format(BASE_64, generateDraftWatermarkEncodedString()));
         }
 
-        if (documentStatus.equals("sealed")) {
+        if (orderStatus == SEALED) {
             orderTemplateBuilder.put("courtseal" , format(BASE_64, generateCourtSealEncodedString()));
         }
 
