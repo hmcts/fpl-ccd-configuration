@@ -75,7 +75,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .data(Map.of("temporaryC2Document", Map.of("document", Map.of())))
             .build(), "get-fee");
 
-        assertThat(((Map<String, Object>) response.getData().get("temporaryC2Document"))).doesNotContainKey("document");
+        assertThat((Map<String, Object>) response.getData().get("temporaryC2Document")).doesNotContainKey("document");
     }
 
     @Test
@@ -87,7 +87,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .build(), "get-fee");
 
 
-        assertThat(((Map<String, Object>) response.getData().get("temporaryC2Document"))).containsKey("document");
+        assertThat((Map<String, Object>) response.getData().get("temporaryC2Document")).containsKey("document");
     }
 
     @Test
@@ -101,5 +101,27 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         assertThat(response.getErrors()).contains("XXX");
         assertThat(response.getData()).doesNotContainKeys("amountToPay");
+    }
+
+    @Test
+    void shouldDisplayErrorForInvalidPbaNumber() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
+            .data(Map.of("temporaryC2Document", Map.of("pbaNumber", "12345")))
+            .build(), "validate-pba-number");
+
+        assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
+        assertThat(((Map<String, Object>) response.getData().get("temporaryC2Document")).get("pbaNumber"))
+            .isEqualTo("PBA12345");
+    }
+
+    @Test
+    void shouldNotDisplayErrorForValidPbaNumber() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
+            .data(Map.of("temporaryC2Document", Map.of("pbaNumber", "1234567")))
+            .build(), "validate-pba-number");
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(((Map<String, Object>) response.getData().get("temporaryC2Document")).get("pbaNumber"))
+            .isEqualTo("PBA1234567");
     }
 }
