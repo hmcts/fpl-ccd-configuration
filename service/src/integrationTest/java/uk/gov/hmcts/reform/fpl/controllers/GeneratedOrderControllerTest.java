@@ -81,6 +81,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String CASE_ID = "12345";
+    private final byte[] pdf = {1, 2, 3, 4, 5};
+    private Document document;
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -96,6 +98,15 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
     GeneratedOrderControllerTest() {
         super("create-order");
+    }
+
+    @BeforeEach
+    void setUp() {
+        document = document();
+        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
+
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
     }
 
     @Test
@@ -117,6 +128,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         @Test
         void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(BLANK_ORDER, null)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .order(GeneratedOrder.builder()
                     .title("Example Order")
                     .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -140,6 +152,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             final CaseDetails caseDetails = buildCaseDetails(
                 commonCaseDetailsComponents(CARE_ORDER, subtype)
                     .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                    .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                     .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
             );
 
@@ -156,6 +169,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
             );
 
@@ -171,6 +185,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         void aboutToSubmitShouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .orderMonths(14));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -211,7 +226,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
             return GeneratedOrder.builder()
                 .type(fullType)
-                .document(DocumentReference.builder().build())
+                .document(expectedDocument())
                 .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .judgeAndLegalAdvisor(
                     JudgeAndLegalAdvisor.builder()
@@ -220,6 +235,14 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                         .legalAdvisorName("Peter Parker")
                         .build()
                 );
+        }
+
+        private DocumentReference expectedDocument() {
+            return DocumentReference.builder()
+                .binaryUrl(document.links.binary.href)
+                .filename("file.pdf")
+                .url(document.links.self.href)
+                .build();
         }
 
         private void aboutToSubmitAssertions(Map<String, Object> data, GeneratedOrder expectedOrder) {
@@ -295,18 +318,6 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     @TestInstance(PER_CLASS)
     @Nested
     class GenerateDocumentMidEvent {
-        private final byte[] pdf = {1, 2, 3, 4, 5};
-        private Document document;
-
-        @BeforeEach
-        void setUp() {
-            document = document();
-            DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
-
-            given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-            given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
-        }
-
         @ParameterizedTest
         @MethodSource("generateDocumentMidEventArgumentSource")
         void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails,
@@ -320,7 +331,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
+            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDraftDocument());
         }
 
         @Test
@@ -462,7 +473,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build();
         }
 
-        private DocumentReference expectedDocument() {
+        private DocumentReference expectedDraftDocument() {
             return DocumentReference.builder()
                 .binaryUrl(document.links.binary.href)
                 .filename("draft-file.pdf")
