@@ -34,19 +34,16 @@ import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
@@ -66,12 +63,10 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
@@ -125,12 +120,6 @@ class NotificationHandlerTest {
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     @Mock
-    private HmctsEmailContentProvider hmctsEmailContentProvider;
-
-    @Mock
-    private CafcassEmailContentProvider cafcassEmailContentProvider;
-
-    @Mock
     private CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
 
     @Mock
@@ -174,9 +163,6 @@ class NotificationHandlerTest {
 
     @InjectMocks
     private NotificationHandler notificationHandler;
-
-    @InjectMocks
-    private SubmittedCaseEventHandler submittedCaseEventHandler;
 
     @Nested
     class C2UploadedNotificationChecks {
@@ -566,76 +552,6 @@ class NotificationHandlerTest {
                 .putAll(expectedCommonCMONotificationParameters())
                 .build();
         }
-    }
-
-    @Test
-    void shouldSendEmailToCtscAdminWhenCtscIsEnabled() throws IOException {
-        CallbackRequest callbackRequest = appendSendToCtscOnCallback();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("court", COURT_NAME)
-            .put("localAuthority", "Example Local Authority")
-            .put("dataPresent", "Yes")
-            .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "^Information on the whereabouts of the child")
-            .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "same day")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
-
-        given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseDetails, LOCAL_AUTHORITY_CODE))
-            .willReturn(expectedParameters);
-
-        submittedCaseEventHandler.sendEmailToHmctsAdmin(
-            new SubmittedCaseEvent(callbackRequest, AUTH_TOKEN, USER_ID));
-
-        verify(notificationService).sendEmail(
-            HMCTS_COURT_SUBMISSION_TEMPLATE,
-            CTSC_INBOX,
-            expectedParameters,
-            "12345");
-    }
-
-    @Test
-    void shouldSendEmailToCafcass() throws IOException {
-        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("cafcass", CAFCASS_NAME)
-            .put("localAuthority", "Example Local Authority")
-            .put("dataPresent", "Yes")
-            .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "^Information on the whereabouts of the child")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
-
-        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-            .willReturn("Example Local Authority");
-
-        given(cafcassEmailContentProvider.buildCafcassSubmissionNotification(callbackRequest().getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
-
-        submittedCaseEventHandler.sendEmailToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
-
-        verify(notificationService).sendEmail(
-            CAFCASS_SUBMISSION_TEMPLATE, CAFCASS_EMAIL_ADDRESS,
-            expectedParameters, "12345");
     }
 
     @Test
