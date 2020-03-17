@@ -24,7 +24,7 @@ class DocmosisStandardDirectionOrderTest {
     private static final Set<String> DOCMOSIS_KEYS = Set.of("judgeAndLegalAdvisor", "courtName",
         "familyManCaseNumber", "generationDate", "complianceDeadline", "respondents", "children",
         "respondentsProvided", "applicantName", "hearingBooking", "allParties", "localAuthorityDirections",
-        "respondentDirections", "cafcassDirections", "otherPartiesDirections", "courtDirections", "draftbackground");
+        "respondentDirections", "cafcassDirections", "otherPartiesDirections", "courtDirections", "draftbackground", "courtseal");
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -104,7 +104,8 @@ class DocmosisStandardDirectionOrderTest {
             .put("cafcassDirections", List.of(direction(CAFCASS)))
             .put("otherPartiesDirections", List.of(direction(OTHERS)))
             .put("courtDirections", List.of(direction(COURT)))
-            .put("draftbackground", "draft background");
+            .put("draftbackground", "draft background")
+            .put("courtseal", "court seal");
 
         return expectedMap.build();
     }
@@ -139,6 +140,7 @@ class DocmosisStandardDirectionOrderTest {
                 .build())
             .directions(directions)
             .draftbackground("draft background")
+            .courtseal("court seal")
             .build();
     }
 }

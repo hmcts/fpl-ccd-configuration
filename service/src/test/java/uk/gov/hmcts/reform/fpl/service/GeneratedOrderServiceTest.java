@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -274,12 +275,12 @@ class GeneratedOrderServiceTest {
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) {
+                                                           GeneratedOrderSubtype subtype) throws IOException {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
         Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, "sealed");
 
         assertThat(templateData).isEqualTo(expectedMap);
 
