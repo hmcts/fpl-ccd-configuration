@@ -181,10 +181,9 @@ class FeeServiceTest {
             List<FeeDto> fees = feesData.getFees();
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.TEN);
-            assertThat(fees.get(0).getCode()).isEqualTo(CARE_ORDER_CODE);
-            assertThat(fees.get(0).getCalculatedAmount()).isEqualTo(BigDecimal.ONE);
-            assertThat(fees.get(1).getCode()).isEqualTo(SUPERVISION_ORDER_CODE);
-            assertThat(fees.get(1).getCalculatedAmount()).isEqualTo(BigDecimal.TEN);
+            assertThat(fees).hasSize(1);
+            assertThat(fees.get(0).getCode()).isEqualTo(SUPERVISION_ORDER_CODE);
+            assertThat(fees.get(0).getCalculatedAmount()).isEqualTo(BigDecimal.TEN);
         }
 
         @AfterEach

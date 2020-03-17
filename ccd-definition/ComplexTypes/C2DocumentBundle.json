@@ -36,7 +36,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "nameOfRepresentative",
     "FieldType": "Text",
-    "ElementLabel": "Description",
+    "ElementLabel": "Name of representative",
     "SecurityClassification": "Public"
   },
   {
@@ -45,7 +45,7 @@
     "ListElementCode": "pbaNumber",
     "HintText": "For example, PBA1234567",
     "FieldType": "Text",
-    "ElementLabel": "Description",
+    "ElementLabel": "Payment by account (PBA) number",
     "SecurityClassification": "Public"
   },
   {
@@ -53,7 +53,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "clientCode",
     "FieldType": "Text",
-    "ElementLabel": "Description",
+    "ElementLabel": "Client code",
     "SecurityClassification": "Public"
   },
   {
@@ -61,7 +61,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "fileReference",
     "FieldType": "Text",
-    "ElementLabel": "Description",
+    "ElementLabel": "File reference",
     "SecurityClassification": "Public"
   },
   {
