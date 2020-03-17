@@ -113,7 +113,7 @@ public class PlacementController {
             .build();
     }
 
-    //TODO: where should private methods for send notifications exist?
+    //TODO: where should private methods for send notifications exist? FPLA-1472
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -137,7 +137,7 @@ public class PlacementController {
         Placement currentPlacement = placementService.getPlacement(caseData, child);
         Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
 
-        // TODO refactor: this logic is confusing. Suggested: new method isNewOrUpdated...
+        // TODO refactor: this logic is confusing. Suggested: new method isNewOrUpdated... FPLA-1473
         if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest);
         }
@@ -185,7 +185,7 @@ public class PlacementController {
             new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
-    //TODO: refactor logic. Double negative for !isNotEmpty currently.
+    //TODO: refactor logic. Double negative for !isNotEmpty currently. FPLA-1473
     private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
         return isNotEmpty(previousPlacement)
             && newPlacement.getApplication().equals(previousPlacement.getApplication());

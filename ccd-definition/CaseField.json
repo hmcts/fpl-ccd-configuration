@@ -28,14 +28,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseIDReference",
-    "Label": "Case ID",
-    "FieldType": "Text",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "EPO_REASONING_SHOW",
     "Label": "EPO Reason show or hide",
     "FieldType": "MultiSelectList",
