@@ -122,6 +122,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         if (draft) {
             cmoTemplateData.putAll(getDraftWaterMarkData());
+            cmoTemplateData.putAll(getCourtSealData());
         }
 
         if(!draft){
