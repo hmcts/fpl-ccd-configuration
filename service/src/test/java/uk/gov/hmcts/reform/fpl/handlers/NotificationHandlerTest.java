@@ -175,6 +175,9 @@ class NotificationHandlerTest {
     @InjectMocks
     private NotificationHandler notificationHandler;
 
+    @InjectMocks
+    private SubmittedCaseEventHandler submittedCaseEventHandler;
+
     @Nested
     class C2UploadedNotificationChecks {
         final String mostRecentUploadedDocumentUrl =
@@ -341,12 +344,11 @@ class NotificationHandlerTest {
             // did this to enable ObjectMapper injection
             // TODO: 17/12/2019 nice to refactor to make cleaner
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
-                hmctsEmailContentProvider, partyAddedToCaseContentProvider, cafcassEmailContentProvider,
-                cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider, c2UploadedEmailContentProvider,
-                orderEmailContentProvider, orderIssuedEmailContentProvider, localAuthorityEmailContentProvider,
-                idamApi, inboxLookupService, caseManagementOrderEmailContentProvider,
-                placementApplicationContentProvider, representativeService, localAuthorityNameLookupConfiguration,
-                objectMapper, ctscEmailLookupConfiguration, notificationService);
+                partyAddedToCaseContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
+                c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
+                localAuthorityEmailContentProvider, idamApi, inboxLookupService,
+                caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
+                localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration, notificationService);
         }
 
         @Test
@@ -567,44 +569,6 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToHmctsAdminWhenCtscIsDisabled() throws IOException {
-        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("court", COURT_NAME)
-            .put("localAuthority", "Example Local Authority")
-            .put("dataPresent", "Yes")
-            .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "^Information on the whereabouts of the child")
-            .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "same day")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
-
-        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-            .willReturn("Example Local Authority");
-
-        given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(callbackRequest().getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
-
-        notificationHandler.sendEmailToHmctsAdmin(
-            new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
-
-        verify(notificationService).sendEmail(
-            HMCTS_COURT_SUBMISSION_TEMPLATE,
-            COURT_EMAIL_ADDRESS,
-            expectedParameters,
-            "12345");
-    }
-
-    @Test
     void shouldSendEmailToCtscAdminWhenCtscIsEnabled() throws IOException {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -631,7 +595,7 @@ class NotificationHandlerTest {
         given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(expectedParameters);
 
-        notificationHandler.sendEmailToHmctsAdmin(
+        submittedCaseEventHandler.sendEmailToHmctsAdmin(
             new SubmittedCaseEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
         verify(notificationService).sendEmail(
@@ -667,7 +631,7 @@ class NotificationHandlerTest {
         given(cafcassEmailContentProvider.buildCafcassSubmissionNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendEmailToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        submittedCaseEventHandler.sendEmailToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationService).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE, CAFCASS_EMAIL_ADDRESS,
@@ -766,8 +730,8 @@ class NotificationHandlerTest {
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
             placementNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
-                cafcassLookupConfiguration, hmctsEmailContentProvider, partyAddedToCaseContentProvider,
-                cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
+                cafcassLookupConfiguration, partyAddedToCaseContentProvider,
+                cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
                 c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
                 localAuthorityEmailContentProvider, idamApi, inboxLookupService,
                 caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
