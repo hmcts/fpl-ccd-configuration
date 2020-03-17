@@ -16,7 +16,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "amountToPay",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": 2,
     "PageDisplayOrder": 2,

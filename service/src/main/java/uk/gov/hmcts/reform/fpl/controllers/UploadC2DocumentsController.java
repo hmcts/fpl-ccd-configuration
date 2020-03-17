@@ -44,6 +44,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @RestController
 @RequestMapping("/callback/upload-c2")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@SuppressWarnings("unchecked")
 public class UploadC2DocumentsController {
     private final ObjectMapper mapper;
     private final UserDetailsService userDetailsService;
@@ -58,8 +59,8 @@ public class UploadC2DocumentsController {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        if (isC2DocumentUrlEmpty(data)) {
-            data.remove("c2Doc");
+        if (caseData.getTemporaryC2Document() != null && isTemporaryDocumentUrlEmpty(caseData)) {
+            ((Map <String, Object>) data.get("temporaryC2Document")).remove("document");
         }
 
         List<String> errors = new ArrayList<>();
@@ -121,9 +122,9 @@ public class UploadC2DocumentsController {
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
 
-    private boolean isC2DocumentUrlEmpty(Map<String, Object> data) {
-        return Optional.ofNullable(data.get("c2Doc"))
-            .map(c2Doc -> mapper.convertValue(c2Doc, DocumentReference.class))
+    private boolean isTemporaryDocumentUrlEmpty(CaseData caseData) {
+        return Optional.ofNullable(caseData.getTemporaryC2Document())
+            .map(C2DocumentBundle::getDocument)
             .map(DocumentReference::getUrl)
             .isEmpty();
     }

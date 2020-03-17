@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
+@SuppressWarnings("unchecked")
 class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
     @MockBean
@@ -71,10 +72,11 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("c2Doc", Map.of()))
+            .data(Map.of("temporaryC2Document", Map.of("document", Map.of())))
             .build(), "get-fee");
 
-        assertThat(response.getData()).doesNotContainKey("c2Doc");
+        var temporaryC2Document = (Map<String, Object>) response.getData().get("temporaryC2Document");
+        assertThat(temporaryC2Document).doesNotContainKey("document");
     }
 
     @Test
@@ -85,7 +87,8 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .data(Map.of("temporaryC2Document", Map.of("document", Map.of("url", "example_url"))))
             .build(), "get-fee");
 
-        assertThat(response.getData()).containsKey("temporaryC2Document");
+        var temporaryC2Document = (Map<String, Object>) response.getData().get("temporaryC2Document");
+        assertThat(temporaryC2Document).containsKey("document");
     }
 
     @Test
