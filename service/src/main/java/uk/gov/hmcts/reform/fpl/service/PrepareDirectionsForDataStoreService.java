@@ -137,7 +137,7 @@ public class PrepareDirectionsForDataStoreService {
         });
     }
 
-    //TODO: refactor of addCourtAssigneeAndDirectionId would remove dependency on eventId.
+    //TODO: refactor of addCourtAssigneeAndDirectionId would remove dependency on eventId. FPLA-1485
     private List<Element<DirectionResponse>> addValuesToListResponses(List<Element<Direction>> directions,
                                                                       ComplyOnBehalfEvent eventId,
                                                                       String authorisation,
@@ -166,7 +166,7 @@ public class PrepareDirectionsForDataStoreService {
         return addResponderAssigneeAndDirectionId(response, authorisation, assignee, id);
     }
 
-    //TODO: if name of user complying for court is added then this can be merged with logic from method below.
+    //TODO: if name of user complying for court is added then this can be merged with logic from method below. FPLA-1485
     private Element<DirectionResponse> addCourtAssigneeAndDirectionId(UUID id, Element<DirectionResponse> element) {
         return element(element.getId(), element.getValue().toBuilder()
             .assignee(COURT)
@@ -207,8 +207,6 @@ public class PrepareDirectionsForDataStoreService {
                 direction.getValue().getResponses().add(response);
             }));
     }
-
-    //TODO
 
     /**
      * Adds assignee and directionId values to response.
