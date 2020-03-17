@@ -213,7 +213,6 @@ public class GeneratedOrderService {
 
         if (documentStatus.equals("draft")) {
             orderTemplateBuilder.put("draftbackground", format(BASE_64, generateDraftWatermarkEncodedString()));
-            orderTemplateBuilder.put("courtseal" , format(BASE_64, generateCourtSealEncodedString()));
         }
 
         if (documentStatus.equals("sealed")) {
