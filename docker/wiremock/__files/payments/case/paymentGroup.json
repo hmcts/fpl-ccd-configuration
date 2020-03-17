@@ -1,54 +1,39 @@
 {
   "payment_groups": [
     {
-      "fees": [
-        {
-          "calculated_amount": 2055,
-          "case_reference": "1583145838486443",
-          "ccd_case_number": "1583145838486443",
-          "code": "FEE0314",
-          "description": "Application for proceedings under Section 31 of Act",
-          "fee_amount": 2055,
-          "id": 5304,
-          "jurisdiction1": "family",
-          "jurisdiction2": "family court",
-          "memo_line": "some memo",
-          "natural_account_code": "some account code",
-          "net_amount": 2055,
-          "reference": "RC-1583-3266-6491-6683",
-          "version": "1",
-          "volume": 1
-        }
-      ],
-      "payment_group_reference": "2020-1583326662836",
+      "payment_group_reference": "2020-1584026805523",
       "payments": [
         {
-          "amount": 2055,
-          "description": "Payment for case: 1566910397443346",
-          "reference": "RC-1583-3266-6491-6683",
+          "amount": 2055.00,
+          "description": "Payment for case: 1584026518972697",
+          "reference": "RC-1584-0268-0774-3312",
+          "date_created": "2020-03-12T15:26:47.801+0000",
+          "date_updated": "2020-03-12T15:26:47.801+0000",
           "currency": "GBP",
-          "ccd_case_number": "1566910397443346",
+          "ccd_case_number": "1584026518972697",
+          "case_reference": "some case reference",
           "channel": "online",
           "method": "payment by account",
           "status": "Success",
           "site_id": "ABA3",
           "service_name": "Family Public Law",
-          "payment_group_reference": "2020-1583326662836",
-          "fees": [
-            {
-              "id": 5304,
-              "code": "FEE0314",
-              "version": "1",
-              "volume": 1,
-              "calculated_amount": 2055
-            }
-          ],
-          "_links": {
-            "self": {
-              "href": "http://some.payment.api/card-payments/RC-1583-3266-6491-6683",
-              "method": "GET"
-            }
-          }
+          "customer_reference": "case submission",
+          "account_number": "PBA0082848",
+          "organisation_name": "Swansea City Council",
+          "payment_allocation": []
+        }
+      ],
+      "remissions": [],
+      "fees": [
+        {
+          "id": 5465,
+          "code": "FEE0314",
+          "version": "1",
+          "volume": 1,
+          "calculated_amount": 2055.00,
+          "memo_line": "RECEIPT OF FEES - Family issue public",
+          "natural_account_code": "4481102160",
+          "description": "Application for proceedings under Section 31 of Act"
         }
       ]
     }
