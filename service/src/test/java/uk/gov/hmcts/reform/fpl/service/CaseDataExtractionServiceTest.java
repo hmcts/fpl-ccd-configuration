@@ -78,7 +78,7 @@ class CaseDataExtractionServiceTest {
     }
 
     //TODO: there needs to be some clarity around what should happen when values are missing from template.
-    // emptyCaseData is unrealistic scenario.
+    // emptyCaseData is unrealistic scenario. FPLA-1486
     @Test
     void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
         DocmosisStandardDirectionOrder template = caseDataExtractionService
