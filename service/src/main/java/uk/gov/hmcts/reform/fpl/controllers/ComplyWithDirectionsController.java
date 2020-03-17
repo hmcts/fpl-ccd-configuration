@@ -40,7 +40,7 @@ public class ComplyWithDirectionsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //TODO: could exist in sdo vs cmo service.
+        //TODO: could exist in sdo vs cmo service. FPLA-1470
         List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
 
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
@@ -76,7 +76,7 @@ public class ComplyWithDirectionsController {
 
         prepareDirectionsForDataStoreService.addResponsesToDirections(responses, directionsToComplyWith);
 
-        //TODO: new service for sdo vs cmo in placing directions
+        //TODO: new service for sdo vs cmo in placing directions FPLA-1470
         if (caseData.getServedCaseManagementOrders().isEmpty()) {
             caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
         } else {
