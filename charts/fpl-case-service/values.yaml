@@ -15,7 +15,7 @@ java:
     PAYMENT_API_URL: http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     FEES_REGISTER_API_URL: http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    CCD_UI_BASE_URL: http://www-ccd.{{ .Values.global.environment }}.platform.hmcts.net
+    CCD_UI_BASE_URL: https://www-ccd.{{ .Values.global.environment }}.platform.hmcts.net
     DOCMOSIS_TORNADO_URL: https://docmosis-development.platform.hmcts.net
     SPRING_MAIL_HOST: mta.reform.hmcts.net
     SPRING_MAIL_PORT: 25
