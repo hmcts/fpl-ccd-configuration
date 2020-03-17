@@ -48,7 +48,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
-            .build());
+            .build(), "get-fee");
 
         verify(feeService).getFeesDataForC2(WITH_NOTICE);
         assertThat(response.getData()).containsEntry("amountToPay", "1000");
@@ -60,7 +60,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
-            .build());
+            .build(), "get-fee");
 
         verify(feeService, never()).getFeesDataForC2(WITH_NOTICE);
         assertThat(response.getData()).doesNotContainKey("amountToPay");
@@ -72,9 +72,9 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document", Map.of("document", Map.of())))
-            .build());
+            .build(), "get-fee");
 
-        assertThat(response.getData()).doesNotContainKey("temporaryC2Document");
+        assertThat(response.getData()).extracting("temporaryC2Document").extracting("document").isNull();
     }
 
     @Test
@@ -83,9 +83,12 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document", Map.of("document", Map.of("url", "example_url"))))
-            .build());
+            .build(), "get-fee");
 
-        assertThat(response.getData()).containsKey("temporaryC2Document");
+        assertThat(response.getData()).extracting("temporaryC2Document")
+            .extracting("document")
+            .extracting("url")
+            .isEqualTo("example_url");
     }
 
     @Test
@@ -95,9 +98,31 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
-            .build());
+            .build(), "get-fee");
 
         assertThat(response.getErrors()).contains("XXX");
         assertThat(response.getData()).doesNotContainKeys("amountToPay");
+    }
+
+    @Test
+    void shouldDisplayErrorForInvalidPbaNumber() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
+            .data(Map.of("temporaryC2Document", Map.of("pbaNumber", "12345")))
+            .build(), "validate-pba-number");
+
+        assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
+        assertThat(response.getData()).extracting("temporaryC2Document").extracting("pbaNumber").isEqualTo("PBA12345");
+    }
+
+    @Test
+    void shouldNotDisplayErrorForValidPbaNumber() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
+            .data(Map.of("temporaryC2Document", Map.of("pbaNumber", "1234567")))
+            .build(), "validate-pba-number");
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData()).extracting("temporaryC2Document")
+            .extracting("pbaNumber")
+            .isEqualTo("PBA1234567");
     }
 }
