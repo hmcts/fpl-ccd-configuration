@@ -72,7 +72,8 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
         FeesData feesData = FeesData.builder()
             .totalAmount(BigDecimal.valueOf(123))
             .build();
-        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
+
+        givenPaymentToggle(true);
         given(feeService.getFeesDataForOrders(orders)).willReturn(feesData);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
@@ -85,7 +86,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void shouldNotAddAmountToPayFieldWhenFeatureToggleIsFalse() {
-        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(false);
+        givenPaymentToggle(false);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(Map.of())
@@ -97,7 +98,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void shouldNotDisplayAmountToPayFieldWhenErrorIsThrown() {
-        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
+        givenPaymentToggle(true);
         given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
@@ -108,8 +109,13 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
     }
 
+    private void givenPaymentToggle(boolean enabled) {
+        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(enabled);
+    }
+
     @Nested
     class LocalAuthorityValidation {
+
         @Test
         void shouldReturnErrorWhenCaseBelongsToSmokeTestLocalAuthority() {
             CaseDetails caseDetails = prepareCaseBelongingTo("FPLA");
