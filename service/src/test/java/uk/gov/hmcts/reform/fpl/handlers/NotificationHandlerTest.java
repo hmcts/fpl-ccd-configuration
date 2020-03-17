@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -75,9 +78,11 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
@@ -85,9 +90,11 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -174,6 +181,9 @@ class NotificationHandlerTest {
     @InjectMocks
     private NotificationHandler notificationHandler;
 
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
+
     @BeforeEach
     void setup() {
         notificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
@@ -206,6 +216,7 @@ class NotificationHandlerTest {
         @BeforeEach
         void before() throws IOException {
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
+            CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
             given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
                 .willReturn("Example Local Authority");
@@ -229,6 +240,13 @@ class NotificationHandlerTest {
             given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER))
                 .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
+
+            given(orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER))
+                .willReturn(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
+
+            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
+                .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
         }
 
         @Test
@@ -301,6 +319,14 @@ class NotificationHandlerTest {
                 COURT_EMAIL_ADDRESS,
                 getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
                 "12345");
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
+                eq("barney@rubble.com"),
+                dataCaptor.capture(),
+                eq("12345"));
+
+            assertEquals(dataCaptor.getValue(), getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
         }
 
         @Test
@@ -767,16 +793,25 @@ class NotificationHandlerTest {
         void shouldSendNotificationForPlacementOrderUploaded() throws IOException, NotificationClientException {
             Map<String, Object> parameters = Map.of("respondentLastName", "Nelson",
                 "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
+            CaseDetails caseDetails = callbackRequest().getCaseDetails();
+            CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
             given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
-                callbackRequest().getCaseDetails())).willReturn(parameters);
+                caseDetails)).willReturn(parameters);
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
             given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER))
+                caseDetails, LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER))
                 .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false));
+
+            given(orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER))
+                .willReturn(getExpectedParametersForRepresentatives(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
+
+            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
+                .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
 
             notificationHandler.sendNotificationForNoticeOfPlacementOrderUploaded(
                 new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID, documentContents));
@@ -792,6 +827,15 @@ class NotificationHandlerTest {
                 COURT_EMAIL_ADDRESS,
                 getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 "12345");
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
+                eq("barney@rubble.com"),
+                dataCaptor.capture(),
+                eq("12345"));
+
+            assertEquals(dataCaptor.getValue(),
+                getExpectedParametersForRepresentatives(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
         }
     }
 
