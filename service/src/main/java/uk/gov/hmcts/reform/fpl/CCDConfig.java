@@ -1,35 +1,41 @@
 package uk.gov.hmcts.reform.fpl;
 
 
-import uk.gov.hmcts.ccd.sdk.types.*;
-
+import com.google.common.base.CaseFormat;
 import de.cronn.reflection.util.TypedPropertyGetter;
+import uk.gov.hmcts.ccd.sdk.types.BaseCCDConfig;
+import uk.gov.hmcts.ccd.sdk.types.DisplayContext;
+import uk.gov.hmcts.ccd.sdk.types.FieldCollection;
+import uk.gov.hmcts.ccd.sdk.types.Webhook;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.*;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-
 
 import static uk.gov.hmcts.reform.fpl.enums.State.*;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.*;
 
 // Found and invoked by the config generator.
 // The CaseData type parameter tells the generator which class represents your case model.
-public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
+public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
     @Override
     public void configure() {
         caseType("CARE_SUPERVISION_EPO");
+        setEnvironment(environment());
+        setWebhookConvention(this::webhookConvention);
 
         explicitState("hearingBookingDetails", JUDICIARY, "CRU");
 
+        buildTabs();
         buildOpen();
         buildSubmittedEvents();
         buildPrepareForHearing();
         buildGatekeepingEvents();
         buildTransitions();
+        buildWorkBasketResultFields();
+        buildWorkBasketInputFields();
 
         event("internal-changeState:Gatekeeping->PREPARE_FOR_HEARING")
                 .forStateTransition(Gatekeeping, PREPARE_FOR_HEARING)
@@ -38,6 +44,86 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .grant("C", SYSTEM_UPDATE);
         caseField("dateAndTimeSubmitted", null, "DateTime", null, "Date submitted");
         caseField("submittedForm", "Attached PDF", "Document");
+    }
+
+    private void buildWorkBasketResultFields() {
+        workBasketResultFields()
+            .field(CaseData::getCaseName, "Case name")
+            .field(CaseData::getFamilyManCaseNumber, "FamilyMan case number")
+            .field("[STATE]", "State")
+            .field(CaseData::getCaseLocalAuthority, "Local authority")
+            .field("dateAndTimeSubmitted", "Date submitted");
+    }
+
+    private void buildWorkBasketInputFields() {
+        workBasketInputFields()
+            .field(CaseData::getCaseLocalAuthority, "Local authority")
+            .field(CaseData::getCaseName, "Case name")
+            .field(CaseData::getFamilyManCaseNumber, "FamilyMan case number")
+            .field(CaseData::getDateSubmitted, "Date submitted");
+    }
+
+    private void buildTabs() {
+        tab("HearingTab", "Hearings")
+            .field(CaseData::getHearingDetails)
+            .field(CaseData::getHearing);
+
+        tab("DraftOrdersTab", "Draft orders")
+            .showCondition("standardDirectionOrder.orderStatus!=\"SEALED\"")
+            .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus!=\"SEALED\"");
+
+        tab("OrdersTab", "Orders")
+            .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus=\"SEALED\"")
+            .field(CaseData::getOrders);
+
+        tab("CasePeopleTab", "People in the case")
+            .field(CaseData::getChildren1)
+            .field(CaseData::getRespondents1)
+            .field(CaseData::getApplicants)
+            .field(CaseData::getSolicitor)
+            .field(CaseData::getOthers);
+
+        tab("LegalBasisTab", "Legal basis")
+            .field(CaseData::getStatementOfService)
+            .field("caseIDReference")
+            .field(CaseData::getGroundsForEPO)
+            .field(CaseData::getGrounds)
+            .field(CaseData::getRisks)
+            .field(CaseData::getFactorsParenting)
+            .field(CaseData::getInternationalElement)
+            .field(CaseData::getProceeding)
+            .field(CaseData::getAllocationDecision)
+            .field(CaseData::getAllocationProposal)
+            .field(CaseData::getHearingPreferences);
+
+        tab("DocumentsTab", "Documents")
+            .field("caseIDReference")
+            .field(CaseData::getSocialWorkChronologyDocument)
+            .field(CaseData::getSocialWorkStatementDocument)
+            .field(CaseData::getSocialWorkAssessmentDocument)
+            .field(CaseData::getSocialWorkCarePlanDocument)
+            .field("standardDirectionsDocument")
+            .field("otherCourtAdminDocuments")
+            .field(CaseData::getSocialWorkEvidenceTemplateDocument)
+            .field(CaseData::getThresholdDocument)
+            .field(CaseData::getChecklistDocument)
+            .field("courtBundle")
+            .field(CaseData::getOtherSocialWorkDocuments)
+            .field("submittedForm")
+            .field(CaseData::getNoticeOfProceedingsBundle)
+            .field(CaseData::getC2DocumentBundle);
+
+    }
+
+
+    protected String environment() {
+        return "production";
+    }
+
+    protected String webhookConvention(Webhook webhook, String eventId) {
+        eventId = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, eventId);
+        String path = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, webhook.toString());
+        return "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/" + eventId + "/" + path;
     }
 
     private void buildC21Event(State state) {
@@ -94,7 +180,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .displayOrder(18) // TODO - necessary?
                 .grant("CRU", LOCAL_AUTHORITY)
                 .name("Delete an application")
-                .aboutToSubmitURL("/case-deletion/about-to-submit")
+                .aboutToSubmitWebhook("case-deletion")
                 .endButtonLabel("Delete application")
                 .fields()
                     .field("deletionConsent", DisplayContext.Mandatory, null, "MultiSelectList", "DeletionConsent", " ");
@@ -113,9 +199,9 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .field(CaseData::getAllocationDecision, DisplayContext.Mandatory, true);
 
-        addHearingBookingDetails( Gatekeeping);
-        buildSharedEvents( Gatekeeping);
-        buildNoticeOfProceedings( Gatekeeping);
+        addHearingBookingDetails(Gatekeeping);
+        buildSharedEvents(Gatekeeping);
+        buildNoticeOfProceedings(Gatekeeping);
 
         event("draftSDO")
                 .forState(Gatekeeping)
@@ -150,9 +236,9 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                             .field().id(Order::getOrderDoc).context(DisplayContext.ReadOnly).label("Check the order").done()
                             .mandatory(Order::getOrderStatus);
 
-        buildStandardDirections( Gatekeeping, "AfterGatekeeping");
-        buildUploadC2( Gatekeeping);
-        buildC21Event( Gatekeeping);
+        buildStandardDirections(Gatekeeping, "AfterGatekeeping");
+        buildUploadC2(Gatekeeping);
+        buildC21Event(Gatekeeping);
         event("uploadDocumentsAfterGatekeeping")
                 .forState(Gatekeeping)
                 .name("Documents")
@@ -198,9 +284,9 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .optional(CaseData::getFamilyManCaseNumber);
 
-        addHearingBookingDetails( Submitted);
-        this.buildStandardDirections( Submitted, "");
-        buildUploadC2( Submitted);
+        addHearingBookingDetails(Submitted);
+        this.buildStandardDirections(Submitted, "");
+        buildUploadC2(Submitted);
 
         event("sendToGatekeeper")
                 .forState(Submitted)
@@ -213,8 +299,8 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .label("gateKeeperLabel", "Let the gatekeeper know there's a new case")
                     .mandatory(CaseData::getGatekeeperEmail);
-        buildSharedEvents( Submitted);
-        buildNoticeOfProceedings( Submitted);
+        buildSharedEvents(Submitted);
+        buildNoticeOfProceedings(Submitted);
 
         event("addStatementOfService")
                 .forState(Submitted)
@@ -226,11 +312,11 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .aboutToStartWebhook("statement-of-service")
                 .fields()
                     .label("c9Declaration", "If you send documents to a party's solicitor or a children's guardian, give their details")
-                    .field(CaseData::getStatementOfService, DisplayContext.Mandatory, true)
+                    .field().id(CaseData::getStatementOfService).context(DisplayContext.Mandatory).showSummary(true).mutable().done()
                     .field("serviceDeclarationLabel", DisplayContext.ReadOnly, null, "Text", null, "Declaration" )
                     .field("serviceConsent", DisplayContext.Mandatory, null, "MultiSelectList", "Consent", " ");
 
-        buildC21Event( Submitted);
+        buildC21Event(Submitted);
 
         event("uploadDocumentsAfterSubmission")
                 .forState(Submitted)
@@ -272,15 +358,16 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("cmoHearingDateList", DisplayContext.Mandatory, null, "DynamicList", null, "Which hearing is this order for?")
                 .page("allPartiesDirections")
                     .label("allPartiesLabelCMO", "## For all parties")
-                    .field("allPartiesPrecedentLabelCMO", DisplayContext.ReadOnly, null, null, "Direction", "Add completed directions from the precedent library or your own template.")
-                    .complex(CaseData::getAllPartiesCustom, Direction.class, this::renderDirection)
+//                    .field("allPartiesPrecedentLabelCMO", DisplayContext.ReadOnly, null, null, "Direction", "Add completed directions from the precedent library or your own template.")
+            .field("allPartiesPrecedentLabelCMO").context(DisplayContext.ReadOnly).fieldTypeParameter("Direction").label("Add completed directions from the precedent library or your own template.").readOnly().done()
+            .field().id(CaseData::getAllPartiesCustom).mutable().showSummary(true).complex(Direction.class, this::renderDirection)
                 .page("localAuthorityDirections")
                      .label("localAuthorityDirectionsLabelCMO", "## For the local authority")
-                     .complex(CaseData::getLocalAuthorityDirectionsCustom, Direction.class, this::renderDirection)
+                     .field().id(CaseData::getLocalAuthorityDirectionsCustom).showSummary(true).mutable().complex(Direction.class, this::renderDirection)
                 .page(2)
                      .label("respondentsDirectionLabelCMO", "## For the parents or respondents")
                      .field("respondentsDropdownLabelCMO", DisplayContext.ReadOnly, null, "TextArea", null, " ")
-                     .complex(CaseData::getRespondentDirectionsCustom, Direction.class)
+                     .field().id(CaseData::getRespondentDirectionsCustom).mutable().showSummary(true).complex(Direction.class)
                         .optional(Direction::getDirectionType)
                         .mandatory(Direction::getDirectionText)
                         .mandatory(Direction::getParentsAndRespondentsAssignee)
@@ -288,14 +375,14 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .done()
                 .page("cafcassDirections")
                      .label("cafcassDirectionsLabelCMO", "## For Cafcass")
-                     .complex(CaseData::getCafcassDirectionsCustom, Direction.class, this::renderDirection)
-                    .complex(CaseData::getCaseManagementOrder)
+                     .field().id(CaseData::getCafcassDirectionsCustom).mutable().showSummary(true).complex(Direction.class, this::renderDirection)
+                    .field().id(CaseData::getCaseManagementOrder).showSummary(true).mutable().complex(CaseManagementOrder.class)
                         .readonly(CaseManagementOrder::getHearingDate)
                     .done()
                 .page(3)
                      .label("otherPartiesDirectionLabelCMO", "## For other parties")
                      .field("otherPartiesDropdownLabelCMO", DisplayContext.ReadOnly, null, "TextArea", null, " ")
-                     .complex(CaseData::getOtherPartiesDirectionsCustom, Direction.class)
+                     .field().id(CaseData::getOtherPartiesDirectionsCustom).mutable().showSummary(true).complex(Direction.class)
                         .optional(Direction::getDirectionType)
                         .mandatory(Direction::getDirectionText)
                         .mandatory(Direction::getOtherPartiesAssignee)
@@ -303,12 +390,13 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .done()
                 .page("courtDirections")
                      .label("courtDirectionsLabelCMO", "## For the court")
-                     .complex(CaseData::getCourtDirectionsCustom, Direction.class, this::renderDirection)
+//                    .complex(CaseData::getCourtDirectionsCustom, Direction.class, this::renderDirection)
+                     .field().id(CaseData::getCourtDirectionsCustom).mutable().complex(Direction.class, this::renderDirection)
                 .page(5)
                      .label("orderBasisLabel", "## Basis of order")
                      .label("addRecitalLabel", "### Add recital")
-                     .field("recitals", DisplayContext.Optional, null, "Collection", "Recitals", "Recitals")
-                .page("schedule")
+                     .field("recitals").context(DisplayContext.Optional).type("Collection").fieldTypeParameter("Recitals").label("Recitals").mutable().done()
+            .page("schedule")
                      .field("schedule", DisplayContext.Mandatory, null, "Schedule", null, "Schedule");
 
         renderComply( "COMPLY_LOCAL_AUTHORITY", LOCAL_AUTHORITY, CaseData::getLocalAuthorityDirections, DisplayContext.Mandatory, "Allows Local Authority user access to comply with their directions as well as ones for all parties");
@@ -329,7 +417,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .aboutToSubmitWebhook()
                 .fields()
                 .pageLabel(" ")
-                .complex(getter, Direction.class)
+                .field().id(getter).showSummary(true).mutable().complex(Direction.class)
                     .readonly(Direction::getDirectionType)
                     .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
                     .readonly(Direction::getDateToBeCompletedBy)
@@ -356,23 +444,23 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Add hearing details")
                 .description("Add hearing booking details to a case")
                 .aboutToStartWebhook("add-hearing-bookings")
-                .midEventURL("/add-hearing-bookings/mid-event")
+                .midEventWebhook("add-hearing-bookings")
                 .showSummary()
                 .fields()
                 .complex(CaseData::getHearingDetails, HearingBooking.class)
-                .mandatory(HearingBooking::getType)
-                .mandatory(HearingBooking::getTypeDetails, "hearingDetails.type=\"OTHER\"")
-                .mandatory(HearingBooking::getVenue)
-                .mandatory(HearingBooking::getStartDate)
-                .mandatory(HearingBooking::getEndDate)
-                .mandatory(HearingBooking::getHearingNeedsBooked)
-                .mandatory(HearingBooking::getHearingNeedsDetails, "hearingDetails.hearingNeedsBooked!=\"NONE\"")
-                .complex(HearingBooking::getJudgeAndLegalAdvisor)
-                .mandatory(JudgeAndLegalAdvisor::getJudgeTitle)
-                .mandatory(JudgeAndLegalAdvisor::getOtherTitle, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"")
-                .mandatory(JudgeAndLegalAdvisor::getJudgeLastName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"")
-                .optional(JudgeAndLegalAdvisor::getJudgeFullName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"")
-                .optional(JudgeAndLegalAdvisor::getLegalAdvisorName);
+                    .mandatory(HearingBooking::getType)
+                    .mandatory(HearingBooking::getTypeDetails, "hearingDetails.type=\"OTHER\"")
+                    .mandatory(HearingBooking::getVenue)
+                    .mandatory(HearingBooking::getStartDate)
+                    .mandatory(HearingBooking::getEndDate)
+                    .mandatory(HearingBooking::getHearingNeedsBooked)
+                    .mandatory(HearingBooking::getHearingNeedsDetails, "hearingDetails.hearingNeedsBooked!=\"NONE\"")
+                    .complex(HearingBooking::getJudgeAndLegalAdvisor)
+                        .mandatory(JudgeAndLegalAdvisor::getJudgeTitle)
+                        .mandatory(JudgeAndLegalAdvisor::getOtherTitle, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"")
+                        .mandatory(JudgeAndLegalAdvisor::getJudgeLastName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"")
+                        .optional(JudgeAndLegalAdvisor::getJudgeFullName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"")
+                        .optional(JudgeAndLegalAdvisor::getLegalAdvisorName);
     }
 
     private void buildSharedEvents(State state) {
@@ -412,7 +500,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .forState(state)
                 .name("Other proceedings")
                 .description("Amending other proceedings and allocation proposals")
-                .midEventURL("/enter-other-proceedings/mid-event")
+                .midEventWebhook("enter-other-proceedings")
                 .showEventNotes()
                 .fields()
                     .optional(CaseData::getProceeding);
@@ -469,8 +557,8 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .initialState(Open)
                 .name("Start application")
                 .description("Create a new case – add a title")
-                .aboutToSubmitURL("/case-initiation/about-to-submit")
-                .submittedURL("/case-initiation/submitted")
+                .aboutToSubmitWebhook("case-initiation")
+                .submittedWebhook()
                 .retries(1,2,3,4,5)
                 .fields()
                     .optional(CaseData::getCaseName);
@@ -478,7 +566,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("ordersNeeded").forState(Open)
                 .name("Orders and directions needed")
                 .description("Selecting the orders needed for application")
-                .aboutToSubmitURL("/orders-needed/about-to-submit")
+                .aboutToSubmitWebhook("orders-needed")
                 .fields()
                     .optional(CaseData::getOrders);
 
@@ -491,10 +579,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("enterChildren").forState(Open)
                 .name("Children")
                 .description("Entering the children for the case")
-                .aboutToStartURL("/enter-children/about-to-start")
-                .aboutToSubmitURL("/enter-children/about-to-submit")
+                .aboutToStartWebhook()
+                .aboutToSubmitWebhook()
                 .fields()
-                    .optional(CaseData::getChildren1);
+                    .field().id(CaseData::getChildren1).context(DisplayContext.Optional).mutable();
 
         event("enterRespondents").forState(Open)
                 .name("Respondents")
@@ -503,7 +591,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .aboutToSubmitWebhook()
                 .midEventWebhook()
                 .fields()
-                    .optional(CaseData::getRespondents1);
+                    .field().id(CaseData::getRespondents1).context(DisplayContext.Optional).mutable();
 
         event("enterApplicant").forState(Open)
                 .name("Applicant")
@@ -524,6 +612,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("enterGrounds").forState(Open)
                 .name("Grounds for the application")
                 .description("Entering the grounds for the application")
+                .grant("CRU", LOCAL_AUTHORITY)
                 .fields()
                     .field("EPO_REASONING_SHOW", DisplayContext.Optional, "groundsForEPO CONTAINS \"Workaround to show groundsForEPO. Needs to be hidden from UI\"", "MultiSelectList", "ShowHide", "EPO Reason show or hide")
                     .optional(CaseData::getGroundsForEPO, "EPO_REASONING_SHOW CONTAINS \"SHOW_FIELD\"")
@@ -551,7 +640,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("otherProceedings").forState(Open)
                 .name("Other proceedings")
                 .description("Entering other proceedings and proposals")
-                .midEventURL("/enter-other-proceedings/mid-event")
+                .midEventWebhook("enter-other-proceedings")
                 .fields()
                     .optional(CaseData::getProceeding);
 
@@ -590,7 +679,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("[STATE]", DisplayContext.ReadOnly, "courtBundle = \"DO_NOT_SHOW\"")
                     .field("courtBundle", DisplayContext.Optional, "[STATE] != \"Open\"", "CourtBundle", null, "8. Court bundle")
                     .label("documents_socialWorkOther_border_top", "-------------------------------------------------------------------------------------------------------------")
-                    .optional(CaseData::getOtherSocialWorkDocuments)
+                    .field().id(CaseData::getOtherSocialWorkDocuments).context(DisplayContext.Optional).mutable().done()
                     .label("documents_socialWorkOther_border_bottom", "-------------------------------------------------------------------------------------------------------------");
 
         event("changeCaseName").forState(Open)
@@ -599,15 +688,5 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .displayOrder(15)
                 .fields()
                     .optional(CaseData::getCaseName);
-
-        event("addCaseIDReference").forState(Open)
-                .name("Add case ID")
-                .description("Add case ID")
-                .explicitGrants() // Do not inherit State level role permissions
-                .displayOrder(16)
-                .fields()
-                    .pageLabel("Add Case ID")
-                    .field("caseIDReference", DisplayContext.Optional, null, "Text", null, "Case ID");
     }
-
 }
