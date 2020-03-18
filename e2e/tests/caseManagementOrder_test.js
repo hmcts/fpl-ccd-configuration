@@ -60,13 +60,13 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
   }
   // Log back in as LA
-  // I.signOut();
+  I.signOut();
   await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
 
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('local authority creates CMO @f', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
   await I.retryUntilExists(() => I.click('Continue'), '#allPartiesLabelCMO');
@@ -121,7 +121,7 @@ Scenario('Judge sees Action CMO placeholder when CMO is not in Judge Review', as
   await I.see('You can only review the draft order after it has been submitted');
 });
 
-Scenario('Local Authority sends draft to Judge who requests corrections @f', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
+Scenario('Local Authority sends draft to Judge who requests corrections', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
 
