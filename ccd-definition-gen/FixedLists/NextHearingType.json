@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "FURTHER_CASE_MGMT_HEARING",
+    "ListElement" : "FURTHER_CASE_MGMT_HEARING",
+    "ID" : "NextHearingType"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "ISSUES_RESOLUTION_HEARING",
+    "ListElement" : "ISSUES_RESOLUTION_HEARING",
+    "ID" : "NextHearingType"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "FINAL_HEARING",
+    "ListElement" : "FINAL_HEARING",
+    "ID" : "NextHearingType"
+  }
+]

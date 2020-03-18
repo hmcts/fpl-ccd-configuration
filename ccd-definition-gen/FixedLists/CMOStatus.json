@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "SEND_TO_JUDGE",
+    "ListElement" : "SEND_TO_JUDGE",
+    "ID" : "CMOStatus"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "PARTIES_REVIEW",
+    "ListElement" : "PARTIES_REVIEW",
+    "ID" : "CMOStatus"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "SELF_REVIEW",
+    "ListElement" : "SELF_REVIEW",
+    "ID" : "CMOStatus"
+  }
+]

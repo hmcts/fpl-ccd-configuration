@@ -280,6 +280,7 @@ declare namespace CodeceptJS {
     reloadPage() : void,
     navigateToUrl(url: string) : void,
     navigateToCaseDetails(caseId: string) : void,
+    navigateToCaseList() : void,
     logInAndCreateCase(username: string, password: string) : void,
     completeEvent(buttonLocator) : Promise<void>,
     completeEvent(buttonLocator, changeDetails: { summary: string, description: string }) : Promise<void>,
@@ -287,12 +288,16 @@ declare namespace CodeceptJS {
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     seeDocument(title: string, name: string, status?: string, reason?: string) : void,
     seeAnswerInTab(questionNo: string | number, complexTypeHeading: string, question: string, answer: string | string[]) : void,
+    seeNestedAnswerInTab(questionNo: string | number, complexTypeHeading: string, complexTypeSubHeading: string, question: string, answer: string | string[]) : void,
+    seeCaseInSearchResult(caseId: string | number): void
+    dontSeeCaseInSearchResult(caseId: string | number): void
     signIn(username: string, password: string) : void,
     signOut() : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
     enterMandatoryFields() : void,
     addAnotherElementToCollection(): void,
+    removeElementFromCollection(): void,
     retryUntilExists(action: Function, locator: string) : void,
   }
 
@@ -480,6 +485,16 @@ declare namespace CodeceptJS {
 
   export interface deleteApplicationPage {
     tickDeletionConsent() : void,
+
+  }
+
+  export interface handleSupplementaryEvidencePage {
+    handleSupplementaryEvidence(): void,
+
+  }
+
+  export interface attachScannedDocsPage {
+    enterScannedDocument(): void,
 
   }
 }

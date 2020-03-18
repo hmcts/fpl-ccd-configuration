@@ -1,0 +1,51 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "HER_HONOUR_JUDGE",
+    "ListElement" : "HER_HONOUR_JUDGE",
+    "ID" : "JudgeOrMagistrateTitle"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "HIS_HONOUR_JUDGE",
+    "ListElement" : "HIS_HONOUR_JUDGE",
+    "ID" : "JudgeOrMagistrateTitle"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "DISTRICT_JUDGE",
+    "ListElement" : "DISTRICT_JUDGE",
+    "ID" : "JudgeOrMagistrateTitle"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 4,
+    "ListElementCode" : "DEPUTY_DISTRICT_JUDGE",
+    "ListElement" : "DEPUTY_DISTRICT_JUDGE",
+    "ID" : "JudgeOrMagistrateTitle"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 5,
+    "ListElementCode" : "DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT",
+    "ListElement" : "DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT",
+    "ID" : "JudgeOrMagistrateTitle"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 6,
+    "ListElementCode" : "MAGISTRATES",
+    "ListElement" : "MAGISTRATES",
+    "ID" : "JudgeOrMagistrateTitle"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 7,
+    "ListElementCode" : "OTHER",
+    "ListElement" : "OTHER",
+    "ID" : "JudgeOrMagistrateTitle"
+  }
+]

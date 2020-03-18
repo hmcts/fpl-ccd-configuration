@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,14 +20,18 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -35,47 +40,40 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 
 @Api
 @RestController
 @RequestMapping("/callback/draft-standard-directions")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftOrdersController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseDataExtractionService caseDataExtractionService;
-    private final DirectionHelperService directionHelperService;
+    private final CommonDirectionService commonDirectionService;
     private final OrdersLookupService ordersLookupService;
     private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
-
-    @Autowired
-    public DraftOrdersController(ObjectMapper mapper,
-                                 DocmosisDocumentGeneratorService docmosisService,
-                                 UploadDocumentService uploadDocumentService,
-                                 CaseDataExtractionService caseDataExtractionService,
-                                 DirectionHelperService directionHelperService,
-                                 OrdersLookupService ordersLookupService,
-                                 CoreCaseDataService coreCaseDataService,
-                                 ApplicationEventPublisher applicationEventPublisher) {
-        this.mapper = mapper;
-        this.docmosisService = docmosisService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.caseDataExtractionService = caseDataExtractionService;
-        this.directionHelperService = directionHelperService;
-        this.ordersLookupService = ordersLookupService;
-        this.coreCaseDataService = coreCaseDataService;
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
+    private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
+    private final OrderValidationService orderValidationService;
+    private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
+
+        Stream.of(DirectionAssignee.values()).forEach(assignee ->
+            caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
 
         if (!isNull(caseData.getStandardDirectionOrder())) {
             Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
@@ -91,11 +89,24 @@ public class DraftOrdersController {
             .build();
     }
 
+    private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
+        String hearingDate;
+
+        try {
+            LocalDateTime startDate = hearingBookingService.getMostUrgentHearingBooking(hearings).getStartDate();
+            hearingDate = formatLocalDateTimeBaseUsingFormat(startDate, DATE_TIME);
+        } catch (IllegalStateException e) {
+            hearingDate = "Please enter a hearing date";
+        }
+
+        return hearingDate;
+    }
+
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {
-        List<Element<Direction>> nonCustomDirections = directionHelperService
+        List<Element<Direction>> nonCustomDirections = commonDirectionService
             .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
 
-        return directionHelperService.sortDirectionsByAssignee(nonCustomDirections);
+        return commonDirectionService.sortDirectionsByAssignee(nonCustomDirections);
     }
 
     @PostMapping("/mid-event")
@@ -108,18 +119,18 @@ public class DraftOrdersController {
 
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(directionHelperService.combineAllDirections(caseData))
+                .directions(commonDirectionService.combineAllDirections(caseData))
                 .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
                 .build())
             .build();
 
-        directionHelperService.persistHiddenDirectionValues(
+        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
             authorization,
             userId,
-            caseDataExtractionService.getStandardOrderDirectionData(updated)
+            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
@@ -145,21 +156,29 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        List<String> validationErrors = orderValidationService.validate(caseData);
+        if (!validationErrors.isEmpty()) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .errors(orderValidationService.validate(caseData))
+                .build();
+        }
+
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(directionHelperService.combineAllDirections(caseData))
+                .directions(commonDirectionService.combineAllDirections(caseData))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
                 .build())
             .build();
 
-        directionHelperService.persistHiddenDirectionValues(
+        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
             authorization,
             userId,
-            caseDataExtractionService.getStandardOrderDirectionData(updated)
+            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
@@ -185,7 +204,8 @@ public class DraftOrdersController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (caseData.getStandardDirectionOrder().getOrderStatus() != OrderStatus.SEALED) {
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
             return;
         }
 
@@ -196,7 +216,14 @@ public class DraftOrdersController {
             "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
         );
 
-        if (caseData.getStandardDirectionOrder().getOrderStatus() == SEALED) {
+        if (standardDirectionOrder.getOrderStatus() == SEALED) {
+            coreCaseDataService.triggerEvent(
+                callbackRequest.getCaseDetails().getJurisdiction(),
+                callbackRequest.getCaseDetails().getCaseTypeId(),
+                callbackRequest.getCaseDetails().getId(),
+                "internal-change:SEND_DOCUMENT",
+                Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
+            );
             applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
                 authorization,
                 userId));
@@ -207,7 +234,7 @@ public class DraftOrdersController {
         // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
         return ordersLookupService.getStandardDirectionOrder().getDirections()
             .stream()
-            .map(direction -> directionHelperService.constructDirectionForCCD(direction, LocalDateTime.now()))
+            .map(direction -> commonDirectionService.constructDirectionForCCD(direction, LocalDateTime.now()))
             .collect(Collectors.toList());
     }
 

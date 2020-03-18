@@ -1,0 +1,59 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "email",
+    "ID" : "Solicitor",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "telephone",
+    "ID" : "Solicitor",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "name",
+    "ID" : "Solicitor",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "mobile",
+    "ID" : "Solicitor",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "dx",
+    "ID" : "Solicitor",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "FieldType",
+    "ListElementCode" : "t",
+    "ID" : "Solicitor",
+    "SecurityClassification" : "Public",
+    "FieldType" : "FixedRadioList"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "reference",
+    "ID" : "Solicitor",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  }
+]

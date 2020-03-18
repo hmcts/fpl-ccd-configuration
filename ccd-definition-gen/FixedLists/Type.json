@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "OTHER",
+    "ListElement" : "OTHER",
+    "ID" : "Type"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "RESPONDENT",
+    "ListElement" : "RESPONDENT",
+    "ID" : "Type"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "CAFCASS",
+    "ListElement" : "CAFCASS",
+    "ID" : "Type"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 4,
+    "ListElementCode" : "LASOLICITOR",
+    "ListElement" : "LASOLICITOR",
+    "ID" : "Type"
+  }
+]

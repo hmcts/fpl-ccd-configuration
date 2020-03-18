@@ -10,29 +10,29 @@
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true
       }
     },
     {
       "title": "Request help to take part in proceedings",
-      "text": "Make an application to the court if you believe any party or witness needs help with:\n\n• understanding proceedings and their role in them in court\n• putting their views to the court\n• instructing their representatives before, during and after the hearing\n• attending the hearing without significant distress\n\nIf possible, include in your application:\n\n• why the party or witness would benefit from help\n• the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n• written confirmation from any relevant witnesses of their view\n",
+      "text": "Make an application to the court if you believe any party or witness needs help with:\n\n- understanding proceedings and their role in them in court\n- putting their views to the court\n- instructing their representatives before, during and after the hearing\n- attending the hearing without significant distress\n\nIf possible, include in your application:\n\n- why the party or witness would benefit from help\n- the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n- written confirmation from any relevant witnesses of their view\n",
       "assignee": "ALL_PARTIES",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true
       }
     },
     {
       "title": "Ask for disclosure",
-      "text": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court’s permission.  \n",
+      "text": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.  \n",
       "assignee": "ALL_PARTIES",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true
       }
     },
@@ -43,7 +43,7 @@
       "display": {
         "due": "ON",
         "templateDateFormat": "d MMMM yyyy 'at' h:mma",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": false,
         "delta": "0"
       }
@@ -55,29 +55,29 @@
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true
       }
     },
     {
       "title": "Send documents to all parties",
-      "text": "Give all parties access to all documents sent to the court, including:\n\n• the application form\n• annex documents\n• evidential checklist documents\n• any documents sent later on\n",
+      "text": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": false
       }
     },
     {
       "title": "Send missing annex documents to the court and all parties",
-      "text": "• Social work chronology\n• Social work statement\n• Family tree (genogram)\n• Social work assessment\n• Care plan\n• Threshold document\n• Index of checklist documents\n",
+      "text": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": false
       }
     },
@@ -88,7 +88,7 @@
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true,
         "delta": "0"
       }
@@ -111,7 +111,7 @@
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true,
         "delta": "-2"
       }
@@ -123,7 +123,7 @@
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true
       }
     },
@@ -140,57 +140,57 @@
     },
     {
       "title": "Send response to threshold statement to all parties",
-      "text": "Send a written statement to the court and all parties, showing:\n\n• the parents’ response to the local authority’s threshold statement\n• the parents’ proposals for placing the children, immediately and long-term\n• whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
+      "text": "Send a written statement to the court and all parties, showing:\n\n- the parents' response to the local authority's threshold statement\n- the parents' proposals for placing the children, immediately and long-term\n- whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
       "assignee": "PARENTS_AND_RESPONDENTS",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true
       }
     },
     {
-      "title": "Arrange an advocates’ meeting",
+      "title": "Arrange an advocates' meeting",
       "text": "All of the advocates who will appear at the related hearing must attend. ",
       "assignee": "CAFCASS",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true,
         "delta": "-2"
       }
     },
     {
-      "title": "Send the guardian’s analysis to all parties",
+      "title": "Send the guardian's analysis to all parties",
       "text": "Send to the court and all parties.",
       "assignee": "CAFCASS",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true
       }
     },
     {
-      "title": "Appoint a children’s guardian",
-      "text": "Preferably",
+      "title": "Appoint a children's guardian",
+      "text": "",
       "assignee": "CAFCASS",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": false
       }
     },
     {
       "title": "Object to a request for disclosure",
-      "text": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court’s permission.\n",
+      "text": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.\n",
       "assignee": "OTHERS",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true
       }
     },

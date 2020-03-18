@@ -1,0 +1,113 @@
+[
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "READONLY",
+    "ListElementCode" : "directionType",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 2,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "READONLY",
+    "ListElementCode" : "directionNeeded",
+    "FieldShowCondition" : "directionText = \"DO_NOT_SHOW\"",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 3,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "READONLY",
+    "ListElementCode" : "dateToBeCompletedBy",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 4,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "response.complied",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 5,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "response.documentDetails",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 6,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "response.file",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 7,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "READONLY",
+    "ListElementCode" : "response.cannotComplyTitle",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : "TODO"
+  },
+  {
+    "FieldDisplayOrder" : 8,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "response.cannotComplyReason",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 9,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "response.c2Uploaded",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 10,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "response.cannotComplyFile",
+    "ID" : "COMPLY_COURT",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  }
+]

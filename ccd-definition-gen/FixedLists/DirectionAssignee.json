@@ -1,0 +1,44 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "ALL_PARTIES",
+    "ListElement" : "ALL_PARTIES",
+    "ID" : "DirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "LOCAL_AUTHORITY",
+    "ListElement" : "LOCAL_AUTHORITY",
+    "ID" : "DirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "PARENTS_AND_RESPONDENTS",
+    "ListElement" : "PARENTS_AND_RESPONDENTS",
+    "ID" : "DirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 4,
+    "ListElementCode" : "CAFCASS",
+    "ListElement" : "CAFCASS",
+    "ID" : "DirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 5,
+    "ListElementCode" : "OTHERS",
+    "ListElement" : "OTHERS",
+    "ID" : "DirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 6,
+    "ListElementCode" : "COURT",
+    "ListElement" : "COURT",
+    "ID" : "DirectionAssignee"
+  }
+]

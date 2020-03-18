@@ -1,0 +1,50 @@
+[
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "standardDirectionsLabel",
+    "CaseEventID" : "uploadStandardDirections",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 1,
+    "DisplayContext" : "READONLY",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  },
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "standardDirectionsTitle",
+    "CaseEventID" : "uploadStandardDirections",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 2,
+    "DisplayContext" : "READONLY",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  },
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "standardDirectionsDocument",
+    "CaseEventID" : "uploadStandardDirections",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 3,
+    "DisplayContext" : "OPTIONAL",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  },
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "otherCourtAdminDocuments",
+    "CaseEventID" : "uploadStandardDirections",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 4,
+    "DisplayContext" : "OPTIONAL",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  }
+]

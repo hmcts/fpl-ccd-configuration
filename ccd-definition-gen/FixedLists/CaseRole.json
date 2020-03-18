@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "CREATOR",
+    "ListElement" : "CREATOR",
+    "ID" : "CaseRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "LASOLICITOR",
+    "ListElement" : "LASOLICITOR",
+    "ID" : "CaseRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "SOLICITOR",
+    "ListElement" : "SOLICITOR",
+    "ID" : "CaseRole"
+  }
+]

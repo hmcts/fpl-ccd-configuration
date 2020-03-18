@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "POST",
+    "ListElement" : "POST",
+    "ID" : "RepresentativeServingPreferences"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "EMAIL",
+    "ListElement" : "EMAIL",
+    "ID" : "RepresentativeServingPreferences"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "DIGITAL_SERVICE",
+    "ListElement" : "DIGITAL_SERVICE",
+    "ID" : "RepresentativeServingPreferences"
+  }
+]

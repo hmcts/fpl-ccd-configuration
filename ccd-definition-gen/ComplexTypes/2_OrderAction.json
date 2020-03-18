@@ -1,0 +1,36 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "NextHearingType",
+    "ListElementCode" : "nextHearingType",
+    "ID" : "OrderAction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "FixedRadioList"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "document",
+    "ID" : "OrderAction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DocumentReference"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "changeRequestedByJudge",
+    "ID" : "OrderAction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "ActionType",
+    "ListElementCode" : "type",
+    "ID" : "OrderAction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "FixedRadioList"
+  }
+]

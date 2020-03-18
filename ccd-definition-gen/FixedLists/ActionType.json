@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "SEND_TO_ALL_PARTIES",
+    "ListElement" : "SEND_TO_ALL_PARTIES",
+    "ID" : "ActionType"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "JUDGE_REQUESTED_CHANGE",
+    "ListElement" : "JUDGE_REQUESTED_CHANGE",
+    "ID" : "ActionType"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "SELF_REVIEW",
+    "ListElement" : "SELF_REVIEW",
+    "ID" : "ActionType"
+  }
+]

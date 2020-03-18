@@ -1,0 +1,101 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_COURT",
+    "CaseFieldID": "localAuthorityDirectionsLabelCMO",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "Respondents directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_COURT",
+    "CaseFieldID": "respondents_label",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "Respondents directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_COURT",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "COMPLEX",
+    "PageID": "Respondents directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "Direction"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_COURT",
+    "CaseFieldID": "otherPartiesDirectionLabelCMO",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "Other party directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_COURT",
+    "CaseFieldID": "others_label",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "Other party directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_COURT",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "COMPLEX",
+    "PageID": "Other party directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "Direction"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_COURT",
+    "CaseFieldID": "cafcassDirectionsLabelCMO",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "Cafcass directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_COURT",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "COMPLEX",
+    "PageID": "Cafcass directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "Direction"
+  }
+]

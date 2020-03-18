@@ -5,9 +5,11 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -21,9 +23,10 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -34,7 +37,6 @@ import java.util.Map;
 import static java.util.Collections.EMPTY_LIST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -71,14 +73,18 @@ class PopulateStandardDirectionsHandlerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
+    @MockBean
+    private UserDetailsService userDetailsService;
 
-    private DirectionHelperService directionHelperService = new DirectionHelperService();
+    @InjectMocks
+    private CommonDirectionService commonDirectionService;
+
+    private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
 
     @BeforeEach
     void before() {
         populateStandardDirectionsHandler = new PopulateStandardDirectionsHandler(objectMapper, ordersLookupService,
-            coreCaseDataApi, authTokenGenerator, idamClient, userConfig, directionHelperService, hearingBookingService);
+            coreCaseDataApi, authTokenGenerator, idamClient, userConfig, commonDirectionService, hearingBookingService);
 
         given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
 
@@ -87,6 +93,8 @@ class PopulateStandardDirectionsHandlerTest {
             .build());
 
         given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
+
+        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn("Emma Taylor");
     }
 
     @Test
@@ -120,7 +128,7 @@ class PopulateStandardDirectionsHandlerTest {
         populateStandardDirectionsHandler.populateStandardDirections(
             new PopulateStandardDirectionsEvent(callbackRequest, "", ""));
 
-        verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
+        verify(coreCaseDataApi).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
                 .eventToken(TOKEN)
                 .event(Event.builder()
@@ -161,7 +169,7 @@ class PopulateStandardDirectionsHandlerTest {
         populateStandardDirectionsHandler.populateStandardDirections(
             new PopulateStandardDirectionsEvent(callbackRequest, "", ""));
 
-        verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
+        verify(coreCaseDataApi).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
                 .eventToken(TOKEN)
                 .event(Event.builder()
@@ -188,7 +196,7 @@ class PopulateStandardDirectionsHandlerTest {
                 DirectionConfiguration.builder()
                     .assignee(LOCAL_AUTHORITY)
                     .title("Direction")
-                    .text("• Test body's 1 \n\n• Two")
+                    .text("- Test body's 1 \n\n- Two")
                     .display(Display.builder()
                         .delta("0")
                         .due(Display.Due.BY)
@@ -207,13 +215,13 @@ class PopulateStandardDirectionsHandlerTest {
             .extracting("value")
             .isEqualTo(Map.of(
                 "assignee", "LOCAL_AUTHORITY",
-                "directionText", "• Test body's 1 \n\n• Two",
+                "directionText", "- Test body's 1 \n\n- Two",
                 "directionType", "Direction",
                 "directionRemovable", "No",
                 "readOnly", "No",
                 "responses", EMPTY_LIST));
 
-        verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
+        verify(coreCaseDataApi).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
                 .eventToken(TOKEN)
                 .event(Event.builder()

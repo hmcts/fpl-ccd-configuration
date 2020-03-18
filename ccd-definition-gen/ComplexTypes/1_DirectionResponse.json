@@ -1,0 +1,84 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "cannotComplyReason",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "complied",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "String",
+    "ListElementCode" : "c2Uploaded",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Collection"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "responder",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "cannotComplyFile",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DocumentReference"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "DirectionAssignee",
+    "ListElementCode" : "assignee",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "FixedRadioList"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "directionId",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "UUID"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "documentDetails",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "file",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DocumentReference"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "respondingOnBehalfOf",
+    "ID" : "DirectionResponse",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  }
+]

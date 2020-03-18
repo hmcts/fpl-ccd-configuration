@@ -1,0 +1,42 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "DEFAULT_CODE",
+    "ID" : "DynamicListElement",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "DEFAULT_LABEL",
+    "ID" : "DynamicListElement",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "code",
+    "ID" : "DynamicListElement",
+    "SecurityClassification" : "Public",
+    "FieldType" : "UUID"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "EMPTY",
+    "ID" : "DynamicListElement",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DynamicListElement"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "label",
+    "ID" : "DynamicListElement",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  }
+]

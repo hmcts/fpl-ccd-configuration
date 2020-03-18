@@ -1,0 +1,24 @@
+[
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "temporaryC2Document",
+    "CaseEventID" : "uploadC2",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "document",
+    "ID" : "UploadC2",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 2,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "temporaryC2Document",
+    "CaseEventID" : "uploadC2",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "description",
+    "ID" : "UploadC2",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  }
+]

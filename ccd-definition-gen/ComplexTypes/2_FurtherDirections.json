@@ -1,0 +1,18 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "directionsNeeded",
+    "ID" : "FurtherDirections",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "directions",
+    "ID" : "FurtherDirections",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  }
+]

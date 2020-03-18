@@ -30,5 +30,47 @@
     "FieldType": "TextArea",
     "ElementLabel": "Description",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "nameOfRepresentative",
+    "FieldType": "Text",
+    "ElementLabel": "Name of representative",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "pbaNumber",
+    "HintText": "For example, PBA1234567",
+    "FieldType": "Text",
+    "ElementLabel": "Payment by account (PBA) number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "clientCode",
+    "FieldType": "Text",
+    "ElementLabel": "Client code",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "fileReference",
+    "FieldType": "Text",
+    "ElementLabel": "File reference",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationType",
+    "ElementLabel": "Application type",
+    "SecurityClassification": "Public"
   }
 ]

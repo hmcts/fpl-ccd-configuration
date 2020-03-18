@@ -1,0 +1,67 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "venue",
+    "ID" : "HearingBooking",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "endDate",
+    "ID" : "HearingBooking",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DateTime"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "String",
+    "ListElementCode" : "hearingNeedsBooked",
+    "ID" : "HearingBooking",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Collection"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "hearingNeedsDetails",
+    "ID" : "HearingBooking",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "typeDetails",
+    "ID" : "HearingBooking",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "judgeAndLegalAdvisor",
+    "ID" : "HearingBooking",
+    "SecurityClassification" : "Public",
+    "FieldType" : "JudgeAndLegalAdvisor"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "startDate",
+    "ID" : "HearingBooking",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DateTime"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "type",
+    "ID" : "HearingBooking",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  }
+]

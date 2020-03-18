@@ -1,0 +1,139 @@
+[
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "type",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 2,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "typeDetails",
+    "FieldShowCondition" : "hearingDetails.type=\"OTHER\"",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 3,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "venue",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 4,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "startDate",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 5,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "endDate",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 6,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "hearingNeedsBooked",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 7,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "hearingNeedsDetails",
+    "FieldShowCondition" : "hearingDetails.hearingNeedsBooked!=\"NONE\"",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 8,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "judgeAndLegalAdvisor.judgeTitle",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 9,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "judgeAndLegalAdvisor.otherTitle",
+    "FieldShowCondition" : "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 10,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "judgeAndLegalAdvisor.judgeLastName",
+    "FieldShowCondition" : "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 11,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "judgeAndLegalAdvisor.judgeFullName",
+    "FieldShowCondition" : "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 12,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "hearingDetails",
+    "CaseEventID" : "hearingBookingDetails",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "judgeAndLegalAdvisor.legalAdvisorName",
+    "ID" : "HearingBookingDetails",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  }
+]

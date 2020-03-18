@@ -1,0 +1,14 @@
+[
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "others",
+    "CaseEventID" : "amendOthers-PREPARE_FOR_HEARING",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 1,
+    "DisplayContext" : "OPTIONAL",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "RESPONDENT_1",
+    "ListElement" : "RESPONDENT_1",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "RESPONDENT_2",
+    "ListElement" : "RESPONDENT_2",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "RESPONDENT_3",
+    "ListElement" : "RESPONDENT_3",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 4,
+    "ListElementCode" : "RESPONDENT_4",
+    "ListElement" : "RESPONDENT_4",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 5,
+    "ListElementCode" : "RESPONDENT_5",
+    "ListElement" : "RESPONDENT_5",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 6,
+    "ListElementCode" : "RESPONDENT_6",
+    "ListElement" : "RESPONDENT_6",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 7,
+    "ListElementCode" : "RESPONDENT_7",
+    "ListElement" : "RESPONDENT_7",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 8,
+    "ListElementCode" : "RESPONDENT_8",
+    "ListElement" : "RESPONDENT_8",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 9,
+    "ListElementCode" : "RESPONDENT_9",
+    "ListElement" : "RESPONDENT_9",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 10,
+    "ListElementCode" : "RESPONDENT_10",
+    "ListElement" : "RESPONDENT_10",
+    "ID" : "ParentsAndRespondentsDirectionAssignee"
+  }
+]

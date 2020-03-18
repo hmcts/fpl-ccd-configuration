@@ -2,78 +2,86 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.time.format.FormatStyle;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static org.apache.commons.lang.StringUtils.uncapitalize;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-@SuppressWarnings({"LineLength", "VariableDeclarationUsageDistance"})
 public abstract class AbstractEmailContentProvider {
 
     final String uiBaseUrl;
-    final DateFormatterService dateFormatterService;
-    final HearingBookingService hearingBookingService;
+    private final DateFormatterService dateFormatterService;
+    private final HearingBookingService hearingBookingService;
 
-    protected AbstractEmailContentProvider(String uiBaseUrl, DateFormatterService dateFormatterService,
+    protected AbstractEmailContentProvider(String uiBaseUrl,
+                                           DateFormatterService dateFormatterService,
                                            HearingBookingService hearingBookingService) {
         this.uiBaseUrl = uiBaseUrl;
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
     }
 
-    @SuppressWarnings("unchecked")
-    ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails) {
-        List<String> ordersAndDirections = buildOrdersAndDirections((Map<String, Object>) caseDetails.getData().get("orders"));
+    ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(Long caseId, CaseData caseData) {
+        List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
 
-        Optional<String> timeFrame = Optional.ofNullable((Map<String, Object>) caseDetails.getData().get("hearing"))
-            .map(hearing -> (String) hearing.get("timeFrame"));
+        Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
+            .map(Hearing::getTimeFrame)
+            .filter(StringUtils::isNotBlank);
 
         return ImmutableMap.<String, Object>builder()
             .put("ordersAndDirections", !ordersAndDirections.isEmpty() ? ordersAndDirections : "")
             .put("dataPresent", !ordersAndDirections.isEmpty() ? "Yes" : "No")
             .put("fullStop", !ordersAndDirections.isEmpty() ? "No" : "Yes")
             .put("timeFramePresent", timeFrame.isPresent() ? "Yes" : "No")
-            .put("timeFrameValue", timeFrame.orElse(""))
-            .put("reference", String.valueOf(caseDetails.getId()))
-            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
+            .put("timeFrameValue", uncapitalize(timeFrame.orElse("")))
+            .put("urgentHearing", timeFrame.isPresent() && timeFrame.get().equals("Same day") ? "Yes" : "No")
+            .put("nonUrgentHearing", timeFrame.isPresent() && !timeFrame.get().equals("Same day") ? "Yes" : "No")
+            .put("firstRespondentName", getFirstRespondentLastName(caseData.getRespondents1()))
+            .put("reference", String.valueOf(caseId))
+            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseId));
     }
 
-    ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
+    ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(Long caseId, CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
+            .put("familyManCaseNumber",
+                isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
             .put("leadRespondentsName", capitalize(caseData.getRespondents1()
                 .get(0)
                 .getValue()
                 .getParty()
                 .getLastName()) + ",")
             .put("hearingDate", getHearingBooking(caseData))
-            .put("reference", String.valueOf(caseDetails.getId()))
-            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
+            .put("reference", String.valueOf(caseId))
+            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseId));
     }
 
     private String getHearingBooking(CaseData data) {
         if (!isNull(data.getHearingDetails())) {
             return dateFormatterService.formatLocalDateToString(
                 hearingBookingService.getMostUrgentHearingBooking(
-                    data.getHearingDetails()).getStartDate().toLocalDate(),FormatStyle.LONG);
+                    data.getHearingDetails()).getStartDate().toLocalDate(), FormatStyle.LONG);
         }
         return "";
     }
 
-    private List<String> buildOrdersAndDirections(Map<String, Object> optionalOrders) {
+    private List<String> buildOrdersAndDirections(Orders optionalOrders) {
         ImmutableList.Builder<String> ordersAndDirectionsBuilder = ImmutableList.builder();
 
         Optional.ofNullable(optionalOrders).ifPresent(orders -> {
@@ -84,27 +92,21 @@ public abstract class AbstractEmailContentProvider {
         return ordersAndDirectionsBuilder.build();
     }
 
-    @SuppressWarnings("unchecked")
-    private void appendOrders(Map<String, Object> orders, ImmutableList.Builder<String> builder) {
-        Optional.ofNullable(orders.get("orderType")).ifPresent(orderTypes -> {
-            for (String typeString : (List<String>) orderTypes) {
-                builder.add(OrderType.valueOf(typeString).getLabel());
-            }
-        });
+    private void appendOrders(Orders orders, ImmutableList.Builder<String> builder) {
+        defaultIfNull(orders.getOrderType(), Collections.<OrderType>emptyList()).stream()
+            .map(OrderType::getLabel)
+            .forEach(builder::add);
 
-        Optional.ofNullable(orders.get("emergencyProtectionOrders")).ifPresent(emergencyProtectionOrders -> {
-            for (String typeString : (List<String>) emergencyProtectionOrders) {
-                builder.add(EmergencyProtectionOrdersType.valueOf(typeString).getLabel());
-            }
-        });
+        defaultIfNull(orders.getEmergencyProtectionOrders(), Collections.<EmergencyProtectionOrdersType>emptyList())
+            .stream()
+            .map(EmergencyProtectionOrdersType::getLabel)
+            .forEach(builder::add);
     }
 
-    @SuppressWarnings("unchecked")
-    private void appendDirections(Map<String, Object> orders, ImmutableList.Builder<String> builder) {
-        Optional.ofNullable(orders.get("emergencyProtectionOrderDirections")).ifPresent(emergencyProtectionOrderDirections -> {
-            for (String typeString : (List<String>) emergencyProtectionOrderDirections) {
-                builder.add(EmergencyProtectionOrderDirectionsType.valueOf(typeString).getLabel());
-            }
-        });
+    private void appendDirections(Orders orders, ImmutableList.Builder<String> builder) {
+        defaultIfNull(orders.getEmergencyProtectionOrderDirections(),
+            Collections.<EmergencyProtectionOrderDirectionsType>emptyList()).stream()
+            .map(EmergencyProtectionOrderDirectionsType::getLabel)
+            .forEach(builder::add);
     }
 }

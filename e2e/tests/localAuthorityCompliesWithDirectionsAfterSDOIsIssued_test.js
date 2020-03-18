@@ -1,12 +1,14 @@
 const config = require('../config.js');
 const response = require('../fixtures/response');
 const directions = require('../fixtures/directions');
+const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 
 let caseId;
 
 Feature('Comply with directions');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, draftStandardDirectionsEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, addHearingBookingDetailsEventPage, sendCaseToGatekeeperEventPage, draftStandardDirectionsEventPage,
+  allocatedJudgeEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -20,11 +22,17 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 
     I.signOut();
 
-    //hmcts login, add case number and send to gatekeeper
+    //hmcts login, add case number, add hearing details and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
     caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
     enterFamilyManCaseNumberEventPage.enterCaseID();
+    await I.completeEvent('Save and continue');
+    await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+    await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
+    await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
     await I.completeEvent('Save and continue');
     caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();

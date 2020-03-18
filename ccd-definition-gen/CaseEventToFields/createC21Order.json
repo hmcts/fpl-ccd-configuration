@@ -1,0 +1,17 @@
+[
+  {
+    "PageID" : "JudgeInformation",
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "judgeAndLegalAdvisor",
+    "DisplayContext" : "COMPLEX",
+    "PageLabel" : " ",
+    "ShowSummaryChangeOption" : "Y",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1,
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CallBackURLMidEvent" : "/create-order/mid-event",
+    "CaseEventID" : "createC21Order",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 1
+  }
+]

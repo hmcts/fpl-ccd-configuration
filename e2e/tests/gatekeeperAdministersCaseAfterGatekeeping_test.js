@@ -8,7 +8,8 @@ let caseId;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage,
+  allocatedJudgeEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -28,6 +29,9 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
     enterFamilyManCaseNumberEventPage.enterCaseID();
     await I.completeEvent('Save and continue');
+    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+    await I.completeEvent('Save and continue');
     caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
@@ -38,16 +42,16 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('gatekeeper enters allocation decision without proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+Scenario('gatekeeper make allocation decision based on proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
-  enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');
-  enterAllocationDecisionEventPage.enterProposalReason('test');
+  enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
 Scenario('gatekeeper enters allocation decision', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
+  enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
   enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');
   enterAllocationDecisionEventPage.enterProposalReason('test');
   await I.completeEvent('Save and continue');
@@ -102,7 +106,7 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.see('draft-standard-directions-order.pdf');
-  I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Request permission for expert evidence');
+  I.seeAnswerInTab(1, 'Directions 1', 'Title', 'Request permission for expert evidence');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
   I.seeAnswerInTab(6, 'Directions 1', 'Due date and time', '1 Jan 2050, 12:00:00 PM');

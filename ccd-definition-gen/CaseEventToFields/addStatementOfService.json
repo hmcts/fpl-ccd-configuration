@@ -1,0 +1,51 @@
+[
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "c9Declaration",
+    "CaseEventID" : "addStatementOfService",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 1,
+    "DisplayContext" : "READONLY",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  },
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "statementOfService",
+    "CaseEventID" : "addStatementOfService",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 2,
+    "DisplayContext" : "MANDATORY",
+    "ShowSummaryChangeOption" : "Y",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  },
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "serviceDeclarationLabel",
+    "CaseEventID" : "addStatementOfService",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 3,
+    "DisplayContext" : "READONLY",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  },
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "serviceConsent",
+    "CaseEventID" : "addStatementOfService",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 4,
+    "DisplayContext" : "MANDATORY",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  }
+]

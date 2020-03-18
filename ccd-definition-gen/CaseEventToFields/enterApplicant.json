@@ -1,0 +1,27 @@
+[
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "applicants",
+    "CallBackURLMidEvent" : "/enter-applicant/mid-event",
+    "CaseEventID" : "enterApplicant",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 1,
+    "DisplayContext" : "OPTIONAL",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  },
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "solicitor",
+    "CaseEventID" : "enterApplicant",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 2,
+    "DisplayContext" : "OPTIONAL",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  }
+]

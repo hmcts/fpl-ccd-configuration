@@ -11,6 +11,41 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
+    "ListElementCode": "responder",
+    "FieldType": "Text",
+    "ElementLabel": "Name of person responding",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfRespondent",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ParentsAndRespondentsDirectionAssignee",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfOthers",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "OtherPartiesDirectionAssignee",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfCafcass",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CafcassDirectionAssignee",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
     "ListElementCode": "directionId",
     "FieldType": "Text",
     "ElementLabel": "Direction ID",
@@ -50,7 +85,7 @@
     "ID": "DirectionResponse",
     "ListElementCode": "cannotComplyTitle",
     "FieldType": "Label",
-    "ElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\n If you can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
+    "ElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\n If you can't comply, you need to explain:\n\n- reasons why\n\n- impact on timetable and next hearing\n\n- proposed next actions",
     "SecurityClassification": "Public",
     "FieldShowCondition": "complied=\"No\""
   },

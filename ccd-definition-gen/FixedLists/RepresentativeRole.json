@@ -1,0 +1,163 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "LA_LEGAL_REPRESENTATIVE",
+    "ListElement" : "LA_LEGAL_REPRESENTATIVE",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "CAFCASS_GUARDIAN",
+    "ListElement" : "CAFCASS_GUARDIAN",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "CAFCASS_SOLICITOR",
+    "ListElement" : "CAFCASS_SOLICITOR",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 4,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_1",
+    "ListElement" : "REPRESENTING_RESPONDENT_1",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 5,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_2",
+    "ListElement" : "REPRESENTING_RESPONDENT_2",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 6,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_3",
+    "ListElement" : "REPRESENTING_RESPONDENT_3",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 7,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_4",
+    "ListElement" : "REPRESENTING_RESPONDENT_4",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 8,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_5",
+    "ListElement" : "REPRESENTING_RESPONDENT_5",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 9,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_6",
+    "ListElement" : "REPRESENTING_RESPONDENT_6",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 10,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_7",
+    "ListElement" : "REPRESENTING_RESPONDENT_7",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 11,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_8",
+    "ListElement" : "REPRESENTING_RESPONDENT_8",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 12,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_9",
+    "ListElement" : "REPRESENTING_RESPONDENT_9",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 13,
+    "ListElementCode" : "REPRESENTING_RESPONDENT_10",
+    "ListElement" : "REPRESENTING_RESPONDENT_10",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 14,
+    "ListElementCode" : "REPRESENTING_PERSON_1",
+    "ListElement" : "REPRESENTING_PERSON_1",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 15,
+    "ListElementCode" : "REPRESENTING_OTHER_PERSON_1",
+    "ListElement" : "REPRESENTING_OTHER_PERSON_1",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 16,
+    "ListElementCode" : "REPRESENTING_OTHER_PERSON_2",
+    "ListElement" : "REPRESENTING_OTHER_PERSON_2",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 17,
+    "ListElementCode" : "REPRESENTING_OTHER_PERSON_3",
+    "ListElement" : "REPRESENTING_OTHER_PERSON_3",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 18,
+    "ListElementCode" : "REPRESENTING_OTHER_PERSON_4",
+    "ListElement" : "REPRESENTING_OTHER_PERSON_4",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 19,
+    "ListElementCode" : "REPRESENTING_OTHER_PERSON_5",
+    "ListElement" : "REPRESENTING_OTHER_PERSON_5",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 20,
+    "ListElementCode" : "REPRESENTING_OTHER_PERSON_6",
+    "ListElement" : "REPRESENTING_OTHER_PERSON_6",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 21,
+    "ListElementCode" : "REPRESENTING_OTHER_PERSON_7",
+    "ListElement" : "REPRESENTING_OTHER_PERSON_7",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 22,
+    "ListElementCode" : "REPRESENTING_OTHER_PERSON_8",
+    "ListElement" : "REPRESENTING_OTHER_PERSON_8",
+    "ID" : "RepresentativeRole"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 23,
+    "ListElementCode" : "REPRESENTING_OTHER_PERSON_9",
+    "ListElement" : "REPRESENTING_OTHER_PERSON_9",
+    "ID" : "RepresentativeRole"
+  }
+]

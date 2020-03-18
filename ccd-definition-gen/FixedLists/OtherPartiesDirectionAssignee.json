@@ -1,0 +1,72 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "OTHER_1",
+    "ListElement" : "OTHER_1",
+    "ID" : "OtherPartiesDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "OTHER_2",
+    "ListElement" : "OTHER_2",
+    "ID" : "OtherPartiesDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 3,
+    "ListElementCode" : "OTHER_3",
+    "ListElement" : "OTHER_3",
+    "ID" : "OtherPartiesDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 4,
+    "ListElementCode" : "OTHER_4",
+    "ListElement" : "OTHER_4",
+    "ID" : "OtherPartiesDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 5,
+    "ListElementCode" : "OTHER_5",
+    "ListElement" : "OTHER_5",
+    "ID" : "OtherPartiesDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 6,
+    "ListElementCode" : "OTHER_6",
+    "ListElement" : "OTHER_6",
+    "ID" : "OtherPartiesDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 7,
+    "ListElementCode" : "OTHER_7",
+    "ListElement" : "OTHER_7",
+    "ID" : "OtherPartiesDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 8,
+    "ListElementCode" : "OTHER_8",
+    "ListElement" : "OTHER_8",
+    "ID" : "OtherPartiesDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 9,
+    "ListElementCode" : "OTHER_9",
+    "ListElement" : "OTHER_9",
+    "ID" : "OtherPartiesDirectionAssignee"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 10,
+    "ListElementCode" : "OTHER_10",
+    "ListElement" : "OTHER_10",
+    "ID" : "OtherPartiesDirectionAssignee"
+  }
+]

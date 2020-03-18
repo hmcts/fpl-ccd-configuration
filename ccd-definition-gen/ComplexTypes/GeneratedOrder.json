@@ -1,0 +1,74 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "document",
+    "ID" : "GeneratedOrder",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DocumentReference"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "date",
+    "ID" : "GeneratedOrder",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "furtherDirections",
+    "ID" : "GeneratedOrder",
+    "SecurityClassification" : "Public",
+    "FieldType" : "FurtherDirections"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "expiryDate",
+    "ID" : "GeneratedOrder",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "type",
+    "ID" : "GeneratedOrder",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "title",
+    "ID" : "GeneratedOrder",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "dateOfIssue",
+    "ID" : "GeneratedOrder",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "judgeAndLegalAdvisor",
+    "ID" : "GeneratedOrder",
+    "SecurityClassification" : "Public",
+    "FieldType" : "JudgeAndLegalAdvisor"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "details",
+    "ID" : "GeneratedOrder",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  }
+]

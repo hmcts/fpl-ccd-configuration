@@ -1,0 +1,70 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "String",
+    "ListElementCode" : "neglectOccurrences",
+    "ID" : "Risks",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Collection"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "sexualAbuse",
+    "ID" : "Risks",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "String",
+    "ListElementCode" : "physicalHarmOccurrences",
+    "ID" : "Risks",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Collection"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "emotionalHarm",
+    "ID" : "Risks",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "physicalHarm",
+    "ID" : "Risks",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "neglect",
+    "ID" : "Risks",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "String",
+    "ListElementCode" : "emotionalHarmOccurrences",
+    "ID" : "Risks",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Collection"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "String",
+    "ListElementCode" : "sexualAbuseOccurrences",
+    "ID" : "Risks",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Collection"
+  }
+]

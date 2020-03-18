@@ -1,0 +1,110 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "directionText",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "custom",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "OtherPartiesDirectionAssignee",
+    "ListElementCode" : "otherPartiesAssignee",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "FixedRadioList"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "ParentsAndRespondentsDirectionAssignee",
+    "ListElementCode" : "parentsAndRespondentsAssignee",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "FixedRadioList"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "readOnly",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "response",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DirectionResponse"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "dateToBeCompletedBy",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DateTime"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "directionType",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "status",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "DirectionResponse",
+    "ListElementCode" : "responses",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Collection"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "directionRemovable",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "directionNeeded",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "DirectionAssignee",
+    "ListElementCode" : "assignee",
+    "ID" : "Direction",
+    "SecurityClassification" : "Public",
+    "FieldType" : "FixedRadioList"
+  }
+]

@@ -21,11 +21,20 @@ module.exports = {
       keyIssues: '#schedule_keyIssues',
       partiesPositions: '#schedule_partiesPositions',
     },
-    respondentDirectionsCustom: {
-      assigneeDropdown: '#respondentDirectionsCustom_0_parentsAndRespondentsAssignee',
+    respondentDirectionsCustomCMO: {
+      assigneeDropdown: '#respondentDirectionsCustomCMO_0_parentsAndRespondentsAssignee',
     },
-    otherPartiesDirectionsCustom: {
-      assigneeDropdown: '#otherPartiesDirectionsCustom_0_otherPartiesAssignee',
+    otherPartiesDirectionsCustomCMO: {
+      assigneeDropdown: '#otherPartiesDirectionsCustomCMO_0_otherPartiesAssignee',
+    },
+  },
+
+  staticFields: {
+    statusRadioGroup: {
+      groupName: '#caseManagementOrder_status',
+      sendToJudge: 'Yes, send this to the judge',
+      partiesReview: 'No, parties need to review it',
+      selfReview: 'No, I need to make changes',
     },
   },
 
@@ -34,37 +43,32 @@ module.exports = {
     I.selectOption(this.fields.cmoHearingDateList, date);
   },
 
-  validatePreviousSelectedHearingDate(date) {
-    I.waitForElement(this.fields.cmoHearingDateList);
-    I.see(date, this.fields.cmoHearingDateList);
-  },
-
   async enterDirection(direction) {
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('allPartiesCustom', direction.title, direction.description);
-    await directions.enterDate('allPartiesCustom', direction.dueDate);
-    await I.click('Continue');
+    await directions.enterTitleAndDescription('allPartiesCustomCMO', direction.title, direction.description);
+    await directions.enterDate('allPartiesCustomCMO', direction.dueDate);
+    await I.retryUntilExists(() => I.click('Continue'), '#localAuthorityDirectionsLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('localAuthorityDirectionsCustom', direction.title, direction.description);
-    await directions.enterDate('localAuthorityDirectionsCustom', direction.dueDate);
-    await I.click('Continue');
+    await directions.enterTitleAndDescription('localAuthorityDirectionsCustomCMO', direction.title, direction.description);
+    await directions.enterDate('localAuthorityDirectionsCustomCMO', direction.dueDate);
+    await I.retryUntilExists(() => I.click('Continue'), '#respondentsDirectionLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('respondentDirectionsCustom', direction.title, direction.description);
-    await I.selectOption(this.fields.respondentDirectionsCustom.assigneeDropdown, 'Respondent 1');
-    await directions.enterDate('respondentDirectionsCustom', direction.dueDate);
-    await I.click('Continue');
+    await directions.enterTitleAndDescription('respondentDirectionsCustomCMO', direction.title, direction.description);
+    await I.selectOption(this.fields.respondentDirectionsCustomCMO.assigneeDropdown, 'Respondent 1');
+    await directions.enterDate('respondentDirectionsCustomCMO', direction.dueDate);
+    await I.retryUntilExists(() => I.click('Continue'), '#cafcassDirectionsLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('cafcassDirectionsCustom', direction.title, direction.description);
-    await directions.enterDate('cafcassDirectionsCustom', direction.dueDate);
-    await I.click('Continue');
+    await directions.enterTitleAndDescription('cafcassDirectionsCustomCMO', direction.title, direction.description);
+    await directions.enterDate('cafcassDirectionsCustomCMO', direction.dueDate);
+    await I.retryUntilExists(() => I.click('Continue'), '#otherPartiesDirectionLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('otherPartiesDirectionsCustom', direction.title, direction.description);
-    I.selectOption(this.fields.otherPartiesDirectionsCustom.assigneeDropdown, 'Person 1');
-    await directions.enterDate('otherPartiesDirectionsCustom', direction.dueDate);
-    await I.click('Continue');
+    await directions.enterTitleAndDescription('otherPartiesDirectionsCustomCMO', direction.title, direction.description);
+    I.selectOption(this.fields.otherPartiesDirectionsCustomCMO.assigneeDropdown, 'Person 1');
+    await directions.enterDate('otherPartiesDirectionsCustomCMO', direction.dueDate);
+    await I.retryUntilExists(() => I.click('Continue'), '#courtDirectionsLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('courtDirectionsCustom', direction.title, direction.description);
-    await directions.enterDate('courtDirectionsCustom', direction.dueDate);
+    await directions.enterTitleAndDescription('courtDirectionsCustomCMO', direction.title, direction.description);
+    await directions.enterDate('courtDirectionsCustomCMO', direction.dueDate);
   },
 
   enterSchedule(schedule) {
@@ -85,4 +89,23 @@ module.exports = {
     I.fillField(this.fields.recitals.title, title);
     I.fillField(this.fields.recitals.description, description);
   },
+
+  markToBeSentToJudge() {
+    within(this.staticFields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.staticFields.statusRadioGroup.sendToJudge));
+    });
+  },
+
+  markToBeReviewedByParties() {
+    within(this.staticFields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.staticFields.statusRadioGroup.partiesReview));
+    });
+  },
+
+  markToReviewedBySelf() {
+    within(this.staticFields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.staticFields.statusRadioGroup.selfReview));
+    });
+  },
+
 };

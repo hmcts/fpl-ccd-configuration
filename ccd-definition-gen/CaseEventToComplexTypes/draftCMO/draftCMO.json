@@ -1,0 +1,233 @@
+[
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "allPartiesCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "directionType",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 2,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "allPartiesCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "directionText",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 3,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "allPartiesCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "dateToBeCompletedBy",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "localAuthorityDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "directionType",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 2,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "localAuthorityDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "directionText",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 3,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "localAuthorityDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "dateToBeCompletedBy",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "respondentDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "directionType",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 2,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "respondentDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "directionText",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 3,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "respondentDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "parentsAndRespondentsAssignee",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 4,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "respondentDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "dateToBeCompletedBy",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "cafcassDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "directionType",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 2,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "cafcassDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "directionText",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 3,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "cafcassDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "dateToBeCompletedBy",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "caseManagementOrder",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "READONLY",
+    "ListElementCode" : "hearingDate",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "otherPartiesDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "directionType",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 2,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "otherPartiesDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "directionText",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 3,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "otherPartiesDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "otherPartiesAssignee",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 4,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "otherPartiesDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "dateToBeCompletedBy",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "directionType",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 2,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "MANDATORY",
+    "ListElementCode" : "directionText",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  },
+  {
+    "FieldDisplayOrder" : 3,
+    "LiveFrom" : "01/01/2017",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "draftCMO",
+    "DisplayContext" : "OPTIONAL",
+    "ListElementCode" : "dateToBeCompletedBy",
+    "ID" : "DraftCMO",
+    "SecurityClassification" : "Public",
+    "EventElementLabel" : null
+  }
+]

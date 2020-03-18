@@ -17,7 +17,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("callback/enter-other-proceedings")
 public class OtherProceedingsController {
-
     private static final String ERROR_MESSAGE = "You must say if there are any other proceedings relevant to this case";
 
     @SuppressWarnings("unchecked")
@@ -26,7 +25,7 @@ public class OtherProceedingsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
         Map<String, Object> proceedingData = (Map<String, Object>) caseDetails.getData().get("proceeding");
-        List<String> validationErrors = new ArrayList<String>();
+        List<String> validationErrors = new ArrayList<>();
         String onGoingProceeding = (String) proceedingData.get("onGoingProceeding");
 
         if (onGoingProceeding == null || "".equals(onGoingProceeding)) {

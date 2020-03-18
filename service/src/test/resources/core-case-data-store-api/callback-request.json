@@ -66,7 +66,8 @@
           "detailsHidden": "No",
           "childInformation": "Cousin",
           "litigationIssues": "NO",
-          "genderIdentification": "Unknown"
+          "genderIdentification": "Unknown",
+          "representedBy": []
         },
         "additionalOthers": [
           {
@@ -90,7 +91,8 @@
               "childInformation": "Friend of family",
               "litigationIssues": "YES",
               "detailsHiddenReason": "Other two hide from parties",
-              "litigationIssuesDetails": "Other two inability to take part in proceedings"
+              "litigationIssuesDetails": "Other two inability to take part in proceedings",
+              "representedBy": []
             }
           }
         ]
@@ -151,7 +153,7 @@
               "detailsHiddenReason": "History of domestic violence with relatives",
               "fathersResponsibility": "Yes",
               "additionalNeedsDetails": "Autism",
-              "childGenderIdentification": "Boy",
+              "genderIdentification": "Boy",
               "placementOrderApplication": "Yes"
             }
           }
@@ -269,14 +271,15 @@
               "litigationIssues": "YES",
               "litigationIssuesDetails": "respondent one test litigation reason",
               "relationshipToChild": "Uncle",
-              "contactDetailsHidden": "No",
+              "contactDetailsHidden": "Yes",
               "contactDetailsHiddenReason": "Hide from all",
               "address": {},
               "telephoneNumber": {
                 "telephoneNumber": "07712345678"
               }
             },
-            "leadRespondentIndicator": "Y"
+            "leadRespondentIndicator": "Y",
+            "representedBy": []
           }
         },
         {
@@ -311,7 +314,8 @@
                 "telephoneNumber": "02892611016"
               }
             },
-            "leadRespondentIndicator": "Y"
+            "leadRespondentIndicator": "Y",
+            "representedBy": []
           }
         },
         {
@@ -341,7 +345,8 @@
                 "telephoneNumber": "0987654321"
               }
             },
-            "leadRespondentIndicator": "Y"
+            "leadRespondentIndicator": "Y",
+            "representedBy": []
           }
         }
       ],
@@ -473,16 +478,49 @@
           }
         }
       ],
+      "c2ApplicationType": {
+        "type": "WITH_NOTICE"
+      },
+      "orderTypeAndDocument": {
+        "type": "BLANK_ORDER",
+        "document": {
+          "document_url": "some url",
+          "document_binary_url": "some binary url",
+          "document_filename": "file.pdf"
+        }
+      },
       "judgeAndLegalAdvisor": {
         "judgeTitle": "HER_HONOUR_JUDGE",
         "judgeLastName": "Judy",
         "legalAdvisorName": "Peter Parker"
       },
-      "c21Order": {
-        "orderTitle": "Example Order",
-        "orderDetails": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+      "order": {
+        "title": "Example Order",
+        "details": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
       },
-      "familyManCaseNumber": "12345L"
+      "familyManCaseNumber": "12345L",
+      "representatives": [
+        {
+          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
+          "value": {
+            "fullName": "Fred Flinstone",
+            "positionInACase": "Cafcass Guardian",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": "fred@flinstone.com"
+          },
+          "telephoneNumber": "0717171717",
+          "servingPreferences": "DIGITAL_SERVICE",
+          "role" : "CAFCASS_GUARDIAN"
+        }
+      ]
     }
   },
   "case_details_before": {

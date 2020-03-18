@@ -1,0 +1,44 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "orderDoc",
+    "ID" : "Order",
+    "SecurityClassification" : "Public",
+    "FieldType" : "DocumentReference"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "OrderStatus",
+    "ListElementCode" : "orderStatus",
+    "ID" : "Order",
+    "SecurityClassification" : "Public",
+    "FieldType" : "FixedRadioList"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "judgeAndLegalAdvisor",
+    "ID" : "Order",
+    "SecurityClassification" : "Public",
+    "FieldType" : "JudgeAndLegalAdvisor"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "ListElementCode" : "hearingDate",
+    "ID" : "Order",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Text"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "Direction",
+    "ListElementCode" : "directions",
+    "ID" : "Order",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Collection"
+  }
+]

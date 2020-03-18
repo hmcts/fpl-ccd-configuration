@@ -1,0 +1,40 @@
+[
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "EPO_REASONING_SHOW",
+    "CaseEventID" : "enterGrounds",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 1,
+    "DisplayContext" : "OPTIONAL",
+    "FieldShowCondition" : "groundsForEPO CONTAINS \"Workaround to show groundsForEPO. Needs to be hidden from UI\"",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  },
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "groundsForEPO",
+    "CaseEventID" : "enterGrounds",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 2,
+    "DisplayContext" : "OPTIONAL",
+    "FieldShowCondition" : "EPO_REASONING_SHOW CONTAINS \"SHOW_FIELD\"",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  },
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "grounds",
+    "CaseEventID" : "enterGrounds",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 3,
+    "DisplayContext" : "OPTIONAL",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  }
+]

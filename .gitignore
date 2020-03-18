@@ -37,4 +37,10 @@ charts/*/charts/*.tgz
 
 # user mappings file
 application-user-mappings.yaml
-ccd-definition-gen/
+
+# feature toggle file
+application-feature-toggle.yaml
+
+# wiremock response
+docker/wiremock/__files/mockResponse.json
+docker/wiremock/mappings/user-by-email/*

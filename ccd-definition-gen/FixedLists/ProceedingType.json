@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 1,
+    "ListElementCode" : "NOTICE_OF_PROCEEDINGS_FOR_PARTIES",
+    "ListElement" : "NOTICE_OF_PROCEEDINGS_FOR_PARTIES",
+    "ID" : "ProceedingType"
+  },
+  {
+    "LiveFrom" : "01/01/2017",
+    "DisplayOrder" : 2,
+    "ListElementCode" : "NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES",
+    "ListElement" : "NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES",
+    "ID" : "ProceedingType"
+  }
+]

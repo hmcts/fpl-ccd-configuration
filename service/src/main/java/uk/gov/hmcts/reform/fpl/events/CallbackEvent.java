@@ -4,11 +4,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 public class CallbackEvent {
 
+    //TODO TECHDEBT use RequestData here so that we don't pass authorization/user id into every event FPLA-1475
     private final CallbackRequest callbackRequest;
     private final String authorization;
     private final String userId;
 
-    public CallbackEvent(CallbackRequest callbackRequest, String authorization, String userId) {
+    CallbackEvent(CallbackRequest callbackRequest, String authorization, String userId) {
         this.callbackRequest = callbackRequest;
         this.authorization = authorization;
         this.userId = userId;

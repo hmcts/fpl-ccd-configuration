@@ -30,6 +30,8 @@ public class ApplicantParty extends Party implements TelephoneContacts {
     @NotBlank(message = "Enter a job title for the contact")
     private final String jobTitle;
     private final String pbaNumber;
+    private final String clientCode;
+    private final String customerReference;
     @NotNull(message = "Enter a valid address for the contact")
     @Valid
     private final Address address;
@@ -49,7 +51,9 @@ public class ApplicantParty extends Party implements TelephoneContacts {
                            Telephone telephoneNumber,
                            Telephone mobileNumber,
                            String jobTitle,
-                           String pbaNumber) {
+                           String pbaNumber,
+                           String clientCode,
+                           String customerReference) {
         super(partyId, partyType, firstName, lastName, organisationName, dateOfBirth, address,
             email, telephoneNumber);
 
@@ -57,6 +61,8 @@ public class ApplicantParty extends Party implements TelephoneContacts {
         this.mobileNumber = mobileNumber;
         this.jobTitle = jobTitle;
         this.pbaNumber = pbaNumber;
+        this.clientCode = clientCode;
+        this.customerReference = customerReference;
         this.address = address;
         this.email = email;
     }

@@ -1,0 +1,16 @@
+[
+  {
+    "PageID" : 1,
+    "LiveFrom" : "01/01/2017",
+    "CaseTypeID" : "CARE_SUPERVISION_EPO",
+    "CaseFieldID" : "courtDirectionsCustom",
+    "CaseEventID" : "COMPLY_COURT",
+    "PageColumnNumber" : 1,
+    "PageFieldDisplayOrder" : 1,
+    "DisplayContext" : "COMPLEX",
+    "PageLabel" : " ",
+    "ShowSummaryChangeOption" : "Y",
+    "SecurityClassification" : "Public",
+    "PageDisplayOrder" : 1
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom" : "01/01/2017",
+    "ElementLabel" : null,
+    "FieldTypeParameter" : "String",
+    "ListElementCode" : "reason",
+    "ID" : "GroundsForEPO",
+    "SecurityClassification" : "Public",
+    "FieldType" : "Collection"
+  }
+]
