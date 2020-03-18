@@ -138,7 +138,7 @@ public class PlacementController {
         Placement currentPlacement = placementService.getPlacement(caseData, child);
         Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
 
-        if (isNewPlacement(previousPlacement) || isExistingPlacementUpdated(previousPlacement, currentPlacement)) {
+        if (isEmpty(previousPlacement) || isUpdatedPlacement(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest);
         }
     }
@@ -185,11 +185,7 @@ public class PlacementController {
             new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
-    private boolean isNewPlacement(Placement previousPlacement) {
-        return isEmpty(previousPlacement);
-    }
-
-    private boolean isExistingPlacementUpdated(Placement previousPlacement, Placement newPlacement) {
+    private boolean isUpdatedPlacement(Placement previousPlacement, Placement newPlacement) {
         return notEqual(newPlacement.getApplication(), previousPlacement.getApplication());
     }
 }
