@@ -19,22 +19,20 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
-import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,23 +43,26 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @RequestMapping("/callback/upload-c2")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadC2DocumentsController {
+    private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
     private final UserDetailsService userDetailsService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final FeatureToggleService featureToggleService;
+    private final PbaNumberService pbaNumberService;
 
-    @PostMapping("/mid-event")
+    @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        if (isTemporaryDocumentUrlEmpty(caseData)) {
-            data.remove("temporaryC2Document");
+        //workaround for previous-continue bug
+        if (shouldRemoveDocument(caseData)) {
+            removeDocumentFromData(data);
         }
 
-        List<String> errors = new ArrayList<>(validatePbaNumber(caseData));
+        List<String> errors = new ArrayList<>();
         if (featureToggleService.isFeesEnabled()) {
             try {
                 FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
@@ -79,6 +80,21 @@ public class UploadC2DocumentsController {
             .build();
     }
 
+    @PostMapping("/validate-pba-number/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
+        @RequestBody CallbackRequest callbackrequest) {
+        Map<String, Object> data = callbackrequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
+        data.put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .errors(pbaNumberService.validate(updatedTemporaryC2Document))
+            .build();
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackrequest,
@@ -87,7 +103,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.put("c2DocumentBundle", buildC2DocumentBundle(caseData, authorization));
-        data.keySet().removeAll(Set.of("temporaryC2Document", "c2ApplicationType", "amountToPay"));
+        data.keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "amountToPay"));
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
@@ -106,18 +122,16 @@ public class UploadC2DocumentsController {
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
 
-    private boolean isTemporaryDocumentUrlEmpty(CaseData caseData) {
-        return Optional.ofNullable(caseData.getTemporaryC2Document())
-            .map(C2DocumentBundle::getDocument)
-            .map(DocumentReference::getUrl)
-            .isEmpty();
+    private boolean shouldRemoveDocument(CaseData caseData) {
+        return caseData.getTemporaryC2Document() != null
+            && caseData.getTemporaryC2Document().getDocument().getUrl() == null;
     }
 
-    private List<String> validatePbaNumber(CaseData caseData) {
-        return Optional.ofNullable(caseData.getTemporaryC2Document())
-            .map(C2DocumentBundle::getPbaNumber)
-            .map(PBANumberHelper::validatePBANumber)
-            .orElse(List.of());
+
+    private void removeDocumentFromData(Map<String, Object> data) {
+        var updatedC2DocumentMap = mapper.convertValue(data.get(TEMPORARY_C2_DOCUMENT), Map.class);
+        updatedC2DocumentMap.remove("document");
+        data.put(TEMPORARY_C2_DOCUMENT, updatedC2DocumentMap);
     }
 
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData, String authorization) {

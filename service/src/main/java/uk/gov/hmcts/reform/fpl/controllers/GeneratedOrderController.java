@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.io.IOException;
@@ -54,9 +55,9 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 
 @Slf4j
 @Api
+@RestController
 @RequestMapping("/callback/create-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@RestController
 public class GeneratedOrderController {
     private final ObjectMapper mapper;
     private final GeneratedOrderService service;
@@ -69,6 +70,7 @@ public class GeneratedOrderController {
     private final ChildrenService childrenService;
     private final DocumentDownloadService documentDownloadService;
     private final RequestData requestData;
+    private final Time time;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -80,6 +82,7 @@ public class GeneratedOrderController {
 
         if (errors.isEmpty()) {
             childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
+            caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -149,7 +152,8 @@ public class GeneratedOrderController {
 
         // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(orderTypeAndDocument, caseData.getOrder(),
-            caseData.getJudgeAndLegalAdvisor(), caseData.getOrderMonths(), caseData.getInterimEndDate()));
+            caseData.getJudgeAndLegalAdvisor(), caseData.getDateOfIssue(), caseData.getOrderMonths(),
+            caseData.getInterimEndDate()));
 
         caseDetails.getData().put("orderCollection", orders);
 

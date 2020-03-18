@@ -15,6 +15,8 @@ function checkHealth {
   done
 }
 
+curl -k  ${service_base_urls}/health -v
+
 until $(checkHealth); do
   current_health_check_attempt=$((${current_health_check_attempt:-1} + 1))
 

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 @Api
 @RestController
 @RequestMapping("/callback/draft-cmo")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final DraftCMOService draftCMOService;
@@ -46,25 +48,6 @@ public class DraftCMOController {
     private final RespondentService respondentService;
     private final OthersService othersService;
     private final CoreCaseDataService coreCaseDataService;
-
-    @Autowired
-    public DraftCMOController(ObjectMapper mapper,
-                              DraftCMOService draftCMOService,
-                              DocmosisDocumentGeneratorService docmosisService,
-                              UploadDocumentService uploadDocumentService,
-                              CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService,
-                              CoreCaseDataService coreCaseDataService,
-                              RespondentService respondentService,
-                              OthersService othersService) {
-        this.mapper = mapper;
-        this.draftCMOService = draftCMOService;
-        this.docmosisService = docmosisService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.docmosisTemplateDataGenerationService = docmosisTemplateDataGenerationService;
-        this.respondentService = respondentService;
-        this.othersService = othersService;
-        this.coreCaseDataService = coreCaseDataService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -139,6 +122,7 @@ public class DraftCMOController {
     //TODO: logic for only calling this when necessary. When status change new vs old.
     // When new document to share.
     // When no data before.
+    // FPLA-1471
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         coreCaseDataService.triggerEvent(

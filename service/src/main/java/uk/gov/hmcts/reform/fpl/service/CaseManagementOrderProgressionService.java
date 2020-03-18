@@ -31,7 +31,7 @@ public class CaseManagementOrderProgressionService {
     // sharedDraftCMODocument -> sharedCaseManagementOrderDocument
     // caseManagementOrder -> draftCaseManagementOrder_LOCAL_AUTHORITY
     // cmoToAction -> draftCaseManagementOrder_JUDICIARY
-    // requires changes in CCD definition. Decided not in scope of 24.
+    // requires changes in CCD definition. Decided not in scope of 24. FPLA-1478
 
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;

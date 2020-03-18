@@ -169,7 +169,7 @@ public class CommonDirectionService {
             .collect(toList());
     }
 
-    //TODO: numbering done for SDO in formatTitle method. CMO to do the same?
+    //TODO: numbering done for SDO in formatTitle method. CMO to do the same? FPLA-1481
     /**
      * Iterates over a list of directions and adds numbers to the directionType starting from 2.
      *

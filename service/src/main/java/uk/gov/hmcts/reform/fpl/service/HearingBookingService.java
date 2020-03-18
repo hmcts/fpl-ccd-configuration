@@ -40,6 +40,7 @@ public class HearingBookingService {
     }
 
     // TODO: this method will always get the first (by date, even if in past) hearing booking. Not the most urgent
+    // FPLA-1484
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
         if (hearingDetails == null) {
             throw new IllegalStateException("Hearing booking was not present");

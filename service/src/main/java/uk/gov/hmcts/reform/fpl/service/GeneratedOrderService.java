@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
@@ -47,6 +48,8 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
@@ -98,6 +101,7 @@ public class GeneratedOrderService {
     public Element<GeneratedOrder> buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
                                                       GeneratedOrder order,
                                                       JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                      LocalDate dateOfIssue,
                                                       Integer orderMonths,
                                                       InterimEndDate interimEndDate) {
         GeneratedOrder generatedOrder = defaultIfNull(order, GeneratedOrder.builder().build());
@@ -127,10 +131,11 @@ public class GeneratedOrderService {
         }
 
         orderBuilder.expiryDate(expiryDate)
+            .dateOfIssue(DateFormatterService.formatLocalDateToString(dateOfIssue, DATE))
             .type(typeAndDocument.getFullType(typeAndDocument.getSubtype()))
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"));
+            .date(DateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE));
 
         return Element.<GeneratedOrder>builder()
             .id(randomUUID())
@@ -207,7 +212,7 @@ public class GeneratedOrderService {
             .put("orderType", orderType)
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
-            .put("todaysDate", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
+            .put("dateOfIssue", DateFormatterService.formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))

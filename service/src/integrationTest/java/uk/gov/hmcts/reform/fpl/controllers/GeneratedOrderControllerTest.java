@@ -121,7 +121,21 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
 
+    @Test
+    void aboutToStartShouldSetDateOfIssueAsTodayByDefault() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(parseLong(CASE_ID))
+            .data(Map.of("familyManCaseNumber", "123"))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(time.now().toLocalDate().toString());
+    }
+
     //TODO TECHDEBT move tests for each callback to separate file as done with GeneratedOrderControllerSubmittedTest
+    // FPLA-1468
     @Nested
     class AboutToSubmit {
 
@@ -234,12 +248,14 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                         .judgeLastName("Judy")
                         .legalAdvisorName("Peter Parker")
                         .build())
-                .familyManCaseNumber("12345L");
+                .familyManCaseNumber("12345L")
+                .dateOfIssue(time.now().toLocalDate());
         }
 
         private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
             return GeneratedOrder.builder()
                 .type(fullType)
+                .dateOfIssue(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
                 .document(expectedDocument())
                 .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .judgeAndLegalAdvisor(
@@ -377,7 +393,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
 
             dataBuilder.order(GeneratedOrder.builder().details("").build())
-                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build());
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
+                .dateOfIssue(time.now().toLocalDate());
 
             generateDefaultValues(dataBuilder);
             generateEpoValues(dataBuilder);
@@ -444,7 +461,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .orderTypeAndDocument(OrderTypeAndDocument.builder()
                     .type(type)
                     .subtype(subtype)
-                    .build());
+                    .build())
+                .dateOfIssue(time.now().toLocalDate());
 
             generateDefaultValues(builder);
 
