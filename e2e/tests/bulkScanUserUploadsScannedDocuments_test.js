@@ -24,9 +24,9 @@ Before(async (I, caseViewPage, submitApplicationEventPage, handleSupplementaryEv
   await I.navigateToCaseDetails(caseId);
 
   await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
-  attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
-  await I.click('Continue');
-  handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
+  await attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
+  await I.retryUntilExists(() => I.click('Continue'), '#evidenceHandled');
+  await handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.administrationActions.bulkScan);
 });
