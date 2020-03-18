@@ -1,14 +1,14 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EPOTypes",
+    "ID": "EPOType",
     "ListElementCode": "REMOVE_TO_ACCOMMODATION",
     "ListElement": "Remove to accommodation",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EPOTypes",
+    "ID": "EPOType",
     "ListElementCode": "PREVENT_REMOVAL",
     "ListElement": "Prevent removal from an address",
     "DisplayOrder": 2

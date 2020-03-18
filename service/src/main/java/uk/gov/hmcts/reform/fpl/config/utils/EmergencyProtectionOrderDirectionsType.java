@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.config.utils;
 
-public enum EmergencyProtectionOrderDirectionsType {
+import uk.gov.hmcts.ccd.sdk.types.HasLabel;
+
+public enum EmergencyProtectionOrderDirectionsType implements HasLabel {
 
     CONTACT_WITH_NAMED_PERSON("Contact with any named person"),
     CHILD_MEDICAL_ASSESSMENT("A medical or psychiatric examination, or another assessment of the child"),
