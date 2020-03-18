@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
 
@@ -192,6 +192,6 @@ public class PlacementController {
 
     private boolean isNewPlacementApplication(Placement previousPlacement, Placement newPlacement) {
         return isEmpty(previousPlacement)
-            || ObjectUtils.notEqual(newPlacement.getApplication(), previousPlacement.getApplication());
+            || notEqual(newPlacement.getApplication(), previousPlacement.getApplication());
     }
 }
