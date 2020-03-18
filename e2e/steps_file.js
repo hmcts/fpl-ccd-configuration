@@ -197,7 +197,6 @@ module.exports = function () {
 
     async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
-      this.waitForElement('.form-group .button');
       if(collectionName) {
         this.click(locate('button')
           .inside(locate('div').withChild(locate('h2').withText(collectionName)))
