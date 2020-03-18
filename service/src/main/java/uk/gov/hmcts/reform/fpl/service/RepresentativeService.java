@@ -219,7 +219,9 @@ public class RepresentativeService {
                                                           List<Element<Representative>> representativesBefore,
                                                           RepresentativeServingPreferences servingPreferences) {
         if (isNotEmpty(currentRepresentatives)) {
-            currentRepresentatives.removeAll(representativesBefore);
+            if (isNotEmpty(representativesBefore)) {
+                currentRepresentatives.removeAll(representativesBefore);
+            }
             return unwrapElements(currentRepresentatives.stream()
                 .filter(representative -> servingPreferences.equals(representative.getValue().getServingPreferences()))
                 .collect(Collectors.toList()));
