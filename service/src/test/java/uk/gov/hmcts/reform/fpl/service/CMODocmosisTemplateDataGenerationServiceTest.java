@@ -175,7 +175,8 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
         final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(caseData, false);
 
-        System.out.println(templateData);
+        assertThat(templateData.get("courtseal")).isNotNull();
+        assertThat(templateData.get("draftbackground")).isNull();
     }
 
     private List<Map<String, Object>> getExpectedRepresentatives() {
