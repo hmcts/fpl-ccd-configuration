@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -27,6 +28,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -69,7 +72,8 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
         FeesData feesData = FeesData.builder()
             .totalAmount(BigDecimal.valueOf(123))
             .build();
-        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
+
+        givenPaymentToggle(true);
         given(feeService.getFeesDataForOrders(orders)).willReturn(feesData);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
@@ -77,11 +81,12 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
             .build());
 
         assertThat(response.getData()).containsEntry("amountToPay", "12300");
+        assertThat(response.getData()).containsEntry("displayAmountToPay", YES.getValue());
     }
 
     @Test
     void shouldNotAddAmountToPayFieldWhenFeatureToggleIsFalse() {
-        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(false);
+        givenPaymentToggle(false);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(Map.of())
@@ -91,8 +96,26 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
         assertThat(response.getData()).doesNotContainKey("amountToPay");
     }
 
+    @Test
+    void shouldNotDisplayAmountToPayFieldWhenErrorIsThrown() {
+        givenPaymentToggle(true);
+        given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
+            .data(Map.of())
+            .build());
+
+        assertThat(response.getData()).doesNotContainKey("amountToPay");
+        assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
+    }
+
+    private void givenPaymentToggle(boolean enabled) {
+        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(enabled);
+    }
+
     @Nested
     class LocalAuthorityValidation {
+
         @Test
         void shouldReturnErrorWhenCaseBelongsToSmokeTestLocalAuthority() {
             CaseDetails caseDetails = prepareCaseBelongingTo("FPLA");
