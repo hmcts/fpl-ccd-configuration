@@ -366,6 +366,19 @@ class RepresentativesServiceTest {
     }
 
     @Test
+    void shouldGetUpdatedRepresentativesWhenNewRepresentativeAddedToEmptyCaseData() {
+        CaseData caseDataBefore = CaseData.builder().build();
+        CaseData caseData = buildCaseDataWithRepresentatives(DIGITAL_SERVICE);
+
+        List<Element<Representative>> expectedRepresentatives = createRepresentatives(DIGITAL_SERVICE);
+
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
+
+        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+    }
+
+    @Test
     void shouldNotReturnAnyRepresentativesIfNewRepresentativeNotAdded() {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
