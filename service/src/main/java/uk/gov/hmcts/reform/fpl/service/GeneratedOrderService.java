@@ -6,7 +6,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.*;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
@@ -42,7 +47,9 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.*;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 // REFACTOR: 27/01/2020 Extract docmosis logic into a new service that extends DocmosisTemplateDataGeneration
@@ -213,7 +220,7 @@ public class GeneratedOrderService {
         }
 
         if (orderStatus == SEALED) {
-            orderTemplateBuilder.put("courtseal" , format(BASE_64, generateCourtSealEncodedString()));
+            orderTemplateBuilder.put("courtseal", format(BASE_64, generateCourtSealEncodedString()));
         }
 
         return orderTemplateBuilder.build();

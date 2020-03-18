@@ -21,7 +21,8 @@ public abstract class DocmosisTemplateDataGeneration {
     }
 
     public static String generateCourtSealEncodedString() throws IOException {
-        InputStream is = DocmosisTemplateDataGeneration.class.getResourceAsStream("/assets/images/family-court-seal.png");
+        InputStream is = DocmosisTemplateDataGeneration.class
+            .getResourceAsStream("/assets/images/family-court-seal.png");
         byte[] fileContent = is.readAllBytes();
         return Base64.getEncoder().encodeToString(fileContent);
     }

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,20 +15,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-import javax.print.Doc;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
@@ -84,7 +77,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     }
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         templateDataGenerationService = new CMODocmosisTemplateDataGenerationService(
             commonCaseDataExtractionService, commonDirectionService, draftCMOService, hearingBookingService,
             hmctsCourtLookupConfiguration, mapper);

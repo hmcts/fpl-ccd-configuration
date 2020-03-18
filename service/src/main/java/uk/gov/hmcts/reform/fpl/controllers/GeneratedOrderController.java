@@ -144,7 +144,8 @@ public class GeneratedOrderController {
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
-        OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData.getOrderTypeAndDocument(), document);
+        OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData
+            .getOrderTypeAndDocument(), document);
 
         // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(orderTypeAndDocument, caseData.getOrder(),
@@ -195,7 +196,7 @@ public class GeneratedOrderController {
         Document document = uploadDocumentService.uploadPDF(userId, authorization, docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
 
-        if(orderStatus == DRAFT) {
+        if (orderStatus == DRAFT) {
             document.originalDocumentName = "draft-" + document.originalDocumentName;
         }
 

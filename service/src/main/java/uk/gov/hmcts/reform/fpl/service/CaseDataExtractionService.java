@@ -45,7 +45,9 @@ import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.*;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
