@@ -43,6 +43,7 @@ import javax.validation.groups.Default;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
 @Api
@@ -75,18 +76,16 @@ public class CaseSubmissionController {
 
         if (errors.isEmpty()) {
             try {
-                String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
-                data.put("submissionConsentLabel", label);
-
                 if (featureToggleService.isFeesEnabled()) {
                     FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+                    data.put("displayAmountToPay", YES.getValue());
                 }
-
             } catch (FeeRegisterException ignore) {
-                // TODO: 21/02/2020 Replace me in FPLA-1353
-                //  this is an error message for when the Fee Register is unavailable
-                errors.add("XXX");
+                data.put("displayAmountToPay", NO.getValue());
+            } finally {
+                String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
+                data.put("submissionConsentLabel", label);
             }
         }
 
@@ -151,7 +150,7 @@ public class CaseSubmissionController {
             .put("document_filename", document.originalDocumentName)
             .build());
 
-        data.remove("amountToPay");
+        removeTemporaryFields(caseDetails, "amountToPay", "displayAmountToPay");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
