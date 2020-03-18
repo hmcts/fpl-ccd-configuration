@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
+import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
@@ -53,8 +54,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProv
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
-import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
 import java.util.List;
@@ -131,9 +130,6 @@ class NotificationHandlerTest {
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     @Mock
-    private NotificationClient notificationClient;
-
-    @Mock
     private HmctsEmailContentProvider hmctsEmailContentProvider;
 
     @Mock
@@ -178,6 +174,9 @@ class NotificationHandlerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Mock
+    private NotificationService notificationService;
+
     @InjectMocks
     private NotificationHandler notificationHandler;
 
@@ -190,9 +189,9 @@ class NotificationHandlerTest {
             cafcassLookupConfiguration, hmctsEmailContentProvider, partyAddedToCaseContentProvider,
             cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
             c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
-            localAuthorityEmailContentProvider, notificationClient, idamApi, inboxLookupService,
+            localAuthorityEmailContentProvider, idamApi, inboxLookupService,
             caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
-            localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration);
+            localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration, notificationService);
     }
 
     @Nested
@@ -250,35 +249,35 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
+        void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException {
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
 
-            notificationHandler.sendNotificationForC2Upload(
+            notificationHandler.sendEmailForC2Upload(
                 new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-            verify(notificationClient, never())
+            verify(notificationService, never())
                 .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-admin@test.com",
                     c2Parameters, "12345");
         }
 
         @Test
-        void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
+        void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException {
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com", COURT_CODE));
 
-            notificationHandler.sendNotificationForC2Upload(
+            notificationHandler.sendEmailForC2Upload(
                 new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-non-admin@test.com", c2Parameters, "12345");
         }
 
         @Test
-        void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() throws IOException, NotificationClientException {
+        void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() throws IOException {
             CallbackRequest callbackRequest = appendSendToCtscOnCallback();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -293,10 +292,10 @@ class NotificationHandlerTest {
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
                 .willReturn(c2Parameters);
 
-            notificationHandler.sendNotificationForC2Upload(
+            notificationHandler.sendEmailForC2Upload(
                 new C2UploadedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE,
                 CTSC_INBOX,
                 c2Parameters,
@@ -304,23 +303,23 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotifyPartiesOnOrderSubmission() throws IOException, NotificationClientException {
-            notificationHandler.sendNotificationsForOrder(new GeneratedOrderEvent(callbackRequest(),
+        void shouldNotifyPartiesOnOrderSubmission() throws IOException {
+            notificationHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
                 AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, documentContents));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA,
                 LOCAL_AUTHORITY_EMAIL_ADDRESS,
                 orderLocalAuthorityParameters,
                 "12345");
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 COURT_EMAIL_ADDRESS,
                 getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
                 "12345");
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
                 eq("barney@rubble.com"),
                 dataCaptor.capture(),
@@ -330,7 +329,7 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotifyCtsAdminOnOrderSubmission() throws IOException, NotificationClientException {
+        void shouldNotifyCtsAdminOnOrderSubmission() throws IOException {
             CallbackRequest callbackRequest = appendSendToCtscOnCallback();
 
             given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
@@ -342,10 +341,10 @@ class NotificationHandlerTest {
 
             given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
 
-            notificationHandler.sendNotificationsForOrder(new GeneratedOrderEvent(callbackRequest,
+            notificationHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest,
                 AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, documentContents));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 CTSC_INBOX,
                 getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
@@ -392,16 +391,16 @@ class NotificationHandlerTest {
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
                 .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
 
-            notificationHandler.sendNotificationsForIssuedCaseManagementOrder(
+            notificationHandler.sendEmailsForIssuedCaseManagementOrder(
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
                 LOCAL_AUTHORITY_EMAIL_ADDRESS,
                 expectedCMOIssuedNotificationParameters,
                 "12345");
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 COURT_EMAIL_ADDRESS,
                 getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
@@ -423,10 +422,10 @@ class NotificationHandlerTest {
                 callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
                 .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
 
-            notificationHandler.sendNotificationsForIssuedCaseManagementOrder(
+            notificationHandler.sendEmailsForIssuedCaseManagementOrder(
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 CTSC_INBOX,
                 getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
@@ -451,10 +450,10 @@ class NotificationHandlerTest {
                 "Jon Snow"))
                 .willReturn(expectedCMOIssuedNotificationParametersForRepresentative);
 
-            notificationHandler.sendNotificationsForIssuedCaseManagementOrder(
+            notificationHandler.sendEmailsForIssuedCaseManagementOrder(
                 new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
                 "abc@example.com",
                 expectedCMOIssuedNotificationParametersForRepresentative,
@@ -475,7 +474,7 @@ class NotificationHandlerTest {
             notificationHandler.notifyLocalAuthorityOfRejectedCaseManagementOrder(
                 new CaseManagementOrderRejectedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 CMO_REJECTED_BY_JUDGE_TEMPLATE,
                 LOCAL_AUTHORITY_EMAIL_ADDRESS,
                 expectedCMORejectedNotificationParameters,
@@ -494,10 +493,10 @@ class NotificationHandlerTest {
                 .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
                 .willReturn(expectedCMOReadyForJudgeNotificationParameters);
 
-            notificationHandler.sendNotificationForCaseManagementOrderReadyForJudgeReview(
+            notificationHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
                 new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
                 COURT_EMAIL_ADDRESS,
                 expectedCMOReadyForJudgeNotificationParameters,
@@ -515,10 +514,10 @@ class NotificationHandlerTest {
                 .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
                 .willReturn(expectedCMOReadyForJudgeNotificationParameters);
 
-            notificationHandler.sendNotificationForCaseManagementOrderReadyForJudgeReview(
+            notificationHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
                 new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
                 CTSC_INBOX,
                 expectedCMOReadyForJudgeNotificationParameters,
@@ -591,7 +590,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToHmctsAdminWhenCtscIsDisabled() throws IOException, NotificationClientException {
+    void shouldSendEmailToHmctsAdminWhenCtscIsDisabled() throws IOException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("localAuthority", "Example Local Authority")
@@ -618,10 +617,10 @@ class NotificationHandlerTest {
         given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendNotificationToHmctsAdmin(
+        notificationHandler.sendEmailToHmctsAdmin(
             new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             COURT_EMAIL_ADDRESS,
             expectedParameters,
@@ -629,7 +628,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToCtscAdminWhenCtscIsEnabled() throws IOException, NotificationClientException {
+    void shouldSendEmailToCtscAdminWhenCtscIsEnabled() throws IOException {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -655,10 +654,10 @@ class NotificationHandlerTest {
         given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(expectedParameters);
 
-        notificationHandler.sendNotificationToHmctsAdmin(
+        notificationHandler.sendEmailToHmctsAdmin(
             new SubmittedCaseEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             CTSC_INBOX,
             expectedParameters,
@@ -666,7 +665,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToCafcass() throws IOException, NotificationClientException {
+    void shouldSendEmailToCafcass() throws IOException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("cafcass", CAFCASS_NAME)
             .put("localAuthority", "Example Local Authority")
@@ -691,15 +690,15 @@ class NotificationHandlerTest {
         given(cafcassEmailContentProvider.buildCafcassSubmissionNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendNotificationToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        notificationHandler.sendEmailToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE, CAFCASS_EMAIL_ADDRESS,
             expectedParameters, "12345");
     }
 
     @Test
-    void shouldSendEmailToGatekeeper() throws IOException, NotificationClientException {
+    void shouldSendEmailToGatekeeper() throws IOException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
@@ -722,16 +721,16 @@ class NotificationHandlerTest {
         given(gatekeeperEmailContentProvider.buildGatekeeperNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendNotificationToGatekeeper(
+        notificationHandler.sendEmailToGatekeeper(
             new NotifyGatekeeperEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL_ADDRESS,
             expectedParameters, "12345");
     }
 
     @Test
-    void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
+    void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() throws IOException {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
@@ -747,7 +746,7 @@ class NotificationHandlerTest {
         notificationHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
             CAFCASS_EMAIL_ADDRESS,
             expectedParameters,
@@ -755,7 +754,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
+    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() throws IOException {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
@@ -775,7 +774,7 @@ class NotificationHandlerTest {
         notificationHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS, expectedParameters,
             "12345");
     }
@@ -790,7 +789,7 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldSendNotificationForPlacementOrderUploaded() throws IOException, NotificationClientException {
+        void shouldSendEmailForPlacementOrderUploaded() throws IOException {
             Map<String, Object> parameters = Map.of("respondentLastName", "Nelson",
                 "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
@@ -813,22 +812,22 @@ class NotificationHandlerTest {
             given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
                 .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
 
-            notificationHandler.sendNotificationForNoticeOfPlacementOrderUploaded(
+            notificationHandler.sendEmailForNoticeOfPlacementOrderUploaded(
                 new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID, documentContents));
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
                 LOCAL_AUTHORITY_EMAIL_ADDRESS,
                 parameters,
                 "12345");
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 COURT_EMAIL_ADDRESS,
                 getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 "12345");
 
-            verify(notificationClient).sendEmail(
+            verify(notificationService).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
                 eq("barney@rubble.com"),
                 dataCaptor.capture(),
@@ -854,7 +853,7 @@ class NotificationHandlerTest {
         notificationHandler.notifyAdminOfPlacementApplicationUpload(
             new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
             COURT_EMAIL_ADDRESS,
             expectedParameters,
@@ -862,7 +861,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationToPartiesWhenAddedToCase() throws IOException, NotificationClientException {
+    void shouldSendEmailToPartiesWhenAddedToCase() throws IOException {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
         CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -892,16 +891,16 @@ class NotificationHandlerTest {
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
             callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).willReturn(expectedDigitalParameters);
 
-        notificationHandler.sendNotificationToPartiesAddedToCase(
+        notificationHandler.sendEmailToPartiesAddedToCase(
             new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
             PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS,
             expectedEmailParameters,
             "12345");
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE,
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL,
             expectedDigitalParameters,
@@ -923,7 +922,7 @@ class NotificationHandlerTest {
         notificationHandler.notifyAdminOfPlacementApplicationUpload(
             new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient).sendEmail(
+        verify(notificationService).sendEmail(
             NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
             CTSC_INBOX,
             expectedParameters,
