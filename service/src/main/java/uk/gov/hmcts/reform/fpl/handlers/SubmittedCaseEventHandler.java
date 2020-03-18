@@ -20,8 +20,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEM
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class SubmittedCaseEventHandler
-    implements LocalAuthorityNotificationEventHandler, CafcassNotificationEventHandler {
+public class SubmittedCaseEventHandler {
 
     private final NotificationService notificationService;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
@@ -30,23 +29,15 @@ public class SubmittedCaseEventHandler
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    @Override
     public Map<String, Object> buildEmailTemplatePersonalisationForLocalAuthority(final EventData eventData) {
         return hmctsEmailContentProvider
             .buildHmctsSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
     }
 
-    @Override
-    public String getEmailRecipientForLocalAuthority(final EventData eventData) {
-        return getHmctsAdminEmail(eventData);
-    }
-
-    @Override
     public String getEmailRecipientForCafcass(final String localAuthority) {
         return cafcassLookupConfiguration.getCafcass(localAuthority).getEmail();
     }
 
-    @Override
     public Map<String, Object> buildEmailTemplatePersonalisationForCafcass(final EventData eventData) {
         return cafcassEmailContentProvider
             .buildCafcassSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
@@ -54,17 +45,17 @@ public class SubmittedCaseEventHandler
 
     @EventListener
     public void sendEmailToHmctsAdmin(final SubmittedCaseEvent event) {
-        EventData eventData = getEventData(event);
+        EventData eventData = new EventData(event);
 
         notificationService.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE,
-            getEmailRecipientForLocalAuthority(eventData),
+            getHmctsAdminEmail(eventData),
             buildEmailTemplatePersonalisationForLocalAuthority(eventData),
             eventData.getReference());
     }
 
     @EventListener
     public void sendEmailToCafcass(final SubmittedCaseEvent event) {
-        EventData eventData = getEventData(event);
+        EventData eventData = new EventData(event);
 
         notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE,
             getEmailRecipientForCafcass(eventData.getLocalAuthorityCode()),

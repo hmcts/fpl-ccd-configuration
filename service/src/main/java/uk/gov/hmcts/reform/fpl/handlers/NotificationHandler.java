@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.enums.UserRole;
-import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
@@ -31,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -40,13 +37,11 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
@@ -76,11 +71,9 @@ public class NotificationHandler {
     private final PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
-    private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
     private final GeneratedOrderEmailContentProvider orderEmailContentProvider;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
-    private final IdamApi idamApi;
     private final InboxLookupService inboxLookupService;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final PlacementApplicationContentProvider placementApplicationContentProvider;
@@ -89,20 +82,6 @@ public class NotificationHandler {
     private final ObjectMapper objectMapper;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final NotificationService notificationService;
-
-    @EventListener
-    public void sendEmailForC2Upload(final C2UploadedEvent event) {
-        List<String> roles = idamApi.retrieveUserInfo(event.getAuthorization()).getRoles();
-        if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
-            EventData eventData = new EventData(event);
-            Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotification(
-                eventData.getCaseDetails());
-            String email = getHmctsAdminEmail(eventData);
-
-            notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters,
-                eventData.getReference());
-        }
-    }
 
     @EventListener
     public void sendEmailsForOrder(final GeneratedOrderEvent orderEvent) {

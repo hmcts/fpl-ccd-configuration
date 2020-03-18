@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
@@ -58,11 +57,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
@@ -79,7 +76,6 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -211,60 +207,6 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException {
-            given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
-                UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
-
-            notificationHandler.sendEmailForC2Upload(
-                new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
-
-            verify(notificationService, never())
-                .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-admin@test.com",
-                    c2Parameters, "12345");
-        }
-
-        @Test
-        void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException {
-            given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
-                UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
-
-            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-                .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com", COURT_CODE));
-
-            notificationHandler.sendEmailForC2Upload(
-                new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
-
-            verify(notificationService).sendEmail(
-                C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-non-admin@test.com", c2Parameters, "12345");
-        }
-
-        @Test
-        void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() throws IOException {
-            CallbackRequest callbackRequest = appendSendToCtscOnCallback();
-            CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-            given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
-                UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
-
-            given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
-
-            given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
-                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
-                .willReturn(c2Parameters);
-
-            notificationHandler.sendEmailForC2Upload(
-                new C2UploadedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
-
-            verify(notificationService).sendEmail(
-                C2_UPLOAD_NOTIFICATION_TEMPLATE,
-                CTSC_INBOX,
-                c2Parameters,
-                "12345");
-        }
-
-        @Test
         void shouldNotifyPartiesOnOrderSubmission() throws IOException {
             notificationHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
                 AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, documentContents));
@@ -331,8 +273,8 @@ class NotificationHandlerTest {
             // TODO: 17/12/2019 nice to refactor to make cleaner FPLA-1249
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
                 partyAddedToCaseContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
-                c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
-                localAuthorityEmailContentProvider, idamApi, inboxLookupService,
+                orderEmailContentProvider, orderIssuedEmailContentProvider,
+                localAuthorityEmailContentProvider, inboxLookupService,
                 caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
                 localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration, notificationService);
         }
@@ -648,8 +590,8 @@ class NotificationHandlerTest {
             placementNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
                 cafcassLookupConfiguration, partyAddedToCaseContentProvider,
                 cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
-                c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
-                localAuthorityEmailContentProvider, idamApi, inboxLookupService,
+                orderEmailContentProvider, orderIssuedEmailContentProvider,
+                localAuthorityEmailContentProvider, inboxLookupService,
                 caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
                 localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration,notificationService);
         }
