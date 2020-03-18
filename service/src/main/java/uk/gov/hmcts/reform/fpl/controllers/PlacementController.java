@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
 
@@ -136,8 +137,7 @@ public class PlacementController {
         Placement currentPlacement = placementService.getPlacement(caseData, child);
         Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
 
-        // TODO refactor: this logic is confusing. Suggested: new method isNewOrUpdated... FPLA-1473
-        if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
+        if (isNewPlacementApplication(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest);
         }
     }
@@ -190,9 +190,8 @@ public class PlacementController {
             new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
-    //TODO: refactor logic. Double negative for !isNotEmpty currently. FPLA-1473
-    private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
-        return isNotEmpty(previousPlacement)
-            && newPlacement.getApplication().equals(previousPlacement.getApplication());
+    private boolean isNewPlacementApplication(Placement previousPlacement, Placement newPlacement) {
+        return isEmpty(previousPlacement)
+            || ObjectUtils.notEqual(newPlacement.getApplication(), previousPlacement.getApplication());
     }
 }
