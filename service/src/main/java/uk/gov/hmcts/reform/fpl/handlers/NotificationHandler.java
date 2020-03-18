@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import java.util.List;
 import java.util.Map;
