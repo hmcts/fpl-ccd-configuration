@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-public enum OrderType {
+import uk.gov.hmcts.ccd.sdk.types.HasLabel;
+
+public enum OrderType implements HasLabel {
     CARE_ORDER("Care order"),
     INTERIM_CARE_ORDER("Interim care order"),
     SUPERVISION_ORDER("Supervision order"),
