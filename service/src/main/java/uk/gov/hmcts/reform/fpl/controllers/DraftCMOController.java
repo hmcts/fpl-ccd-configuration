@@ -122,6 +122,7 @@ public class DraftCMOController {
     //TODO: logic for only calling this when necessary. When status change new vs old.
     // When new document to share.
     // When no data before.
+    // FPLA-1471
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         coreCaseDataService.triggerEvent(

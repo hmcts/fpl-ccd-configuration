@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 
-//TODO: methods to be moved to CaseManagementOrderService and DirectionHelperService.
+//TODO: methods to be moved to CaseManagementOrderService and Directions services. FPLA-1479 / FPLA-1483
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {

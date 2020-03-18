@@ -1,14 +1,13 @@
 {
   "request": {
     "method": "GET",
-    "urlPattern": "/payments/card-payments/([\\w-]*)/statuses"
+    "urlPath": "/refdata/external/v1/organisations"
   },
   "response": {
     "status": 200,
     "headers": {
       "Content-Type": "application/json"
     },
-    "bodyFileName": "payments/card-payments/reference-status.json"
+    "bodyFileName": "organisationMockResponse.json"
   }
 }
-
