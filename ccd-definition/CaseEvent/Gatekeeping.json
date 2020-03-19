@@ -28,6 +28,7 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/about-to-start",
     "ShowSummary": "Y",
+    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -149,7 +150,9 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/submitted",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -200,7 +203,7 @@
     "ID": "createOrderGatekeeping",
     "Name": "Create an order",
     "Description": "Create an order",
-    "DisplayOrder": 12,
+    "DisplayOrder": 13,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
@@ -218,7 +221,7 @@
     "ID": "uploadDocumentsAfterGatekeeping",
     "Name": "Documents",
     "Description": "Only here for backwards compatibility with case history",
-    "DisplayOrder": 13,
+    "DisplayOrder": 14,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
@@ -232,12 +235,13 @@
     "ID": "addStatementOfServiceGatekeeping",
     "Name": "Add statement of service (c9)",
     "Description": "Add statement of service",
-    "DisplayOrder": 14,
+    "DisplayOrder": 15,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/statement-of-service/about-to-start",
     "ShowSummary": "Y",
+    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -245,8 +249,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageRepresentativesGatekeeping",
     "Name": "Manage representatives",
-    "Description": "Manage representatives ",
-    "DisplayOrder": 15,
+    "Description": "Manage representatives",
+    "DisplayOrder": 16,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
@@ -262,7 +266,7 @@
     "ID": "placementGatekeeping",
     "Name": "Placement",
     "Description": "Placement",
-    "DisplayOrder": 16,
+    "DisplayOrder": 17,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",

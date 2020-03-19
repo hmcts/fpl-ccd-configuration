@@ -5,7 +5,6 @@ import com.google.common.base.CaseFormat;
 import de.cronn.reflection.util.TypedPropertyGetter;
 import uk.gov.hmcts.ccd.sdk.types.BaseCCDConfig;
 import uk.gov.hmcts.ccd.sdk.types.DisplayContext;
-import uk.gov.hmcts.ccd.sdk.types.Event.EventBuilder;
 import uk.gov.hmcts.ccd.sdk.types.FieldCollection;
 import uk.gov.hmcts.ccd.sdk.types.Webhook;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -29,6 +28,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
         explicitState("hearingBookingDetails", JUDICIARY, "CRU");
 
+        buildUniversalEvents();
         buildTabs();
         buildOpen();
         buildSubmittedEvents();
@@ -45,6 +45,29 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .grant("C", SYSTEM_UPDATE);
         caseField("dateAndTimeSubmitted", null, "DateTime", null, "Date submitted");
         caseField("submittedForm", "Attached PDF", "Document");
+    }
+
+    private void buildUniversalEvents() {
+        event("internal-change:SEND_DOCUMENT")
+            .forAllStates()
+            .name("Send document")
+            .endButtonLabel("")
+            .aboutToSubmitWebhook("send-document");
+
+        event("handleSupplementaryEvidence")
+            .forAllStates()
+            .name("Handle supplementary evidence")
+            .showEventNotes();
+
+        event("attachScannedDocs")
+            .forAllStates()
+            .endButtonLabel("")
+            .name("Attach scanned docs");
+
+        event("allocatedJudge")
+            .forAllStates()
+            .name("Allocated Judge")
+            .description("Add allocated judge to a case");
     }
 
     private void buildWorkBasketResultFields() {
@@ -134,6 +157,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .grant("CRU", HMCTS_ADMIN, JUDICIARY)
                 .name("Create an order")
                 .showSummary()
+                .showSummaryChangeOption()
                 .allWebhooks("create-order")
                 .midEventWebhook()
                 .fields()
@@ -200,7 +224,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .field(CaseData::getAllocationDecision, DisplayContext.Mandatory, true);
 
-        addHearingBookingDetails(Gatekeeping, true);
+        addHearingBookingDetails(Gatekeeping, false);
         buildSharedEvents(Gatekeeping);
         buildNoticeOfProceedings(Gatekeeping);
 
@@ -237,8 +261,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                             .field().id(Order::getOrderDoc).context(DisplayContext.ReadOnly).label("Check the order").done()
                             .mandatory(Order::getOrderStatus);
 
-        buildStandardDirections(Gatekeeping, "AfterGatekeeping");
-        buildUploadC2(Gatekeeping, false);
+        buildStandardDirections(Gatekeeping, "AfterGatekeeping", "");
+        buildUploadC2(Gatekeeping, true);
         buildCreateOrderEvent(Gatekeeping);
         event("uploadDocumentsAfterGatekeeping")
                 .forState(Gatekeeping)
@@ -246,6 +270,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .description("Only here for backwards compatibility with case history")
                 .explicitGrants()
                 .grant("R", LOCAL_AUTHORITY);
+        buildLimitedUploadDocuments(Gatekeeping, 11);
+        addStatementOfService(Gatekeeping);
+        buildManageRepresentatives(Gatekeeping, false, false);
+        buildPlacement(Gatekeeping);
     }
 
     private void renderSDODirectionsCustom(FieldCollection.FieldCollectionBuilder<Direction,?> f)  {
@@ -263,12 +291,13 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .optional(Direction::getDateToBeCompletedBy);
     }
 
-    private void buildStandardDirections(State state, String suffix) {
+    private void buildStandardDirections(State state, String suffix, String buttonLabel) {
         event("uploadStandardDirections" + suffix)
                 .forState(state)
                 .name("Documents")
                 .description("Upload standard directions")
                 .explicitGrants()
+                .endButtonLabel(buttonLabel)
                 .grant("CRU", HMCTS_ADMIN)
                 .fields()
                     .label("standardDirectionsLabel", "Upload standard directions and other relevant documents, for example the C6 Notice of Proceedings or C9 statement of service.")
@@ -288,7 +317,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .optional(CaseData::getFamilyManCaseNumber);
 
         addHearingBookingDetails(Submitted, true);
-        this.buildStandardDirections(Submitted, "");
+        this.buildStandardDirections(Submitted, "", "Save and continue");
         buildUploadC2(Submitted, true);
 
         event("sendToGatekeeper")
@@ -317,7 +346,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .description("Only here for backwards compatibility with case history");
 
         buildLimitedUploadDocuments(Submitted, 15);
-        buildManageRepresentatives(Submitted);
+        buildManageRepresentatives(Submitted, true, true);
         buildPlacement(Submitted);
     }
 
@@ -423,7 +452,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .allWebhooks("action-cmo");
 
         addStatementOfService(PREPARE_FOR_HEARING);
-        buildManageRepresentatives(PREPARE_FOR_HEARING);
+        buildManageRepresentatives(PREPARE_FOR_HEARING, true, true);
 
         renderComply( "COMPLY_LOCAL_AUTHORITY", LOCAL_AUTHORITY, CaseData::getLocalAuthorityDirections, DisplayContext.Mandatory, "Allows Local Authority user access to comply with their directions as well as ones for all parties");
         renderComply( "COMPLY_CAFCASS", UserRole.CAFCASS, CaseData::getCafcassDirections, DisplayContext.Optional, "Allows Cafcass user access to comply with their directions as well as ones for all parties");
@@ -508,12 +537,15 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
     }
 
-    private void buildManageRepresentatives(State state) {
+    private void buildManageRepresentatives(State state, boolean submittedWebhook,
+        boolean showSummaryChange) {
         event("manageRepresentatives")
             .forState(state)
             .name("Manage representatives")
-            .showSummaryChangeOption()
-            .allWebhooks();
+            .showSummaryChangeOption(showSummaryChange)
+            .aboutToStartWebhook()
+            .aboutToSubmitWebhook()
+            .submittedWebhook(submittedWebhook);
     }
 
     private void renderComply(String eventId, UserRole role, TypedPropertyGetter<CaseData, ?> getter, DisplayContext reasonContext, String description) {
