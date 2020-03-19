@@ -126,8 +126,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         return "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/" + eventId + "/" + path;
     }
 
-    private void buildC21Event(State state) {
-        event("createC21Order")
+    private void buildCreateOrderEvent(State state) {
+        event("createOrder")
                 .forState(state)
                 .explicitGrants()
                 .grant("CRU", HMCTS_ADMIN, JUDICIARY)
@@ -238,7 +238,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
         buildStandardDirections(Gatekeeping, "AfterGatekeeping");
         buildUploadC2(Gatekeeping);
-        buildC21Event(Gatekeeping);
+        buildCreateOrderEvent(Gatekeeping);
         event("uploadDocumentsAfterGatekeeping")
                 .forState(Gatekeeping)
                 .name("Documents")
@@ -287,6 +287,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         addHearingBookingDetails(Submitted);
         this.buildStandardDirections(Submitted, "");
         buildUploadC2(Submitted);
+        buildManageRepresentatives(Submitted);
+        buildPlacement(Submitted);
 
         event("sendToGatekeeper")
                 .forState(Submitted)
@@ -302,8 +304,22 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         buildSharedEvents(Submitted);
         buildNoticeOfProceedings(Submitted);
 
-        event("addStatementOfService")
+        addStatementOfService(Submitted);
+
+        buildCreateOrderEvent(Submitted);
+
+        event("uploadDocumentsAfterSubmission")
                 .forState(Submitted)
+                .explicitGrants()
+                .grant("R", LOCAL_AUTHORITY)
+                .name("Documents")
+                .description("Only here for backwards compatibility with case history");
+
+    }
+
+    private void addStatementOfService(State state) {
+        event("addStatementOfService")
+                .forState(state)
                 .explicitGrants()
                 .grant("CRU", LOCAL_AUTHORITY)
                 .name("Add statement of service (c9)")
@@ -315,16 +331,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field().id(CaseData::getStatementOfService).context(DisplayContext.Mandatory).showSummary(true).mutable().done()
                     .field("serviceDeclarationLabel", DisplayContext.ReadOnly, null, "Text", null, "Declaration" )
                     .field("serviceConsent", DisplayContext.Mandatory, null, "MultiSelectList", "Consent", " ");
-
-        buildC21Event(Submitted);
-
-        event("uploadDocumentsAfterSubmission")
-                .forState(Submitted)
-                .explicitGrants()
-                .grant("R", LOCAL_AUTHORITY)
-                .name("Documents")
-                .description("Only here for backwards compatibility with case history");
-
     }
 
     private void buildPrepareForHearing() {
@@ -335,30 +341,41 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         buildSharedEvents( PREPARE_FOR_HEARING);
 
         event("uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING")
-                .forState(PREPARE_FOR_HEARING)
-                .name("Documents")
-                .description("Upload documents")
-                .grant("CRU", HMCTS_ADMIN)
-                .fields()
-                    .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection", "CourtAdminDocument", "Other documents");
-        buildUploadC2( PREPARE_FOR_HEARING);
+            .forState(PREPARE_FOR_HEARING)
+            .name("Documents")
+            .description("Upload documents")
+            .grant("CRU", HMCTS_ADMIN)
+            .fields()
+            .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection", "CourtAdminDocument", "Other documents");
+
+        event("limitedUploadDocuments-PREPARE_FOR_HEARING")
+            .forState(PREPARE_FOR_HEARING)
+            .name("Documents")
+            .description("Upload documents")
+            .displayOrder(8)
+            .grant("CRU", HMCTS_ADMIN)
+            .fields()
+            .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection", "CourtAdminDocument", "Other documents");
+
+        buildUploadC2(PREPARE_FOR_HEARING);
         buildNoticeOfProceedings( PREPARE_FOR_HEARING);
+
+        buildCreateOrderEvent(PREPARE_FOR_HEARING);
 
         event("draftCMO")
                 .forState(PREPARE_FOR_HEARING)
                 .explicitGrants()
                 .grant("CRU", LOCAL_AUTHORITY)
                 .name("Draft CMO")
+                .endButtonLabel("")
                 .description("Draft Case Management Order")
                 .displayOrder(1)
-                .aboutToStartWebhook("draft-cmo")
-                .aboutToSubmitWebhook()
+                .allWebhooks("draft-cmo")
                 .fields()
                 .page("hearingDate")
                     .field("cmoHearingDateList", DisplayContext.Mandatory, null, "DynamicList", null, "Which hearing is this order for?")
                 .page("allPartiesDirections")
                     .label("allPartiesLabelCMO", "## For all parties")
-//                    .field("allPartiesPrecedentLabelCMO", DisplayContext.ReadOnly, null, null, "Direction", "Add completed directions from the precedent library or your own template.")
             .field("allPartiesPrecedentLabelCMO").context(DisplayContext.ReadOnly).fieldTypeParameter("Direction").label("Add completed directions from the precedent library or your own template.").readOnly().done()
             .field().id(CaseData::getAllPartiesCustom).mutable().showSummary(true).complex(Direction.class, this::renderDirection)
                 .page("localAuthorityDirections")
@@ -390,7 +407,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .done()
                 .page("courtDirections")
                      .label("courtDirectionsLabelCMO", "## For the court")
-//                    .complex(CaseData::getCourtDirectionsCustom, Direction.class, this::renderDirection)
                      .field().id(CaseData::getCourtDirectionsCustom).mutable().complex(Direction.class, this::renderDirection)
                 .page(5)
                      .label("orderBasisLabel", "## Basis of order")
@@ -399,10 +415,95 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .page("schedule")
                      .field("schedule", DisplayContext.Mandatory, null, "Schedule", null, "Schedule");
 
+
+        event("actionCMO")
+            .forState(PREPARE_FOR_HEARING)
+            .explicitGrants()
+            .grant("CRU", LOCAL_AUTHORITY)
+            .name("Action CMO")
+            .description("Allows Judge user access to action a case management order")
+            .displayOrder(1)
+            .allWebhooks("action-cmo");
+
+        addStatementOfService(PREPARE_FOR_HEARING);
+        buildManageRepresentatives(PREPARE_FOR_HEARING);
+
         renderComply( "COMPLY_LOCAL_AUTHORITY", LOCAL_AUTHORITY, CaseData::getLocalAuthorityDirections, DisplayContext.Mandatory, "Allows Local Authority user access to comply with their directions as well as ones for all parties");
         renderComply( "COMPLY_CAFCASS", UserRole.CAFCASS, CaseData::getCafcassDirections, DisplayContext.Optional, "Allows Cafcass user access to comply with their directions as well as ones for all parties");
         renderComply( "COMPLY_COURT", HMCTS_ADMIN, CaseData::getCourtDirectionsCustom, DisplayContext.Optional, "Event gives Court user access to comply with their directions as well as all parties");
+
+        // TODO: duplicate of renderComply
+        event("COMPLY_OTHERS")
+            .forState(PREPARE_FOR_HEARING)
+            .explicitGrants()
+            .grant("CRU", LOCAL_AUTHORITY)
+            .name("Comply on behalf of others")
+            .description("Event gives SOLICITOR user access to comply with directions for other parties")
+            .displayOrder(11)
+            .aboutToStartWebhook("comply-on-behalf")
+            .aboutToSubmitWebhook()
+            .fields()
+            .pageLabel(" ")
+            .field().id(CaseData::getCourtDirectionsCustom).showSummary(true).mutable().complex(Direction.class)
+            .readonly(Direction::getDirectionType)
+            .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
+            .readonly(Direction::getDateToBeCompletedBy)
+            .complex(Direction::getResponse)
+            .optional(DirectionResponse::getComplied)
+            .optional(DirectionResponse::getDocumentDetails)
+            .optional(DirectionResponse::getFile)
+            .label("cannotComplyTitle", "TODO")
+            .field(DirectionResponse::getCannotComplyReason, DisplayContext.Optional)
+            .optional(DirectionResponse::getC2Uploaded)
+            .optional(DirectionResponse::getCannotComplyFile);
+
+        // TODO: duplicate of renderComply
+        event("COMPLY_ON_BEHALF_COURT")
+            .forState(PREPARE_FOR_HEARING)
+            .explicitGrants()
+            .grant("CRU", LOCAL_AUTHORITY)
+            .name("Comply on behalf of others")
+            .description("Event gives Court user access to comply with all directions on behalf of others")
+            .displayOrder(11)
+            .aboutToStartWebhook("comply-on-behalf")
+            .aboutToSubmitWebhook()
+            .fields()
+            .pageLabel(" ")
+            .field().id(CaseData::getCourtDirectionsCustom).showSummary(true).mutable().complex(Direction.class)
+            .readonly(Direction::getDirectionType)
+            .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
+            .readonly(Direction::getDateToBeCompletedBy)
+            .complex(Direction::getResponse)
+            .optional(DirectionResponse::getComplied)
+            .optional(DirectionResponse::getDocumentDetails)
+            .optional(DirectionResponse::getFile)
+            .label("cannotComplyTitle", "TODO")
+            .field(DirectionResponse::getCannotComplyReason, DisplayContext.Optional)
+            .optional(DirectionResponse::getC2Uploaded)
+            .optional(DirectionResponse::getCannotComplyFile);
+
+        buildPlacement(PREPARE_FOR_HEARING);
+        event("internal-change:CMO_PROGRESSION")
+            .forState(PREPARE_FOR_HEARING)
+            .name("-")
+            .endButtonLabel("")
+            .aboutToSubmitWebhook("cmo-progression");
         explicitState("uploadC2-PREPARE_FOR_HEARING", LOCAL_AUTHORITY, "");
+    }
+
+    private void buildPlacement(State state) {
+        event("placement")
+            .forState(state)
+            .name("Placement")
+            .allWebhooks();
+
+    }
+
+    private void buildManageRepresentatives(State state) {
+        event("manageRepresentatives")
+            .forState(state)
+            .name("Manage representatives")
+            .allWebhooks();
     }
 
     private void renderComply(String eventId, UserRole role, TypedPropertyGetter<CaseData, ?> getter, DisplayContext reasonContext, String description) {
@@ -487,6 +588,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Others to be given notice")
                 .description("Amending others for the case")
                 .showEventNotes()
+                .aboutToStartWebhook("enter-others")
+                .aboutToSubmitWebhook()
                 .fields()
                     .optional(CaseData::getOthers);
         event("amendInternationalElement")
@@ -543,7 +646,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         .name("Upload a C2")
         .description("Upload a c2 to the case")
         .aboutToSubmitWebhook()
-        .submittedWebhook()
         .midEventWebhook()
         .fields()
             .complex(CaseData::getTemporaryC2Document)
@@ -606,6 +708,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("enterOthers").forState(Open)
                 .name("Others to be given notice")
                 .description("Entering others for the case")
+                .aboutToStartWebhook()
+                .aboutToSubmitWebhook()
                 .fields()
                     .optional(CaseData::getOthers);
 

@@ -11,6 +11,7 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/about-to-start",
     "ShowSummary": "Y",
+    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -189,6 +190,8 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-cmo/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-cmo/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-cmo/submitted"
@@ -203,6 +206,8 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/submitted",
@@ -218,6 +223,8 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -232,6 +239,8 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -246,6 +255,8 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -260,6 +271,8 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -274,6 +287,8 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -290,6 +305,7 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/statement-of-service/about-to-start",
     "ShowSummary": "Y",
+    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -331,9 +347,13 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "internal-change:CMO_PROGRESSION",
     "Name": "-",
+    "Description": "-",
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
+    "DisplayOrder": 15,
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/cmo-progression/about-to-submit"
   }
 ]
