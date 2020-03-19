@@ -1271,7 +1271,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseNotes",
     "Label": "Note",
-    "HintText": "Add note detail, including relevant dates and people involved",
     "FieldType": "Collection",
     "FieldTypeParameter": "CaseNote",
     "SecurityClassification": "Public",
