@@ -31,9 +31,6 @@ class DocmosisTemplateDataGenerationTest {
     @Test
     void shouldPopulateAMapWithCourtSealEncoding() throws IOException {
         final Map<String, Object> draftWaterMarkData = templateDataGeneration.getCourtSealData();
-        assertThat(draftWaterMarkData).containsKey("courtseal")
-            .extracting("courtseal")
-            .asString()
-            .isNotEmpty();
+        assertThat(draftWaterMarkData).containsKey("courtseal").isNotEmpty();
     }
 }
