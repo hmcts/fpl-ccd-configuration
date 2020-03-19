@@ -14,6 +14,7 @@ module.exports = {
     confidential: 'Confidential',
     placement: 'Placement',
     paymentHistory: 'Payment History',
+    notes: 'Notes',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',

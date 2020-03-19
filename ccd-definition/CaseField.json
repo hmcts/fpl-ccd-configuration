@@ -1274,6 +1274,6 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "CaseNote",
     "SecurityClassification": "Public",
-    "Comment": "The note field to be displayed in an event"
+    "Comment": "The note fields to be displayed in the tab"
   }
 ]

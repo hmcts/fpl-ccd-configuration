@@ -35,7 +35,7 @@ public class CaseNoteService {
         List<Element<CaseNote>> updatedCaseNotes = ofNullable(caseNotes).orElse(newArrayList());
         updatedCaseNotes.add(element(caseNote));
 
-        updatedCaseNotes.sort(comparing(x -> x.getValue().getCreatedBy()));
+        updatedCaseNotes.sort(comparing(caseNoteElement -> caseNoteElement.getValue().getDate()));
 
         return updatedCaseNotes;
     }

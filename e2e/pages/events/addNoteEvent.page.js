@@ -5,7 +5,7 @@ module.exports = {
     note: '#caseNote',
   },
 
-  addNote() {
-    I.fillField(this.fields.note, 'Example note');
+  addNote(note) {
+    I.fillField(this.fields.note, note);
   },
 };

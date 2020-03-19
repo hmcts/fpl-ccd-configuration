@@ -248,8 +248,11 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
 });
 
 Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteEventPage) => {
+  const note = 'Example note';
   await caseViewPage.goToNewActions(config.administrationActions.addNote);
-  addNoteEventPage.addNote();
+  addNoteEventPage.addNote(note);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
+  caseViewPage.selectTab(caseViewPage.tabs.notes);
+  I.seeAnswerInTab('1', 'Note 1', 'Note', note);
 });
