@@ -694,7 +694,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2DocumentBundle",
-    "Label": "C2",
+    "Label": "C2 Application",
     "FieldType": "Collection",
     "FieldTypeParameter": "C2DocumentBundle",
     "SecurityClassification": "Public"

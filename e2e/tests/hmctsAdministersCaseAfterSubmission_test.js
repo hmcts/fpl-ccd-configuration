@@ -102,10 +102,10 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeAnswerInTab('1', 'C2 1', 'Upload a file', 'mockFile.txt');
-  I.seeAnswerInTab('4', 'C2 1', 'Description', 'Rachel Zane C2');
-  I.seeAnswerInTab('1', 'C2 2', 'Upload a file', 'mockFile.txt');
-  I.seeAnswerInTab('4', 'C2 2', 'Description', 'Jessica Pearson C2');
+  I.seeAnswerInTab('1', 'C2 Application 1', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('4', 'C2 Application 1', 'Description', 'Rachel Zane C2');
+  I.seeAnswerInTab('1', 'C2 Application 2', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('4', 'C2 Application 2', 'Description', 'Jessica Pearson C2');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
