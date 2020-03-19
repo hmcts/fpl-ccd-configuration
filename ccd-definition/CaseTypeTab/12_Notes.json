@@ -6,7 +6,7 @@
     "TabID": "Notes",
     "TabLabel": "Notes",
     "TabDisplayOrder": 12,
-    "CaseFieldID": "CaseNotes",
+    "CaseFieldID": "caseNotes",
     "TabFieldDisplayOrder": 1
   }
 ]

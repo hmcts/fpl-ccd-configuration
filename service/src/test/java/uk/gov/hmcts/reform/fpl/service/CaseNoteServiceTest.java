@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -44,9 +47,10 @@ class CaseNoteServiceTest {
             given(idamClient.getUserDetails(userAuthToken)).willReturn(userDetails);
         }
 
-        @Test
-        void shouldBuildExpectedCaseNote() {
-            String note = "new note";
+        @ParameterizedTest
+        @ValueSource(strings = {"new note"})
+        @NullAndEmptySource
+        void shouldBuildExpectedCaseNote(String note) {
             CaseNote caseNote = service.buildCaseNote(userAuthToken, note);
 
             assertThat(caseNote).isEqualTo(caseNoteForToday(note));
