@@ -5,6 +5,7 @@ import com.google.common.base.CaseFormat;
 import de.cronn.reflection.util.TypedPropertyGetter;
 import uk.gov.hmcts.ccd.sdk.types.BaseCCDConfig;
 import uk.gov.hmcts.ccd.sdk.types.DisplayContext;
+import uk.gov.hmcts.ccd.sdk.types.Event.EventBuilder;
 import uk.gov.hmcts.ccd.sdk.types.FieldCollection;
 import uk.gov.hmcts.ccd.sdk.types.Webhook;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -199,7 +200,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .field(CaseData::getAllocationDecision, DisplayContext.Mandatory, true);
 
-        addHearingBookingDetails(Gatekeeping);
+        addHearingBookingDetails(Gatekeeping, true);
         buildSharedEvents(Gatekeeping);
         buildNoticeOfProceedings(Gatekeeping);
 
@@ -237,7 +238,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                             .mandatory(Order::getOrderStatus);
 
         buildStandardDirections(Gatekeeping, "AfterGatekeeping");
-        buildUploadC2(Gatekeeping);
+        buildUploadC2(Gatekeeping, false);
         buildCreateOrderEvent(Gatekeeping);
         event("uploadDocumentsAfterGatekeeping")
                 .forState(Gatekeeping)
@@ -281,14 +282,14 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("addFamilyManCaseNumber")
                 .forState(Submitted)
                 .name("Add case number")
+                .aboutToSubmitWebhook("add-case-number")
+                .submittedWebhook()
                 .fields()
                     .optional(CaseData::getFamilyManCaseNumber);
 
-        addHearingBookingDetails(Submitted);
+        addHearingBookingDetails(Submitted, true);
         this.buildStandardDirections(Submitted, "");
-        buildUploadC2(Submitted);
-        buildManageRepresentatives(Submitted);
-        buildPlacement(Submitted);
+        buildUploadC2(Submitted, true);
 
         event("sendToGatekeeper")
                 .forState(Submitted)
@@ -315,6 +316,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Documents")
                 .description("Only here for backwards compatibility with case history");
 
+        buildLimitedUploadDocuments(Submitted, 15);
+        buildManageRepresentatives(Submitted);
+        buildPlacement(Submitted);
     }
 
     private void addStatementOfService(State state) {
@@ -337,7 +341,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         prefix(PREPARE_FOR_HEARING, "-");
         blacklist(PREPARE_FOR_HEARING, GATEKEEPER);
         grant(PREPARE_FOR_HEARING, "CRU", HMCTS_ADMIN);
-        addHearingBookingDetails( PREPARE_FOR_HEARING);
+        addHearingBookingDetails( PREPARE_FOR_HEARING, true);
         buildSharedEvents( PREPARE_FOR_HEARING);
 
         event("uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING")
@@ -348,16 +352,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .fields()
             .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection", "CourtAdminDocument", "Other documents");
 
-        event("limitedUploadDocuments-PREPARE_FOR_HEARING")
-            .forState(PREPARE_FOR_HEARING)
-            .name("Documents")
-            .description("Upload documents")
-            .displayOrder(8)
-            .grant("CRU", HMCTS_ADMIN)
-            .fields()
-            .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection", "CourtAdminDocument", "Other documents");
+        buildLimitedUploadDocuments(PREPARE_FOR_HEARING, 8);
 
-        buildUploadC2(PREPARE_FOR_HEARING);
+        buildUploadC2(PREPARE_FOR_HEARING, false);
         buildNoticeOfProceedings( PREPARE_FOR_HEARING);
 
         buildCreateOrderEvent(PREPARE_FOR_HEARING);
@@ -491,6 +488,18 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         explicitState("uploadC2-PREPARE_FOR_HEARING", LOCAL_AUTHORITY, "");
     }
 
+    private void buildLimitedUploadDocuments(State state, int displayOrder) {
+        event("limitedUploadDocuments")
+            .forState(state)
+            .name("Documents")
+            .description("Upload documents")
+            .displayOrder(displayOrder)
+            .grant("CRU", HMCTS_ADMIN)
+            .fields()
+            .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection", "CourtAdminDocument", "Other documents");
+    }
+
+
     private void buildPlacement(State state) {
         event("placement")
             .forState(state)
@@ -503,6 +512,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("manageRepresentatives")
             .forState(state)
             .name("Manage representatives")
+            .showSummaryChangeOption()
             .allWebhooks();
     }
 
@@ -538,30 +548,30 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .optional(Direction::getDateToBeCompletedBy);
     }
 
-    private void addHearingBookingDetails(State state) {
-        event("hearingBookingDetails")
-                .forState(state)
-                .grant("CRU", UserRole.GATEKEEPER)
-                .name("Add hearing details")
-                .description("Add hearing booking details to a case")
-                .aboutToStartWebhook("add-hearing-bookings")
-                .midEventWebhook("add-hearing-bookings")
-                .showSummary()
-                .fields()
-                .complex(CaseData::getHearingDetails, HearingBooking.class)
-                    .mandatory(HearingBooking::getType)
-                    .mandatory(HearingBooking::getTypeDetails, "hearingDetails.type=\"OTHER\"")
-                    .mandatory(HearingBooking::getVenue)
-                    .mandatory(HearingBooking::getStartDate)
-                    .mandatory(HearingBooking::getEndDate)
-                    .mandatory(HearingBooking::getHearingNeedsBooked)
-                    .mandatory(HearingBooking::getHearingNeedsDetails, "hearingDetails.hearingNeedsBooked!=\"NONE\"")
-                    .complex(HearingBooking::getJudgeAndLegalAdvisor)
-                        .mandatory(JudgeAndLegalAdvisor::getJudgeTitle)
-                        .mandatory(JudgeAndLegalAdvisor::getOtherTitle, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"")
-                        .mandatory(JudgeAndLegalAdvisor::getJudgeLastName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"")
-                        .optional(JudgeAndLegalAdvisor::getJudgeFullName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"")
-                        .optional(JudgeAndLegalAdvisor::getLegalAdvisorName);
+    private void addHearingBookingDetails(State state, boolean withAboutToSubmitWebhook) {
+        event( "hearingBookingDetails")
+            .forState(state)
+            .grant("CRU", GATEKEEPER)
+            .name("Add hearing details")
+            .description("Add hearing booking details to a case")
+            .aboutToStartWebhook("add-hearing-bookings")
+            .aboutToSubmitWebhook(withAboutToSubmitWebhook)
+            .showSummary()
+            .fields()
+            .complex(CaseData::getHearingDetails, HearingBooking.class)
+                .mandatory(HearingBooking::getType)
+                .mandatory(HearingBooking::getTypeDetails, "hearingDetails.type=\"OTHER\"")
+                .mandatory(HearingBooking::getVenue)
+                .mandatory(HearingBooking::getStartDate)
+                .mandatory(HearingBooking::getEndDate)
+                .mandatory(HearingBooking::getHearingNeedsBooked)
+                .mandatory(HearingBooking::getHearingNeedsDetails, "hearingDetails.hearingNeedsBooked!=\"NONE\"")
+                .complex(HearingBooking::getJudgeAndLegalAdvisor)
+                    .mandatory(JudgeAndLegalAdvisor::getJudgeTitle)
+                    .mandatory(JudgeAndLegalAdvisor::getOtherTitle, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"")
+                    .mandatory(JudgeAndLegalAdvisor::getJudgeLastName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"")
+                    .optional(JudgeAndLegalAdvisor::getJudgeFullName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"")
+                    .optional(JudgeAndLegalAdvisor::getLegalAdvisorName);
     }
 
     private void buildSharedEvents(State state) {
@@ -638,7 +648,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .mandatory(NoticeOfProceedings::getProceedingTypes);
     }
 
-    private void buildUploadC2(State state) {
+    private void buildUploadC2(State state, boolean withSubmittedWebhook) {
         event("uploadC2")
         .forState(state)
         .explicitGrants()
@@ -646,6 +656,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         .name("Upload a C2")
         .description("Upload a c2 to the case")
         .aboutToSubmitWebhook()
+        .submittedWebhook(withSubmittedWebhook)
         .midEventWebhook()
         .fields()
             .complex(CaseData::getTemporaryC2Document)
