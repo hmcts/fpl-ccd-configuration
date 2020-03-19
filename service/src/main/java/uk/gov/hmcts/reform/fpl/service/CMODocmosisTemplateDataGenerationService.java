@@ -138,11 +138,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     }
 
     private String getIssuedDate(LocalDate dateOfIssue) {
-        LocalDate date = dateOfIssue;
-        if (date == null) {
-            date = time.now().toLocalDate(); // When LA drafts it will default to current time
-        }
-        return formatLocalDateToString(date, DATE);
+        return formatLocalDateToString(defaultIfNull(dateOfIssue, time.now().toLocalDate()), DATE);
     }
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
