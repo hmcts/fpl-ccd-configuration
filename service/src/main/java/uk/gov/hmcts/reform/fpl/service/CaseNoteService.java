@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -34,8 +33,6 @@ public class CaseNoteService {
     public List<Element<CaseNote>> addNoteToList(CaseNote caseNote, List<Element<CaseNote>> caseNotes) {
         List<Element<CaseNote>> updatedCaseNotes = ofNullable(caseNotes).orElse(newArrayList());
         updatedCaseNotes.add(element(caseNote));
-
-        updatedCaseNotes.sort(comparing(caseNoteElement -> caseNoteElement.getValue().getDate()));
 
         return updatedCaseNotes;
     }
