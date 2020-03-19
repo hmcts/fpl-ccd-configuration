@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 
 import javax.validation.Valid;
@@ -14,6 +15,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Data
 @Builder
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
+@ComplexType(name = "ChildrenNew")
 public class Child implements ConfidentialParty {
     @Valid
     @NotNull(message = "You need to add details to children")

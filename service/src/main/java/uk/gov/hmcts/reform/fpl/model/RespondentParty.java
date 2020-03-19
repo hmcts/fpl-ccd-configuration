@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -7,7 +11,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
-import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
@@ -20,6 +23,12 @@ import javax.validation.constraints.NotBlank;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonDeserialize(builder = RespondentParty.RespondentPartyBuilder.class)
 public final class RespondentParty extends Party {
+
+    public final Telephone telephoneNumber;
+    public final String firstName;
+    public final String lastName;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    public final LocalDate dateOfBirth;
     private final String gender;
     private final String genderIdentification;
     private final String placeOfBirth;
@@ -31,12 +40,12 @@ public final class RespondentParty extends Party {
 
     @NotBlank(message = "Enter the respondent's full name")
     public String getFirstName() {
-        return super.getFirstName();
+        return firstName;
     }
 
     @NotBlank(message = "Enter the respondent's full name")
     public String getLastName() {
-        return super.getLastName();
+        return lastName;
     }
 
     @Builder(toBuilder = true, builderClassName = "RespondentPartyBuilder")
@@ -44,10 +53,8 @@ public final class RespondentParty extends Party {
                            PartyType partyType,
                            String firstName,
                            String lastName,
-                           String organisationName,
                            LocalDate dateOfBirth,
                            Address address,
-                           EmailAddress email,
                            Telephone telephoneNumber,
                            String gender,
                            String genderIdentification,
@@ -57,8 +64,10 @@ public final class RespondentParty extends Party {
                            String contactDetailsHiddenReason,
                            String litigationIssues,
                            String litigationIssuesDetails) {
-        super(partyId, partyType, firstName, lastName, organisationName,
-            dateOfBirth, address, email, telephoneNumber);
+        super(partyId, partyType, address);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.placeOfBirth = placeOfBirth;
@@ -67,6 +76,12 @@ public final class RespondentParty extends Party {
         this.contactDetailsHiddenReason = contactDetailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
+        this.telephoneNumber = telephoneNumber;
+    }
+
+    @JsonIgnore
+    public String getFullName() {
+        return String.format("%s %s", defaultString(firstName), defaultString(lastName)).trim();
     }
 
     @JsonPOJOBuilder(withPrefix = "")

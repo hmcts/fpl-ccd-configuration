@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import uk.gov.hmcts.ccd.sdk.types.CCD;
 
 @Data
 @Builder
@@ -15,6 +16,7 @@ public class ChildSelector {
     @Builder.Default
     private String childCount = "";
     @Builder.Default
+    @CCD(ignore = true)
     private List<Integer> selected = new ArrayList<>();
 
     public void generateChildCount(int max) {

@@ -21,19 +21,6 @@ public class Party {
     // REFACTOR: 03/12/2019 This needs to be private, effects tests as well
     public final String partyId;
     public final PartyType partyType;
-    public final String firstName;
-    public final String lastName;
-    public final String organisationName;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    public final LocalDate dateOfBirth;
     public final Address address;
 
-    @Valid
-    public final EmailAddress email;
-    public final Telephone telephoneNumber;
-
-    @JsonIgnore
-    public String getFullName() {
-        return String.format("%s %s", defaultString(firstName), defaultString(lastName)).trim();
-    }
 }

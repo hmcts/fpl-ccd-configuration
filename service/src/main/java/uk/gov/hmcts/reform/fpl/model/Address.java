@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ComplexType(generate = false)
 public class Address {
     @NotBlank(message = "Enter a valid address for the contact", groups = { Default.class, EPOAddressGroup.class })
     private final String addressLine1;

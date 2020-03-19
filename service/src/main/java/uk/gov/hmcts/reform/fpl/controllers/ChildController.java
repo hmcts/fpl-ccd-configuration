@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
@@ -81,7 +83,7 @@ public class ChildController {
             caseData.getChildren1().stream()
                 .map(Element::getValue)
                 .map(Child::getParty)
-                .map(Party::getDateOfBirth)
+                .map(ChildParty::getDateOfBirth)
                 .filter(Objects::nonNull)
                 .filter(dateOfBirth -> dateOfBirth.isAfter(LocalDate.now()))
                 .findAny()

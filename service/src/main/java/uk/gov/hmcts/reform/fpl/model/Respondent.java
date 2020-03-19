@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder
 @AllArgsConstructor
 @EqualsAndHashCode
+@ComplexType(name = "RespondentNew")
 public class Respondent implements Representable, ConfidentialParty {
     @Valid
     @NotNull(message = "You need to add details to respondents")

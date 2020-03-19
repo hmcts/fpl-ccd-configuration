@@ -16,5 +16,13 @@
     "FieldType": "Text",
     "ElementLabel": "Name of person to contact",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ElementLabel": null,
+    "ListElementCode": "telephoneUsageType",
+    "ID": "Telephone",
+    "SecurityClassification": "Public",
+    "FieldType": "Text"
   }
 ]

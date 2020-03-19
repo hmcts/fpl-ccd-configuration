@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
@@ -81,7 +82,7 @@ public class RespondentController {
         caseData.getAllRespondents().stream()
             .map(Element::getValue)
             .map(Respondent::getParty)
-            .map(Party::getDateOfBirth)
+            .map(RespondentParty::getDateOfBirth)
             .filter(Objects::nonNull)
             .filter(dob -> dob.isAfter(LocalDate.now()))
             .findAny()

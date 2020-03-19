@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
-import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
@@ -17,6 +20,11 @@ import javax.validation.constraints.PastOrPresent;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class ChildParty extends Party {
+
+    public final String firstName;
+    public final String lastName;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    public final LocalDate dateOfBirth;
     private final String gender;
     private final String genderIdentification;
     private final String livingSituation;
@@ -44,55 +52,54 @@ public final class ChildParty extends Party {
 
     @NotBlank(message = "Tell us the names of all children in the case")
     public String getFirstName() {
-        return super.getFirstName();
+        return firstName;
     }
 
     @NotBlank(message = "Tell us the names of all children in the case")
     public String getLastName() {
-        return super.getLastName();
+        return lastName;
     }
 
     @PastOrPresent(message = "Date of birth is in the future. You cannot send this application until that date")
     public LocalDate getDateOfBirth() {
-        return super.getDateOfBirth();
+        return dateOfBirth;
     }
 
     @Builder(toBuilder = true)
     public ChildParty(String partyId,
-                      PartyType partyType,
-                      String firstName,
-                      String lastName,
-                      String organisationName,
-                      LocalDate dateOfBirth,
-                      Address address,
-                      EmailAddress email,
-                      Telephone telephoneNumber,
-                      String gender,
-                      String genderIdentification,
-                      String livingSituation,
-                      String livingSituationDetails,
-                      LocalDate addressChangeDate,
-                      LocalDate datePowersEnd,
-                      LocalDate careStartDate,
-                      LocalDate dischargeDate,
-                      String keyDates,
-                      String careAndContactPlan,
-                      String adoption,
-                      String placementOrderApplication,
-                      String placementCourt,
-                      String mothersName,
-                      String fathersName,
-                      String fathersResponsibility,
-                      String socialWorkerName,
-                      Telephone socialWorkerTelephoneNumber,
-                      String additionalNeeds,
-                      String additionalNeedsDetails,
-                      String detailsHidden,
-                      String detailsHiddenReason,
-                      String litigationIssues,
-                      String litigationIssuesDetails) {
-        super(partyId, partyType, firstName, lastName, organisationName,
-            dateOfBirth, address, email, telephoneNumber);
+        PartyType partyType,
+        String firstName,
+        String lastName,
+        LocalDate dateOfBirth,
+        Address address,
+        String gender,
+        String genderIdentification,
+        String livingSituation,
+        String livingSituationDetails,
+        LocalDate addressChangeDate,
+        LocalDate datePowersEnd,
+        LocalDate careStartDate,
+        LocalDate dischargeDate,
+        String keyDates,
+        String careAndContactPlan,
+        String adoption,
+        String placementOrderApplication,
+        String placementCourt,
+        String mothersName,
+        String fathersName,
+        String fathersResponsibility,
+        String socialWorkerName,
+        Telephone socialWorkerTelephoneNumber,
+        String additionalNeeds,
+        String additionalNeedsDetails,
+        String detailsHidden,
+        String detailsHiddenReason,
+        String litigationIssues,
+        String litigationIssuesDetails) {
+        super(partyId, partyType, address);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;
@@ -117,5 +124,10 @@ public final class ChildParty extends Party {
         this.detailsHiddenReason = detailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
+    }
+
+    @JsonIgnore
+    public String getFullName() {
+        return String.format("%s %s", defaultString(firstName), defaultString(lastName)).trim();
     }
 }

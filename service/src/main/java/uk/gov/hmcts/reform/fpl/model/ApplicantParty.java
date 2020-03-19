@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +28,8 @@ import javax.validation.constraints.NotNull;
 @HasContactDirection
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicantParty extends Party implements TelephoneContacts {
+
+    public final Telephone telephoneNumber;
     @NotBlank(message = "Enter the applicant's full name")
     private final String organisationName;
     private final Telephone mobileNumber;
@@ -42,10 +48,7 @@ public class ApplicantParty extends Party implements TelephoneContacts {
     @Builder(toBuilder = true)
     private ApplicantParty(String partyId,
                            PartyType partyType,
-                           String firstName,
-                           String lastName,
                            String organisationName,
-                           LocalDate dateOfBirth,
                            Address address,
                            EmailAddress email,
                            Telephone telephoneNumber,
@@ -54,9 +57,7 @@ public class ApplicantParty extends Party implements TelephoneContacts {
                            String pbaNumber,
                            String clientCode,
                            String customerReference) {
-        super(partyId, partyType, firstName, lastName, organisationName, dateOfBirth, address,
-            email, telephoneNumber);
-
+        super(partyId, partyType, address);
         this.organisationName = organisationName;
         this.mobileNumber = mobileNumber;
         this.jobTitle = jobTitle;
@@ -65,5 +66,7 @@ public class ApplicantParty extends Party implements TelephoneContacts {
         this.customerReference = customerReference;
         this.address = address;
         this.email = email;
+        this.telephoneNumber = telephoneNumber;
     }
+
 }

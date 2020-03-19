@@ -5,10 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 
 @Data
 @Builder
 @AllArgsConstructor
+@ComplexType(name = "RiskAndHarm")
 public class Risks {
     private final String neglect;
     private final String sexualAbuse;

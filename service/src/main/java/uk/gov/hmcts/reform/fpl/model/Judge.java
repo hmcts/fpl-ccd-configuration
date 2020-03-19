@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
@@ -12,6 +13,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 @Data
 @Builder
 @AllArgsConstructor
+@ComplexType(name = "JudgeAndLegalAdvisor")
 public class Judge {
     private final JudgeOrMagistrateTitle judgeTitle;
     private final String otherTitle;
