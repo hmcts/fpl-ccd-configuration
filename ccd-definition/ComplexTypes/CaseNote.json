@@ -4,7 +4,7 @@
     "ID": "CaseNote",
     "ListElementCode": "createdBy",
     "FieldType": "Text",
-    "ElementLabel": "Note created by",
+    "ElementLabel": "Created by",
     "SecurityClassification": "Public"
   },
   {
@@ -12,7 +12,7 @@
     "ID": "CaseNote",
     "ListElementCode": "date",
     "FieldType": "Date",
-    "ElementLabel": "Date",
+    "ElementLabel": "Created on",
     "SecurityClassification": "Public"
   },
   {
