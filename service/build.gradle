@@ -19,7 +19,7 @@ group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
 ccd {
-  configDir = file('../ccd-definition-gen')
+  configDir = file("$rootProject.buildDir/ccd-definition")
   caseType = 'CARE_SUPERVISION_EPO'
 }
 
