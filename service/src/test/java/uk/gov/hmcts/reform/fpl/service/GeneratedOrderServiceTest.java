@@ -439,7 +439,7 @@ class GeneratedOrderServiceTest {
             case EMERGENCY_PROTECTION_ORDER:
                 expectedMap
                     .put("orderType", EMERGENCY_PROTECTION_ORDER)
-                    .put("localAuthorityName", "Example Local Authority")
+                    .put("localAuthorityName", localAuthorityName)
                     .put("childrenDescription", "Test description")
                     .put("epoType", REMOVE_TO_ACCOMMODATION)
                     .put("includePhrase", "Yes")
