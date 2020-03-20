@@ -133,6 +133,5 @@ docker/wiremock folder configures the stubs themselves.
 Refer to the [documentation](http://wiremock.org)
 for an additional guide.
 
-
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
