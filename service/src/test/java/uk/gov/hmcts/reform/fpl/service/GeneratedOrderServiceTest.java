@@ -343,6 +343,8 @@ class GeneratedOrderServiceTest {
                                                            LocalDateTime dateTime) {
         ImmutableMap.Builder<String, Object> expectedMap = ImmutableMap.builder();
         final LocalDate date = dateTime.toLocalDate();
+        final String localAuthorityName = "Example Local Authority";
+
         String formattedDate = dateFormatterService.formatLocalDateToString(date, FormatStyle.LONG);
 
         List<Map<String, String>> children = ImmutableList.of(
@@ -365,7 +367,9 @@ class GeneratedOrderServiceTest {
                 break;
             case CARE_ORDER:
                 expectedMap
-                    .put("orderType", CARE_ORDER);
+                    .put("orderType", CARE_ORDER)
+                    .put("childrenCount", children.size())
+                    .put("localAuthorityName", localAuthorityName);
                 if (subtype == INTERIM) {
                     expectedMap
                         .put("orderTitle", "Interim care order")

@@ -165,6 +165,8 @@ public class GeneratedOrderService {
                         .put("childrenAct", "Section 31 Children Act 1989");
                 }
                 orderTemplateBuilder
+                    .put("childrenCount", children.size())
+                    .put("localAuthorityName", getLocalAuthorityName(caseData.getCaseLocalAuthority()))
                     .put("orderDetails", getFormattedCareOrderDetails(children.size(),
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
                 break;
