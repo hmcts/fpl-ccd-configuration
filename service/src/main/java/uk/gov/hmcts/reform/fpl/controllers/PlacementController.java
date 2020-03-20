@@ -30,9 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
 @RestController
@@ -136,8 +138,7 @@ public class PlacementController {
         Placement currentPlacement = placementService.getPlacement(caseData, child);
         Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
 
-        // TODO refactor: this logic is confusing. Suggested: new method isNewOrUpdated... FPLA-1473
-        if (!isUpdatingExistingPlacement(previousPlacement, currentPlacement)) {
+        if (isEmpty(previousPlacement) || isUpdatedPlacement(previousPlacement, currentPlacement)) {
             publishPlacementApplicationUploadEvent(callbackRequest);
         }
     }
@@ -179,20 +180,12 @@ public class PlacementController {
         return mapper.convertValue(childrenList, DynamicList.class).getValueCode();
     }
 
-    private void removeTemporaryFields(CaseDetails caseDetails, String... fields) {
-        for (String field : fields) {
-            caseDetails.getData().remove(field);
-        }
-    }
-
     private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
         applicationEventPublisher.publishEvent(
             new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
-    //TODO: refactor logic. Double negative for !isNotEmpty currently. FPLA-1473
-    private boolean isUpdatingExistingPlacement(Placement previousPlacement, Placement newPlacement) {
-        return isNotEmpty(previousPlacement)
-            && newPlacement.getApplication().equals(previousPlacement.getApplication());
+    private boolean isUpdatedPlacement(Placement previousPlacement, Placement newPlacement) {
+        return notEqual(newPlacement.getApplication(), previousPlacement.getApplication());
     }
 }
