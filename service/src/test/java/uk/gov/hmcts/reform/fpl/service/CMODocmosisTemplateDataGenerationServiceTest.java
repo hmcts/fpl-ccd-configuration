@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
@@ -237,12 +238,12 @@ class CMODocmosisTemplateDataGenerationServiceTest {
                 "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
             Map.of(
                 "name", "Sansa Stark",
-                "gender", DEFAULT,
-                "dateOfBirth", DEFAULT),
+                "gender", EMPTY,
+                "dateOfBirth", EMPTY),
             Map.of(
                 "name", "Jon Snow",
-                "gender", DEFAULT,
-                "dateOfBirth", DEFAULT)
+                "gender", EMPTY,
+                "dateOfBirth", EMPTY)
         );
     }
 

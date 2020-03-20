@@ -142,8 +142,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             .map(Child::getParty)
             .map(child -> ImmutableMap.of(
                 "name", child.getFullName(),
-                "gender", defaultIfNull(child.getGender(), DEFAULT),
-                "dateOfBirth", child.getDateOfBirth() == null ? DEFAULT :
+                "gender", defaultIfNull(child.getGender(), EMPTY),
+                "dateOfBirth", child.getDateOfBirth() == null ? EMPTY :
                     formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
             .collect(toList());
     }

@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 public class CommonCaseDataExtractionService {
     private final DateFormatterService dateFormatterService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
-    public static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
+    public static final String HEARING_EMPTY_PLACEHOLDER = "Hearing details will be added by the judge";
 
     @Autowired
     public CommonCaseDataExtractionService(DateFormatterService dateFormatterService,
