@@ -77,14 +77,18 @@ class CaseDataExtractionServiceTest {
     }
 
     //TODO: there needs to be some clarity around what should happen when values are missing from template.
-    // emptyCaseData is unrealistic scenario.
+    // emptyCaseData is unrealistic scenario. FPLA-1486
     @Test
     void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
+        Order order = Order.builder()
+            .dateOfIssue("29 November 2019")
+            .build();
+
         DocmosisStandardDirectionOrder template = caseDataExtractionService
             .getStandardOrderDirectionData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
-                .standardDirectionOrder(Order.builder().build())
+                .standardDirectionOrder(order)
                 .build());
 
         assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
@@ -94,7 +98,7 @@ class CaseDataExtractionServiceTest {
                 .build())
             .courtName(COURT_NAME)
             .familyManCaseNumber(null)
-            .generationDate(formatLocalDateToString(TODAY, LONG))
+            .dateOfIssue(order.getDateOfIssue())
             .complianceDeadline(formatLocalDateToString(TODAY.plusWeeks(26), LONG))
             .children(emptyList())
             .hearingBooking(DocmosisHearingBooking.builder().build())
@@ -140,7 +144,7 @@ class CaseDataExtractionServiceTest {
                 .build())
             .courtName(COURT_NAME)
             .familyManCaseNumber("123")
-            .generationDate(formatLocalDateToString(TODAY, LONG))
+            .dateOfIssue("29 November 2019")
             .complianceDeadline(formatLocalDateToString(TODAY.plusWeeks(26), LONG))
             .children(emptyList())
             .hearingBooking(DocmosisHearingBooking.builder().build())
@@ -175,7 +179,7 @@ class CaseDataExtractionServiceTest {
                 .build())
             .courtName(COURT_NAME)
             .familyManCaseNumber("123")
-            .generationDate(formatLocalDateToString(TODAY, LONG))
+            .dateOfIssue("29 November 2019")
             .complianceDeadline(formatLocalDateToString(TODAY.plusWeeks(26), LONG))
             .children(getExpectedChildren())
             .hearingBooking(DocmosisHearingBooking.builder()
@@ -190,7 +194,7 @@ class CaseDataExtractionServiceTest {
             .respondentsProvided(true)
             .directions(getExpectedDirections())
             .applicantName("Bran Stark")
-            .draftbackground(template.getDraftbackground())
+            .courtseal(template.getCourtseal())
             .build());
     }
 

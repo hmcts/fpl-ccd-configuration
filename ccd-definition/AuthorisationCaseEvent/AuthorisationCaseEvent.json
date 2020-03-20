@@ -359,13 +359,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "otherProposal",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendOtherProceedings",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"

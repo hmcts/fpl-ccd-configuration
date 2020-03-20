@@ -19,4 +19,5 @@ public class Order {
     private final OrderStatus orderStatus;
     private final DocumentReference orderDoc;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private final String dateOfIssue;
 }

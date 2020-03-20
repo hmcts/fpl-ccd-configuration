@@ -10,7 +10,7 @@
         "headers": {
           "Content-Type": "application/json"
         },
-        "bodyFileName": "paymentResponse.json"
+        "bodyFileName": "payments/credit-account-payment/paymentResponse.json"
       }
     }
   ]

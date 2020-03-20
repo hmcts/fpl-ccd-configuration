@@ -1,14 +1,13 @@
 {
   "request": {
     "method": "GET",
-    "urlPattern": "/payments/card-payments/([\\w-]*)/statuses"
+    "urlPath": "/bank-holidays.json"
   },
   "response": {
     "status": 200,
     "headers": {
       "Content-Type": "application/json"
     },
-    "bodyFileName": "payments/card-payments/reference-status.json"
+    "bodyFileName": "bankHolidays.json"
   }
 }
-

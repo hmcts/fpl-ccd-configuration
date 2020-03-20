@@ -28,14 +28,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseIDReference",
-    "Label": "Case ID",
-    "FieldType": "Text",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "EPO_REASONING_SHOW",
     "Label": "EPO Reason show or hide",
     "FieldType": "MultiSelectList",
@@ -283,7 +275,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submittedForm",
-    "Label": "Attached PDF",
+    "Label": "C110a Application",
     "FieldType": "Document",
     "SecurityClassification": "Public"
   },
@@ -702,7 +694,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2DocumentBundle",
-    "Label": "C2",
+    "Label": "C2 Application",
     "FieldType": "Collection",
     "FieldTypeParameter": "C2DocumentBundle",
     "SecurityClassification": "Public"
@@ -1212,7 +1204,7 @@
     "Label": " ",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
-    "Comment": "Used to record wether a case has been sent to CTSC. Move to CTSC set for 30th March 2020."
+    "Comment": "Used to record whether a case has been sent to CTSC. Move to CTSC set for 30th March 2020."
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1221,6 +1213,15 @@
     "Label": "Application fee to pay",
     "FieldType": "MoneyGBP",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "displayAmountToPay",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Comment": "Used to hide the amountToPay field, mainly in the event of an error with the Fee Register"
   },
   {
     "LiveFrom": "01/01/2017",

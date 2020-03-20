@@ -15,6 +15,9 @@
       "jurisdiction2": {
         "equalTo": "family court"
       },
+      "keyword": {
+        "equalTo": "CareOrder"
+      },
       "service": {
         "equalTo": "public law"
       }

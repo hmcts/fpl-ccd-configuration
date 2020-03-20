@@ -58,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 
-//TODO: had to extract old methods from case data extraction service to keep this from breaking.
+//TODO: had to extract old methods from case data extraction service to keep this from breaking. FPLA-1480
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
@@ -122,6 +122,10 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         if (draft) {
             cmoTemplateData.putAll(getDraftWaterMarkData());
+        }
+
+        if (!draft) {
+            cmoTemplateData.putAll(getCourtSealData());
         }
 
         List<Map<String, String>> recitals = buildRecitals(order.getRecitals());

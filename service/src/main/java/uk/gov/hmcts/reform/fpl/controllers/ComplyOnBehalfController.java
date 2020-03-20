@@ -78,7 +78,7 @@ public class ComplyOnBehalfController {
         prepareDirectionsForDataStoreService.addComplyOnBehalfResponsesToDirectionsInOrder(
             caseData, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()), authorisation);
 
-        //TODO: new service for sdo vs cmo in placing directions
+        //TODO: new service for sdo vs cmo in placing directions FPLA-1470
         if (caseData.getServedCaseManagementOrders().isEmpty()) {
             caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
         } else {

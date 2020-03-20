@@ -22,9 +22,10 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 
 class DocmosisStandardDirectionOrderTest {
     private static final Set<String> DOCMOSIS_KEYS = Set.of("judgeAndLegalAdvisor", "courtName",
-        "familyManCaseNumber", "generationDate", "complianceDeadline", "respondents", "children",
+        "familyManCaseNumber","dateOfIssue", "complianceDeadline", "respondents", "children",
         "respondentsProvided", "applicantName", "hearingBooking", "allParties", "localAuthorityDirections",
-        "respondentDirections", "cafcassDirections", "otherPartiesDirections", "courtDirections", "draftbackground");
+        "respondentDirections", "cafcassDirections", "otherPartiesDirections", "courtDirections",
+        "draftbackground", "courtseal");
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -81,7 +82,7 @@ class DocmosisStandardDirectionOrderTest {
                 "legalAdvisorName", "Mrs Judge"))
             .put("courtName", "Court name")
             .put("familyManCaseNumber", "123")
-            .put("generationDate", "this date")
+            .put("dateOfIssue", "29 November 2019")
             .put("complianceDeadline", "this other date")
             .put("respondents", List.of(Map.of(
                 "name", "Respondent",
@@ -104,7 +105,8 @@ class DocmosisStandardDirectionOrderTest {
             .put("cafcassDirections", List.of(direction(CAFCASS)))
             .put("otherPartiesDirections", List.of(direction(OTHERS)))
             .put("courtDirections", List.of(direction(COURT)))
-            .put("draftbackground", "draft background");
+            .put("draftbackground", "draft background")
+            .put("courtseal", "court seal");
 
         return expectedMap.build();
     }
@@ -117,7 +119,7 @@ class DocmosisStandardDirectionOrderTest {
                 .build())
             .courtName("Court name")
             .familyManCaseNumber("123")
-            .generationDate("this date")
+            .dateOfIssue("29 November 2019")
             .complianceDeadline("this other date")
             .respondents(List.of(DocmosisRespondent.builder()
                 .name("Respondent")
@@ -139,6 +141,7 @@ class DocmosisStandardDirectionOrderTest {
                 .build())
             .directions(directions)
             .draftbackground("draft background")
+            .courtseal("court seal")
             .build();
     }
 }

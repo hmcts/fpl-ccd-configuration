@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -54,6 +55,8 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
@@ -275,15 +278,29 @@ class GeneratedOrderServiceTest {
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) {
+                                                           GeneratedOrderSubtype subtype) throws IOException {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
         Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, SEALED);
 
-        assertThat(templateData).isEqualTo(expectedMap);
+        assertThat(templateData).containsAllEntriesOf(expectedMap);
+        assertThat(templateData).containsKey("courtseal");
+    }
 
+    @ParameterizedTest
+    @MethodSource("docmosisDataGenerationSource")
+    void shouldCreateExpectedMapWhenGivenPopulatedCaseDataInDraft(GeneratedOrderType orderType,
+                                                           GeneratedOrderSubtype subtype) throws IOException {
+        LocalDateTime now = time.now();
+        CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
+
+        Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, DRAFT);
+
+        assertThat(templateData).containsAllEntriesOf(expectedMap);
+        assertThat(templateData).containsKey("draftbackground");
     }
 
     @Test
