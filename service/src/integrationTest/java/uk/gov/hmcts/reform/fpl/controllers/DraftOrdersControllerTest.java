@@ -37,11 +37,13 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,7 +75,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class DraftOrdersControllerTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
-
+    private static final DateTimeFormatter DATE_FORMAT = ofPattern("dd MMMM yyyy, hh:mma");
     private final DocumentReference documentReference = DocumentReference.builder().build();
 
     @Mock
@@ -120,17 +122,18 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartCallbackShouldPopulateCorrectHearingDate() {
-        LocalDateTime date = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
+        final LocalDateTime hearingDate = LocalDateTime.now();
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("hearingDetails", wrapElements(createHearingBooking(date, date.plusDays(1)))))
+            .data(Map.of("hearingDetails", wrapElements(createHearingBooking(hearingDate, hearingDate.plusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
+        final String expectedDate = DATE_FORMAT.format(hearingDate);
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
-                .isEqualTo("1 January 2020, 12:00am"));
+                .isEqualTo(expectedDate));
     }
 
     @Test
@@ -194,7 +197,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private ImmutableMap.Builder createCaseDataMap(List<Element<Direction>> directions) {
+    private ImmutableMap.Builder<String, Object> createCaseDataMap(List<Element<Direction>> directions) {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
         return builder

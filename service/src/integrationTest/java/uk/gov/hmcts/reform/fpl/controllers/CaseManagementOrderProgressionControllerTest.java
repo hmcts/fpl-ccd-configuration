@@ -24,11 +24,13 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
@@ -50,15 +52,16 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUr
 @WebMvcTest(CaseManagementOrderProgressionController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseManagementOrderProgressionControllerTest extends AbstractControllerTest {
-    private static final UUID uuid = randomUUID();
+    private static final UUID UUID = randomUUID();
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String HMCTS_ADMIN_INBOX = "admin@family-court.com";
     private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
 
-    private static final Long caseId = 12345L;
-    private final LocalDateTime testDate = LocalDateTime.of(2020, 2, 1, 12, 30);
+    private static final DateTimeFormatter DATE_FORMAT = ofPattern("dd MMM yyyy");
+    private static final Long CASE_ID = 12345L;
+    private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
 
     @MockBean
     private NotificationClient notificationClient;
@@ -94,7 +97,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), caseId.toString());
+            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
     }
 
     private void cmoCommonAssertions(CaseData responseData, CaseData caseDataBefore) {
@@ -119,7 +122,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), caseId.toString());
+            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
     }
 
     @Test
@@ -151,11 +154,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
     }
 
     @Test
@@ -168,11 +171,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
     }
 
     @Test
@@ -185,11 +188,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString()
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString()
         );
     }
 
@@ -210,18 +213,19 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     }
 
     private Map<String, Object> commonNotificationParameters() {
-        final String subjectLine = "Jones, SACCCCCCCC5676576567," + " hearing 1 Feb 2020";
+        String hearingDate = FUTURE_DATE.format(DATE_FORMAT);
+        final String subjectLine = "Jones, SACCCCCCCC5676576567," + " hearing " + hearingDate;
         return ImmutableMap.<String, Object>builder()
             .put("subjectLineWithHearingDate", subjectLine)
-            .put("reference", caseId.toString())
-            .put("caseUrl", formatCaseUrl("http://fake-url", caseId))
+            .put("reference", CASE_ID.toString())
+            .put("caseUrl", formatCaseUrl("http://fake-url", CASE_ID))
             .build();
     }
 
     private CaseManagementOrder buildOrder(CMOStatus status, ActionType actionType) {
         return CaseManagementOrder.builder()
             .status(status)
-            .id(uuid)
+            .id(UUID)
             .action(OrderAction.builder()
                 .type(actionType)
                 .build())
@@ -233,7 +237,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .id(12345L)
             .data(Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
                 "cmoEventId", cmoEvent.getId(),
-                "hearingDetails", createHearingBookings(testDate, testDate.plusHours(4)),
+                "hearingDetails", createHearingBookings(FUTURE_DATE, FUTURE_DATE.plusHours(4)),
                 "respondents1", createRespondents(),
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                 "sendToCtsc", enableCtsc,

@@ -67,15 +67,13 @@ class CafcassEmailContentProviderSDOIssuedTest {
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+        return ImmutableMap.<String, Object>builder()
             .put("title", CAFCASS_NAME)
             .put("familyManCaseNumber", "12345,")
             .put("leadRespondentsName", "Smith,")
-            .put("hearingDate", "1 January 2020")
+            .put("hearingDate", "1 January 2999")
             .put("reference", "12345")
             .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
-
-        return expectedMap;
     }
 }

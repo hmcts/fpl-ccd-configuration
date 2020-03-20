@@ -103,7 +103,7 @@ class LocalAuthorityEmailContentProviderTest {
             .put("title", LOCAL_AUTHORITY_NAME)
             .put("familyManCaseNumber", "12345,")
             .put("leadRespondentsName", "Smith,")
-            .put("hearingDate", "1 January 2020")
+            .put("hearingDate", "1 January 2999")
             .put("reference", "12345")
             .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();

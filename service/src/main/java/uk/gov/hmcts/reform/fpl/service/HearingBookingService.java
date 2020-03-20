@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,15 +33,6 @@ public class HearingBookingService {
         return hearingDetails.stream().filter(this::isPastHearing).collect(toList());
     }
 
-    private boolean isPastHearing(Element<HearingBooking> element) {
-        return ofNullable(element.getValue())
-            .map(HearingBooking::getStartDate)
-            .filter(hearingDate -> hearingDate.isBefore(now()))
-            .isPresent();
-    }
-
-    // TODO: this method will always get the first (by date, even if in past) hearing booking. Not the most urgent
-    // FPLA-1484
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
         if (hearingDetails == null) {
             throw new IllegalStateException("Hearing booking was not present");
@@ -48,6 +40,7 @@ public class HearingBookingService {
 
         return hearingDetails.stream()
             .map(Element::getValue)
+            .filter(e -> !e.getStartDate().toLocalDate().isBefore(LocalDate.now()))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
@@ -99,5 +92,12 @@ public class HearingBookingService {
         combinedHearingDetails.sort(comparing(element -> element.getValue().getStartDate()));
 
         return combinedHearingDetails;
+    }
+
+    private boolean isPastHearing(Element<HearingBooking> element) {
+        return ofNullable(element.getValue())
+            .map(HearingBooking::getStartDate)
+            .filter(hearingDate -> hearingDate.isBefore(now()))
+            .isPresent();
     }
 }
