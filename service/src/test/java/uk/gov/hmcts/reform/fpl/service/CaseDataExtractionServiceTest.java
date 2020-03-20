@@ -192,7 +192,7 @@ class CaseDataExtractionServiceTest {
             .respondentsProvided(true)
             .directions(getExpectedDirections())
             .applicantName("Bran Stark")
-            .draftbackground(template.getDraftbackground())
+            .courtseal(template.getCourtseal())
             .build());
     }
 
