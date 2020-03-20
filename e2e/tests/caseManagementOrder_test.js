@@ -53,6 +53,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 
     // gatekeeper login and create sdo
     await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+    await draftStandardDirectionsEventPage.skipDateOfIssue();
     await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
     await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
     await draftStandardDirectionsEventPage.markAsFinal();

@@ -474,7 +474,7 @@ Scenario('local authority tries to submit without giving consent', async (I, cas
 
 Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  I.see('£2,055.00');
+  // I.see('£2,055.00'); Disabled until Fee Register updated on AAT
   submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
