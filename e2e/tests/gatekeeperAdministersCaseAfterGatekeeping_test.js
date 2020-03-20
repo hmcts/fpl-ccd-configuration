@@ -98,14 +98,18 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
 });
 
 Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+  const today = new Date();
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.skipDateOfIssue();
   await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsDraft();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  I.see('draft-standard-directions-order.pdf');
+  I.seeSimpleAnswerInTab('Standard directions order', 'File','draft-standard-directions-order.pdf');
+  I.seeSimpleAnswerInTab('Standard directions order', 'Date of issue', dateFormat(today, 'd mmmm yyyy'));
   I.seeAnswerInTab(1, 'Directions 1', 'Title', 'Request permission for expert evidence');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
@@ -114,11 +118,16 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
 
 Scenario('Gatekeeper submits final version of standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.enterDateOfIssue({day:11, month:1, year:2020});
   await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsFinal();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.seeSimpleAnswerInTab('Standard directions order', 'File','standard-directions-order.pdf');
+  I.seeSimpleAnswerInTab('Standard directions order', 'Date of issue', '11 January 2020');
 
   caseViewPage.checkActionsAreAvailable([
     config.administrationActions.addHearingBookingDetails,
