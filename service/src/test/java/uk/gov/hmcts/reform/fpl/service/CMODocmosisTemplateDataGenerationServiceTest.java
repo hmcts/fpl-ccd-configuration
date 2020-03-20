@@ -164,6 +164,18 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("caseManagementNumber")).isEqualTo(2);
     }
 
+    @Test
+    void shouldReturnCourtSealInTemplateDataWhenCMOisNotInDraft() throws IOException {
+        final Map<String, Object> caseDataMap = buildCaseDataMapForDraftCMODocmosisGeneration(NOW);
+
+        final CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
+
+        final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(caseData, false);
+
+        assertThat(templateData.get("courtseal")).isNotNull();
+        assertThat(templateData.get("draftbackground")).isNull();
+    }
+
     private List<Map<String, Object>> getExpectedRepresentatives() {
         return List.of(
             Map.of("name", "Bran Stark", "representedBy", List.of(
