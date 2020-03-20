@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Map;
@@ -42,11 +41,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, GeneratedOrderEmailContentProvider.class,
     HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class})
 class GeneratedOrderEmailContentProviderTest {
-    private final LocalDate today = LocalDate.now();
+
     private final DateFormatterService dateFormatterService = new DateFormatterService();
     private final HearingBookingService hearingBookingService = new HearingBookingService();
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
 
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
@@ -86,15 +86,14 @@ class GeneratedOrderEmailContentProviderTest {
             .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
                 "linkToDocument", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Local Authority",
-                (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM)),
-                documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
+                (subjectLine + ", hearing " + DateFormatterService.formatLocalDateToString(FUTURE_DATE.toLocalDate(),
+                    FormatStyle.MEDIUM)), documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
     }
 
     private CaseDetails createCaseDetailsWithSingleOrderElement() {
-        final LocalDateTime now = LocalDateTime.now();
         return CaseDetails.builder()
             .id(167888L)
-            .data(ImmutableMap.of(HEARING_DETAILS_KEY, createHearingBookings(now, now.plusDays(1)),
+            .data(ImmutableMap.of(HEARING_DETAILS_KEY, createHearingBookings(FUTURE_DATE, FUTURE_DATE.plusDays(1)),
                 "orderCollection", ImmutableList.of(
                     Element.<GeneratedOrder>builder()
                         .value(GeneratedOrder.builder()

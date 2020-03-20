@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 @OverrideAutoConfiguration(enabled = true)
 class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTest {
 
-    private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
+    private static final LocalDateTime TODAYS_DATE = LocalDateTime.now().plusDays(1);
 
     @Autowired
     private DateFormatterService dateFormatterService;
@@ -60,8 +60,8 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
 
         String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
 
-        String expectedContent = String.format("The case management hearing will be on the %s.", dateFormatterService
-            .formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM yyyy"));
+        String expectedContent = String.format("The case management hearing will be on the %s.",
+            DateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM yyyy"));
 
         assertThat(proceedingLabel).isEqualTo(expectedContent);
     }

@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,7 +40,7 @@ public class HearingBookingService {
 
         return hearingDetails.stream()
             .map(Element::getValue)
-            .filter(e -> !e.getStartDate().toLocalDate().isBefore(LocalDate.now()))
+            .filter(hearing -> hearing.getStartDate().isAfter(LocalDateTime.now()))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }

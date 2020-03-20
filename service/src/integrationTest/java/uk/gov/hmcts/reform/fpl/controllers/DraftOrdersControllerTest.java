@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -61,7 +60,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -121,18 +119,18 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartCallbackShouldPopulateCorrectHearingDate() {
-        final LocalDateTime hearingDate = LocalDateTime.now();
+        final LocalDateTime hearingDate = LocalDateTime.of(2999, 11, 1, 11, 10);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("hearingDetails", wrapElements(createHearingBooking(hearingDate, hearingDate.plusDays(1)))))
+            .data(Map.of("hearingDetails",
+                wrapElements(createHearingBooking(hearingDate, hearingDate.plusDays(2)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        final String expectedDate = DateFormatterService.formatLocalDateTimeBaseUsingFormat(hearingDate, DATE_TIME);
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
-                .isEqualTo(expectedDate));
+                .isEqualTo("1 November 2999, 11:10am"));
     }
 
     @Test
