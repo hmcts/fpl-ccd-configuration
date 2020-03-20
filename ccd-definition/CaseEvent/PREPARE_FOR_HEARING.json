@@ -11,7 +11,6 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/about-to-start",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -26,7 +25,6 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/about-to-submit",
-    "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
   },
@@ -42,7 +40,6 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-submit",
-    "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
   },
@@ -56,7 +53,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-others/about-to-start",
@@ -72,7 +68,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
   },
@@ -86,7 +81,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
   },
@@ -100,7 +94,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
   },
@@ -114,8 +107,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -128,8 +119,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -142,8 +131,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/about-to-submit"
   },
@@ -160,8 +147,7 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notice-of-proceedings/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notice-of-proceedings/about-to-submit",
     "EndButtonLabel": "Save and continue",
-    "ShowSummary": "Y",
-    "ShowEventNotes": "N"
+    "ShowSummary": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -174,7 +160,6 @@
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/about-to-submit",
@@ -190,8 +175,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-cmo/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-cmo/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-cmo/submitted"
@@ -206,8 +189,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/submitted",
@@ -223,8 +204,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -239,8 +218,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -255,8 +232,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -271,8 +246,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -287,8 +260,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-submit",
     "EndButtonLabel": "Save and continue"
@@ -305,7 +276,6 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/statement-of-service/about-to-start",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -318,8 +288,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-representatives/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-representatives/about-to-submit",
@@ -335,8 +303,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/about-to-submit",
@@ -352,8 +318,6 @@
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
     "DisplayOrder": 15,
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/cmo-progression/about-to-submit"
   }
 ]

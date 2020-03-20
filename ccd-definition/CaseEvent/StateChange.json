@@ -15,8 +15,6 @@
     "RetriesTimeoutURLAboutToSubmitEvent": "1,2,3,4,5",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-submission/submitted",
     "RetriesTimeoutURLSubmittedEvent": "1,2,3,4,5",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Submit"
   },
   {
@@ -30,8 +28,6 @@
     "PostConditionState": "Deleted",
     "SecurityClassification": "Public",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-deletion/about-to-submit",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Delete application"
   },
   {
@@ -44,9 +40,7 @@
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
-    "EndButtonLabel": "Save and continue",
-    "ShowEventNotes" : "N",
-    "ShowSummary" : "N"
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -57,8 +51,6 @@
     "DisplayOrder" : 1,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "PREPARE_FOR_HEARING",
-    "SecurityClassification": "Public",
-    "ShowEventNotes" : "N",
-    "ShowSummary" : "N"
+    "SecurityClassification": "Public"
   }
 ]
