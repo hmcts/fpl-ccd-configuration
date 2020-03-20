@@ -44,6 +44,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
     await I.navigateToCaseDetails(caseId);
     await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+    await draftStandardDirectionsEventPage.skipDateOfIssue();
     await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
     await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
     draftStandardDirectionsEventPage.markAsFinal();
