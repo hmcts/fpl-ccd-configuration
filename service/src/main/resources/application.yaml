@@ -101,6 +101,10 @@ ld:
   user_key: FPLA
   sdk_key:
 
+bankHolidays:
+  api:
+    url: "https://www.gov.uk"
+
 ---
 
 spring:
@@ -293,6 +297,10 @@ ccd:
   ui:
     base:
       url: http://localhost:3451
+
+bankHolidays:
+  api:
+    url: http://localhost:8765
 
 appinsights:
   instrumentationkey: fake-key
