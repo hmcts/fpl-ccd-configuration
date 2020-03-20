@@ -41,6 +41,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("internal-changeState:Gatekeeping->PREPARE_FOR_HEARING")
                 .forStateTransition(Gatekeeping, PREPARE_FOR_HEARING)
                 .name("-")
+                .endButtonLabel("")
                 .explicitGrants()
                 .grant("C", SYSTEM_UPDATE);
         caseField("dateAndTimeSubmitted", null, "DateTime", null, "Date submitted");
@@ -150,14 +151,14 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         return "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/" + eventId + "/" + path;
     }
 
-    private void buildCreateOrderEvent(State state) {
+    private void buildCreateOrderEvent(State state, boolean showSummaryChange) {
         event("createOrder")
                 .forState(state)
                 .explicitGrants()
                 .grant("CRU", HMCTS_ADMIN, JUDICIARY)
                 .name("Create an order")
                 .showSummary()
-                .showSummaryChangeOption()
+                .showSummaryChangeOption(showSummaryChange)
                 .allWebhooks("create-order")
                 .midEventWebhook()
                 .fields()
@@ -218,9 +219,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Allocation decision")
                 .description("Entering other proceedings and allocation proposals")
                 .showSummary()
-                .aboutToStartWebhook("allocation-decision")
+                .aboutToStartWebhook("allocation-decision", 1, 2, 3, 4, 5)
                 .aboutToSubmitWebhook()
-                .retries(1,2,3,4,5)
                 .fields()
                     .field(CaseData::getAllocationDecision, DisplayContext.Mandatory, true);
 
@@ -263,7 +263,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
         buildStandardDirections(Gatekeeping, "AfterGatekeeping", "");
         buildUploadC2(Gatekeeping, true);
-        buildCreateOrderEvent(Gatekeeping);
+        buildCreateOrderEvent(Gatekeeping, true);
         event("uploadDocumentsAfterGatekeeping")
                 .forState(Gatekeeping)
                 .name("Documents")
@@ -336,7 +336,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
         addStatementOfService(Submitted);
 
-        buildCreateOrderEvent(Submitted);
+        buildCreateOrderEvent(Submitted, false);
 
         event("uploadDocumentsAfterSubmission")
                 .forState(Submitted)
@@ -370,7 +370,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         prefix(PREPARE_FOR_HEARING, "-");
         blacklist(PREPARE_FOR_HEARING, GATEKEEPER);
         grant(PREPARE_FOR_HEARING, "CRU", HMCTS_ADMIN);
-        addHearingBookingDetails( PREPARE_FOR_HEARING, true);
+        addHearingBookingDetails( PREPARE_FOR_HEARING, false);
         buildSharedEvents( PREPARE_FOR_HEARING);
 
         event("uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING")
@@ -386,7 +386,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         buildUploadC2(PREPARE_FOR_HEARING, false);
         buildNoticeOfProceedings( PREPARE_FOR_HEARING);
 
-        buildCreateOrderEvent(PREPARE_FOR_HEARING);
+        buildCreateOrderEvent(PREPARE_FOR_HEARING, false);
 
         event("draftCMO")
                 .forState(PREPARE_FOR_HEARING)
@@ -452,7 +452,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .allWebhooks("action-cmo");
 
         addStatementOfService(PREPARE_FOR_HEARING);
-        buildManageRepresentatives(PREPARE_FOR_HEARING, true, true);
+        buildManageRepresentatives(PREPARE_FOR_HEARING, true, false);
 
         renderComply( "COMPLY_LOCAL_AUTHORITY", LOCAL_AUTHORITY, CaseData::getLocalAuthorityDirections, DisplayContext.Mandatory, "Allows Local Authority user access to comply with their directions as well as ones for all parties");
         renderComply( "COMPLY_CAFCASS", UserRole.CAFCASS, CaseData::getCafcassDirections, DisplayContext.Optional, "Allows Cafcass user access to comply with their directions as well as ones for all parties");

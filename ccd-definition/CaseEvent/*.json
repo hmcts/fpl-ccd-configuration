@@ -18,6 +18,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "internal-change:SEND_DOCUMENT",
     "Name": "Send document",
+    "Description": "Send document",
+    "DisplayOrder": 1,
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
@@ -31,6 +33,7 @@
     "ID": "handleSupplementaryEvidence",
     "Name": "Handle supplementary evidence",
     "Description": "Handle supplementary evidence",
+    "DisplayOrder": 2,
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
@@ -44,6 +47,7 @@
     "ID": "attachScannedDocs",
     "Name": "Attach scanned docs",
     "Description": "Attach scanned docs",
+    "DisplayOrder": 3,
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
@@ -56,10 +60,12 @@
     "ID": "allocatedJudge",
     "Name": "Allocated Judge",
     "Description": "Add allocated judge to a case",
+    "DisplayOrder": 4,
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   }
 ]

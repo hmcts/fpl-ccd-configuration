@@ -44,15 +44,21 @@
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "ShowEventNotes" : "N",
+    "ShowSummary" : "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING",
     "Name": "-",
+    "Description": "-",
+    "DisplayOrder" : 1,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "PREPARE_FOR_HEARING",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "ShowEventNotes" : "N",
+    "ShowSummary" : "N"
   }
 ]
