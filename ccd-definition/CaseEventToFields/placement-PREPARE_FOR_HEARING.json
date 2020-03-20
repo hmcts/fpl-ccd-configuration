@@ -21,7 +21,6 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "childrenList",
-    "PageLabel": " ",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "PageShowCondition": "singleChild=\"NO\""
