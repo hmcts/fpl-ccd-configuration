@@ -60,6 +60,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -73,6 +75,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class DraftOrdersControllerTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
+
     private final DocumentReference documentReference = DocumentReference.builder().build();
 
     @Mock
@@ -119,18 +122,17 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartCallbackShouldPopulateCorrectHearingDate() {
-        final LocalDateTime hearingDate = LocalDateTime.of(2999, 11, 1, 11, 10);
+        LocalDateTime date = LocalDateTime.of(2999, 1, 1, 0, 0, 0);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("hearingDetails",
-                wrapElements(createHearingBooking(hearingDate, hearingDate.plusDays(2)))))
+            .data(Map.of("hearingDetails", wrapElements(createHearingBooking(date, date.plusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
-                .isEqualTo("1 November 2999, 11:10am"));
+                .isEqualTo(formatLocalDateTimeBaseUsingFormat(date, DATE_TIME)));
     }
 
     @Test
