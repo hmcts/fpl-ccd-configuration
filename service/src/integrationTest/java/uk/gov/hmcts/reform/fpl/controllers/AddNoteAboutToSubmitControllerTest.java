@@ -63,7 +63,7 @@ class AddNoteAboutToSubmitControllerTest extends AbstractControllerTest {
         return CaseNote.builder()
             .date(date)
             .createdBy(createdBy)
-            .caseNote(note)
+            .note(note)
             .build();
     }
 }

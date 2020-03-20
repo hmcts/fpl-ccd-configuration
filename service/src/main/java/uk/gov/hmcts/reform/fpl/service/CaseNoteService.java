@@ -26,7 +26,7 @@ public class CaseNoteService {
         return CaseNote.builder()
             .createdBy(userDetails.getFullName())
             .date(LocalDate.now())
-            .caseNote(note)
+            .note(note)
             .build();
     }
 

@@ -10,5 +10,5 @@ import java.time.LocalDate;
 public class CaseNote {
     private final String createdBy;
     private final LocalDate date;
-    private final String caseNote;
+    private final String note;
 }
