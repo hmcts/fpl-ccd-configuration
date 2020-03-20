@@ -28,70 +28,70 @@ fees-register:
       event: general application
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: without-notice
+      keyword: ${FEE_REGISTER_C2_WITHOUT_NOTICE_KEYWORD:without-notice}
       service: other
     C2_WITH_NOTICE:
       channel: default
       event: general application
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: notice
+      keyword: ${FEE_REGISTER_C2_WITH_NOTICE_KEYWORD:notice}
       service: other
     CARE_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: CareOrder
+      keyword: ${FEE_REGISTER_CARE_ORDER_KEYWORD:CareOrder}
       service: public law
     EDUCATION_SUPERVISION_ORDER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: EducationSupervision
+      keyword: ${FEE_REGISTER_EDUCATION_SUPERVISION_ORDER_KEYWORD:EducationSupervision}
       service: private law
     EMERGENCY_PROTECTION_ORDER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: EPO
+      keyword: ${FEE_REGISTER_EMERGENCY_PROTECTION_ORDER_KEYWORD:EPO}
       service: private law
     INTERIM_CARE_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: CareOrder
+      keyword: ${FEE_REGISTER_INTERIM_CARE_ORDER_KEYWORD:CareOrder}
       service: public law
     INTERIM_SUPERVISION_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: CareOrder
+      keyword: ${FEE_REGISTER_INTERIM_SUPERVISION_ORDER_KEYWORD:CareOrder}
       service: public law
     OTHER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: QRS
+      keyword: ${FEE_REGISTER_OTHER_KEYWORD:QRS}
       service: private law
     PLACEMENT:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: Placement
+      keyword: ${FEE_REGISTER_PLACEMENT_KEYWORD:Placement}
       service: adoption
     SUPERVISION_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: CareOrder
+      keyword: ${FEE_REGISTER_SUPERVISION_ORDER_KEYWORD:CareOrder}
       service: public law
 
 payment:
