@@ -15,6 +15,8 @@ java:
     GATEWAY_URL: https://gateway-${SERVICE_FQDN}
     FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
+    "fees-register.parameters.EMERGENCY_PROTECTION_ORDER.keyword":
+
 
 ccd:
   ingressHost: ${SERVICE_FQDN}
