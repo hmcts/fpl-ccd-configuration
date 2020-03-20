@@ -254,5 +254,5 @@ Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteE
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
   caseViewPage.selectTab(caseViewPage.tabs.notes);
-  I.seeAnswerInTab('1', 'Note 1', 'Note', note);
+  I.seeAnswerInTab('3', 'Note 1', 'Note', note);
 });
