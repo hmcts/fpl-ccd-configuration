@@ -15,6 +15,22 @@ java:
     GATEWAY_URL: https://gateway-${SERVICE_FQDN}
     FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
+    fees-register:
+      parameters:
+        CARE_ORDER:
+          keyword: ''
+        EDUCATION_SUPERVISION_ORDER:
+          keyword: TUV
+        EMERGENCY_PROTECTION_ORDER:
+          keyword: KLM
+        INTERIM_CARE_ORDER:
+          keyword: ''
+        INTERIM_SUPERVISION_ORDER:
+          keyword: ''
+        PLACEMENT:
+          keyword: DEF
+        SUPERVISION_ORDER:
+          keyword: ''
 
 ccd:
   ingressHost: ${SERVICE_FQDN}
