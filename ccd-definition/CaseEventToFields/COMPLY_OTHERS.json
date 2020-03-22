@@ -6,7 +6,7 @@
     "CaseFieldID": "respondents_label",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "1",
+    "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   },
@@ -17,7 +17,7 @@
     "CaseFieldID": "respondentDirectionsCustom",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
-    "PageID": "1",
+    "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   },
@@ -28,7 +28,7 @@
     "CaseFieldID": "others_label",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "2",
+    "PageID": 2,
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1
   },
@@ -39,7 +39,7 @@
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
-    "PageID": "2",
+    "PageID": 2,
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1
   }

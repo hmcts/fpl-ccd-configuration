@@ -6,7 +6,7 @@
     "CaseFieldID": "courtDirectionsCustom",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
-    "PageID": "1",
+    "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "CaseEventFieldLabel": "Direction",
