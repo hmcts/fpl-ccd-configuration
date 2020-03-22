@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendChildren-PREPARE_FOR_HEARING",
     "CaseFieldID": "children1",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,

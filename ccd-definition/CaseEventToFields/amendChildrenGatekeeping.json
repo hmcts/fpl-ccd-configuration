@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendChildrenGatekeeping",
     "CaseFieldID": "children1",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,

@@ -6,6 +6,8 @@
     "CaseFieldID": "respondents_label",
     "PageID": 1,
     "PageFieldDisplayOrder": 1,
+    "PageColumnNumber" : 1,
+    "PageDisplayOrder" : 1,
     "DisplayContext": "READONLY",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-representatives/mid-event"
   },
@@ -16,6 +18,8 @@
     "CaseFieldID": "others_label",
     "PageID": 1,
     "PageFieldDisplayOrder": 2,
+    "PageColumnNumber" : 1,
+    "PageDisplayOrder" : 1,
     "DisplayContext": "READONLY"
   },
   {
@@ -25,6 +29,8 @@
     "CaseFieldID": "representatives",
     "PageID": 1,
     "PageFieldDisplayOrder": 3,
+    "PageColumnNumber" : 1,
+    "PageDisplayOrder" : 1,
     "DisplayContext": "OPTIONAL"
   }
 ]

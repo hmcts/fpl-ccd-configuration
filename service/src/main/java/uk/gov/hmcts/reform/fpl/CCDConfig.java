@@ -58,17 +58,29 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("handleSupplementaryEvidence")
             .forAllStates()
             .name("Handle supplementary evidence")
-            .showEventNotes();
+            .showEventNotes()
+            .fields()
+            .pageLabel("Bulk Scanning ")
+            .field("evidenceHandled").context(DisplayContext.Mandatory);
 
         event("attachScannedDocs")
             .forAllStates()
             .endButtonLabel("")
-            .name("Attach scanned docs");
+            .name("Attach scanned docs")
+            .fields()
+            .pageLabel("BulkScanning")
+            .field("scannedDocuments").context(DisplayContext.Optional).done()
+            .page(2)
+            .pageLabel("BulkScanning")
+            .field("evidenceHandled").context(DisplayContext.Mandatory);
 
         event("allocatedJudge")
             .forAllStates()
             .name("Allocated Judge")
-            .description("Add allocated judge to a case");
+            .description("Add allocated judge to a case")
+            .fields()
+            .page("AllocatedJudge")
+                .field(CaseData::getAllocatedJudge);
     }
 
     private void buildWorkBasketResultFields() {
@@ -578,7 +590,19 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("placement")
             .forState(state)
             .name("Placement")
-            .allWebhooks();
+            .allWebhooks()
+            .fields()
+            .page("childrenList")
+                .pageLabel("Child")
+                .midEventWebhook()
+                .showCondition("singleChild=\"NO\"")
+                .field("singleChild").showCondition("childrenList=\"DO NOT SHOW\"").context(DisplayContext.ReadOnly).done()
+                .field("childrenList").context(DisplayContext.Mandatory).done()
+            .page("placement")
+                .pageLabel("Application and supporting documents")
+                .field("placementChildName").showCondition("childrenList=\"DO NOT SHOW\"").context(DisplayContext.Mandatory).done()
+                .field("placementLabel").context(DisplayContext.ReadOnly).done()
+                .field("placement").done();
 
     }
 
@@ -590,7 +614,12 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .showSummaryChangeOption(showSummaryChange)
             .aboutToStartWebhook()
             .aboutToSubmitWebhook()
-            .submittedWebhook(submittedWebhook);
+            .submittedWebhook(submittedWebhook)
+            .fields()
+                .midEventWebhook()
+                .label("respondents_label", "label")
+                .label("others_label", "others")
+                .optional(CaseData::getRepresentatives);
     }
 
     private void renderComply(String eventId, UserRole role, TypedPropertyGetter<CaseData, ?> getter, DisplayContext reasonContext, String description) {
@@ -635,6 +664,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .aboutToSubmitWebhook(withAboutToSubmitWebhook)
             .showSummary()
             .fields()
+            .midEventWebhook("add-hearing-bookings")
             .complex(CaseData::getHearingDetails, HearingBooking.class)
                 .mandatory(HearingBooking::getType)
                 .mandatory(HearingBooking::getTypeDetails, "hearingDetails.type=\"OTHER\"")
