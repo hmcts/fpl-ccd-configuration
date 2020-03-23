@@ -8,7 +8,6 @@ module.exports = {
     evidenceNotHandled: '#evidenceHandled-No',
     search: 'Apply',
     caseList: 'Case List',
-    caseReference: '#\\[CASE_REFERENCE\\]',
   },
 
   navigate(){
@@ -40,8 +39,4 @@ module.exports = {
     return caseProperty.inside(caseRow);
   },
 
-  searchForCasesWithCaseRef(caseId) {
-    I.fillField(this.fields.caseReference, caseId);
-    I.click(this.fields.search);
-  },
 };

@@ -239,20 +239,9 @@ Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, c
   await I.seeCaseInSearchResult(caseId);
 });
 
-Scenario('HMCTS admin search for a given caseId', async (I, caseListPage) => {
-  await I.navigateToCaseList();
-  await caseListPage.searchForCasesWithCaseRef('0000');
-  await I.dontSeeCaseInSearchResult(caseId);
-
-  await I.navigateToCaseList();
-  await caseListPage.searchForCasesWithCaseRef(caseId);
-  await I.seeCaseInSearchResult(caseId);
-});
-
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
-
