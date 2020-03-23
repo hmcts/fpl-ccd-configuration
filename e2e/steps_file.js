@@ -106,6 +106,14 @@ module.exports = function () {
       }
     },
 
+    seeSimpleAnswerInTab(sectionName, question, answer) {
+      const sectionLocator =  locate(`//div[@class="complex-panel"][//span[text()="${sectionName}"]]`);
+      const questionRow = locate(`${sectionLocator}//tr[@class="complex-panel-simple-field"][//span[text()="${question}"]]`);
+      this.seeElement(sectionLocator);
+      this.seeElement(questionRow);
+      this.seeElement(questionRow.withText(answer));
+    },
+
     seeNestedAnswerInTab(questionNo, complexTypeHeading, complexTypeSubHeading, question, answer) {
       const panelLocator = name => locate(`//div[@class="complex-panel"][//span[text()="${name}"]]`);
 
@@ -192,6 +200,16 @@ module.exports = function () {
       await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
       enterAllocationProposalEventPage.selectAllocationProposal('District judge');
       await this.completeEvent('Save and continue');
+    },
+
+    async fillDate(date, sectionId = 'form'){
+      if(date) {
+        return within(sectionId, () => {
+          this.fillField('Day', date.day);
+          this.fillField('Month', date.month);
+          this.fillField('Year', date.year);
+        });
+      }
     },
 
     async addAnotherElementToCollection(collectionName) {
