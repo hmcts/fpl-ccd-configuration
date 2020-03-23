@@ -21,7 +21,7 @@
     "PageID": "OrderTypeAndDocument",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTypeAndDocument=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "orderTypeAndDocument=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,7 +33,7 @@
     "PageID": "OrderDateOfIssue",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/date-of-issue/mid-event",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/date-of-issue/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -72,7 +72,7 @@
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/child-selector/mid-event",
-    "PageShowCondition": "orderAppliesToAllChildren=\"No\"",
+    "PageShowCondition": "orderAppliesToAllChildren=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -107,7 +107,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "OrderMonths",
-    "PageDisplayOrder": 5,
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"SUPERVISION_ORDER\" AND orderTypeAndDocument.subtype=\"FINAL\"",
     "ShowSummaryChangeOption": "Y"
@@ -120,7 +120,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "InterimEndDate",
-    "PageDisplayOrder": 5,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.subtype=\"INTERIM\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/interim-end-date/mid-event",
@@ -134,7 +134,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "EPOChildren",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 8,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
     "ShowSummaryChangeOption": "Y"
@@ -147,7 +147,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "EPOType",
-    "PageDisplayOrder": 7,
+    "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/address/mid-event",
@@ -161,7 +161,7 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL",
     "PageID": "EPOType",
-    "PageDisplayOrder": 7,
+    "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
     "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
     "ShowSummaryChangeOption": "Y"
@@ -171,10 +171,10 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "createOrder",
     "CaseFieldID": "epoPhrase",
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "EPOPhrase",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 10,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
     "ShowSummaryChangeOption": "Y"
@@ -187,7 +187,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "EPOEndTime",
-    "PageDisplayOrder": 9,
+    "PageDisplayOrder": 11,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/epo-end-date/mid-event",
@@ -201,7 +201,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "JudgeInformation",
-    "PageDisplayOrder": 10,
+    "PageDisplayOrder": 12,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/generate-document/mid-event"
@@ -214,7 +214,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "FurtherDirections",
-    "PageDisplayOrder": 11,
+    "PageDisplayOrder": 13,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "orderTypeAndDocument.type!=\"BLANK_ORDER\"",

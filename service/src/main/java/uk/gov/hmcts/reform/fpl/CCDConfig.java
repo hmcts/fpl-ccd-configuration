@@ -178,7 +178,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("pageShow", DisplayContext.ReadOnly, "orderTypeAndDocument=\"DO_NOT_SHOW\"")
                 .page("OrderDateOfIssue")
                     .midEventWebhook("validate-order/date-of-issue")
-                    .field("dateOfIssue_label").context(DisplayContext.ReadOnly).label("dateOfIssue_label").showSummary().done()
+                    .field("dateOfIssue_label").context(DisplayContext.ReadOnly).label("dateOfIssue_label").done()
                     .field(CaseData::getDateOfIssue).context(DisplayContext.Mandatory).showSummary().done()
                 .page("OrderAppliesToAllChildren")
                     .showCondition("pageShow=\"Yes\"")
@@ -239,7 +239,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .allWebhooks("case-submission")
                 .retries(1,2,3,4,5)
                 .fields()
-                    .midEventWebhook()
                     .field("submissionConsentLabel", DisplayContext.ReadOnly, null, "Text", null, " ")
                     .field("submissionConsent", DisplayContext.Mandatory, null, "MultiSelectList", "Consent", " ");
 
@@ -250,7 +249,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .explicitGrants()
                 .grant("C", UserRole.SYSTEM_UPDATE)
                 .fields()
-                    .pageLabel(" ")
                     .optional(CaseData::getAllParties)
                     .optional(CaseData::getLocalAuthorityDirections)
                     .optional(CaseData::getRespondentDirections)
@@ -583,10 +581,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .label("nextHearingDateHintText", "### Add recital")
                     .field(CaseData::getNextHearingDateList).context(DisplayContext.Mandatory).done();
 
-
-
-
-
         addStatementOfService(PREPARE_FOR_HEARING);
         buildManageRepresentatives(PREPARE_FOR_HEARING, true, false);
 
@@ -605,19 +599,12 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .aboutToStartWebhook("comply-on-behalf")
             .aboutToSubmitWebhook()
             .fields()
-            .pageLabel(" ")
-            .field().id(CaseData::getCourtDirectionsCustom).showSummary(true).mutable().complex(Direction.class)
-            .readonly(Direction::getDirectionType)
-            .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
-            .readonly(Direction::getDateToBeCompletedBy)
-            .complex(Direction::getResponse)
-            .optional(DirectionResponse::getComplied)
-            .optional(DirectionResponse::getDocumentDetails)
-            .optional(DirectionResponse::getFile)
-            .label("cannotComplyTitle", "TODO")
-            .field(DirectionResponse::getCannotComplyReason, DisplayContext.Optional)
-            .optional(DirectionResponse::getC2Uploaded)
-            .optional(DirectionResponse::getCannotComplyFile);
+            .page(1)
+                .label("respondents_label", "label")
+                .field(CaseData::getRespondentDirectionsCustom).done()
+            .page(2)
+                .label("others_label", "label")
+                .field(CaseData::getOtherPartiesDirectionsCustom);
 
         // TODO: duplicate of renderComply
         event("COMPLY_ON_BEHALF_COURT")
@@ -841,10 +828,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         .aboutToSubmitWebhook()
         .submittedWebhook(withSubmittedWebhook)
         .fields()
-            .midEventWebhook()
-            .complex(CaseData::getTemporaryC2Document)
-            .mandatory(C2DocumentBundle::getDocument)
-            .mandatory(C2DocumentBundle::getDescription);
+            .page(2)
+            .field(CaseData::getTemporaryC2Document).complex()
+                .mandatory(C2DocumentBundle::getDocument)
+                .mandatory(C2DocumentBundle::getDescription);
     }
 
     private void buildOpen() {
@@ -948,7 +935,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .description("Entering other proceedings and allocation proposals")
                 .fields()
                     .label("allocationProposal_label", "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.")
-                    .optional(CaseData::getAllocationProposal);
+                    .field(CaseData::getAllocationProposal).context(DisplayContext.Complex);
 
         event("attendingHearing").forState(Open)
                 .name("Attending the hearing")
