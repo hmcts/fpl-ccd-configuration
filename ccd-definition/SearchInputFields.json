@@ -39,6 +39,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "dateSubmitted",
     "Label": "Date submitted",
-    "DisplayOrder": 5
+    "DisplayOrder": 6
   }
 ]
