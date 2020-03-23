@@ -97,7 +97,7 @@ public class DraftOrdersController {
 
     private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
         return hearingBookingService.getFirstHearing(hearings)
-            .map(x -> formatLocalDateTimeBaseUsingFormat(x.getStartDate(), DATE_TIME))
+            .map(hearing -> formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME))
             .orElse("Please enter a hearing date");
     }
 

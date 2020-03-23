@@ -7,11 +7,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.LocalDateTime.now;
@@ -35,16 +33,14 @@ public class HearingBookingService {
     }
 
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
-        return Stream.ofNullable(unwrapElements(hearingDetails))
-            .flatMap(Collection::stream)
+        return unwrapElements(hearingDetails).stream()
             .filter(hearing -> hearing.getStartDate().isAfter(LocalDateTime.now()))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
 
     public Optional<HearingBooking> getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
-        return Stream.ofNullable(unwrapElements(hearingDetails))
-            .flatMap(Collection::stream)
+        return unwrapElements(hearingDetails).stream()
             .min(comparing(HearingBooking::getStartDate));
     }
 
