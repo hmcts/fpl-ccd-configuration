@@ -161,6 +161,7 @@ public class GeneratedOrderService {
                 orderTemplateBuilder
                     .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
                     .put("childrenAct", "Children Act 1989")
+                    .put("childrenCount", childrenCount)
                     .put("orderDetails", caseData.getOrder().getDetails());
                 break;
             case CARE_ORDER:

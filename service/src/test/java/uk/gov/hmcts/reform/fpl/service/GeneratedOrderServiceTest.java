@@ -381,6 +381,7 @@ class GeneratedOrderServiceTest {
                     .put("orderType", BLANK_ORDER)
                     .put("orderTitle", "Example Title")
                     .put("childrenAct", "Children Act 1989")
+                    .put("childrenCount", childrenCount)
                     .put("orderDetails", "Example details");
                 break;
             case CARE_ORDER:
@@ -445,7 +446,7 @@ class GeneratedOrderServiceTest {
                     .put("epoType", REMOVE_TO_ACCOMMODATION)
                     .put("includePhrase", "Yes")
                     .put("removalAddress", "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
-                    .put("childrenCount", 2)
+                    .put("childrenCount", childrenCount)
                     .put("epoStartDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
                         "d MMMM yyyy 'at' h:mma"))
                     .put("epoEndDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
