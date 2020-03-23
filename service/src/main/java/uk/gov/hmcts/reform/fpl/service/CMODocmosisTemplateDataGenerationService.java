@@ -101,7 +101,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         cmoTemplateData.put("representatives",
             getRepresentatives(caseData, applicantName, caseData.getSolicitor()));
 
-        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
+        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, caseData.getCaseManagementOrder());
 
         HearingBooking nextHearing = null;
 
@@ -175,14 +175,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
                 "name", respondent.getFullName(),
                 "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), DEFAULT)))
             .collect(toList());
-    }
-
-    private CaseManagementOrder getCaseManagementOrder(CaseData caseData) {
-        if (caseData.getCaseManagementOrder() != null) {
-            return caseData.getCaseManagementOrder();
-        }
-
-        return null;
     }
 
     private List<Map<String, Object>> getRepresentatives(CaseData caseData,
