@@ -11,6 +11,15 @@ module.exports = {
     },
   },
 
+  async skipDateOfIssue(){
+    await this.enterDateOfIssue();
+  },
+
+  async enterDateOfIssue(date){
+    await I.fillDate(date);
+    await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeAndLegalAdvisor');
+  },
+
   async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
