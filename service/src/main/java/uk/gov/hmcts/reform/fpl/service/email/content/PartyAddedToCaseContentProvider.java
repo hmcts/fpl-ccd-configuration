@@ -14,10 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import java.util.Map;
 
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -44,14 +41,6 @@ public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvide
             notificationParams.put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()));
         }
         return notificationParams.build();
-    }
-
-    public String getPartyAddedToCaseNotificationTemplate(RepresentativeServingPreferences servingPreferences) {
-        if (servingPreferences == EMAIL) {
-            return PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-        }     else {
-            return PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
-        }
     }
 
     private ImmutableMap.Builder<String, Object> buildPartyAddedToCaseCommonNotificationParams(
