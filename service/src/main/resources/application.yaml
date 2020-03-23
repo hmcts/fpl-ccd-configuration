@@ -98,7 +98,7 @@ payment:
   site_id: ABA3
 
 ld:
-  user_key: FPLA
+  user_key: ${LD_USER_KEY:FPLA}
   sdk_key:
 
 bankHolidays:
