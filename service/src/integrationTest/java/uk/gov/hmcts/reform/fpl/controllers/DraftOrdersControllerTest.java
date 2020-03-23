@@ -251,6 +251,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                                 .party(RespondentParty.builder()
                                     .dateOfBirth(LocalDate.now().plusDays(1))
                                     .lastName("Moley")
+                                    .relationshipToChild("Uncle")
                                     .build())
                                 .build()
                         )
