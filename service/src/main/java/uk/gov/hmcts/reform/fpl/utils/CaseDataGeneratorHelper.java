@@ -149,36 +149,32 @@ public class CaseDataGeneratorHelper {
     }
 
     public static List<Element<Child>> createPopulatedChildren() {
-        return ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Bran")
-                        .lastName("Stark")
-                        .gender("Male")
-                        .dateOfBirth(LocalDate.now())
-                        .build())
+        return ElementUtils.wrapElements(
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Bran")
+                    .lastName("Stark")
+                    .gender("Boy")
+                    .dateOfBirth(LocalDate.now())
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Sansa")
-                        .lastName("Stark")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Sansa")
+                    .lastName("Stark")
+                    .gender("Boy")
+                    .dateOfBirth(LocalDate.now())
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Jon")
-                        .lastName("Snow")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Jon")
+                    .lastName("Snow")
+                    .gender("Girl")
+                    .dateOfBirth(LocalDate.now())
                     .build())
-                .build());
+                .build()
+        );
     }
 
     public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
@@ -279,6 +275,7 @@ public class CaseDataGeneratorHelper {
         return ImmutableList.of(
             Element.<GeneratedOrder>builder()
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Example Order")
                     .details(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -291,6 +288,7 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Winter is here")
                     .details("Westeros")
                     .date(formatLocalDateTimeBaseUsingFormat(
@@ -303,6 +301,7 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Black Sails")
                     .details("Long John Silver")
                     .date(formatLocalDateTimeBaseUsingFormat(
