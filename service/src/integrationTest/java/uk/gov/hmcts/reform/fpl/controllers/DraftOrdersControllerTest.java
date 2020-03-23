@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
 
@@ -90,6 +92,9 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
     @MockBean
     private InboxLookupService inboxLookupService;
 
+    @Autowired
+    private Time time;
+
     DraftOrdersControllerTest() {
         super("draft-standard-directions");
     }
@@ -112,6 +117,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
         assertThat(extractDirections(caseData.getCafcassDirections())).containsOnly(directions.get(3));
         assertThat(extractDirections(caseData.getOtherPartiesDirections())).containsOnly(directions.get(4));
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5)).hasSize(1);
+        assertThat(caseData.getDateOfIssue()).isEqualTo(time.now().toLocalDate());
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
@@ -245,6 +251,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                                 .party(RespondentParty.builder()
                                     .dateOfBirth(LocalDate.now().plusDays(1))
                                     .lastName("Moley")
+                                    .relationshipToChild("Uncle")
                                     .build())
                                 .build()
                         )
@@ -328,9 +335,10 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
             CaseDetails caseDetails = CaseDetails.builder()
                 .data(createCaseDataMap(directions)
+                    .put("dateOfIssue", time.now().toLocalDate().toString())
                     .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                     .put("caseLocalAuthority", "example")
-                    .put("dateSubmitted", LocalDate.now().toString())
+                    .put("dateSubmitted", time.now().toLocalDate().toString())
                     .build())
                 .build();
 
@@ -365,6 +373,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
             CaseDetails caseDetails = CaseDetails.builder()
                 .data(createCaseDataMap(directionWithShowHideValuesRemoved)
+                    .put("dateOfIssue", time.now().toLocalDate().toString())
                     .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
                     .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                     .put("allocatedJudge", Judge.builder().build())
@@ -374,7 +383,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                         .venue("EXAMPLE")
                         .build()))
                     .put("caseLocalAuthority", "example")
-                    .put("dateSubmitted", LocalDate.now().toString())
+                    .put("dateSubmitted", time.now().toLocalDate().toString())
                     .build())
                 .build();
 

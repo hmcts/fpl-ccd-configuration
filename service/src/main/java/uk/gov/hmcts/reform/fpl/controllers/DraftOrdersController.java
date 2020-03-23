@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -45,8 +46,10 @@ import java.util.stream.Stream;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 
 @Api
 @RestController
@@ -64,6 +67,7 @@ public class DraftOrdersController {
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final OrderValidationService orderValidationService;
     private final HearingBookingService hearingBookingService;
+    private final Time time;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -71,6 +75,8 @@ public class DraftOrdersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
+
+        caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
@@ -121,6 +127,7 @@ public class DraftOrdersController {
             .standardDirectionOrder(Order.builder()
                 .directions(commonDirectionService.combineAllDirections(caseData))
                 .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+                .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
 
@@ -169,6 +176,7 @@ public class DraftOrdersController {
                 .directions(commonDirectionService.combineAllDirections(caseData))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+                .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
 
@@ -191,6 +199,7 @@ public class DraftOrdersController {
 
         caseDetails.getData().put("standardDirectionOrder", order);
         caseDetails.getData().remove("judgeAndLegalAdvisor");
+        caseDetails.getData().remove("dateOfIssue");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
