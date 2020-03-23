@@ -42,32 +42,35 @@ fees-register:
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
+      keyword: CareOrder
       service: public law
     EDUCATION_SUPERVISION_ORDER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: TUV
+      keyword: EducationSupervision
       service: private law
     EMERGENCY_PROTECTION_ORDER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: KLM
+      keyword: EPO
       service: private law
     INTERIM_CARE_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
+      keyword: CareOrder
       service: public law
     INTERIM_SUPERVISION_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
+      keyword: CareOrder
       service: public law
     OTHER:
       channel: default
@@ -81,20 +84,21 @@ fees-register:
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: DEF
+      keyword: Placement
       service: adoption
     SUPERVISION_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
+      keyword: CareOrder
       service: public law
 
 payment:
   site_id: ABA3
 
 ld:
-  user_key: FPLA
+  user_key: ${LD_USER_KEY:FPLA}
   sdk_key:
 
 bankHolidays:

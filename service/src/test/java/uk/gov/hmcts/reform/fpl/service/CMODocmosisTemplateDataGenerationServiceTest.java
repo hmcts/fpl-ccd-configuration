@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
@@ -161,6 +160,18 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("caseManagementNumber")).isEqualTo(2);
     }
 
+    @Test
+    void shouldReturnCourtSealInTemplateDataWhenCMOisNotInDraft() throws IOException {
+        final Map<String, Object> caseDataMap = buildCaseDataMapForDraftCMODocmosisGeneration(NOW);
+
+        final CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
+
+        final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(caseData, false);
+
+        assertThat(templateData.get("courtseal")).isNotNull();
+        assertThat(templateData.get("draftbackground")).isNull();
+    }
+
     private List<Map<String, Object>> getExpectedRepresentatives() {
         return List.of(
             Map.of("name", "Bran Stark", "representedBy", List.of(
@@ -234,16 +245,16 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         return List.of(
             Map.of(
                 "name", "Bran Stark",
-                "gender", "Male",
+                "gender", "Boy",
                 "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
             Map.of(
                 "name", "Sansa Stark",
-                "gender", EMPTY,
-                "dateOfBirth", EMPTY),
+                "gender", "Boy",
+                "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
             Map.of(
                 "name", "Jon Snow",
-                "gender", EMPTY,
-                "dateOfBirth", EMPTY)
+                "gender", "Girl",
+                "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
         );
     }
 
