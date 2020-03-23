@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 @WebMvcTest(NoticeOfProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTest {
-    private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
+    private static final LocalDateTime TODAY = LocalDateTime.now();
 
     NoticeOfProceedingsControllerAboutToStartTest() {
         super("notice-of-proceedings");
@@ -57,15 +57,15 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
         String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
 
         String expectedContent = String.format("The case management hearing will be on the %s.",
-            formatLocalDateTimeBaseUsingFormat(FUTURE_DATE, DATE));
+            formatLocalDateTimeBaseUsingFormat(TODAY, DATE));
 
         assertThat(proceedingLabel).isEqualTo(expectedContent);
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
         return ElementUtils.wrapElements(
-            createHearingBooking(FUTURE_DATE.plusDays(5), FUTURE_DATE.plusHours(6)),
-            createHearingBooking(FUTURE_DATE.plusDays(2), FUTURE_DATE.plusMinutes(45)),
-            createHearingBooking(FUTURE_DATE, FUTURE_DATE.plusHours(2)));
+            createHearingBooking(TODAY.plusDays(5), TODAY.plusHours(6)),
+            createHearingBooking(TODAY.plusDays(2), TODAY.plusMinutes(45)),
+            createHearingBooking(TODAY, TODAY.plusHours(2)));
     }
 }
