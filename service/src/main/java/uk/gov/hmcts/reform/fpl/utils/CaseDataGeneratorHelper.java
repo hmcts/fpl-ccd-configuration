@@ -182,26 +182,20 @@ public class CaseDataGeneratorHelper {
 
     public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
         return Order.builder()
-            .directions(ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(randomUUID())
-                    .value(Direction.builder()
-                        .directionType("Test SDO type 1")
-                        .directionText("Test body 1")
-                        .directionNeeded(YES.getValue())
-                        .dateToBeCompletedBy(today)
-                        .assignee(ALL_PARTIES)
-                        .build())
+            .dateOfIssue("29 November 2019")
+            .directions(ElementUtils.wrapElements(Direction.builder()
+                    .directionType("Test SDO type 1")
+                    .directionText("Test body 1")
+                    .directionNeeded(YES.getValue())
+                    .dateToBeCompletedBy(today)
+                    .assignee(ALL_PARTIES)
                     .build(),
-                Element.<Direction>builder()
-                    .id(randomUUID())
-                    .value(Direction.builder()
-                        .directionType("Test SDO type 2")
-                        .directionText("Test body 2")
-                        .directionNeeded(YES.getValue())
-                        .dateToBeCompletedBy(today)
-                        .assignee(ALL_PARTIES)
-                        .build())
+                Direction.builder()
+                    .directionType("Test SDO type 2")
+                    .directionText("Test body 2")
+                    .directionNeeded(YES.getValue())
+                    .dateToBeCompletedBy(today)
+                    .assignee(ALL_PARTIES)
                     .build()
             ))
             .orderStatus(status)
@@ -284,6 +278,7 @@ public class CaseDataGeneratorHelper {
         return ImmutableList.of(
             Element.<GeneratedOrder>builder()
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Example Order")
                     .details(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -296,6 +291,7 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Winter is here")
                     .details("Westeros")
                     .date(formatLocalDateTimeBaseUsingFormat(
@@ -308,6 +304,7 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Black Sails")
                     .details("Long John Silver")
                     .date(formatLocalDateTimeBaseUsingFormat(

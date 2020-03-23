@@ -519,6 +519,26 @@
           "telephoneNumber": "0717171717",
           "servingPreferences": "DIGITAL_SERVICE",
           "role" : "CAFCASS_GUARDIAN"
+        },
+        {
+          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
+          "value": {
+            "fullName": "Barney Rubble",
+            "positionInACase": "Cafcass Solicitor",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": "barney@rubble.com"
+          },
+          "telephoneNumber": "0717171718",
+          "servingPreferences": "EMAIL",
+          "role" : "CAFCASS_SOLICITOR"
         }
       ]
     }
