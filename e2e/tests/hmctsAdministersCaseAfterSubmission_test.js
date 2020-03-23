@@ -241,7 +241,7 @@ Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, c
 
 Scenario('HMCTS admin search for a given caseId', async (I, caseListPage) => {
   await I.navigateToCaseList();
-  await caseListPage.searchForCasesWithCaseRef('Find Case');
+  await caseListPage.searchForCasesWithCaseRef('0000');
   await I.dontSeeCaseInSearchResult(caseId);
 
   await I.navigateToCaseList();
