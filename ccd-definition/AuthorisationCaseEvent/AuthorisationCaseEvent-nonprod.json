@@ -67,7 +67,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "placement",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
