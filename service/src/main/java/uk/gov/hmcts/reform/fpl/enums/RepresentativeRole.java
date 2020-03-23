@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LABARRISTER;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
 
@@ -30,7 +31,8 @@ public enum RepresentativeRole {
     REPRESENTING_OTHER_PERSON_6(Type.OTHER, 6, SOLICITOR),
     REPRESENTING_OTHER_PERSON_7(Type.OTHER, 7, SOLICITOR),
     REPRESENTING_OTHER_PERSON_8(Type.OTHER, 8, SOLICITOR),
-    REPRESENTING_OTHER_PERSON_9(Type.OTHER, 9, SOLICITOR);
+    REPRESENTING_OTHER_PERSON_9(Type.OTHER, 9, SOLICITOR),
+    LA_BARRISTER(Type.LABARRISTER, 1, LABARRISTER);
 
     private Set<CaseRole> caseRoles = new HashSet<>();
     private Type type;
@@ -59,6 +61,6 @@ public enum RepresentativeRole {
     }
 
     public enum Type {
-        OTHER, RESPONDENT, CAFCASS, LASOLICITOR
+        OTHER, RESPONDENT, CAFCASS, LASOLICITOR, LABARRISTER
     }
 }

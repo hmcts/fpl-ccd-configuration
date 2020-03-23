@@ -159,5 +159,12 @@
     "ListElementCode": "REPRESENTING_OTHER_PERSON_9",
     "ListElement": "Representing other person 9",
     "DisplayOrder": 23
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RepresentativeRole",
+    "ListElementCode": "LA_BARRISTER",
+    "ListElement": "LA Barrister",
+    "DisplayOrder": 24
   }
 ]

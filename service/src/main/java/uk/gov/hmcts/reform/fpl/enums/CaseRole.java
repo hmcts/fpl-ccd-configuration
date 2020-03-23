@@ -3,7 +3,8 @@ package uk.gov.hmcts.reform.fpl.enums;
 public enum CaseRole {
     CREATOR,
     LASOLICITOR,
-    SOLICITOR;
+    SOLICITOR,
+    LABARRISTER;
 
     private String formattedName;
 
