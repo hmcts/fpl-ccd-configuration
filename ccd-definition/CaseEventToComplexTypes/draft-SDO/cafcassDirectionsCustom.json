@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CafcassDirectionsCustom",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "directionType",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CafcassDirectionsCustom",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "directionText",
@@ -20,7 +18,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CafcassDirectionsCustom",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",

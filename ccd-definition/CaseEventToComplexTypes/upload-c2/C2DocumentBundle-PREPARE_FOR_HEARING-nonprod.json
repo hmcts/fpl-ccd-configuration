@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "nameOfRepresentative",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "pbaNumber",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "clientCode",
@@ -31,7 +28,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "fileReference",
@@ -40,4 +36,3 @@
     "DisplayContext": "OPTIONAL"
   }
 ]
-

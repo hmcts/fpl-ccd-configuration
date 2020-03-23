@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "LocalAuthorityCustomDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "localAuthorityDirectionsCustom",
     "ListElementCode": "directionType",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "LocalAuthorityCustomDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "localAuthorityDirectionsCustom",
     "ListElementCode": "directionText",
@@ -20,7 +18,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "LocalAuthorityCustomDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "localAuthorityDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",

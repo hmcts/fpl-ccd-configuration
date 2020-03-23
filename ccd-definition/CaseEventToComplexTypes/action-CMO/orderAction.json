@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OrderAction",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "orderAction",
     "ListElementCode": "document",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OrderAction",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "orderAction",
     "ListElementCode": "type",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OrderAction",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "orderAction",
     "ListElementCode": "nextHearingType",
@@ -30,7 +27,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OrderAction",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "orderAction",
     "ListElementCode": "changeRequestedByJudge",

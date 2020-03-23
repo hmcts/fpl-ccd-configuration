@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocationProposal",
     "CaseEventID": "otherProposal",
     "CaseFieldID": "allocationProposal",
     "ListElementCode": "proposal",
@@ -10,7 +9,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocationProposal",
     "CaseEventID": "otherProposal",
     "CaseFieldID": "allocationProposal",
     "ListElementCode": "proposalReason",

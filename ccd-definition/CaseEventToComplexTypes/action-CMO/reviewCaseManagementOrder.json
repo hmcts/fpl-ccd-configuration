@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "cmoToAction",
     "ListElementCode": "orderDoc",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "cmoToAction",
     "ListElementCode": "hearingDate",

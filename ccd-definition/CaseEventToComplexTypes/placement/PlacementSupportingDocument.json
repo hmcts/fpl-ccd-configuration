@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementSupportingDocument",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments.type",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementSupportingDocument",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments.document",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementSupportingDocument",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments.description",

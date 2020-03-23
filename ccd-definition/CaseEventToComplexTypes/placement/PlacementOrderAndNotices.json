@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementOrderAndNotices",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.type_label",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementOrderAndNotices",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.type",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementOrderAndNotices",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.document",
@@ -31,7 +28,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementOrderAndNotices",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.description",

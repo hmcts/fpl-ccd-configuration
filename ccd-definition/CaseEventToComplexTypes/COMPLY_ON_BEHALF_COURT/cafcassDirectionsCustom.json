@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "directionType",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "directionNeeded",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",
@@ -31,7 +28,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.complied",
@@ -41,7 +37,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.documentDetails",
@@ -50,7 +45,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.file",
@@ -59,7 +53,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.cannotComplyTitle",
@@ -69,7 +62,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.cannotComplyReason",
@@ -78,7 +70,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.c2Uploaded",
@@ -87,7 +78,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.cannotComplyFile",

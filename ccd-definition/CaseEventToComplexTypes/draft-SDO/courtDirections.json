@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "courtDirections",
     "ListElementCode": "readOnly",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "courtDirections",
     "ListElementCode": "directionRemovable",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "courtDirections",
     "ListElementCode": "directionType",
@@ -31,7 +28,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "courtDirections",
     "ListElementCode": "directionNeeded",
@@ -41,7 +37,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "courtDirections",
     "ListElementCode": "directionText",
@@ -51,7 +46,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "courtDirections",
     "ListElementCode": "dateToBeCompletedBy",

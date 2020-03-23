@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "childCount",
@@ -12,7 +11,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child0",
@@ -22,7 +20,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child1",
@@ -32,7 +29,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child2",
@@ -42,7 +38,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child3",
@@ -52,7 +47,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child4",
@@ -62,7 +56,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child5",
@@ -72,7 +65,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child6",
@@ -82,7 +74,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child7",
@@ -92,7 +83,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child8",
@@ -102,7 +92,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child9",
@@ -112,7 +101,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child10",
@@ -122,7 +110,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child11",
@@ -132,7 +119,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child12",
@@ -142,7 +128,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child13",
@@ -152,7 +137,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildSelector",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "childSelector",
     "ListElementCode": "child14",

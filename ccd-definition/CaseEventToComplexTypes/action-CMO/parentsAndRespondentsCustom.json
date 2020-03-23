@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ParentsAndRespondentsCustom",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "respondentDirectionsCustomCMO",
     "ListElementCode": "directionType",
@@ -10,7 +9,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ParentsAndRespondentsCustom",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "respondentDirectionsCustomCMO",
     "ListElementCode": "directionText",
@@ -19,7 +17,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ParentsAndRespondentsCustom",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "respondentDirectionsCustomCMO",
     "ListElementCode": "parentsAndRespondentsAssignee",
@@ -28,7 +25,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ParentsAndRespondentsCustom",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "respondentDirectionsCustomCMO",
     "ListElementCode": "dateToBeCompletedBy",

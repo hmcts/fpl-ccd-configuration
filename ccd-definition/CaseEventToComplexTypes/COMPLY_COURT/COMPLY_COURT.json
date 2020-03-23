@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "directionType",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "directionNeeded",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",
@@ -31,7 +28,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "response.complied",
@@ -40,7 +36,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "response.documentDetails",
@@ -49,7 +44,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "response.file",
@@ -58,7 +52,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "response.cannotComplyTitle",
@@ -67,7 +60,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "response.cannotComplyReason",
@@ -76,7 +68,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "response.c2Uploaded",
@@ -85,7 +76,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_COURT",
     "CaseFieldID": "courtDirectionsCustom",
     "ListElementCode": "response.cannotComplyFile",

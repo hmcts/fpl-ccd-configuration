@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementConfidentialDocument",
     "CaseEventID": "placement-PREPARE_FOR_HEARING",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments.type",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementConfidentialDocument",
     "CaseEventID": "placement-PREPARE_FOR_HEARING",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments.document",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PlacementConfidentialDocument",
     "CaseEventID": "placement-PREPARE_FOR_HEARING",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments.description",

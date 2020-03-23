@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "draftCMO",
     "CaseFieldID": "caseManagementOrder",
     "ListElementCode": "orderDoc",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "draftCMO",
     "CaseFieldID": "caseManagementOrder",
     "ListElementCode": "hearingDate",
@@ -22,7 +20,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "draftCMO",
     "CaseFieldID": "caseManagementOrder",
     "ListElementCode": "status",

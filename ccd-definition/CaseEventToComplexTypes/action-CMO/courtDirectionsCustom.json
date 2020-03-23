@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirectionsCustom",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "courtDirectionsCustomCMO",
     "ListElementCode": "directionType",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirectionsCustom",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "courtDirectionsCustomCMO",
     "ListElementCode": "directionText",
@@ -20,7 +18,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirectionsCustom",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "courtDirectionsCustomCMO",
     "ListElementCode": "dateToBeCompletedBy",

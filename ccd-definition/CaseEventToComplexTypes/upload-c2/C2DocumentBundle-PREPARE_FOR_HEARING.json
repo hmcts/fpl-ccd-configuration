@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "document",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "description",
@@ -20,4 +18,3 @@
     "DisplayContext": "MANDATORY"
   }
 ]
-

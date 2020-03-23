@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Placement",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementChildId",
@@ -12,7 +11,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Placement",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementChildName",
@@ -22,7 +20,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Placement",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementApplication",
@@ -32,7 +29,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Placement",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments",
@@ -42,7 +38,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Placement",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments",
@@ -52,7 +47,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Placement",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices",

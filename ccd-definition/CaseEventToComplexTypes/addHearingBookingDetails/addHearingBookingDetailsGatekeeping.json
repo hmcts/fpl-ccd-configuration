@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "type",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "typeDetails",
@@ -22,7 +20,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "venue",
@@ -32,7 +29,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "startDate",
@@ -43,7 +39,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "endDate",
@@ -54,7 +49,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "hearingNeedsBooked",
@@ -64,7 +58,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "hearingNeedsDetails",
@@ -75,7 +68,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.judgeTitle",
@@ -85,7 +77,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.otherTitle",
@@ -96,7 +87,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.judgeLastName",
@@ -107,7 +97,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.judgeFullName",
@@ -118,7 +107,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetailsGatekeeping",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.legalAdvisorName",
@@ -126,6 +114,4 @@
     "FieldDisplayOrder": 12,
     "DisplayContext": "OPTIONAL"
   }
-
-
 ]

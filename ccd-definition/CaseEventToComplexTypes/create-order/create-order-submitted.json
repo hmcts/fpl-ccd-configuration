@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OrderTypeAndDocumentComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "type",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OrderTypeAndDocumentComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "subtype",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OrderTypeAndDocumentComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "document",
@@ -32,7 +29,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "GeneratedOrderComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "order",
     "ListElementCode": "title",
@@ -42,7 +38,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "GeneratedOrderComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "order",
     "ListElementCode": "details",
@@ -52,7 +47,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "GeneratedOrderComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "order",
     "ListElementCode": "date",
@@ -63,7 +57,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "JudgeAndLegalAdvisorComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
@@ -73,7 +66,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "JudgeAndLegalAdvisorComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
@@ -83,7 +75,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "JudgeAndLegalAdvisorComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeFullName",
@@ -93,7 +84,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "JudgeAndLegalAdvisorComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
@@ -103,7 +93,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EPOChildren",
     "CaseEventID": "createOrder",
     "CaseFieldID": "epoChildren",
     "ListElementCode": "descriptionNeeded",
@@ -113,7 +102,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EPOChildren",
     "CaseEventID": "createOrder",
     "CaseFieldID": "epoChildren",
     "ListElementCode": "description",
