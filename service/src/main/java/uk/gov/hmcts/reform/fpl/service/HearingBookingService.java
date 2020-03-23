@@ -7,18 +7,19 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.LocalDateTime.now;
 import static java.util.Comparator.comparing;
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 public class HearingBookingService {
@@ -34,24 +35,16 @@ public class HearingBookingService {
     }
 
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
-        if (hearingDetails == null) {
-            throw new IllegalStateException("Hearing booking was not present");
-        }
-
-        return hearingDetails.stream()
-            .map(Element::getValue)
+        return Stream.ofNullable(unwrapElements(hearingDetails))
+            .flatMap(Collection::stream)
             .filter(hearing -> hearing.getStartDate().isAfter(LocalDateTime.now()))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
 
     public Optional<HearingBooking> getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
-        if (isEmpty(hearingDetails)) {
-            return empty();
-        }
-
-        return hearingDetails.stream()
-            .map(Element::getValue)
+        return Stream.ofNullable(unwrapElements(hearingDetails))
+            .flatMap(Collection::stream)
             .min(comparing(HearingBooking::getStartDate));
     }
 

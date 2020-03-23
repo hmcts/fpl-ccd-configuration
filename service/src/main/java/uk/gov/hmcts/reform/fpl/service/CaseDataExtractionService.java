@@ -195,17 +195,16 @@ public class CaseDataExtractionService {
     }
 
     private DocmosisHearingBooking getHearingBookingData(List<Element<HearingBooking>> hearingDetails) {
-        return ofNullable(hearingDetails).map(hearingBookings -> {
-                HearingBooking hearing = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
-                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing.getVenue());
+        return hearingBookingService.getFirstHearing(hearingDetails).map(hearingBooking -> {
+                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking.getVenue());
 
                 return DocmosisHearingBooking.builder()
-                    .hearingDate(dataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
+                    .hearingDate(dataExtractionService.getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""))
                     .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
-                    .preHearingAttendance(dataExtractionService.extractPrehearingAttendance(hearing))
-                    .hearingTime(dataExtractionService.getHearingTime(hearing))
-                    .hearingJudgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
-                    .hearingLegalAdvisorName(getLegalAdvisorName(hearing.getJudgeAndLegalAdvisor()))
+                    .preHearingAttendance(dataExtractionService.extractPrehearingAttendance(hearingBooking))
+                    .hearingTime(dataExtractionService.getHearingTime(hearingBooking))
+                    .hearingJudgeTitleAndName(formatJudgeTitleAndName(hearingBooking.getJudgeAndLegalAdvisor()))
+                    .hearingLegalAdvisorName(getLegalAdvisorName(hearingBooking.getJudgeAndLegalAdvisor()))
                     .build();
             }
         ).orElse(DocmosisHearingBooking.builder().build());

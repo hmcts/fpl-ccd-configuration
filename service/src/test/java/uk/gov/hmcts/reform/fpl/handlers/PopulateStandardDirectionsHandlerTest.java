@@ -215,6 +215,7 @@ class PopulateStandardDirectionsHandlerTest {
             .extracting("value")
             .isEqualTo(Map.of(
                 "assignee", "LOCAL_AUTHORITY",
+                "dateToBeCompletedBy", "2020-01-01T15:30:00",
                 "directionText", "- Test body's 1 \n\n- Two",
                 "directionType", "Direction",
                 "directionRemovable", "No",

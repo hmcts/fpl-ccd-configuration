@@ -62,7 +62,6 @@ class CaseDataExtractionServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Family Court";
     private static final LocalDate TODAY = LocalDate.now();
-    private static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
 
     @MockBean
     private UserDetailsService userDetailsService;
@@ -185,7 +184,7 @@ class CaseDataExtractionServiceTest {
             .complianceDeadline(formatLocalDateToString(TODAY.plusWeeks(26), LONG))
             .children(getExpectedChildren())
             .hearingBooking(DocmosisHearingBooking.builder()
-                .hearingDate(formatLocalDateToString(FUTURE_DATE, LONG))
+                .hearingDate(formatLocalDateToString(TODAY, LONG))
                 .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
                 .preHearingAttendance("11:00pm")
                 .hearingTime("12:00am - 12:00pm")
@@ -268,6 +267,6 @@ class CaseDataExtractionServiceTest {
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
-        return wrapElements(createHearingBooking(FUTURE_DATE.atStartOfDay(), FUTURE_DATE.atTime(NOON)));
+        return wrapElements(createHearingBooking(TODAY.atStartOfDay(), TODAY.atTime(NOON)));
     }
 }
