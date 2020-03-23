@@ -373,6 +373,7 @@ class GeneratedOrderServiceTest {
                 "name", "Robbie Jones",
                 "gender", "Boy",
                 "dateOfBirth", formattedDate));
+        int childrenCount = children.size();
 
         switch (type) {
             case BLANK_ORDER:
@@ -385,7 +386,7 @@ class GeneratedOrderServiceTest {
             case CARE_ORDER:
                 expectedMap
                     .put("orderType", CARE_ORDER)
-                    .put("childrenCount", children.size())
+                    .put("childrenCount", childrenCount)
                     .put("localAuthorityName", localAuthorityName);
                 if (subtype == INTERIM) {
                     expectedMap
