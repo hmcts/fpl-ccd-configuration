@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
@@ -172,10 +171,10 @@ class NotificationHandlerTest {
     @BeforeEach
     void setup() {
         notificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
-            cafcassLookupConfiguration, hmctsEmailContentProvider, partyAddedToCaseContentProvider,
-            cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
-            c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
-            localAuthorityEmailContentProvider, idamApi, inboxLookupService,
+            cafcassLookupConfiguration, partyAddedToCaseContentProvider,
+            cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
+            orderEmailContentProvider, orderIssuedEmailContentProvider,
+            localAuthorityEmailContentProvider, inboxLookupService,
             caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
             localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration, notificationService);
     }
