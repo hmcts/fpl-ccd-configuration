@@ -279,6 +279,7 @@ public class CaseDataGeneratorHelper {
         return ImmutableList.of(
             Element.<GeneratedOrder>builder()
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Example Order")
                     .details(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -291,6 +292,7 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Winter is here")
                     .details("Westeros")
                     .date(formatLocalDateTimeBaseUsingFormat(
@@ -303,6 +305,7 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Black Sails")
                     .details("Long John Silver")
                     .date(formatLocalDateTimeBaseUsingFormat(
