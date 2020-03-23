@@ -209,7 +209,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
-        assertThat(templateData.get("hearingDate")).isEqualTo(DateFormatterService
+        assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
             .formatLocalDateToString(FUTURE_DATE, FormatStyle.LONG));
         assertThat(templateData.get("hearingVenue"))
             .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");

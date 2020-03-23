@@ -41,7 +41,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, GeneratedOrderEmailContentProvider.class,
     HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class})
 class GeneratedOrderEmailContentProviderTest {
-
     private final DateFormatterService dateFormatterService = new DateFormatterService();
     private final HearingBookingService hearingBookingService = new HearingBookingService();
 
@@ -86,7 +85,7 @@ class GeneratedOrderEmailContentProviderTest {
             .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
                 "linkToDocument", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Local Authority",
-                (subjectLine + ", hearing " + DateFormatterService.formatLocalDateToString(FUTURE_DATE.toLocalDate(),
+                (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(FUTURE_DATE.toLocalDate(),
                     FormatStyle.MEDIUM)), documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
     }
 

@@ -24,13 +24,12 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
+import static com.google.common.collect.Maps.newHashMap;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
@@ -44,6 +43,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_SHORT_MONTH;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
@@ -52,15 +53,14 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUr
 @WebMvcTest(CaseManagementOrderProgressionController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseManagementOrderProgressionControllerTest extends AbstractControllerTest {
-    private static final UUID UUID = randomUUID();
+    private static final UUID uuid = randomUUID();
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String HMCTS_ADMIN_INBOX = "admin@family-court.com";
     private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
 
-    private static final DateTimeFormatter DATE_FORMAT = ofPattern("dd MMM yyyy");
-    private static final Long CASE_ID = 12345L;
+    private static final Long caseId = 12345L;
     private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
 
     @MockBean
@@ -97,7 +97,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
+            expectedJudgeRejectedNotificationParameters(), caseId.toString());
     }
 
     private void cmoCommonAssertions(CaseData responseData, CaseData caseDataBefore) {
@@ -122,7 +122,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
+            expectedJudgeRejectedNotificationParameters(), caseId.toString());
     }
 
     @Test
@@ -154,11 +154,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
     }
 
     @Test
@@ -171,11 +171,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
     }
 
     @Test
@@ -188,44 +188,44 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString()
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString()
         );
     }
 
     private Map<String, Object> expectedJudgeRejectedNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(commonNotificationParameters())
-            .put("requestedChanges", "Please make this change XYZ")
-            .build();
+        return newHashMap(
+            commonNotificationParameters()
+                .put("requestedChanges", "Please make this change XYZ")
+                .build());
     }
 
     private Map<String, Object> expectedCMODraftCompleteNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(commonNotificationParameters())
-            .put("respondentLastName", "Jones")
-            .put("judgeTitle", "Her Honour Judge")
-            .put("judgeName", "Moley")
-            .build();
+        return newHashMap(
+            commonNotificationParameters()
+                .put("respondentLastName", "Jones")
+                .put("judgeTitle", "Her Honour Judge")
+                .put("judgeName", "Moley")
+                .build());
     }
 
-    private Map<String, Object> commonNotificationParameters() {
-        String hearingDate = FUTURE_DATE.format(DATE_FORMAT);
-        final String subjectLine = "Jones, SACCCCCCCC5676576567," + " hearing " + hearingDate;
+    private ImmutableMap.Builder<String, Object> commonNotificationParameters() {
+        String hearingDate = formatLocalDateTimeBaseUsingFormat(FUTURE_DATE, DATE_SHORT_MONTH);
+        String subjectLine = String.format("Jones, %s, hearing %s", FAMILY_MAN_CASE_NUMBER, hearingDate);
+
         return ImmutableMap.<String, Object>builder()
             .put("subjectLineWithHearingDate", subjectLine)
-            .put("reference", CASE_ID.toString())
-            .put("caseUrl", formatCaseUrl("http://fake-url", CASE_ID))
-            .build();
+            .put("reference", caseId.toString())
+            .put("caseUrl", formatCaseUrl("http://fake-url", caseId));
     }
 
     private CaseManagementOrder buildOrder(CMOStatus status, ActionType actionType) {
         return CaseManagementOrder.builder()
             .status(status)
-            .id(UUID)
+            .id(uuid)
             .action(OrderAction.builder()
                 .type(actionType)
                 .build())

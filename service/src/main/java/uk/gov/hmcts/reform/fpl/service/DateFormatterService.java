@@ -15,6 +15,7 @@ public class DateFormatterService {
     public static final String TIME_DATE = "h:mma, d MMMM yyyy";
     public static final String DATE_TIME = "d MMMM yyyy, h:mma";
     public static final String DATE = "d MMMM yyyy";
+    public static final String DATE_SHORT_MONTH = "d MMM yyyy";
 
     public static String formatLocalDateToString(LocalDate date, FormatStyle style) {
         return date.format(DateTimeFormatter.ofLocalizedDate(style).localizedBy(Locale.UK));
