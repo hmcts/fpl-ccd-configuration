@@ -10,10 +10,11 @@ import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 
 import java.time.LocalDate;
-
 import javax.validation.constraints.NotBlank;
+import javax.validation.groups.Default;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -37,6 +38,12 @@ public final class RespondentParty extends Party {
     @NotBlank(message = "Enter the respondent's full name")
     public String getLastName() {
         return super.getLastName();
+    }
+
+    @NotBlank(message = "Enter the respondent's relationship to child",
+        groups = {Default.class, SealedSDOGroup.class})
+    public String getRelationshipToChild() {
+        return relationshipToChild;
     }
 
     @Builder(toBuilder = true, builderClassName = "RespondentPartyBuilder")
