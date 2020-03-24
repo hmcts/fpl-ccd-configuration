@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, HmctsEmailContentProvider.class,
-    DateFormatterService.class, HearingBookingService.class})
+    HearingBookingService.class})
 class HmctsEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -47,9 +47,6 @@ class HmctsEmailContentProviderTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private DateFormatterService dateFormatterService;
-
-    @Autowired
     private HearingBookingService hearingBookingService;
 
     private HmctsEmailContentProvider hmctsEmailContentProvider;
@@ -57,7 +54,7 @@ class HmctsEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.hmctsEmailContentProvider = new HmctsEmailContentProvider(
-            localAuthorityNameLookupConfiguration, hmctsCourtLookupConfiguration, "null", dateFormatterService,
+            localAuthorityNameLookupConfiguration, hmctsCourtLookupConfiguration, "null",
             hearingBookingService, mapper);
     }
 

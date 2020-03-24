@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
@@ -38,6 +37,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 
 @Api
 @RestController
@@ -50,7 +50,6 @@ public class NoticeOfProceedingsController {
     private final UploadDocumentService uploadDocumentService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
-    private final DateFormatterService dateFormatterService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -62,7 +61,7 @@ public class NoticeOfProceedingsController {
                 .getMostUrgentHearingBooking(caseData.getHearingDetails());
 
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
-                dateFormatterService.formatLocalDateToString(
+                formatLocalDateToString(
                     hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG)));
         }
 

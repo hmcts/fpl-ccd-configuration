@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, GatekeeperEmailContentProvider.class,
-    DateFormatterService.class, HearingBookingService.class})
+    HearingBookingService.class})
 class GatekeeperEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -39,9 +39,6 @@ class GatekeeperEmailContentProviderTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private DateFormatterService dateFormatterService;
-
-    @Autowired
     private HearingBookingService hearingBookingService;
 
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
@@ -49,7 +46,7 @@ class GatekeeperEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.gatekeeperEmailContentProvider = new GatekeeperEmailContentProvider(localAuthorityNameLookupConfiguration,
-            "null", dateFormatterService, hearingBookingService, mapper);
+            "null", hearingBookingService, mapper);
     }
 
     @Test

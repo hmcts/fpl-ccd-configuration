@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -37,6 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 
 @Api
 @RestController
@@ -141,7 +141,7 @@ public class UploadC2DocumentsController {
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(userDetailsService.getUserName(authorization))
-            .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(zonedDateTime
                 .toLocalDateTime(), "h:mma, d MMMM yyyy"));
 
         if (featureToggleService.isFeesEnabled()) {

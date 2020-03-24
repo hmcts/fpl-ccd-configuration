@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -23,9 +22,8 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     @Autowired
     protected C2UploadedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                              ObjectMapper objectMapper,
-                                             DateFormatterService dateFormatterService,
                                              HearingBookingService hearingBookingService) {
-        super(uiBaseUrl,dateFormatterService,hearingBookingService);
+        super(uiBaseUrl, hearingBookingService);
         this.objectMapper = objectMapper;
     }
 

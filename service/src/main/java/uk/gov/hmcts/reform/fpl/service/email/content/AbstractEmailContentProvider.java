@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.time.format.FormatStyle;
@@ -21,20 +20,17 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 public abstract class AbstractEmailContentProvider {
 
     final String uiBaseUrl;
-    private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
 
-    protected AbstractEmailContentProvider(String uiBaseUrl,
-                                           DateFormatterService dateFormatterService,
-                                           HearingBookingService hearingBookingService) {
+    protected AbstractEmailContentProvider(String uiBaseUrl, HearingBookingService hearingBookingService) {
         this.uiBaseUrl = uiBaseUrl;
-        this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
     }
 
@@ -74,8 +70,7 @@ public abstract class AbstractEmailContentProvider {
 
     private String getHearingBooking(CaseData data) {
         if (!isNull(data.getHearingDetails())) {
-            return dateFormatterService.formatLocalDateToString(
-                hearingBookingService.getMostUrgentHearingBooking(
+            return formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(
                     data.getHearingDetails()).getStartDate().toLocalDate(), FormatStyle.LONG);
         }
         return "";

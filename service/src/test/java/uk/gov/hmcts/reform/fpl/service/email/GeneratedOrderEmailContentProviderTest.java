@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 
@@ -32,6 +31,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -40,19 +40,19 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, GeneratedOrderEmailContentProvider.class,
-    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class})
+    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class})
 class GeneratedOrderEmailContentProviderTest {
-    private final LocalDate today = LocalDate.now();
-    private final DateFormatterService dateFormatterService = new DateFormatterService();
-    private final HearingBookingService hearingBookingService = new HearingBookingService();
-
     private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final LocalDate TODAY = LocalDate.now();
 
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private HearingBookingService hearingBookingService;
 
     private GeneratedOrderEmailContentProvider orderEmailContentProvider;
 
@@ -63,7 +63,7 @@ class GeneratedOrderEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.orderEmailContentProvider = new GeneratedOrderEmailContentProvider("",
-            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService);
+            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration);
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
@@ -86,7 +86,7 @@ class GeneratedOrderEmailContentProviderTest {
             .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
                 "linkToDocument", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Local Authority",
-                (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM)),
+                (subjectLine + ", hearing " + formatLocalDateToString(TODAY, FormatStyle.MEDIUM)),
                 documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
     }
 
