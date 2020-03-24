@@ -36,6 +36,7 @@ import java.util.Map;
 
 import static java.util.Collections.EMPTY_LIST;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -230,5 +231,22 @@ class PopulateStandardDirectionsHandlerTest {
                     .build())
                 .data(callbackRequest.getCaseDetails().getData())
                 .build());
+    }
+
+    @Test
+    void shouldThrowIllegalStateExceptionWhenNoHearing() throws IOException {
+        CallbackRequest callbackRequest = callbackRequest();
+        callbackRequest.getCaseDetails().getData().remove("hearingDetails");
+
+        given(coreCaseDataApi.startEventForCaseWorker(
+            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
+            .willReturn(StartEventResponse.builder()
+                .caseDetails(callbackRequest.getCaseDetails())
+                .eventId(CASE_EVENT)
+                .token(TOKEN)
+                .build());
+
+        assertThrows(IllegalStateException.class, () -> populateStandardDirectionsHandler.populateStandardDirections(
+                new PopulateStandardDirectionsEvent(callbackRequest, "", "")));
     }
 }

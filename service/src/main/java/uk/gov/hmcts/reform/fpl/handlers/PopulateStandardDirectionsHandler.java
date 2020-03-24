@@ -102,7 +102,7 @@ public class PopulateStandardDirectionsHandler {
     private LocalDateTime getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
         return hearingBookingService.getFirstHearing(hearings)
             .map(HearingBooking::getStartDate)
-            .orElse(null);
+            .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
 
     private Element<Direction> getDirectionElement(LocalDateTime hearingStartDate, DirectionConfiguration config) {
