@@ -46,7 +46,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
-            .putAll(buildCMODocumentLinkNotificationParameters(documentContents))
+            .putAll(linkToAttachedDocument(documentContents))
             .put("cafcassOrRespondentName", recipientName)
             .build();
     }
@@ -57,6 +57,36 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
             .put("requestedChanges", caseData.getCaseManagementOrder().getAction().getChangeRequestedByJudge())
+            .build();
+    }
+
+    public Map<String, Object> buildCMOReviewByDigitalRepresentativesParameters(final CaseDetails caseDetails,
+                                                                                byte[] documentContents) {
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        final String subjectLine = buildSubjectLine(caseData);
+
+        return ImmutableMap.<String, Object>builder()
+            .put("subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
+                caseData.getHearingDetails()))
+            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
+            .put("digitalPreference", "Yes")
+            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()))
+            .putAll(linkToAttachedDocument(documentContents))
+            .build();
+    }
+
+    public Map<String, Object> buildCMOReviewByEmailRepresentativesParameters(final CaseDetails caseDetails,
+                                                                              byte[] documentContents) {
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        final String subjectLine = buildSubjectLine(caseData);
+
+        return ImmutableMap.<String, Object>builder()
+            .put("subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
+                caseData.getHearingDetails()))
+            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
+            .put("digitalPreference", "No")
+            .put("caseUrl", "")
+            .putAll(linkToAttachedDocument(documentContents))
             .build();
     }
 
@@ -83,16 +113,16 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         );
     }
 
-    private Map<String, Object> buildCMODocumentLinkNotificationParameters(final byte[] documentContents) {
+    private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
 
-        ImmutableMap.Builder<String, Object> cmoNotificationParameters = ImmutableMap.builder();
+        ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
 
         try {
-            cmoNotificationParameters.put("link_to_document", prepareUpload(documentContents));
+            url.put("link_to_document", prepareUpload(documentContents));
         } catch (NotificationClientException e) {
             log.error("Unable to send notification for cafcass due to ", e);
         }
 
-        return cmoNotificationParameters.build();
+        return url.build();
     }
 }

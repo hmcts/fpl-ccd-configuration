@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -36,6 +37,7 @@ public class CaseManagementOrderProgressionService {
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RequestData requestData;
+    private final DocumentDownloadService documentDownloadService;
 
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -56,6 +58,7 @@ public class CaseManagementOrderProgressionService {
                 break;
             case PARTIES_REVIEW:
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_SHARED.getKey(), order.getOrderDoc());
+                publishReadyForPartyReviewEvent(caseDetails, requestData);
                 break;
             case SELF_REVIEW:
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_SHARED.getKey());
@@ -100,7 +103,16 @@ public class CaseManagementOrderProgressionService {
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest,
-                requestData.authorisation(), requestData.userId()));
+            requestData.authorisation(), requestData.userId()));
+    }
+
+    private void publishReadyForPartyReviewEvent(CaseDetails caseDetails, RequestData requestData) {
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest,
+            requestData.authorisation(), requestData.userId(),
+            documentDownloadService.downloadDocument(caseData.getCaseManagementOrder().getOrderDoc().getBinaryUrl())));
     }
 
     private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
@@ -53,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLAT
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
@@ -205,6 +207,33 @@ public class NotificationHandler {
 
         sendCMOCaseLinkNotifications(eventData);
         sendCMODocumentLinkNotifications(eventData, event.getDocumentContents());
+    }
+
+    @EventListener
+    public void sendEmailForCaseManagementOrderReadyForPartyReview(
+        final CaseManagementOrderReadyForPartyReviewEvent event) {
+        EventData eventData = new EventData(event);
+
+        Map<String, Object> digitalRepresentativesParameters = caseManagementOrderEmailContentProvider
+            .buildCMOReviewByDigitalRepresentativesParameters(eventData.getCaseDetails(), event.getDocumentContents());
+
+        Map<String, Object> emailRepresentativesParameters = caseManagementOrderEmailContentProvider
+            .buildCMOReviewByEmailRepresentativesParameters(eventData.getCaseDetails(), event.getDocumentContents());
+
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+
+        List<Representative> representativesServedByDigitalService =
+            representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), DIGITAL_SERVICE);
+        List<Representative> representativesServedByEmail =
+            representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL);
+
+        sendNotificationToRepresentatives(eventData, digitalRepresentativesParameters,
+            representativesServedByDigitalService,
+            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE);
+
+        sendNotificationToRepresentatives(eventData, emailRepresentativesParameters, representativesServedByEmail,
+            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE);
+
     }
 
     @EventListener
