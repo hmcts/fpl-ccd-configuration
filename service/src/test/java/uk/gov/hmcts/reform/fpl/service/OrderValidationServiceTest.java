@@ -1,148 +1,121 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import javax.validation.Validator;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {OrderValidationService.class, JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {OrderValidationService.class, LocalValidatorFactoryBean.class})
 public class OrderValidationServiceTest {
 
     @Autowired
     private OrderValidationService validationService;
 
-    @Autowired
-    private ObjectMapper mapper;
+    @SpyBean
+    private Validator validator;
 
     @Test
-    void shouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
-        CaseDetails caseDetails = buildCaseDetails(SEALED);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    void shouldNotValidateCaseWhenDraftingOrder() {
+        CaseData caseData = buildCaseData(DRAFT);
 
-        List<String> returnedErrors = validationService.validate(caseData);
+        final List<String> validationErrors = validationService.validate(caseData);
 
-        assertThat(returnedErrors)
-            .contains("You need to enter a hearing date.");
+        assertThat(validationErrors).isEmpty();
+        verify(validator, never()).validate(any(), any());
     }
 
     @Test
-    void shouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
-        CaseDetails caseDetails = buildCaseDetails(SEALED);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    void shouldSuccessfullyValidateCaseWithAllRequiredFieldsWhenSealingOrder() {
+        CaseData caseData = buildCaseDataWithMandatoryFields(SEALED);
 
-        List<String> returnedErrors = validationService.validate(caseData);
+        final List<String> validationErrors = validationService.validate(caseData);
 
-        assertThat(returnedErrors)
-            .contains("You need to enter the allocated judge.");
+        assertThat(validationErrors).isEmpty();
     }
 
     @Test
-    void shouldNotReturnErrorsWhenHearingDetailsExistsForSealedOrder() {
-        CaseDetails caseDetails = buildCaseDetailsWithMandatoryFields(SEALED);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    void shouldReturnValidationErrorsForACaseWithoutRequiredFieldsWhenSealingOrder() {
+        CaseData caseData = buildCaseData(SEALED);
 
-        List<String> returnedErrors = validationService.validate(caseData);
+        final List<String> validationErrors = validationService.validate(caseData);
 
-        assertThat(returnedErrors).isEmpty();
+        assertThat(validationErrors).containsExactlyInAnyOrder(
+            "You need to enter a hearing date.",
+            "You need to enter the allocated judge.",
+            "Tell us the date of birth of all children in the case",
+            "Tell us the gender of all children in the case",
+            "Enter the respondent's relationship to child"
+        );
     }
 
-    @Test
-    void shouldNotReturnErrorsWhenAllocatedJudgeExistsForSealedOrder() {
-        CaseDetails caseDetails = buildCaseDetailsWithMandatoryFields(SEALED);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        List<String> returnedErrors = validationService.validate(caseData);
-
-        assertThat(returnedErrors).isEmpty();
-    }
-
-    @Test
-    void shouldNotReturnErrorsWhenNoHearingDetailsExistsForDraftOrder() {
-        CaseDetails caseDetails = buildCaseDetails(DRAFT);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        List<String> returnedErrors = validationService.validate(caseData);
-
-        assertThat(returnedErrors).isEmpty();
-    }
-
-    @Test
-    void shouldNotReturnErrorsWhenNoAllocatedJudgeExistsForDraftOrder() {
-        CaseDetails caseDetails = buildCaseDetails(DRAFT);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        List<String> returnedErrors = validationService.validate(caseData);
-
-        assertThat(returnedErrors).isEmpty();
-    }
-
-    @Test
-    void shouldNotReturnErrorsWhenHearingDetailsExistsForDraftOrder() {
-        CaseDetails caseDetails = buildCaseDetailsWithMandatoryFields(DRAFT);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        List<String> returnedErrors = validationService.validate(caseData);
-
-        assertThat(returnedErrors).isEmpty();
-    }
-
-    @Test
-    void shouldNotReturnErrorsWhenAllocatedJudgeExistsForDraftOrder() {
-        CaseDetails caseDetails = buildCaseDetailsWithMandatoryFields(DRAFT);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        List<String> returnedErrors = validationService.validate(caseData);
-
-        assertThat(returnedErrors).isEmpty();
-    }
-
-    private CaseDetails buildCaseDetailsWithMandatoryFields(final OrderStatus orderStatus) {
-        CaseDetails caseDetails = buildCaseDetails(orderStatus);
-
-        Map<String, Object> caseDataMap = caseDetails.getData();
-
-        return caseDetails.toBuilder()
-            .data(ImmutableMap.<String, Object>builder()
-                .putAll(caseDataMap)
-                .putAll(Map.of(HEARING_DETAILS_KEY, createHearingBookings(LocalDateTime.now())))
-                .put("allocatedJudge", Judge.builder().build())
-                .build())
+    private static CaseData buildCaseDataWithMandatoryFields(final OrderStatus orderStatus) {
+        return buildCaseData(orderStatus).toBuilder()
+            .respondents1(buildRespondent("Uncle"))
+            .children1(buildChild("Boy", LocalDate.now().minusYears(1)))
+            .hearingDetails(createHearingBookings(LocalDateTime.now()))
+            .allocatedJudge(Judge.builder().build())
             .build();
     }
 
-    private CaseDetails buildCaseDetails(final OrderStatus orderStatus) {
-        return CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("standardDirectionOrder", buildOrderWithStatus(orderStatus))
-                .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                .build())
+    private static CaseData buildCaseData(final OrderStatus orderStatus) {
+        return CaseData.builder()
+            .standardDirectionOrder(buildOrderWithStatus(orderStatus))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+            .respondents1(buildRespondent(null))
+            .children1(buildChild(null, null))
             .build();
     }
 
-    private Order buildOrderWithStatus(final OrderStatus orderStatus) {
+    private static Order buildOrderWithStatus(final OrderStatus orderStatus) {
         return Order.builder()
             .orderStatus(orderStatus)
             .build();
+    }
+
+    private static List<Element<Child>> buildChild(final String gender, final LocalDate dob) {
+        return wrapElements(Child.builder()
+            .party(
+                ChildParty.builder()
+                    .gender(gender)
+                    .dateOfBirth(dob)
+                    .build())
+            .build());
+    }
+
+    private static List<Element<Respondent>> buildRespondent(final String relationshipToChild) {
+        return wrapElements(Respondent.builder()
+            .party(
+                RespondentParty.builder()
+                    .relationshipToChild(relationshipToChild)
+                    .build())
+            .build());
     }
 }

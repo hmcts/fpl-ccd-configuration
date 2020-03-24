@@ -40,7 +40,6 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
@@ -81,11 +80,15 @@ class CaseDataExtractionServiceTest {
     // emptyCaseData is unrealistic scenario. FPLA-1486
     @Test
     void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
+        Order order = Order.builder()
+            .dateOfIssue("29 November 2019")
+            .build();
+
         DocmosisStandardDirectionOrder template = caseDataExtractionService
             .getStandardOrderDirectionData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
-                .standardDirectionOrder(Order.builder().build())
+                .standardDirectionOrder(order)
                 .build());
 
         assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
@@ -95,7 +98,7 @@ class CaseDataExtractionServiceTest {
                 .build())
             .courtName(COURT_NAME)
             .familyManCaseNumber(null)
-            .generationDate(formatLocalDateToString(TODAY, LONG))
+            .dateOfIssue(order.getDateOfIssue())
             .complianceDeadline(formatLocalDateToString(TODAY.plusWeeks(26), LONG))
             .children(emptyList())
             .hearingBooking(DocmosisHearingBooking.builder().build())
@@ -141,7 +144,7 @@ class CaseDataExtractionServiceTest {
                 .build())
             .courtName(COURT_NAME)
             .familyManCaseNumber("123")
-            .generationDate(formatLocalDateToString(TODAY, LONG))
+            .dateOfIssue("29 November 2019")
             .complianceDeadline(formatLocalDateToString(TODAY.plusWeeks(26), LONG))
             .children(emptyList())
             .hearingBooking(DocmosisHearingBooking.builder().build())
@@ -176,7 +179,7 @@ class CaseDataExtractionServiceTest {
                 .build())
             .courtName(COURT_NAME)
             .familyManCaseNumber("123")
-            .generationDate(formatLocalDateToString(TODAY, LONG))
+            .dateOfIssue("29 November 2019")
             .complianceDeadline(formatLocalDateToString(TODAY.plusWeeks(26), LONG))
             .children(getExpectedChildren())
             .hearingBooking(DocmosisHearingBooking.builder()
@@ -233,18 +236,18 @@ class CaseDataExtractionServiceTest {
         return List.of(
             DocmosisChildren.builder()
                 .name("Bran Stark")
-                .gender("Male")
+                .gender("Boy")
                 .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build(),
             DocmosisChildren.builder()
                 .name("Sansa Stark")
-                .gender(DEFAULT)
-                .dateOfBirth(DEFAULT)
+                .gender("Boy")
+                .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build(),
             DocmosisChildren.builder()
                 .name("Jon Snow")
-                .gender(DEFAULT)
-                .dateOfBirth(DEFAULT)
+                .gender("Girl")
+                .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build()
         );
     }

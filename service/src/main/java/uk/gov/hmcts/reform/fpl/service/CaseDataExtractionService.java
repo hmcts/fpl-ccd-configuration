@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -73,7 +72,7 @@ public class CaseDataExtractionService {
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder))
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
-            .generationDate(formatLocalDateToString(LocalDate.now(), LONG))
+            .dateOfIssue(standardDirectionOrder.getDateOfIssue())
             .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), LONG))
             .children(getChildrenDetails(caseData.getAllChildren()))
             .respondents(getRespondentsNameAndRelationship(caseData.getAllRespondents()))
