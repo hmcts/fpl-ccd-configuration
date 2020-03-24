@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 public class SampleRoboticsTestDataHelper {
     private static LocalDate NOW = LocalDate.now();

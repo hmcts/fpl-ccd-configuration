@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.utils;
 
 import org.springframework.stereotype.Service;
 
@@ -10,11 +10,15 @@ import java.util.Locale;
 
 //TODO: decouple from services and refactor to Helper class. FPLA-1482
 @Service
-public class DateFormatterService {
+public class DateFormatterHelper {
     public static final String DATE_TIME_AT = "d MMMM yyyy 'at' h:mma";
     public static final String TIME_DATE = "h:mma, d MMMM yyyy";
     public static final String DATE_TIME = "d MMMM yyyy, h:mma";
     public static final String DATE = "d MMMM yyyy";
+
+    private DateFormatterHelper() {
+        // NO-OP
+    }
 
     public static String formatLocalDateToString(LocalDate date, FormatStyle style) {
         return date.format(DateTimeFormatter.ofLocalizedDate(style).localizedBy(Locale.UK));
@@ -28,7 +32,7 @@ public class DateFormatterService {
         return dateTime.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
 
-    public String getDayOfMonthSuffix(int day) {
+    public static String getDayOfMonthSuffix(int day) {
         if (day <= 0 || day >= 32) {
             throw new IllegalArgumentException("Illegal day of month: " + day);
         }

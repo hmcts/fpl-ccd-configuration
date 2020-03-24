@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {PartyAddedToCaseContentProvider.class})
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class PartyAddedToCaseContentProviderTest {
-    private final static String CASE_REFERENCE = "12345";
 
     @Autowired
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;

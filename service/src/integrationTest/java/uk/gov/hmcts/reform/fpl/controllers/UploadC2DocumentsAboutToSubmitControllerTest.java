@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
@@ -26,6 +25,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -33,10 +33,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
     private static final String USER_NAME = "Emma Taylor";
-
     private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK);
     private static final Long CASE_ID = 12345L;
+
     @MockBean
     private UserDetailsService userDetailsService;
 
@@ -69,8 +69,8 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         // updated to use LocalDate to avoid 1-minute issue
         LocalDateTime uploadedDateTime = LocalDateTime.parse(uploadedC2DocumentBundle.getUploadedDateTime(), FORMATTER);
 
-        assertThat(DateFormatterService.formatLocalDateToString(uploadedDateTime.toLocalDate(), FormatStyle.MEDIUM))
-            .isEqualTo(DateFormatterService.formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
+        assertThat(formatLocalDateToString(uploadedDateTime.toLocalDate(), FormatStyle.MEDIUM))
+            .isEqualTo(formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
     }
 
     @Test
@@ -95,8 +95,8 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         // updated to use LocalDate to avoid 1-minute issue
         LocalDateTime uploadedDateTime = LocalDateTime.parse(appendedC2Document.getUploadedDateTime(), FORMATTER);
 
-        assertThat(DateFormatterService.formatLocalDateToString(uploadedDateTime.toLocalDate(), FormatStyle.MEDIUM))
-            .isEqualTo(DateFormatterService.formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
+        assertThat(formatLocalDateToString(uploadedDateTime.toLocalDate(), FormatStyle.MEDIUM))
+            .isEqualTo(formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws IOException {

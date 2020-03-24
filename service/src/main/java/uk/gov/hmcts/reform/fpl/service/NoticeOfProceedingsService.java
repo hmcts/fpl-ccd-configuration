@@ -25,21 +25,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+
 @Service
 public class NoticeOfProceedingsService {
-    private DateFormatterService dateFormatterService;
     private HearingBookingService hearingBookingService;
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private HearingVenueLookUpService hearingVenueLookUpService;
     private CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     @Autowired
-    public NoticeOfProceedingsService(DateFormatterService dateFormatterService,
-                                      HearingBookingService hearingBookingService,
+    public NoticeOfProceedingsService(HearingBookingService hearingBookingService,
                                       HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                       HearingVenueLookUpService hearingVenueLookUpService,
                                       CommonCaseDataExtractionService commonCaseDataExtractionService) {
-        this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.hearingVenueLookUpService = hearingVenueLookUpService;
@@ -71,7 +70,7 @@ public class NoticeOfProceedingsService {
         return ImmutableMap.<String, Object>builder()
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
-            .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("todaysDate", formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .put("applicantName", getFirstApplicantName(caseData.getApplicants()))
             .put("orderTypes", getOrderTypes(caseData.getOrders()))
             .put("childrenNames", getAllChildrenNames(caseData.getAllChildren()))
