@@ -381,13 +381,11 @@ class GeneratedOrderServiceTest {
                     .put("orderType", BLANK_ORDER)
                     .put("orderTitle", "Example Title")
                     .put("childrenAct", "Children Act 1989")
-                    .put("childrenCount", childrenCount)
                     .put("orderDetails", "Example details");
                 break;
             case CARE_ORDER:
                 expectedMap
                     .put("orderType", CARE_ORDER)
-                    .put("childrenCount", childrenCount)
                     .put("localAuthorityName", localAuthorityName);
                 if (subtype == INTERIM) {
                     expectedMap

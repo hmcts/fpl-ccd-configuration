@@ -161,7 +161,6 @@ public class GeneratedOrderService {
                 orderTemplateBuilder
                     .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
                     .put("childrenAct", "Children Act 1989")
-                    .put("childrenCount", childrenCount)
                     .put("orderDetails", caseData.getOrder().getDetails());
                 break;
             case CARE_ORDER:
@@ -175,7 +174,6 @@ public class GeneratedOrderService {
                         .put("childrenAct", "Section 31 Children Act 1989");
                 }
                 orderTemplateBuilder
-                    .put("childrenCount", childrenCount)
                     .put("localAuthorityName", getLocalAuthorityName(caseData.getCaseLocalAuthority()))
                     .put("orderDetails", getFormattedCareOrderDetails(childrenCount,
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
@@ -204,7 +202,6 @@ public class GeneratedOrderService {
                     .put("epoType", caseData.getEpoType())
                     .put("includePhrase", caseData.getEpoPhrase().getIncludePhrase())
                     .put("removalAddress", getFormattedRemovalAddress(caseData))
-                    .put("childrenCount", childrenCount)
                     .put("epoStartDateTime", formatEPODateTime(time.now()))
                     .put("epoEndDateTime", formatEPODateTime(caseData.getEpoEndDate()));
                 break;
@@ -221,6 +218,7 @@ public class GeneratedOrderService {
                 caseData.getJudgeAndLegalAdvisor()))
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .put("children", childrenDetails)
+            .put("childrenCount", childrenCount)
             .put("furtherDirections", caseData.getFurtherDirectionsText())
             .build();
 
