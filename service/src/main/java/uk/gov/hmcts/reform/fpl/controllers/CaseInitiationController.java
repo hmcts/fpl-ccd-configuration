@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 
@@ -23,6 +24,7 @@ import java.util.Map;
 public class CaseInitiationController {
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
@@ -39,13 +41,13 @@ public class CaseInitiationController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorisation,
-        @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         String caseId = Long.toString(caseDetails.getId());
         String caseLocalAuthority = (String) caseDetails.getData()
             .get("caseLocalAuthority");
+        String authorisation = requestData.authorisation();
+        String userId = requestData.userId();
 
         localAuthorityUserService.grantUserAccessWithCaseRole(authorisation, userId, caseId, caseLocalAuthority);
     }
