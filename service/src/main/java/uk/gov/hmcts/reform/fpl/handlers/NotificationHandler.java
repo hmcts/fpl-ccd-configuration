@@ -20,19 +20,16 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -66,13 +62,11 @@ public class NotificationHandler {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
-    private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GeneratedOrderEmailContentProvider orderEmailContentProvider;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final InboxLookupService inboxLookupService;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
-    private final PlacementApplicationContentProvider placementApplicationContentProvider;
     private final RepresentativeService representativeService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final ObjectMapper objectMapper;
@@ -93,19 +87,6 @@ public class NotificationHandler {
 
         sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(),
             representativesServedByEmail, GENERATED_ORDER);
-    }
-
-    @EventListener
-    public void notifyAdminOfPlacementApplicationUpload(PlacementApplicationEvent event) {
-        EventData eventData = new EventData(event);
-
-        Map<String, Object> parameters = placementApplicationContentProvider
-            .buildPlacementApplicationNotificationParameters(eventData.getCaseDetails());
-
-        String email = getHmctsAdminEmail(eventData);
-
-        notificationService.sendEmail(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters,
-            eventData.getReference());
     }
 
     @EventListener

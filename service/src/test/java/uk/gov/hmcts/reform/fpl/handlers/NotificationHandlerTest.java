@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
@@ -30,20 +29,17 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -59,7 +55,6 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -107,13 +102,7 @@ class NotificationHandlerTest {
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Mock
-    private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-
-    @Mock
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
-
-    @Mock
-    private CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
 
     @Mock
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
@@ -137,9 +126,6 @@ class NotificationHandlerTest {
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @Mock
-    private PlacementApplicationContentProvider placementApplicationContentProvider;
-
-    @Mock
     private RepresentativeService representativeService;
 
     @Mock
@@ -160,11 +146,10 @@ class NotificationHandlerTest {
     @BeforeEach
     void setup() {
         notificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
-            cafcassLookupConfiguration, partyAddedToCaseContentProvider,
-            cafcassEmailContentProviderSDOIssued, orderEmailContentProvider, orderIssuedEmailContentProvider,
-            localAuthorityEmailContentProvider, inboxLookupService,
-            caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
-            localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration, notificationService);
+            cafcassLookupConfiguration, partyAddedToCaseContentProvider, orderEmailContentProvider,
+            orderIssuedEmailContentProvider, localAuthorityEmailContentProvider, inboxLookupService,
+            caseManagementOrderEmailContentProvider, representativeService, localAuthorityNameLookupConfiguration,
+            objectMapper, ctscEmailLookupConfiguration, notificationService);
     }
 
     @Nested
@@ -568,28 +553,6 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldNotifyHmctsAdminOfPlacementApplicationUploadWhenCtscIsDiabled() throws Exception {
-        CallbackRequest callbackRequest = callbackRequest();
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
-
-        given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
-
-        given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseDetails))
-            .willReturn(expectedParameters);
-
-        notificationHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
-
-        verify(notificationService).sendEmail(
-            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-            COURT_EMAIL_ADDRESS,
-            expectedParameters,
-            "12345");
-    }
-
-    @Test
     void shouldSendEmailToPartiesWhenAddedToCase() throws IOException {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
         CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
@@ -636,28 +599,6 @@ class NotificationHandlerTest {
             "12345");
     }
 
-    @Test
-    void shouldNotifyCtscAdminOfPlacementApplicationUploadWhenCtscIsEnabled() throws Exception {
-        CallbackRequest callbackRequest = appendSendToCtscOnCallback();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-        final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
-
-        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
-
-        given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseDetails))
-            .willReturn(expectedParameters);
-
-        notificationHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
-
-        verify(notificationService).sendEmail(
-            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-            CTSC_INBOX,
-            expectedParameters,
-            "12345");
-    }
-
     private List<Representative> getExpectedDigitalRepresentativesForAddingPartiesToCase() {
         return ImmutableList.of(
             Representative.builder()
@@ -674,13 +615,6 @@ class NotificationHandlerTest {
                 .fullName("Barney Rubble")
                 .servingPreferences(EMAIL)
                 .build());
-    }
-
-    private Map<String, Object> getExpectedPlacementNotificationParameters() {
-        return ImmutableMap.of(
-            "respondentLastName", "Moley",
-            "caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345"
-        );
     }
 
     private Map<String, Object> getPartyAddedByEmailNotificationParameters() {
