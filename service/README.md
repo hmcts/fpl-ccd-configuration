@@ -132,3 +132,15 @@ ld:
 
 Your key will be added on first `FeatureToggleService` call and will be available on LaunchDarkly panel in Users tab.
 You will be able to set your own flag values there without affecting other environments.
+
+
+### Scheduler
+
+In order to enable quartz scheduler
+- run ./bin/utils/create-scheduler-db.sh
+- set scheduler.enabled:true in application.yml local profile  
+
+Upcoming hearing jobs can be configured with environment variables
+UPCOMING_HEARINGS_CRON[default 0 0 2 ? * MON-FRI] - quartz expression, e.g 0/30 * * ? * MON-FRI
+UPCOMING_HEARINGS_DAYS[default 2] - number of working days notification is sent before hearing
+Elastic search must be enable in ccd-docker for Upcoming hearings job to work
