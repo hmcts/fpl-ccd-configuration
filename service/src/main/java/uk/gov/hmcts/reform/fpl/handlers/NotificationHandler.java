@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
-import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -50,7 +49,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
@@ -95,31 +93,6 @@ public class NotificationHandler {
 
         sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(),
             representativesServedByEmail, GENERATED_ORDER);
-    }
-
-    @EventListener
-    public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
-        EventData eventData = new EventData(event);
-        Map<String, Object> parameters = cafcassEmailContentProviderSDOIssued
-            .buildCafcassStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(),
-                eventData.getLocalAuthorityCode());
-        String email = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
-
-        notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters,
-            eventData.getReference());
-    }
-
-    @EventListener
-    public void notifyLocalAuthorityOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
-        EventData eventData = new EventData(event);
-        Map<String, Object> parameters = localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(),
-                eventData.getLocalAuthorityCode());
-        String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
-            eventData.getLocalAuthorityCode());
-
-        notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters,
-            eventData.getReference());
     }
 
     @EventListener
