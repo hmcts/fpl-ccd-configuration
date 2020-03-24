@@ -24,8 +24,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
@@ -53,8 +51,6 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -262,10 +258,6 @@ class NotificationHandlerTest {
             getCMOIssuedCaseLinkNotificationParameters();
         private final Map<String, Object> expectedCMOIssuedNotificationParametersForRepresentative =
             getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative();
-        private final Map<String, Object> expectedCMOReadyForJudgeNotificationParameters =
-            getCMOReadyForJudgeNotificationParameters();
-        private final Map<String, Object> expectedCMORejectedNotificationParameters =
-            getCMORejectedCaseLinkNotificationParameters();
 
         @BeforeEach
         void setup() {
@@ -364,79 +356,9 @@ class NotificationHandlerTest {
                 "12345");
         }
 
-        @Test
-        void shouldNotifyLocalAuthorityOfCMORejected() throws Exception {
-            CallbackRequest callbackRequest = callbackRequest();
-            CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-            given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
-                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-
-            given(caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(caseDetails))
-                .willReturn(expectedCMORejectedNotificationParameters);
-
-            notificationHandler.notifyLocalAuthorityOfRejectedCaseManagementOrder(
-                new CaseManagementOrderRejectedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
-
-            verify(notificationService).sendEmail(
-                CMO_REJECTED_BY_JUDGE_TEMPLATE,
-                LOCAL_AUTHORITY_EMAIL_ADDRESS,
-                expectedCMORejectedNotificationParameters,
-                "12345");
-        }
-
-        @Test
-        void shouldNotifyHmctsAdminOfCMOReadyForJudgeReviewWhenCtscIsDisabled() throws Exception {
-            CallbackRequest callbackRequest = callbackRequest();
-            CaseDetails caseDetails = callbackRequest().getCaseDetails();
-
-            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
-
-            given(caseManagementOrderEmailContentProvider
-                .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
-                .willReturn(expectedCMOReadyForJudgeNotificationParameters);
-
-            notificationHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
-                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID));
-
-            verify(notificationService).sendEmail(
-                CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-                COURT_EMAIL_ADDRESS,
-                expectedCMOReadyForJudgeNotificationParameters,
-                "12345");
-        }
-
-        @Test
-        void shouldNotifyCtscAdminOfCMOReadyForJudgeReviewWhenCtscIsEnabled() throws Exception {
-            CallbackRequest callbackRequest = appendSendToCtscOnCallback();
-            CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-            given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
-
-            given(caseManagementOrderEmailContentProvider
-                .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
-                .willReturn(expectedCMOReadyForJudgeNotificationParameters);
-
-            notificationHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
-                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID));
-
-            verify(notificationService).sendEmail(
-                CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-                CTSC_INBOX,
-                expectedCMOReadyForJudgeNotificationParameters,
-                "12345");
-        }
-
         private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
             return ImmutableMap.<String, Object>builder()
                 .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
-                .putAll(expectedCommonCMONotificationParameters())
-                .build();
-        }
-
-        private ImmutableMap<String, Object> getCMOReadyForJudgeNotificationParameters() {
-            return ImmutableMap.<String, Object>builder()
                 .putAll(expectedCommonCMONotificationParameters())
                 .build();
         }
@@ -483,13 +405,6 @@ class NotificationHandlerTest {
             return ImmutableMap.of("subjectLineWithHearingDate", subjectLine,
                 "reference", "12345",
                 "caseUrl", String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE));
-        }
-
-        private Map<String, Object> getCMORejectedCaseLinkNotificationParameters() {
-            return ImmutableMap.<String, Object>builder()
-                .put("requestedChanges", "Please make these changes XYZ")
-                .putAll(expectedCommonCMONotificationParameters())
-                .build();
         }
     }
 

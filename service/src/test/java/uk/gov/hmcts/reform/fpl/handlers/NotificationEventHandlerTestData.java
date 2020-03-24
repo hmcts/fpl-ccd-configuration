@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.io.IOException;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 public class NotificationEventHandlerTestData {
@@ -19,14 +21,10 @@ public class NotificationEventHandlerTestData {
     static final String CAFCASS_NAME = "cafcass";
     static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
     static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     static final String COURT_CODE = "11";
-    static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "joe-blogs@gmail.com";
-    static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "damian@swansea.gov.uk";
     static final String CTSC_INBOX = "Ctsc+test@gmail.com";
-    final byte[] documentContents = {1, 2, 3};
 
-    public NotificationEventHandlerTestData() {
+    private NotificationEventHandlerTestData() {
     }
 
     public static CallbackRequest appendSendToCtscOnCallback() throws IOException {
@@ -42,5 +40,25 @@ public class NotificationEventHandlerTestData {
         callbackRequest.setCaseDetails(caseDetails);
 
         return callbackRequest;
+    }
+
+    public static ImmutableMap<String, Object> getCMOReadyForJudgeNotificationParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .putAll(expectedCommonCMONotificationParameters())
+            .build();
+    }
+
+    public static Map<String, Object> expectedCommonCMONotificationParameters() {
+        String subjectLine = "Lastname, SACCCCCCCC5676576567";
+        return ImmutableMap.of("subjectLineWithHearingDate", subjectLine,
+            "reference", "12345",
+            "caseUrl", String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE));
+    }
+
+    public static Map<String, Object> getCMORejectedCaseLinkNotificationParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .put("requestedChanges", "Please make these changes XYZ")
+            .putAll(expectedCommonCMONotificationParameters())
+            .build();
     }
 }
