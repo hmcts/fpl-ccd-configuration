@@ -1,6 +1,5 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,13 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,14 +27,15 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
+@ActiveProfiles("integration-test")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CafcassEmailContentProvider.class,
-    HearingBookingService.class})
+@SpringBootTest(classes = {CafcassEmailContentProvider.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class CafcassEmailContentProviderTest {
-
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String CAFCASS_NAME = "Test cafcass";
     private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
+    private static final String CASE_REFERENCE = "12345";
 
     @MockBean
     private CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -43,19 +44,7 @@ class CafcassEmailContentProviderTest {
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private HearingBookingService hearingBookingService;
-
     private CafcassEmailContentProvider cafcassEmailContentProvider;
-
-    @BeforeEach
-    void setup() {
-        this.cafcassEmailContentProvider = new CafcassEmailContentProvider(
-            localAuthorityNameLookupConfiguration, cafcassLookupConfiguration, "null", hearingBookingService,
-            mapper);
-    }
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
@@ -72,8 +61,8 @@ class CafcassEmailContentProviderTest {
             .put("urgentHearing", "Yes")
             .put("nonUrgentHearing", "No")
             .put("firstRespondentName", "Smith")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .put("reference", CASE_REFERENCE)
+            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_REFERENCE))
             .build();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
@@ -100,7 +89,7 @@ class CafcassEmailContentProviderTest {
             .put("nonUrgentHearing", "No")
             .put("firstRespondentName", "")
             .put("reference", "123")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/123")
+            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, "123"))
             .build();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))

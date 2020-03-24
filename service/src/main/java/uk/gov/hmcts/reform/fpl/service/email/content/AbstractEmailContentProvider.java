@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
@@ -24,14 +28,16 @@ import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDa
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-public abstract class AbstractEmailContentProvider {
-
+abstract class AbstractEmailContentProvider {
     final String uiBaseUrl;
-    private final HearingBookingService hearingBookingService;
 
-    protected AbstractEmailContentProvider(String uiBaseUrl, HearingBookingService hearingBookingService) {
+    @Autowired
+    ObjectMapper mapper;
+
+    private final HearingBookingService hearingBookingService = new HearingBookingService();
+
+    protected AbstractEmailContentProvider(String uiBaseUrl) {
         this.uiBaseUrl = uiBaseUrl;
-        this.hearingBookingService = hearingBookingService;
     }
 
     ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(Long caseId, CaseData caseData) {
@@ -71,7 +77,7 @@ public abstract class AbstractEmailContentProvider {
     private String getHearingBooking(CaseData data) {
         if (!isNull(data.getHearingDetails())) {
             return formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(
-                    data.getHearingDetails()).getStartDate().toLocalDate(), FormatStyle.LONG);
+                data.getHearingDetails()).getStartDate().toLocalDate(), FormatStyle.LONG);
         }
         return "";
     }

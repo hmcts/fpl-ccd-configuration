@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -32,18 +30,13 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @Slf4j
 @Service
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
-
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final RepresentativeService representativeService;
-    private final ObjectMapper objectMapper;
 
     public OrderIssuedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                           ObjectMapper objectMapper,
-                                           HearingBookingService hearingBookingService,
                                            HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                            RepresentativeService representativeService) {
-        super(uiBaseUrl, hearingBookingService);
-        this.objectMapper = objectMapper;
+        super(uiBaseUrl);
         this.representativeService = representativeService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
@@ -52,7 +45,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
                                                                         final String localAuthorityCode,
                                                                         final byte[] documentContents,
                                                                         final IssuedOrderType issuedOrderType) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         List<Representative> representativesServedByPost = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), POST);
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(representativesServedByPost);
@@ -73,7 +66,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
                                                                              final String localAuthorityCode,
                                                                              final byte[] documentContents,
                                                                              final IssuedOrderType issuedOrderType) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
             .put("orderType", getTypeOfOrder(caseData, issuedOrderType))

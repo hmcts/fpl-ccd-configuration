@@ -1,43 +1,35 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 
 import java.io.IOException;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
+@ActiveProfiles("integration-test")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, PartyAddedToCaseContentProvider.class,
-    HearingBookingService.class})
+@SpringBootTest(classes = {PartyAddedToCaseContentProvider.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class PartyAddedToCaseContentProviderTest {
-
-    @Autowired
-    private HearingBookingService hearingBookingService;
+    private final static String CASE_REFERENCE = "12345";
 
     @Autowired
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    @BeforeEach
-    void setup() {
-        this.partyAddedToCaseContentProvider = new PartyAddedToCaseContentProvider(
-            "null", hearingBookingService, mapper);
-    }
 
     @Test
     void shouldGetPartyAddedToCaseByEmailNotificationParameters() throws IOException {
@@ -55,7 +47,7 @@ class PartyAddedToCaseContentProviderTest {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", "Smith")
             .put("familyManCaseNumber", "12345L")
-            .put("caseUrl", "null/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
+            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, "12345"))
             .build();
 
         assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(

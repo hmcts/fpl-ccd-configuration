@@ -1,20 +1,17 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,43 +24,24 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
+@ActiveProfiles("integration-test")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HmctsEmailContentProvider.class,
-    HearingBookingService.class})
-class HmctsEmailContentProviderTest {
-
+@SpringBootTest(classes = {GatekeeperEmailContentProvider.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
+class GatekeeperEmailContentProviderTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String COURT_NAME = "Test court";
-    private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
-    private static final String COURT_CODE = "11";
-
-    @MockBean
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private HearingBookingService hearingBookingService;
-
-    private HmctsEmailContentProvider hmctsEmailContentProvider;
-
-    @BeforeEach
-    void setup() {
-        this.hmctsEmailContentProvider = new HmctsEmailContentProvider(
-            localAuthorityNameLookupConfiguration, hmctsCourtLookupConfiguration, "null",
-            hearingBookingService, mapper);
-    }
+    private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("court", COURT_NAME)
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
@@ -74,23 +52,19 @@ class HmctsEmailContentProviderTest {
             .put("nonUrgentHearing", "No")
             .put("firstRespondentName", "Smith")
             .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, "12345"))
             .build();
-
-        given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(populatedCaseDetails(),
+        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
     }
 
     @Test
     void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("court", COURT_NAME)
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
@@ -101,16 +75,13 @@ class HmctsEmailContentProviderTest {
             .put("nonUrgentHearing", "No")
             .put("firstRespondentName", "")
             .put("reference", "123")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/123")
+            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, "123"))
             .build();
-
-        given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(emptyCaseDetails(),
+        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(emptyCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
     }
 }
