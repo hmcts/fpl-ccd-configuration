@@ -14,19 +14,19 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
 public class CommonCaseDataExtractionService {
-    private final DateFormatterService dateFormatterService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     public static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
 
     @Autowired
-    public CommonCaseDataExtractionService(DateFormatterService dateFormatterService,
-                                           HearingVenueLookUpService hearingVenueLookUpService) {
-        this.dateFormatterService = dateFormatterService;
+    public CommonCaseDataExtractionService(HearingVenueLookUpService hearingVenueLookUpService) {
         this.hearingVenueLookUpService = hearingVenueLookUpService;
     }
 
@@ -53,8 +53,7 @@ public class CommonCaseDataExtractionService {
 
         // If they aren't on the same date return nothing
         if (hearingBooking.hasDatesOnSameDay()) {
-            hearingDate = dateFormatterService.formatLocalDateToString(
-                hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
+            hearingDate = formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
         }
 
         return Optional.ofNullable(hearingDate);
@@ -99,14 +98,14 @@ public class CommonCaseDataExtractionService {
     }
 
     private String formatDateTimeWithYear(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy, h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM, h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM, h:mma");
     }
 
     private String formatTime(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma");
     }
 }

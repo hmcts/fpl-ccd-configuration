@@ -38,12 +38,12 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 //TODO: methods to be moved to CaseManagementOrderService and Directions services. FPLA-1479 / FPLA-1483
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
-    private final DateFormatterService dateFormatterService;
     private final CommonDirectionService commonDirectionService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
@@ -187,6 +187,6 @@ public class DraftCMOService {
     }
 
     private String formatLocalDateToMediumStyle(LocalDate date) {
-        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+        return formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }

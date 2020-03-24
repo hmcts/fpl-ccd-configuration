@@ -48,11 +48,14 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 // REFACTOR: 27/01/2020 Extract docmosis logic into a new service that extends DocmosisTemplateDataGeneration
@@ -60,16 +63,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Slf4j
 @Service
 public class GeneratedOrderService {
-    private final DateFormatterService dateFormatterService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final Time time;
 
-    public GeneratedOrderService(DateFormatterService dateFormatterService,
-                                 HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+    public GeneratedOrderService(HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                  LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                  Time time) {
-        this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.time = time;
@@ -131,11 +131,11 @@ public class GeneratedOrderService {
         }
 
         orderBuilder.expiryDate(expiryDate)
-            .dateOfIssue(DateFormatterService.formatLocalDateToString(dateOfIssue, DATE))
+            .dateOfIssue(formatLocalDateToString(dateOfIssue, DATE))
             .type(typeAndDocument.getFullType(typeAndDocument.getSubtype()))
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-            .date(DateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE));
+            .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE));
 
         return Element.<GeneratedOrder>builder()
             .id(randomUUID())
@@ -212,7 +212,7 @@ public class GeneratedOrderService {
             .put("orderType", orderType)
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
-            .put("dateOfIssue", DateFormatterService.formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+            .put("dateOfIssue", formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
@@ -260,8 +260,7 @@ public class GeneratedOrderService {
                 return getInterimExpiryDate(interimEndDate);
             case FINAL:
                 requireNonNull(orderMonths);
-                return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                    time.now().plusMonths(orderMonths), "h:mma, d MMMM y");
+                return formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(orderMonths), "h:mma, d MMMM y");
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + typeAndDocument.getSubtype());
         }
@@ -269,7 +268,7 @@ public class GeneratedOrderService {
 
     private String getInterimExpiryDate(InterimEndDate interimEndDate) {
         return interimEndDate.toLocalDateTime()
-            .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma, d MMMM y"))
+            .map(dateTime -> formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma, d MMMM y"))
             .orElse(END_OF_PROCEEDINGS.getLabel());
     }
 
@@ -302,8 +301,8 @@ public class GeneratedOrderService {
     private String getInterimEndDateString(InterimEndDate interimEndDate) {
         return interimEndDate.toLocalDateTime()
             .map(dateTime -> {
-                final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(dateTime.getDayOfMonth());
-                return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                final String dayOrdinalSuffix = getDayOfMonthSuffix(dateTime.getDayOfMonth());
+                return formatLocalDateTimeBaseUsingFormat(
                     dateTime, "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y");
             })
             .orElse("the end of the proceedings");
@@ -313,13 +312,13 @@ public class GeneratedOrderService {
                                                             String caseLocalAuthority,
                                                             int numOfMonths) {
         final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
-        final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
+        final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
         return String.format(
             "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
             getLocalAuthorityName(caseLocalAuthority),
             (numOfChildren == 1) ? "child" : "children",
             numOfMonths,
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
+            formatLocalDateTimeBaseUsingFormat(orderExpiration,
                 "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y"));
     }
 
@@ -339,8 +338,8 @@ public class GeneratedOrderService {
             .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
                 "gender", defaultIfNull(child.getGender(), ""),
-                "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
-                    .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
+                "dateOfBirth", child.getDateOfBirth() != null ? formatLocalDateToString(
+                    child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
     }
 
@@ -358,7 +357,7 @@ public class GeneratedOrderService {
     }
 
     private String formatEPODateTime(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy 'at' h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy 'at' h:mma");
     }
 
     private String getFormattedRemovalAddress(CaseData caseData) {

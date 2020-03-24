@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -67,15 +66,14 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CaseDataGeneratorHelper {
-
-    private static final DateFormatterService DATE_FORMATTER_SERVICE = new DateFormatterService();
-    private static final String FORMAT_STYLE = "h:mma, d MMMM yyyy";
 
     private CaseDataGeneratorHelper() {
         // NO-OP
@@ -279,8 +277,7 @@ public class CaseDataGeneratorHelper {
                     .title("Example Order")
                     .details(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                    .date(formatLocalDateTimeBaseUsingFormat(
-                        LocalDateTime.now().plusDays(57), FORMAT_STYLE))
+                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(57), TIME_DATE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
                         "Judy", null, HER_HONOUR_JUDGE))
                     .build())
@@ -291,8 +288,7 @@ public class CaseDataGeneratorHelper {
                     .type("Blank order (C21)")
                     .title("Winter is here")
                     .details("Westeros")
-                    .date(formatLocalDateTimeBaseUsingFormat(
-                        LocalDateTime.now().plusDays(59), FORMAT_STYLE))
+                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(59), TIME_DATE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
                         "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
                     .document(createDocumentReference(randomUUID().toString()))
@@ -304,8 +300,7 @@ public class CaseDataGeneratorHelper {
                     .type("Blank order (C21)")
                     .title("Black Sails")
                     .details("Long John Silver")
-                    .date(formatLocalDateTimeBaseUsingFormat(
-                        LocalDateTime.now().plusDays(60), FORMAT_STYLE))
+                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(60), TIME_DATE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
                         "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
                     .document(lastOrderDocumentReference)
@@ -456,8 +451,7 @@ public class CaseDataGeneratorHelper {
             .put(HEARING_DATE_LIST.getKey(), DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                    .label(DATE_FORMATTER_SERVICE.formatLocalDateToString(
-                        localDateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
+                    .label(formatLocalDateToString(localDateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
                     .build())
                 .build())
             .put(SCHEDULE.getKey(), createSchedule(true))
