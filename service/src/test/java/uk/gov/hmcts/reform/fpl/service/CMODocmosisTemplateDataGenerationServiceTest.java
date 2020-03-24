@@ -245,16 +245,16 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         return List.of(
             Map.of(
                 "name", "Bran Stark",
-                "gender", "Male",
+                "gender", "Boy",
                 "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
             Map.of(
                 "name", "Sansa Stark",
-                "gender", DEFAULT,
-                "dateOfBirth", DEFAULT),
+                "gender", "Boy",
+                "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
             Map.of(
                 "name", "Jon Snow",
-                "gender", DEFAULT,
-                "dateOfBirth", DEFAULT)
+                "gender", "Girl",
+                "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
         );
     }
 
