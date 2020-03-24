@@ -5,27 +5,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.PostConstruct;
 
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentReference;
@@ -35,29 +32,25 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {GeneratedOrderEmailContentProvider.class})
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
-class GeneratedOrderEmailContentProviderTest {
-    private static final String LOCAL_AUTHORITY_CODE = "example";
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, LookupTestConfig.class})
+class GeneratedOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
     private static final LocalDate TODAY = LocalDate.now();
     private static final String FAMILY_MAN_CASE_NUMBER = randomAlphabetic(8);
     private static final UUID DOCUMENT_ID = randomUUID();
     private static final String SUBJECT_LINE = "Jones, " + FAMILY_MAN_CASE_NUMBER;
-    private static final String CASE_REFERENCE = "12345";
-
-    @MockBean
-    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Autowired
     private GeneratedOrderEmailContentProvider orderEmailContentProvider;
 
+    @PostConstruct
+    void setField() {
+        ReflectionTestUtils.setField(orderEmailContentProvider, "uiBaseUrl", BASE_URL);
+    }
+
     @Test
     void shouldReturnExactOrderLocalAuthorityNotificationParametersWithUploadedDocumentUrl() {
-        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-            .willReturn("Example Local Authority");
-
         String documentUrl = "http://dm-store:8080/documents/" + DOCUMENT_ID + "/binary";
         CaseDetails caseDetails = createCaseDetailsWithSingleOrderElement();
 
@@ -72,11 +65,11 @@ class GeneratedOrderEmailContentProviderTest {
                 "reference",
                 "caseUrl")
             .containsExactly(SUBJECT_LINE,
-                "Example Local Authority",
+                LOCAL_AUTHORITY_NAME,
                 String.format("%s, hearing %s", SUBJECT_LINE, formatLocalDateToString(TODAY, FormatStyle.MEDIUM)),
                 documentUrl,
                 CASE_REFERENCE,
-                String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_REFERENCE));
+                buildCaseUrl(CASE_REFERENCE));
     }
 
     private CaseDetails createCaseDetailsWithSingleOrderElement() {

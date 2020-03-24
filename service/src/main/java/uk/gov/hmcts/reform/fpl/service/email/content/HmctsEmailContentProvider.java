@@ -16,7 +16,7 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @Autowired
-    public HmctsEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+    protected HmctsEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                      LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
         super(uiBaseUrl);

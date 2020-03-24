@@ -14,7 +14,7 @@ public class GatekeeperEmailContentProvider extends AbstractEmailContentProvider
     private final LocalAuthorityNameLookupConfiguration config;
 
     @Autowired
-    public GatekeeperEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+    protected GatekeeperEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                           LocalAuthorityNameLookupConfiguration config) {
         super(uiBaseUrl);
         this.config = config;

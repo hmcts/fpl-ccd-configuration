@@ -17,7 +17,7 @@ public class LocalAuthorityEmailContentProvider extends AbstractEmailContentProv
     private final LocalAuthorityNameLookupConfiguration config;
 
     @Autowired
-    public LocalAuthorityEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+    protected LocalAuthorityEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                               LocalAuthorityNameLookupConfiguration config) {
         super(uiBaseUrl);
         this.config = config;

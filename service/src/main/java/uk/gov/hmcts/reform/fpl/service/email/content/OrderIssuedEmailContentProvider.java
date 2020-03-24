@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -30,15 +31,16 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @Slf4j
 @Service
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final RepresentativeService representativeService;
+    private final HmctsCourtLookupConfiguration config;
+    private final RepresentativeService service;
 
-    public OrderIssuedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                           HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                           RepresentativeService representativeService) {
+    @Autowired
+    protected OrderIssuedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                           HmctsCourtLookupConfiguration config,
+                                           RepresentativeService service) {
         super(uiBaseUrl);
-        this.representativeService = representativeService;
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+        this.service = service;
+        this.config = config;
     }
 
     public Map<String, Object> buildNotificationParametersForHmctsAdmin(final CaseDetails caseDetails,
@@ -46,7 +48,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
                                                                         final byte[] documentContents,
                                                                         final IssuedOrderType issuedOrderType) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        List<Representative> representativesServedByPost = representativeService.getRepresentativesByServedPreference(
+        List<Representative> representativesServedByPost = service.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), POST);
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(representativesServedByPost);
 
@@ -54,7 +56,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
             .put("needsPosting", isNotEmpty(representativesServedByPost) ? "Yes" : "No")
             .put("doesNotNeedPosting", representativesServedByPost.isEmpty() ? "Yes" : "No")
-            .put("courtName", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
+            .put("courtName", config.getCourt(localAuthorityCode).getName())
             .putAll(caseUrlOrDocumentLink(isNotEmpty(representativesServedByPost), documentContents,
                 caseDetails.getId()))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
@@ -71,7 +73,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return ImmutableMap.<String, Object>builder()
             .put("orderType", getTypeOfOrder(caseData, issuedOrderType))
             .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
-            .put("courtName", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
+            .put("courtName", config.getCourt(localAuthorityCode).getName())
             .putAll(linkToAttachedDocument(documentContents))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .build();

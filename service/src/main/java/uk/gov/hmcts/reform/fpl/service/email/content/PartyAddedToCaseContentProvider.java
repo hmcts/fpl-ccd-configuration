@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvider {
     
     @Autowired
-    public PartyAddedToCaseContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl) {
+    protected PartyAddedToCaseContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl) {
         super(uiBaseUrl);
     }
 

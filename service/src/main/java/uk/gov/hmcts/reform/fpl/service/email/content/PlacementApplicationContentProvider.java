@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class PlacementApplicationContentProvider extends AbstractEmailContentProvider {
 
     @Autowired
-    public PlacementApplicationContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl) {
+    protected PlacementApplicationContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl) {
         super(uiBaseUrl);
     }
 

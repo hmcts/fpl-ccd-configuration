@@ -14,7 +14,7 @@ public class CafcassEmailContentProviderSDOIssued extends AbstractEmailContentPr
     private final CafcassLookupConfiguration config;
 
     @Autowired
-    public CafcassEmailContentProviderSDOIssued(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+    protected CafcassEmailContentProviderSDOIssued(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                                 CafcassLookupConfiguration config) {
         super(uiBaseUrl);
         this.config = config;

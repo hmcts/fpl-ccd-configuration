@@ -16,7 +16,7 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Autowired
-    public CafcassEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+    protected CafcassEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                        LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                        CafcassLookupConfiguration cafcassLookupConfiguration) {
         super(uiBaseUrl);
