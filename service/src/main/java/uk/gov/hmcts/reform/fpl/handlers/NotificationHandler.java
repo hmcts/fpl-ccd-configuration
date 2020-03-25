@@ -14,18 +14,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
-import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
-import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
-import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
-import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
-import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.*;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -308,6 +297,12 @@ public class NotificationHandler {
             representativesServedByEmail, PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
         sendNotificationToRepresentatives(eventData, servedByDigitalServiceParameters,
             representativesServedByDigitalService, PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
+    }
+
+    @EventListener
+    public void sendFailedPBAPaymentEmailToLocalAuthority(FailedPBAPaymentEvent event) {
+        EventData eventData = new EventData(event);
+        System.out.println("Going to send a notification of failed payment to LA");
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {

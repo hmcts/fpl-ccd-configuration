@@ -17,8 +17,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -165,7 +167,12 @@ public class CaseSubmissionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         if (featureToggleService.isPaymentsEnabled()) {
-            paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
+            try {
+                paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
+            } catch(FeeRegisterException | PaymentsApiException ignore) {
+                System.out.println("Something went wrong with payment");
+                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId));
+            }
         }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
     }
