@@ -90,7 +90,7 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document document = getDocument(requestData.authorisation(), requestData.userId(), caseData, true);
+        Document document = getDocument(requestData, caseData, true);
 
         caseDetails.getData()
             .put(ORDER_ACTION.getKey(), OrderAction.builder().document(buildFromDocument(document)).build());
@@ -138,7 +138,7 @@ public class ActionCaseManagementOrderController {
             order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
         }
 
-        Document document = getDocument(requestData.authorisation(), requestData.userId(), caseData, order.isDraft());
+        Document document = getDocument(requestData, caseData, order.isDraft());
 
         order = caseManagementOrderService.addDocument(order, document);
 
@@ -171,7 +171,7 @@ public class ActionCaseManagementOrderController {
                 "internal-change:SEND_DOCUMENT",
                 Map.of("documentToBeSent", caseManagementOrder.getOrderDoc())
             );
-            publishEventOnApprovedCMO(requestData.authorisation(), requestData.userId(), callbackRequest);
+            publishEventOnApprovedCMO(callbackRequest);
         }
     }
 
@@ -180,7 +180,7 @@ public class ActionCaseManagementOrderController {
             && caseManagementOrderService.isHearingDateInFuture(caseData);
     }
 
-    private Document getDocument(String auth, String userId, CaseData data, boolean draft) throws IOException {
+    private Document getDocument(RequestData requestData, CaseData data, boolean draft) throws IOException {
         Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, draft);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
@@ -188,14 +188,15 @@ public class ActionCaseManagementOrderController {
 
         String documentTitle = (draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle());
 
-        return uploadDocumentService.uploadPDF(userId, auth, document.getBytes(), documentTitle);
+        return uploadDocumentService.uploadPDF(requestData.userId(), requestData.authorisation(),
+            document.getBytes(), documentTitle);
     }
 
     private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
         return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
     }
 
-    private void publishEventOnApprovedCMO(String authorization, String userId, CallbackRequest callbackRequest) {
+    private void publishEventOnApprovedCMO(CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         CaseManagementOrder actionedCmo = caseData.getCaseManagementOrder();
 

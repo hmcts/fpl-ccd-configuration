@@ -25,7 +25,6 @@ import java.util.Map;
 public class AllocationDecisionController {
     private final ObjectMapper mapper;
     private final CourtLevelAllocationService service;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(

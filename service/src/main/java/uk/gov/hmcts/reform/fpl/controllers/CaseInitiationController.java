@@ -23,7 +23,6 @@ import java.util.Map;
 public class CaseInitiationController {
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
@@ -45,9 +44,7 @@ public class CaseInitiationController {
         String caseId = Long.toString(caseDetails.getId());
         String caseLocalAuthority = (String) caseDetails.getData()
             .get("caseLocalAuthority");
-        String authorisation = requestData.authorisation();
-        String userId = requestData.userId();
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(authorisation, userId, caseId, caseLocalAuthority);
+        localAuthorityUserService.grantUserAccessWithCaseRole(caseId, caseLocalAuthority);
     }
 }
