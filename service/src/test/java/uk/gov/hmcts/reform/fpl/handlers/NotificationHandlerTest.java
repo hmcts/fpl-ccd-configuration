@@ -310,7 +310,7 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotifyAdminWhenUploadedC2tIsNotUsingPbaPayment() throws IOException {
+        void shouldNotifyAdminWhenUploadedC2IsNotUsingPbaPayment() throws IOException {
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
