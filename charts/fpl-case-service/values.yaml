@@ -3,6 +3,7 @@ tags:
   ccd-idam-pr: false
 
 java:
+  aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest
   environment:
     IDAM_CLIENT_ID: fpl_case_service
