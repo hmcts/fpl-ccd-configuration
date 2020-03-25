@@ -127,7 +127,7 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendEmailForC2UploadPaymentNotTaken(final C2PbaPaymentNotTakenEvent event) {
+    public void sendEmailForC2UploadPbaPaymentNotTaken(final C2PbaPaymentNotTakenEvent event) {
         EventData eventData = new EventData(event);
         String email = getHmctsAdminEmail(eventData);
         Map<String, Object> parameters = c2UploadedEmailContentProvider

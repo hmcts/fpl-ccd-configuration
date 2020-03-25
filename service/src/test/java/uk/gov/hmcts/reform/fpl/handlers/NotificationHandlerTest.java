@@ -316,10 +316,10 @@ class NotificationHandlerTest {
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com", COURT_CODE));
 
-            given(c2UploadedEmailContentProvider.buildC2UploadPaymentNotTakenNotification(caseDetails))
+            given(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(caseDetails))
                 .willReturn(c2PaymentNotTakenParameters);
 
-            notificationHandler.sendEmailForC2UploadPaymentNotTaken(
+            notificationHandler.sendEmailForC2UploadPbaPaymentNotTaken(
                 new C2PbaPaymentNotTakenEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationService).sendEmail(
@@ -340,10 +340,10 @@ class NotificationHandlerTest {
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-            given(c2UploadedEmailContentProvider.buildC2UploadPaymentNotTakenNotification(caseDetails))
+            given(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(caseDetails))
                 .willReturn(c2PaymentNotTakenParameters);
 
-            notificationHandler.sendEmailForC2UploadPaymentNotTaken(
+            notificationHandler.sendEmailForC2UploadPbaPaymentNotTaken(
                 new C2PbaPaymentNotTakenEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationService).sendEmail(

@@ -186,10 +186,10 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         verify(paymentService, never()).makePaymentForC2(any(), any());
     }
 
-    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc, YesNo paymentTaken) {
+    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
         return createCase(ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .putAll(buildC2DocumentBundle(paymentTaken))
+            .putAll(buildC2DocumentBundle(usePbaPayment))
             .put("sendToCtsc", enableCtsc.getValue())
             .build());
     }
