@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,13 +66,12 @@ class CafcassEmailContentProviderSDOIssuedTest {
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("title", CAFCASS_NAME)
-            .put("familyManCaseNumber", "12345,")
-            .put("leadRespondentsName", "Smith,")
-            .put("hearingDate", "1 January 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+        return Map.of(
+            "title", CAFCASS_NAME,
+            "familyManCaseNumber", "12345,",
+            "leadRespondentsName", "Smith,",
+            "hearingDate", "1 January 2020",
+            "reference", "12345",
+            "caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
     }
 }

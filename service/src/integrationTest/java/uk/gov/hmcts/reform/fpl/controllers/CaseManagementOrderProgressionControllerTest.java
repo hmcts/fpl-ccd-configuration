@@ -25,6 +25,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -197,14 +198,13 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     }
 
     private Map<String, Object> expectedJudgeRejectedNotificationParameters() {
-        return newHashMap(
-            commonNotificationParameters()
-                .put("requestedChanges", "Please make this change XYZ")
-                .build());
+        return new HashMap<>(commonNotificationParameters()
+            .put("requestedChanges", "Please make this change XYZ")
+            .build());
     }
 
     private Map<String, Object> expectedCMODraftCompleteNotificationParameters() {
-        return newHashMap(
+        return new HashMap<>(
             commonNotificationParameters()
                 .put("respondentLastName", "Jones")
                 .put("judgeTitle", "Her Honour Judge")
