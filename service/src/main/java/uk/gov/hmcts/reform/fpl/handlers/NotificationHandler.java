@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -23,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -33,8 +31,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -49,7 +45,6 @@ public class NotificationHandler {
     private static final String CASE_LOCAL_AUTHORITY_PROPERTY_NAME = "caseLocalAuthority";
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
     private final GeneratedOrderEmailContentProvider orderEmailContentProvider;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
@@ -117,31 +112,6 @@ public class NotificationHandler {
                 representative.getEmail(),
                 parameters,
                 eventData.getReference()));
-    }
-
-    @EventListener
-    public void sendEmailToPartiesAddedToCase(PartyAddedToCaseEvent event) {
-        EventData eventData = new EventData(event);
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-
-        Map<String, Object> servedByEmailParameters = partyAddedToCaseContentProvider
-            .getPartyAddedToCaseNotificationParameters(caseDetails, EMAIL);
-        Map<String, Object> servedByDigitalServiceParameters = partyAddedToCaseContentProvider
-            .getPartyAddedToCaseNotificationParameters(caseDetails, DIGITAL_SERVICE);
-
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = objectMapper.convertValue(event.getCallbackRequest().getCaseDetailsBefore().getData(),
-            CaseData.class);
-
-        List<Representative> representativesServedByDigitalService = representativeService.getUpdatedRepresentatives(
-            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
-        List<Representative> representativesServedByEmail = representativeService.getUpdatedRepresentatives(
-            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
-
-        sendNotificationToRepresentatives(eventData, servedByEmailParameters,
-            representativesServedByEmail, PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
-        sendNotificationToRepresentatives(eventData, servedByDigitalServiceParameters,
-            representativesServedByDigitalService, PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
     }
 
     private void sendOrderNotificationToLocalAuthority(final CaseDetails caseDetails,

@@ -14,6 +14,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
@@ -30,6 +31,8 @@ public class NotificationEventHandlerTestData {
     static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     static final String COURT_CODE = "11";
     static final String CTSC_INBOX = "Ctsc+test@gmail.com";
+    static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "barney@rubble.com";
+    static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "fred@flinstone.com";
     static final byte[] DOCUMENT_CONTENTS = {1, 2, 3};
 
     private NotificationEventHandlerTestData() {
@@ -112,5 +115,14 @@ public class NotificationEventHandlerTestData {
             .put("localAuthorityNameOrRepresentativeFullName", "Jon Snow")
             .putAll(expectedCommonCMONotificationParameters())
             .build();
+    }
+
+    public static List<Representative> getExpectedEmailRepresentativesForAddingPartiesToCase() {
+        return ImmutableList.of(
+            Representative.builder()
+                .email("barney@rubble.com")
+                .fullName("Barney Rubble")
+                .servingPreferences(EMAIL)
+                .build());
     }
 }

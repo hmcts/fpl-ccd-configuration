@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -35,7 +34,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -52,12 +50,9 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
@@ -78,8 +73,6 @@ class NotificationHandlerTest {
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String COURT_CODE = "11";
-    private static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "barney@rubble.com";
-    private static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "fred@flinstone.com";
     private static final String CTSC_INBOX = "Ctsc+test@gmail.com";
     private final byte[] documentContents = {1, 2, 3};
 
@@ -116,9 +109,6 @@ class NotificationHandlerTest {
     @Mock
     private RepresentativeService representativeService;
 
-    @Mock
-    private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -134,9 +124,8 @@ class NotificationHandlerTest {
     @BeforeEach
     void setup() {
         notificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
-            partyAddedToCaseContentProvider, orderEmailContentProvider,
-            orderIssuedEmailContentProvider, localAuthorityEmailContentProvider, inboxLookupService,
-            representativeService, objectMapper, ctscEmailLookupConfiguration, notificationService);
+            orderEmailContentProvider, orderIssuedEmailContentProvider, localAuthorityEmailContentProvider,
+            inboxLookupService, representativeService, objectMapper, ctscEmailLookupConfiguration, notificationService);
     }
 
     @Nested
@@ -302,62 +291,6 @@ class NotificationHandlerTest {
         }
     }
 
-    @Test
-    void shouldSendEmailToPartiesWhenAddedToCase() throws IOException {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = objectMapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
-
-        final Map<String, Object> expectedEmailParameters = getPartyAddedByEmailNotificationParameters();
-        final Map<String, Object> expectedDigitalParameters = getPartyAddedByDigitalServiceNotificationParameters();
-
-        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
-            DIGITAL_SERVICE))
-            .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
-
-        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
-            .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
-
-        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
-            caseDataBefore.getRepresentatives(), EMAIL))
-            .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
-
-        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
-            caseDataBefore.getRepresentatives(), DIGITAL_SERVICE))
-            .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
-
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
-            callbackRequest().getCaseDetails(), EMAIL)).willReturn(expectedEmailParameters);
-
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
-            callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).willReturn(expectedDigitalParameters);
-
-        notificationHandler.sendEmailToPartiesAddedToCase(
-            new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
-
-        verify(notificationService).sendEmail(
-            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
-            PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS,
-            expectedEmailParameters,
-            "12345");
-
-        verify(notificationService).sendEmail(
-            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE,
-            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL,
-            expectedDigitalParameters,
-            "12345");
-    }
-
-    private List<Representative> getExpectedDigitalRepresentativesForAddingPartiesToCase() {
-        return ImmutableList.of(
-            Representative.builder()
-                .email("fred@flinstone.com")
-                .fullName("Fred Flinstone")
-                .servingPreferences(DIGITAL_SERVICE)
-                .build());
-    }
-
     private List<Representative> getExpectedEmailRepresentativesForAddingPartiesToCase() {
         return ImmutableList.of(
             Representative.builder()
@@ -365,23 +298,6 @@ class NotificationHandlerTest {
                 .fullName("Barney Rubble")
                 .servingPreferences(EMAIL)
                 .build());
-    }
-
-    private Map<String, Object> getPartyAddedByEmailNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("firstRespondentLastName", "Moley")
-            .put("familyManCaseNumber", "123")
-            .put("reference", "12345")
-            .build();
-    }
-
-    private Map<String, Object> getPartyAddedByDigitalServiceNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("firstRespondentLastName", "Moley")
-            .put("familyManCaseNumber", "123")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
     }
 
     private CallbackRequest appendSendToCtscOnCallback() throws IOException {
