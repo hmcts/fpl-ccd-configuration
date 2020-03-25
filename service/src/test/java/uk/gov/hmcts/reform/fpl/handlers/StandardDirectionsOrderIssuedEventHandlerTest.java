@@ -3,12 +3,12 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
@@ -36,28 +36,29 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, LookupTestConfig.class})
+@SpringBootTest(classes = {StandardDirectionsOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
+    LookupTestConfig.class})
 public class StandardDirectionsOrderIssuedEventHandlerTest {
     private static final Logger LOG = LoggerFactory.getLogger(StandardDirectionsOrderIssuedEventHandlerTest.class);
 
     private static CallbackRequest callbackRequest;
 
-    @Mock
+    @MockBean
     private CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
 
-    @Mock
+    @MockBean
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
-    @Mock
+    @MockBean
     private NotificationService notificationService;
 
-    @Mock
+    @MockBean
     private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
 
-    @Mock
+    @MockBean
     private InboxLookupService inboxLookupService;
 
-    @InjectMocks
+    @Autowired
     private StandardDirectionsOrderIssuedEventHandler standardDirectionsOrderIssuedEventHandler;
 
     static {

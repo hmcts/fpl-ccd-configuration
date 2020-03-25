@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -32,9 +31,8 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {PlacementApplicationEventHandler.class})
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, LookupTestConfig.class,
-    HmctsEmailContentProvider.class})
+@SpringBootTest(classes = {PlacementApplicationEventHandler.class, JacksonAutoConfiguration.class,
+    LookupTestConfig.class, HmctsEmailContentProvider.class})
 public class PlacementApplicationEventHandlerTest {
     @MockBean
     private NotificationService notificationService;

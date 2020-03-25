@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -28,15 +28,15 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, LookupTestConfig.class})
+@SpringBootTest(classes = {NotifyGatekeeperEventHandler.class, JacksonAutoConfiguration.class, LookupTestConfig.class})
 public class NotifyGatekeeperEventHandlerTest {
-    @Mock
+    @MockBean
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
 
-    @Mock
+    @MockBean
     private NotificationService notificationService;
 
-    @InjectMocks
+    @Autowired
     private NotifyGatekeeperEventHandler notifyGatekeeperEventHandler;
 
     @Test
