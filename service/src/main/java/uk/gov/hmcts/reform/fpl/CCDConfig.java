@@ -6,6 +6,7 @@ import de.cronn.reflection.util.TypedPropertyGetter;
 import uk.gov.hmcts.ccd.sdk.types.BaseCCDConfig;
 import uk.gov.hmcts.ccd.sdk.types.DisplayContext;
 import uk.gov.hmcts.ccd.sdk.types.FieldCollection;
+import uk.gov.hmcts.ccd.sdk.types.FieldCollection.FieldCollectionBuilder;
 import uk.gov.hmcts.ccd.sdk.types.Webhook;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
@@ -620,14 +621,14 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .page("Respondents directions")
                 .label("localAuthorityDirectionsLabelCMO", "## For the local authority")
                 .label("respondents_label", "## For the local authority")
-                .field(CaseData::getRespondentDirectionsCustom).context(DisplayContext.Complex).caseEventFieldLabel("Direction").done()
+                .field(CaseData::getRespondentDirectionsCustom).caseEventFieldLabel("Direction").complex().done()
             .page("Other party directions")
                 .label("otherPartiesDirectionLabelCMO", "## For the local authority")
                 .label("others_label", "## For the local authority")
-                .field(CaseData::getOtherPartiesDirectionsCustom).context(DisplayContext.Complex).caseEventFieldLabel("Direction").done()
+                .field(CaseData::getOtherPartiesDirectionsCustom).caseEventFieldLabel("Direction").complex().done()
             .page("Cafcass directions")
                 .label("cafcassDirectionsLabelCMO", "## For the local authority")
-                .field(CaseData::getCafcassDirectionsCustom).context(DisplayContext.Complex).caseEventFieldLabel("Direction").done();
+                .field(CaseData::getCafcassDirectionsCustom).caseEventFieldLabel("Direction").complex().done();
 
         buildPlacement(PREPARE_FOR_HEARING);
         event("internal-change:CMO_PROGRESSION")
@@ -700,12 +701,12 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .field().id(getter).caseEventFieldLabel("Direction").mutable().complex(Direction.class)
                     .readonly(Direction::getDirectionType)
                     .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
-                    .readonly(Direction::getDateToBeCompletedBy)
+                    .field(Direction::getDateToBeCompletedBy).context(DisplayContext.ReadOnly).label("Deadline").done()
                     .complex(Direction::getResponse)
                         .optional(DirectionResponse::getComplied)
                         .optional(DirectionResponse::getDocumentDetails)
                         .optional(DirectionResponse::getFile)
-                        .label("cannotComplyTitle", "TODO")
+                        .field("cannotComplyTitle").context(DisplayContext.Optional).done()
                         .field(DirectionResponse::getCannotComplyReason, reasonContext)
                         .optional(DirectionResponse::getC2Uploaded)
                         .optional(DirectionResponse::getCannotComplyFile);
