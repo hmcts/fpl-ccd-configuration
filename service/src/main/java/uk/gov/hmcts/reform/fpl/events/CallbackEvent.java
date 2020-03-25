@@ -1,18 +1,16 @@
 package uk.gov.hmcts.reform.fpl.events;
 
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 public class CallbackEvent {
 
-    //TODO TECHDEBT use RequestData here so that we don't pass authorization/user id into every event FPLA-1475
     private final CallbackRequest callbackRequest;
-    private final String authorization;
-    private final String userId;
+    private final RequestData requestData;
 
-    CallbackEvent(CallbackRequest callbackRequest, String authorization, String userId) {
+    CallbackEvent(CallbackRequest callbackRequest, RequestData requestData) {
         this.callbackRequest = callbackRequest;
-        this.authorization = authorization;
-        this.userId = userId;
+        this.requestData = requestData;
     }
 
     public CallbackRequest getCallbackRequest() {
@@ -20,10 +18,10 @@ public class CallbackEvent {
     }
 
     public String getAuthorization() {
-        return authorization;
+        return requestData.authorisation();
     }
 
     public String getUserId() {
-        return userId;
+        return requestData.userId();
     }
 }

@@ -117,8 +117,7 @@ public class UploadC2DocumentsController {
         if (featureToggleService.isPaymentsEnabled()) {
             paymentService.makePaymentForC2(caseDetails.getId(), caseData);
         }
-        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, requestData.authorisation(),
-            requestData.userId()));
+        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, requestData));
     }
 
     private boolean shouldRemoveDocument(CaseData caseData) {

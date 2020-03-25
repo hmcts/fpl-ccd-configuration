@@ -173,8 +173,7 @@ public class GeneratedOrderController {
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
-            requestData.authorisation(),
-            requestData.userId(),
+            requestData,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));

@@ -203,8 +203,8 @@ public class ActionCaseManagementOrderController {
             final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();
             byte[] documentContents = documentDownloadService.downloadDocument(actionCmoDocumentUrl);
 
-            applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, authorization,
-                userId, documentContents));
+            applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, requestData,
+                documentContents));
         }
     }
 }

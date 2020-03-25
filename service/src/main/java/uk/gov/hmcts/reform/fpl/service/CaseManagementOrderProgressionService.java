@@ -100,13 +100,12 @@ public class CaseManagementOrderProgressionService {
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest,
-                requestData.authorisation(), requestData.userId()));
+            requestData));
     }
 
     private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {
         applicationEventPublisher.publishEvent(
             new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build(),
-                requestData.authorisation(),
-                requestData.userId()));
+                requestData));
     }
 }

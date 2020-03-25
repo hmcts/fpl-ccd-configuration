@@ -46,8 +46,7 @@ public class NotifyGatekeeperController {
         @RequestBody CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(
-            new PopulateStandardDirectionsEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
-        applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, requestData.authorisation(),
-            requestData.userId()));
+            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+        applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, requestData));
     }
 }

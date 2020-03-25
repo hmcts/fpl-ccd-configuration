@@ -229,8 +229,7 @@ public class DraftOrdersController {
                 Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
             );
             applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
-                requestData.authorisation(),
-                requestData.userId()));
+                requestData));
         }
     }
 

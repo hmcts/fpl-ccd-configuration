@@ -165,8 +165,7 @@ public class CaseSubmissionController {
         if (featureToggleService.isPaymentsEnabled()) {
             paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
         }
-        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, requestData.authorisation(),
-            requestData.userId()));
+        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, requestData));
     }
 
     private String setSendToCtsc() {
