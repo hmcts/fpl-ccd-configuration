@@ -144,7 +144,6 @@ public class DraftCMOController {
     private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, CMO);
 
-        return uploadDocumentService.uploadPDF(
-            userId, authorization, document.getBytes(), "draft-" + document.getDocumentTitle());
+        return uploadDocumentService.uploadPDF(document.getBytes(), "draft-" + document.getDocumentTitle());
     }
 }

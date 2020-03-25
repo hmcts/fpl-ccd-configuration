@@ -135,8 +135,7 @@ public class CaseSubmissionController {
             Pair.of("userFullName", userDetailsService.getUserName(requestData.authorisation()))
         );
 
-        Document document = uploadDocumentService.uploadPDF(requestData.userId(), requestData.authorisation(),
-            pdf, buildFileName(caseDetails));
+        Document document = uploadDocumentService.uploadPDF(pdf, buildFileName(caseDetails));
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 

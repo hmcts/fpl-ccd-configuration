@@ -57,7 +57,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
             .willReturn("Emma Taylor");
         given(documentGeneratorService.generateSubmittedFormPDF(any(), any()))
             .willReturn(pdf);
-        given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, "2313.pdf"))
+        given(uploadDocumentService.uploadPDF(pdf, "2313.pdf"))
             .willReturn(document);
     }
 

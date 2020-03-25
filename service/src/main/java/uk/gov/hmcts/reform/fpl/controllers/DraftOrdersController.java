@@ -134,8 +134,6 @@ public class DraftOrdersController {
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
-            requestData.authorisation(),
-            requestData.userId(),
             caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
@@ -181,8 +179,6 @@ public class DraftOrdersController {
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
-            requestData.authorisation(),
-            requestData.userId(),
             caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
@@ -241,7 +237,7 @@ public class DraftOrdersController {
             .collect(Collectors.toList());
     }
 
-    private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
+    private Document getDocument(Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
         String docTitle = document.getDocumentTitle();
@@ -250,6 +246,6 @@ public class DraftOrdersController {
             docTitle = "draft-" + document.getDocumentTitle();
         }
 
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
+        return uploadDocumentService.uploadPDF(document.getBytes(), docTitle);
     }
 }

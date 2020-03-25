@@ -84,8 +84,7 @@ public class NoticeOfProceedingsController {
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 
-        List<Document> uploadedDocuments = generateAndUploadDocuments(requestData.userId(),
-            requestData.authorisation(), templateData,
+        List<Document> uploadedDocuments = generateAndUploadDocuments(templateData,
             templateTypes);
 
         List<Element<DocumentBundle>> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
@@ -120,17 +119,14 @@ public class NoticeOfProceedingsController {
             .collect(Collectors.toList());
     }
 
-    private List<Document> generateAndUploadDocuments(String userId,
-                                                      String authorization,
-                                                      Map<String, Object> templatePlaceholders,
+    private List<Document> generateAndUploadDocuments(Map<String, Object> templatePlaceholders,
                                                       List<DocmosisTemplates> templates) {
         List<DocmosisDocument> docmosisDocuments = templates.stream()
             .map(template -> docmosisDocumentGeneratorService.generateDocmosisDocument(templatePlaceholders, template))
             .collect(Collectors.toList());
 
         return docmosisDocuments.stream()
-            .map(document -> uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-                document.getDocumentTitle()))
+            .map(document -> uploadDocumentService.uploadPDF(document.getBytes(), document.getDocumentTitle()))
             .collect(Collectors.toList());
     }
 

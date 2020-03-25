@@ -191,7 +191,7 @@ public class GeneratedOrderController {
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 
-        Document document = uploadDocumentService.uploadPDF(userId, authorization, docmosisDocument.getBytes(),
+        Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
 
         if (orderStatus == DRAFT) {
