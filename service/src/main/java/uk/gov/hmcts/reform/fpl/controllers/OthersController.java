@@ -52,7 +52,7 @@ public class OthersController {
 
         List<Element<Other>> confidentialOthersModified = othersService.retainConfidentialDetails(confidentialOthers);
 
-        confidentialService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersModified, OTHER);
+        confidentialService.addConfidentialDetailsToCase(caseDetails, confidentialOthersModified, OTHER);
 
         caseDetails.getData().put("others", othersService.modifyHiddenValues(caseData.getAllOthers()));
 

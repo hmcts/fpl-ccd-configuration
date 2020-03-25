@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,12 +9,16 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ChildController.class)
@@ -32,7 +34,7 @@ class ChildControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartShouldPrepopulateChildrenDataWhenNoChildExists() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of("data", "some data"))
+            .data(Map.of("data", "some data"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
@@ -43,9 +45,7 @@ class ChildControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(ImmutableMap.of("children1", ImmutableList.of(
-                createChildrenElement(LocalDate.now().plusDays(1)))))
+            .data(Map.of("children1", wrapElements(createChildWithDateOfBirth(LocalDate.now().plusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -56,12 +56,10 @@ class ChildControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnDateOfBirthErrorWhenThereIsMultipleChildren() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(ImmutableMap.of(
-                "children1", ImmutableList.of(
-                    createChildrenElement(LocalDate.now().plusDays(1)),
-                    createChildrenElement(LocalDate.now().plusDays(1))
-                )))
+            .data(Map.of("children1", wrapElements(
+                createChildWithDateOfBirth(LocalDate.now().plusDays(1)),
+                createChildWithDateOfBirth(LocalDate.now().plusDays(1))
+            )))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -72,9 +70,7 @@ class ChildControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnNoDateOfBirthErrorWhenValidDateOfBirth() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(ImmutableMap.of("children1", ImmutableList.of(
-                createChildrenElement(LocalDate.now().minusDays(1)))))
+            .data(Map.of("children1", wrapElements(createChildWithDateOfBirth(LocalDate.now().minusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -85,8 +81,7 @@ class ChildControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnNoDateOfBirthErrorsWhenCaseDataIsEmpty() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(ImmutableMap.of())
+            .data(emptyMap())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -101,18 +96,28 @@ class ChildControllerTest extends AbstractControllerTest {
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseData initialData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
 
-        assertThat(caseData.getConfidentialChildren()).containsOnly(initialData.getAllChildren().get(0));
+        assertThat(caseData.getConfidentialChildren())
+            .containsOnly(retainConfidentialDetails(initialData.getAllChildren().get(0)));
+
         assertThat(caseData.getChildren1().get(0).getValue().getParty().address).isNull();
         assertThat(caseData.getChildren1().get(1).getValue().getParty().address).isNotNull();
     }
 
-    private Map<String, Object> createChildrenElement(LocalDate dateOfBirth) {
-        return ImmutableMap.of(
-            "id", "",
-            "value", Child.builder()
-                .party(ChildParty.builder()
-                    .dateOfBirth(dateOfBirth)
-                    .build())
-                .build());
+    private Child createChildWithDateOfBirth(LocalDate date) {
+        return Child.builder()
+            .party(ChildParty.builder().dateOfBirth(date).build())
+            .build();
+    }
+
+    private Element<Child> retainConfidentialDetails(Element<Child> child) {
+        return element(child.getId(), Child.builder()
+            .party(ChildParty.builder()
+                .firstName(child.getValue().getParty().firstName)
+                .lastName(child.getValue().getParty().lastName)
+                .address(child.getValue().getParty().address)
+                .telephoneNumber(child.getValue().getParty().telephoneNumber)
+                .email(child.getValue().getParty().email)
+                .build())
+            .build());
     }
 }

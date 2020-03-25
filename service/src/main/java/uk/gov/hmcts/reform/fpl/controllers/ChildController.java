@@ -64,7 +64,10 @@ public class ChildController {
         List<Element<Child>> confidentialChildren =
             confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllChildren());
 
-        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialChildren, CHILD);
+        List<Element<Child>> confidentialChildrenModified =
+            childrenService.retainConfidentialDetails(confidentialChildren);
+
+        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, confidentialChildrenModified, CHILD);
 
         caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData.getAllChildren()));
 

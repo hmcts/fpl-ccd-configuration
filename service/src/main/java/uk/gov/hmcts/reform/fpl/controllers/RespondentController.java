@@ -61,11 +61,14 @@ public class RespondentController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Respondent>> confidentialRespondents =
-            confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllRespondents());
+        List<Element<Respondent>> confidentialRespondents = confidentialDetailsService
+            .addPartyMarkedConfidentialToList(caseData.getAllRespondents());
 
-        confidentialDetailsService.addConfidentialDetailsToCaseDetails(
-            caseDetails, confidentialRespondents, RESPONDENT);
+        List<Element<Respondent>> confidentialRespondentsModified = respondentService
+            .retainConfidentialDetails(confidentialRespondents);
+
+        confidentialDetailsService
+            .addConfidentialDetailsToCase(caseDetails, confidentialRespondentsModified, RESPONDENT);
 
         caseDetails.getData().put("respondents1", respondentService.modifyHiddenValues(caseData.getAllRespondents()));
 

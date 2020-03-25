@@ -21,6 +21,9 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class ChildrenServiceTest {
@@ -109,15 +112,11 @@ class ChildrenServiceTest {
 
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleChild() {
-        List<Element<Child>> children = ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .build())
-                    .build())
-                .build());
+        List<Element<Child>> children = wrapElements(Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .build())
+            .build());
 
         CaseData caseData = CaseData.builder()
             .children1(children)
@@ -132,24 +131,16 @@ class ChildrenServiceTest {
 
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToMultipleChildren() {
-        List<Element<Child>> children = ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .build())
+        List<Element<Child>> children = wrapElements(Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("James")
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Lucy")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Lucy")
                     .build())
-                .build()
-        );
+                .build());
 
         CaseData caseData = CaseData.builder()
             .children1(children)
@@ -167,16 +158,12 @@ class ChildrenServiceTest {
 
     @Test
     void shouldKeepExistingPartyID() {
-        List<Element<Child>> children = ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .partyId("123")
-                        .build())
-                    .build())
-                .build());
+        List<Element<Child>> children = wrapElements(Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .partyId("123")
+                .build())
+            .build());
 
         CaseData caseData = CaseData.builder()
             .children1(children)
@@ -189,22 +176,16 @@ class ChildrenServiceTest {
 
     @Test
     void shouldKeepExistingPartyIdAndContinueAddingNewPartyId() {
-        List<Element<Child>> children = ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .partyId("123")
-                        .build())
+        List<Element<Child>> children = wrapElements(
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("James")
+                    .partyId("123")
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Lucy")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Lucy")
                     .build())
                 .build());
 
@@ -295,65 +276,86 @@ class ChildrenServiceTest {
         assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }
 
-    private Element<Child> childWithDetailsHiddenNo(UUID id) {
-        return Element.<Child>builder()
-            .id(id)
-            .value(Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("James")
-                    .detailsHidden("No")
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
+    @Test
+    void shouldRemoveAllNonConfidentialFieldsWhenPopulatedChild() {
+        List<Element<Child>> children = wrapElements(populatedChild());
+
+        List<Element<Child>> confidentialChildDetails = service.retainConfidentialDetails(children);
+
+        assertThat(unwrapElements(confidentialChildDetails)).containsExactly(childWithOnlyConfidentialFields());
+    }
+
+    private Child childWithOnlyConfidentialFields() {
+        return Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .lastName("Smith")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                 .build())
             .build();
+    }
+
+    private Child populatedChild() {
+        return Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .lastName("Smith")
+                .detailsHidden("Yes")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                .additionalNeeds("Additional Needs")
+                .adoption("Adoption information")
+                .fathersName("Fathers name")
+                .gender("Male")
+                .litigationIssues("Litigation issues")
+                .build())
+            .build();
+    }
+
+    private Element<Child> childWithDetailsHiddenNo(UUID id) {
+        return element(id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .detailsHidden("No")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                .build())
+            .build());
     }
 
     private Element<Child> childWithRemovedConfidentialFields(UUID id) {
-        return Element.<Child>builder()
-            .id(id)
-            .value(Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("James")
-                    .detailsHidden("Yes")
-                    .build())
+        return element(id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .detailsHidden("Yes")
                 .build())
-            .build();
+            .build());
     }
 
     private Element<Child> childWithConfidentialFields(UUID id) {
-        return Element.<Child>builder()
-            .id(id)
-            .value(Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("James")
-                    .detailsHidden("Yes")
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
+        return element(id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .detailsHidden("Yes")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                 .build())
-            .build();
+            .build());
     }
 
     private List<Element<Child>> childElementWithDetailsHiddenValue(String hidden) {
-        return ImmutableList.of(Element.<Child>builder()
-            .id(randomUUID())
-            .value(Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("James")
-                    .detailsHidden(hidden)
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
+        return wrapElements(Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .detailsHidden(hidden)
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                 .build())
             .build());
     }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +19,9 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class RespondentServiceTest {
@@ -38,7 +40,7 @@ class RespondentServiceTest {
     @Test
     void shouldReturnRespondentsIfRespondentsIsPrePopulated() {
         CaseData caseData = CaseData.builder()
-            .respondents1(ImmutableList.of(respondentWithRemovedConfidentialFields(ID)))
+            .respondents1(List.of(respondentWithRemovedConfidentialFields(ID)))
             .build();
 
         List<Element<Respondent>> respondents = service.prepareRespondents(caseData);
@@ -49,8 +51,8 @@ class RespondentServiceTest {
     @Test
     void shouldPrepareRespondentWithConfidentialValuesWhenConfidentialRespondentIsNotEmpty() {
         CaseData caseData = CaseData.builder()
-            .respondents1(ImmutableList.of(respondentWithRemovedConfidentialFields(ID)))
-            .confidentialRespondents(ImmutableList.of(respondentWithConfidentialFields(ID)))
+            .respondents1(List.of(respondentWithRemovedConfidentialFields(ID)))
+            .confidentialRespondents(List.of(respondentWithConfidentialFields(ID)))
             .build();
 
         List<Element<Respondent>> respondents = service.prepareRespondents(caseData);
@@ -61,8 +63,8 @@ class RespondentServiceTest {
     @Test
     void shouldReturnRespondentWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialRespondent() {
         CaseData caseData = CaseData.builder()
-            .respondents1(ImmutableList.of(respondentWithRemovedConfidentialFields(ID)))
-            .confidentialRespondents(ImmutableList.of(respondentWithConfidentialFields(randomUUID())))
+            .respondents1(List.of(respondentWithRemovedConfidentialFields(ID)))
+            .confidentialRespondents(List.of(respondentWithConfidentialFields(randomUUID())))
             .build();
 
         List<Element<Respondent>> respondents = service.prepareRespondents(caseData);
@@ -73,8 +75,8 @@ class RespondentServiceTest {
     @Test
     void shouldAddExpectedRespondentWhenHiddenDetailsMarkedAsNo() {
         CaseData caseData = CaseData.builder()
-            .respondents1(ImmutableList.of(respondentWithDetailsHiddenNo(ID)))
-            .confidentialRespondents(ImmutableList.of(respondentWithConfidentialFields(ID)))
+            .respondents1(List.of(respondentWithDetailsHiddenNo(ID)))
+            .confidentialRespondents(List.of(respondentWithConfidentialFields(ID)))
             .build();
 
         List<Element<Respondent>> respondents = service.prepareRespondents(caseData);
@@ -86,12 +88,12 @@ class RespondentServiceTest {
     void shouldMaintainOrderingOfRespondentWhenComplexScenario() {
         UUID otherId = randomUUID();
 
-        List<Element<Respondent>> respondents = ImmutableList.of(
+        List<Element<Respondent>> respondents = List.of(
             respondentWithRemovedConfidentialFields(ID),
             respondentWithDetailsHiddenNo(randomUUID()),
             respondentWithRemovedConfidentialFields(otherId));
 
-        List<Element<Respondent>> confidentialRespondent = ImmutableList.of(
+        List<Element<Respondent>> confidentialRespondent = List.of(
             respondentWithConfidentialFields(ID),
             respondentWithConfidentialFields(otherId));
 
@@ -109,7 +111,7 @@ class RespondentServiceTest {
 
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleRespondent() {
-        List<Element<Respondent>> respondents = ImmutableList.of(respondentElementWithName("James"));
+        List<Element<Respondent>> respondents = List.of(respondentElementWithName("James"));
 
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
@@ -123,7 +125,7 @@ class RespondentServiceTest {
 
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToMultipleRespondents() {
-        List<Element<Respondent>> respondents = ImmutableList.of(
+        List<Element<Respondent>> respondents = List.of(
             respondentElementWithName("James"),
             respondentElementWithName("Lucy"));
 
@@ -143,7 +145,7 @@ class RespondentServiceTest {
     @Test
     void shouldKeepExistingPartyIDWhenAlreadyExists() {
         String id = "123";
-        List<Element<Respondent>> respondents = ImmutableList.of(respondentElementWithId(id));
+        List<Element<Respondent>> respondents = List.of(respondentElementWithId(id));
 
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
@@ -157,7 +159,7 @@ class RespondentServiceTest {
     @Test
     void shouldKeepExistingPartyIdAndContinueAddingNewPartyId() {
         String id = "123";
-        List<Element<Respondent>> respondents = ImmutableList.of(
+        List<Element<Respondent>> respondents = List.of(
             respondentElementWithId(id),
             respondentElementWithName("Lucy"));
 
@@ -203,78 +205,94 @@ class RespondentServiceTest {
         assertThat(getParty(updatedRespondents, 0).telephoneNumber).isNotNull();
     }
 
+    @Test
+    void shouldRemoveAllNonConfidentialFieldsWhenPopulatedRespondent() {
+        List<Element<Respondent>> respondents = wrapElements(populatedRespondent());
+
+        List<Element<Respondent>> confidentialRespondentDetails = service.retainConfidentialDetails(respondents);
+
+        assertThat(unwrapElements(confidentialRespondentDetails))
+            .containsExactly(respondentWithOnlyConfidentialFields());
+    }
+
+    private Respondent respondentWithOnlyConfidentialFields() {
+        return Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("James")
+                .lastName("Smith")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                .build())
+            .build();
+    }
+
+    private Respondent populatedRespondent() {
+        return Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("James")
+                .lastName("Smith")
+                .contactDetailsHidden("Yes")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                .gender("Male")
+                .litigationIssues("Litigation issues")
+                .build())
+            .build();
+    }
+
     private List<Element<Respondent>> respondentElementWithDetailsHiddenValue(String hidden) {
-        return ImmutableList.of(Element.<Respondent>builder()
-            .id(randomUUID())
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .contactDetailsHidden(hidden)
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
+        return wrapElements(Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("James")
+                .contactDetailsHidden(hidden)
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                 .build())
             .build());
     }
 
     private Element<Respondent> respondentElementWithName(String name) {
-        return Element.<Respondent>builder()
-            .id(UUID.randomUUID())
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName(name)
-                    .build())
+        return element(Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName(name)
                 .build())
-            .build();
+            .build());
     }
 
     private Element<Respondent> respondentWithDetailsHiddenNo(UUID id) {
-        return Element.<Respondent>builder()
-            .id(id)
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .contactDetailsHidden("No")
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
+        return element(id, Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("James")
+                .contactDetailsHidden("No")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                 .build())
-            .build();
+            .build());
     }
 
     private Element<Respondent> respondentWithRemovedConfidentialFields(UUID id) {
-        return Element.<Respondent>builder()
-            .id(id)
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .contactDetailsHidden("Yes")
-                    .build())
+        return element(id, Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("James")
+                .contactDetailsHidden("Yes")
                 .build())
-            .build();
+            .build());
     }
 
     private Element<Respondent> respondentWithConfidentialFields(UUID id) {
-        return Element.<Respondent>builder()
-            .id(id)
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .contactDetailsHidden("Yes")
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
+        return element(id, Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("James")
+                .contactDetailsHidden("Yes")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                 .build())
-            .build();
+            .build());
     }
 
     private RespondentParty getParty(List<Element<Respondent>> updatedRespondents, int i) {
@@ -282,15 +300,12 @@ class RespondentServiceTest {
     }
 
     private Element<Respondent> respondentElementWithId(String id) {
-        return Element.<Respondent>builder()
-            .id(UUID.randomUUID())
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .partyId(id)
-                    .build())
+        return element(Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("James")
+                .partyId(id)
                 .build())
-            .build();
+            .build());
     }
 
     @Nested
@@ -298,12 +313,10 @@ class RespondentServiceTest {
 
         @Test
         void shouldBuildExpectedLabelWhenSingleElementInList() {
-            List<Element<Respondent>> respondents = ImmutableList.of(Element.<Respondent>builder()
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("James")
-                        .lastName("Daniels")
-                        .build())
+            List<Element<Respondent>> respondents = wrapElements(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("James")
+                    .lastName("Daniels")
                     .build())
                 .build());
 
@@ -331,20 +344,16 @@ class RespondentServiceTest {
         }
 
         private List<Element<Respondent>> getRespondents() {
-            return ImmutableList.of(Element.<Respondent>builder()
-                    .value(Respondent.builder()
-                        .party(RespondentParty.builder()
-                            .firstName("James")
-                            .lastName("Daniels")
-                            .build())
+            return wrapElements(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("James")
+                        .lastName("Daniels")
                         .build())
                     .build(),
-                Element.<Respondent>builder()
-                    .value(Respondent.builder()
-                        .party(RespondentParty.builder()
-                            .firstName("Bob")
-                            .lastName("Martyn")
-                            .build())
+                Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Bob")
+                        .lastName("Martyn")
                         .build())
                     .build());
         }

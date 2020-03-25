@@ -21,9 +21,9 @@ public class ConfidentialDetailsService {
             .collect(toList());
     }
 
-    public <T> void addConfidentialDetailsToCaseDetails(CaseDetails caseDetails,
-                                                        List<Element<T>> confidentialDetails,
-                                                        ConfidentialPartyType type) {
+    public <T> void addConfidentialDetailsToCase(CaseDetails caseDetails,
+                                                 List<Element<T>> confidentialDetails,
+                                                 ConfidentialPartyType type) {
         if (isNotEmpty(confidentialDetails)) {
             caseDetails.getData().put(type.getCaseDataKey(), confidentialDetails);
         } else {

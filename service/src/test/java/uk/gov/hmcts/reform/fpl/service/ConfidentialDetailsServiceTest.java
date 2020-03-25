@@ -99,7 +99,7 @@ class ConfidentialDetailsServiceTest {
         List<Element<Respondent>> confidentialDetails = ImmutableList.of(
             respondentElement(CONFIDENTIAL));
 
-        service.addConfidentialDetailsToCaseDetails(caseDetails, confidentialDetails, RESPONDENT);
+        service.addConfidentialDetailsToCase(caseDetails, confidentialDetails, RESPONDENT);
 
         assertThat(caseDetails.getData()).containsKeys(RESPONDENT.getCaseDataKey());
     }

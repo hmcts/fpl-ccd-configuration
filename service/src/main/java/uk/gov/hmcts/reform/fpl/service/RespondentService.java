@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 public class RespondentService {
@@ -23,7 +23,11 @@ public class RespondentService {
         List<Element<Respondent>> respondentsCollection = new ArrayList<>();
 
         if (caseData.getAllRespondents().isEmpty()) {
-            respondentsCollection.add(emptyElementWithPartyId());
+            Element<Respondent> expandedRespondentWithPartyId = element(Respondent.builder()
+                .party(RespondentParty.builder().partyId(randomUUID().toString()).build())
+                .build());
+
+            respondentsCollection.add(expandedRespondentWithPartyId);
 
         } else if (caseData.getConfidentialRespondents().isEmpty()) {
             return caseData.getAllRespondents();
@@ -31,7 +35,13 @@ public class RespondentService {
         } else {
             caseData.getAllRespondents().forEach(element -> {
                 if (element.getValue().containsConfidentialDetails()) {
-                    respondentsCollection.add(getElementToAdd(caseData.getConfidentialRespondents(), element));
+                    Element<Respondent> confidentialRespondent =
+                        getElementToAdd(caseData.getConfidentialRespondents(), element);
+
+                    Respondent respondentWithConfidentialDetails =
+                        addConfidentialDetails(confidentialRespondent, element);
+
+                    respondentsCollection.add(element(element.getId(), respondentWithConfidentialDetails));
                 } else {
                     respondentsCollection.add(element);
                 }
@@ -40,11 +50,17 @@ public class RespondentService {
         return respondentsCollection;
     }
 
-    // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.
-    private Element<Respondent> emptyElementWithPartyId() {
-        return ElementUtils.element(Respondent.builder()
-            .party(RespondentParty.builder().partyId(randomUUID().toString()).build())
-            .build());
+    private Respondent addConfidentialDetails(Element<Respondent> confidentialRespondent,
+                                              Element<Respondent> respondent) {
+        return Respondent.builder()
+            .party(respondent.getValue().getParty().toBuilder()
+                .firstName(confidentialRespondent.getValue().getParty().firstName)
+                .lastName(confidentialRespondent.getValue().getParty().lastName)
+                .email(confidentialRespondent.getValue().getParty().email)
+                .telephoneNumber(confidentialRespondent.getValue().getParty().telephoneNumber)
+                .address(confidentialRespondent.getValue().getParty().address)
+                .build())
+            .build();
     }
 
     private Element<Respondent> getElementToAdd(List<Element<Respondent>> confidentialChildren,
@@ -80,6 +96,23 @@ public class RespondentService {
                     .build();
             })
             .collect(toList());
+    }
+
+    public List<Element<Respondent>> retainConfidentialDetails(List<Element<Respondent>> confidentialRespondents) {
+        List<Element<Respondent>> confidentialRespondentsModified = new ArrayList<>();
+
+        confidentialRespondents.forEach(element -> confidentialRespondentsModified.add(
+            element(element.getId(), Respondent.builder().party(
+                RespondentParty.builder()
+                    .firstName(element.getValue().getParty().firstName)
+                    .lastName(element.getValue().getParty().lastName)
+                    .address(element.getValue().getParty().address)
+                    .telephoneNumber(element.getValue().getParty().telephoneNumber)
+                    .email(element.getValue().getParty().email)
+                    .build())
+                .build())));
+
+        return confidentialRespondentsModified;
     }
 
     private void addHiddenValues(Element<Respondent> element, Respondent.RespondentBuilder builder) {
