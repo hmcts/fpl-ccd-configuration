@@ -191,7 +191,7 @@ dependencies {
   compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.10' // override to fix vulnerability issue (CVE-2019-17195)
   compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.4.1'
   compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.10.1'
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.12.0', classifier: 'thin'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.12.1', classifier: 'thin'
   compile group: 'io.github.openfeign', name: 'feign-core', version: '10.4.0'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot

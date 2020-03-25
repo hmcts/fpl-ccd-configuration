@@ -16,7 +16,7 @@
         "equalTo": "family court"
       },
       "keyword": {
-        "equalTo": "QRS"
+        "equalTo": "VariationDischarge"
       },
       "service": {
         "equalTo": "private law"
