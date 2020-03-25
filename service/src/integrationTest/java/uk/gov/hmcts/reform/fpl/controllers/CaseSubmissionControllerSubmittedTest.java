@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import com.launchdarkly.client.LDClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.service.notify.NotificationClient;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -157,9 +160,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     class MakePaymentForCaseOrders {
 
         @Test
-        void shouldMakePaymentWhenFeatureToggleIsTrue() {
+        void shouldMakePaymentWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
             given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
             CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+            caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
             postSubmittedEvent(caseDetails);
 
@@ -170,20 +174,38 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         @Test
         void shouldNotMakePaymentWhenFeatureToggleIsFalse() {
             given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
+            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+            caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
-            postSubmittedEvent(enableSendToCtscOnCaseDetails(YES));
+            postSubmittedEvent(caseDetails);
 
             verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
+        }
+
+        @Test
+        void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
+            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+            caseDetails.getData().put("displayAmountToPay", NO.getValue());
+
+            postSubmittedEvent(caseDetails);
+
+            verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
+        }
+
+        @AfterEach
+        void resetInvocations() {
+            reset(paymentService);
         }
     }
 
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
         return CaseDetails.builder()
             .id(CASE_REFERENCE)
-            .data(Map.of(
+            .data(new HashMap<>(Map.of(
                 "caseLocalAuthority", "example",
                 "sendToCtsc", enableCtsc.getValue()
-            )).build();
+            ))).build();
     }
 
     private ImmutableMap.Builder<String, Object> getCompleteParameters() {
