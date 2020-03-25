@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,7 +30,9 @@ class UploadDocumentServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
-    protected DocumentUploadClientApi documentUploadClient;
+    private DocumentUploadClientApi documentUploadClient;
+    @Mock
+    private RequestData requestData;
 
     @InjectMocks
     private UploadDocumentService uploadDocumentService;
@@ -37,6 +40,8 @@ class UploadDocumentServiceTest {
     @BeforeEach
     void setup() {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+        given(requestData.userId()).willReturn(USER_ID);
     }
 
     @Test

@@ -18,14 +18,12 @@ import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -95,6 +93,8 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldAddCallerUserIdToACaseEvenIfNotPartOfLocalAuthority()  {
+        given(requestData.userId()).willReturn(USER_NOT_IN_LA_ID);
+
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         List<String> userIdsIncludingCallerId = ImmutableList
