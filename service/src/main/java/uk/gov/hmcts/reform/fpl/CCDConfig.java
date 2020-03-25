@@ -107,23 +107,29 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getHearing);
 
         tab("DraftOrdersTab", "Draft orders")
-            .showCondition("standardDirectionOrder.orderStatus!=\"SEALED\"")
-            .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus!=\"SEALED\"");
+            .showCondition("standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\"")
+            .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus!=\"SEALED\"")
+            .field(CaseData::getSharedDraftCMODocument)
+            .field("cmoToAction")
+            .field(CaseData::getCaseManagementOrder);
 
         tab("OrdersTab", "Orders")
+            .field(CaseData::getServedCaseManagementOrders)
             .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus=\"SEALED\"")
-            .field(CaseData::getOrders);
+            .field(CaseData::getOrders)
+            .field(CaseData::getOrderCollection);
 
         tab("CasePeopleTab", "People in the case")
+            .field(CaseData::getAllocatedJudge)
             .field(CaseData::getChildren1)
             .field(CaseData::getRespondents1)
             .field(CaseData::getApplicants)
             .field(CaseData::getSolicitor)
-            .field(CaseData::getOthers);
+            .field(CaseData::getOthers)
+            .field(CaseData::getRepresentatives);
 
         tab("LegalBasisTab", "Legal basis")
             .field(CaseData::getStatementOfService)
-            .field("caseIDReference")
             .field(CaseData::getGroundsForEPO)
             .field(CaseData::getGrounds)
             .field(CaseData::getRisks)
@@ -135,7 +141,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getHearingPreferences);
 
         tab("DocumentsTab", "Documents")
-            .field("caseIDReference")
             .field(CaseData::getSocialWorkChronologyDocument)
             .field(CaseData::getSocialWorkStatementDocument)
             .field(CaseData::getSocialWorkAssessmentDocument)
@@ -149,8 +154,21 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getOtherSocialWorkDocuments)
             .field("submittedForm")
             .field(CaseData::getNoticeOfProceedingsBundle)
-            .field(CaseData::getC2DocumentBundle);
+            .field(CaseData::getC2DocumentBundle)
+            .field("scannedDocuments");
 
+        tab("Confidential", "Confidential")
+            .field(CaseData::getConfidentialChildren)
+            .field(CaseData::getConfidentialRespondents)
+            .field(CaseData::getConfidentialOthers);
+
+        tab("PlacementTab", "Placement")
+            .field(CaseData::getPlacements)
+            .field("confidentialPlacements")
+            .field("placementsWithoutPlacementOrder");
+
+        tab("SentDocumentsTab", "Documents sent to parties")
+            .field("documentsSentToParties");
     }
 
 

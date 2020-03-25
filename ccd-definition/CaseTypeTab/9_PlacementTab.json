@@ -17,7 +17,7 @@
     "TabLabel": "Placement",
     "TabDisplayOrder": 9,
     "CaseFieldID": "confidentialPlacements",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
@@ -27,6 +27,6 @@
     "TabLabel": "Placement",
     "TabDisplayOrder": 9,
     "CaseFieldID": "placementsWithoutPlacementOrder",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 3
   }
 ]
