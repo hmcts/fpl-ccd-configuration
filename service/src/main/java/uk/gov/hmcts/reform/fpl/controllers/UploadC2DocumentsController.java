@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
@@ -51,6 +51,7 @@ public class UploadC2DocumentsController {
     private final PaymentService paymentService;
     private final FeatureToggleService featureToggleService;
     private final PbaNumberService pbaNumberService;
+    private final RequestData requestData;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
@@ -97,12 +98,11 @@ public class UploadC2DocumentsController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackrequest,
-        @RequestHeader(value = "authorization") String authorization) {
+        @RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.put("c2DocumentBundle", buildC2DocumentBundle(caseData, authorization));
+        data.put("c2DocumentBundle", buildC2DocumentBundle(caseData, requestData.authorisation()));
         data.keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "amountToPay"));
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
@@ -110,8 +110,6 @@ public class UploadC2DocumentsController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -119,7 +117,8 @@ public class UploadC2DocumentsController {
         if (featureToggleService.isPaymentsEnabled()) {
             paymentService.makePaymentForC2(caseDetails.getId(), caseData);
         }
-        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
+        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, requestData.authorisation(),
+            requestData.userId()));
     }
 
     private boolean shouldRemoveDocument(CaseData caseData) {

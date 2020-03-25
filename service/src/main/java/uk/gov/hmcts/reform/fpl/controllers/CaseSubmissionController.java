@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -22,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -62,10 +62,10 @@ public class CaseSubmissionController {
     private final PaymentService paymentService;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
-        @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -84,7 +84,8 @@ public class CaseSubmissionController {
             } catch (FeeRegisterException ignore) {
                 data.put("displayAmountToPay", NO.getValue());
             } finally {
-                String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
+                String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(
+                    requestData.authorisation()));
                 data.put("submissionConsentLabel", label);
             }
         }
@@ -127,16 +128,15 @@ public class CaseSubmissionController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
-            Pair.of("userFullName", userDetailsService.getUserName(authorization))
+            Pair.of("userFullName", userDetailsService.getUserName(requestData.authorisation()))
         );
 
-        Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
+        Document document = uploadDocumentService.uploadPDF(requestData.userId(), requestData.authorisation(),
+            pdf, buildFileName(caseDetails));
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
@@ -159,15 +159,14 @@ public class CaseSubmissionController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         if (featureToggleService.isPaymentsEnabled()) {
             paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
         }
-        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
+        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, requestData.authorisation(),
+            requestData.userId()));
     }
 
     private String setSendToCtsc() {
