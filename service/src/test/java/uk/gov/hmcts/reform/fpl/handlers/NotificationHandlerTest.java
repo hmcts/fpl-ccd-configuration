@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
@@ -33,7 +32,6 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -50,7 +48,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -58,14 +55,12 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
@@ -119,9 +114,6 @@ class NotificationHandlerTest {
     private InboxLookupService inboxLookupService;
 
     @Mock
-    private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
-
-    @Mock
     private RepresentativeService representativeService;
 
     @Mock
@@ -142,10 +134,9 @@ class NotificationHandlerTest {
     @BeforeEach
     void setup() {
         notificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
-            cafcassLookupConfiguration, partyAddedToCaseContentProvider, orderEmailContentProvider,
+            partyAddedToCaseContentProvider, orderEmailContentProvider,
             orderIssuedEmailContentProvider, localAuthorityEmailContentProvider, inboxLookupService,
-            caseManagementOrderEmailContentProvider, representativeService, localAuthorityNameLookupConfiguration,
-            objectMapper, ctscEmailLookupConfiguration, notificationService);
+            representativeService, objectMapper, ctscEmailLookupConfiguration, notificationService);
     }
 
     @Nested
@@ -249,162 +240,6 @@ class NotificationHandlerTest {
                 CTSC_INBOX,
                 getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
                 "12345");
-        }
-    }
-
-    @Nested
-    class CaseManagementOrderNotificationTests {
-        private final Map<String, Object> expectedCMOIssuedNotificationParameters =
-            getCMOIssuedCaseLinkNotificationParameters();
-        private final Map<String, Object> expectedCMOIssuedNotificationParametersForRepresentative =
-            getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative();
-
-        @BeforeEach
-        void setup() {
-            given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-                .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
-
-            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-                .willReturn(LOCAL_AUTHORITY_NAME);
-        }
-
-        @Test
-        void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() throws Exception {
-            CallbackRequest callbackRequest = callbackRequest();
-            CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-            given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
-                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-
-            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
-
-            given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
-                LOCAL_AUTHORITY_NAME))
-                .willReturn(expectedCMOIssuedNotificationParameters);
-
-            given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
-                .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
-
-            notificationHandler.sendEmailsForIssuedCaseManagementOrder(
-                new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
-
-            verify(notificationService).sendEmail(
-                CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
-                LOCAL_AUTHORITY_EMAIL_ADDRESS,
-                expectedCMOIssuedNotificationParameters,
-                "12345");
-
-            verify(notificationService).sendEmail(
-                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-                COURT_EMAIL_ADDRESS,
-                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
-                "12345");
-        }
-
-        @Test
-        void shouldNotifyCtscAdminOfCMOIssued() throws Exception {
-            CallbackRequest callbackRequest = appendSendToCtscOnCallback();
-            CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-            given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
-
-            given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
-                LOCAL_AUTHORITY_NAME))
-                .willReturn(expectedCMOIssuedNotificationParameters);
-
-            given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
-                callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, CMO))
-                .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
-
-            notificationHandler.sendEmailsForIssuedCaseManagementOrder(
-                new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
-
-            verify(notificationService).sendEmail(
-                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-                CTSC_INBOX,
-                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
-                "12345");
-        }
-
-        @Test
-        void shouldNotifyRepresentativesOfCMOIssued() throws Exception {
-            CallbackRequest callbackRequest = buildCallbackRequest();
-            CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-            CaseData caseData = buildCaseDataWithRepresentatives();
-
-            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
-
-            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
-                DIGITAL_SERVICE))
-                .willReturn(expectedRepresentatives());
-
-            given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
-                "Jon Snow"))
-                .willReturn(expectedCMOIssuedNotificationParametersForRepresentative);
-
-            notificationHandler.sendEmailsForIssuedCaseManagementOrder(
-                new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
-
-            verify(notificationService).sendEmail(
-                CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
-                "abc@example.com",
-                expectedCMOIssuedNotificationParametersForRepresentative,
-                "12345");
-        }
-
-        private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
-            return ImmutableMap.<String, Object>builder()
-                .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
-                .putAll(expectedCommonCMONotificationParameters())
-                .build();
-        }
-
-        private CaseDetails buildCaseDetailsWithRepresentatives() throws IOException {
-            CaseDetails caseDetails = callbackRequest().getCaseDetails();
-            Map<String, Object> caseData = caseDetails.getData();
-
-            caseData.put("representatives", createRepresentatives(DIGITAL_SERVICE));
-            return caseDetails.toBuilder()
-                .data(caseData)
-                .build();
-        }
-
-        private CaseData buildCaseDataWithRepresentatives() {
-            return CaseData.builder()
-                .representatives(createRepresentatives(DIGITAL_SERVICE))
-                .build();
-        }
-
-        private Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative() {
-            return ImmutableMap.<String, Object>builder()
-                .put("localAuthorityNameOrRepresentativeFullName", "Jon Snow")
-                .putAll(expectedCommonCMONotificationParameters())
-                .build();
-        }
-
-        private CallbackRequest buildCallbackRequest() throws IOException {
-            return CallbackRequest.builder()
-                .caseDetails(buildCaseDetailsWithRepresentatives())
-                .build();
-        }
-
-        private List<Representative> expectedRepresentatives() {
-            return ImmutableList.of(Representative.builder()
-                .email("abc@example.com")
-                .fullName("Jon Snow")
-                .servingPreferences(DIGITAL_SERVICE)
-                .build());
-        }
-
-        private Map<String, Object> expectedCommonCMONotificationParameters() {
-            String subjectLine = "Lastname, SACCCCCCCC5676576567";
-            return ImmutableMap.of("subjectLineWithHearingDate", subjectLine,
-                "reference", "12345",
-                "caseUrl", String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE));
         }
     }
 
