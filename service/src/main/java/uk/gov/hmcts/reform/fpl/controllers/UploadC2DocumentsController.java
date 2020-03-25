@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -37,6 +38,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 
 @Api
 @RestController
@@ -119,6 +121,14 @@ public class UploadC2DocumentsController {
         if (featureToggleService.isPaymentsEnabled()) {
             paymentService.makePaymentForC2(caseDetails.getId(), caseData);
         }
+
+        C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
+
+        if (NO.getValue().equals(c2DocumentBundle.getUsePbaPayment())) {
+            applicationEventPublisher.publishEvent(new C2PbaPaymentNotTakenEvent(callbackRequest, authorization,
+                userId));
+        }
+
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
 

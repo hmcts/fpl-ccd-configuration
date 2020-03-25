@@ -3,6 +3,7 @@ const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const orders = require('../fixtures/orders.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
+const c2Payment = require('../fixtures/c2Payment.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -92,20 +93,28 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  uploadC2DocumentsEventPage.usePbaPayment('Yes');
+  uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  uploadC2DocumentsEventPage.usePbaPayment('No');
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'C2 Application 1', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('4', 'C2 Application 1', 'Description', 'Rachel Zane C2');
+  I.seeAnswerInTab('5', 'C2 Application 1', 'Are you using PBA to pay?', 'Yes');
+  I.seeAnswerInTab('6', 'C2 Application 1', 'Payment by account (PBA) number', 'PBA1234567');
+  I.seeAnswerInTab('7', 'C2 Application 1', 'Client code', '8888');
+  I.seeAnswerInTab('8', 'C2 Application 1', 'File reference', 'Example reference');
   I.seeAnswerInTab('1', 'C2 Application 2', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('4', 'C2 Application 2', 'Description', 'Jessica Pearson C2');
+  I.seeAnswerInTab('5', 'C2 Application 2', 'Are you using PBA to pay?', 'No');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {

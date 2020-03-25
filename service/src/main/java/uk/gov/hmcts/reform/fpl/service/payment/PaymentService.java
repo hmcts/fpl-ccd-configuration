@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @Slf4j
@@ -71,7 +70,7 @@ public class PaymentService {
     }
 
     public void makePaymentForC2(Long caseId, CaseData caseData) {
-        C2DocumentBundle c2DocumentBundle = getLastC2DocumentBundle(caseData);
+        C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
         String localAuthorityName =
             localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
         FeesData feesData = feeService.getFeesDataForC2(c2DocumentBundle.getType());
@@ -104,12 +103,6 @@ public class PaymentService {
             .siteId(siteId)
             .fees(feesData.getFees())
             .build();
-    }
-
-    private C2DocumentBundle getLastC2DocumentBundle(CaseData caseData) {
-        var c2DocumentBundle = unwrapElements(caseData.getC2DocumentBundle());
-
-        return c2DocumentBundle.get(c2DocumentBundle.size() - 1);
     }
 
     private void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {

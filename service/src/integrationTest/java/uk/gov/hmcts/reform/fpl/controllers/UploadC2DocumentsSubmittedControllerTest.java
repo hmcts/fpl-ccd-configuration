@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -29,8 +30,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadC2DocumentsController.class)
@@ -65,7 +68,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() throws Exception {
-        postSubmittedEvent(enableSendToCtscOnCaseDetails(NO));
+        postSubmittedEvent(enableSendToCtscOnCaseDetails(NO, YES));
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -84,7 +87,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() throws Exception {
-        postSubmittedEvent(enableSendToCtscOnCaseDetails(YES));
+        postSubmittedEvent(enableSendToCtscOnCaseDetails(YES, YES));
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -101,10 +104,68 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void submittedEventShouldNotifyAdminWhenC2IsNotUsingPbaPayment() throws Exception {
+        postSubmittedEvent(enableSendToCtscOnCaseDetails(NO, NO));
+
+        verify(notificationClient).sendEmail(
+            C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "admin@family-court.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            CASE_ID.toString()
+        );
+
+        verify(notificationClient, never()).sendEmail(
+            C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            CASE_ID.toString()
+        );
+    }
+
+    @Test
+    void submittedEventShouldNotifyCtscAdminWhenC2IsNotUsingPbaPaymentAndCtscToggleIsEnabled() throws Exception {
+        postSubmittedEvent(enableSendToCtscOnCaseDetails(YES, NO));
+
+        verify(notificationClient, never()).sendEmail(
+            C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "admin@family-court.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            CASE_ID.toString()
+        );
+
+        verify(notificationClient).sendEmail(
+            C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            CASE_ID.toString()
+        );
+    }
+
+    @Test
+    void submittedEventShouldNotNotifyAdminWhenUC2IsUsingPbaPayment() throws Exception {
+        postSubmittedEvent(enableSendToCtscOnCaseDetails(NO, YES));
+
+        verify(notificationClient, never()).sendEmail(
+            C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "admin@family-court.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            CASE_ID.toString()
+        );
+
+        verify(notificationClient, never()).sendEmail(
+            C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            CASE_ID.toString()
+        );
+    }
+
+    @Test
     void shouldMakePaymentWhenFeatureToggleIsTrue() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
+            .putAll(buildC2DocumentBundle(YES))
             .build();
 
         postSubmittedEvent(createCase(caseData));
@@ -117,6 +178,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
+            .putAll(buildC2DocumentBundle(YES))
             .build();
 
         postSubmittedEvent(createCase(caseData));
@@ -124,9 +186,10 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         verify(paymentService, never()).makePaymentForC2(any(), any());
     }
 
-    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
+    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc, YesNo paymentTaken) {
         return createCase(ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
+            .putAll(buildC2DocumentBundle(paymentTaken))
             .put("sendToCtsc", enableCtsc.getValue())
             .build());
     }
@@ -159,5 +222,19 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             .data(data)
             .id(CASE_ID)
             .build();
+    }
+
+    private Map<String, Object> buildC2DocumentBundle(YesNo usePbaPayment) {
+        return ImmutableMap.of(
+            "c2DocumentBundle", wrapElements(C2DocumentBundle.builder()
+                .usePbaPayment(usePbaPayment.getValue())
+                .build())
+        );
+    }
+
+    private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
+        return Map.of(
+            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/" + CASE_ID
+        );
     }
 }

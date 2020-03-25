@@ -194,6 +194,15 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+
+    @JsonIgnore
+    public C2DocumentBundle getLastC2DocumentBundle() {
+        return Optional.ofNullable(c2DocumentBundle)
+            .map(ElementUtils::unwrapElements)
+            .map(c2DocumentBundleList -> c2DocumentBundleList.get(c2DocumentBundleList.size() - 1))
+            .orElse(null);
+    }
+
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;

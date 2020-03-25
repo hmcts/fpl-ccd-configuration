@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
@@ -67,6 +68,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
@@ -199,11 +201,16 @@ class NotificationHandlerTest {
         final String mostRecentUploadedDocumentUrl =
             "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
+
+        final Map<String, Object> c2PaymentNotTakenParameters = ImmutableMap.<String, Object>builder()
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
         final Map<String, Object> c2Parameters = ImmutableMap.<String, Object>builder()
+            .putAll(c2PaymentNotTakenParameters)
             .put("subjectLine", subjectLine)
             .put("hearingDetailsCallout", subjectLine)
             .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
         final Map<String, Object> orderLocalAuthorityParameters = ImmutableMap.<String, Object>builder()
@@ -300,6 +307,47 @@ class NotificationHandlerTest {
                 CTSC_INBOX,
                 c2Parameters,
                 "12345");
+        }
+
+        @Test
+        void shouldNotifyAdminWhenUploadedC2tIsNotUsingPbaPayment() throws IOException {
+            CaseDetails caseDetails = callbackRequest().getCaseDetails();
+
+            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com", COURT_CODE));
+
+            given(c2UploadedEmailContentProvider.buildC2UploadPaymentNotTakenNotification(caseDetails))
+                .willReturn(c2PaymentNotTakenParameters);
+
+            notificationHandler.sendEmailForC2UploadPaymentNotTaken(
+                new C2PbaPaymentNotTakenEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+            verify(notificationService).sendEmail(
+                C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE, "hmcts-non-admin@test.com", c2PaymentNotTakenParameters,
+                "12345");
+        }
+
+        @Test
+        void shouldNotifyCtscAdminWhenUploadedC2IsNotUsingPbaPaymentAndCtscIsEnabled() throws IOException {
+            CallbackRequest callbackRequest = appendSendToCtscOnCallback();
+            CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+            given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+                UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
+
+            given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
+
+            given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+
+            given(c2UploadedEmailContentProvider.buildC2UploadPaymentNotTakenNotification(caseDetails))
+                .willReturn(c2PaymentNotTakenParameters);
+
+            notificationHandler.sendEmailForC2UploadPaymentNotTaken(
+                new C2PbaPaymentNotTakenEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+
+            verify(notificationService).sendEmail(
+                C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE, CTSC_INBOX, c2PaymentNotTakenParameters, "12345");
         }
 
         @Test
