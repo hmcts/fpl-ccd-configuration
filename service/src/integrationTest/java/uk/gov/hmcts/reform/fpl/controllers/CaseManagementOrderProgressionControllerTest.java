@@ -2,7 +2,11 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,6 +23,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -29,21 +36,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @ActiveProfiles("integration-test")
@@ -56,6 +74,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String HMCTS_ADMIN_INBOX = "admin@family-court.com";
     private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
+    private static final byte[] PDF = {1, 2, 3, 4, 5};
 
     private static final Long caseId = 12345L;
     private final LocalDateTime testDate = LocalDateTime.of(2020, 2, 1, 12, 30);
@@ -65,6 +84,12 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
     @Autowired
     private ObjectMapper mapper;
+
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     CaseManagementOrderProgressionControllerTest() {
         super("cmo-progression");
@@ -142,6 +167,33 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     }
 
     @Test
+    void aboutToSubmitShouldNotifyRepresentativesWhenStatusIsSendToParties() throws Exception {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+
+        CaseManagementOrder order = buildOrder(PARTIES_REVIEW, null);
+
+        CaseDetails caseDetails = buildCaseDetails(order, DRAFT_CASE_MANAGEMENT_ORDER, "No");
+
+        postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
+            eq("robert@example.com"),
+            dataCaptor.capture(),
+            eq(caseId.toString()));
+
+        assertEquals(dataCaptor.getValue(), expectedReviewByDigitalRepresentativesNotificationParameters());
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
+            eq("charlie@example.com"),
+            dataCaptor.capture(),
+            eq(caseId.toString()));
+
+        assertEquals(dataCaptor.getValue(), expectedReviewByEmailRepresentativesNotificationParameters());
+    }
+
+    @Test
     void aboutToSubmitShouldNotifyHmctsAdminWhenStatusIsSendToJudgeAndCtscIsDisabled() throws Exception {
         CaseManagementOrder order = buildOrder(SEND_TO_JUDGE, SEND_TO_ALL_PARTIES);
 
@@ -193,6 +245,37 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         );
     }
 
+    private Map<String, Object> expectedReviewByEmailRepresentativesNotificationParameters() {
+        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+        final String subjectLine = "Jones, SACCCCCCCC5676576567," + " hearing 1 Feb 2020";
+
+        return ImmutableMap.<String, Object>builder()
+            .put("subjectLineWithHearingDate", subjectLine)
+            .put("respondentLastName", "Jones")
+            .put("digitalPreference", "No")
+            .put("caseUrl", "")
+            .put("link_to_document", jsonFileObject)
+            .build();
+    }
+
+    private Map<String, Object> expectedReviewByDigitalRepresentativesNotificationParameters() {
+        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+        final String subjectLine = "Jones, SACCCCCCCC5676576567," + " hearing 1 Feb 2020";
+
+        return ImmutableMap.<String, Object>builder()
+            .put("subjectLineWithHearingDate", subjectLine)
+            .put("respondentLastName", "Jones")
+            .put("digitalPreference", "Yes")
+            .put("caseUrl", formatCaseUrl("http://fake-url", caseId))
+            .put("link_to_document", jsonFileObject)
+
+            .build();
+    }
+
     private Map<String, Object> expectedJudgeRejectedNotificationParameters() {
         return ImmutableMap.<String, Object>builder()
             .putAll(commonNotificationParameters())
@@ -222,6 +305,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         return CaseManagementOrder.builder()
             .status(status)
             .id(uuid)
+            .orderDoc(createDocumentReference(randomUUID().toString()))
             .action(OrderAction.builder()
                 .type(actionType)
                 .build())
@@ -238,7 +322,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                 "sendToCtsc", enableCtsc,
                 "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
-                "allocatedJudge", buildAllocatedJudge())).build();
+                "allocatedJudge", buildAllocatedJudge(),
+                "representatives", createRepresentatives())).build();
     }
 
     private Judge buildAllocatedJudge() {
@@ -253,5 +338,17 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .eventId(event.getId())
             .caseDetails(caseDetails)
             .build();
+    }
+
+    private List<Element<Representative>> createRepresentatives() {
+        return wrapElements(Representative.builder()
+            .email("robert@example.com")
+            .fullName("Robert Robin")
+            .servingPreferences(DIGITAL_SERVICE)
+            .build(), Representative.builder()
+            .email("charlie@example.com")
+            .fullName("Charlie Brown")
+            .servingPreferences(EMAIL)
+            .build());
     }
 }

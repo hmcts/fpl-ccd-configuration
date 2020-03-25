@@ -112,7 +112,7 @@ public class CaseManagementOrderProgressionService {
 
         applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest,
             requestData.authorisation(), requestData.userId(),
-            documentDownloadService.downloadDocument(caseData.getCaseManagementOrder().getOrderDoc().getBinaryUrl())));
+            documentDownloadService.downloadDocument(caseData.getSharedDraftCMODocument().getBinaryUrl())));
     }
 
     private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {

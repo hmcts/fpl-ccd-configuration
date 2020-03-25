@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
@@ -70,6 +71,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEM
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
@@ -522,6 +524,38 @@ class NotificationHandlerTest {
                 CTSC_INBOX,
                 expectedCMOReadyForJudgeNotificationParameters,
                 "12345");
+        }
+
+        @Test
+        void shouldNotifyRepresentativesOfCMOReadyForPartyReview() throws Exception {
+            CallbackRequest callbackRequest = callbackRequest();
+            CaseDetails caseDetails = callbackRequest().getCaseDetails();
+            CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+
+            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
+                DIGITAL_SERVICE))
+                .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
+
+            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
+                EMAIL))
+                .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
+
+            notificationHandler.sendEmailForCaseManagementOrderReadyForPartyReview(
+                new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID,
+                    documentContents));
+
+            //parameters tested in controller test - need to test again here?
+            verify(notificationService).sendEmail(
+                eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
+                eq("fred@flinstone.com"),
+                dataCaptor.capture(),
+                eq("12345"));
+
+            verify(notificationService).sendEmail(
+                eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
+                eq("barney@rubble.com"),
+                dataCaptor.capture(),
+                eq("12345"));
         }
 
         private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
