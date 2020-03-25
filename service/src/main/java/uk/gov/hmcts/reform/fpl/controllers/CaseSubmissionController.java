@@ -171,7 +171,8 @@ public class CaseSubmissionController {
                 paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
             } catch(FeeRegisterException | PaymentsApiException ignore) {
                 System.out.println("Something went wrong with payment");
-                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId));
+                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
+                    "C110a"));
             }
         }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
