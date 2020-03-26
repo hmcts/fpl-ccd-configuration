@@ -23,7 +23,7 @@ public class LocalAuthorityUserService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseUserApi caseUserApi;
     private final OrganisationService organisationService;
-    private SystemUpdateUserConfiguration userConfig;
+    private final SystemUpdateUserConfiguration userConfig;
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient client;
     private final Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
@@ -45,7 +45,7 @@ public class LocalAuthorityUserService {
 
     public void grantUserAccessWithCaseRole(String caseId,
                                             String caseLocalAuthority) {
-        List<String> userIds = findUserIds(requestData.authorisation(), caseLocalAuthority);
+        List<String> userIds = findUserIds(caseLocalAuthority);
 
         Stream.concat(userIds.stream(), Stream.of(requestData.userId()))
             .distinct()
@@ -63,10 +63,10 @@ public class LocalAuthorityUserService {
             });
     }
 
-    private List<String> findUserIds(String authorisation, String localAuthorityCode) {
+    private List<String> findUserIds(String localAuthorityCode) {
         try {
             return organisationService
-                .findUserIdsInSameOrganisation(authorisation, localAuthorityCode);
+                .findUserIdsInSameOrganisation(localAuthorityCode);
         } catch (Exception e) {
             log.warn("Exception while looking for users within the same LA. "
                 + "Only the callerId will be given access to the case", e);

@@ -98,7 +98,7 @@ class PopulateStandardDirectionsHandlerTest {
 
         given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
 
-        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn("Emma Taylor");
+        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
 
         given(requestData.userId()).willReturn(USER_ID);
 

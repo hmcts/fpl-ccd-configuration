@@ -78,7 +78,7 @@ public class DraftCMOController {
 
         Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData, true);
 
-        Document document = getDocument(requestData.authorisation(), requestData.userId(), cmoTemplateData);
+        Document document = getDocument(cmoTemplateData);
 
         final DocumentReference reference = DocumentReference.builder()
             .url(document.links.self.href)
@@ -140,7 +140,7 @@ public class DraftCMOController {
         return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
     }
 
-    private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
+    private Document getDocument(Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, CMO);
 
         return uploadDocumentService.uploadPDF(document.getBytes(), "draft-" + document.getDocumentTitle());

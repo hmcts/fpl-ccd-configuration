@@ -74,7 +74,7 @@ class LocalAuthorityUserServiceTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
-        given(organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN, LOCAL_AUTHORITY)).willReturn(
+        given(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder()
                 .addAll(USER_IDS)
                 .build()
@@ -108,7 +108,7 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldAddCallerUserIdToACaseWhenValidLocalAuthorityHasNoUsers()  {
-        given(organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN, LOCAL_AUTHORITY)).willReturn(
+        given(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder().build()
         );
 
@@ -119,7 +119,7 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldAddCallerUserIdToACaseWhenServiceThrowsAnException()  {
-        given(organisationService.findUserIdsInSameOrganisation(any(), any()))
+        given(organisationService.findUserIdsInSameOrganisation(any()))
             .willThrow(new NullPointerException());
 
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);

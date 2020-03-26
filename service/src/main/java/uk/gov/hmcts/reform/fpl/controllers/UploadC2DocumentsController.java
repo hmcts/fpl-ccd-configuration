@@ -101,7 +101,7 @@ public class UploadC2DocumentsController {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.put("c2DocumentBundle", buildC2DocumentBundle(caseData, requestData.authorisation()));
+        data.put("c2DocumentBundle", buildC2DocumentBundle(caseData));
         data.keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "amountToPay"));
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
@@ -131,13 +131,13 @@ public class UploadC2DocumentsController {
         data.put(TEMPORARY_C2_DOCUMENT, updatedC2DocumentMap);
     }
 
-    private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData, String authorization) {
+    private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(userDetailsService.getUserName(authorization))
+            .author(userDetailsService.getUserName())
             .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                 .toLocalDateTime(), "h:mma, d MMMM yyyy"));
 

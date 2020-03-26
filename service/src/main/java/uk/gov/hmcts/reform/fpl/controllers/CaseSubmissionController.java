@@ -84,8 +84,7 @@ public class CaseSubmissionController {
             } catch (FeeRegisterException ignore) {
                 data.put("displayAmountToPay", NO.getValue());
             }
-            String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(
-                requestData.authorisation()));
+            String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName());
             data.put("submissionConsentLabel", label);
         }
 
@@ -131,7 +130,7 @@ public class CaseSubmissionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
-            Pair.of("userFullName", userDetailsService.getUserName(requestData.authorisation()))
+            Pair.of("userFullName", userDetailsService.getUserName())
         );
 
         Document document = uploadDocumentService.uploadPDF(pdf, buildFileName(caseDetails));

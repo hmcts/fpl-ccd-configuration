@@ -37,7 +37,7 @@ public class StatementOfServiceController {
 
         caseDetails.getData().put("statementOfService", statementOfServiceService.expandRecipientCollection(caseData));
 
-        String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(requestData.authorisation()));
+        String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName());
 
         Map<String, Object> data = caseDetails.getData();
         data.put("serviceDeclarationLabel", label);
