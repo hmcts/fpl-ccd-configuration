@@ -15,7 +15,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -54,8 +56,10 @@ public class UploadC2DocumentsController {
     private final PbaNumberService pbaNumberService;
 
     @PostMapping("/get-fee/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        Map<String, Object> data = callbackrequest.getCaseDetails().getData();
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest,
+      @RequestHeader(value = "authorization") String authorization,
+      @RequestHeader(value = "user-id") String userId) {
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         data.remove("displayAmountToPay");
 
@@ -72,6 +76,8 @@ public class UploadC2DocumentsController {
             }
         } catch (FeeRegisterException ignore) {
             data.put("displayAmountToPay", NO.getValue());
+            applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
+                "C2"));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -116,7 +122,12 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
-            paymentService.makePaymentForC2(caseDetails.getId(), caseData);
+            try {
+                paymentService.makePaymentForC2(caseDetails.getId(), caseData);
+            } catch(FeeRegisterException | PaymentsApiException ignore) {
+                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
+                    "C2"));
+            }
         }
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }
