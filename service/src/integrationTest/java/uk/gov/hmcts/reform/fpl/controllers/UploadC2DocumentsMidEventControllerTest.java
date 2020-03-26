@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -45,15 +44,6 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
     @MockBean
     private NotificationService notificationService;
-
-    @MockBean
-    private NotificationClient notificationClient;
-
-    @MockBean
-    private ApplicationEventPublisher applicationEventPublisher;
-
-    @MockBean
-    private FailedPBAPaymentContentProvider failedPBAPaymentContentProvider;
 
     UploadC2DocumentsMidEventControllerTest() {
         super("upload-c2");
@@ -130,7 +120,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldSendFailedPaymentNotificationOnFeeRegisterException() throws IOException, NotificationClientException {
+    void shouldSendFailedPaymentNotificationOnFeeRegisterException() {
         CaseDetails details = CaseDetails.builder()
             .data(Map.of(
                 "caseLocalAuthority", "example",
@@ -139,8 +129,6 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .build();
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
         given(feeService.getFeesDataForC2(any())).willThrow((new FeeRegisterException(1, "", new Throwable())));
-        given(failedPBAPaymentContentProvider.buildLANotificationParameters(any())).willReturn(
-            Map.of("applicationType", "C2"));
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(details,
             "get-fee");
@@ -150,11 +138,12 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             "local-authority@local-authority.com",
             Map.of("applicationType", "C2"),
             "1");
-    }
 
-    private Map<String, Object> getCtscNotificationParametersForFailedPayment() {
-        return Map.of("applicationType", "C2",
-            "caseUrl", "caseUrl");
+        verify(notificationService).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            "1");
     }
 
     @Test
@@ -177,5 +166,10 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
         assertThat(response.getData()).extracting("temporaryC2Document")
             .extracting("pbaNumber")
             .isEqualTo("PBA1234567");
+    }
+
+    private Map<String, Object> expectedCtscNotificationParameters() {
+        return Map.of("applicationType", "C2",
+            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/1");
     }
 }
