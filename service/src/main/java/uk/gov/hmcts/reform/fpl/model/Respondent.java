@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
@@ -19,10 +21,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Respondent implements Representable, ConfidentialParty {
+public class Respondent implements Representable, ConfidentialParty<Respondent> {
     @Valid
     @NotNull(message = "You need to add details to respondents")
     private final RespondentParty party;
@@ -39,5 +41,25 @@ public class Respondent implements Representable, ConfidentialParty {
         String hiddenValue = defaultIfNull(party.getContactDetailsHidden(), "");
 
         return hiddenValue.equals("Yes");
+    }
+
+    @JsonIgnore
+    @Override
+    public Party getConfidentialParty() {
+        return party;
+    }
+
+    @Override
+    public Respondent setConfidentialParty(Party party) {
+        return this.toBuilder()
+            .party(RespondentParty.builder()
+                .firstName(party.firstName)
+                .lastName(party.lastName)
+                .address(party.address)
+                .telephoneNumber(party.telephoneNumber)
+                .email(party.email)
+                .build())
+            .build();
+
     }
 }

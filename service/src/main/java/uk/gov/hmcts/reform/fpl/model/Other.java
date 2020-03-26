@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
@@ -20,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder(toBuilder = true)
-public class Other implements Representable, ConfidentialParty {
+public class Other implements Representable, ConfidentialParty<Other> {
     @SuppressWarnings("membername")
     @JsonProperty("DOB")
     private final String DOB;
@@ -45,5 +47,21 @@ public class Other implements Representable, ConfidentialParty {
 
     public boolean containsConfidentialDetails() {
         return "Yes".equals(detailsHidden);
+    }
+
+    @JsonIgnore
+    @Override
+    public Party getConfidentialParty() {
+        // Telephone in party and other is stored differently, using lastName variable for telephone
+        return new Party(null, null, name, telephone, null, null, address, null, null);
+    }
+
+    @Override
+    public Other setConfidentialParty(Party party) {
+        return this.toBuilder()
+            .address(party.address)
+            .name(party.firstName)
+            .telephone(party.lastName)
+            .build();
     }
 }
