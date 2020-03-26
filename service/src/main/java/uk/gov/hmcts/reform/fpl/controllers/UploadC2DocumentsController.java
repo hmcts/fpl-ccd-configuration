@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +38,7 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Api
 @RestController
@@ -58,27 +58,25 @@ public class UploadC2DocumentsController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
+        data.remove("displayAmountToPay");
 
         //workaround for previous-continue bug
         if (shouldRemoveDocument(caseData)) {
             removeDocumentFromData(data);
         }
 
-        List<String> errors = new ArrayList<>();
-        if (featureToggleService.isFeesEnabled()) {
-            try {
+        try {
+            if (featureToggleService.isFeesEnabled()) {
                 FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
                 data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-            } catch (FeeRegisterException ignore) {
-                // TODO: 21/02/2020 Replace me in FPLA-1353
-                //  this is an error message for when the Fee Register is unavailable
-                errors.add("XXX");
+                data.put("displayAmountToPay", YES.getValue());
             }
+        } catch (FeeRegisterException ignore) {
+            data.put("displayAmountToPay", NO.getValue());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(errors)
             .build();
     }
 
@@ -118,13 +116,13 @@ public class UploadC2DocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (featureToggleService.isPaymentsEnabled()) {
+        if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
             paymentService.makePaymentForC2(caseDetails.getId(), caseData);
         }
 
         C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
 
-        if (NO.getValue().equals(c2DocumentBundle.getUsePbaPayment())) {
+        if (isNotPaidByPba(c2DocumentBundle)) {
             applicationEventPublisher.publishEvent(new C2PbaPaymentNotTakenEvent(callbackRequest, authorization,
                 userId));
         }
@@ -164,5 +162,13 @@ public class UploadC2DocumentsController {
             .build());
 
         return c2DocumentBundle;
+    }
+
+    private boolean displayAmountToPay(CaseDetails caseDetails) {
+        return YES.getValue().equals(caseDetails.getData().get("displayAmountToPay"));
+    }
+
+    private boolean isNotPaidByPba(C2DocumentBundle c2DocumentBundle) {
+        return NO.getValue().equals(c2DocumentBundle.getUsePbaPayment());
     }
 }

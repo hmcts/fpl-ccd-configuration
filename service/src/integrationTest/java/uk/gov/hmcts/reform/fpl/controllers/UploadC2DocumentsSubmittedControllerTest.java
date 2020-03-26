@@ -25,6 +25,8 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -68,7 +70,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() throws Exception {
-        postSubmittedEvent(enableSendToCtscOnCaseDetails(NO, YES));
+        postSubmittedEvent(buildCaseDetails(NO, YES));
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -87,7 +89,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() throws Exception {
-        postSubmittedEvent(enableSendToCtscOnCaseDetails(YES, YES));
+        postSubmittedEvent(buildCaseDetails(YES, YES));
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -105,7 +107,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void submittedEventShouldNotifyAdminWhenC2IsNotUsingPbaPayment() throws Exception {
-        postSubmittedEvent(enableSendToCtscOnCaseDetails(NO, NO));
+        postSubmittedEvent(buildCaseDetails(NO, NO));
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
@@ -124,7 +126,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void submittedEventShouldNotifyCtscAdminWhenC2IsNotUsingPbaPaymentAndCtscToggleIsEnabled() throws Exception {
-        postSubmittedEvent(enableSendToCtscOnCaseDetails(YES, NO));
+        postSubmittedEvent(buildCaseDetails(YES, NO));
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
@@ -143,29 +145,23 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void submittedEventShouldNotNotifyAdminWhenUC2IsUsingPbaPayment() throws Exception {
-        postSubmittedEvent(enableSendToCtscOnCaseDetails(NO, YES));
+        postSubmittedEvent(buildCaseDetails(NO, YES));
 
         verify(notificationClient, never()).sendEmail(
-            C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
-            "admin@family-court.com",
-            expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
-        );
-
-        verify(notificationClient, never()).sendEmail(
-            C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
-            "FamilyPublicLaw+ctsc@gmail.com",
-            expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
+            eq(C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE),
+            anyString(),
+            anyMap(),
+            anyString()
         );
     }
 
     @Test
-    void shouldMakePaymentWhenFeatureToggleIsTrue() {
+    void shouldMakePaymentWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildC2DocumentBundle(YES))
+            .put("displayAmountToPay", YES.getValue())
             .build();
 
         postSubmittedEvent(createCase(caseData));
@@ -179,6 +175,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildC2DocumentBundle(YES))
+            .put("displayAmountToPay", YES.getValue())
             .build();
 
         postSubmittedEvent(createCase(caseData));
@@ -186,7 +183,21 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         verify(paymentService, never()).makePaymentForC2(any(), any());
     }
 
-    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
+    @Test
+    void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .putAll(buildC2DocumentBundle(YES))
+            .put("displayAmountToPay", NO.getValue())
+            .build();
+
+        postSubmittedEvent(createCase(caseData));
+
+        verify(paymentService, never()).makePaymentForC2(any(), any());
+    }
+
+    private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
         return createCase(ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildC2DocumentBundle(usePbaPayment))
