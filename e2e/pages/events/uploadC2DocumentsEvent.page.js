@@ -24,7 +24,7 @@ module.exports = {
   },
 
   usePbaPayment(usePbaPayment='No') {
-    if (usePbaPayment=='Yes') {
+    if (usePbaPayment==='Yes') {
       I.click(this.fields.usePbaPayment.yes);
     } else {
       I.click(this.fields.usePbaPayment.no);

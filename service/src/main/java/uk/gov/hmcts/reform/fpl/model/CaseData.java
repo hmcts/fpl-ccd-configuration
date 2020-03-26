@@ -199,6 +199,7 @@ public class CaseData {
     public C2DocumentBundle getLastC2DocumentBundle() {
         return Optional.ofNullable(c2DocumentBundle)
             .map(ElementUtils::unwrapElements)
+            .filter(c2DocumentBundleList -> !c2DocumentBundleList.isEmpty())
             .map(c2DocumentBundleList -> c2DocumentBundleList.get(c2DocumentBundleList.size() - 1))
             .orElse(null);
     }
