@@ -38,9 +38,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 
 @Api
 @RestController
@@ -58,8 +58,8 @@ public class UploadC2DocumentsController {
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest,
-      @RequestHeader(value = "authorization") String authorization,
-      @RequestHeader(value = "user-id") String userId) {
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         data.remove("displayAmountToPay");
@@ -125,7 +125,7 @@ public class UploadC2DocumentsController {
         if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
             try {
                 paymentService.makePaymentForC2(caseDetails.getId(), caseData);
-            } catch(FeeRegisterException | PaymentsApiException ignore) {
+            } catch (FeeRegisterException | PaymentsApiException ignore) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
                     C2_APPLICATION));
             }

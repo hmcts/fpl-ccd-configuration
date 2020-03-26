@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -44,6 +46,12 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @MockBean
     private LDClient ldClient;
+
+    @MockBean
+    private InboxLookupService inboxLookupService;
+
+    @MockBean
+    private NotificationService notificationService;
 
     CaseSubmissionControllerAboutToStartTest() {
         super("case-submission");
@@ -103,6 +111,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(Map.of())
+            .id(1L)
             .build());
 
         assertThat(response.getData()).doesNotContainKey("amountToPay");

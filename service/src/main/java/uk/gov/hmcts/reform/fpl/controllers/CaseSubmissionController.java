@@ -33,7 +33,6 @@ import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -44,6 +43,7 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
@@ -171,7 +171,7 @@ public class CaseSubmissionController {
         if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
             try {
                 paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
-            } catch(FeeRegisterException | PaymentsApiException ignore) {
+            } catch (FeeRegisterException | PaymentsApiException ignore) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
                     C110A_APPLICATION));
             }
