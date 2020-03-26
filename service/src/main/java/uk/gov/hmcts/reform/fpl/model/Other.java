@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
@@ -52,16 +53,19 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @JsonIgnore
     @Override
     public Party getConfidentialParty() {
-        // Telephone in party and other is stored differently, using lastName variable for telephone
-        return new Party(null, null, name, telephone, null, null, address, null, null);
+        return new Party(null, null, name, null, null, null, address, null, Telephone.builder().telephoneNumber(telephone).build());
     }
 
     @Override
     public Other setConfidentialParty(Party party) {
+        if (party.telephoneNumber == null) {
+            throw new IllegalArgumentException("telephone number can't be null");
+        }
+
         return this.toBuilder()
             .address(party.address)
             .name(party.firstName)
-            .telephone(party.lastName)
+            .telephone(party.telephoneNumber.getTelephoneNumber())
             .build();
     }
 }
