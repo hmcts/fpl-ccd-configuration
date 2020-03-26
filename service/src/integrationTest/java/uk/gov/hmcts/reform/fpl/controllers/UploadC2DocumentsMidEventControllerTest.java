@@ -2,17 +2,26 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.launchdarkly.client.LDClient;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
+import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -25,6 +34,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -33,6 +43,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
+    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    private static final String LOCAL_AUTHORITY_CODE = "example";
 
     @MockBean
     private LDClient ldClient;
@@ -45,6 +57,15 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
     @MockBean
     private NotificationService notificationService;
+
+    @MockBean
+    private NotificationClient notificationClient;
+
+    @MockBean
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @MockBean
+    private FailedPBAPaymentContentProvider failedPBAPaymentContentProvider;
 
     UploadC2DocumentsMidEventControllerTest() {
         super("upload-c2");
@@ -117,6 +138,36 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
         assertThat(response.getData())
             .doesNotContainKey("amountToPay")
             .containsEntry("displayAmountToPay", NO.getValue());
+    }
+
+    @Test
+    void shouldSendFailedPaymentNotificationOnFeeRegisterException() throws IOException, NotificationClientException {
+        CaseDetails details = CaseDetails.builder()
+            .data(Map.of(
+                "caseLocalAuthority", "example",
+                "c2ApplicationType", Map.of("type", "WITH_NOTICE")))
+            .id(1L)
+            .build();
+        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
+        given(feeService.getFeesDataForC2(any())).willThrow((new FeeRegisterException(1, "", new Throwable())));
+        given(inboxLookupService.getNotificationRecipientEmail(any(),
+            any())).willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(failedPBAPaymentContentProvider.buildLANotificationParameters(any())).willReturn(
+            Map.of("applicationType", "C2"));
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(details,
+            "get-fee");
+
+        verify(notificationService).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "FamilyPublicLaw+sa@gmail.com",
+            Map.of("applicationType", "C2"),
+            "1");
+    }
+
+    private Map<String, Object> getCtscNotificationParametersForFailedPayment() {
+        return Map.of("applicationType", "C2",
+            "caseUrl", "caseUrl");
     }
 
     @Test
