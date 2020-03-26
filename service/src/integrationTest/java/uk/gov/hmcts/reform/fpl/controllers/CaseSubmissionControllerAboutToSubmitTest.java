@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -110,6 +111,8 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
             ))
             .build());
 
-        assertThat(callbackResponse.getData()).doesNotContainKeys("displayAmountToPay", "amountToPay");
+        assertThat(callbackResponse.getData())
+            .doesNotContainKey("amountToPay")
+            .containsEntry("displayAmountToPay", YES.getValue());
     }
 }

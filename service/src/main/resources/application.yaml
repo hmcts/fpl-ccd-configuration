@@ -77,7 +77,7 @@ fees-register:
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: QRS
+      keyword: VariationDischarge
       service: private law
     PLACEMENT:
       channel: default

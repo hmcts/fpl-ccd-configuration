@@ -71,9 +71,8 @@ withPipeline(type, product, component) {
   onPR {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
-  if (!new ProjectBranch(env.BRANCH_NAME).isDemo()) {
-    disableLegacyDeployment()
-  }
+  disableLegacyDeployment()
+
   enableAksStagingDeployment()
   installCharts()
   enableSlackNotifications('#fpla-tech')
