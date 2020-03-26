@@ -6,11 +6,13 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 public class CallbackEvent {
 
     private final CallbackRequest callbackRequest;
-    private final RequestData requestData;
+    private final String authorisation;
+    private final String userId;
 
     CallbackEvent(CallbackRequest callbackRequest, RequestData requestData) {
         this.callbackRequest = callbackRequest;
-        this.requestData = requestData;
+        this.authorisation = requestData.authorisation();
+        this.userId = requestData.userId();
     }
 
     public CallbackRequest getCallbackRequest() {
@@ -18,10 +20,10 @@ public class CallbackEvent {
     }
 
     public String getAuthorization() {
-        return requestData.authorisation();
+        return authorisation;
     }
 
     public String getUserId() {
-        return requestData.userId();
+        return userId;
     }
 }
