@@ -7,5 +7,7 @@ public interface ConfidentialParty<T> {
 
     Party getConfidentialParty();
 
-    T setConfidentialParty(Party party);
+    T cloneWithConfidentialParty(Party party);
+
+    T cloneWithFullParty(Party party);
 }

@@ -35,9 +35,22 @@ public class Child implements ConfidentialParty<Child> {
 
     @JsonIgnore
     @Override
-    public Child setConfidentialParty(Party party) {
+    public Child cloneWithConfidentialParty(Party party) {
         return this.toBuilder()
             .party(ChildParty.builder()
+                .firstName(party.firstName)
+                .lastName(party.lastName)
+                .address(party.address)
+                .telephoneNumber(party.telephoneNumber)
+                .email(party.email)
+                .build())
+            .build();
+    }
+
+    @Override
+    public Child cloneWithFullParty(Party party) {
+        return this.toBuilder()
+            .party(this.getParty().toBuilder()
                 .firstName(party.firstName)
                 .lastName(party.lastName)
                 .address(party.address)

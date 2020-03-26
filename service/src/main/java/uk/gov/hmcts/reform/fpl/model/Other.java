@@ -53,11 +53,14 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @JsonIgnore
     @Override
     public Party getConfidentialParty() {
-        return new Party(null, null, name, null, null, null, address, null, Telephone.builder().telephoneNumber(telephone).build());
+        return new Party(null, null, name, null,
+            null, null, address, null,
+            Telephone.builder().telephoneNumber(telephone).build());
     }
 
+    @JsonIgnore
     @Override
-    public Other setConfidentialParty(Party party) {
+    public Other cloneWithConfidentialParty(Party party) {
         if (party.telephoneNumber == null) {
             throw new IllegalArgumentException("telephone number can't be null");
         }
@@ -67,5 +70,10 @@ public class Other implements Representable, ConfidentialParty<Other> {
             .name(party.firstName)
             .telephone(party.telephoneNumber.getTelephoneNumber())
             .build();
+    }
+
+    @Override
+    public Other cloneWithFullParty(Party party) {
+        return cloneWithConfidentialParty(party);
     }
 }

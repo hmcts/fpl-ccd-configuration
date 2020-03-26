@@ -49,8 +49,9 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
         return party;
     }
 
+    @JsonIgnore
     @Override
-    public Respondent setConfidentialParty(Party party) {
+    public Respondent cloneWithConfidentialParty(Party party) {
         return this.toBuilder()
             .party(RespondentParty.builder()
                 .firstName(party.firstName)
@@ -60,6 +61,21 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
                 .email(party.email)
                 .build())
             .build();
+    }
+
+    @Override
+    public Respondent cloneWithFullParty(Party party) {
+        return this.toBuilder()
+            .party(this.getParty().toBuilder()
+                .firstName(party.firstName)
+                .lastName(party.lastName)
+                .address(party.address)
+                .telephoneNumber(party.telephoneNumber)
+                .email(party.email)
+                .build())
+            .build();
 
     }
+
+
 }

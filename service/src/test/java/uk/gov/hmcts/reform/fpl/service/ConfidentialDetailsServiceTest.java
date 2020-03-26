@@ -20,9 +20,12 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -195,6 +198,41 @@ class ConfidentialDetailsServiceTest {
             .telephone("01227 831393")
             .build()
         );
+
+    }
+
+    @Test
+    void name() {
+        UUID ID = randomUUID();
+        List<Element<Child>> children1 = List.of(
+            element(ID, Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("James")
+                    .detailsHidden("Yes")
+                    .build())
+                .build()));
+        List<Element<Child>> confidentialChildren = List.of(
+            element(ID, Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("James")
+                    .detailsHidden("Yes")
+                    .email(EmailAddress.builder().email("email@email.com").build())
+                    .address(Address.builder().addressLine1("Address Line 1").build())
+                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .build())
+                .build()));
+
+        List<Element<Child>> children = service.prepareConfidentialChildCollection(children1, confidentialChildren);
+
+        assertThat(children).containsOnly(element(ID, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .detailsHidden("Yes")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                .build())
+            .build()));
 
     }
 
