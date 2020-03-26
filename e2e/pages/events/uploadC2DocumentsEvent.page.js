@@ -23,8 +23,8 @@ module.exports = {
     I.fillField(this.fields.description, description);
   },
 
-  usePbaPayment(usePbaPayment='No') {
-    if (usePbaPayment==='Yes') {
+  usePbaPayment(usePbaPayment=true) {
+    if (usePbaPayment) {
       I.click(this.fields.usePbaPayment.yes);
     } else {
       I.click(this.fields.usePbaPayment.no);
