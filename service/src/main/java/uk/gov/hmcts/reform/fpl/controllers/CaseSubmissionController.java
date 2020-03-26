@@ -43,7 +43,6 @@ import javax.validation.groups.Default;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
 @Api
@@ -72,6 +71,7 @@ public class CaseSubmissionController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
+        data.remove("displayAmountToPay");
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
@@ -83,11 +83,10 @@ public class CaseSubmissionController {
                 }
             } catch (FeeRegisterException ignore) {
                 data.put("displayAmountToPay", NO.getValue());
-            } finally {
-                String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(
-                    requestData.authorisation()));
-                data.put("submissionConsentLabel", label);
             }
+            String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(
+                requestData.authorisation()));
+            data.put("submissionConsentLabel", label);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -148,8 +147,7 @@ public class CaseSubmissionController {
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", document.originalDocumentName)
             .build());
-
-        removeTemporaryFields(caseDetails, "amountToPay", "displayAmountToPay");
+        data.remove("amountToPay");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -161,7 +159,7 @@ public class CaseSubmissionController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        if (featureToggleService.isPaymentsEnabled()) {
+        if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
             paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
         }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, requestData));
@@ -169,5 +167,9 @@ public class CaseSubmissionController {
 
     private String setSendToCtsc() {
         return featureToggleService.isCtscEnabled() ? YES.getValue() : NO.getValue();
+    }
+
+    private boolean displayAmountToPay(CaseDetails caseDetails) {
+        return YES.getValue().equals(caseDetails.getData().get("displayAmountToPay"));
     }
 }
