@@ -67,6 +67,7 @@ public class CaseSubmissionController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
