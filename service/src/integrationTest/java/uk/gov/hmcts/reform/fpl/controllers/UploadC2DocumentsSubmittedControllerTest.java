@@ -8,12 +8,17 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fnp.client.PaymentApi;
+import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -26,9 +31,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -53,6 +57,12 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @MockBean
     private PaymentService paymentService;
+
+    @MockBean
+    private PaymentApi paymentApi;
+
+    @MockBean
+    private NotificationService notificationService;
 
     UploadC2DocumentsSubmittedControllerTest() {
         super("upload-c2");
@@ -137,6 +147,36 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         postSubmittedEvent(createCase(caseData));
 
         verify(paymentService, never()).makePaymentForC2(any(), any());
+    }
+
+    @Test
+    void shouldSendFailedPaymentNotificationOnPaymentsApiException() {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("displayAmountToPay", YES.getValue())
+            .build();
+
+        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService).makePaymentForC2(any(),any());
+
+        postSubmittedEvent(createCase(caseData));
+
+        verify(notificationService).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "local-authority@local-authority.com",
+            Map.of("applicationType", "C2"),
+            "12345");
+
+        verify(notificationService).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            "12345");
+    }
+
+    private Map<String, Object> expectedCtscNotificationParameters() {
+        return Map.of("applicationType", "C2",
+            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
     }
 
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
