@@ -11,7 +11,9 @@ public enum UserRole implements Role {
     CAFCASS("caseworker-publiclaw-cafcass"),
     GATEKEEPER("caseworker-publiclaw-gatekeeper"),
     JUDICIARY("caseworker-publiclaw-judiciary"),
-    SYSTEM_UPDATE("caseworker-publiclaw-systemupdate");
+    SYSTEM_UPDATE("caseworker-publiclaw-systemupdate"),
+    CCD_SOLICITOR("[SOLICITOR]"),
+    CCD_LASOLICITOR("[LASOLICITOR]");
 
 
     private final String role;

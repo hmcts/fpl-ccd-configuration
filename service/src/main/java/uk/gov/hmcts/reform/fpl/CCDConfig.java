@@ -5,8 +5,8 @@ import com.google.common.base.CaseFormat;
 import de.cronn.reflection.util.TypedPropertyGetter;
 import uk.gov.hmcts.ccd.sdk.types.BaseCCDConfig;
 import uk.gov.hmcts.ccd.sdk.types.DisplayContext;
+import uk.gov.hmcts.ccd.sdk.types.Event.EventBuilder;
 import uk.gov.hmcts.ccd.sdk.types.FieldCollection;
-import uk.gov.hmcts.ccd.sdk.types.FieldCollection.FieldCollectionBuilder;
 import uk.gov.hmcts.ccd.sdk.types.Webhook;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
@@ -54,10 +54,13 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .forAllStates()
             .name("Send document")
             .endButtonLabel("")
-            .aboutToSubmitWebhook("send-document");
+            .aboutToSubmitWebhook("send-document")
+            .explicitGrants()
+            .grant("CRU", SYSTEM_UPDATE);
 
         event("handleSupplementaryEvidence")
             .forAllStates()
+            .explicitGrants()
             .name("Handle supplementary evidence")
             .showEventNotes()
             .fields()
@@ -66,6 +69,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
         event("attachScannedDocs")
             .forAllStates()
+            .explicitGrants()
             .endButtonLabel("")
             .name("Attach scanned docs")
             .fields()
@@ -79,6 +83,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .forAllStates()
             .name("Allocated Judge")
             .description("Add allocated judge to a case")
+            .grant("CRU", JUDICIARY, HMCTS_ADMIN, GATEKEEPER)
+            .grant("R", LOCAL_AUTHORITY, CAFCASS)
             .fields()
             .page("AllocatedJudge")
                 .field(CaseData::getAllocatedJudge);
@@ -252,8 +258,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Submit application")
                 .displayOrder(17) // TODO - necessary?
                 .explicitGrants()
-                .grant("R", HMCTS_ADMIN, UserRole.CAFCASS, UserRole.JUDICIARY, UserRole.GATEKEEPER)
-                .grant("CRU", LOCAL_AUTHORITY)
+                .grant("R", LOCAL_AUTHORITY, HMCTS_ADMIN, UserRole.CAFCASS, UserRole.JUDICIARY, UserRole.GATEKEEPER)
+                .grant("CRU", CCD_LASOLICITOR)
                 .endButtonLabel("Submit")
                 .allWebhooks("case-submission")
                 .retries(1,2,3,4,5)
@@ -278,7 +284,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("deleteApplication")
                 .forStateTransition(Open, Deleted)
                 .displayOrder(18) // TODO - necessary?
-                .grant("CRU", LOCAL_AUTHORITY)
+                .grant("CRU", CCD_LASOLICITOR)
+                .grant("R", LOCAL_AUTHORITY)
                 .name("Delete an application")
                 .aboutToSubmitWebhook("case-deletion")
                 .endButtonLabel("Delete application")
@@ -298,7 +305,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .field(CaseData::getAllocationDecision, DisplayContext.Mandatory, true);
 
-        addHearingBookingDetails(Gatekeeping, false);
+        addHearingBookingDetails(Gatekeeping)
+            .grant("CRU", GATEKEEPER);
         buildSharedEvents(Gatekeeping);
         buildNoticeOfProceedings(Gatekeeping);
 
@@ -349,8 +357,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Documents")
                 .description("Only here for backwards compatibility with case history")
                 .explicitGrants()
-                .grant("R", LOCAL_AUTHORITY);
-        buildLimitedUploadDocuments(Gatekeeping, 11);
+                .grant("R", LOCAL_AUTHORITY, CCD_LASOLICITOR);
+        buildLimitedUploadDocuments(Gatekeeping, 11)
+            .grant("R", LOCAL_AUTHORITY);
         addStatementOfService(Gatekeeping);
         buildManageRepresentatives(Gatekeeping, false, false);
         buildPlacement(Gatekeeping);
@@ -396,7 +405,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .optional(CaseData::getFamilyManCaseNumber);
 
-        addHearingBookingDetails(Submitted, true);
+        addHearingBookingDetails(Submitted)
+            .grant("CRU", JUDICIARY, GATEKEEPER)
+            .aboutToSubmitWebhook();
         this.buildStandardDirections(Submitted, "", "Save and continue");
         buildUploadC2(Submitted, true);
 
@@ -421,11 +432,12 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("uploadDocumentsAfterSubmission")
                 .forState(Submitted)
                 .explicitGrants()
-                .grant("R", LOCAL_AUTHORITY)
+                .grant("R", LOCAL_AUTHORITY, CCD_LASOLICITOR)
                 .name("Documents")
                 .description("Only here for backwards compatibility with case history");
 
-        buildLimitedUploadDocuments(Submitted, 15);
+        buildLimitedUploadDocuments(Submitted, 15)
+            .grant("R", LOCAL_AUTHORITY);
         buildManageRepresentatives(Submitted, true, true);
         buildPlacement(Submitted);
     }
@@ -434,7 +446,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("addStatementOfService")
                 .forState(state)
                 .explicitGrants()
-                .grant("CRU", LOCAL_AUTHORITY)
+                .grant("CRU", CCD_LASOLICITOR)
+                .grant("R", LOCAL_AUTHORITY)
                 .name("Add statement of service (c9)")
                 .description("Add statement of service")
                 .showSummary()
@@ -450,7 +463,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         prefix(PREPARE_FOR_HEARING, "-");
         blacklist(PREPARE_FOR_HEARING, GATEKEEPER);
         grant(PREPARE_FOR_HEARING, "CRU", HMCTS_ADMIN);
-        addHearingBookingDetails( PREPARE_FOR_HEARING, false);
+        addHearingBookingDetails(PREPARE_FOR_HEARING);
         buildSharedEvents( PREPARE_FOR_HEARING);
 
         event("uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING")
@@ -461,7 +474,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .fields()
             .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection", "CourtAdminDocument", "Other documents");
 
-        buildLimitedUploadDocuments(PREPARE_FOR_HEARING, 8);
+        buildLimitedUploadDocuments(PREPARE_FOR_HEARING, 8)
+            .grant("CRU", CCD_SOLICITOR);
 
         buildUploadC2(PREPARE_FOR_HEARING, false);
         buildNoticeOfProceedings( PREPARE_FOR_HEARING);
@@ -471,7 +485,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("draftCMO")
                 .forState(PREPARE_FOR_HEARING)
                 .explicitGrants()
-                .grant("CRU", LOCAL_AUTHORITY)
+                .grant("CRU", CCD_LASOLICITOR)
+                .grant("R", LOCAL_AUTHORITY)
                 .name("Draft CMO")
                 .endButtonLabel("")
                 .description("Draft Case Management Order")
@@ -536,7 +551,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("actionCMO")
             .forState(PREPARE_FOR_HEARING)
             .explicitGrants()
-            .grant("CRU", LOCAL_AUTHORITY)
+            .grant("CRU", JUDICIARY)
             .name("Action CMO")
             .description("Allows Judge user access to action a case management order")
             .displayOrder(1)
@@ -611,7 +626,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("COMPLY_OTHERS")
             .forState(PREPARE_FOR_HEARING)
             .explicitGrants()
-            .grant("CRU", LOCAL_AUTHORITY)
+            .grant("CRU", CCD_SOLICITOR)
             .name("Comply on behalf of others")
             .description("Event gives SOLICITOR user access to comply with directions for other parties")
             .displayOrder(11)
@@ -629,7 +644,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("COMPLY_ON_BEHALF_COURT")
             .forState(PREPARE_FOR_HEARING)
             .explicitGrants()
-            .grant("CRU", LOCAL_AUTHORITY)
+            .grant("CRU", HMCTS_ADMIN)
             .name("Comply on behalf of others")
             .description("Event gives Court user access to comply with all directions on behalf of others")
             .displayOrder(11)
@@ -653,19 +668,25 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .forState(PREPARE_FOR_HEARING)
             .name("-")
             .endButtonLabel("")
+            .explicitGrants()
+            .grant("CRU", SYSTEM_UPDATE)
             .aboutToSubmitWebhook("cmo-progression");
         explicitState("uploadC2-PREPARE_FOR_HEARING", LOCAL_AUTHORITY, "");
     }
 
-    private void buildLimitedUploadDocuments(State state, int displayOrder) {
-        event("limitedUploadDocuments")
+    @SuppressWarnings("unchecked")
+    private EventBuilder<CaseData, UserRole, Object> buildLimitedUploadDocuments(State state, int displayOrder) {
+        return (EventBuilder<CaseData, UserRole, Object>) event("limitedUploadDocuments")
             .forState(state)
             .name("Documents")
             .description("Upload documents")
             .displayOrder(displayOrder)
-            .grant("CRU", HMCTS_ADMIN)
+            .explicitGrants()
+            .grant("CRU", CCD_SOLICITOR)
             .fields()
-            .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection", "CourtAdminDocument", "Other documents");
+            .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection",
+                "CourtAdminDocument", "Other documents")
+            .eventBuilder();
     }
 
 
@@ -673,6 +694,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("placement")
             .forState(state)
             .name("Placement")
+            .explicitGrants()
             .allWebhooks()
             .fields()
             .page("childrenList")
@@ -698,6 +720,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .aboutToStartWebhook()
             .aboutToSubmitWebhook()
             .submittedWebhook(submittedWebhook)
+            .explicitGrants()
+            .grant("CRU", HMCTS_ADMIN)
             .fields()
                 .midEventWebhook()
                 .label("respondents_label", "label")
@@ -736,14 +760,14 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .optional(Direction::getDateToBeCompletedBy);
     }
 
-    private void addHearingBookingDetails(State state, boolean withAboutToSubmitWebhook) {
-        event( "hearingBookingDetails")
+    @SuppressWarnings("unchecked")
+    private EventBuilder<CaseData, UserRole, State> addHearingBookingDetails(State state) {
+        return (EventBuilder<CaseData, UserRole, State>) event( "hearingBookingDetails")
             .forState(state)
-            .grant("CRU", GATEKEEPER)
+            .grant("CRU", HMCTS_ADMIN)
             .name("Add hearing details")
             .description("Add hearing booking details to a case")
             .aboutToStartWebhook("add-hearing-bookings")
-            .aboutToSubmitWebhook(withAboutToSubmitWebhook)
             .showSummary()
             .fields()
             .midEventWebhook("add-hearing-bookings")
@@ -760,7 +784,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .mandatory(JudgeAndLegalAdvisor::getOtherTitle, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"")
                     .mandatory(JudgeAndLegalAdvisor::getJudgeLastName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"")
                     .optional(JudgeAndLegalAdvisor::getJudgeFullName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"")
-                    .optional(JudgeAndLegalAdvisor::getLegalAdvisorName);
+                    .optional(JudgeAndLegalAdvisor::getLegalAdvisorName)
+                    .done()
+                .done()
+            .eventBuilder();
     }
 
     private void buildSharedEvents(State state) {
@@ -841,7 +868,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("uploadC2")
         .forState(state)
         .explicitGrants()
-        .grant("CRU", UserRole.LOCAL_AUTHORITY, UserRole.CAFCASS, HMCTS_ADMIN)
+        .grant("CRU", UserRole.CAFCASS, HMCTS_ADMIN, CCD_LASOLICITOR, CCD_SOLICITOR)
+        .grant("R", LOCAL_AUTHORITY)
         .name("Upload a C2")
         .description("Upload a c2 to the case")
         .aboutToSubmitWebhook()
@@ -854,11 +882,13 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildOpen() {
-        grant(Open, "CRU", LOCAL_AUTHORITY);
+        // Local Authority has at least R on all Open events.
+        grant(Open, "R", LOCAL_AUTHORITY);
         event("openCase")
                 .initialState(Open)
                 .name("Start application")
                 .description("Create a new case – add a title")
+                .grant("CRU", LOCAL_AUTHORITY)
                 .aboutToSubmitWebhook("case-initiation")
                 .submittedWebhook()
                 .retries(1,2,3,4,5)
@@ -869,12 +899,14 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Orders and directions needed")
                 .description("Selecting the orders needed for application")
                 .aboutToSubmitWebhook("orders-needed")
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .optional(CaseData::getOrders);
 
         event("hearingNeeded").forState(Open)
                 .name("Hearing needed")
                 .description("Selecting the hearing needed for application")
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .optional(CaseData::getHearing);
 
@@ -883,6 +915,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .description("Entering the children for the case")
                 .aboutToStartWebhook()
                 .aboutToSubmitWebhook()
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .field().id(CaseData::getChildren1).context(DisplayContext.Optional).mutable();
 
@@ -891,6 +924,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .description("Entering the respondents for the case")
                 .aboutToStartWebhook()
                 .aboutToSubmitWebhook()
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .midEventWebhook()
                     .field().id(CaseData::getRespondents1).context(DisplayContext.Optional).mutable();
@@ -900,6 +934,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .description("Entering the applicant for the case")
                 .aboutToStartWebhook()
                 .aboutToSubmitWebhook()
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .midEventWebhook()
                     .optional(CaseData::getApplicants)
@@ -910,13 +945,14 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .description("Entering others for the case")
                 .aboutToStartWebhook()
                 .aboutToSubmitWebhook()
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .optional(CaseData::getOthers);
 
         event("enterGrounds").forState(Open)
                 .name("Grounds for the application")
                 .description("Entering the grounds for the application")
-                .grant("CRU", LOCAL_AUTHORITY)
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .field("EPO_REASONING_SHOW", DisplayContext.Optional, "groundsForEPO CONTAINS \"Workaround to show groundsForEPO. Needs to be hidden from UI\"", "MultiSelectList", "ShowHide", "EPO Reason show or hide")
                     .optional(CaseData::getGroundsForEPO, "EPO_REASONING_SHOW CONTAINS \"SHOW_FIELD\"")
@@ -925,33 +961,36 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("enterRiskHarm").forState(Open)
                 .name("Risk and harm to children")
                 .description("Entering opinion on risk and harm to children")
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .optional(CaseData::getRisks);
 
         event("enterParentingFactors").forState(Open)
                 .name("Factors affecting parenting")
                 .description("Entering the factors affecting parenting")
-                .grant("CRU", LOCAL_AUTHORITY)
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .optional(CaseData::getFactorsParenting);
 
         event("enterInternationalElement").forState(Open)
                 .name("International element")
                 .description("Entering the international element")
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .optional(CaseData::getInternationalElement);
 
         event("otherProceedings").forState(Open)
                 .name("Other proceedings")
                 .description("Entering other proceedings and proposals")
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .midEventWebhook("enter-other-proceedings")
                     .optional(CaseData::getProceeding);
 
         event("otherProposal").forState(Open)
                 .name("Allocation proposal")
-                .grant("CRU", GATEKEEPER)
                 .description("Entering other proceedings and allocation proposals")
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .label("allocationProposal_label", "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.")
                     .field(CaseData::getAllocationProposal).context(DisplayContext.Complex);
@@ -960,13 +999,15 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Attending the hearing")
                 .description("Enter extra support needed for anyone to take part in hearing")
                 .displayOrder(13)
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .optional(CaseData::getHearingPreferences);
 
         event("uploadDocuments")
                 .forAllStates()
                 .explicitGrants()
-                .grant("CRU", LOCAL_AUTHORITY)
+                .grant("CRU", CCD_LASOLICITOR)
+                .grant("R", LOCAL_AUTHORITY)
                 .name("Documents")
                 .description("Upload documents")
                 .displayOrder(14)
@@ -990,6 +1031,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Change case name")
                 .description("Change case name")
                 .displayOrder(15)
+                .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .optional(CaseData::getCaseName);
     }
