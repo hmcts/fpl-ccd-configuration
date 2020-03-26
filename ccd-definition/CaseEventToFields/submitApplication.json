@@ -32,8 +32,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "submissionConsentLabel=\"DO_NOT_SHOW\"",
-    "Comment": "Due to the way the definition files are parsed this file is read first and the callback needs to be here, when the 2 files are merged the mid event callback should go back onto the consent label"
+    "FieldShowCondition": "submissionConsentLabel=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
