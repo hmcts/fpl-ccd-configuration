@@ -288,7 +288,7 @@ public class NotificationHandler {
     @EventListener
     public void sendFailedPBAPaymentEmailToLocalAuthority(FailedPBAPaymentEvent event) {
         EventData eventData = new EventData(event);
-        Map<String, Object> parameters = Map.of("applicationType", event.getApplicationType());
+        Map<String, Object> parameters = Map.of("applicationType", event.getApplicationType().getType());
 
         String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
             eventData.getLocalAuthorityCode());
@@ -300,7 +300,7 @@ public class NotificationHandler {
     @EventListener
     public void sendFailedPBAPaymentEmailToCTSC(FailedPBAPaymentEvent event) {
         EventData eventData = new EventData(event);
-        Map<String, Object> parameters = Map.of("applicationType", event.getApplicationType(),
+        Map<String, Object> parameters = Map.of("applicationType", event.getApplicationType().getType(),
             "caseUrl", "caseUrl");
 
         String email = ctscEmailLookupConfiguration.getEmail();

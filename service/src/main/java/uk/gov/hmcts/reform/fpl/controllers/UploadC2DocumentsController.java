@@ -40,6 +40,7 @@ import java.util.UUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 
 @Api
 @RestController
@@ -77,7 +78,7 @@ public class UploadC2DocumentsController {
         } catch (FeeRegisterException ignore) {
             data.put("displayAmountToPay", NO.getValue());
             applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
-                "C2"));
+                C2_APPLICATION));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -126,7 +127,7 @@ public class UploadC2DocumentsController {
                 paymentService.makePaymentForC2(caseDetails.getId(), caseData);
             } catch(FeeRegisterException | PaymentsApiException ignore) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
-                    "C2"));
+                    C2_APPLICATION));
             }
         }
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));

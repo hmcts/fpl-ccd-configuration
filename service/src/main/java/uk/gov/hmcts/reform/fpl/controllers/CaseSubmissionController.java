@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -87,7 +88,7 @@ public class CaseSubmissionController {
             } catch (FeeRegisterException ignore) {
                 data.put("displayAmountToPay", NO.getValue());
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
-                    "C110a"));
+                    C110A_APPLICATION));
             }
             String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
             data.put("submissionConsentLabel", label);
@@ -172,7 +173,7 @@ public class CaseSubmissionController {
                 paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
             } catch(FeeRegisterException | PaymentsApiException ignore) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
-                    "C110a"));
+                    C110A_APPLICATION));
             }
         }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));

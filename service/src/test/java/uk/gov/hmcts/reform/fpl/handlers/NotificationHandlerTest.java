@@ -86,6 +86,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepres
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -932,7 +934,7 @@ class NotificationHandlerTest {
         final Map<String, Object> expectedParameters = Map.of("applicationType", "C110a");
 
         notificationHandler.sendFailedPBAPaymentEmailToLocalAuthority(
-            new FailedPBAPaymentEvent(callbackRequest, AUTH_TOKEN, USER_ID, "C110a"));
+            new FailedPBAPaymentEvent(callbackRequest, AUTH_TOKEN, USER_ID, C110A_APPLICATION));
 
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
@@ -947,7 +949,7 @@ class NotificationHandlerTest {
         final Map<String, Object> expectedParameters = getCTSCNotificationParametersForFailedPayment();
 
         notificationHandler.sendFailedPBAPaymentEmailToCTSC(
-            new FailedPBAPaymentEvent(callbackRequest, AUTH_TOKEN, USER_ID, "C110a"));
+            new FailedPBAPaymentEvent(callbackRequest, AUTH_TOKEN, USER_ID, C2_APPLICATION));
 
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
@@ -957,7 +959,7 @@ class NotificationHandlerTest {
     }
 
     private Map<String, Object> getCTSCNotificationParametersForFailedPayment(){
-        return Map.of("applicationType", "C110a",
+        return Map.of("applicationType", "C2",
             "caseUrl", "caseUrl");
 
     }
