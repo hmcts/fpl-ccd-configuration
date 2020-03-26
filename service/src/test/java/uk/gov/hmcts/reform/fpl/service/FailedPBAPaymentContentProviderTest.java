@@ -1,26 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 
 import java.io.IOException;
 import java.util.Map;
@@ -28,8 +18,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
@@ -58,13 +46,21 @@ class FailedPBAPaymentContentProviderTest {
 
     @Test
     void shouldReturnExpectedMapWithValidCtscNotificationParamaters() throws IOException {
-        Map<String, Object> expectedMap = getExpectedNotificationParametersForCtsc();
+        Map<String, Object> expectedMap = getExpectedCtscNotificationParameters();
 
         assertThat(failedPBAPaymentContentProvider.buildCtscNotificationParameters(populatedCaseDetails(),
-                ApplicationType.C2_APPLICATION)).isEqualTo(expectedMap);
+            ApplicationType.C2_APPLICATION)).isEqualTo(expectedMap);
     }
 
-    private Map<String, Object> getExpectedNotificationParametersForCtsc() {
+    @Test
+    void shouldReturnExpectedMapWithValidLANotificationParamaters() {
+        Map<String, Object> expectedMap = Map.of("applicationType", "C110a");
+
+        assertThat(failedPBAPaymentContentProvider.buildLANotificationParameters(
+            ApplicationType.C110A_APPLICATION)).isEqualTo(expectedMap);
+    }
+
+    private Map<String, Object> getExpectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
             "caseUrl", "/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
     }
