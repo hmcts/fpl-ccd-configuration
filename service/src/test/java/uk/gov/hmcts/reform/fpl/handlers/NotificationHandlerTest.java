@@ -982,7 +982,6 @@ class NotificationHandlerTest {
     private Map<String, Object> getCtscNotificationParametersForFailedPayment() {
         return Map.of("applicationType", "C2",
             "caseUrl", "caseUrl");
-
     }
 
     private List<Representative> getExpectedDigitalRepresentativesForAddingPartiesToCase() {
