@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -176,6 +177,9 @@ class NotificationHandlerTest {
     @Mock
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
+    @Mock
+    private FailedPBAPaymentContentProvider failedPBAPaymentContentProvider;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -194,7 +198,7 @@ class NotificationHandlerTest {
             cafcassLookupConfiguration, hmctsEmailContentProvider, partyAddedToCaseContentProvider,
             cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
             c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
-            localAuthorityEmailContentProvider, idamApi, inboxLookupService,
+            localAuthorityEmailContentProvider, failedPBAPaymentContentProvider, idamApi, inboxLookupService,
             caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
             localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration, notificationService);
 
@@ -944,6 +948,9 @@ class NotificationHandlerTest {
         CallbackRequest callbackRequest = callbackRequest();
         final Map<String, Object> expectedParameters = Map.of("applicationType", "C110a");
 
+        given(failedPBAPaymentContentProvider.buildLANotificationParameters(C110A_APPLICATION))
+            .willReturn(expectedParameters);
+
         notificationHandler.sendFailedPBAPaymentEmailToLocalAuthority(
             new FailedPBAPaymentEvent(callbackRequest, AUTH_TOKEN, USER_ID, C110A_APPLICATION));
 
@@ -958,6 +965,9 @@ class NotificationHandlerTest {
     void shouldNotifyCtscWhenApplicationPBAPaymentFails() throws IOException {
         CallbackRequest callbackRequest = callbackRequest();
         final Map<String, Object> expectedParameters = getCtscNotificationParametersForFailedPayment();
+
+        given(failedPBAPaymentContentProvider.buildCtscNotificationParameters(callbackRequest
+                .getCaseDetails(), C2_APPLICATION)).willReturn(expectedParameters);
 
         notificationHandler.sendFailedPBAPaymentEmailToCTSC(
             new FailedPBAPaymentEvent(callbackRequest, AUTH_TOKEN, USER_ID, C2_APPLICATION));

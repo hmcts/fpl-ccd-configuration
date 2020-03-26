@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -92,6 +93,7 @@ public class NotificationHandler {
     private final GeneratedOrderEmailContentProvider orderEmailContentProvider;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
+    private final FailedPBAPaymentContentProvider failedPBAPaymentContentProvider;
     private final IdamApi idamApi;
     private final InboxLookupService inboxLookupService;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
@@ -316,7 +318,8 @@ public class NotificationHandler {
     @EventListener
     public void sendFailedPBAPaymentEmailToLocalAuthority(FailedPBAPaymentEvent event) {
         EventData eventData = new EventData(event);
-        Map<String, Object> parameters = Map.of("applicationType", event.getApplicationType().getType());
+        Map<String, Object> parameters = failedPBAPaymentContentProvider.buildLANotificationParameters(
+            event.getApplicationType());
 
         String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
             eventData.getLocalAuthorityCode());
@@ -328,8 +331,8 @@ public class NotificationHandler {
     @EventListener
     public void sendFailedPBAPaymentEmailToCTSC(FailedPBAPaymentEvent event) {
         EventData eventData = new EventData(event);
-        Map<String, Object> parameters = Map.of("applicationType", event.getApplicationType().getType(),
-            "caseUrl", "caseUrl");
+        Map<String, Object> parameters = failedPBAPaymentContentProvider.buildCtscNotificationParameters(
+            eventData.getCaseDetails(), event.getApplicationType());
 
         String email = ctscEmailLookupConfiguration.getEmail();
 

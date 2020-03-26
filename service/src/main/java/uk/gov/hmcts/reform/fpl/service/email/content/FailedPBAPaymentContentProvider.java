@@ -1,0 +1,39 @@
+package uk.gov.hmcts.reform.fpl.service.email.content;
+
+import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
+
+@Service
+public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {
+    @Autowired
+    public FailedPBAPaymentContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                           HearingBookingService hearingBookingService,
+                                           DateFormatterService dateFormatterService) {
+        super(uiBaseUrl, dateFormatterService, hearingBookingService);
+
+    }
+
+    public Map<String, Object> buildCtscNotificationParameters(CaseDetails caseDetails,
+        ApplicationType applicationType) {
+        return ImmutableMap.of(
+            "applicationType", applicationType.getType(),
+            "caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId())
+        );
+    }
+
+    public Map<String, Object> buildLANotificationParameters(ApplicationType applicationType) {
+        return ImmutableMap.of(
+            "applicationType", applicationType.getType()
+        );
+    }
+}
