@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -59,9 +58,6 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @MockBean
     private PaymentService paymentService;
-
-    @MockBean
-    private PaymentApi paymentApi;
 
     UploadC2DocumentsSubmittedControllerTest() {
         super("upload-c2");
@@ -156,7 +152,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             .put("displayAmountToPay", YES.getValue())
             .build();
 
-        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService).makePaymentForC2(any(),any());
+        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService).makePaymentForC2(any(), any());
 
         postSubmittedEvent(createCase(caseData));
 

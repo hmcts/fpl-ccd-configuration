@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -30,6 +29,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -46,9 +47,6 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @MockBean
     private LDClient ldClient;
-
-    @MockBean
-    private InboxLookupService inboxLookupService;
 
     @MockBean
     private NotificationService notificationService;
@@ -110,12 +108,40 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
         given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(Map.of())
+            .data(Map.of("caseLocalAuthority", "example"))
             .id(1L)
             .build());
 
         assertThat(response.getData()).doesNotContainKey("amountToPay");
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
+    }
+
+    @Test
+    void shouldSendFailedPaymentNotificationOnFeeRegisterException() {
+        givenPaymentToggle(true);
+        given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
+            .data(Map.of("caseLocalAuthority","example"))
+            .id(1L)
+            .build());
+
+        verify(notificationService).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "local-authority@local-authority.com",
+            Map.of("applicationType", "C110a"),
+            "1");
+
+        verify(notificationService).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            "1");
+    }
+
+    private Map<String, Object> expectedCtscNotificationParameters() {
+        return Map.of("applicationType", "C110a",
+            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/1");
     }
 
     private void givenPaymentToggle(boolean enabled) {
