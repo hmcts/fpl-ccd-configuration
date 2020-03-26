@@ -29,12 +29,6 @@ resource "azurerm_resource_group" "rg" {
   tags = "${var.common_tags}"
 }
 
-resource "azurerm_key_vault_secret" "AZURE_APPINSGHTS_KEY" {
-  name         = "AppInsightsInstrumentationKey"
-  value        = "${azurerm_application_insights.appinsights.instrumentation_key}"
-  key_vault_id = "${module.key-vault.key_vault_id}"
-}
-
 resource "azurerm_application_insights" "appinsights" {
   name                = "${var.product}-${var.component}-appinsights-${var.env}"
   location            = "${var.appinsights_location}"
@@ -42,6 +36,13 @@ resource "azurerm_application_insights" "appinsights" {
   application_type    = "Web"
 
   tags = "${var.common_tags}"
+}
+
+#Copying appinsights key to the valut
+resource "azurerm_key_vault_secret" "AZURE_APPINSGHTS_KEY" {
+  name         = "AppInsightsInstrumentationKey"
+  value        = "${azurerm_application_insights.appinsights.instrumentation_key}"
+  key_vault_id = "${module.key-vault.key_vault_id}"
 }
 
 data "azurerm_key_vault_secret" "s2s_secret" {
