@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.launchdarkly.client.LDClient;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -11,12 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
-import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
-import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -43,17 +37,11 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-
     @MockBean
     private LDClient ldClient;
 
     @MockBean
     private FeeService feeService;
-
-    @MockBean
-    private InboxLookupService inboxLookupService;
 
     @MockBean
     private NotificationService notificationService;
@@ -131,7 +119,8 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
         given(feeService.getFeesDataForC2(any())).willThrow((new FeeRegisterException(1, "", new Throwable())));
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
+            .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE"),
+                "caseLocalAuthority", "example"))
             .id(1L)
             .build(), "get-fee");
 
@@ -150,8 +139,6 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .build();
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
         given(feeService.getFeesDataForC2(any())).willThrow((new FeeRegisterException(1, "", new Throwable())));
-        given(inboxLookupService.getNotificationRecipientEmail(any(),
-            any())).willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
         given(failedPBAPaymentContentProvider.buildLANotificationParameters(any())).willReturn(
             Map.of("applicationType", "C2"));
 
@@ -160,7 +147,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-            "FamilyPublicLaw+sa@gmail.com",
+            "local-authority@local-authority.com",
             Map.of("applicationType", "C2"),
             "1");
     }
