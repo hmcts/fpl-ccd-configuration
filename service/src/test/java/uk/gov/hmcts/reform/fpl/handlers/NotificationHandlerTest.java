@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -32,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -46,13 +44,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
@@ -101,9 +97,6 @@ class NotificationHandlerTest {
     private IdamApi idamApi;
 
     @Mock
-    private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
-
-    @Mock
     private InboxLookupService inboxLookupService;
 
     @Mock
@@ -124,8 +117,8 @@ class NotificationHandlerTest {
     @BeforeEach
     void setup() {
         notificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
-            orderEmailContentProvider, orderIssuedEmailContentProvider, localAuthorityEmailContentProvider,
-            inboxLookupService, representativeService, objectMapper, ctscEmailLookupConfiguration, notificationService);
+            orderEmailContentProvider, orderIssuedEmailContentProvider, inboxLookupService, representativeService,
+            objectMapper, ctscEmailLookupConfiguration, notificationService);
     }
 
     @Nested
@@ -239,55 +232,6 @@ class NotificationHandlerTest {
         void setup() throws IOException {
             given(inboxLookupService.getNotificationRecipientEmail(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-        }
-
-        @Test
-        void shouldSendEmailForPlacementOrderUploaded() throws IOException {
-            Map<String, Object> parameters = Map.of("respondentLastName", "Nelson",
-                "caseUrl", String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, 1L));
-            CaseDetails caseDetails = callbackRequest().getCaseDetails();
-            CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-
-            given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
-                caseDetails)).willReturn(parameters);
-
-            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
-
-            given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
-                caseDetails, LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER))
-                .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false));
-
-            given(orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER))
-                .willReturn(getExpectedParametersForRepresentatives(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
-
-            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
-                .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
-
-            notificationHandler.sendEmailForNoticeOfPlacementOrderUploaded(
-                new NoticeOfPlacementOrderUploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID, documentContents));
-
-            verify(notificationService).sendEmail(
-                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                LOCAL_AUTHORITY_EMAIL_ADDRESS,
-                parameters,
-                "12345");
-
-            verify(notificationService).sendEmail(
-                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-                COURT_EMAIL_ADDRESS,
-                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
-                "12345");
-
-            verify(notificationService).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
-                eq("barney@rubble.com"),
-                dataCaptor.capture(),
-                eq("12345"));
-
-            assertEquals(dataCaptor.getValue(),
-                getExpectedParametersForRepresentatives(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
         }
     }
 

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -46,5 +47,11 @@ public class LookupTestConfig {
     @Bean
     public LocalAuthorityNameLookupConfiguration nameLookupConfiguration() {
         return new LocalAuthorityNameLookupConfiguration("example=>Example Local Authority");
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration() {
+        return new LocalAuthorityEmailLookupConfiguration("example=>FamilyPublicLaw+sa@gmail.com");
     }
 }

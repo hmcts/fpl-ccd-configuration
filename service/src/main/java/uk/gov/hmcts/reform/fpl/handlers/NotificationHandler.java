@@ -13,27 +13,22 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
 @Slf4j
@@ -47,7 +42,6 @@ public class NotificationHandler {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final GeneratedOrderEmailContentProvider orderEmailContentProvider;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
-    private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final InboxLookupService inboxLookupService;
     private final RepresentativeService representativeService;
     private final ObjectMapper objectMapper;
@@ -68,37 +62,6 @@ public class NotificationHandler {
 
         sendOrderIssuedNotificationToRepresentatives(eventData, orderEvent.getDocumentContents(),
             representativesServedByEmail, GENERATED_ORDER);
-    }
-
-    @EventListener
-    public void sendEmailForNoticeOfPlacementOrderUploaded(
-        NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
-        EventData eventData = new EventData(noticeOfPlacementEvent);
-
-        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
-            eventData.getLocalAuthorityCode());
-
-        Map<String, Object> parameters =
-            localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(eventData.caseDetails);
-
-        notificationService.sendEmail(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters,
-            eventData.reference);
-        sendOrderIssuedNotificationToAdmin(eventData, noticeOfPlacementEvent.getDocumentContents(),
-            NOTICE_OF_PLACEMENT_ORDER);
-
-        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-
-        List<Representative> representativesServedByDigitalService =
-            representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), DIGITAL_SERVICE);
-        List<Representative> representativesServedByEmail =
-            representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL);
-
-        sendNotificationToRepresentatives(eventData, parameters, representativesServedByDigitalService,
-            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE);
-
-        sendOrderIssuedNotificationToRepresentatives(eventData, noticeOfPlacementEvent.getDocumentContents(),
-            representativesServedByEmail, NOTICE_OF_PLACEMENT_ORDER);
-
     }
 
     private void sendNotificationToRepresentatives(EventData eventData,
