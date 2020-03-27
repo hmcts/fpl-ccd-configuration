@@ -45,7 +45,7 @@ class FailedPBAPaymentContentProviderTest {
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidCtscNotificationParamaters() throws IOException {
+    void shouldReturnExpectedMapWithValidCtscNotificationParameters() throws IOException {
         Map<String, Object> expectedMap = getExpectedCtscNotificationParameters();
 
         assertThat(failedPBAPaymentContentProvider.buildCtscNotificationParameters(populatedCaseDetails(),
@@ -53,7 +53,7 @@ class FailedPBAPaymentContentProviderTest {
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidLANotificationParamaters() {
+    void shouldReturnExpectedMapWithValidLANotificationParameters() {
         Map<String, Object> expectedMap = Map.of("applicationType", "C110a");
 
         assertThat(failedPBAPaymentContentProvider.buildLANotificationParameters(

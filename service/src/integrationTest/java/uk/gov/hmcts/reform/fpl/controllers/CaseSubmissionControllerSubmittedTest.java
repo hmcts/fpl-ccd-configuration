@@ -229,6 +229,29 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
+    void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+
+        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService)
+            .makePaymentForCaseOrders(any(), any());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient, never()).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "local-authority@local-authority.com",
+            Map.of("applicationType", "C110a"),
+            "12345");
+
+        verify(notificationClient, never()).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            "12345");
+    }
+
+    @Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);

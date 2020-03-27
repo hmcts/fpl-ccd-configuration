@@ -192,6 +192,28 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             "12345");
     }
 
+    @Test
+    void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .build();
+
+        postSubmittedEvent(createCase(caseData));
+
+        verify(notificationClient, never()).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "local-authority@local-authority.com",
+            Map.of("applicationType", "C110a"),
+            "12345");
+
+        verify(notificationClient, never()).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            "12345");
+    }
+
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
             "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
