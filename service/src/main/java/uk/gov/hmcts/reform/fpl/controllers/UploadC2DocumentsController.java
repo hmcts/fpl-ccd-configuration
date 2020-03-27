@@ -78,7 +78,7 @@ public class UploadC2DocumentsController {
         } catch (FeeRegisterException ignore) {
             data.put("displayAmountToPay", NO.getValue());
             applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest,
-                git srequestData.authorisation(),
+                requestData.authorisation(),
                 requestData.userId(),
                 C2_APPLICATION));
         }
