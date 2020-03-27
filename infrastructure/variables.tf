@@ -40,20 +40,10 @@ variable "jenkins_AAD_objectId" {
   description = "(Required) The Azure AD object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
 }
 
-variable "idam_api_url" {
-  type = "string"
-}
-
-variable "ccd_ui_base_url" {
-  type = "string"
-}
-
 variable "managed_identity_object_id" {
   default = ""
 }
-variable "enable_ase" {
-  default = true
-}
+
 variable "appinsights_location" {
   type        = "string"
   default     = "West Europe"
@@ -70,57 +60,4 @@ variable "docmosis_resource_group" {
 
 variable "docmosis_vault" {
   default = "docmosisiaasdevkv"
-}
-
-variable "idam_client_id" {
-  type = "string"
-}
-
-variable "idam_client_redirect_uri" {
-  type = "string"
-}
-
-variable "security_enabled" {
-  type = "string"
-  default = "false"
-}
-
-variable "idam_token_issuer_uri" {
-  type    = "string"
-  default = ""
-}
-
-variable "idam_token_jwk_set_uri" {
-  type    = "string"
-  default = ""
-}
-
-variable "gateway_url" {
-  type    = "string"
-  default = ""
-}
-
-variable "mail_host" {
-  type = "string"
-  default = "mta.reform.hmcts.net"
-}
-
-variable "mail_port" {
-  type = "string"
-  default = "25"
-}
-
-variable "mail_properties_smtp_starttls_enable" {
-  type = "string"
-  default = "true"
-}
-
-variable "feature_toggle_robotics_case_number_notification_enabled" {
-  type = "string"
-  default = "false"
-}
-
-variable "feature_toggle_robotics_support_api_enabled" {
-  type = "string"
-  default = "false"
 }
