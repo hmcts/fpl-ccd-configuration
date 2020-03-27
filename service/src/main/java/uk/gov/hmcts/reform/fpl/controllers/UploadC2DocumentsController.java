@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
@@ -55,11 +56,10 @@ public class UploadC2DocumentsController {
     private final PaymentService paymentService;
     private final FeatureToggleService featureToggleService;
     private final PbaNumberService pbaNumberService;
+    private final RequestData requestData;
 
     @PostMapping("/get-fee/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest,
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId) {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         data.remove("displayAmountToPay");
@@ -77,7 +77,9 @@ public class UploadC2DocumentsController {
             }
         } catch (FeeRegisterException ignore) {
             data.put("displayAmountToPay", NO.getValue());
-            applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
+            applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest,
+                git srequestData.authorisation(),
+                requestData.userId(),
                 C2_APPLICATION));
         }
 
