@@ -24,6 +24,8 @@ import java.util.Map;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -239,16 +241,16 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient, never()).sendEmail(
-            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-            "local-authority@local-authority.com",
-            Map.of("applicationType", "C110a"),
-            "12345");
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA),
+            anyString(),
+            anyMap(),
+            anyString());
 
         verify(notificationClient, never()).sendEmail(
-            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
-            "FamilyPublicLaw+ctsc@gmail.com",
-            expectedCtscNotificationParameters(),
-            "12345");
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC),
+            anyString(),
+            anyMap(),
+            anyString());
     }
 
     @Test
