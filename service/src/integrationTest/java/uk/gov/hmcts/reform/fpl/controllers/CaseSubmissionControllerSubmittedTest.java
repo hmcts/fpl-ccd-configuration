@@ -198,34 +198,34 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
         }
 
-        @Test
-        void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
-            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-            caseDetails.getData().put("displayAmountToPay", YES.getValue());
-
-            doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService)
-                .makePaymentForCaseOrders(any(), any());
-
-            postSubmittedEvent(caseDetails);
-
-            verify(notificationClient).sendEmail(
-                APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-                "local-authority@local-authority.com",
-                Map.of("applicationType", "C110a"),
-                "12345");
-
-            verify(notificationClient).sendEmail(
-                APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
-                "FamilyPublicLaw+ctsc@gmail.com",
-                expectedCtscNotificationParameters(),
-                "12345");
-        }
-
         @AfterEach
         void resetInvocations() {
             reset(paymentService);
         }
+    }
+
+    @Test
+    void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        caseDetails.getData().put("displayAmountToPay", YES.getValue());
+
+        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService)
+            .makePaymentForCaseOrders(any(), any());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "local-authority@local-authority.com",
+            Map.of("applicationType", "C110a"),
+            "12345");
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            "12345");
     }
 
     @Test

@@ -56,7 +56,6 @@ public class UploadC2DocumentsController {
     private final PaymentService paymentService;
     private final FeatureToggleService featureToggleService;
     private final PbaNumberService pbaNumberService;
-    private final RequestData requestData;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
