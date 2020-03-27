@@ -68,7 +68,6 @@ public class CaseSubmissionController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -87,8 +86,6 @@ public class CaseSubmissionController {
                 }
             } catch (FeeRegisterException ignore) {
                 data.put("displayAmountToPay", NO.getValue());
-                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
-                    C110A_APPLICATION));
             }
             String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
             data.put("submissionConsentLabel", label);
@@ -172,6 +169,11 @@ public class CaseSubmissionController {
             try {
                 paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
             } catch (FeeRegisterException | PaymentsApiException ignore) {
+                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
+                    C110A_APPLICATION));
+            }
+
+            if(NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))){
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
                     C110A_APPLICATION));
             }

@@ -10,10 +10,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
-import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -24,8 +22,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -34,14 +30,12 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
+
     @MockBean
     private LDClient ldClient;
 
     @MockBean
     private FeeService feeService;
-
-    @MockBean
-    private NotificationService notificationService;
 
     UploadC2DocumentsMidEventControllerTest() {
         super("upload-c2");
@@ -102,46 +96,17 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddErrorOnFeeRegisterException() throws IOException {
+    void shouldAddErrorOnFeeRegisterException() {
         given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
         given(feeService.getFeesDataForC2(any())).willThrow((new FeeRegisterException(1, "", new Throwable())));
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE"),
-                "caseLocalAuthority", "example"))
-            .id(1L)
+            .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
             .build(), "get-fee");
 
         assertThat(response.getData())
             .doesNotContainKey("amountToPay")
             .containsEntry("displayAmountToPay", NO.getValue());
-    }
-
-    @Test
-    void shouldSendFailedPaymentNotificationOnFeeRegisterException() {
-        CaseDetails details = CaseDetails.builder()
-            .data(Map.of(
-                "caseLocalAuthority", "example",
-                "c2ApplicationType", Map.of("type", "WITH_NOTICE")))
-            .id(1L)
-            .build();
-        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(true);
-        given(feeService.getFeesDataForC2(any())).willThrow((new FeeRegisterException(1, "", new Throwable())));
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(details,
-            "get-fee");
-
-        verify(notificationService).sendEmail(
-            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-            "local-authority@local-authority.com",
-            Map.of("applicationType", "C2"),
-            "1");
-
-        verify(notificationService).sendEmail(
-            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
-            "FamilyPublicLaw+ctsc@gmail.com",
-            expectedCtscNotificationParameters(),
-            "1");
     }
 
     @Test
@@ -164,10 +129,5 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
         assertThat(response.getData()).extracting("temporaryC2Document")
             .extracting("pbaNumber")
             .isEqualTo("PBA1234567");
-    }
-
-    private Map<String, Object> expectedCtscNotificationParameters() {
-        return Map.of("applicationType", "C2",
-            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/1");
     }
 }

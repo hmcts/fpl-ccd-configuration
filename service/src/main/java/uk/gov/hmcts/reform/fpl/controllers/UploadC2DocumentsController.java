@@ -59,8 +59,8 @@ public class UploadC2DocumentsController {
     private final RequestData requestData;
 
     @PostMapping("/get-fee/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         data.remove("displayAmountToPay");
 
@@ -77,10 +77,6 @@ public class UploadC2DocumentsController {
             }
         } catch (FeeRegisterException ignore) {
             data.put("displayAmountToPay", NO.getValue());
-            applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest,
-                requestData.authorisation(),
-                requestData.userId(),
-                C2_APPLICATION));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -128,6 +124,11 @@ public class UploadC2DocumentsController {
             try {
                 paymentService.makePaymentForC2(caseDetails.getId(), caseData);
             } catch (FeeRegisterException | PaymentsApiException ignore) {
+                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
+                    C2_APPLICATION));
+            }
+
+            if(NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))){
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
                     C2_APPLICATION));
             }
