@@ -675,8 +675,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     }
 
     @SuppressWarnings("unchecked")
-    private EventBuilder<CaseData, UserRole, Object> buildLimitedUploadDocuments(State state, int displayOrder) {
-        return (EventBuilder<CaseData, UserRole, Object>) event("limitedUploadDocuments")
+    private EventBuilder<CaseData, UserRole, State> buildLimitedUploadDocuments(State state, int displayOrder) {
+        return (EventBuilder<CaseData, UserRole, State>) event("limitedUploadDocuments")
             .forState(state)
             .name("Documents")
             .description("Upload documents")
