@@ -25,15 +25,18 @@ public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvide
 
     public Map<String, Object> buildCtscNotificationParameters(CaseDetails caseDetails,
         ApplicationType applicationType) {
-        return ImmutableMap.of(
-            "applicationType", applicationType.getType(),
-            "caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId())
-        );
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters(applicationType))
+            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()))
+            .build();
     }
 
     public Map<String, Object> buildLANotificationParameters(ApplicationType applicationType) {
-        return ImmutableMap.of(
-            "applicationType", applicationType.getType()
-        );
+        return buildCommonNotificationParameters(applicationType);
+    }
+
+    private Map<String, Object> buildCommonNotificationParameters(ApplicationType applicationType) {
+        return Map.of(
+            "applicationType", applicationType.getType());
     }
 }
