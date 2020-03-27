@@ -165,15 +165,19 @@ public class CaseSubmissionController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
-            try {
-                paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
-            } catch (FeeRegisterException | PaymentsApiException ignore) {
-                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
-                    C110A_APPLICATION));
+        if (featureToggleService.isPaymentsEnabled()) {
+
+            if (displayAmountToPay(caseDetails)) {
+                try {
+                    paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
+                } catch (FeeRegisterException | PaymentsApiException ignore) {
+                    applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest,
+                        authorization, userId,
+                        C110A_APPLICATION));
+                }
             }
 
-            if(NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))){
+            if (NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
                     C110A_APPLICATION));
             }

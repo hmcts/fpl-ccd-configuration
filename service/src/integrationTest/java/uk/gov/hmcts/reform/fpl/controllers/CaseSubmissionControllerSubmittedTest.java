@@ -222,15 +222,36 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 "12345");
         }
 
-        private Map<String, Object> expectedCtscNotificationParameters() {
-            return Map.of("applicationType", "C110a",
-                "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
-        }
-
         @AfterEach
         void resetInvocations() {
             reset(paymentService);
         }
+    }
+
+    @Test
+    void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "local-authority@local-authority.com",
+            Map.of("applicationType", "C110a"),
+            "12345");
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            "12345");
+    }
+
+    private Map<String, Object> expectedCtscNotificationParameters() {
+        return Map.of("applicationType", "C110a",
+            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
     }
 
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {

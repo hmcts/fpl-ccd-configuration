@@ -120,15 +120,18 @@ public class UploadC2DocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
-            try {
-                paymentService.makePaymentForC2(caseDetails.getId(), caseData);
-            } catch (FeeRegisterException | PaymentsApiException ignore) {
-                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
-                    C2_APPLICATION));
+        if (featureToggleService.isPaymentsEnabled()) {
+
+            if (displayAmountToPay(caseDetails)) {
+                try {
+                    paymentService.makePaymentForC2(caseDetails.getId(), caseData);
+                } catch (FeeRegisterException | PaymentsApiException ignore) {
+                    applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest,
+                        authorization, userId, C2_APPLICATION));
+                }
             }
 
-            if(NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))){
+            if (NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
                     C2_APPLICATION));
             }
