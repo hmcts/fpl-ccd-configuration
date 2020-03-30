@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 
 import java.util.Map;
@@ -32,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {PlacementApplicationEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, HmctsEmailContentProvider.class})
+    LookupTestConfig.class, HmctsAdminNotificationHandler.class})
 public class PlacementApplicationEventHandlerTest {
     @MockBean
     private NotificationService notificationService;

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 
 import java.util.Map;
@@ -17,7 +16,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class IssuedOrderAdminNotificationHandler {
     private final NotificationService notificationService;
-    private final HmctsEmailContentProvider hmctsEmailContentProvider;
+    private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
     public void sendOrderIssuedNotificationToAdmin(final EventData eventData,
@@ -26,7 +25,7 @@ public class IssuedOrderAdminNotificationHandler {
         Map<String, Object> parameters = orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
             eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
 
-        String email = hmctsEmailContentProvider.getHmctsAdminEmail(eventData);
+        String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
 
         notificationService.sendEmail(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters,
             Long.toString(eventData.getCaseDetails().getId()));

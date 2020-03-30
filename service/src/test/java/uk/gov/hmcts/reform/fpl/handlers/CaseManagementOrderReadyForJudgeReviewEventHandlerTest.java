@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEven
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -28,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderReadyForJudgeReviewEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, HmctsEmailContentProvider.class})
+    LookupTestConfig.class, HmctsAdminNotificationHandler.class})
 public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
     @MockBean
     private NotificationService notificationService;

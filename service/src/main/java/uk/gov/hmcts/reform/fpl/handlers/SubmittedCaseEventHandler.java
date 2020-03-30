@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -21,34 +19,18 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEM
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SubmittedCaseEventHandler {
-
     private final NotificationService notificationService;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
-    private final CafcassEmailContentProvider cafcassEmailContentProvider;
+    private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
-    private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-
-    public Map<String, Object> buildEmailTemplatePersonalisationForLocalAuthority(final EventData eventData) {
-        return hmctsEmailContentProvider
-            .buildHmctsSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
-    }
-
-    public String getEmailRecipientForCafcass(final String localAuthority) {
-        return cafcassLookupConfiguration.getCafcass(localAuthority).getEmail();
-    }
-
-    public Map<String, Object> buildEmailTemplatePersonalisationForCafcass(final EventData eventData) {
-        return cafcassEmailContentProvider
-            .buildCafcassSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
-    }
+    private final CafcassEmailContentProvider cafcassEmailContentProvider;
 
     @EventListener
     public void sendEmailToHmctsAdmin(final SubmittedCaseEvent event) {
         EventData eventData = new EventData(event);
 
         notificationService.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE,
-            getHmctsAdminEmail(eventData),
+            adminNotificationHandler.getHmctsAdminEmail(eventData),
             buildEmailTemplatePersonalisationForLocalAuthority(eventData),
             eventData.getReference());
     }
@@ -63,17 +45,17 @@ public class SubmittedCaseEventHandler {
             eventData.getReference());
     }
 
-    private String getHmctsAdminEmail(EventData eventData) {
-        String ctscValue = getCtscValue(eventData.getCaseDetails().getData());
-
-        if (ctscValue.equals("Yes")) {
-            return ctscEmailLookupConfiguration.getEmail();
-        }
-
-        return hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
+    private Map<String, Object> buildEmailTemplatePersonalisationForLocalAuthority(final EventData eventData) {
+        return hmctsEmailContentProvider
+            .buildHmctsSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
     }
 
-    private String getCtscValue(Map<String, Object> caseData) {
-        return caseData.get("sendToCtsc") != null ? caseData.get("sendToCtsc").toString() : "No";
+    private String getEmailRecipientForCafcass(final String localAuthority) {
+        return cafcassLookupConfiguration.getCafcass(localAuthority).getEmail();
+    }
+
+    private Map<String, Object> buildEmailTemplatePersonalisationForCafcass(final EventData eventData) {
+        return cafcassEmailContentProvider
+            .buildCafcassSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
     }
 }

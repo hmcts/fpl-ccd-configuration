@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import java.util.List;
@@ -24,8 +23,8 @@ public class C2UploadedEventHandler {
     private final IdamApi idamApi;
     private final RequestData requestData;
     private final NotificationService notificationService;
+    private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
-    private final HmctsEmailContentProvider hmctsEmailContentProvider;
 
     @EventListener
     public void sendEmailForC2Upload(final C2UploadedEvent event) {
@@ -35,7 +34,7 @@ public class C2UploadedEventHandler {
             Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotification(
                 eventData.getCaseDetails());
 
-            String email = hmctsEmailContentProvider.getHmctsAdminEmail(eventData);
+            String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
 
             notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters,
                 eventData.getReference());

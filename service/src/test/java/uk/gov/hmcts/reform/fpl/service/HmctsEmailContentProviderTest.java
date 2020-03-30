@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -44,9 +43,6 @@ class HmctsEmailContentProviderTest {
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
-    @MockBean
-    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
-
     @Autowired
     private ObjectMapper mapper;
 
@@ -62,7 +58,7 @@ class HmctsEmailContentProviderTest {
     void setup() {
         this.hmctsEmailContentProvider = new HmctsEmailContentProvider(
             localAuthorityNameLookupConfiguration, hmctsCourtLookupConfiguration, "null", dateFormatterService,
-            hearingBookingService, ctscEmailLookupConfiguration, mapper);
+            hearingBookingService, mapper);
     }
 
     @Test

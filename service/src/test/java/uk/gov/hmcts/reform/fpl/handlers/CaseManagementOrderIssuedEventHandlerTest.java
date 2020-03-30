@@ -45,7 +45,8 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
     HmctsEmailContentProvider.class, LookupTestConfig.class, CaseManagementOrderCaseLinkNotificationHandler.class,
-    CaseManagementOrderDocumentLinkNotificationHandler.class, IssuedOrderAdminNotificationHandler.class})
+    CaseManagementOrderDocumentLinkNotificationHandler.class, IssuedOrderAdminNotificationHandler.class,
+    HmctsAdminNotificationHandler.class})
 public class CaseManagementOrderIssuedEventHandlerTest {
     @MockBean
     private InboxLookupService inboxLookupService;

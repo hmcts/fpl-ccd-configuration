@@ -62,7 +62,8 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class, HmctsEmailContentProvider.class,
     JacksonAutoConfiguration.class, LookupTestConfig.class, RepresentativeNotificationHandler.class,
-    IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class})
+    IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class,
+    HmctsAdminNotificationHandler.class})
 class GeneratedOrderEventHandlerTest {
     final String mostRecentUploadedDocumentUrl =
         "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";

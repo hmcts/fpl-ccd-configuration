@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEven
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 
 import java.util.Map;
 
@@ -18,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderReadyForJudgeReviewEventHandler {
     private final NotificationService notificationService;
-    private final HmctsEmailContentProvider hmctsEmailContentProvider;
+    private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @EventListener
@@ -29,7 +28,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandler {
         Map<String, Object> parameters = caseManagementOrderEmailContentProvider
             .buildCMOReadyForJudgeReviewNotificationParameters(eventData.getCaseDetails());
 
-        String email = hmctsEmailContentProvider.getHmctsAdminEmail(eventData);
+        String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
 
         notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, parameters,
             eventData.getReference());

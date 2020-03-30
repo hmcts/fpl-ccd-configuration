@@ -51,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 @SpringBootTest(classes = {NoticeOfPlacementOrderUploadedEventHandler.class, InboxLookupService.class,
     JacksonAutoConfiguration.class, LookupTestConfig.class, HmctsEmailContentProvider.class,
     RepresentativeNotificationService.class, RepresentativeNotificationHandler.class,
-    IssuedOrderAdminNotificationHandler.class})
+    IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class})
 public class NoticeOfPlacementOrderUploadedEventHandlerTest {
     @Captor
     private ArgumentCaptor<Map<String, Object>> dataCaptor;
