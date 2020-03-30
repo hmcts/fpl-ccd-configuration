@@ -109,8 +109,8 @@ class PaymentServiceTest {
                     .customerReference(customerReference)
                     .build())))
                 .build();
-            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder(
-                customerReference)
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference(paymentService.defaultCustomerReferenceIfBlank(customerReference))
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
@@ -135,8 +135,8 @@ class PaymentServiceTest {
                     .customerReference(customerReference)
                     .build())))
                 .build();
-            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder(
-                customerReference)
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference(paymentService.defaultCustomerReferenceIfBlank(customerReference))
                 .amount(feeForC2WithoutNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithoutNotice))
                 .build();
@@ -197,14 +197,14 @@ class PaymentServiceTest {
                     .party(ApplicantParty.builder()
                         .pbaNumber("PBA123")
                         .clientCode("clientCode")
-                        .customerReference("fileReference")
+                        .customerReference("customerReference")
                         .build())
                     .build())))
                 .orders(orders)
                 .build();
 
-            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder(
-                "customerReference")
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("customerReference")
                 .amount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build();
@@ -239,14 +239,12 @@ class PaymentServiceTest {
         reset(paymentApi);
     }
 
-    private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder testCreditAccountPaymentRequestBuilder(
-        final String customerReference) {
+    private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder testCreditAccountPaymentRequestBuilder() {
         return CreditAccountPaymentRequest.builder()
             .accountNumber("PBA123")
             .caseReference("clientCode")
             .ccdCaseNumber(String.valueOf(CASE_ID))
             .currency(GBP)
-            .customerReference(paymentService.defaultCustomerReference(customerReference))
             .description("Payment for case: " + CASE_ID)
             .organisationName("Example Local Authority")
             .service(FPL)

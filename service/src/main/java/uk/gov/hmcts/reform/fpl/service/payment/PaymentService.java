@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class PaymentService {
 
     private static final String DESCRIPTION_TEMPLATE = "Payment for case: %s";
+    private static final String BLANK_CUSTOMER_REFERENCE_VALUE = "Not provided";
 
     private final FeeService feeService;
     private final PaymentApi paymentApi;
@@ -59,7 +60,7 @@ public class PaymentService {
             CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
                 applicantParty.getPbaNumber(),
                 applicantParty.getClientCode(),
-                defaultCustomerReference(applicantParty.getCustomerReference()),
+                defaultCustomerReferenceIfBlank(applicantParty.getCustomerReference()),
                 localAuthorityName,
                 feesData);
 
@@ -80,15 +81,15 @@ public class PaymentService {
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             c2DocumentBundle.getPbaNumber(),
             c2DocumentBundle.getClientCode(),
-            defaultCustomerReference(c2DocumentBundle.getCustomerReference()),
+            defaultCustomerReferenceIfBlank(c2DocumentBundle.getCustomerReference()),
             localAuthorityName,
             feesData);
 
         callPaymentsApi(paymentRequest);
     }
 
-    public String defaultCustomerReference(final String currentValue) {
-        return isNotBlank(currentValue) ? currentValue : "Not provided";
+    public String defaultCustomerReferenceIfBlank(final String currentValue) {
+        return isNotBlank(currentValue) ? currentValue : BLANK_CUSTOMER_REFERENCE_VALUE;
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
