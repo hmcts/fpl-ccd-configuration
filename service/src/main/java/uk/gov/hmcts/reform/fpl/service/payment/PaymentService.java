@@ -88,7 +88,7 @@ public class PaymentService {
         callPaymentsApi(paymentRequest);
     }
 
-    public String defaultCustomerReferenceIfBlank(final String currentValue) {
+    private String defaultCustomerReferenceIfBlank(final String currentValue) {
         return isNotBlank(currentValue) ? currentValue : BLANK_CUSTOMER_REFERENCE_VALUE;
     }
 

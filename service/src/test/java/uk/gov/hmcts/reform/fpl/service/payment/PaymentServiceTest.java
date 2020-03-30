@@ -97,7 +97,6 @@ class PaymentServiceTest {
         }
 
         @ParameterizedTest
-        @NullAndEmptySource
         @ValueSource(strings = {"customerReference"})
         void shouldMakeCorrectPaymentForC2WithNotice(final String customerReference) {
             CaseData caseData = CaseData.builder()
@@ -110,7 +109,7 @@ class PaymentServiceTest {
                     .build())))
                 .build();
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference(paymentService.defaultCustomerReferenceIfBlank(customerReference))
+                .customerReference(customerReference)
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
@@ -124,6 +123,31 @@ class PaymentServiceTest {
 
         @ParameterizedTest
         @NullAndEmptySource
+        void shouldMakeCorrectPaymentForC2WithNoticeWhenCustomerReferenceIsNullOrEmpty(
+            final String customerReference) {
+            CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA")
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
+                    .type(WITH_NOTICE)
+                    .pbaNumber("PBA123")
+                    .clientCode("clientCode")
+                    .customerReference(customerReference)
+                    .build())))
+                .build();
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("Not provided")
+                .amount(feeForC2WithNotice.getCalculatedAmount())
+                .fees(List.of(feeForC2WithNotice))
+                .build();
+
+            paymentService.makePaymentForC2(CASE_ID, caseData);
+
+            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(feeService).getFeesDataForC2(WITH_NOTICE);
+        }
+
+        @ParameterizedTest
         @ValueSource(strings = {"customerReference"})
         void shouldMakeCorrectPaymentForC2WithoutNotice(final String customerReference) {
             CaseData caseData = CaseData.builder()
@@ -136,7 +160,33 @@ class PaymentServiceTest {
                     .build())))
                 .build();
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference(paymentService.defaultCustomerReferenceIfBlank(customerReference))
+                .customerReference(customerReference)
+                .amount(feeForC2WithoutNotice.getCalculatedAmount())
+                .fees(List.of(feeForC2WithoutNotice))
+                .build();
+
+            paymentService.makePaymentForC2(CASE_ID, caseData);
+
+            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldMakeCorrectPaymentForC2WithoutNoticeWhenCustomerReferenceIsNullOrEmpty(
+            final String customerReference) {
+            CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA")
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
+                    .type(WITHOUT_NOTICE)
+                    .pbaNumber("PBA123")
+                    .clientCode("clientCode")
+                    .customerReference(customerReference)
+                    .build())))
+                .build();
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("Not provided")
                 .amount(feeForC2WithoutNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithoutNotice))
                 .build();
@@ -153,8 +203,8 @@ class PaymentServiceTest {
             String responseBodyContent = "Response message";
             when(paymentApi.createCreditAccountPayment(any(), any(), any())).thenThrow(
                 new FeignException.UnprocessableEntity("",
-                Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8),
-                responseBodyContent.getBytes()));
+                    Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8),
+                    responseBodyContent.getBytes()));
             CaseData caseData = CaseData.builder()
                 .caseLocalAuthority("LA")
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
