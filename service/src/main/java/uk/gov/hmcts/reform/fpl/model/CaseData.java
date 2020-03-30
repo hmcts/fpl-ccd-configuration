@@ -328,4 +328,7 @@ public class CaseData {
     public List<Element<Placement>> getPlacements() {
         return defaultIfNull(placements, new ArrayList<>());
     }
+
+    private final String caseNote;
+    private final List<Element<CaseNote>> caseNotes;
 }
