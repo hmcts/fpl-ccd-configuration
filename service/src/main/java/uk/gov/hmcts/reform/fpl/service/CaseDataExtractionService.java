@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
@@ -65,7 +65,9 @@ public class CaseDataExtractionService {
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
     public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData) throws IOException {
-        DocmosisStandardDirectionOrder.Builder orderBuilder = DocmosisStandardDirectionOrder.builder();
+        DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder orderBuilder =
+            DocmosisStandardDirectionOrder.builder();
+
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         orderBuilder
@@ -100,7 +102,7 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    private List<DocmosisChildren> getChildrenDetails(List<Element<Child>> children) {
+    public List<DocmosisChild> getChildrenDetails(List<Element<Child>> children) {
         return children.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
@@ -108,8 +110,8 @@ public class CaseDataExtractionService {
     }
 
     // TODO: see FPLA-1087
-    private DocmosisChildren buildChild(ChildParty child) {
-        return DocmosisChildren.builder()
+    private DocmosisChild buildChild(ChildParty child) {
+        return DocmosisChild.builder()
             .name(child.getFullName())
             .gender(defaultIfNull(child.getGender(), DEFAULT))
             .dateOfBirth(getDateOfBirth(child))
@@ -123,7 +125,7 @@ public class CaseDataExtractionService {
             .orElse(DEFAULT);
     }
 
-    private List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
+    public List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
         return respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
@@ -159,7 +161,7 @@ public class CaseDataExtractionService {
         ).orElse(ImmutableList.of());
     }
 
-    private String getApplicantName(Applicant applicant) {
+    public String getApplicantName(Applicant applicant) {
         return ofNullable(applicant.getParty())
             .map(ApplicantParty::getOrganisationName)
             .orElse("");

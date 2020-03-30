@@ -1,219 +1,182 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.interfaces.Assignee;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentedBy;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
-//TODO: had to extract old methods from case data extraction service to keep this from breaking. FPLA-1480
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
-    private static final String REPRESENTED_BY = "representedBy";
-    private static final String NAME = "name";
-    private static final String REPRESENTATIVE_NAME = "representativeName";
-    private static final String REPRESENTATIVE_EMAIL = "representativeEmail";
-    private static final String REPRESENTATIVE_PHONE_NUMBER = "representativePhoneNumber";
-    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
-    private final CommonDirectionService commonDirectionService;
+    private static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
+
+    private final CommonCaseDataExtractionService dataExtractionService;
     private final DraftCMOService draftCMOService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final ObjectMapper mapper;
+    private final CaseDataExtractionService caseDataExtractionService;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
 
-    public Map<String, Object> getTemplateData(CaseData caseData, boolean draft) throws IOException {
-        Map<String, Object> cmoTemplateData = new HashMap<>();
+    public DocmosisCaseManagementOrder getCaseManagementOrderData(CaseData caseData) throws IOException {
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
-        final DynamicList hearingDateList = caseData.getCmoHearingDateList();
-        final String localAuthorityCode = caseData.getCaseLocalAuthority();
-
-        cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), DEFAULT));
-        cmoTemplateData.put("generationDate",
-            formatLocalDateToString(LocalDate.now(), FormatStyle.LONG));
-        cmoTemplateData.put("complianceDeadline", caseData.getDateSubmitted() != null
-            ? formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
-            FormatStyle.LONG) : DEFAULT);
-
-        final List<Map<String, String>> childrenInCase = getChildrenDetails(caseData);
-        cmoTemplateData.put("children", childrenInCase);
-        cmoTemplateData.put("numberOfChildren", childrenInCase.size());
-
-        cmoTemplateData.put("courtName", getCourtName(localAuthorityCode));
-
-        final String applicantName = getFirstApplicantName(caseData);
-        cmoTemplateData.put("applicantName", applicantName);
-
-        cmoTemplateData.put("respondents", getRespondentsNameAndRelationship(caseData));
-
-        cmoTemplateData.put("representatives",
-            getRepresentatives(caseData, applicantName, caseData.getSolicitor()));
-
-        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData,
+            caseData.getCaseManagementOrder());
 
         HearingBooking nextHearing = null;
 
-        if (order.getNextHearing() != null && order.getNextHearing().getId() != null && !order.isDraft()) {
-            List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
-            UUID nextHearingId = order.getNextHearing().getId();
-            nextHearing = hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
+        if (caseManagementOrder.getNextHearing() != null
+            && caseManagementOrder.getNextHearing().getId() != null
+            && !caseManagementOrder.isDraft()) {
+            UUID nextHearingId = caseManagementOrder.getNextHearing().getId();
+            nextHearing = hearingBookingService.getHearingBookingByUUID(hearingDetails, nextHearingId);
         }
 
-        cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(nextHearing));
+        HearingBooking hearingBooking = hearingBookingService.getHearingBooking(hearingDetails,
+            caseData.getCmoHearingDateList());
 
-        HearingBooking hearingBooking = hearingBookingService.getHearingBooking(
-            caseData.getHearingDetails(), hearingDateList);
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
-        cmoTemplateData.putAll(commonCaseDataExtractionService.getJudgeAndLegalAdvisorData(judgeAndLegalAdvisor));
+        DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
+            .judgeAndLegalAdvisor(getJudgeAndLegalAdvisorData(hearingBooking.getJudgeAndLegalAdvisor()))
+            .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            //TODO generationDate in cmo -> need to update
+            .dateOfIssue(formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
+            .children(caseDataExtractionService.getChildrenDetails(caseData.getAllChildren()))
+            .respondents(caseDataExtractionService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
+            .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
+            .applicantName(caseDataExtractionService.getApplicantName(caseData.findApplicant(0)
+                .orElse(Applicant.builder().build())))
+            .directions(getGroupedCMODirections(caseManagementOrder))
+            .hearingBooking(getHearingBookingData(nextHearing))
+            .numberOfChildren(caseData.getAllChildren().size())
+            .representatives(getRepresentatives(caseData))
+            .recitals(buildRecitals(caseManagementOrder.getRecitals()))
+            .recitalsProvided(isNotEmpty(buildRecitals(caseManagementOrder.getRecitals())))
+            .schedule(caseManagementOrder.getSchedule())
+            .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)))
+            .caseManagementNumber(caseData.getServedCaseManagementOrders().size() + 1);
 
-        cmoTemplateData.putAll(getGroupedCMODirections(order));
-
-        if (draft) {
-            cmoTemplateData.putAll(getDraftWaterMarkData());
+        if (caseData.getCaseManagementOrder().isDraft()) {
+            order.draftbackground(generateDraftWatermarkEncodedString());
         }
 
-        if (!draft) {
-            cmoTemplateData.putAll(getCourtSealData());
+        if (!caseData.getCaseManagementOrder().isDraft()) {
+            order.courtseal(generateCourtSealEncodedString());
         }
 
-        List<Map<String, String>> recitals = buildRecitals(order.getRecitals());
-        cmoTemplateData.put(RECITALS.getKey(), recitals);
-        cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
-
-        cmoTemplateData.putAll(getSchedule(order));
-
-        cmoTemplateData.put("caseManagementNumber", caseData.getServedCaseManagementOrders().size() + 1);
-
-        return cmoTemplateData;
+        return order.build();
     }
 
-    private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
-        // children is validated as not null
-        return caseData.getAllChildren().stream()
-            .map(Element::getValue)
-            .map(Child::getParty)
-            .map(child -> ImmutableMap.of(
-                "name", child.getFullName(),
-                "gender", defaultIfNull(child.getGender(), DEFAULT),
-                "dateOfBirth", child.getDateOfBirth() == null ? DEFAULT :
-                    formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
-            .collect(toList());
+    private String getScheduleProvided(CaseManagementOrder caseManagementOrder) {
+        return ofNullable(caseManagementOrder.getSchedule())
+            .map(Schedule::getIncludeSchedule)
+            .orElse("No");
     }
 
-    private String getFirstApplicantName(CaseData caseData) {
-        return caseData.getAllApplicants().stream()
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .map(Applicant::getParty)
-            .filter(Objects::nonNull)
-            .map(ApplicantParty::getOrganisationName)
-            .findFirst()
-            .orElse("");
+    private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisorData(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        return DocmosisJudgeAndLegalAdvisor.builder()
+            .judgeTitleAndName(defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor), DEFAULT))
+            .legalAdvisorName(getLegalAdvisorName(judgeAndLegalAdvisor))
+            .build();
     }
 
-    private List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
-        if (isEmpty(caseData.getRespondents1())) {
-            return emptyList();
-        }
+    private DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking) {
+        return ofNullable(hearingBooking).map(hearing -> {
+                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing.getVenue());
 
-        return caseData.getRespondents1().stream()
-            .map(Element::getValue)
-            .map(Respondent::getParty)
-            .map(respondent -> ImmutableMap.of(
-                "name", respondent.getFullName(),
-                "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), DEFAULT)))
-            .collect(toList());
+                return DocmosisHearingBooking.builder()
+                    .hearingDate(dataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
+                    .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
+                    .preHearingAttendance(dataExtractionService.extractPrehearingAttendance(hearing))
+                    .hearingTime(dataExtractionService.getHearingTime(hearing))
+                    .build();
+            }
+        ).orElse(DocmosisHearingBooking.builder()
+            .hearingDate(HEARING_EMPTY_PLACEHOLDER)
+            .hearingVenue(HEARING_EMPTY_PLACEHOLDER)
+            .preHearingAttendance(HEARING_EMPTY_PLACEHOLDER)
+            .hearingTime(HEARING_EMPTY_PLACEHOLDER)
+            .build());
     }
 
-    private CaseManagementOrder getCaseManagementOrder(CaseData caseData) {
-        if (caseData.getCaseManagementOrder() != null) {
-            return caseData.getCaseManagementOrder();
-        }
-
-        return null;
-    }
-
-    private List<Map<String, Object>> getRepresentatives(CaseData caseData,
-                                                         String applicantName,
-                                                         Solicitor solicitor) {
-
-        List<Map<String, Object>> representativesInfo = new ArrayList<>();
+    private List<DocmosisRepresentative> getRepresentatives(CaseData caseData) {
+        List<DocmosisRepresentative> representativesInfo = new ArrayList<>();
         List<Element<Representative>> representatives = caseData.getRepresentatives();
+
+        String applicantName = caseData.findApplicant(0)
+            .map(element -> element.getParty().getOrganisationName())
+            .orElse("");
+
+        Solicitor solicitor = caseData.getSolicitor();
 
         representativesInfo.add(getApplicantDetails(applicantName, solicitor));
 
-        ElementUtils.unwrapElements(caseData.getRespondents1()).stream()
+        unwrapElements(caseData.getRespondents1()).stream()
             .filter(respondent -> isNotEmpty(respondent.getRepresentedBy()))
-            .forEach(respondent -> representativesInfo.add(Map.of(
-                NAME, defaultIfNull(respondent.getParty().getFullName(), EMPTY),
-                REPRESENTED_BY, getRepresentativesInfo(respondent, representatives))
-            ));
+            .forEach(respondent -> representativesInfo.add(DocmosisRepresentative.builder()
+                .name(defaultIfNull(respondent.getParty().getFullName(), EMPTY))
+                .representedBy(getRepresentativesInfo(respondent, representatives))
+                .build()));
 
 
-        caseData.getAllOthers().stream()
-            .map(Element::getValue)
+        unwrapElements(caseData.getAllOthers()).stream()
             .filter(other -> isNotEmpty(other.getRepresentedBy()))
-            .forEach(other -> representativesInfo.add(Map.of(
-                NAME, defaultIfNull(other.getName(), EMPTY),
-                REPRESENTED_BY, getRepresentativesInfo(other, representatives))));
+            .forEach(other -> representativesInfo.add(DocmosisRepresentative.builder()
+                .name(defaultIfNull(other.getName(), EMPTY))
+                .representedBy(getRepresentativesInfo(other, representatives))
+                .build()));
 
         return representativesInfo;
     }
 
-    private List<Map<String, Object>> getRepresentativesInfo(Representable representable,
-                                                             List<Element<Representative>> representatives) {
+    private List<DocmosisRepresentedBy> getRepresentativesInfo(Representable representable,
+                                                               List<Element<Representative>> representatives) {
         return representable.getRepresentedBy().stream()
             .map(representativeId -> findRepresentative(representatives, representativeId.getValue()))
             .filter(Optional::isPresent)
@@ -229,159 +192,90 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             .map(Element::getValue);
     }
 
-    private Map<String, Object> buildRepresentativeInfo(Representative representative) {
-        return ImmutableMap.of(
-            REPRESENTATIVE_NAME, representative.getFullName(),
-            REPRESENTATIVE_EMAIL, defaultIfNull(representative.getEmail(), EMPTY),
-            REPRESENTATIVE_PHONE_NUMBER, defaultIfNull(representative.getTelephoneNumber(), EMPTY)
-        );
+    private DocmosisRepresentedBy buildRepresentativeInfo(Representative representative) {
+        return DocmosisRepresentedBy.builder()
+            .name(representative.getFullName())
+            .email(defaultIfNull(representative.getEmail(), EMPTY))
+            .phoneNumber(defaultIfNull(representative.getTelephoneNumber(), EMPTY))
+            .build();
     }
 
-    private Map<String, Object> getSchedule(CaseManagementOrder caseManagementOrder) {
-        final Schedule schedule = caseManagementOrder.getSchedule();
-        Map<String, Object> scheduleMap = new LinkedHashMap<>();
+    private DocmosisRepresentative getApplicantDetails(String applicantName, Solicitor solicitor) {
+        DocmosisRepresentative.DocmosisRepresentativeBuilder applicantDetails = DocmosisRepresentative.builder();
 
-        if (isScheduleIncluded(schedule)) {
-            scheduleMap.putAll(getEmptyScheduleMap());
-        } else {
-            scheduleMap.putAll(mapper.convertValue(schedule, new TypeReference<>() {
-            }));
-            scheduleMap.put("scheduleProvided", true);
-        }
-
-        return scheduleMap;
-    }
-
-    private boolean isScheduleIncluded(Schedule schedule) {
-        return (schedule == null) || schedule.getIncludeSchedule().equals("No");
-    }
-
-    private Map<String, Object> getEmptyScheduleMap() {
-        final String[] scheduleKeys = {
-            "includeSchedule", "allocation", "application", "todaysHearing", "childrensCurrentArrangement",
-            "timetableForProceedings", "timetableForChildren", "alternativeCarers", "threshold", "keyIssues",
-            "partiesPositions"
-        };
-
-        Map<String, Object> scheduleMap = new LinkedHashMap<>();
-
-        Arrays.stream(scheduleKeys).forEach(key -> scheduleMap.put(key, DEFAULT));
-
-        scheduleMap.put("scheduleProvided", false);
-
-        return scheduleMap;
-    }
-
-    private Map<String, Object> getApplicantDetails(String applicantName, Solicitor solicitor) {
-        Map<String, Object> applicantDetails = new HashMap<>();
-
-        applicantDetails.put("name", defaultIfBlank(applicantName, DEFAULT));
+        applicantDetails.name(defaultIfBlank(applicantName, DEFAULT));
 
         if (solicitor == null) {
-            applicantDetails.put(REPRESENTED_BY, List.of(Map.of(
-                REPRESENTATIVE_NAME, DEFAULT,
-                REPRESENTATIVE_EMAIL, DEFAULT,
-                REPRESENTATIVE_PHONE_NUMBER, DEFAULT
-            )));
+            applicantDetails.representedBy(List.of(DocmosisRepresentedBy.builder()
+                .name(DEFAULT)
+                .email(DEFAULT)
+                .phoneNumber(DEFAULT)
+                .build()));
         } else {
             String phoneNumber = defaultIfBlank(solicitor.getTelephone(), solicitor.getMobile());
-            applicantDetails.put(REPRESENTED_BY, List.of(
-                Map.of(
-                    REPRESENTATIVE_NAME, defaultIfBlank(solicitor.getName(), DEFAULT),
-                    REPRESENTATIVE_EMAIL, defaultIfBlank(solicitor.getEmail(), DEFAULT),
-                    REPRESENTATIVE_PHONE_NUMBER, defaultIfBlank(phoneNumber, DEFAULT)
-                )));
+            applicantDetails.representedBy(List.of(
+                DocmosisRepresentedBy.builder()
+                    .name(defaultIfBlank(solicitor.getName(), DEFAULT))
+                    .email(defaultIfBlank(solicitor.getEmail(), DEFAULT))
+                    .phoneNumber(defaultIfBlank(phoneNumber, DEFAULT))
+                    .build()));
         }
 
-        return applicantDetails;
-
+        return applicantDetails.build();
     }
 
-    private String getCourtName(String localAuthorityCode) {
-        if (isBlank(localAuthorityCode)) {
-            return DEFAULT;
-        }
-        return defaultIfBlank(hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName(), DEFAULT);
+    private List<DocmosisDirection> getGroupedCMODirections(CaseManagementOrder caseManagementOrder) {
+        return ofNullable(caseManagementOrder.getDirections()).map(directions -> {
+                ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
+
+                int directionNumber = 1;
+                for (Element<Direction> element : directions) {
+                    Direction direction = element.getValue();
+                    if (direction.getParentsAndRespondentsAssignee() != null) {
+                        formattedDirections.add(DocmosisDirection.builder()
+                            .header("For " + direction.getParentsAndRespondentsAssignee().getLabel())
+                            .assignee(direction.getAssignee())
+                            .title(formatTitle(directionNumber++, direction))
+                            .body(direction.getDirectionText())
+                            .build());
+                    }
+
+                    if (direction.getOtherPartiesAssignee() != null) {
+                        formattedDirections.add(DocmosisDirection.builder()
+                            .header("For " + direction.getOtherPartiesAssignee().getLabel())
+                            .assignee(direction.getAssignee())
+                            .title(formatTitle(directionNumber++, direction))
+                            .body(direction.getDirectionText())
+                            .build());
+
+                    } else {
+                        formattedDirections.add(DocmosisDirection.builder()
+                            .assignee(direction.getAssignee())
+                            .title(formatTitle(directionNumber++, direction))
+                            .body(direction.getDirectionText())
+                            .build());
+                    }
+                }
+
+                return formattedDirections.build();
+            }
+        ).orElse(ImmutableList.of());
     }
 
-    private Map<String, Object> getGroupedCMODirections(final CaseManagementOrder caseManagementOrder) {
-        if (caseManagementOrder == null || isEmpty(caseManagementOrder.getDirections())) {
-            return ImmutableMap.of();
-        }
-
-        Map<DirectionAssignee, List<Element<Direction>>> directions =
-            commonDirectionService.sortDirectionsByAssignee(commonDirectionService.numberDirections(
-                caseManagementOrder.getDirections()));
-
-        List<Element<Direction>> respondents = defaultIfNull(directions.remove(PARENTS_AND_RESPONDENTS), emptyList());
-        List<Element<Direction>> otherParties = defaultIfNull(directions.remove(OTHERS), emptyList());
-        ImmutableMap.Builder<String, Object> formattedDirections = ImmutableMap.builder();
-
-        final Map<Assignee, List<Element<Direction>>> respondentDirections =
-            respondents.stream()
-                .collect(groupingBy(element -> element.getValue().getParentsAndRespondentsAssignee()));
-
-        final Map<Assignee, List<Element<Direction>>> otherPartyDirections = otherParties.stream()
-            .collect(groupingBy(element -> element.getValue().getOtherPartiesAssignee()));
-
-        formattedDirections.put(PARENTS_AND_RESPONDENTS.getValue(),
-            getFormattedDirections(respondentDirections));
-
-        formattedDirections.put(OTHERS.getValue(), getFormattedDirections(otherPartyDirections));
-
-        directions.forEach((key, value) -> {
-            List<Map<String, String>> directionsList = buildFormattedDirectionList(value);
-            formattedDirections.put(key.getValue(), directionsList);
-        });
-
-        return formattedDirections.build();
+    private String formatTitle(int index, Direction direction) {
+        return String.format("%d. %s by %s", index, direction.getDirectionType(),
+            ofNullable(direction.getDateToBeCompletedBy())
+                .map(date -> formatLocalDateTimeBaseUsingFormat(date, "h:mma, d MMMM yyyy"))
+                .orElse("unknown"));
     }
 
-    private List<Map<String, Object>> getFormattedDirections(
-        Map<Assignee, List<Element<Direction>>> groupedDirections) {
-
-        List<Map<String, Object>> directions = new ArrayList<>();
-        groupedDirections.forEach((assignee, assigneeDirection) -> {
-            Map<String, Object> direction = new HashMap<>();
-            direction.put("header", "For " + assignee.getLabel());
-            List<Map<String, String>> directionsList = buildFormattedDirectionList(
-                assigneeDirection);
-            direction.put("directions", directionsList);
-            directions.add(direction);
-        });
-
-        return directions;
-    }
-
-    private List<Map<String, String>> buildFormattedDirectionList(List<Element<Direction>> directions) {
-        return directions.stream()
-            .map(Element::getValue)
-            .filter(direction -> !"No".equals(direction.getDirectionNeeded()))
-            .map(direction -> ImmutableMap.of(
-                "title", formatTitle(direction),
-                "body", defaultIfNull(direction.getDirectionText(), DEFAULT)))
-            .collect(toList());
-    }
-
-    private String formatTitle(Direction direction) {
-        return String.format("%s by %s",
-            direction.getDirectionType(),
-            direction.getDateToBeCompletedBy() != null ? formatLocalDateTimeBaseUsingFormat(
-                direction.getDateToBeCompletedBy(), "h:mma, d MMMM yyyy") : "unknown");
-    }
-
-    private List<Map<String, String>> buildRecitals(final List<Element<Recital>> recitals) {
-        if (isEmpty(recitals)) {
-            return emptyList();
-        }
-
-        return recitals.stream()
+    private List<DocmosisRecital> buildRecitals(List<Element<Recital>> recitals) {
+        return unwrapElements(recitals).stream()
             .filter(Objects::nonNull)
-            .map(Element::getValue)
-            .map(recital -> ImmutableMap.of(
-                "title", defaultString(recital.getTitle(), DEFAULT),
-                "body", defaultString(recital.getDescription(), DEFAULT)
-            ))
+            .map(recital -> DocmosisRecital.builder()
+                .title(defaultString(recital.getTitle(), DEFAULT))
+                .body(defaultString(recital.getDescription(), DEFAULT))
+                .build())
             .collect(toList());
     }
 }

@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -35,7 +36,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
@@ -59,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDir
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -72,6 +74,9 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     private final DocumentReference cmoDocument = buildFromDocument(document());
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
+
+    private CaseDetails populatedCaseDetails;
+
     @Autowired
     private DraftCMOService draftCMOService;
 
@@ -87,11 +92,13 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     //TODO TECHDEBT refactor into separate files for each callback endpoint FPLA-1467
     @BeforeEach
-    void setup() {
+    void setup() throws IOException {
         DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document());
+
+        populatedCaseDetails = populatedCaseDetails();
     }
 
     @Test
@@ -120,8 +127,10 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartShouldNotProgressOrderWhenOrderActionIsNotSet() {
-        CaseDetails caseDetails = createCaseDetailsWithEmptyCMO();
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        populatedCaseDetails.getData()
+            .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder().build());
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(populatedCaseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(caseData.getCaseManagementOrder()).isEqualTo(CaseManagementOrder.builder().build());
@@ -129,7 +138,10 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void midEventShouldAddDocumentReferenceToOrderAction() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(buildCaseDetails(emptyMap()));
+        populatedCaseDetails.getData()
+            .put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder().build());
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(populatedCaseDetails);
 
         verify(uploadDocumentService).uploadPDF(userId, userAuthToken, PDF, "draft-case-management-order.pdf");
 
@@ -147,13 +159,14 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldReturnCaseManagementOrderWithFinalDocumentWhenSendToAllParties() {
-        Map<String, Object> data = Map.of(
-            HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(-1),
-            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
-            ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
-            NEXT_HEARING_DATE_LIST.getKey(), hearingDateList());
+        populatedCaseDetails.getData().putAll(
+            Map.of(
+                HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(-1),
+                CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
+                ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
+                NEXT_HEARING_DATE_LIST.getKey(), hearingDateList()));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCaseDetails(data));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -174,12 +187,11 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() {
-        Map<String, Object> data = Map.of(
-            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
-            ORDER_ACTION.getKey(), getOrderAction(JUDGE_REQUESTED_CHANGE));
+    void aboutToSubmitShouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() throws IOException {
+        populatedCaseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder());
+        populatedCaseDetails.getData().put(ORDER_ACTION.getKey(), getOrderAction(JUDGE_REQUESTED_CHANGE));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCaseDetails(data));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -189,19 +201,13 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldRemoveOrderWhenOrderActionIsNotJudgeReview() {
-        CaseDetails caseDetails = createCaseDetailsWithEmptyCMO();
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        populatedCaseDetails.getData()
+            .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder().build());
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(caseData.getCaseManagementOrder()).isEqualTo(null);
-    }
-
-    private CaseDetails createCaseDetailsWithEmptyCMO() {
-        Map<String, Object> data = new HashMap<>();
-        final CaseManagementOrder order = CaseManagementOrder.builder().build();
-
-        data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
-        return buildCaseDetails(data);
     }
 
     private CaseManagementOrder expectedCaseManagementOrder() {

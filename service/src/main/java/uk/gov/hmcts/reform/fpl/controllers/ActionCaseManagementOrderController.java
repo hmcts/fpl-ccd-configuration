@@ -71,7 +71,7 @@ public class ActionCaseManagementOrderController {
         }
 
         caseDetails.getData().putAll(caseManagementOrderService
-                .extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
+            .extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
 
         draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
@@ -186,7 +186,8 @@ public class ActionCaseManagementOrderController {
     }
 
     private Document getDocument(String auth, String userId, CaseData data, boolean draft) throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, draft);
+        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getCaseManagementOrderData(data)
+            .toMap(mapper);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             cmoDocumentTemplateData, DocmosisTemplates.CMO);

@@ -77,7 +77,8 @@ public class DraftCMOController {
         final Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData, true);
+        Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getCaseManagementOrderData(caseData)
+            .toMap(mapper);
 
         Document document = getDocument(authorization, userId, cmoTemplateData);
 

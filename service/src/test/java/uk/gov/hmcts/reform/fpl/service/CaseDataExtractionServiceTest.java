@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
@@ -91,7 +91,7 @@ class CaseDataExtractionServiceTest {
                 .standardDirectionOrder(order)
                 .build());
 
-        assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
+        assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("")
                 .legalAdvisorName("")
@@ -137,7 +137,7 @@ class CaseDataExtractionServiceTest {
         DocmosisStandardDirectionOrder template = caseDataExtractionService
             .getStandardOrderDirectionData(caseData);
 
-        assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
+        assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Smith")
                 .legalAdvisorName("Bob Ross")
@@ -172,7 +172,7 @@ class CaseDataExtractionServiceTest {
         DocmosisStandardDirectionOrder template = caseDataExtractionService
             .getStandardOrderDirectionData(caseData);
 
-        assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
+        assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Smith")
                 .legalAdvisorName("Bob Ross")
@@ -232,19 +232,19 @@ class CaseDataExtractionServiceTest {
             .collect(toList());
     }
 
-    private List<DocmosisChildren> getExpectedChildren() {
+    private List<DocmosisChild> getExpectedChildren() {
         return List.of(
-            DocmosisChildren.builder()
+            DocmosisChild.builder()
                 .name("Bran Stark")
                 .gender("Boy")
                 .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build(),
-            DocmosisChildren.builder()
+            DocmosisChild.builder()
                 .name("Sansa Stark")
                 .gender("Boy")
                 .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build(),
-            DocmosisChildren.builder()
+            DocmosisChild.builder()
                 .name("Jon Snow")
                 .gender("Girl")
                 .dateOfBirth(formatLocalDateToString(TODAY, LONG))

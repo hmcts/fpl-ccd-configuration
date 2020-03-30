@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -37,7 +38,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyMap;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -118,7 +119,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void midEventShouldGenerateDraftCaseManagementOrderDocument() {
+    void midEventShouldGenerateDraftCaseManagementOrderDocument() throws IOException {
         byte[] pdf = {1, 2, 3, 4, 5};
         final Document document = document();
         final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
@@ -126,7 +127,9 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
 
-        CaseDetails caseDetails = buildCaseDetails(emptyMap());
+        CaseDetails caseDetails = populatedCaseDetails();
+        caseDetails.getData()
+            .put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder().build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
@@ -164,7 +167,6 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             data.put(direction.toCustomDirectionField().concat("CMO"),
                 createElementCollection(createUnassignedDirection()))
         );
-
 
         data.put(HEARING_DATE_LIST.getKey(), dynamicHearingDates);
         data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder()
