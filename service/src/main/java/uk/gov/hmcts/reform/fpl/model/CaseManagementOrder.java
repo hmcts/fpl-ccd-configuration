@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 
@@ -32,11 +33,11 @@ public class CaseManagementOrder {
 
     @JsonIgnore
     public boolean isDraft() {
-        return action == null || !action.getType().equals(SEND_TO_ALL_PARTIES);
+        return ofNullable(action).map(x -> !SEND_TO_ALL_PARTIES.equals(action.getType())).orElse(true);
     }
 
     @JsonIgnore
-    public boolean isInJudgeReview() { 
+    public boolean isInJudgeReview() {
         return status == SEND_TO_JUDGE;
     }
 }

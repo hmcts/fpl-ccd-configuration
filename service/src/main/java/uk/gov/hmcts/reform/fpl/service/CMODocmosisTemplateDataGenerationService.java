@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -84,7 +85,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisorData(hearingBooking.getJudgeAndLegalAdvisor()))
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
-            //TODO generationDate in cmo -> need to update
             .dateOfIssue(formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
             .children(caseDataExtractionService.getChildrenDetails(caseData.getAllChildren()))
@@ -102,12 +102,12 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)))
             .caseManagementNumber(caseData.getServedCaseManagementOrders().size() + 1);
 
-        if (caseData.getCaseManagementOrder().isDraft()) {
-            order.draftbackground(generateDraftWatermarkEncodedString());
+        if (caseManagementOrder.isDraft()) {
+            order.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
         }
 
-        if (!caseData.getCaseManagementOrder().isDraft()) {
-            order.courtseal(generateCourtSealEncodedString());
+        if (!caseManagementOrder.isDraft()) {
+            order.courtseal(format(BASE_64, generateCourtSealEncodedString()));
         }
 
         return order.build();
