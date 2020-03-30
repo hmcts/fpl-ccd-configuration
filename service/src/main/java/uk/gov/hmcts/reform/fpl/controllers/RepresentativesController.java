@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -26,14 +24,12 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Api
 @RestController
 @RequestMapping("/callback/manage-representatives")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepresentativesController {
-
     private final ObjectMapper mapper;
     private final RepresentativeService representativeService;
     private final RespondentService respondentService;
@@ -88,18 +84,8 @@ public class RepresentativesController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-
-        List<Element<Representative>> representativesBefore = caseDataBefore.getRepresentatives();
-        List<Element<Representative>> currentRepresentatives = caseData.getRepresentatives();
-
-        List<Element<Representative>> representativeParties = representativeService
-            .getRepresentativePartiesToNotify(currentRepresentatives, representativesBefore);
-
         applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(
-            callbackRequest, requestData.authorisation(), requestData.userId(),
-            unwrapElements(representativeParties)));
+            callbackRequest, requestData.authorisation(), requestData.userId()));
     }
 
     private String getRespondentsLabel(CaseData caseData) {

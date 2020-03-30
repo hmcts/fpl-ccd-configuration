@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -25,8 +26,10 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
@@ -40,11 +43,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Optional.empty;
@@ -77,10 +83,11 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to applicant")
         Element<Applicant>> applicants;
+
+    @Valid
     @NotNull(message = "You need to add details to respondents")
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
 
-    @Valid
     private Optional<Respondent> getFirstRespondent() {
         return findRespondent(0);
     }
@@ -117,6 +124,8 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirectionsCustomCMO;
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
+
+    @NotNull(message = "You need to enter the allocated judge.", groups = SealedSDOGroup.class)
     private final Judge allocatedJudge;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
@@ -176,6 +185,7 @@ public class CaseData {
     }
 
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
+    @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
 
     private LocalDate dateSubmitted;
@@ -184,6 +194,7 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+    private final Map<String, C2ApplicationType> c2ApplicationType;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
@@ -191,6 +202,8 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final ChildSelector childSelector;
     private final String orderAppliesToAllChildren;
+    @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
+    private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
@@ -278,6 +291,14 @@ public class CaseData {
     public Optional<Respondent> findRespondent(int seqNo) {
         return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+    }
+
+    public Optional<Applicant> findApplicant(int seqNo) {
+        if (isEmpty(applicants) || applicants.size() <= seqNo) {
+            return empty();
+        } else {
+            return Optional.of(applicants.get(seqNo).getValue());
+        }
     }
 
     @JsonIgnore

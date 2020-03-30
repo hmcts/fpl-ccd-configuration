@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,19 +24,11 @@ import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 @Api
 @RestController
 @RequestMapping("/callback/enter-others")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OthersController {
     private final ObjectMapper mapper;
     private final OthersService othersService;
     private final ConfidentialDetailsService confidentialService;
-
-    @Autowired
-    public OthersController(ObjectMapper mapper,
-                            ConfidentialDetailsService confidentialService,
-                            OthersService othersService) {
-        this.mapper = mapper;
-        this.confidentialService = confidentialService;
-        this.othersService = othersService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {

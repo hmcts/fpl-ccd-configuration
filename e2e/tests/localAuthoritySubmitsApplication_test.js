@@ -255,10 +255,9 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   I.seeAnswerInTab(6, 'Party', 'Customer reference', applicant.customerReference);
   I.seeAnswerInTab(1, 'Address', 'Building and Street', applicant.address.buildingAndStreet.lineOne);
   I.seeAnswerInTab(2, 'Address', '', applicant.address.buildingAndStreet.lineTwo);
-  I.seeAnswerInTab(3, 'Address', '', applicant.address.buildingAndStreet.lineThree);
-  I.seeAnswerInTab(4, 'Address', 'Town or City', applicant.address.town);
+  I.seeAnswerInTab(3, 'Address', 'Town or City', applicant.address.town);
+  I.seeAnswerInTab(4, 'Address', 'County', applicant.address.county);
   I.seeAnswerInTab(5, 'Address', 'Postcode/Zipcode', applicant.address.postcode);
-  I.seeAnswerInTab(6, 'Address', 'Country', applicant.address.country);
   I.seeAnswerInTab(1, 'Telephone number', 'Telephone number', applicant.telephoneNumber);
   I.seeAnswerInTab(2, 'Telephone number', 'Name of person to contact', applicant.nameOfPersonToContact);
   I.seeAnswerInTab(9, 'Party', 'Job title', applicant.jobTitle);
@@ -475,6 +474,7 @@ Scenario('local authority tries to submit without giving consent', async (I, cas
 
 Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  // I.see('£2,055.00'); Disabled until Fee Register updated on AAT
   submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);

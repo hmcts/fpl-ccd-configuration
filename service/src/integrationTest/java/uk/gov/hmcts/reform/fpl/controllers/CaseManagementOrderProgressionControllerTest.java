@@ -14,8 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.Event;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
@@ -29,7 +31,6 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
@@ -92,8 +93,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         cmoCommonAssertions(responseData, caseDataBefore);
 
         verify(notificationClient).sendEmail(
-            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedJudgeRejectedNotificationParameters()), eq(caseId.toString()));
+            CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            expectedJudgeRejectedNotificationParameters(), caseId.toString());
     }
 
     private void cmoCommonAssertions(CaseData responseData, CaseData caseDataBefore) {
@@ -117,8 +118,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, ACTION_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedJudgeRejectedNotificationParameters()), eq(caseId.toString()));
+            CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            expectedJudgeRejectedNotificationParameters(), caseId.toString());
     }
 
     @Test
@@ -149,12 +150,12 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(HMCTS_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
     }
 
     @Test
@@ -166,12 +167,12 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(HMCTS_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
 
         verify(notificationClient).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
     }
 
     @Test
@@ -183,12 +184,12 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(HMCTS_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString()));
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
 
         verify(notificationClient, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE), eq(CTSC_ADMIN_INBOX),
-            eq(expectedCMODraftCompleteNotificationParameters()), eq(caseId.toString())
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
+            expectedCMODraftCompleteNotificationParameters(), caseId.toString()
         );
     }
 
@@ -203,6 +204,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         return ImmutableMap.<String, Object>builder()
             .putAll(commonNotificationParameters())
             .put("respondentLastName", "Jones")
+            .put("judgeTitle", "Her Honour Judge")
+            .put("judgeName", "Moley")
             .build();
     }
 
@@ -233,8 +236,15 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                 "hearingDetails", createHearingBookings(testDate, testDate.plusHours(4)),
                 "respondents1", createRespondents(),
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+                "sendToCtsc", enableCtsc,
                 "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
-                "sendToCtsc", enableCtsc))
+                "allocatedJudge", buildAllocatedJudge())).build();
+    }
+
+    private Judge buildAllocatedJudge() {
+        return Judge.builder()
+            .judgeLastName("Moley")
+            .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
             .build();
     }
 

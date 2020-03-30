@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,19 +22,11 @@ import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGrou
 @Api
 @RestController
 @RequestMapping("/callback/notify-gatekeeper")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NotifyGatekeeperController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
     private final ApplicationEventPublisher applicationEventPublisher;
-
-    @Autowired
-    public NotifyGatekeeperController(ObjectMapper mapper,
-                                      ValidateGroupService validateGroupService,
-                                      ApplicationEventPublisher applicationEventPublisher) {
-        this.mapper = mapper;
-        this.validateGroupService = validateGroupService;
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(

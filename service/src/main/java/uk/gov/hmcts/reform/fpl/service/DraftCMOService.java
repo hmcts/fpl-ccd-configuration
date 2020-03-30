@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
-//TODO: methods to be moved to CaseManagementOrderService and DirectionHelperService.
+//TODO: methods to be moved to CaseManagementOrderService and Directions services. FPLA-1479 / FPLA-1483
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {

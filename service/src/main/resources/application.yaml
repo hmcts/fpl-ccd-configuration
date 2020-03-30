@@ -20,9 +20,90 @@ idam:
 fpl:
   local_authority_codes_forbidden_case_submission:
 
+fees-register:
+  parameters:
+    # if these change be sure to update the appropriate wiremocks
+    C2_WITHOUT_NOTICE:
+      channel: default
+      event: general application
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: without-notice
+      service: other
+    C2_WITH_NOTICE:
+      channel: default
+      event: general application
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: notice
+      service: other
+    CARE_ORDER:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: CareOrder
+      service: public law
+    EDUCATION_SUPERVISION_ORDER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: EducationSupervision
+      service: private law
+    EMERGENCY_PROTECTION_ORDER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: EPO
+      service: private law
+    INTERIM_CARE_ORDER:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: CareOrder
+      service: public law
+    INTERIM_SUPERVISION_ORDER:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: CareOrder
+      service: public law
+    OTHER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: VariationDischarge
+      service: private law
+    PLACEMENT:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: Placement
+      service: adoption
+    SUPERVISION_ORDER:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: CareOrder
+      service: public law
+
+payment:
+  site_id: ABA3
+
 ld:
-  user_key: FPLA
+  user_key: ${LD_USER_KEY:FPLA}
   sdk_key:
+
+bankHolidays:
+  api:
+    url: "https://www.gov.uk"
 
 ---
 
@@ -84,10 +165,19 @@ rd_professional:
 send-letter:
   url: http://fake-send-letter
 
+payment:
+  api:
+    url: http://fake-payment-api
+
 ccd:
   ui:
     base:
       url: http://fake-url
+
+fees-register:
+  api:
+    url: http://fake-fees-register-api
+
 
 fpl:
   local_authority_codes_forbidden_case_submission: FPLA
@@ -192,13 +282,25 @@ rd_professional:
   api:
     url: http://localhost:8765
 
+fees-register:
+  api:
+    url: http://localhost:8765
+
 send-letter:
   url: http://localhost:8765
+
+payment:
+  api:
+    url: http://localhost:8765
 
 ccd:
   ui:
     base:
       url: http://localhost:3451
+
+bankHolidays:
+  api:
+    url: http://localhost:8765
 
 appinsights:
   instrumentationkey: fake-key

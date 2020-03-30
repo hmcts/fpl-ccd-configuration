@@ -24,17 +24,29 @@ module.exports = {
   async enterRepresentative(representative) {
     const elementIndex = await this.getActiveElementIndex();
 
-    I.fillField(this.fields(elementIndex).representative.fullName, representative.fullName);
-    I.fillField(this.fields(elementIndex).representative.positionInACase, representative.positionInACase);
-    I.fillField(this.fields(elementIndex).representative.email, representative.email);
-    I.fillField(this.fields(elementIndex).representative.telephone, representative.telephone);
-    within(this.fields(elementIndex).representative.address, () => {
-      postcodeLookup.enterAddressManually(representative.address);
-    });
-
-    this.setServingPreferences(representative.servingPreferences.toLowerCase());
-
-    I.selectOption(this.fields(elementIndex).representative.role, representative.role);
+    if(representative.fullName) {
+      I.fillField(this.fields(elementIndex).representative.fullName, representative.fullName);
+    }
+    if(representative.positionInACase) {
+      I.fillField(this.fields(elementIndex).representative.positionInACase, representative.positionInACase);
+    }
+    if(representative.email) {
+      I.fillField(this.fields(elementIndex).representative.email, representative.email);
+    }
+    if(representative.telephone) {
+      I.fillField(this.fields(elementIndex).representative.telephone, representative.telephone);
+    }
+    if(representative.address) {
+      within(this.fields(elementIndex).representative.address, () => {
+        postcodeLookup.enterAddressManually(representative.address);
+      });
+    }
+    if(representative.servingPreferences) {
+      this.setServingPreferences(representative.servingPreferences.toLowerCase());
+    }
+    if(representative.role) {
+      I.selectOption(this.fields(elementIndex).representative.role, representative.role);
+    }
   },
 
   async setServingPreferences(servingPreferences) {

@@ -1,5 +1,9 @@
+const dateFormat = require('dateformat');
+const dateToString = require('../helpers/date_to_string_helper');
+
 const createBlankOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type);
+  await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.title);
   await createOrderEventPage.enterC21OrderDetails();
@@ -10,6 +14,7 @@ const createBlankOrder = async (I, createOrderEventPage, order) => {
 
 const createCareOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type, order.subtype);
+  await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
   if (order.subtype === 'Interim') {
     await fillInterimEndDate(I, createOrderEventPage, order);
@@ -23,6 +28,7 @@ const createCareOrder = async (I, createOrderEventPage, order) => {
 
 const createSupervisionOrder = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.selectType(order.type, order.subtype);
+  await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
   if (order.subtype === 'Final') {
     await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.months);
@@ -41,6 +47,7 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order) =>
   const tomorrow = new Date(Date.now() + (3600 * 1000 * 24));
 
   await createOrderEventPage.selectType(order.type);
+  await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.epo.childrenDescription.radioGroup);
   await createOrderEventPage.enterChildrenDescription(order.childrenDescription);
@@ -65,6 +72,11 @@ const fillInterimEndDate = async (I, createOrderEventPage, order) => {
   } else {
     await createOrderEventPage.selectEndOfProceedings();
   }
+};
+
+const fillDateOfIssue = async (I, createOrderEventPage, order) => {
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.dateOfIssue.id);
+  await createOrderEventPage.enterDateOfIssue(order.dateOfIssue);
 };
 
 const selectChildren = async (I, createOrderEventPage, order) => {
@@ -96,7 +108,7 @@ module.exports = {
     }
   },
 
-  async assertOrder(I, caseViewPage, order, orderNum) {
+  async assertOrder(I, caseViewPage, order, orderNum, defaultIssuedDate) {
     const orderHeading = 'Order ' + orderNum;
     caseViewPage.selectTab(caseViewPage.tabs.orders);
     I.seeAnswerInTab(1, orderHeading, 'Type of order', order.fullType);
@@ -104,12 +116,20 @@ module.exports = {
     if (order.type === 'Blank order (C21)') {
       I.seeAnswerInTab(2, orderHeading, 'Order title', order.title);
       I.seeAnswerInTab(4, orderHeading, 'Order document', order.document);
+      I.seeAnswerInTab(5, orderHeading, 'Date of issue', dateFormat(defaultIssuedDate, 'd mmmm yyyy'));
     } else {
       I.seeAnswerInTab(2, orderHeading, 'Order document', order.document);
+      I.seeAnswerInTab(3, orderHeading, 'Date of issue', dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
     }
 
     I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', order.judgeAndLegalAdvisor.judgeTitle);
     I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', order.judgeAndLegalAdvisor.judgeLastName);
     I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', order.judgeAndLegalAdvisor.legalAdvisorName);
+  },
+
+  async assertOrderSentToParty(I, caseViewPage, partyName, order, orderNum) {
+    caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
+    I.seeAnswerInTab(1, 'Party 1', 'Representative name', partyName);
+    I.seeNestedAnswerInTab(2, 'Party 1', `Document ${orderNum}`, 'File', order.document);
   },
 };

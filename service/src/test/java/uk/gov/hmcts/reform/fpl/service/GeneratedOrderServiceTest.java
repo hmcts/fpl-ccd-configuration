@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -54,6 +55,8 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
@@ -91,7 +94,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), null, null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Order");
@@ -109,7 +112,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), null, null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Order");
@@ -127,7 +130,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), null, null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Order");
@@ -145,7 +148,7 @@ class GeneratedOrderServiceTest {
                     .type(BLANK_ORDER)
                     .document(DocumentReference.builder().build())
                     .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), null, null).getValue();
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Example Title");
@@ -171,7 +174,7 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build(), null, null).getValue();
+                .build(), time.now().toLocalDate(), null, null).getValue();
 
         assertThat(builtOrder.getType()).isEqualTo("Final care order");
         assertThat(builtOrder.getTitle()).isNull();
@@ -196,7 +199,8 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build(), null, InterimEndDate.builder().type(END_OF_PROCEEDINGS).build()).getValue();
+                .build(), time.now().toLocalDate(), null,
+            InterimEndDate.builder().type(END_OF_PROCEEDINGS).build()).getValue();
 
         assertThat(builtOrder.getExpiryDate()).isEqualTo("End of the proceedings");
     }
@@ -215,6 +219,7 @@ class GeneratedOrderServiceTest {
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
                 .build(),
+            time.now().toLocalDate(),
             null,
             InterimEndDate.builder()
                 .type(NAMED_DATE)
@@ -225,7 +230,6 @@ class GeneratedOrderServiceTest {
         assertThat(builtOrder.getExpiryDate()).isEqualTo(dateFormatterService.formatLocalDateToString(
             time.now().toLocalDate(), "'11:59pm', d MMMM y"));
     }
-
 
     @Test
     void shouldReturnExpectedSupervisionOrderWhenFinalSubtypeSelected() {
@@ -238,7 +242,7 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HIS_HONOUR_JUDGE)
                 .judgeLastName("Dredd")
                 .legalAdvisorName("Frank N. Stein")
-                .build(), 5, null).getValue();
+                .build(), time.now().toLocalDate(), 5, null).getValue();
 
         final LocalDateTime orderExpiration = time.now().plusMonths(5);
         final String expectedExpiryDate = dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
@@ -274,15 +278,29 @@ class GeneratedOrderServiceTest {
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) {
+                                                           GeneratedOrderSubtype subtype) throws IOException {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
         Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, SEALED);
 
-        assertThat(templateData).isEqualTo(expectedMap);
+        assertThat(templateData).containsAllEntriesOf(expectedMap);
+        assertThat(templateData).containsKey("courtseal");
+    }
 
+    @ParameterizedTest
+    @MethodSource("docmosisDataGenerationSource")
+    void shouldCreateExpectedMapWhenGivenPopulatedCaseDataInDraft(GeneratedOrderType orderType,
+                                                           GeneratedOrderSubtype subtype) throws IOException {
+        LocalDateTime now = time.now();
+        CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
+
+        Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, DRAFT);
+
+        assertThat(templateData).containsAllEntriesOf(expectedMap);
+        assertThat(templateData).containsKey("draftbackground");
     }
 
     @Test
@@ -435,7 +453,7 @@ class GeneratedOrderServiceTest {
             .put("furtherDirections", (type != BLANK_ORDER) ? "Example Directions" : "")
             .put("familyManCaseNumber", "123")
             .put("courtName", "Family Court")
-            .put("todaysDate", formattedDate)
+            .put("dateOfIssue", DateFormatterService.formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
             .put("children", children);
@@ -541,6 +559,7 @@ class GeneratedOrderServiceTest {
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
                 .build())
+            .dateOfIssue(time.now().toLocalDate())
             .children1(ImmutableList.of(
                 element(Child.builder()
                     .party(ChildParty.builder()

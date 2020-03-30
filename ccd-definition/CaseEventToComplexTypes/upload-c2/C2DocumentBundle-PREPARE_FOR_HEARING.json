@@ -6,7 +6,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "document",
     "EventElementLabel": "Upload a file",
-    "FieldDisplayOrder": 1,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -16,7 +16,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "description",
     "EventElementLabel": "Description",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   }
 ]

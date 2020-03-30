@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.InterimEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
@@ -26,14 +28,22 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NA
 @Api
 @RestController
 @RequestMapping("/callback/validate-order")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ValidateOrderController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
 
-    @Autowired
-    public ValidateOrderController(ObjectMapper mapper, ValidateGroupService validateGroupService) {
-        this.mapper = mapper;
-        this.validateGroupService = validateGroupService;
+    @PostMapping("/date-of-issue/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventValidateDateOfIssue(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(validateGroupService.validateGroup(caseData, DateOfIssueGroup.class))
+            .build();
     }
 
     @PostMapping("/address/mid-event")

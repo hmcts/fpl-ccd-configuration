@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,19 +26,11 @@ import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETA
 @Api
 @RestController
 @RequestMapping("/callback/add-hearing-bookings")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingBookingDetailsController {
     private final HearingBookingService service;
     private final ValidateGroupService validateGroupService;
     private final ObjectMapper mapper;
-
-    @Autowired
-    public HearingBookingDetailsController(HearingBookingService service,
-                                           ValidateGroupService validateGroupService,
-                                           ObjectMapper mapper) {
-        this.service = service;
-        this.validateGroupService = validateGroupService;
-        this.mapper = mapper;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {

@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -64,17 +62,5 @@ class PartyAddedToCaseContentProviderTest {
 
         assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
             callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).isEqualTo(expectedParameters);
-    }
-
-    @Test
-    void shouldGetPartyAddedToCaseByEmailNotificationTemplate() {
-        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(EMAIL))
-            .isEqualTo(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE);
-    }
-
-    @Test
-    void shouldGetPartyAddedThroughDigitalServiceNotificationTemplate() {
-        assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationTemplate(DIGITAL_SERVICE))
-            .isEqualTo(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE);
     }
 }

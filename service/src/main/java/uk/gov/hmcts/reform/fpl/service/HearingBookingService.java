@@ -7,13 +7,16 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.LocalDateTime.now;
 import static java.util.Comparator.comparing;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -36,6 +39,8 @@ public class HearingBookingService {
             .isPresent();
     }
 
+    // TODO: this method will always get the first (by date, even if in past) hearing booking. Not the most urgent
+    // FPLA-1484
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
         if (hearingDetails == null) {
             throw new IllegalStateException("Hearing booking was not present");
@@ -45,6 +50,16 @@ public class HearingBookingService {
             .map(Element::getValue)
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
+    }
+
+    public Optional<HearingBooking> getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
+        if (isEmpty(hearingDetails)) {
+            return empty();
+        }
+
+        return hearingDetails.stream()
+            .map(Element::getValue)
+            .min(comparing(HearingBooking::getStartDate));
     }
 
     public HearingBooking getHearingBooking(List<Element<HearingBooking>> hearingDetails, DynamicList hearingDateList) {
