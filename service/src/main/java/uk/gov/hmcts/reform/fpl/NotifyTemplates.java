@@ -30,4 +30,8 @@ public class NotifyTemplates {
         = "ca15c188-14d2-49a3-ac61-fdd7c6c7dc9b";
     public static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE
         = "f846a44e-9d1f-4cdb-aa3b-10af07bc4c66";
+    public static final String APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA
+        = "b40328fe-c01e-4b7f-9542-4ef776140df9";
+    public static final String APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC
+        = "7d362e1e-bc87-4d63-8218-3835abecb600";
 }
