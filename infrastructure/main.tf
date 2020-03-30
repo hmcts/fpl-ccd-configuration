@@ -110,8 +110,6 @@ data "azurerm_key_vault_secret" "ctsc-inbox" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
-=======
->>>>>>>  fix: Clean up tf files as we completely migrated to aks (#996)
 module "key-vault" {
   source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   name                    = "fpl-${var.env}"
