@@ -76,6 +76,7 @@ exports.config = {
     allocatedJudgeEventPage: './e2e/pages/events/enterAllocatedJudgeEvent.page.js',
     handleSupplementaryEvidenceEventPage: './e2e/pages/events/handleSupplementaryEvidenceEvent.page.js',
     attachScannedDocsEventPage: './e2e/pages/events/attachScannedDocsEvent.page.js',
+    addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
   },
   plugins: {
     autoDelay: {
