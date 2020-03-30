@@ -22,7 +22,9 @@ import java.util.Map;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -31,6 +33,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @WebMvcTest(CaseSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
+
+    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
 
     @MockBean
     private UserDetailsService userDetailsService;
@@ -74,7 +78,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSetCtscPropertyToYesWhenCtscLaunchDarklyVariableIsEnabled() {
-        given(featureToggleService.isCtscEnabled()).willReturn(false);
+        given(featureToggleService.isCtscEnabled(anyString())).willReturn(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
@@ -90,16 +94,17 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSetCtscPropertyToNoWhenCtscLaunchDarklyVariableIsDisabled() {
-        given(featureToggleService.isCtscEnabled()).willReturn(true);
+        given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
         assertThat(callbackResponse.getData()).containsEntry("sendToCtsc", "Yes");
+        verify(featureToggleService).isCtscEnabled(LOCAL_AUTHORITY_NAME);
     }
 
     @Test
     void shouldRemoveTemporaryFieldsWhenPresent() {
-        given(featureToggleService.isCtscEnabled()).willReturn(true);
+        given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)
