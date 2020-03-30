@@ -8,6 +8,6 @@ import java.util.List;
 
 @Value
 public class UpcomingHearingsFound {
-    private LocalDate hearingDate;
-    private List<CaseDetails> caseDetails;
+    LocalDate hearingDate;
+    List<CaseDetails> caseDetails;
 }

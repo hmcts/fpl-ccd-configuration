@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.flywaydb.core.Flyway;
 import org.quartz.Job;
 import org.quartz.Scheduler;
@@ -78,7 +77,6 @@ public class SchedulerConfiguration {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
     public static class Schedule {
         private String name;
         private String description;

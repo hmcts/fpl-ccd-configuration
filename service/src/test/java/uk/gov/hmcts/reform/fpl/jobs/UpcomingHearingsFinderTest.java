@@ -54,10 +54,11 @@ public class UpcomingHearingsFinderTest {
     @InjectMocks
     private UpcomingHearingsFinder upcomingHearingsFinder;
 
+    private final LocalDate baseDate = LocalDate.now();
+
     @BeforeEach
     void init() {
         hearingDate = now().plusDays(DEFAULT_NOTICE_DAYS_BEFORE_HEARING);
-        final LocalDate baseDate = LocalDate.now();
         when(jobKey.getName()).thenReturn("testName");
         when(jobDetail.getKey()).thenReturn(jobKey);
         when(jobExecutionContext.getJobDetail()).thenReturn(jobDetail);
@@ -69,6 +70,7 @@ public class UpcomingHearingsFinderTest {
     void shouldEmitUpcomingHearingsFoundEventWhenCasesToBeHeardFound() {
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().build());
 
+        when(calendarService.isWorkingDay(baseDate)).thenReturn(true);
         when(searchService.search("data.hearingDetails.value.startDate", hearingDate)).thenReturn(caseDetails);
 
         upcomingHearingsFinder.execute(jobExecutionContext);
@@ -80,7 +82,17 @@ public class UpcomingHearingsFinderTest {
     void shouldNotEmitUpcomingHearingsFoundEventWhenCasesToBeHeardNotFound() {
         List<CaseDetails> caseDetails = emptyList();
 
+        when(calendarService.isWorkingDay(baseDate)).thenReturn(true);
         when(searchService.search("data.hearingDetails.value.startDate", hearingDate)).thenReturn(caseDetails);
+
+        upcomingHearingsFinder.execute(jobExecutionContext);
+
+        verifyNoMoreInteractions(applicationEventPublisher);
+    }
+
+    @Test
+    void shouldNotEmitUpcomingHearingsFoundEventWhenBankHoliday() {
+        when(calendarService.isWorkingDay(baseDate)).thenReturn(false);
 
         upcomingHearingsFinder.execute(jobExecutionContext);
 

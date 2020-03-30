@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
@@ -14,11 +15,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 
 @Service
@@ -45,7 +43,7 @@ public class UpcomingHearingsContentProvider {
     private String formatCase(CaseDetails caseDetails) {
         Object caseNumber = caseDetails.getData().get("familyManCaseNumber");
         Object caseName = caseDetails.getData().get("caseName");
-        String caseUrl = format("%s/case/%s/%s/%s#OrdersTab", uiBaseUrl, JURISDICTION, CASE_TYPE, caseDetails.getId());
+        String caseUrl = EmailNotificationHelper.formatCaseUrl(uiBaseUrl, caseDetails.getId(), "OrdersTab");
 
         return Stream.of(caseNumber, caseName, caseUrl)
             .filter(Objects::nonNull)

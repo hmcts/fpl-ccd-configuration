@@ -50,7 +50,7 @@ public class JobScheduler {
     private void scheduleJob(SchedulerConfiguration.Schedule jobData) {
         try {
             scheduler.scheduleJob(getJobDetail(jobData), getTrigger(jobData));
-            log.info("Job '{}' scheduled" + jobData.getName());
+            log.info("Job '{}' scheduled", jobData.getName());
         } catch (SchedulerException e) {
             throw new UncheckedSchedulerException(e);
         }
@@ -60,7 +60,7 @@ public class JobScheduler {
         try {
             for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.groupEquals(scheduleGroup))) {
                 scheduler.deleteJob(jobKey);
-                log.info("Job '{}' deleted" + jobKey.getName());
+                log.info("Job '{}' deleted", jobKey.getName());
             }
         } catch (SchedulerException e) {
             throw new UncheckedSchedulerException(e);

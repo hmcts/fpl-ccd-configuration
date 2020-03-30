@@ -349,7 +349,7 @@ public class NotificationHandler {
 
     @EventListener
     public void sendEmailWithUpcomingHearings(UpcomingHearingsFound event) {
-        if (featureToggleService.isCtscEnabled()) {
+        if (featureToggleService.isCtscReportEnabled()) {
             if (!isEmpty(event.getCaseDetails())) {
                 Map<String, Object> parameters = upcomingHearingsEmailContentProvider.buildParameters(
                     event.getHearingDate(), event.getCaseDetails());

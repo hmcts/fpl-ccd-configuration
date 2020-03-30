@@ -62,7 +62,7 @@ public class JobSchedulerTest {
         .description("Job 2 run at night")
         .cron("0 0 2 ? * * *")
         .name("Job 2")
-        .jobClass(JobA.class)
+        .jobClass(Job.class)
         .cronGroup("Night")
         .build();
 
@@ -80,7 +80,7 @@ public class JobSchedulerTest {
         .description("Job run at night")
         .cron("0")
         .name("Job invalid")
-        .jobClass(JobA.class)
+        .jobClass(Job.class)
         .cronGroup("Invalid")
         .build();
 
@@ -156,6 +156,4 @@ public class JobSchedulerTest {
             .build());
     }
 
-    private interface JobA extends Job {
-    }
 }

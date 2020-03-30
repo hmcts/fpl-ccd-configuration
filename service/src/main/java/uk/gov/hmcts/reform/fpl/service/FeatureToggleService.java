@@ -32,6 +32,12 @@ public class FeatureToggleService {
             false);
     }
 
+    public boolean isCtscReportEnabled() {
+        return ldClient.boolVariation("CTSC",
+            ldUserBuilder.custom("report", true).build(),
+            false);
+    }
+
     public boolean isFeesEnabled() {
         return ldClient.boolVariation("FNP", ldUser, false);
     }

@@ -16,7 +16,6 @@ java:
     FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
     LD_USER_KEY: FPLA_PREVIEW
-    SCHEDULER_UPCOMING_HEARINGS_CRON: 0 0 * ? * MON-FRI
     SCHEDULER_DB_HOST: "{{ .Release.Name }}-postgresql"
     SCHEDULER_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
     SCHEDULER_DB_USER: "{{ .Values.postgresql.postgresqlUsername}}"

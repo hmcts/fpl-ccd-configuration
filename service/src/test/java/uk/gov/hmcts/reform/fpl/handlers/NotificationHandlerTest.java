@@ -40,8 +40,8 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.UpcomingHearingsFound;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -216,10 +216,10 @@ class NotificationHandlerTest {
             cafcassLookupConfiguration, hmctsEmailContentProvider, partyAddedToCaseContentProvider,
             cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
             c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
-            localAuthorityEmailContentProvider, upcomingHearingsEmailContentProvider, failedPBAPaymentContentProvider, idamApi, inboxLookupService,
-            caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
-            localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration, notificationService,
-            featureToggleService);
+            localAuthorityEmailContentProvider, upcomingHearingsEmailContentProvider, failedPBAPaymentContentProvider,
+            idamApi, inboxLookupService, caseManagementOrderEmailContentProvider, placementApplicationContentProvider,
+            representativeService, localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration,
+            notificationService, featureToggleService);
 
         given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
@@ -1016,7 +1016,7 @@ class NotificationHandlerTest {
             final Map<String, Object> params = Map.of("testKey", "testValue");
             final UpcomingHearingsFound upcomingHearings = new UpcomingHearingsFound(hearingDate, cases);
 
-            when(featureToggleService.isCtscEnabled()).thenReturn(true);
+            when(featureToggleService.isCtscReportEnabled()).thenReturn(true);
             when(ctscEmailLookupConfiguration.getEmail()).thenReturn(CTSC_INBOX);
             when(upcomingHearingsEmailContentProvider.buildParameters(hearingDate, cases))
                 .thenReturn(params);
@@ -1032,7 +1032,7 @@ class NotificationHandlerTest {
             List<CaseDetails> cases = List.of(CaseDetails.builder().build());
             UpcomingHearingsFound upcomingHearings = new UpcomingHearingsFound(hearingDate, cases);
 
-            when(featureToggleService.isCtscEnabled()).thenReturn(false);
+            when(featureToggleService.isCtscReportEnabled()).thenReturn(false);
 
             notificationHandler.sendEmailWithUpcomingHearings(upcomingHearings);
 
@@ -1044,7 +1044,7 @@ class NotificationHandlerTest {
             List<CaseDetails> cases = emptyList();
             UpcomingHearingsFound upcomingHearings = new UpcomingHearingsFound(hearingDate, cases);
 
-            when(featureToggleService.isCtscEnabled()).thenReturn(true);
+            when(featureToggleService.isCtscReportEnabled()).thenReturn(true);
 
             notificationHandler.sendEmailWithUpcomingHearings(upcomingHearings);
 
