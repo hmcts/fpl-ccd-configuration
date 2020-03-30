@@ -39,6 +39,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "evidenceHandled",
     "Label": "Supplementary evidence handled",
-    "DisplayOrder": 5
+    "DisplayOrder": 6
   }
 ]
