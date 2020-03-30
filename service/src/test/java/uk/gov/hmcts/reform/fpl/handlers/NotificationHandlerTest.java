@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
+import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
@@ -46,6 +47,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -67,6 +69,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
@@ -82,6 +86,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
@@ -172,6 +178,9 @@ class NotificationHandlerTest {
     @Mock
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
+    @Mock
+    private FailedPBAPaymentContentProvider failedPBAPaymentContentProvider;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -188,14 +197,19 @@ class NotificationHandlerTest {
     private RequestData requestData;
 
     @BeforeEach
-    void setup() {
+    void setup() throws IOException {
         notificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration,
             cafcassLookupConfiguration, hmctsEmailContentProvider, partyAddedToCaseContentProvider,
             cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued, gatekeeperEmailContentProvider,
             c2UploadedEmailContentProvider, orderEmailContentProvider, orderIssuedEmailContentProvider,
-            localAuthorityEmailContentProvider, idamApi, inboxLookupService,
+            localAuthorityEmailContentProvider, failedPBAPaymentContentProvider, idamApi, inboxLookupService,
             caseManagementOrderEmailContentProvider, placementApplicationContentProvider, representativeService,
             localAuthorityNameLookupConfiguration, objectMapper, ctscEmailLookupConfiguration, notificationService);
+
+        given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(),
+            LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+
+        given(ctscEmailLookupConfiguration.getEmail()).willReturn(CTSC_INBOX);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(requestData.userId()).willReturn(USER_ID);
     }
@@ -933,6 +947,47 @@ class NotificationHandlerTest {
             CTSC_INBOX,
             expectedParameters,
             "12345");
+    }
+
+    @Test
+    void shouldNotifyLAWhenApplicationPBAPaymentFails() throws IOException {
+        CallbackRequest callbackRequest = callbackRequest();
+        final Map<String, Object> expectedParameters = Map.of("applicationType", "C110a");
+
+        given(failedPBAPaymentContentProvider.buildLANotificationParameters(C110A_APPLICATION))
+            .willReturn(expectedParameters);
+
+        notificationHandler.sendFailedPBAPaymentEmailToLocalAuthority(
+            new FailedPBAPaymentEvent(callbackRequest, requestData, C110A_APPLICATION));
+
+        verify(notificationService).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            expectedParameters,
+            "12345");
+    }
+
+    @Test
+    void shouldNotifyCtscWhenApplicationPBAPaymentFails() throws IOException {
+        CallbackRequest callbackRequest = callbackRequest();
+        final Map<String, Object> expectedParameters = getCtscNotificationParametersForFailedPayment();
+
+        given(failedPBAPaymentContentProvider.buildCtscNotificationParameters(callbackRequest
+                .getCaseDetails(), C2_APPLICATION)).willReturn(expectedParameters);
+
+        notificationHandler.sendFailedPBAPaymentEmailToCTSC(
+            new FailedPBAPaymentEvent(callbackRequest, requestData, C2_APPLICATION));
+
+        verify(notificationService).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            CTSC_INBOX,
+            expectedParameters,
+            "12345");
+    }
+
+    private Map<String, Object> getCtscNotificationParametersForFailedPayment() {
+        return Map.of("applicationType", "C2",
+            "caseUrl", "caseUrl");
     }
 
     private List<Representative> getExpectedDigitalRepresentativesForAddingPartiesToCase() {

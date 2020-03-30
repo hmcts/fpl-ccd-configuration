@@ -16,8 +16,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -41,6 +44,7 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
@@ -61,6 +65,7 @@ public class CaseSubmissionController {
     private final PaymentService paymentService;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final RequestData requestData;
 
     @PostMapping("/about-to-start")
@@ -140,7 +145,7 @@ public class CaseSubmissionController {
         Map<String, Object> data = caseDetails.getData();
         data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
         data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
-        data.put("sendToCtsc", setSendToCtsc());
+        data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()));
         data.put("submittedForm", ImmutableMap.<String, String>builder()
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)
@@ -158,14 +163,29 @@ public class CaseSubmissionController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
-            paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
+        if (featureToggleService.isPaymentsEnabled()) {
+
+            if (displayAmountToPay(caseDetails)) {
+                try {
+                    paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
+                } catch (FeeRegisterException | PaymentsApiException ignore) {
+                    applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, requestData,
+                        C110A_APPLICATION));
+                }
+            }
+
+            if (NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))) {
+                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, requestData,
+                    C110A_APPLICATION));
+            }
         }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, requestData));
     }
 
-    private String setSendToCtsc() {
-        return featureToggleService.isCtscEnabled() ? YES.getValue() : NO.getValue();
+    private String setSendToCtsc(String caseLocalAuthority) {
+        String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
+
+        return featureToggleService.isCtscEnabled(localAuthorityName) ? YES.getValue() : NO.getValue();
     }
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {
