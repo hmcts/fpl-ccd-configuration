@@ -134,8 +134,7 @@ public class RoboticsNotificationServiceTest {
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenOwningCourtCodeZero()
-        throws IOException {
+    void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenOwningCourtCodeZero() {
         CaseData caseData = prepareCaseData();
 
         given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
@@ -145,8 +144,7 @@ public class RoboticsNotificationServiceTest {
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenRoboticsJsonDataNull()
-        throws IOException {
+    void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenRoboticsJsonDataNull() {
         CaseData caseData = prepareCaseData();
 
         given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
@@ -155,13 +153,13 @@ public class RoboticsNotificationServiceTest {
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
 
-    private CaseData prepareCaseData() throws IOException {
+    private CaseData prepareCaseData() {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
         caseData.setDateSubmitted(NOW);
         return caseData;
     }
 
-    private CaseDetails prepareCaseDetails() throws IOException {
+    private CaseDetails prepareCaseDetails() {
         CaseDetails caseDetails = populatedCaseDetails();
 
         Map<String, Object> caseDataMap = populatedCaseDetails().getData();
