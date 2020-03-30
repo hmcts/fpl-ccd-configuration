@@ -8,6 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -93,18 +96,21 @@ class PaymentServiceTest {
             when(feeService.getFeesDataForC2(WITHOUT_NOTICE)).thenReturn(buildFeesData(feeForC2WithoutNotice));
         }
 
-        @Test
-        void shouldMakeCorrectPaymentForC2WithNotice() {
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"customerReference"})
+        void shouldMakeCorrectPaymentForC2WithNotice(final String customerReference) {
             CaseData caseData = CaseData.builder()
                 .caseLocalAuthority("LA")
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
                     .pbaNumber("PBA123")
                     .clientCode("clientCode")
-                    .fileReference("fileReference")
+                    .customerReference(customerReference)
                     .build())))
                 .build();
-            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder(
+                customerReference)
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
@@ -116,18 +122,21 @@ class PaymentServiceTest {
             verify(feeService).getFeesDataForC2(WITH_NOTICE);
         }
 
-        @Test
-        void shouldMakeCorrectPaymentForC2WithoutNotice() {
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"customerReference"})
+        void shouldMakeCorrectPaymentForC2WithoutNotice(final String customerReference) {
             CaseData caseData = CaseData.builder()
                 .caseLocalAuthority("LA")
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                     .type(WITHOUT_NOTICE)
                     .pbaNumber("PBA123")
                     .clientCode("clientCode")
-                    .fileReference("fileReference")
+                    .customerReference(customerReference)
                     .build())))
                 .build();
-            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder(
+                customerReference)
                 .amount(feeForC2WithoutNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithoutNotice))
                 .build();
@@ -152,7 +161,7 @@ class PaymentServiceTest {
                     .type(WITHOUT_NOTICE)
                     .pbaNumber("PBA123")
                     .clientCode("clientCode")
-                    .fileReference("fileReference")
+                    .customerReference("customerReference")
                     .build())))
                 .build();
 
@@ -194,7 +203,8 @@ class PaymentServiceTest {
                 .orders(orders)
                 .build();
 
-            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder(
+                "customerReference")
                 .amount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build();
@@ -229,13 +239,14 @@ class PaymentServiceTest {
         reset(paymentApi);
     }
 
-    private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder testCreditAccountPaymentRequestBuilder() {
+    private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder testCreditAccountPaymentRequestBuilder(
+        final String customerReference) {
         return CreditAccountPaymentRequest.builder()
             .accountNumber("PBA123")
             .caseReference("clientCode")
             .ccdCaseNumber(String.valueOf(CASE_ID))
             .currency(GBP)
-            .customerReference("fileReference")
+            .customerReference(paymentService.defaultCustomerReference(customerReference))
             .description("Payment for case: " + CASE_ID)
             .organisationName("Example Local Authority")
             .service(FPL)

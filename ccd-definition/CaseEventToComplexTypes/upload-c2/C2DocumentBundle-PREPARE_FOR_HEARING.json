@@ -34,8 +34,8 @@
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "fileReference",
-    "EventElementLabel": "File reference",
+    "ListElementCode": "customerReference",
+    "EventElementLabel": "Customer reference",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },

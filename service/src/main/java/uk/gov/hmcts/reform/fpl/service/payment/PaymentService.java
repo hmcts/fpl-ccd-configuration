@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.math.BigDecimal;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -58,7 +59,7 @@ public class PaymentService {
             CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
                 applicantParty.getPbaNumber(),
                 applicantParty.getClientCode(),
-                applicantParty.getCustomerReference(),
+                defaultCustomerReference(applicantParty.getCustomerReference()),
                 localAuthorityName,
                 feesData);
 
@@ -79,11 +80,15 @@ public class PaymentService {
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             c2DocumentBundle.getPbaNumber(),
             c2DocumentBundle.getClientCode(),
-            c2DocumentBundle.getFileReference(),
+            defaultCustomerReference(c2DocumentBundle.getCustomerReference()),
             localAuthorityName,
             feesData);
 
         callPaymentsApi(paymentRequest);
+    }
+
+    public String defaultCustomerReference(final String currentValue) {
+        return isNotBlank(currentValue) ? currentValue : "Not provided";
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,

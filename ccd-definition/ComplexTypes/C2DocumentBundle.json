@@ -59,9 +59,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "fileReference",
+    "ListElementCode": "customerReference",
     "FieldType": "Text",
-    "ElementLabel": "File reference",
+    "ElementLabel": "Customer reference",
     "SecurityClassification": "Public"
   },
   {
