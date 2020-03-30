@@ -20,6 +20,7 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.isAlphanumeric;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Api
 @RestController
@@ -41,7 +42,11 @@ public class AddCaseNumberController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new CaseNumberAdded(callbackRequest.getCaseDetails()));
+        CaseData previousData = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
+
+        if (isEmpty(previousData.getFamilyManCaseNumber())) {
+            applicationEventPublisher.publishEvent(new CaseNumberAdded(callbackRequest.getCaseDetails()));
+        }
     }
 
     private List<String> validationErrors(final CaseDetails caseDetails) {

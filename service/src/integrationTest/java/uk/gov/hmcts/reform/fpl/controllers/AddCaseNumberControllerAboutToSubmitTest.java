@@ -15,10 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("integration-test")
 @WebMvcTest(AddCaseNumberController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class AddCaseNumberControllerTest extends AbstractControllerTest {
+public class AddCaseNumberControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final String FAMILY_MAN_CASE_NUMBER_KEY = "familyManCaseNumber";
 
-    AddCaseNumberControllerTest() {
+    AddCaseNumberControllerAboutToSubmitTest() {
         super("add-case-number");
     }
 
