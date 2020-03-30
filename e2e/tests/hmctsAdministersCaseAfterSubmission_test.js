@@ -43,10 +43,11 @@ Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage
 });
 
 Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
-  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {}) {
+  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {
+  }) {
     await caseViewPage.goToNewActions(event);
     I_doActionsOnEditPage();
-    await I.completeEvent('Save and continue', { summary: summary, description: description });
+    await I.completeEvent('Save and continue', {summary: summary, description: description});
     I.seeEventSubmissionConfirmation(event);
     I.see(summary);
     I.see(description);
@@ -210,7 +211,7 @@ Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewP
     await orderFunctions.createOrder(I, createOrderEventPage, order);
     I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
     await orderFunctions.assertOrder(I, caseViewPage, order, i + 1, defaultIssuedDate);
-    await orderFunctions.assertOrderSentToParty(I, caseViewPage,  representatives.servedByPost.fullName, order, i + 1);
+    await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order, i + 1);
   }
 });
 
@@ -249,4 +250,21 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+});
+
+Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteEventPage) => {
+  const note = 'Example note';
+  await caseViewPage.goToNewActions(config.administrationActions.addNote);
+  addNoteEventPage.addNote(note);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
+  caseViewPage.selectTab(caseViewPage.tabs.notes);
+  I.seeAnswerInTab('3', 'Note 1', 'Note', note);
+});
+
+Scenario('HMCTS admin update FamilyMan reference number after sending case to gatekeeper', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  enterFamilyManCaseNumberEventPage.enterCaseID('updatedmockcaseID');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 });
