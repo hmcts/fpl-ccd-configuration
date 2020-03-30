@@ -15,7 +15,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -36,6 +38,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -115,8 +118,21 @@ public class UploadC2DocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
-            paymentService.makePaymentForC2(caseDetails.getId(), caseData);
+        if (featureToggleService.isPaymentsEnabled()) {
+
+            if (displayAmountToPay(caseDetails)) {
+                try {
+                    paymentService.makePaymentForC2(caseDetails.getId(), caseData);
+                } catch (FeeRegisterException | PaymentsApiException ignore) {
+                    applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest,
+                        authorization, userId, C2_APPLICATION));
+                }
+            }
+
+            if (NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))) {
+                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
+                    C2_APPLICATION));
+            }
         }
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, authorization, userId));
     }

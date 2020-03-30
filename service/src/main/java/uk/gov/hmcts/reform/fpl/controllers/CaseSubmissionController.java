@@ -17,9 +17,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -42,6 +44,7 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
@@ -164,8 +167,22 @@ public class CaseSubmissionController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        if (featureToggleService.isPaymentsEnabled() && displayAmountToPay(caseDetails)) {
-            paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
+        if (featureToggleService.isPaymentsEnabled()) {
+
+            if (displayAmountToPay(caseDetails)) {
+                try {
+                    paymentService.makePaymentForCaseOrders(caseDetails.getId(), caseData);
+                } catch (FeeRegisterException | PaymentsApiException ignore) {
+                    applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest,
+                        authorization, userId,
+                        C110A_APPLICATION));
+                }
+            }
+
+            if (NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))) {
+                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, authorization, userId,
+                    C110A_APPLICATION));
+            }
         }
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
     }
