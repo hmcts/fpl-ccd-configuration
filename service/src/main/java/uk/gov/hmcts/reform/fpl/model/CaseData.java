@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
@@ -194,6 +195,16 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+
+    @JsonIgnore
+    public C2DocumentBundle getLastC2DocumentBundle() {
+        return Stream.of(ElementUtils.unwrapElements(c2DocumentBundle))
+            .filter(list -> !list.isEmpty())
+            .map(c2DocumentBundles -> c2DocumentBundles.get(c2DocumentBundles.size() - 1))
+            .findFirst()
+            .orElse(null);
+    }
+
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
