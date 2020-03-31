@@ -90,6 +90,7 @@ class CaseValidatorServiceTest {
             "• Enter the applicant's full name",
             "• Enter the contact's full name",
             "• Enter a job title for the contact",
+            "• Enter a PBA number for the contact",
             "• Enter a valid address for the contact",
             "• Enter at least one telephone number for the contact",
             "• Enter an email address for the contact",
@@ -345,6 +346,7 @@ class CaseValidatorServiceTest {
             .party(ApplicantParty.builder()
                 .organisationName("Harry Kane")
                 .jobTitle("Judge")
+                .pbaNumber("1234567")
                 .address(addressBuilder.build())
                 .email(EmailAddress.builder()
                     .email("Harrykane@hMCTS.net")

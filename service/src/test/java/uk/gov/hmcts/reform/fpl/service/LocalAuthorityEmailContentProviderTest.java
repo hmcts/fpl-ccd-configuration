@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -63,7 +62,7 @@ class LocalAuthorityEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
+    void shouldReturnExpectedMapWithValidSDODetails() {
         Map<String, Object> expectedMap = standardDirectionTemplateParameters();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
