@@ -72,7 +72,7 @@ class ComplyOnBehalfControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldAddResponsesOnBehalfOfWhenOtherEvent() {
-        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn("Emma Taylor");
+        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
 
         CallbackRequest request = CallbackRequest.builder()
             .eventId(COMPLY_OTHERS.toString())

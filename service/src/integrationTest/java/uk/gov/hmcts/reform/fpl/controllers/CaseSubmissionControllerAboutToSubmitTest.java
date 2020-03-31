@@ -58,11 +58,11 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     void mocking() {
         byte[] pdf = {1, 2, 3, 4, 5};
 
-        given(userDetailsService.getUserName(userAuthToken))
+        given(userDetailsService.getUserName())
             .willReturn("Emma Taylor");
         given(documentGeneratorService.generateSubmittedFormPDF(any(), any()))
             .willReturn(pdf);
-        given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, "2313.pdf"))
+        given(uploadDocumentService.uploadPDF(pdf, "2313.pdf"))
             .willReturn(document);
     }
 
