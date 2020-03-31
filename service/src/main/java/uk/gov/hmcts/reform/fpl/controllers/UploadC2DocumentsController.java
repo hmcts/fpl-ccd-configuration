@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Api
@@ -142,7 +143,7 @@ public class UploadC2DocumentsController {
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(userDetailsService.getUserName(authorization))
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(zonedDateTime
-                .toLocalDateTime(), "h:mma, d MMMM yyyy"));
+                .toLocalDateTime(), TIME_DATE));
 
         if (featureToggleService.isFeesEnabled()) {
             c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
