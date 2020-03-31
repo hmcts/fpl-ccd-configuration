@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -105,8 +106,7 @@ class DocumentSenderServiceTest {
             documentDownloadService,
             docmosisCoverDocumentsService,
             authTokenGenerator,
-            uploadDocumentService,
-            requestData);
+            uploadDocumentService);
     }
 
     @Test
@@ -127,9 +127,13 @@ class DocumentSenderServiceTest {
         List<LetterWithPdfsRequest> letterWithPdfsRequestValues = letterWithPdfsRequestArgumentCaptor.getAllValues();
         assertThat(letterWithPdfsRequestValues.get(0).getDocuments())
             .isEqualTo(List.of(COVER_DOCUMENTS_BYTES.get(0), MAIN_DOCUMENT_BYTES));
+        assertThat(letterWithPdfsRequestValues.get(0).getAdditionalData())
+            .isEqualTo(Map.of("caseId", CASE_ID, "documentName", documentToBeSent.getFilename()));
         assertThat(letterWithPdfsRequestValues.get(1).getDocuments())
             .isEqualTo(List.of(COVER_DOCUMENTS_BYTES.get(1),
                 MAIN_DOCUMENT_BYTES));
+        assertThat(letterWithPdfsRequestValues.get(1).getAdditionalData())
+            .isEqualTo(Map.of("caseId", CASE_ID, "documentName", documentToBeSent.getFilename()));
     }
 
     @Test

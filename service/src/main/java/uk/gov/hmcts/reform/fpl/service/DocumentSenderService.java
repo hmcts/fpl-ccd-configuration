@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
@@ -32,7 +31,6 @@ public class DocumentSenderService {
     private final DocmosisCoverDocumentsService docmosisCoverDocumentsService;
     private final AuthTokenGenerator authTokenGenerator;
     private final UploadDocumentService uploadDocumentService;
-    private final RequestData requestData;
 
     public List<SentDocument> send(DocumentReference mainDocument, List<Representative> representativesServedByPost,
                                    Long caseId, String familyManCaseNumber) {
@@ -44,7 +42,9 @@ public class DocumentSenderService {
                 representative).getBytes();
 
             sendLetterApi.sendLetter(authTokenGenerator.generate(),
-                new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary), SEND_LETTER_TYPE, Map.of()));
+                new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary),
+                    SEND_LETTER_TYPE,
+                    Map.of("caseId", caseId, "documentName", mainDocument.getFilename())));
 
             Document coversheet = uploadDocumentService.uploadPDF(coverDocument, "Coversheet.pdf");
 
