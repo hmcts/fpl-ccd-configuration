@@ -10,7 +10,7 @@ module.exports = {
     },
     pbaNumber: '#temporaryC2Document_pbaNumber',
     clientCode: '#temporaryC2Document_clientCode',
-    fileReference: '#temporaryC2Document_fileReference',
+    customerReference: '#temporaryC2Document_fileReference',
   },
   applicationTypePrefix: '#c2ApplicationType_type-',
 
@@ -34,6 +34,6 @@ module.exports = {
   enterPbaPaymentDetails(payment) {
     I.fillField(this.fields.pbaNumber, payment.pbaNumber);
     I.fillField(this.fields.clientCode, payment.clientCode);
-    I.fillField(this.fields.fileReference, payment.fileReference);
+    I.fillField(this.fields.customerReference, payment.customerReference);
   },
 };

@@ -112,7 +112,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeAnswerInTab('5', 'C2 Application 1', 'Are you using PBA to pay?', 'Yes');
   I.seeAnswerInTab('6', 'C2 Application 1', 'Payment by account (PBA) number', 'PBA0082848');
   I.seeAnswerInTab('7', 'C2 Application 1', 'Client code', '8888');
-  I.seeAnswerInTab('8', 'C2 Application 1', 'File reference', 'Example reference');
+  I.seeAnswerInTab('8', 'C2 Application 1', 'Customer reference', 'Example reference');
   I.seeAnswerInTab('1', 'C2 Application 2', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('4', 'C2 Application 2', 'Description', 'Jessica Pearson C2');
   I.seeAnswerInTab('5', 'C2 Application 2', 'Are you using PBA to pay?', 'No');
