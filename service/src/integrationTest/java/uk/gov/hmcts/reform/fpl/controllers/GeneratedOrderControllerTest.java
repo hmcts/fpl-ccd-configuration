@@ -106,7 +106,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
     }
 
     @Test
@@ -357,7 +357,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 caseDetails, "generate-document");
 
             verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(), eq(templateName));
-            verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
+            verify(uploadDocumentService).uploadPDF(pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -369,7 +369,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), "generate-document");
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
-            verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
+            verify(uploadDocumentService, never()).uploadPDF(any(), any());
         }
 
         @AfterEach

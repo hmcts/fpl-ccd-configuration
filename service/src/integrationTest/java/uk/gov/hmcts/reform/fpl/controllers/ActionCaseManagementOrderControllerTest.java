@@ -96,7 +96,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document());
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document());
     }
 
     @Test
@@ -164,7 +164,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     void midEventShouldAddDocumentReferenceToOrderAction() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(buildCaseDetails(emptyMap()));
 
-        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, PDF, "draft-case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(PDF, "draft-case-management-order.pdf");
 
         Map<String, Object> responseCaseData = callbackResponse.getData();
 
@@ -190,7 +190,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, PDF, "case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(PDF, "case-management-order.pdf");
         assertThat(caseData.getCaseManagementOrder()).isEqualTo(expectedCaseManagementOrder());
     }
 
@@ -216,7 +216,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, PDF, "draft-case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(PDF, "draft-case-management-order.pdf");
         assertThat(caseData.getCaseManagementOrder().getAction()).isEqualTo(getOrderAction(JUDGE_REQUESTED_CHANGE));
     }
 

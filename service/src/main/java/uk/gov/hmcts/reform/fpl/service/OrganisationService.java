@@ -31,7 +31,7 @@ public class OrganisationService {
     private final AuthTokenGenerator authTokenGenerator;
     private final RequestData requestData;
 
-    public List<String> findUserIdsInSameOrganisation(String authorisation, String localAuthorityCode) {
+    public List<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
 
         try {
             return ImmutableList
@@ -40,7 +40,7 @@ public class OrganisationService {
             try {
                 return
                     ImmutableList
-                        .copyOf(getUsersFromSameOrganisationBasedOnReferenceData(authorisation));
+                        .copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
             } catch (Exception e) {
                 throw new UserOrganisationLookupException(
                     format("Can't find users for %s local authority", localAuthorityCode), e
