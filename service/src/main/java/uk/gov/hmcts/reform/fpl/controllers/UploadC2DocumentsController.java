@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -132,7 +133,14 @@ public class UploadC2DocumentsController {
                     C2_APPLICATION));
             }
         }
+
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, requestData));
+
+        C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
+
+        if (isNotPaidByPba(c2DocumentBundle)) {
+            applicationEventPublisher.publishEvent(new C2PbaPaymentNotTakenEvent(callbackRequest, requestData));
+        }
     }
 
     private boolean shouldRemoveDocument(CaseData caseData) {
@@ -171,5 +179,9 @@ public class UploadC2DocumentsController {
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {
         return YES.getValue().equals(caseDetails.getData().get("displayAmountToPay"));
+    }
+
+    private boolean isNotPaidByPba(C2DocumentBundle c2DocumentBundle) {
+        return NO.getValue().equals(c2DocumentBundle.getUsePbaPayment());
     }
 }
