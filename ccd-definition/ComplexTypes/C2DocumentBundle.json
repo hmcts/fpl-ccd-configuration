@@ -42,6 +42,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "usePbaPayment",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Are you using PBA to pay?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "pbaNumber",
     "HintText": "For example, PBA1234567",
     "FieldType": "Text",
