@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -28,22 +29,12 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfProceedingsService {
-    private HearingBookingService hearingBookingService;
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private HearingVenueLookUpService hearingVenueLookUpService;
-    private CommonCaseDataExtractionService commonCaseDataExtractionService;
-
-    @Autowired
-    public NoticeOfProceedingsService(HearingBookingService hearingBookingService,
-                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                      HearingVenueLookUpService hearingVenueLookUpService,
-                                      CommonCaseDataExtractionService commonCaseDataExtractionService) {
-        this.hearingBookingService = hearingBookingService;
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
-        this.hearingVenueLookUpService = hearingVenueLookUpService;
-        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
-    }
+    private final HearingBookingService hearingBookingService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
                                                                    List<DocmosisTemplates> templateTypes) {

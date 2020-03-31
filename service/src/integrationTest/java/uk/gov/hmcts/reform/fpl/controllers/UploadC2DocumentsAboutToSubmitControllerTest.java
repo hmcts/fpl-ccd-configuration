@@ -13,19 +13,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -55,22 +52,18 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         Map<String, Object> data = createTemporaryC2Document();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
-
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getTemporaryC2Document()).isNull();
-        assertThat(caseData.getC2DocumentBundle()).hasSize(1);
-
         C2DocumentBundle uploadedC2DocumentBundle = caseData.getC2DocumentBundle().get(0).getValue();
-
-        assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
-        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
 
         // updated to use LocalDate to avoid 1-minute issue
         LocalDateTime uploadedDateTime = LocalDateTime.parse(uploadedC2DocumentBundle.getUploadedDateTime(), FORMATTER);
 
-        assertThat(formatLocalDateToString(uploadedDateTime.toLocalDate(), FormatStyle.MEDIUM))
-            .isEqualTo(formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
+        assertThat(uploadedDateTime.toLocalDate()).isEqualTo(ZONE_DATE_TIME.toLocalDate());
+        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(caseData.getC2DocumentBundle()).hasSize(1);
+        assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
+        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
     }
 
     @Test
@@ -78,28 +71,23 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        assertThat(caseData.getTemporaryC2Document()).isNull();
-        assertThat(caseData.getC2DocumentBundle()).hasSize(2);
 
         C2DocumentBundle existingC2Document = caseData.getC2DocumentBundle().get(0).getValue();
         C2DocumentBundle appendedC2Document = caseData.getC2DocumentBundle().get(1).getValue();
 
-        assertC2BundleDocument(existingC2Document, "C2 document one");
-        assertC2BundleDocument(appendedC2Document, "C2 document two");
-
-        assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
-
         // updated to use LocalDate to avoid 1-minute issue
         LocalDateTime uploadedDateTime = LocalDateTime.parse(appendedC2Document.getUploadedDateTime(), FORMATTER);
 
-        assertThat(formatLocalDateToString(uploadedDateTime.toLocalDate(), FormatStyle.MEDIUM))
-            .isEqualTo(formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
+        assertThat(uploadedDateTime.toLocalDate()).isEqualTo(ZONE_DATE_TIME.toLocalDate());
+        assertC2BundleDocument(existingC2Document, "C2 document one");
+        assertC2BundleDocument(appendedC2Document, "C2 document two");
+        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(caseData.getC2DocumentBundle()).hasSize(2);
+        assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
 
-    private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws IOException {
+    private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
         Document document = document();
 
         assertThat(documentBundle.getDocument().getUrl()).isEqualTo(document.links.self.href);

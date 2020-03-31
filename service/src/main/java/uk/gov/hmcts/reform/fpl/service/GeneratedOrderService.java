@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -52,6 +54,8 @@ import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BAS
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -62,18 +66,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final Time time;
-
-    public GeneratedOrderService(HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                 LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                 Time time) {
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-        this.time = time;
-    }
 
     public OrderTypeAndDocument buildOrderTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
         return typeAndDocument.toBuilder()
@@ -260,7 +257,7 @@ public class GeneratedOrderService {
                 return getInterimExpiryDate(interimEndDate);
             case FINAL:
                 requireNonNull(orderMonths);
-                return formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(orderMonths), "h:mma, d MMMM y");
+                return formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(orderMonths), TIME_DATE);
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + typeAndDocument.getSubtype());
         }
@@ -268,7 +265,7 @@ public class GeneratedOrderService {
 
     private String getInterimExpiryDate(InterimEndDate interimEndDate) {
         return interimEndDate.toLocalDateTime()
-            .map(dateTime -> formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma, d MMMM y"))
+            .map(dateTime -> formatLocalDateTimeBaseUsingFormat(dateTime, TIME_DATE))
             .orElse(END_OF_PROCEEDINGS.getLabel());
     }
 
@@ -303,7 +300,7 @@ public class GeneratedOrderService {
             .map(dateTime -> {
                 final String dayOrdinalSuffix = getDayOfMonthSuffix(dateTime.getDayOfMonth());
                 return formatLocalDateTimeBaseUsingFormat(
-                    dateTime, "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y");
+                    dateTime, String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix));
             })
             .orElse("the end of the proceedings");
     }
@@ -319,7 +316,7 @@ public class GeneratedOrderService {
             (numOfChildren == 1) ? "child" : "children",
             numOfMonths,
             formatLocalDateTimeBaseUsingFormat(orderExpiration,
-                "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y"));
+                String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)));
     }
 
     private List<Child> getSelectedChildren(List<Child> allChildren, ChildSelector selector, String choice) {
@@ -357,7 +354,7 @@ public class GeneratedOrderService {
     }
 
     private String formatEPODateTime(LocalDateTime dateTime) {
-        return formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy 'at' h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME_AT);
     }
 
     private String getFormattedRemovalAddress(CaseData caseData) {
