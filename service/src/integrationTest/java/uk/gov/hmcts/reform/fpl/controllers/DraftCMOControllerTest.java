@@ -86,7 +86,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToStartCallbackShouldPrepareCaseForCMO() throws Exception {
+    void aboutToStartCallbackShouldPrepareCaseForCMO() {
         Map<String, Object> data = ImmutableMap.of(
             HEARING_DETAILS_KEY, hearingDetails,
             "respondents1", createRespondents(),
@@ -124,13 +124,13 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
 
         CaseDetails caseDetails = buildCaseDetails(emptyMap());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, "draft-case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(pdf, "draft-case-management-order.pdf");
 
         final Map<String, Object> responseCaseData = callbackResponse.getData();
 

@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -46,12 +45,12 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
     @BeforeEach
     void before() {
-        given(userDetailsService.getUserName(userAuthToken))
+        given(userDetailsService.getUserName())
             .willReturn(USER_NAME);
     }
 
     @Test
-    void shouldCreateC2DocumentBundle() throws Exception {
+    void shouldCreateC2DocumentBundle() {
         Map<String, Object> data = createTemporaryC2Document();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
@@ -99,7 +98,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
             .isEqualTo(DateFormatterService.formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
     }
 
-    private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws IOException {
+    private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
         Document document = document();
 
         assertThat(documentBundle.getDocument().getUrl()).isEqualTo(document.links.self.href);

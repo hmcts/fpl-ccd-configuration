@@ -56,7 +56,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(userId, userAuthToken, PDF, C6_DOCUMENT_TITLE))
+        given(uploadDocumentService.uploadPDF(PDF, C6_DOCUMENT_TITLE))
             .willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
