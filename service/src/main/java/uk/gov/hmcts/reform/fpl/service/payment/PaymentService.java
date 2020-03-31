@@ -81,7 +81,7 @@ public class PaymentService {
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             c2DocumentBundle.getPbaNumber(),
             c2DocumentBundle.getClientCode(),
-            defaultCustomerReferenceIfBlank(c2DocumentBundle.getCustomerReference()),
+            defaultCustomerReferenceIfBlank(c2DocumentBundle.getFileReference()),
             localAuthorityName,
             feesData);
 

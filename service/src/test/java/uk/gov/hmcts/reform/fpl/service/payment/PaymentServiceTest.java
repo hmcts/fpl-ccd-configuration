@@ -105,7 +105,7 @@ class PaymentServiceTest {
                     .type(WITH_NOTICE)
                     .pbaNumber("PBA123")
                     .clientCode("clientCode")
-                    .customerReference(customerReference)
+                    .fileReference(customerReference)
                     .build())))
                 .build();
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
@@ -131,7 +131,7 @@ class PaymentServiceTest {
                     .type(WITH_NOTICE)
                     .pbaNumber("PBA123")
                     .clientCode("clientCode")
-                    .customerReference(customerReference)
+                    .fileReference(customerReference)
                     .build())))
                 .build();
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
@@ -156,7 +156,7 @@ class PaymentServiceTest {
                     .type(WITHOUT_NOTICE)
                     .pbaNumber("PBA123")
                     .clientCode("clientCode")
-                    .customerReference(customerReference)
+                    .fileReference(customerReference)
                     .build())))
                 .build();
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
@@ -182,7 +182,7 @@ class PaymentServiceTest {
                     .type(WITHOUT_NOTICE)
                     .pbaNumber("PBA123")
                     .clientCode("clientCode")
-                    .customerReference(customerReference)
+                    .fileReference(customerReference)
                     .build())))
                 .build();
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
@@ -211,7 +211,7 @@ class PaymentServiceTest {
                     .type(WITHOUT_NOTICE)
                     .pbaNumber("PBA123")
                     .clientCode("clientCode")
-                    .customerReference("customerReference")
+                    .fileReference("customerReference")
                     .build())))
                 .build();
 

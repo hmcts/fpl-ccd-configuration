@@ -11,7 +11,7 @@ public class C2DocumentBundle {
     private final String nameOfRepresentative;
     private final String pbaNumber;
     private final String clientCode;
-    private final String customerReference;
+    private final String fileReference;
     private final DocumentReference document;
     private final String description;
     private final String uploadedDateTime;
