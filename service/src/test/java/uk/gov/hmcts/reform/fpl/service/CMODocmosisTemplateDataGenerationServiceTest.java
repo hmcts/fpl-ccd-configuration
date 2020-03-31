@@ -107,7 +107,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("preHearingAttendance")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("hearingTime")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("judgeTitleAndName")).isEqualTo(DEFAULT);
+        assertThat(templateData.get("judgeTitleAndName")).isEqualTo("");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("");
         assertThat(templateData.get("allParties")).isNull();
         assertThat(templateData.get("localAuthorityDirections")).isNull();
