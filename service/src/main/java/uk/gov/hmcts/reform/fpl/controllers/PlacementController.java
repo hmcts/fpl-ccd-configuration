@@ -151,7 +151,7 @@ public class PlacementController {
             .map(DocumentReference::getBinaryUrl)
             .map(documentDownloadService::downloadDocument)
             .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
-            callbackRequest, requestData.authorisation(), requestData.userId(), documentContents))
+            callbackRequest, requestData, documentContents))
             .forEach(applicationEventPublisher::publishEvent);
     }
 
@@ -182,7 +182,7 @@ public class PlacementController {
 
     private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
         applicationEventPublisher.publishEvent(
-            new PlacementApplicationEvent(callbackRequest, requestData.authorisation(), requestData.userId()));
+            new PlacementApplicationEvent(callbackRequest, requestData));
     }
 
     private boolean isUpdatedPlacement(Placement previousPlacement, Placement newPlacement) {

@@ -86,9 +86,9 @@ class DocumentSenderServiceTest {
         given(time.now()).willReturn(DATE);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(requestData.userId()).willReturn(USER_ID);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME))
+        given(uploadDocumentService.uploadPDF(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME))
             .willReturn(COVERSHEETS.get(0));
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME))
+        given(uploadDocumentService.uploadPDF(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME))
             .willReturn(COVERSHEETS.get(1));
         given(sendLetterApi.sendLetter(anyString(),
             any(LetterWithPdfsRequest.class))).willReturn(new SendLetterResponse(UUID.randomUUID()));
@@ -119,8 +119,8 @@ class DocumentSenderServiceTest {
         verify(documentDownloadService).downloadDocument(documentToBeSent.getBinaryUrl());
         verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, REPRESENTATIVES.get(0));
         verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, REPRESENTATIVES.get(1));
-        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME);
-        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME);
+        verify(uploadDocumentService).uploadPDF(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME);
+        verify(uploadDocumentService).uploadPDF(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME);
         verify(sendLetterApi, times(2))
             .sendLetter(eq(SERVICE_AUTH_TOKEN), letterWithPdfsRequestArgumentCaptor.capture());
 
