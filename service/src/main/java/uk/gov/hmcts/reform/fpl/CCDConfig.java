@@ -27,6 +27,11 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         setEnvironment(environment());
         setWebhookConvention(this::webhookConvention);
 
+        roleExtends(CCD_SOLICITOR, LOCAL_AUTHORITY);
+        roleExtends(CCD_LASOLICITOR, LOCAL_AUTHORITY);
+        roleExtends(JUDICIARY, HMCTS_ADMIN);
+        roleExtends(GATEKEEPER, HMCTS_ADMIN);
+
         explicitState("hearingBookingDetails", JUDICIARY, "CRU");
 
         buildUniversalEvents();
@@ -319,29 +324,28 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                         .midEventWebhook()
                         .optional(CaseData::getJudgeAndLegalAdvisor)
                     .page("allPartiesDirections")
-//                        .readonly(CaseData::, "hearingDate=\"DO_NOT_SHOW\"")
                         .field("allPartiesHearingDate", DisplayContext.ReadOnly, null, "Label", null, "The next hearing is on ${hearingDetails.startDate}.")
-                        .complex(CaseData::getAllParties, Direction.class, this::renderSDODirection, false)
+                        .immutableList(CaseData::getAllParties).complex(Direction.class, this::renderSDODirection)
                         .complex(CaseData::getAllPartiesCustom, Direction.class, this::renderSDODirectionsCustom, false)
                     .page("localAuthorityDirections")
                         .field("localAuthorityDirectionsHearingDate", DisplayContext.ReadOnly, null, "Label", null, "The next hearing is on ${hearingDetails.startDate}.")
-                        .complex(CaseData::getLocalAuthorityDirections, Direction.class, this::renderSDODirection, false)
+                        .immutableList(CaseData::getLocalAuthorityDirections).complex(Direction.class, this::renderSDODirection)
                         .complex(CaseData::getLocalAuthorityDirectionsCustom, Direction.class, this::renderSDODirectionsCustom, false)
                     .page("parentsAndRespondentsDirections")
                         .field("respondentDirectionsHearingDate", DisplayContext.ReadOnly, null, "Label", null, "The next hearing is on ${hearingDetails.startDate}.")
-                        .complex(CaseData::getRespondentDirections, Direction.class, this::renderSDODirection, false)
+                        .immutableList(CaseData::getRespondentDirections).complex(Direction.class, this::renderSDODirection)
                         .complex(CaseData::getRespondentDirectionsCustom, Direction.class, this::renderSDODirectionsCustom, false)
                     .page("cafcassDirections")
                         .field("cafcassDirectionsHearingDate", DisplayContext.ReadOnly, null, "Label", null, "The next hearing is on ${hearingDetails.startDate}.")
-                        .complex(CaseData::getCafcassDirections, Direction.class, this::renderSDODirection, false)
+                        .immutableList(CaseData::getCafcassDirections).complex(Direction.class, this::renderSDODirection)
                         .complex(CaseData::getCafcassDirectionsCustom, Direction.class, this::renderSDODirectionsCustom, false)
                     .page("otherPartiesDirections")
                         .field("otherPartiesDirectionsHearingDate", DisplayContext.ReadOnly, null, "Label", null, "The next hearing is on ${hearingDetails.startDate}.")
-                        .complex(CaseData::getOtherPartiesDirections, Direction.class, this::renderSDODirection, false)
+                        .immutableList(CaseData::getOtherPartiesDirections).complex(Direction.class, this::renderSDODirection)
                         .complex(CaseData::getOtherPartiesDirectionsCustom, Direction.class, this::renderSDODirectionsCustom, false)
                     .page("courtDirections")
                         .field("courtDirectionsHearingDate", DisplayContext.ReadOnly, null, "Label", null, "The next hearing is on ${hearingDetails.startDate}.")
-                        .complex(CaseData::getCourtDirections, Direction.class, this::renderSDODirection, false)
+                        .immutableList(CaseData::getCourtDirections).complex(Direction.class, this::renderSDODirection)
                         .complex(CaseData::getCourtDirectionsCustom, Direction.class, this::renderSDODirectionsCustom, false)
                     .page("documentReview")
                         .field(CaseData::getStandardDirectionOrder).showSummary(false)
