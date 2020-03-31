@@ -42,6 +42,13 @@ public class FeatureToggleServiceTest {
     }
 
     @Test
+    public void shouldMakeCorrectCallForCtscReport() {
+        featureToggleService.isCtscReportEnabled();
+
+        verify(ldClient).boolVariation(eq("CTSC"), any(LDUser.class), eq(false));
+    }
+
+    @Test
     public void shouldMakeCorrectCallForFees() {
         featureToggleService.isFeesEnabled();
 
