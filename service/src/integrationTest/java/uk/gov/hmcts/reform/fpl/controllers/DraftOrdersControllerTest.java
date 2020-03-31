@@ -320,7 +320,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         @Test
         void midEventShouldGenerateDraftStandardDirectionDocument() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, DRAFT_ORDER_FILE_NAME))
+            given(uploadDocumentService.uploadPDF(pdf, DRAFT_ORDER_FILE_NAME))
                 .willReturn(document);
 
             List<Element<Direction>> directions = buildDirections(
@@ -352,7 +352,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         @Test
         void aboutToSubmitShouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
+            given(uploadDocumentService.uploadPDF(pdf, SEALED_ORDER_FILE_NAME))
                 .willReturn(document);
 
             UUID uuid = UUID.randomUUID();
@@ -402,7 +402,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         @Test
         void aboutToSubmitShouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
+            given(uploadDocumentService.uploadPDF(pdf, SEALED_ORDER_FILE_NAME))
                 .willReturn(document());
 
             UUID uuid = UUID.randomUUID();
@@ -425,7 +425,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         @Test
         void aboutToSubmitShouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
+            given(uploadDocumentService.uploadPDF(pdf, SEALED_ORDER_FILE_NAME))
                 .willReturn(document());
 
             CallbackRequest request = buildCallbackRequest(SEALED);

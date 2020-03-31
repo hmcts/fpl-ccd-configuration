@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -16,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
@@ -27,6 +27,7 @@ public class NotifyGatekeeperController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final RequestData requestData;
 
     //TODO: can we validate a hearing has been added at this point? Saves some nasty exceptions in the case of
     // no hearing being present when populating standard directions FPLA-1516
@@ -44,12 +45,10 @@ public class NotifyGatekeeperController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(
-            new PopulateStandardDirectionsEvent(callbackRequest, authorization, userId));
-        applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, authorization, userId));
+            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+        applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, requestData));
     }
 }

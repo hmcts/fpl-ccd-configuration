@@ -85,7 +85,7 @@ public class RepresentativesController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(
-            callbackRequest, requestData.authorisation(), requestData.userId()));
+            callbackRequest, requestData));
     }
 
     private String getRespondentsLabel(CaseData caseData) {

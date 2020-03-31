@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
@@ -68,6 +69,9 @@ class PopulateStandardDirectionsHandlerTest {
     @Mock
     private SystemUpdateUserConfiguration userConfig;
 
+    @Mock
+    private RequestData requestData;
+
     @Autowired
     private HearingBookingService hearingBookingService;
 
@@ -95,7 +99,11 @@ class PopulateStandardDirectionsHandlerTest {
 
         given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
 
-        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn("Emma Taylor");
+        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
+
+        given(requestData.userId()).willReturn(USER_ID);
+
+        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
     }
 
     @Test
@@ -127,7 +135,7 @@ class PopulateStandardDirectionsHandlerTest {
             .build());
 
         populateStandardDirectionsHandler.populateStandardDirections(
-            new PopulateStandardDirectionsEvent(callbackRequest, "", ""));
+            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
 
         verify(coreCaseDataApi).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
@@ -168,7 +176,7 @@ class PopulateStandardDirectionsHandlerTest {
             .build());
 
         populateStandardDirectionsHandler.populateStandardDirections(
-            new PopulateStandardDirectionsEvent(callbackRequest, "", ""));
+            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
 
         verify(coreCaseDataApi).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
@@ -209,7 +217,7 @@ class PopulateStandardDirectionsHandlerTest {
             .build());
 
         populateStandardDirectionsHandler.populateStandardDirections(
-            new PopulateStandardDirectionsEvent(callbackRequest, "", ""));
+            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
 
         assertThat(objectMapper.convertValue(
             callbackRequest.getCaseDetails().getData().get("localAuthorityDirections"), List.class).get(0))
@@ -234,7 +242,7 @@ class PopulateStandardDirectionsHandlerTest {
     }
 
     @Test
-    void shouldThrowIllegalStateExceptionWhenNoHearing() throws IOException {
+    void shouldThrowIllegalStateExceptionWhenNoHearing() {
         CallbackRequest callbackRequest = callbackRequest();
         callbackRequest.getCaseDetails().getData().remove("hearingDetails");
 
@@ -247,6 +255,6 @@ class PopulateStandardDirectionsHandlerTest {
                 .build());
 
         assertThrows(IllegalStateException.class, () -> populateStandardDirectionsHandler.populateStandardDirections(
-                new PopulateStandardDirectionsEvent(callbackRequest, "", "")));
+                new PopulateStandardDirectionsEvent(callbackRequest, requestData)));
     }
 }

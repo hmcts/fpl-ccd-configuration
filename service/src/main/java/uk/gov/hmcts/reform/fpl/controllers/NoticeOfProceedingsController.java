@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -70,19 +69,15 @@ public class NoticeOfProceedingsController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         Map<String, Object> templateData = noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 
-        List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
-            templateTypes);
+        List<Document> uploadedDocuments = generateAndUploadDocuments(templateData, templateTypes);
 
         List<Element<DocumentBundle>> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
 
@@ -121,17 +116,14 @@ public class NoticeOfProceedingsController {
             .collect(Collectors.toList());
     }
 
-    private List<Document> generateAndUploadDocuments(String userId,
-                                                      String authorization,
-                                                      Map<String, Object> templatePlaceholders,
+    private List<Document> generateAndUploadDocuments(Map<String, Object> templatePlaceholders,
                                                       List<DocmosisTemplates> templates) {
         List<DocmosisDocument> docmosisDocuments = templates.stream()
             .map(template -> docmosisDocumentGeneratorService.generateDocmosisDocument(templatePlaceholders, template))
             .collect(Collectors.toList());
 
         return docmosisDocuments.stream()
-            .map(document -> uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-                document.getDocumentTitle()))
+            .map(document -> uploadDocumentService.uploadPDF(document.getBytes(), document.getDocumentTitle()))
             .collect(Collectors.toList());
     }
 
