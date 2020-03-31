@@ -32,8 +32,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         roleExtends(JUDICIARY, HMCTS_ADMIN);
         roleExtends(GATEKEEPER, HMCTS_ADMIN);
 
-        explicitState("hearingBookingDetails", JUDICIARY, "CRU");
-
         buildUniversalEvents();
         buildTabs();
         buildOpen();
@@ -44,12 +42,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         buildWorkBasketResultFields();
         buildWorkBasketInputFields();
 
-        event("internal-changeState:Gatekeeping->PREPARE_FOR_HEARING")
-                .forStateTransition(Gatekeeping, PREPARE_FOR_HEARING)
-                .name("-")
-                .endButtonLabel("")
-                .explicitGrants()
-                .grant("C", SYSTEM_UPDATE);
         caseField("dateAndTimeSubmitted", null, "DateTime", null, "Date submitted");
         caseField("submittedForm", "Attached PDF", "Document");
     }
@@ -296,6 +288,13 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .endButtonLabel("Delete application")
                 .fields()
                     .field("deletionConsent", DisplayContext.Mandatory, null, "MultiSelectList", "DeletionConsent", " ");
+
+        event("internal-changeState:Gatekeeping->PREPARE_FOR_HEARING")
+            .forStateTransition(Gatekeeping, PREPARE_FOR_HEARING)
+            .name("-")
+            .endButtonLabel("")
+            .explicitGrants()
+            .grant("C", SYSTEM_UPDATE);
     }
 
     private void buildGatekeepingEvents() {
@@ -675,7 +674,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .explicitGrants()
             .grant("CRU", SYSTEM_UPDATE)
             .aboutToSubmitWebhook("cmo-progression");
-        explicitState("uploadC2-PREPARE_FOR_HEARING", LOCAL_AUTHORITY, "");
     }
 
     @SuppressWarnings("unchecked")
