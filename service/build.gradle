@@ -156,7 +156,7 @@ sonarqube {
     property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.exclusions", "**/model/**, **/config/*Configuration.java"
+    property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java"
   }
 }
 
@@ -184,6 +184,8 @@ dependencies {
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
   compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot)
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: versions.springBoot
 
   compile group: 'org.springframework.security', name: 'spring-security-config'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
@@ -193,9 +195,10 @@ dependencies {
   compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.10.2'
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.12.1', classifier: 'thin'
   compile group: 'io.github.openfeign', name: 'feign-core', version: '10.4.0'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.11'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '6.3.2'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
-
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
