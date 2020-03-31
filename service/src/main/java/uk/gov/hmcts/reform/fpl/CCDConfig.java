@@ -27,10 +27,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         setEnvironment(environment());
         setWebhookConvention(this::webhookConvention);
 
-        roleExtends(CCD_SOLICITOR, LOCAL_AUTHORITY);
-        roleExtends(CCD_LASOLICITOR, LOCAL_AUTHORITY);
-        roleExtends(JUDICIARY, HMCTS_ADMIN);
-        roleExtends(GATEKEEPER, HMCTS_ADMIN);
+        role(CCD_SOLICITOR).has(LOCAL_AUTHORITY);
+        role(CCD_LASOLICITOR).has(LOCAL_AUTHORITY);
+        role(JUDICIARY).has(HMCTS_ADMIN);
+        role(GATEKEEPER).has(HMCTS_ADMIN);
 
         buildUniversalEvents();
         buildTabs();
