@@ -28,8 +28,10 @@ import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.UpcomingHearingsFound;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -45,12 +47,14 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.UpcomingHearingsContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -70,6 +74,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPCOMING_HEARINGS_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
@@ -95,6 +100,7 @@ public class NotificationHandler {
     private final GeneratedOrderEmailContentProvider orderEmailContentProvider;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
+    private final UpcomingHearingsContentProvider upcomingHearingsEmailContentProvider;
     private final FailedPBAPaymentContentProvider failedPBAPaymentContentProvider;
     private final IdamApi idamApi;
     private final InboxLookupService inboxLookupService;
@@ -105,6 +111,7 @@ public class NotificationHandler {
     private final ObjectMapper objectMapper;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final NotificationService notificationService;
+    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void sendEmailToHmctsAdmin(SubmittedCaseEvent event) {
@@ -351,6 +358,24 @@ public class NotificationHandler {
 
         notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
             eventData.getReference());
+    }
+
+    @EventListener
+    public void sendEmailWithUpcomingHearings(UpcomingHearingsFound event) {
+        if (featureToggleService.isCtscReportEnabled()) {
+            if (!isEmpty(event.getCaseDetails())) {
+                Map<String, Object> parameters = upcomingHearingsEmailContentProvider.buildParameters(
+                    event.getHearingDate(), event.getCaseDetails());
+                String email = ctscEmailLookupConfiguration.getEmail();
+                String reference = event.getHearingDate().toString();
+
+                notificationService.sendEmail(UPCOMING_HEARINGS_TEMPLATE, email, parameters, reference);
+            } else {
+                log.info("Email of upcoming hearings not sent as no cases to be heard on {}", event.getHearingDate());
+            }
+        } else {
+            log.info("Sending email of upcoming hearings is turned off");
+        }
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
