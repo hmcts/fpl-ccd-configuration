@@ -494,7 +494,7 @@ public class RoboticsDataServiceTest {
             "C/+o 34 9090 7877");
     }
 
-    private CaseData prepareCaseData(LocalDate date) throws IOException {
+    private CaseData prepareCaseData(LocalDate date) {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
         caseData.setDateSubmitted(date);
 

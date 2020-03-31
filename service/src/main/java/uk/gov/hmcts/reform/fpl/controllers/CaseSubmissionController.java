@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -64,6 +65,7 @@ public class CaseSubmissionController {
     private final PaymentService paymentService;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -145,7 +147,7 @@ public class CaseSubmissionController {
         Map<String, Object> data = caseDetails.getData();
         data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
         data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
-        data.put("sendToCtsc", setSendToCtsc());
+        data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()));
         data.put("submittedForm", ImmutableMap.<String, String>builder()
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)
@@ -185,8 +187,10 @@ public class CaseSubmissionController {
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
     }
 
-    private String setSendToCtsc() {
-        return featureToggleService.isCtscEnabled() ? YES.getValue() : NO.getValue();
+    private String setSendToCtsc(String caseLocalAuthority) {
+        String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
+
+        return featureToggleService.isCtscEnabled(localAuthorityName) ? YES.getValue() : NO.getValue();
     }
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {

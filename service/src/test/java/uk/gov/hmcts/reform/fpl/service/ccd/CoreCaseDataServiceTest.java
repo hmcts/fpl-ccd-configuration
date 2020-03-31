@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
@@ -98,7 +97,7 @@ class CoreCaseDataServiceTest {
     }
 
     @Test
-    void shouldReturnMatchingCaseDetailsIdWhenSearchedByExistingCaseId() throws IOException {
+    void shouldReturnMatchingCaseDetailsIdWhenSearchedByExistingCaseId() {
         CaseDetails expectedCaseDetails = populatedCaseDetails();
 
         when(requestData.authorisation()).thenReturn(userAuthToken);
