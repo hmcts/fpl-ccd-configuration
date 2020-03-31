@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +51,7 @@ class CafcassEmailContentProviderSDOIssuedTest {
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
+    void shouldReturnExpectedMapWithValidSDODetails() {
         Map<String, Object> expectedMap = getStandardDirectionTemplateParameters();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
