@@ -35,7 +35,7 @@
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "fileReference",
-    "EventElementLabel": "File reference",
+    "EventElementLabel": "Customer reference",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
