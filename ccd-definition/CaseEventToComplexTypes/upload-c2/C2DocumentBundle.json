@@ -47,7 +47,7 @@
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "fileReference",
-    "EventElementLabel": "File reference",
+    "EventElementLabel": "Customer reference",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "temporaryC2Document.usePbaPayment=\"Yes\""

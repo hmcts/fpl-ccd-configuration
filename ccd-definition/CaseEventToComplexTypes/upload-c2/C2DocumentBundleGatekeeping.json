@@ -29,7 +29,6 @@
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryC2Document.usePbaPayment=\"Yes\""
-
   },
   {
     "LiveFrom": "01/01/2017",
@@ -41,7 +40,6 @@
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "temporaryC2Document.usePbaPayment=\"Yes\""
-
   },
   {
     "LiveFrom": "01/01/2017",
@@ -49,11 +47,10 @@
     "CaseEventID": "uploadC2Gatekeeping",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "fileReference",
-    "EventElementLabel": "File reference",
+    "EventElementLabel": "Customer reference",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "temporaryC2Document.usePbaPayment=\"Yes\""
-
   },
   {
     "LiveFrom": "01/01/2017",

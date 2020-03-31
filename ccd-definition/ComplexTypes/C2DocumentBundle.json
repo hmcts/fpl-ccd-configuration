@@ -69,7 +69,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "fileReference",
     "FieldType": "Text",
-    "ElementLabel": "File reference",
+    "ElementLabel": "Customer reference",
     "SecurityClassification": "Public"
   },
   {
