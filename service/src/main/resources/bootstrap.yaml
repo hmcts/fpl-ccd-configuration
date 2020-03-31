@@ -21,4 +21,4 @@ spring:
         robotics-notification-recipient: robotics.notification.recipient
         ld-sdk-key: ld.sdk_key
         ctsc-inbox: fpl.ctsc_inbox
-        scheduler-db-password: scheduler_db_password
+        scheduler-db-password: SCHEDULER_DB_PASSWORD
