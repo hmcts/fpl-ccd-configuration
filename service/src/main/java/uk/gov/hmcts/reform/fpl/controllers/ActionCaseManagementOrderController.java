@@ -39,6 +39,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.DATE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
@@ -65,18 +66,22 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getCaseManagementOrder() == null || !caseData.getCaseManagementOrder().isInJudgeReview()) {
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+        if (caseManagementOrder == null || !caseManagementOrder.isInJudgeReview()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
                 .build();
         }
 
         caseDetails.getData().putAll(caseManagementOrderService
-                .extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
+                .extractMapFieldsFromCaseManagementOrder(caseManagementOrder));
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
+        draftCMOService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
         caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
+
+        caseDetails.getData().put(DATE_OF_ISSUE.getKey(),
+            caseManagementOrderService.getIssuedDate(caseManagementOrder));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -141,6 +146,8 @@ public class ActionCaseManagementOrderController {
         Document document = getDocument(caseData, order.isDraft());
 
         order = caseManagementOrderService.addDocument(order, document);
+
+        caseDetails.getData().remove(DATE_OF_ISSUE.getKey());
 
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
