@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -21,8 +20,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDet
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {HmctsEmailContentProvider.class})
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, LookupTestConfig.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, HmctsEmailContentProvider.class, LookupTestConfig.class
+})
 class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired

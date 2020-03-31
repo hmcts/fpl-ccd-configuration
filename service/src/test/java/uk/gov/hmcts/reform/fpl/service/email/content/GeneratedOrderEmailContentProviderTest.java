@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -33,8 +32,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {GeneratedOrderEmailContentProvider.class})
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, LookupTestConfig.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, GeneratedOrderEmailContentProvider.class, LookupTestConfig.class
+})
 class GeneratedOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
     private static final LocalDate TODAY = LocalDate.now();
     private static final String FAMILY_MAN_CASE_NUMBER = randomAlphabetic(8);
