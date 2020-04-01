@@ -10,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -214,6 +217,34 @@ class CaseDataTest {
             caseData = CaseData.builder().build();
 
             assertThat(caseData.getFurtherDirectionsText()).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetLastC2DocumentBundle {
+        private CaseData caseData;
+        private List<Element<C2DocumentBundle>> c2DocumentBundle;
+
+        @Test
+        void shouldReturnLastC2DocumentBundleWhenC2DocumentBundleIsPopulated() {
+            C2DocumentBundle c2DocumentBundle1 = C2DocumentBundle.builder()
+                .description("Mock bundle 1")
+                .build();
+
+            C2DocumentBundle c2DocumentBundle2 = C2DocumentBundle.builder()
+                .description("Mock bundle 2")
+                .build();
+
+            c2DocumentBundle = wrapElements(c2DocumentBundle1, c2DocumentBundle2);
+
+            caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
+            assertThat(caseData.getLastC2DocumentBundle()).isEqualTo(c2DocumentBundle2);
+        }
+
+        @Test
+        void shouldReturnNullIfC2DocumentBundleIsNotPopulated() {
+            caseData = CaseData.builder().c2DocumentBundle(null).build();
+            assertThat(caseData.getLastC2DocumentBundle()).isEqualTo(null);
         }
     }
 }
