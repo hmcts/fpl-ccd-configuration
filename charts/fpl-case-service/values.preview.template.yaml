@@ -18,6 +18,7 @@ java:
     SCHEDULER_ENABLED: false
 
 ccd:
+  imagePullPolicy: Always
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
