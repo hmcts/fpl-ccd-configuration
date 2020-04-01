@@ -10,15 +10,15 @@ import uk.gov.hmcts.reform.fpl.model.event.EventData;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderIssuedEventHandler {
-    private final CaseManagementOrderCaseLinkNotificationHandler caseManagementOrderCaseLinkNotificationHandler;
-    private final CaseManagementOrderDocumentLinkNotificationHandler caseManagementOrderDocumentLinkNotificationHandler;
+    private final CaseLinkNotificationHandler caseLinkNotificationHandler;
+    private final DocumentLinkNotificationHandler documentLinkNotificationHandler;
 
     @EventListener
     public void sendEmailsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
 
-        caseManagementOrderCaseLinkNotificationHandler.sendCMOCaseLinkNotifications(eventData);
-        caseManagementOrderDocumentLinkNotificationHandler.sendCMODocumentLinkNotifications(eventData,
+        caseLinkNotificationHandler.sendNotifications(eventData);
+        documentLinkNotificationHandler.sendNotifications(eventData,
             event.getDocumentContents());
     }
 }

@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseManagementOrderDocumentLinkNotificationHandler {
+public class DocumentLinkNotificationHandler {
     private final ObjectMapper objectMapper;
     private final NotificationService notificationService;
     private final RepresentativeService representativeService;
@@ -30,27 +30,27 @@ public class CaseManagementOrderDocumentLinkNotificationHandler {
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
-    public void sendCMODocumentLinkNotifications(final EventData eventData, final byte[] documentContents) {
-        sendCMODocumentLinkNotificationForCafcass(eventData, documentContents);
-        sendCMODocumentLinkNotificationsToRepresentatives(eventData, documentContents);
+    public void sendNotifications(final EventData eventData, final byte[] documentContents) {
+        sendToCafcass(eventData, documentContents);
+        sendToRepresentatives(eventData, documentContents);
         issuedOrderAdminNotificationHandler.sendOrderIssuedNotificationToAdmin(eventData, documentContents, CMO);
     }
 
-    private void sendCMODocumentLinkNotificationForCafcass(final EventData eventData, final byte[] documentContents) {
+    private void sendToCafcass(final EventData eventData, final byte[] documentContents) {
         final String cafcassName = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getName();
 
-        Map<String, Object> cafcassParameters =
+        final Map<String, Object> cafcassParameters =
             caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
                 eventData.getCaseDetails(), cafcassName, documentContents);
 
-        String cafcassEmail = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
+        final String cafcassEmail = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
 
         notificationService.sendEmail(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail,
             cafcassParameters, eventData.getReference());
     }
 
-    private void sendCMODocumentLinkNotificationsToRepresentatives(final EventData eventData,
-                                                                   final byte[] documentContents) {
+    private void sendToRepresentatives(final EventData eventData,
+                                       final byte[] documentContents) {
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
         List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), EMAIL);

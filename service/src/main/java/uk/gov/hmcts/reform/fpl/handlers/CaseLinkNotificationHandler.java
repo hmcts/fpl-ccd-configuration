@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseManagementOrderCaseLinkNotificationHandler {
+public class CaseLinkNotificationHandler {
     private final ObjectMapper objectMapper;
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
@@ -30,26 +30,26 @@ public class CaseManagementOrderCaseLinkNotificationHandler {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
-    public void sendCMOCaseLinkNotifications(final EventData eventData) {
-        sendCMOCaseLinkNotificationForLocalAuthority(eventData);
-        sendCMOCaseLinkNotificationToRepresentatives(eventData);
+    public void sendNotifications(final EventData eventData) {
+        sendToLocalAuthority(eventData);
+        sendToRepresentatives(eventData);
     }
 
-    private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
+    private void sendToLocalAuthority(final EventData eventData) {
         final String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(
             eventData.getLocalAuthorityCode());
 
-        Map<String, Object> localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
+        final Map<String, Object> localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
             .buildCMOIssuedCaseLinkNotificationParameters(eventData.getCaseDetails(), localAuthorityName);
 
-        String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
+        final String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
             eventData.getLocalAuthorityCode());
 
         notificationService.sendEmail(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email,
             localAuthorityNotificationParameters, eventData.getReference());
     }
 
-    private void sendCMOCaseLinkNotificationToRepresentatives(final EventData eventData) {
+    private void sendToRepresentatives(final EventData eventData) {
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
         List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), DIGITAL_SERVICE);
