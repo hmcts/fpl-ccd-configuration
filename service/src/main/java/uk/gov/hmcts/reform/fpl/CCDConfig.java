@@ -29,7 +29,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
         role(CCD_SOLICITOR, CCD_LASOLICITOR).has(LOCAL_AUTHORITY);
         role(JUDICIARY, GATEKEEPER).has(HMCTS_ADMIN);
-        role(SYSTEM_UPDATE).isAPIRole();
+        role(SYSTEM_UPDATE).apiOnly();
 
         buildUniversalEvents();
         buildTabs();
