@@ -14,6 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -28,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.service.CommonCaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
@@ -36,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDat
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, DraftCMOService.class, CommonCaseDataExtractionService.class,
     DateFormatterService.class, CommonDirectionService.class, UserDetailsService.class, HearingVenueLookUpService.class,
-    HearingBookingService.class, JsonOrdersLookupService.class
+    HearingBookingService.class, JsonOrdersLookupService.class, FixedTimeConfiguration.class
 })
 class CMODocmosisTemplateDataGenerationServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
@@ -52,6 +55,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     private final DraftCMOService draftCMOService;
     private final HearingBookingService hearingBookingService;
     private final ObjectMapper mapper;
+    private final Time time;
     private final String[] scheduleKeys = {
         "includeSchedule", "allocation", "application", "todaysHearing", "childrensCurrentArrangement",
         "timetableForProceedings", "timetableForChildren", "alternativeCarers", "threshold", "keyIssues",
@@ -69,18 +73,20 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     CMODocmosisTemplateDataGenerationServiceTest(CommonCaseDataExtractionService commonCaseDataExtractionService,
                                                  DraftCMOService draftCMOService,
                                                  HearingBookingService hearingBookingService,
-                                                 ObjectMapper mapper) {
+                                                 ObjectMapper mapper,
+                                                 Time time) {
         this.commonCaseDataExtractionService = commonCaseDataExtractionService;
         this.draftCMOService = draftCMOService;
         this.hearingBookingService = hearingBookingService;
         this.mapper = mapper;
+        this.time = time;
     }
 
     @BeforeEach
     void setUp() {
         templateDataGenerationService = new CMODocmosisTemplateDataGenerationService(
             commonCaseDataExtractionService, commonDirectionService, draftCMOService, hearingBookingService,
-            hmctsCourtLookupConfiguration, mapper);
+            hmctsCourtLookupConfiguration, mapper, time);
     }
 
     @Test
@@ -90,8 +96,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
         assertThat(templateData.get("courtName")).isEqualTo(DEFAULT);
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo(DEFAULT);
-        assertThat(templateData.get("generationDate")).isEqualTo(
-            formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG));
+        assertThat(templateData.get("dateOfIssue")).isEqualTo(formatLocalDateToString(time.now().toLocalDate(), DATE));
         assertThat(templateData.get("complianceDeadline")).isEqualTo(DEFAULT);
         assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("numberOfChildren")).isEqualTo(0);
@@ -102,7 +107,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("preHearingAttendance")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("hearingTime")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("judgeTitleAndName")).isEqualTo(DEFAULT);
+        assertThat(templateData.get("judgeTitleAndName")).isEqualTo("");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("");
         assertThat(templateData.get("allParties")).isNull();
         assertThat(templateData.get("localAuthorityDirections")).isNull();
@@ -128,8 +133,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
         assertThat(templateData.get("courtName")).isEqualTo(COURT_NAME);
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
-        assertThat(templateData.get("generationDate")).isEqualTo(
-            formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG));
+        assertThat(templateData.get("dateOfIssue")).isEqualTo("15 January 2020");
         assertThat(templateData.get("complianceDeadline")).isEqualTo(
             formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG));
         assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());

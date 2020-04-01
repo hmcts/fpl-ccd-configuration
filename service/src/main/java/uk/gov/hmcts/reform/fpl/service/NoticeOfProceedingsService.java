@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class NoticeOfProceedingsService {
-    private DateFormatterService dateFormatterService;
-    private HearingBookingService hearingBookingService;
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private HearingVenueLookUpService hearingVenueLookUpService;
-    private CommonCaseDataExtractionService commonCaseDataExtractionService;
+    private final DateFormatterService dateFormatterService;
+    private final HearingBookingService hearingBookingService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     @Autowired
     public NoticeOfProceedingsService(DateFormatterService dateFormatterService,
