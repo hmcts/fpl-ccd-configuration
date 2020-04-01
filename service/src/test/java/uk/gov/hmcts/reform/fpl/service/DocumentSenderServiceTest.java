@@ -55,6 +55,7 @@ class DocumentSenderServiceTest {
     private static final List<Document> COVERSHEETS = List.of(testDocument(), testDocument());
     private static final List<byte[]> COVER_DOCUMENTS_BYTES = List.of(new byte[]{0}, new byte[]{1});
     private static final List<Representative> REPRESENTATIVES = List.of(testRepresentative(), testRepresentative());
+    private static final List<UUID> LETTERS_IDS = List.of(UUID.randomUUID(), UUID.randomUUID());
 
     private DocumentSenderService documentSenderService;
 
@@ -91,8 +92,9 @@ class DocumentSenderServiceTest {
             .willReturn(COVERSHEETS.get(0));
         given(uploadDocumentService.uploadPDF(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME))
             .willReturn(COVERSHEETS.get(1));
-        given(sendLetterApi.sendLetter(anyString(),
-            any(LetterWithPdfsRequest.class))).willReturn(new SendLetterResponse(UUID.randomUUID()));
+        given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class)))
+            .willReturn(new SendLetterResponse(LETTERS_IDS.get(0)))
+            .willReturn(new SendLetterResponse(LETTERS_IDS.get(1)));
         given(documentDownloadService.downloadDocument(anyString())).willReturn(MAIN_DOCUMENT_BYTES);
         given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, REPRESENTATIVES.get(0)))
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(0)));
@@ -145,12 +147,16 @@ class DocumentSenderServiceTest {
             .partyName(REPRESENTATIVES.get(0).getFullName())
             .document(DOCUMENT_REFERENCE)
             .coversheet(buildFromDocument(COVERSHEETS.get(0)))
-            .sentAt(FORMATTED_DATE).build());
+            .sentAt(FORMATTED_DATE)
+            .letterId(LETTERS_IDS.get(0).toString())
+            .build());
 
         assertThat(sentDocuments.get(1)).isEqualTo(SentDocument.builder()
             .partyName(REPRESENTATIVES.get(1).getFullName())
             .document(DOCUMENT_REFERENCE)
             .coversheet(buildFromDocument(COVERSHEETS.get(1)))
-            .sentAt(FORMATTED_DATE).build());
+            .sentAt(FORMATTED_DATE)
+            .letterId(LETTERS_IDS.get(1).toString())
+            .build());
     }
 }
