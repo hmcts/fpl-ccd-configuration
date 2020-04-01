@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,6 @@ public class NotificationEventHandlerTestData {
     static final String COURT_EMAIL_ADDRESS = "admin@family-court.com";
     static final String COURT_NAME = "Test court";
     static final String AUTH_TOKEN = "Bearer token";
-    static final String USER_ID = "1";
     static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
     static final String CAFCASS_NAME = "cafcass";
     static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
@@ -38,7 +36,7 @@ public class NotificationEventHandlerTestData {
     private NotificationEventHandlerTestData() {
     }
 
-    public static CallbackRequest appendSendToCtscOnCallback() throws IOException {
+    public static CallbackRequest appendSendToCtscOnCallback() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -80,13 +78,13 @@ public class NotificationEventHandlerTestData {
             .build();
     }
 
-    public static CallbackRequest buildCallbackRequest() throws IOException {
+    public static CallbackRequest buildCallbackRequest() {
         return CallbackRequest.builder()
             .caseDetails(buildCaseDetailsWithRepresentatives())
             .build();
     }
 
-    public static CaseDetails buildCaseDetailsWithRepresentatives() throws IOException {
+    public static CaseDetails buildCaseDetailsWithRepresentatives() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
         Map<String, Object> caseData = caseDetails.getData();
 
