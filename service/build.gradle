@@ -195,7 +195,7 @@ dependencies {
   compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.10.2'
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.12.1', classifier: 'thin'
   compile group: 'io.github.openfeign', name: 'feign-core', version: '10.4.0'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.11'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
   compile group: 'org.flywaydb', name: 'flyway-core', version: '6.3.2'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
