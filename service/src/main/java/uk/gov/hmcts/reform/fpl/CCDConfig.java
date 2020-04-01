@@ -43,6 +43,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
         caseField("dateAndTimeSubmitted", null, "DateTime", null, "Date submitted");
         caseField("submittedForm", "Attached PDF", "Document");
+        field("cmoToAction").blacklist(HMCTS_ADMIN, GATEKEEPER);
+        field("caseManagementOrder").blacklist(HMCTS_ADMIN, GATEKEEPER);
+        field("placements").blacklist("R", HMCTS_ADMIN, GATEKEEPER);
+        field("placementsWithoutPlacementOrder").blacklist("R", HMCTS_ADMIN, GATEKEEPER);
     }
 
     private void buildUniversalEvents() {
@@ -112,7 +116,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .showCondition("standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\"")
             .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus!=\"SEALED\"")
             .field(CaseData::getSharedDraftCMODocument)
-            .field("cmoToAction")
+            .field(CaseData::getCaseManagementOrder_Judiciary)
             .field(CaseData::getCaseManagementOrder);
 
         tab("OrdersTab", "Orders")
@@ -165,8 +169,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getConfidentialOthers);
 
         tab("PlacementTab", "Placement")
+            .field("placements")
             .field(CaseData::getPlacements)
-            .field("confidentialPlacements")
             .field("placementsWithoutPlacementOrder");
 
         tab("SentDocumentsTab", "Documents sent to parties")
@@ -254,7 +258,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Submit application")
                 .displayOrder(17) // TODO - necessary?
                 .explicitGrants()
-                .grant("R", LOCAL_AUTHORITY, HMCTS_ADMIN, UserRole.CAFCASS, UserRole.JUDICIARY, UserRole.GATEKEEPER)
+                .grantHistoryOnly(HMCTS_ADMIN, GATEKEEPER)
+                .grant("R", HMCTS_ADMIN, LOCAL_AUTHORITY, UserRole.CAFCASS, UserRole.JUDICIARY)
                 .grant("CRU", CCD_LASOLICITOR)
                 .endButtonLabel("Submit")
                 .allWebhooks("case-submission")
@@ -654,15 +659,15 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .aboutToSubmitWebhook()
             .fields()
             .page("Respondents directions")
-                .label("localAuthorityDirectionsLabelCMO", "## For the local authority")
+                .field("localAuthorityDirectionsLabelCMO").type("Label").label("## For the local authority").context(DisplayContext.ReadOnly).blacklist(HMCTS_ADMIN).done()
                 .label("respondents_label", "## For the local authority")
                 .field(CaseData::getRespondentDirectionsCustom).caseEventFieldLabel("Direction").complex().done()
             .page("Other party directions")
-                .label("otherPartiesDirectionLabelCMO", "## For the local authority")
+                .field("otherPartiesDirectionLabelCMO").type("Label").label("## For the local authority").context(DisplayContext.ReadOnly).blacklist(HMCTS_ADMIN).done()
                 .label("others_label", "## For the local authority")
                 .field(CaseData::getOtherPartiesDirectionsCustom).caseEventFieldLabel("Direction").complex().done()
             .page("Cafcass directions")
-                .label("cafcassDirectionsLabelCMO", "## For the local authority")
+                .field("cafcassDirectionsLabelCMO").type("Label").label("## For the local authority").context(DisplayContext.ReadOnly).blacklist(HMCTS_ADMIN).done()
                 .field(CaseData::getCafcassDirectionsCustom).caseEventFieldLabel("Direction").complex().done();
 
         buildPlacement(PREPARE_FOR_HEARING);
