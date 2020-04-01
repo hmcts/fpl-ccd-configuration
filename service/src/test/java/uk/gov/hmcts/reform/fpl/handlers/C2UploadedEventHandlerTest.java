@@ -39,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.USER_ID;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.appendSendToCtscOnCallback;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
@@ -49,6 +48,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 public class C2UploadedEventHandlerTest {
     @MockBean
     private IdamApi idamApi;
+
+    @MockBean
+    private RequestData requestData;
 
     @MockBean
     private NotificationService notificationService;
@@ -61,9 +63,6 @@ public class C2UploadedEventHandlerTest {
 
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-
-    @MockBean
-    private RequestData requestData;
 
     @Autowired
     private C2UploadedEventHandler c2UploadedEventHandler;
@@ -79,7 +78,7 @@ public class C2UploadedEventHandlerTest {
             .build();
 
         @BeforeEach
-        void before() throws IOException {
+        void before() {
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
             given(requestData.authorisation()).willReturn(AUTH_TOKEN);
@@ -92,7 +91,7 @@ public class C2UploadedEventHandlerTest {
         }
 
         @Test
-        void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException {
+        void shouldNotifyNonHmctsAdminOnC2Upload() {
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
 
@@ -101,7 +100,7 @@ public class C2UploadedEventHandlerTest {
                     COURT_CODE));
 
             c2UploadedEventHandler.sendEmailForC2Upload(
-                new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+                new C2UploadedEvent(callbackRequest(), requestData));
 
             verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-non-admin@test.com", c2Parameters, "12345");
@@ -122,7 +121,7 @@ public class C2UploadedEventHandlerTest {
                 .willReturn(c2Parameters);
 
             c2UploadedEventHandler.sendEmailForC2Upload(
-                new C2UploadedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+                new C2UploadedEvent(callbackRequest, requestData));
 
             verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -132,12 +131,12 @@ public class C2UploadedEventHandlerTest {
         }
 
         @Test
-        void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException {
+        void shouldNotNotifyHmctsAdminOnC2Upload() {
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
 
             c2UploadedEventHandler.sendEmailForC2Upload(
-                new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+                new C2UploadedEvent(callbackRequest(), requestData));
 
             verify(notificationService, never())
                 .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-admin@test.com",

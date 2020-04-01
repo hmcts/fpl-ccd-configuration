@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -19,10 +20,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.USER_ID;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getCMORejectedCaseLinkNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
@@ -30,6 +29,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {CaseManagementOrderRejectedEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, HmctsEmailContentProvider.class})
 public class CaseManagementOrderRejectedEventHandlerTest {
+    @MockBean
+    private RequestData requestData;
+
     @MockBean
     private InboxLookupService inboxLookupService;
 
@@ -43,7 +45,7 @@ public class CaseManagementOrderRejectedEventHandlerTest {
     private CaseManagementOrderRejectedEventHandler caseManagementOrderRejectedEventHandler;
 
     @Test
-    void shouldNotifyLocalAuthorityOfCMORejected() throws Exception {
+    void shouldNotifyLocalAuthorityOfCMORejected() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -54,7 +56,7 @@ public class CaseManagementOrderRejectedEventHandlerTest {
             .willReturn(getCMORejectedCaseLinkNotificationParameters());
 
         caseManagementOrderRejectedEventHandler.notifyLocalAuthorityOfRejectedCaseManagementOrder(
-            new CaseManagementOrderRejectedEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+            new CaseManagementOrderRejectedEvent(callbackRequest, requestData));
 
         verify(notificationService).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE,

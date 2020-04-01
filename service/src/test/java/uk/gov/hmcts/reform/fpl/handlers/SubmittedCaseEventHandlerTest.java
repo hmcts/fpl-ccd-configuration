@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
@@ -25,14 +26,12 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.USER_ID;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.appendSendToCtscOnCallback;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
@@ -40,6 +39,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {SubmittedCaseEventHandler.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
     HmctsAdminNotificationHandler.class})
 public class SubmittedCaseEventHandlerTest {
+    @MockBean
+    private RequestData requestData;
+
     @MockBean
     private NotificationService notificationService;
 
@@ -53,14 +55,14 @@ public class SubmittedCaseEventHandlerTest {
     private SubmittedCaseEventHandler submittedCaseEventHandler;
 
     @Test
-    void shouldSendEmailToHmctsAdminWhenCtscIsDisabled() throws IOException {
+    void shouldSendEmailToHmctsAdminWhenCtscIsDisabled() {
         final Map<String, Object> expectedParameters = expectedSubmittedCaseEventNotificationParameters(COURT_NAME);
 
         given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
         submittedCaseEventHandler.sendEmailToHmctsAdmin(
-            new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+            new SubmittedCaseEvent(callbackRequest(), requestData));
 
         verify(notificationService).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
@@ -80,7 +82,7 @@ public class SubmittedCaseEventHandlerTest {
             .willReturn(expectedParameters);
 
         submittedCaseEventHandler.sendEmailToHmctsAdmin(
-            new SubmittedCaseEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+            new SubmittedCaseEvent(callbackRequest, requestData));
 
         verify(notificationService).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
@@ -90,14 +92,14 @@ public class SubmittedCaseEventHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToCafcass() throws IOException {
+    void shouldSendEmailToCafcass() {
         final Map<String, Object> expectedParameters = expectedSubmittedCaseEventNotificationParameters(CAFCASS_NAME);
 
         given(cafcassEmailContentProvider.buildCafcassSubmissionNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
         submittedCaseEventHandler.sendEmailToCafcass(
-            new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+            new SubmittedCaseEvent(callbackRequest(), requestData));
 
         verify(notificationService).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE, CAFCASS_EMAIL_ADDRESS,

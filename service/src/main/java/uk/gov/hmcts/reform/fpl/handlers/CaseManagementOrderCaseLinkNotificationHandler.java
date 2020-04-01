@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseLinkNotificationHandler {
+public class CaseManagementOrderCaseLinkNotificationHandler {
     private final ObjectMapper objectMapper;
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;

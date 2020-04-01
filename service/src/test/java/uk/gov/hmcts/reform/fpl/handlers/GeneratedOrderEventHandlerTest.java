@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -30,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +53,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.USER_ID;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
@@ -85,6 +84,9 @@ class GeneratedOrderEventHandlerTest {
     private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     @MockBean
+    private RequestData requestData;
+
+    @MockBean
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @MockBean
@@ -112,7 +114,7 @@ class GeneratedOrderEventHandlerTest {
     private GeneratedOrderEventHandler generatedOrderEventHandler;
 
     @BeforeEach
-    void before() throws IOException {
+    void before() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -139,9 +141,9 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyPartiesOnOrderSubmission() throws IOException {
+    void shouldNotifyPartiesOnOrderSubmission() {
         generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
-            AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA,
@@ -165,7 +167,7 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCtsAdminOnOrderSubmission() throws IOException {
+    void shouldNotifyCtsAdminOnOrderSubmission() {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
 
         given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
@@ -176,7 +178,7 @@ class GeneratedOrderEventHandlerTest {
             UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
         generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest,
-            AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
@@ -194,7 +196,7 @@ class GeneratedOrderEventHandlerTest {
                 .build());
     }
 
-    private CallbackRequest appendSendToCtscOnCallback() throws IOException {
+    private CallbackRequest appendSendToCtscOnCallback() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 

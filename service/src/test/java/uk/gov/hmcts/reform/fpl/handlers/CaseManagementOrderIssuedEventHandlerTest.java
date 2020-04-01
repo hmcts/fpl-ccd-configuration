@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -25,14 +26,12 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.USER_ID;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.appendSendToCtscOnCallback;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.buildCallbackRequest;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.buildCaseDataWithRepresentatives;
@@ -44,10 +43,13 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
-    HmctsEmailContentProvider.class, LookupTestConfig.class, CaseLinkNotificationHandler.class,
-    DocumentLinkNotificationHandler.class, IssuedOrderAdminNotificationHandler.class,
+    HmctsEmailContentProvider.class, LookupTestConfig.class, CaseManagementOrderCaseLinkNotificationHandler.class,
+    CaseManagementOrderDocumentLinkNotificationHandler.class, IssuedOrderAdminNotificationHandler.class,
     HmctsAdminNotificationHandler.class})
 public class CaseManagementOrderIssuedEventHandlerTest {
+    @MockBean
+    private RequestData requestData;
+
     @MockBean
     private InboxLookupService inboxLookupService;
 
@@ -67,7 +69,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
 
     @Test
-    void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() throws Exception {
+    void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -83,7 +85,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, DOCUMENT_CONTENTS));
+            new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
@@ -112,7 +114,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, DOCUMENT_CONTENTS));
+            new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
@@ -137,7 +139,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative());
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, DOCUMENT_CONTENTS));
+            new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,

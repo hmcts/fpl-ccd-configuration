@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class DocumentLinkNotificationHandler {
+public class CaseManagementOrderDocumentLinkNotificationHandler {
     private final ObjectMapper objectMapper;
     private final NotificationService notificationService;
     private final RepresentativeService representativeService;

@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
@@ -22,10 +23,8 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.USER_ID;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.appendSendToCtscOnCallback;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
@@ -33,6 +32,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {PlacementApplicationEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, HmctsAdminNotificationHandler.class})
 public class PlacementApplicationEventHandlerTest {
+    @MockBean
+    private RequestData requestData;
+
     @MockBean
     private NotificationService notificationService;
 
@@ -43,7 +45,7 @@ public class PlacementApplicationEventHandlerTest {
     private PlacementApplicationEventHandler placementApplicationEventHandler;
 
     @Test
-    void shouldNotifyHmctsAdminOfPlacementApplicationUploadWhenCtscIsDiabled() throws Exception {
+    void shouldNotifyHmctsAdminOfPlacementApplicationUploadWhenCtscIsDiabled() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
@@ -53,7 +55,7 @@ public class PlacementApplicationEventHandlerTest {
             .willReturn(expectedParameters);
 
         placementApplicationEventHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+            new PlacementApplicationEvent(callbackRequest, requestData));
 
         verify(notificationService).sendEmail(
             NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
@@ -73,7 +75,7 @@ public class PlacementApplicationEventHandlerTest {
             .willReturn(expectedParameters);
 
         placementApplicationEventHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+            new PlacementApplicationEvent(callbackRequest, requestData));
 
         verify(notificationService).sendEmail(
             NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,

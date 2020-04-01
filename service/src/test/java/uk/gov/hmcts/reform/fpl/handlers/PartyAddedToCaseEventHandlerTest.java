@@ -14,13 +14,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -32,10 +32,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.USER_ID;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedEmailRepresentativesForAddingPartiesToCase;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
@@ -43,6 +41,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {PartyAddedToCaseEventHandler.class, LookupTestConfig.class, JacksonAutoConfiguration.class,
     RepresentativeNotificationService.class})
 public class PartyAddedToCaseEventHandlerTest {
+    @MockBean
+    private RequestData requestData;
+
     @MockBean
     private NotificationService notificationService;
 
@@ -59,7 +60,7 @@ public class PartyAddedToCaseEventHandlerTest {
     private PartyAddedToCaseEventHandler partyAddedToCaseEventHandler;
 
     @Test
-    void shouldSendEmailToPartiesWhenAddedToCase() throws IOException {
+    void shouldSendEmailToPartiesWhenAddedToCase() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
         CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -90,7 +91,7 @@ public class PartyAddedToCaseEventHandlerTest {
             callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).willReturn(expectedDigitalParameters);
 
         partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(
-            new PartyAddedToCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+            new PartyAddedToCaseEvent(callbackRequest(), requestData));
 
         verify(notificationService).sendEmail(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
