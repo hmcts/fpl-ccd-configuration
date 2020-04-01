@@ -18,7 +18,6 @@ java:
     SCHEDULER_ENABLED: false
 
 ccd:
-  imagePullPolicy: Always
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
@@ -34,6 +33,8 @@ ccd:
     memoryLimits: 16Mi
   caseManagementWeb:
     enabled: true
+    nodejs:
+      imagePullPolicy: Always
     environment:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
       DM_URL: https://gateway-${SERVICE_FQDN}/documents
@@ -41,12 +42,21 @@ ccd:
       CCD_ACTIVITY_URL: null
   apiGateway:
     s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
+    nodejs:
+      imagePullPolicy: Always
     idamClientSecret:
       value: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
     environment:
       PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
   definitionStoreApi:
+    java:
+      imagePullPolicy: Always
     s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
   dataStoreApi:
+    java:
+      imagePullPolicy: Always
     s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
+  userProfileApi:
+    java:
+      imagePullPolicy: Always
