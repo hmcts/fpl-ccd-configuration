@@ -41,12 +41,18 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         buildWorkBasketResultFields();
         buildWorkBasketInputFields();
 
+        // TODO: simplify
         caseField("dateAndTimeSubmitted", null, "DateTime", null, "Date submitted");
         caseField("submittedForm", "Attached PDF", "Document");
         field("cmoToAction").blacklist(HMCTS_ADMIN, GATEKEEPER);
-        field("caseManagementOrder").blacklist(HMCTS_ADMIN, GATEKEEPER);
-        field("placements").blacklist("R", HMCTS_ADMIN, GATEKEEPER);
-        field("placementsWithoutPlacementOrder").blacklist("R", HMCTS_ADMIN, GATEKEEPER);
+        field("caseManagementOrder").blacklist(HMCTS_ADMIN, GATEKEEPER, JUDICIARY);
+        field("placements").blacklist("R", HMCTS_ADMIN, GATEKEEPER, JUDICIARY);
+        field("placementsWithoutPlacementOrder").blacklist("R", HMCTS_ADMIN, GATEKEEPER, JUDICIARY);
+        field("orderBasisLabel").blacklist(JUDICIARY);
+        field("respondentsDirectionLabelCMO").blacklist(JUDICIARY);
+
+        field("actionCMOPlaceholderHeading").blacklist("CU", JUDICIARY);
+        field("actionCMOPlaceholderHint").blacklist("CU", JUDICIARY);
     }
 
     private void buildUniversalEvents() {
@@ -265,8 +271,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .allWebhooks("case-submission")
                 .retries(1,2,3,4,5)
                 .fields()
-                    .field("submissionConsentLabel", DisplayContext.ReadOnly, null, "Text", null, " ")
-                    .field("submissionConsent", DisplayContext.Mandatory, null, "MultiSelectList", "Consent", " ");
+                    .field("submissionConsentLabel").context(DisplayContext.ReadOnly).type("Text").label(" ").blacklist(JUDICIARY).done()
+                    .field("submissionConsent").context(DisplayContext.Mandatory).type("MultiSelectList").fieldTypeParameter("Consent").label(" ").blacklist(JUDICIARY);
 
         event("populateSDO")
                 .forStateTransition(Submitted, Gatekeeping)
