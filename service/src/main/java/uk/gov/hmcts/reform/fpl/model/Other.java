@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder(toBuilder = true)
-public class Other implements Representable, ConfidentialParty {
+public class Other implements Representable {
     @SuppressWarnings("membername")
     @JsonProperty("DOB")
     private final String DOB;
