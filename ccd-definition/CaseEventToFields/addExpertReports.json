@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "expertReport",
-    "CaseFieldID": "scannedDocuments",
+    "CaseFieldID": "expertReport",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
