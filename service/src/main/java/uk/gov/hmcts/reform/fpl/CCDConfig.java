@@ -44,9 +44,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         // TODO: simplify
         caseField("dateAndTimeSubmitted", null, "DateTime", null, "Date submitted");
         caseField("submittedForm", "Attached PDF", "Document");
-        field("cmoToAction").blacklist(HMCTS_ADMIN, GATEKEEPER);
-        field("caseManagementOrder").blacklist(HMCTS_ADMIN, GATEKEEPER, JUDICIARY);
-        field("placements").blacklist("R", HMCTS_ADMIN, GATEKEEPER, JUDICIARY);
+        field("cmoToAction").blacklist(HMCTS_ADMIN, GATEKEEPER, CAFCASS);
+        field("caseManagementOrder").blacklist(HMCTS_ADMIN, GATEKEEPER, JUDICIARY, CAFCASS);
+        field("placements").blacklist("R", HMCTS_ADMIN, GATEKEEPER, JUDICIARY, CAFCASS);
         field("placementsWithoutPlacementOrder").blacklist("R", HMCTS_ADMIN, GATEKEEPER, JUDICIARY);
         field("orderBasisLabel").blacklist(JUDICIARY);
         field("respondentsDirectionLabelCMO").blacklist(JUDICIARY);
@@ -115,7 +115,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
     private void buildTabs() {
         tab("HearingTab", "Hearings")
-            .field(CaseData::getHearingDetails)
+            .restrictedField(CaseData::getHearingDetails).exclude(CAFCASS)
             .field(CaseData::getHearing);
 
         tab("DraftOrdersTab", "Draft orders")
@@ -126,10 +126,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getCaseManagementOrder);
 
         tab("OrdersTab", "Orders")
-            .field(CaseData::getServedCaseManagementOrders)
+            .restrictedField(CaseData::getServedCaseManagementOrders).exclude(CAFCASS)
             .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus=\"SEALED\"")
             .field(CaseData::getOrders)
-            .field(CaseData::getOrderCollection);
+            .restrictedField(CaseData::getOrderCollection).exclude(CAFCASS);
 
         tab("CasePeopleTab", "People in the case")
             .field(CaseData::getAllocatedJudge)
@@ -138,7 +138,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getApplicants)
             .field(CaseData::getSolicitor)
             .field(CaseData::getOthers)
-            .field(CaseData::getRepresentatives);
+            .restrictedField(CaseData::getRepresentatives).exclude(CAFCASS);
 
         tab("LegalBasisTab", "Legal basis")
             .field(CaseData::getStatementOfService)
@@ -165,21 +165,24 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field("courtBundle")
             .field(CaseData::getOtherSocialWorkDocuments)
             .field("submittedForm")
-            .field(CaseData::getNoticeOfProceedingsBundle)
+            .restrictedField(CaseData::getNoticeOfProceedingsBundle).exclude(CAFCASS)
             .field(CaseData::getC2DocumentBundle)
-            .field("scannedDocuments");
+            .restrictedField("scannedDocuments").exclude(CAFCASS);
 
         tab("Confidential", "Confidential")
+            .exclude(CAFCASS)
             .field(CaseData::getConfidentialChildren)
             .field(CaseData::getConfidentialRespondents)
             .field(CaseData::getConfidentialOthers);
 
         tab("PlacementTab", "Placement")
+            .exclude(CAFCASS)
             .field("placements")
             .field(CaseData::getPlacements)
             .field("placementsWithoutPlacementOrder");
 
         tab("SentDocumentsTab", "Documents sent to parties")
+            .exclude(CAFCASS)
             .field("documentsSentToParties");
     }
 
@@ -264,15 +267,15 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Submit application")
                 .displayOrder(17) // TODO - necessary?
                 .explicitGrants()
-                .grantHistoryOnly(HMCTS_ADMIN, GATEKEEPER)
-                .grant("R", HMCTS_ADMIN, LOCAL_AUTHORITY, UserRole.CAFCASS, UserRole.JUDICIARY)
+                .grantHistoryOnly(HMCTS_ADMIN, GATEKEEPER, JUDICIARY, CAFCASS)
+                .grant("R", HMCTS_ADMIN, LOCAL_AUTHORITY)
                 .grant("CRU", CCD_LASOLICITOR)
                 .endButtonLabel("Submit")
                 .allWebhooks("case-submission")
                 .retries(1,2,3,4,5)
                 .fields()
-                    .field("submissionConsentLabel").context(DisplayContext.ReadOnly).type("Text").label(" ").blacklist(JUDICIARY).done()
-                    .field("submissionConsent").context(DisplayContext.Mandatory).type("MultiSelectList").fieldTypeParameter("Consent").label(" ").blacklist(JUDICIARY);
+                    .field("submissionConsentLabel").context(DisplayContext.ReadOnly).type("Text").label(" ").done()
+                    .field("submissionConsent").context(DisplayContext.Mandatory).type("MultiSelectList").fieldTypeParameter("Consent").label(" ");
 
         event("populateSDO")
                 .forStateTransition(Submitted, Gatekeeping)
