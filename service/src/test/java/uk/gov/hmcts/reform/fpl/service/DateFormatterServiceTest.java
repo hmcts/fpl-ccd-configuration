@@ -1,23 +1,26 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.parseLocalDateFromStringUsingFormat;
 
-@ExtendWith(SpringExtension.class)
 class DateFormatterServiceTest {
+    public static final String JANUARY_2019 = "1 January 2019";
     private final DateFormatterService dateFormatterService = new DateFormatterService();
 
     private static Stream<Arguments> dayOfMonthSuffixSource() {
@@ -35,28 +38,28 @@ class DateFormatterServiceTest {
     @Test
     void shouldFormatLocalDateInLongFormat() {
         LocalDate date = createDate();
-        String formattedDate = dateFormatterService.formatLocalDateToString(date, FormatStyle.LONG);
-        assertThat(formattedDate).isEqualTo("1 January 2019");
+        String formattedDate = formatLocalDateToString(date, FormatStyle.LONG);
+        assertThat(formattedDate).isEqualTo(JANUARY_2019);
     }
 
     @Test
     void shouldFormatLocalDateInMediumFormat() {
         LocalDate date = createDate();
-        String formattedDate = dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+        String formattedDate = formatLocalDateToString(date, FormatStyle.MEDIUM);
         assertThat(formattedDate).isEqualTo("1 Jan 2019");
     }
 
     @Test
     void shouldFormatLocalDateInShortFormat() {
         LocalDate date = createDate();
-        String formattedDate = dateFormatterService.formatLocalDateToString(date, FormatStyle.SHORT);
+        String formattedDate = formatLocalDateToString(date, FormatStyle.SHORT);
         assertThat(formattedDate).isEqualTo("01/01/2019");
     }
 
     @Test
     void shouldFormatLocalDateTimeInExpectedFormat() {
         LocalDateTime date = createDateTime();
-        String formattedDate = dateFormatterService.formatLocalDateTimeBaseUsingFormat(date, "h:mma, d MMMM yyyy");
+        String formattedDate = formatLocalDateTimeBaseUsingFormat(date, "h:mma, d MMMM yyyy");
         assertThat(formattedDate).isEqualTo("12:00pm, 1 January 2019");
     }
 
@@ -76,6 +79,27 @@ class DateFormatterServiceTest {
             () -> dateFormatterService.getDayOfMonthSuffix(day));
 
         assertThat(exception.getMessage()).isEqualTo("Illegal day of month: " + day);
+    }
+
+    @Test
+    void shouldParseAFormattedDateToLocalDateWhenGivenCorrectFormat() {
+        LocalDate parsed = parseLocalDateFromStringUsingFormat(JANUARY_2019, DATE);
+        assertThat(parsed).isEqualTo(createDate());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFormatDoesNotMatchDate() {
+        assertThrows(DateTimeParseException.class, () -> parseLocalDateFromStringUsingFormat(JANUARY_2019, "d MM y"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDateIsNull() {
+        assertThrows(NullPointerException.class, () -> parseLocalDateFromStringUsingFormat(null, DATE));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFormatIsNull() {
+        assertThrows(NullPointerException.class, () -> parseLocalDateFromStringUsingFormat(JANUARY_2019, null));
     }
 
     private LocalDate createDate() {

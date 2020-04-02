@@ -120,7 +120,7 @@ public class GeneratedOrderController {
 
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
-            Document document = getDocument(requestData.authorisation(), requestData.userId(), caseData, DRAFT);
+            Document document = getDocument(caseData, DRAFT);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
@@ -138,7 +138,7 @@ public class GeneratedOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document document = getDocument(requestData.authorisation(), requestData.userId(), caseData, SEALED);
+        Document document = getDocument(caseData, SEALED);
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
@@ -173,16 +173,13 @@ public class GeneratedOrderController {
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
-            requestData.authorisation(),
-            requestData.userId(),
+            requestData,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
     }
 
-    private Document getDocument(String authorization,
-                                 String userId,
-                                 CaseData caseData,
+    private Document getDocument(CaseData caseData,
                                  OrderStatus orderStatus) throws IOException {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
@@ -192,7 +189,7 @@ public class GeneratedOrderController {
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 
-        Document document = uploadDocumentService.uploadPDF(userId, authorization, docmosisDocument.getBytes(),
+        Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
 
         if (orderStatus == DRAFT) {

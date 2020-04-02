@@ -91,7 +91,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_BINARIES);
         given(docmosisCoverDocumentsService.createCoverDocuments(any(), any(), any()))
             .willReturn(testDocmosisDocument(COVERSHEET_BINARIES));
-        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(COVERSHEET_DOCUMENT);
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(COVERSHEET_DOCUMENT);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
@@ -112,7 +112,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
         verify(documentDownloadService).downloadDocument(documentToBeSent.getBinaryUrl());
         verify(sendLetterApi).sendLetter(anyString(), any(LetterWithPdfsRequest.class));
-        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, COVERSHEET_BINARIES, "Coversheet.pdf");
+        verify(uploadDocumentService).uploadPDF(COVERSHEET_BINARIES, "Coversheet.pdf");
         verify(docmosisCoverDocumentsService).createCoverDocuments(FAMILY_MAN_NO, caseDetails.getId(), representative1);
 
         List<DocumentsSentToParty> documentsSentToParties = unwrapElements(mapper.convertValue(
@@ -141,7 +141,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
         verify(docmosisCoverDocumentsService, never()).createCoverDocuments(any(), any(), any());
         verify(documentDownloadService, never()).downloadDocument(any());
-        verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
+        verify(uploadDocumentService, never()).uploadPDF(any(), any());
         verify(sendLetterApi, never()).sendLetter(any(), any(LetterWithPdfsRequest.class));
     }
 

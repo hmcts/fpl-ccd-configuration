@@ -46,8 +46,7 @@ public class DocumentSenderService {
             sendLetterApi.sendLetter(authTokenGenerator.generate(),
                 new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary), SEND_LETTER_TYPE, Map.of()));
 
-            Document coversheet = uploadDocumentService.uploadPDF(requestData.userId(), requestData.authorisation(),
-                coverDocument, "Coversheet.pdf");
+            Document coversheet = uploadDocumentService.uploadPDF(coverDocument, "Coversheet.pdf");
 
             sentDocuments.add(SentDocument.builder()
                 .partyName(representative.getFullName())

@@ -360,6 +360,8 @@ class GeneratedOrderServiceTest {
                                                            LocalDateTime dateTime) {
         ImmutableMap.Builder<String, Object> expectedMap = ImmutableMap.builder();
         final LocalDate date = dateTime.toLocalDate();
+        final String localAuthorityName = "Example Local Authority";
+
         String formattedDate = dateFormatterService.formatLocalDateToString(date, FormatStyle.LONG);
 
         List<Map<String, String>> children = ImmutableList.of(
@@ -371,6 +373,7 @@ class GeneratedOrderServiceTest {
                 "name", "Robbie Jones",
                 "gender", "Boy",
                 "dateOfBirth", formattedDate));
+        int childrenCount = children.size();
 
         switch (type) {
             case BLANK_ORDER:
@@ -382,7 +385,8 @@ class GeneratedOrderServiceTest {
                 break;
             case CARE_ORDER:
                 expectedMap
-                    .put("orderType", CARE_ORDER);
+                    .put("orderType", CARE_ORDER)
+                    .put("localAuthorityName", localAuthorityName);
                 if (subtype == INTERIM) {
                     expectedMap
                         .put("orderTitle", "Interim care order")
@@ -435,12 +439,12 @@ class GeneratedOrderServiceTest {
             case EMERGENCY_PROTECTION_ORDER:
                 expectedMap
                     .put("orderType", EMERGENCY_PROTECTION_ORDER)
-                    .put("localAuthorityName", "Example Local Authority")
+                    .put("localAuthorityName", localAuthorityName)
                     .put("childrenDescription", "Test description")
                     .put("epoType", REMOVE_TO_ACCOMMODATION)
                     .put("includePhrase", "Yes")
                     .put("removalAddress", "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
-                    .put("childrenCount", 2)
+                    .put("childrenCount", childrenCount)
                     .put("epoStartDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
                         "d MMMM yyyy 'at' h:mma"))
                     .put("epoEndDateTime", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),

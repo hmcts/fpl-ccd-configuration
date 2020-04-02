@@ -24,7 +24,9 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -81,6 +83,9 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
+    @Autowired
+    private Time time;
+
     ActionCaseManagementOrderControllerTest() {
         super("action-cmo");
     }
@@ -91,7 +96,35 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document());
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document());
+    }
+
+    @Test
+    void aboutToStartShouldAddCurrentTimeAsDateOfIssuedWhenNotInCaseManagementOrder() {
+        Map<String, Object> data = new HashMap<>();
+        data.put(HEARING_DETAILS_KEY, createHearingBookings(time.now()));
+        data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createCaseManagementOrder(SEND_TO_JUDGE));
+
+        CaseDetails caseDetails = buildCaseDetails(data);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+
+        assertThat(response.getData()).containsEntry("dateOfIssue", time.now().toLocalDate().toString());
+    }
+
+    @Test
+    void aboutToStartShouldAddPreviousTimeAsDateOfIssuedWhenInCaseManagementOrder() {
+        Map<String, Object> data = new HashMap<>();
+        data.put(HEARING_DETAILS_KEY, createHearingBookings(time.now()));
+        data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createCaseManagementOrder(SEND_TO_JUDGE).toBuilder()
+            .dateOfIssue("20 March 2019")
+            .build());
+
+        CaseDetails caseDetails = buildCaseDetails(data);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+
+        assertThat(response.getData()).containsEntry("dateOfIssue", LocalDate.of(2019, 3, 20).toString());
     }
 
     @Test
@@ -131,7 +164,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     void midEventShouldAddDocumentReferenceToOrderAction() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(buildCaseDetails(emptyMap()));
 
-        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, PDF, "draft-case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(PDF, "draft-case-management-order.pdf");
 
         Map<String, Object> responseCaseData = callbackResponse.getData();
 
@@ -157,7 +190,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, PDF, "case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(PDF, "case-management-order.pdf");
         assertThat(caseData.getCaseManagementOrder()).isEqualTo(expectedCaseManagementOrder());
     }
 
@@ -183,7 +216,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, PDF, "draft-case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(PDF, "draft-case-management-order.pdf");
         assertThat(caseData.getCaseManagementOrder().getAction()).isEqualTo(getOrderAction(JUDGE_REQUESTED_CHANGE));
     }
 

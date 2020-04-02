@@ -67,7 +67,7 @@ class OrganisationServiceTest {
     @Test
     void shouldReturnUsersFromLocalAuthorityMappingWhenTheyExist() {
         List<String> usersIdsWithinSaLa = organisationService
-            .findUserIdsInSameOrganisation(AUTH_TOKEN_ID, "SA");
+            .findUserIdsInSameOrganisation("SA");
 
         assertThat(usersIdsWithinSaLa)
             .containsExactlyInAnyOrder("1", "2", "3");
@@ -80,7 +80,7 @@ class OrganisationServiceTest {
             .thenReturn(usersInAnOrganisation);
 
         List<String> userIds = organisationService
-            .findUserIdsInSameOrganisation(AUTH_TOKEN_ID, "AN");
+            .findUserIdsInSameOrganisation("AN");
 
         assertThat(userIds)
             .containsExactly("40", "41");
@@ -93,7 +93,7 @@ class OrganisationServiceTest {
 
         AssertionsForClassTypes.assertThatThrownBy(() ->
             organisationService
-                .findUserIdsInSameOrganisation(AUTH_TOKEN_ID, "AN"))
+                .findUserIdsInSameOrganisation("AN"))
             .isInstanceOf(UserOrganisationLookupException.class)
             .hasMessage("Can't find users for AN local authority");
     }
