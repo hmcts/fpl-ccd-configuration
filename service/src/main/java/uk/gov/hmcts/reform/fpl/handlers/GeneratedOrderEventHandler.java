@@ -41,7 +41,7 @@ public class GeneratedOrderEventHandler {
 
         sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             orderEvent.getMostRecentUploadedDocumentUrl());
-        issuedOrderAdminNotificationHandler.sendOrderIssuedNotificationToAdmin(eventData,
+        issuedOrderAdminNotificationHandler.sendToAdmin(eventData,
             orderEvent.getDocumentContents(), GENERATED_ORDER);
 
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);

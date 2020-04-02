@@ -33,7 +33,7 @@ public class CaseManagementOrderDocumentLinkNotificationHandler {
     public void sendNotifications(final EventData eventData, final byte[] documentContents) {
         sendToCafcass(eventData, documentContents);
         sendToRepresentatives(eventData, documentContents);
-        issuedOrderAdminNotificationHandler.sendOrderIssuedNotificationToAdmin(eventData, documentContents, CMO);
+        issuedOrderAdminNotificationHandler.sendToAdmin(eventData, documentContents, CMO);
     }
 
     private void sendToCafcass(final EventData eventData, final byte[] documentContents) {

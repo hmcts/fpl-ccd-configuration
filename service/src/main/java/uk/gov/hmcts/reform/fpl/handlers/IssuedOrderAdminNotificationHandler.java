@@ -19,9 +19,9 @@ public class IssuedOrderAdminNotificationHandler {
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
-    public void sendOrderIssuedNotificationToAdmin(final EventData eventData,
-                                                    final byte[] documentContents,
-                                                    final IssuedOrderType issuedOrderType) {
+    public void sendToAdmin(final EventData eventData,
+                            final byte[] documentContents,
+                            final IssuedOrderType issuedOrderType) {
         Map<String, Object> parameters = orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
             eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
 

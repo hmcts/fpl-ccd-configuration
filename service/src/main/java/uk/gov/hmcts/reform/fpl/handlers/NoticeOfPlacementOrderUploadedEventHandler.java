@@ -48,7 +48,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
 
         notificationService.sendEmail(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters,
             eventData.getReference());
-        issuedOrderAdminNotificationHandler.sendOrderIssuedNotificationToAdmin(eventData,
+        issuedOrderAdminNotificationHandler.sendToAdmin(eventData,
             noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
 
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
