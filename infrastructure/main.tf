@@ -39,3 +39,23 @@ module "key-vault" {
   #aks migration
   managed_identity_object_id = "${var.managed_identity_object_id}"
 }
+
+module "fpl-scheduler-db" {
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product            = "${var.product}-${var.component}"
+  location           = "${var.location_db}"
+  env                = "${var.env}"
+  database_name      = "fpl_scheduler"
+  postgresql_user    = "fpl_scheduler"
+  postgresql_version = "10"
+  sku_name           = "GP_Gen5_2"
+  sku_tier           = "GeneralPurpose"
+  common_tags        = "${var.common_tags}"
+  subscription       = "${var.subscription}"
+}
+
+resource "azurerm_key_vault_secret" "scheduler-db-password" {
+  name      = "scheduler-db-password"
+  value     = "${module.fpl-scheduler-db.postgresql_password}"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}

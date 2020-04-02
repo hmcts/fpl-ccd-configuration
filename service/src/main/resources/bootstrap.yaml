@@ -22,3 +22,4 @@ spring:
         ld-sdk-key: ld.sdk_key
         ctsc-inbox: fpl.ctsc_inbox
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        scheduler-db-password: SCHEDULER_DB_PASSWORD

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
@@ -55,6 +56,9 @@ class LocalAuthorityUserServiceTest {
     @MockBean
     private IdamClient client;
 
+    @MockBean
+    private RequestData requestData;
+
     @Autowired
     private SystemUpdateUserConfiguration userConfig;
 
@@ -64,29 +68,34 @@ class LocalAuthorityUserServiceTest {
     void setup() {
         this.localAuthorityUserService = new LocalAuthorityUserService(
             organisationService,
-            authTokenGenerator, caseUserApi, client, userConfig);
+            authTokenGenerator, caseUserApi, client, userConfig, requestData);
 
         given(client.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
-        given(organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN, LOCAL_AUTHORITY)).willReturn(
+        given(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder()
                 .addAll(USER_IDS)
                 .build()
         );
+
+        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+        given(requestData.userId()).willReturn(USER_ID);
     }
 
     @Test
     void shouldMakeCallToUpdateCaseRoleEndpointWhenUsersWithinLocalAuthority() {
-        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1, USER_IDS);
     }
 
     @Test
     void shouldAddCallerUserIdToACaseEvenIfNotPartOfLocalAuthority()  {
-        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_NOT_IN_LA_ID, CASE_ID, LOCAL_AUTHORITY);
+        given(requestData.userId()).willReturn(USER_NOT_IN_LA_ID);
+
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         List<String> userIdsIncludingCallerId = ImmutableList
             .<String>builder()
@@ -99,21 +108,21 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldAddCallerUserIdToACaseWhenValidLocalAuthorityHasNoUsers()  {
-        given(organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN, LOCAL_AUTHORITY)).willReturn(
+        given(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder().build()
         );
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1, List.of(USER_ID));
     }
 
     @Test
     void shouldAddCallerUserIdToACaseWhenServiceThrowsAnException()  {
-        given(organisationService.findUserIdsInSameOrganisation(any(), any()))
+        given(organisationService.findUserIdsInSameOrganisation(any()))
             .willThrow(new NullPointerException());
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1, List.of(USER_ID));
     }
@@ -126,15 +135,15 @@ class LocalAuthorityUserServiceTest {
             .updateCaseRolesForUser(
                 AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, "1", new CaseUser("1", caseRoles));
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1, USER_IDS);
     }
 
     @Test
     void shouldUpdateCaseRolesWhenRolesAreAlreadyAssignedToUser() {
-        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
-        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(2, USER_IDS);
     }
