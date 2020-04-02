@@ -44,7 +44,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         // TODO: simplify
         caseField("dateAndTimeSubmitted", null, "DateTime", null, "Date submitted");
         caseField("submittedForm", "Attached PDF", "Document");
-        field("cmoToAction").blacklist(HMCTS_ADMIN, GATEKEEPER, CAFCASS);
+        field("cmoToAction").blacklist(HMCTS_ADMIN, GATEKEEPER, CAFCASS, LOCAL_AUTHORITY);
         field("caseManagementOrder").blacklist(HMCTS_ADMIN, GATEKEEPER, JUDICIARY, CAFCASS);
         field("placements").blacklist("R", HMCTS_ADMIN, GATEKEEPER, JUDICIARY, CAFCASS);
         field("placementsWithoutPlacementOrder").blacklist("R", HMCTS_ADMIN, GATEKEEPER, JUDICIARY);
@@ -53,6 +53,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
         field("actionCMOPlaceholderHeading").blacklist("CU", JUDICIARY);
         field("actionCMOPlaceholderHint").blacklist("CU", JUDICIARY);
+        field("dateSubmitted").blacklist("R", LOCAL_AUTHORITY);
     }
 
     private void buildUniversalEvents() {
@@ -89,8 +90,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .forAllStates()
             .name("Allocated Judge")
             .description("Add allocated judge to a case")
+            .grantHistoryOnly(LOCAL_AUTHORITY)
             .grant("CRU", JUDICIARY, HMCTS_ADMIN, GATEKEEPER)
-            .grant("R", LOCAL_AUTHORITY, CAFCASS)
+            .grant("R", CAFCASS)
             .fields()
             .page("AllocatedJudge")
                 .field(CaseData::getAllocatedJudge);
@@ -116,9 +118,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     private void buildTabs() {
         tab("HearingTab", "Hearings")
             .restrictedField(CaseData::getHearingDetails).exclude(CAFCASS)
-            .field(CaseData::getHearing);
+            .restrictedField(CaseData::getHearing).exclude(LOCAL_AUTHORITY);
 
         tab("DraftOrdersTab", "Draft orders")
+            .exclude(LOCAL_AUTHORITY)
             .showCondition("standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\"")
             .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus!=\"SEALED\"")
             .field(CaseData::getSharedDraftCMODocument)
@@ -126,21 +129,24 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getCaseManagementOrder);
 
         tab("OrdersTab", "Orders")
+            .exclude(LOCAL_AUTHORITY)
             .restrictedField(CaseData::getServedCaseManagementOrders).exclude(CAFCASS)
             .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus=\"SEALED\"")
             .field(CaseData::getOrders)
             .restrictedField(CaseData::getOrderCollection).exclude(CAFCASS);
 
         tab("CasePeopleTab", "People in the case")
+            .exclude(LOCAL_AUTHORITY)
             .field(CaseData::getAllocatedJudge)
             .field(CaseData::getChildren1)
             .field(CaseData::getRespondents1)
             .field(CaseData::getApplicants)
             .field(CaseData::getSolicitor)
             .field(CaseData::getOthers)
-            .restrictedField(CaseData::getRepresentatives).exclude(CAFCASS);
+            .restrictedField(CaseData::getRepresentatives).exclude(CAFCASS, LOCAL_AUTHORITY);
 
         tab("LegalBasisTab", "Legal basis")
+            .exclude(LOCAL_AUTHORITY)
             .field(CaseData::getStatementOfService)
             .field(CaseData::getGroundsForEPO)
             .field(CaseData::getGrounds)
@@ -153,6 +159,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getHearingPreferences);
 
         tab("DocumentsTab", "Documents")
+            .exclude(LOCAL_AUTHORITY)
             .field(CaseData::getSocialWorkChronologyDocument)
             .field(CaseData::getSocialWorkStatementDocument)
             .field(CaseData::getSocialWorkAssessmentDocument)
@@ -170,19 +177,19 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .restrictedField("scannedDocuments").exclude(CAFCASS);
 
         tab("Confidential", "Confidential")
-            .exclude(CAFCASS)
+            .exclude(CAFCASS, LOCAL_AUTHORITY)
             .field(CaseData::getConfidentialChildren)
             .field(CaseData::getConfidentialRespondents)
             .field(CaseData::getConfidentialOthers);
 
         tab("PlacementTab", "Placement")
-            .exclude(CAFCASS)
+            .exclude(CAFCASS, LOCAL_AUTHORITY)
             .field("placements")
             .field(CaseData::getPlacements)
             .field("placementsWithoutPlacementOrder");
 
         tab("SentDocumentsTab", "Documents sent to parties")
-            .exclude(CAFCASS)
+            .exclude(CAFCASS, LOCAL_AUTHORITY)
             .field("documentsSentToParties");
     }
 
@@ -267,8 +274,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Submit application")
                 .displayOrder(17) // TODO - necessary?
                 .explicitGrants()
-                .grantHistoryOnly(HMCTS_ADMIN, GATEKEEPER, JUDICIARY, CAFCASS)
-                .grant("R", HMCTS_ADMIN, LOCAL_AUTHORITY)
+                .grantHistoryOnly(LOCAL_AUTHORITY, HMCTS_ADMIN, GATEKEEPER, JUDICIARY, CAFCASS)
                 .grant("CRU", CCD_LASOLICITOR)
                 .endButtonLabel("Submit")
                 .allWebhooks("case-submission")
@@ -294,8 +300,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("deleteApplication")
                 .forStateTransition(Open, Deleted)
                 .displayOrder(18) // TODO - necessary?
+                .grantHistoryOnly(LOCAL_AUTHORITY)
                 .grant("CRU", CCD_LASOLICITOR)
-                .grant("R", LOCAL_AUTHORITY)
                 .name("Delete an application")
                 .aboutToSubmitWebhook("case-deletion")
                 .endButtonLabel("Delete application")
@@ -462,8 +468,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("addStatementOfService")
                 .forState(state)
                 .explicitGrants()
+                .grantHistoryOnly(LOCAL_AUTHORITY)
                 .grant("CRU", CCD_LASOLICITOR)
-                .grant("R", LOCAL_AUTHORITY)
                 .name("Add statement of service (c9)")
                 .description("Add statement of service")
                 .showSummary()
@@ -501,8 +507,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("draftCMO")
                 .forState(PREPARE_FOR_HEARING)
                 .explicitGrants()
+                .grantHistoryOnly(LOCAL_AUTHORITY)
                 .grant("CRU", CCD_LASOLICITOR)
-                .grant("R", LOCAL_AUTHORITY)
                 .name("Draft CMO")
                 .endButtonLabel("")
                 .description("Draft Case Management Order")
@@ -884,7 +890,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         .forState(state)
         .explicitGrants()
         .grant("CRU", UserRole.CAFCASS, HMCTS_ADMIN, CCD_LASOLICITOR, CCD_SOLICITOR)
-        .grant("R", LOCAL_AUTHORITY)
+        .grantHistoryOnly(LOCAL_AUTHORITY)
         .name("Upload a C2")
         .description("Upload a c2 to the case")
         .aboutToSubmitWebhook()
@@ -897,8 +903,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildOpen() {
-        // Local Authority has at least R on all Open events.
-        grant(Open, "R", LOCAL_AUTHORITY);
+        // Local Authority can view the history of all events in the Open state.
+        grantHistory(Open,LOCAL_AUTHORITY);
         event("openCase")
                 .initialState(Open)
                 .name("Start application")
@@ -1021,8 +1027,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("uploadDocuments")
                 .forAllStates()
                 .explicitGrants()
+                .grantHistoryOnly(LOCAL_AUTHORITY)
                 .grant("CRU", CCD_LASOLICITOR)
-                .grant("R", LOCAL_AUTHORITY)
                 .name("Documents")
                 .description("Upload documents")
                 .displayOrder(14)
