@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -13,6 +14,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
@@ -60,8 +62,9 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .build();
     }
 
-    public Map<String, Object> buildCMOReviewByDigitalRepresentativesParameters(final CaseDetails caseDetails,
-                                                                                byte[] documentContents) {
+    public Map<String, Object> buildCMOPartyReviewParameters(final CaseDetails caseDetails,
+                                                             byte[] documentContents,
+                                                             RepresentativeServingPreferences servingPreference) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
 
@@ -69,23 +72,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .put("subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
                 caseData.getHearingDetails()))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
-            .put("digitalPreference", "Yes")
-            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()))
-            .putAll(linkToAttachedDocument(documentContents))
-            .build();
-    }
-
-    public Map<String, Object> buildCMOReviewByEmailRepresentativesParameters(final CaseDetails caseDetails,
-                                                                              byte[] documentContents) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        final String subjectLine = buildSubjectLine(caseData);
-
-        return ImmutableMap.<String, Object>builder()
-            .put("subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
-                caseData.getHearingDetails()))
-            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
-            .put("digitalPreference", "No")
-            .put("caseUrl", "")
+            .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
+            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? formatCaseUrl(uiBaseUrl, caseDetails.getId()) : "")
             .putAll(linkToAttachedDocument(documentContents))
             .build();
     }

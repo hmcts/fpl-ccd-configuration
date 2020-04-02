@@ -625,8 +625,7 @@ class NotificationHandlerTest {
 
             notificationHandler.sendEmailForCaseManagementOrderReadyForPartyReview(
                 new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest, requestData, documentContents));
-
-            //parameters tested in controller test - need to test again here?
+            
             verify(notificationService).sendEmail(
                 eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
                 eq("fred@flinstone.com"),

@@ -240,10 +240,10 @@ public class NotificationHandler {
         EventData eventData = new EventData(event);
 
         Map<String, Object> digitalRepresentativesParameters = caseManagementOrderEmailContentProvider
-            .buildCMOReviewByDigitalRepresentativesParameters(eventData.getCaseDetails(), event.getDocumentContents());
+            .buildCMOPartyReviewParameters(eventData.getCaseDetails(), event.getDocumentContents(), DIGITAL_SERVICE);
 
         Map<String, Object> emailRepresentativesParameters = caseManagementOrderEmailContentProvider
-            .buildCMOReviewByEmailRepresentativesParameters(eventData.getCaseDetails(), event.getDocumentContents());
+            .buildCMOPartyReviewParameters(eventData.getCaseDetails(), event.getDocumentContents(), EMAIL);
 
         CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
