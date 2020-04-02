@@ -18,14 +18,6 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": "01/01/2018",
-    "ID": "ExpertReport",
-    "ListElementCode": "expertReportDeliveryDate",
-    "FieldType": "DateTime",
-    "ElementLabel": "Date approved",
-    "SecurityClassification": "Public"
-  },
-  {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReport",
     "ListElementCode": "detailsHidden",
@@ -37,8 +29,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReport",
     "ListElementCode": "detailsHiddenReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
+    "FieldType": "Date",
+    "ElementLabel": "Date approved",
+    "HintText": "For example, 27 3 2007",
     "FieldShowCondition": "detailsHidden=\"Yes\"",
     "SecurityClassification": "Public"
   }
