@@ -101,7 +101,7 @@
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": true,
-        "showDateOnly": true
+        "showDateOnly": false
       }
     },
     {
