@@ -18,6 +18,13 @@ resource "azurerm_application_insights" "appinsights" {
   tags = "${var.common_tags}"
 }
 
+#Copying appinsights key to the valut
+resource "azurerm_key_vault_secret" "AZURE_APPINSGHTS_KEY" {
+  name         = "AppInsightsInstrumentationKey"
+  value        = "${azurerm_application_insights.appinsights.instrumentation_key}"
+  key_vault_id = "${module.key-vault.key_vault_id}"
+}
+
 module "key-vault" {
   source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   name                    = "fpl-${var.env}"
