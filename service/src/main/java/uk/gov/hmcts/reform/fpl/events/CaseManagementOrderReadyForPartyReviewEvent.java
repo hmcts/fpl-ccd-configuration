@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 @EqualsAndHashCode(callSuper = true)
 public class CaseManagementOrderReadyForPartyReviewEvent extends CallbackEvent {
 
-    private final byte[] documentContents;
+    byte[] documentContents;
 
     public CaseManagementOrderReadyForPartyReviewEvent(CallbackRequest callbackRequest,
                                                        RequestData requestData,
