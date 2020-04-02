@@ -111,7 +111,7 @@ public class CaseManagementOrderProgressionService {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest,
-            requestData.authorisation(), requestData.userId(),
+            requestData,
             documentDownloadService.downloadDocument(caseData.getSharedDraftCMODocument().getBinaryUrl())));
     }
 

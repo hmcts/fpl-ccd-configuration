@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -182,7 +183,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             dataCaptor.capture(),
             eq(caseId.toString()));
 
-        assertEquals(dataCaptor.getValue(), expectedReviewByDigitalRepresentativesNotificationParameters());
+        assertEquals(dataCaptor.getValue(), expectedReviewByRepresentativesNotificationParameters(DIGITAL_SERVICE));
 
         verify(notificationClient).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
@@ -190,7 +191,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             dataCaptor.capture(),
             eq(caseId.toString()));
 
-        assertEquals(dataCaptor.getValue(), expectedReviewByEmailRepresentativesNotificationParameters());
+        assertEquals(dataCaptor.getValue(), expectedReviewByRepresentativesNotificationParameters(EMAIL));
     }
 
     @Test
@@ -245,7 +246,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         );
     }
 
-    private Map<String, Object> expectedReviewByEmailRepresentativesNotificationParameters() {
+    private Map<String, Object> expectedReviewByRepresentativesNotificationParameters(
+        RepresentativeServingPreferences servingPreference) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
@@ -254,25 +256,9 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         return ImmutableMap.<String, Object>builder()
             .put("subjectLineWithHearingDate", subjectLine)
             .put("respondentLastName", "Jones")
-            .put("digitalPreference", "No")
-            .put("caseUrl", "")
+            .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
+            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? formatCaseUrl("http://fake-url", caseId) : "")
             .put("link_to_document", jsonFileObject)
-            .build();
-    }
-
-    private Map<String, Object> expectedReviewByDigitalRepresentativesNotificationParameters() {
-        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
-
-        final String subjectLine = "Jones, SACCCCCCCC5676576567," + " hearing 1 Feb 2020";
-
-        return ImmutableMap.<String, Object>builder()
-            .put("subjectLineWithHearingDate", subjectLine)
-            .put("respondentLastName", "Jones")
-            .put("digitalPreference", "Yes")
-            .put("caseUrl", formatCaseUrl("http://fake-url", caseId))
-            .put("link_to_document", jsonFileObject)
-
             .build();
     }
 

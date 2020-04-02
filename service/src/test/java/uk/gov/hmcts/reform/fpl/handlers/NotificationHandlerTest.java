@@ -624,8 +624,7 @@ class NotificationHandlerTest {
                 .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
 
             notificationHandler.sendEmailForCaseManagementOrderReadyForPartyReview(
-                new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest, AUTH_TOKEN, USER_ID,
-                    documentContents));
+                new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest, requestData, documentContents));
 
             //parameters tested in controller test - need to test again here?
             verify(notificationService).sendEmail(
