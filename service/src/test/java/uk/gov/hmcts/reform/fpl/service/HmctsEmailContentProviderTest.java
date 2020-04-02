@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +61,7 @@ class HmctsEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
+    void shouldReturnExpectedMapWithValidCaseDetails() {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
@@ -91,7 +90,7 @@ class HmctsEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
+    void shouldReturnSuccessfullyWithEmptyCaseDetails() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("localAuthority", "Example Local Authority")

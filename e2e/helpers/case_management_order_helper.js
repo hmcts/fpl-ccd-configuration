@@ -22,11 +22,12 @@ const allOtherPartyDetails = [
 
 
 const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
-  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.see(fileName);
   I.seeAnswerInTab(1, 'Order actions', 'Is this ready to be sent to parties?', 'Yes, send this to all parties');
   I.seeAnswerInTab(2, 'Order actions', 'What is the next hearing?', 'Final hearing');
-  I.seeAnswerInTab(3, 'Case management orders 1', 'Which hearing is this order for?', '1 Jan 2050');
+  I.seeAnswerInTab(3, 'Case management orders 1', 'Date of issue', '12 December 2019');
+  I.seeAnswerInTab(4, 'Case management orders 1', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
@@ -69,10 +70,24 @@ const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   I.seeAnswerInTab(1, 'Next Hearing', 'Which hearing is next?', '1 Jan 2050');
 };
 
-const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
+const assertCanSeeDraftCMO = (I, caseViewPage, details= {}) => {
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.see('draft-case_management_order.pdf');
-  I.seeAnswerInTab(2, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
+  let hearingIndex = 2;
+  let statusIndex = 7;
+
+  if (details.orderActions) {
+    I.seeAnswerInTab(1, 'Order actions', 'Is this ready to be sent to parties?', details.orderActions.type);
+    I.seeAnswerInTab(2, 'Order actions', 'What do they need to change?', details.orderActions.reason);
+  }
+
+  if (details.hasIssuedDate) {
+    I.seeAnswerInTab(3, 'Case management order', 'Date of issue', '12 December 2019');
+    hearingIndex += 2;
+    statusIndex += 2;
+  }
+
+  I.seeAnswerInTab(hearingIndex, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
@@ -111,7 +126,7 @@ const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
   I.seeAnswerInTab(9, 'Schedule', 'Threshold', 'The S.31 threshold for the making of orders is in dispute');
   I.seeAnswerInTab(10, 'Schedule', 'Key issues', 'Are there any other family or friends capable of caring in the children');
   I.seeAnswerInTab(11, 'Schedule', 'Parties\' positions', 'The mother agrees section 20');
-  I.seeAnswerInTab(7, 'Case management order', 'Is this ready to be sent to the judge?', cmoStatus);
+  I.seeAnswerInTab(statusIndex, 'Case management order', 'Is this ready to be sent to the judge?', details.status);
 };
 
 const assertCanSeeDraftCMODocument = (I, caseViewPage) => {
@@ -166,9 +181,10 @@ const sendDraftForPartyReview = async (I, draftCaseManagementOrderEventPage) => 
 };
 
 const actionDraft = async (I, actionCaseManagementOrderEventPage) => {
+  await actionCaseManagementOrderEventPage.enterDateOfIssue({day: 12, month: 12, year: 2019});
   await skipToSchedule(I);
   await I.retryUntilExists(() => I.click('Continue'), '#orderAction_type');
-  actionCaseManagementOrderEventPage.markToBeSentToLocalAuthority();
+  await actionCaseManagementOrderEventPage.markToBeSentToLocalAuthority();
   await I.completeEvent('Save and continue');
 };
 

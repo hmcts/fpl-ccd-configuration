@@ -12,6 +12,10 @@ management:
 spring:
   application:
     name: fpl-service
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 
 idam:
   s2s-auth:
@@ -77,7 +81,7 @@ fees-register:
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: QRS
+      keyword: VariationDischarge
       service: private law
     PLACEMENT:
       channel: default
@@ -105,6 +109,30 @@ bankHolidays:
   api:
     url: "https://www.gov.uk"
 
+scheduler:
+  enabled: ${SCHEDULER_ENABLED:true}
+  datasourceConf:
+    name: schedulerDataSource
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:5050}/${SCHEDULER_DB_NAME:fpl_scheduler}
+    username: ${SCHEDULER_DB_USER:fpl_scheduler}
+    password: ${SCHEDULER_DB_PASSWORD:fpl_scheduler}
+  quartzConf:
+    org.quartz:
+      scheduler:
+        instanceId: AUTO
+      jobStore:
+        isClustered: true
+        class: org.quartz.impl.jdbcjobstore.JobStoreTX
+        driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+        dataSource: schedulerDataSource
+  schedulerConf:
+    - name: 'Upcoming hearings'
+      enabled: true
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Finds upcoming hearings'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
+      cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
 ---
 
 spring:
@@ -217,6 +245,9 @@ feature:
       support:
         api:
           enabled: true
+
+scheduler:
+  enabled: false
 
 ---
 
@@ -336,3 +367,6 @@ feature:
       support:
         api:
           enabled: true
+
+scheduler:
+  enabled: false

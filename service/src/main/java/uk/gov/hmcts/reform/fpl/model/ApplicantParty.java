@@ -29,6 +29,7 @@ public class ApplicantParty extends Party implements TelephoneContacts {
     private final Telephone mobileNumber;
     @NotBlank(message = "Enter a job title for the contact")
     private final String jobTitle;
+    @NotBlank(message = "Enter a PBA number for the contact")
     private final String pbaNumber;
     private final String clientCode;
     private final String customerReference;

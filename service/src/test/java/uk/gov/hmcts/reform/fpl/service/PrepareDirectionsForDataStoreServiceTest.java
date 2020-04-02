@@ -314,7 +314,7 @@ class PrepareDirectionsForDataStoreServiceTest {
 
         @BeforeEach
         void initValues() {
-            given(userDetailsService.getUserName("auth")).willReturn("Emma Taylor");
+            given(userDetailsService.getUserName()).willReturn("Emma Taylor");
 
             directionId = randomUUID();
             responseId = randomUUID();
@@ -337,7 +337,7 @@ class PrepareDirectionsForDataStoreServiceTest {
                 .complied("Yes")
                 .build();
 
-            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_COURT, "auth");
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_COURT);
 
             assertThat(getResponsesSdo(caseData).get(0).getValue()).isEqualTo(expectedResponse);
         }
@@ -357,7 +357,7 @@ class PrepareDirectionsForDataStoreServiceTest {
                     .assignee(COURT)
                     .build()));
 
-            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_COURT, "auth");
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_COURT);
 
             assertThat(getResponsesSdo(caseData)).containsAll(expectedResponses);
         }
@@ -375,7 +375,7 @@ class PrepareDirectionsForDataStoreServiceTest {
 
             List<Element<DirectionResponse>> expectedResponses = expectedResponse(OTHERS);
 
-            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_OTHERS, "auth");
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_OTHERS);
 
             assertThat(getResponsesCmo(caseData)).containsAll(expectedResponses);
         }
@@ -393,7 +393,7 @@ class PrepareDirectionsForDataStoreServiceTest {
 
             List<Element<DirectionResponse>> expectedResponses = expectedResponse(PARENTS_AND_RESPONDENTS);
 
-            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_OTHERS, "auth");
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_OTHERS);
 
             assertThat(getResponsesCmo(caseData)).containsAll(expectedResponses);
         }

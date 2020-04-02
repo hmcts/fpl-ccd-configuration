@@ -29,6 +29,7 @@ public class CaseManagementOrder {
     private final CMOStatus status;
     private final OrderAction action;
     private final NextHearing nextHearing;
+    private final String dateOfIssue;
 
     @JsonIgnore
     public boolean isDraft() {
@@ -36,7 +37,7 @@ public class CaseManagementOrder {
     }
 
     @JsonIgnore
-    public boolean isInJudgeReview() { 
+    public boolean isInJudgeReview() {
         return status == SEND_TO_JUDGE;
     }
 }
