@@ -2,58 +2,19 @@
   {
     "LiveFrom": "01/01/2018",
     "ID": "ExpertReport",
-    "ListElementCode": "# Record Meta data",
-    "FieldType": "Label",
-    "ElementLabel": "Scanned records",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "ID": "ExpertReport",
     "ListElementCode": "type",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "ScannedDocumentType",
-    "ElementLabel": "Document type",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "ID": "ExpertReport",
-    "ListElementCode": "subtype",
-    "FieldType": "Text",
-    "ElementLabel": "Document subtype",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "ID": "ExpertReport",
-    "ListElementCode": "url",
-    "FieldType": "Document",
-    "ElementLabel": "Document url",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "ID": "ExpertReportt",
-    "ListElementCode": "controlNumber",
-    "FieldType": "Text",
-    "ElementLabel": "Document control number",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "ID": "ExpertReport",
-    "ListElementCode": "fileName",
-    "FieldType": "Text",
-    "ElementLabel": "File name",
+    "FieldTypeParameter": "ExpertReportList",
+    "ElementLabel": "What type of report have you requested?",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
     "ID": "ExpertReport",
     "ListElementCode": "scannedDate",
-    "FieldType": "DateTime",
-    "ElementLabel": "Scanned date",
+    "FieldType": "Date",
+    "ElementLabel": "Date requested",
+    "HintText": "For example, 27 3 2007",
     "SecurityClassification": "Public"
   },
   {
@@ -61,15 +22,7 @@
     "ID": "ExpertReport",
     "ListElementCode": "deliveryDate",
     "FieldType": "DateTime",
-    "ElementLabel": "Delivery date",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ExpertReport",
-    "ListElementCode": "exceptionRecordReference",
-    "FieldType": "Text",
-    "ElementLabel": "Exception record reference",
+    "ElementLabel": "Date approved",
     "SecurityClassification": "Public"
   }
 ]
