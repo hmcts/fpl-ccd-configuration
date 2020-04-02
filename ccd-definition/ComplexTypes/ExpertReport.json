@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2018",
     "ID": "ExpertReport",
-    "ListElementCode": "type",
+    "ListElementCode": "expertReportList",
     "FieldType": "FixedList",
     "FieldTypeParameter": "ExpertReportList",
     "ElementLabel": "What type of report have you requested?",
@@ -11,7 +11,7 @@
   {
     "LiveFrom": "01/01/2018",
     "ID": "ExpertReport",
-    "ListElementCode": "scannedDate",
+    "ListElementCode": "expertReportDateRequested",
     "FieldType": "Date",
     "ElementLabel": "Date requested",
     "HintText": "For example, 27 3 2007",
@@ -20,7 +20,7 @@
   {
     "LiveFrom": "01/01/2018",
     "ID": "ExpertReport",
-    "ListElementCode": "deliveryDate",
+    "ListElementCode": "expertReportDeliveryDate",
     "FieldType": "DateTime",
     "ElementLabel": "Date approved",
     "SecurityClassification": "Public"
