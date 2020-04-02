@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -24,6 +26,7 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -385,6 +388,160 @@ class ConfidentialDetailsServiceTest {
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                     .build())
                 .build());
+        }
+    }
+    
+    @Nested
+    class OthersTests {
+        @Test
+        void shouldAddToListWhenConfidentialDetailsForOther() {
+            List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, CONFIDENTIAL));
+
+            List<Element<Other>> confidentialOthers = service.getConfidentialDetails(others);
+
+            assertThat(confidentialOthers).containsOnly(otherWithConfidentialFields(ID, NO_VALUE));
+        }
+
+        @Test
+        void shouldNotAddToListWhenOthersIsEmptyList() {
+            List<Element<Other>> confidentialOthers = service.getConfidentialDetails(List.of());
+
+            assertThat(confidentialOthers).isEmpty();
+        }
+
+        @Test
+        void shouldOnlyAddConfidentialDetailsToListOnlyWhenAnsweredYesForOther() {
+            List<Element<Other>> others = List.of(
+                otherWithConfidentialFields(ID, CONFIDENTIAL),
+                otherWithConfidentialFields(ID, NOT_CONFIDENTIAL));
+
+            List<Element<Other>> confidentialOthers = service.getConfidentialDetails(others);
+
+            assertThat(confidentialOthers).containsExactly(otherWithConfidentialFields(ID, NO_VALUE));
+        }
+
+        @Test
+        void shouldRemoveConfidentialDetailsWhenMarkedAsConfidential() {
+            List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, CONFIDENTIAL));
+
+            assertThat(service.removeConfidentialDetails(others))
+                .containsOnly(otherWithRemovedConfidentialFields(ID));
+        }
+
+        @Test
+        void shouldNotRemoveConfidentialDetailsWhenNotMarkedAsConfidential() {
+            List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL));
+
+            assertThat(service.removeConfidentialDetails(others)).isEqualTo(others);
+        }
+
+        @Test
+        void shouldReturnOthersIfOthersIsPrePopulated() {
+            CaseData caseData = CaseData.builder()
+                .others(Others.builder().firstOther(otherWithRemovedConfidentialFields(ID).getValue()).build())
+                .build();
+
+            List<Element<Other>> others = service.combineOtherDetails(caseData.getAllOthers(),
+                caseData.getConfidentialOthers());
+
+            assertThat(others.get(0).getValue()).isEqualTo(otherWithRemovedConfidentialFields(ID).getValue());
+        }
+
+        @Test
+        void shouldPrepareOtherWithConfidentialValuesWhenConfidentialOthersIsNotEmpty() {
+            CaseData caseData = CaseData.builder()
+                .others(Others.builder().firstOther(otherWithRemovedConfidentialFields(ID).getValue()).build())
+                .confidentialOthers(List.of(otherWithConfidentialFields(ID, CONFIDENTIAL)))
+                .build();
+
+            List<Element<Other>> others = service.combineOtherDetails(caseData.getAllOthers(),
+                caseData.getConfidentialOthers());
+
+            assertThat(others.get(0).getValue()).isEqualTo(otherWithConfidentialFields(ID, CONFIDENTIAL).getValue());
+        }
+
+        @Test
+        void shouldAddExpectedOtherWhenHiddenDetailsMarkedAsNo() {
+            CaseData caseData = CaseData.builder()
+                .others(Others.builder()
+                    .firstOther(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL).getValue())
+                    .build())
+                .confidentialOthers(List.of(otherWithConfidentialFields(ID, CONFIDENTIAL)))
+                .build();
+
+            List<Element<Other>> others = service.combineOtherDetails(caseData.getAllOthers(),
+                caseData.getConfidentialOthers());
+
+            assertThat(others.get(0).getValue())
+                .isEqualTo(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL).getValue());
+        }
+
+        @Test
+        void shouldMaintainOrderingOfOthersWhenComplexScenario() {
+            UUID otherId = randomUUID();
+
+            List<Element<Other>> others = List.of(
+                otherWithConfidentialFields(randomUUID(), NOT_CONFIDENTIAL),
+                otherWithRemovedConfidentialFields(otherId));
+
+            List<Element<Other>> confidentialOthers = List.of(
+                otherWithConfidentialFields(ID, CONFIDENTIAL),
+                otherWithConfidentialFields(otherId, CONFIDENTIAL));
+
+            CaseData caseData = CaseData.builder()
+                .others(Others.builder()
+                    .firstOther(otherWithRemovedConfidentialFields(ID).getValue())
+                    .additionalOthers(others)
+                    .build())
+                .confidentialOthers(confidentialOthers)
+                .build();
+
+            List<Element<Other>> updatedOthers = service.combineOtherDetails(caseData.getAllOthers(),
+                caseData.getConfidentialOthers());
+
+            assertThat(updatedOthers.get(0).getValue()).isEqualTo(confidentialOthers.get(0).getValue());
+            assertThat(updatedOthers.get(1)).isEqualTo(others.get(0));
+            assertThat(updatedOthers.get(2)).isEqualTo(confidentialOthers.get(1));
+        }
+
+        @Test
+        void shouldAddConfidentialDetailsToCaseDetailsWhenClassExists() {
+            CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+            List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, CONFIDENTIAL));
+
+            service.addConfidentialDetailsToCase(caseDetails, others, OTHER);
+
+            assertThat(caseDetails.getData()).containsKeys(OTHER.getCaseDataKey());
+        }
+
+        @Test
+        void shouldRemoveConfidentialDetailsFromCaseDetailsWhenNoConfidentialDetails() {
+            Map<String, Object> data = new HashMap<>();
+            data.put(OTHER.getCaseDataKey(), "");
+
+            CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+            service.addConfidentialDetailsToCase(caseDetails, emptyList(), OTHER);
+
+            assertThat(caseDetails.getData()).isEmpty();
+        }
+
+
+        private Other.OtherBuilder baseOtherBuilder(String detailsHidden) {
+            return Other.builder()
+                .name("John Smith")
+                .detailsHidden(detailsHidden);
+        }
+
+        private Element<Other> otherWithRemovedConfidentialFields(UUID id) {
+            return element(id, baseOtherBuilder(CONFIDENTIAL).build());
+        }
+
+        private Element<Other> otherWithConfidentialFields(UUID id, String detailsHidden) {
+            return element(id, baseOtherBuilder(detailsHidden)
+                    .address(Address.builder().addressLine1("Address Line 1").build())
+                    .telephone("01227 831393")
+                    .build());
         }
     }
 }

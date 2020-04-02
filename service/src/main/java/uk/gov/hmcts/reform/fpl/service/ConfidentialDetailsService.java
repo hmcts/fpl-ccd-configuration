@@ -4,12 +4,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -25,6 +27,10 @@ public class ConfidentialDetailsService {
     public List<Element<Respondent>> combineRespondentDetails(List<Element<Respondent>> all,
                                                               List<Element<Respondent>> confidential) {
         return prepareCollection(all, confidential, expandedRespondent());
+    }
+
+    public List<Element<Other>> combineOtherDetails(List<Element<Other>> all, List<Element<Other>> confidential) {
+        return prepareCollection(all, confidential, null);
     }
 
     public <T extends ConfidentialParty<T>> List<Element<T>> getConfidentialDetails(List<Element<T>> details) {
@@ -83,6 +89,18 @@ public class ConfidentialDetailsService {
                 if (party.containsConfidentialDetails()) {
                     T partyToAdd = getItemToAdd(confidential, element);
                     T confidentialParty = party.addConfidentialDetails((partyToAdd.getConfidentialParty()));
+
+                    // code due to others following a different data structure.
+                    if (defaultValue == null) {
+                        List<UUID> ids = all.stream().map(Element::getId).collect(toList());
+
+                        confidentialParty = confidential.stream()
+                            .filter(other -> !ids.contains(other.getId()))
+                            .map(other -> party.addConfidentialDetails(other.getValue().getConfidentialParty()))
+                            .findFirst()
+                            .orElse(party);
+                    }
+
                     collection.add(element(element.getId(), confidentialParty));
                 } else {
                     collection.add(element);
