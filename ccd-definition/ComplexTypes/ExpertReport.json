@@ -24,5 +24,22 @@
     "FieldType": "DateTime",
     "ElementLabel": "Date approved",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReport",
+    "ListElementCode": "detailsHidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Has it been approved?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReport",
+    "ListElementCode": "detailsHiddenReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "detailsHidden=\"Yes\"",
+    "SecurityClassification": "Public"
   }
 ]
