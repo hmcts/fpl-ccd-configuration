@@ -12,6 +12,10 @@ management:
 spring:
   application:
     name: fpl-service
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 
 idam:
   s2s-auth:
@@ -42,61 +46,93 @@ fees-register:
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
+      keyword: CareOrder
       service: public law
     EDUCATION_SUPERVISION_ORDER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: TUV
+      keyword: EducationSupervision
       service: private law
     EMERGENCY_PROTECTION_ORDER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: KLM
+      keyword: EPO
       service: private law
     INTERIM_CARE_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
+      keyword: CareOrder
       service: public law
     INTERIM_SUPERVISION_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
+      keyword: CareOrder
       service: public law
     OTHER:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: QRS
+      keyword: VariationDischarge
       service: private law
     PLACEMENT:
       channel: default
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: DEF
+      keyword: Placement
       service: adoption
     SUPERVISION_ORDER:
       channel: default
       event: issue
       jurisdiction1: family
       jurisdiction2: family court
+      keyword: CareOrder
       service: public law
 
 payment:
   site_id: ABA3
 
 ld:
-  user_key: FPLA
+  user_key: ${LD_USER_KEY:FPLA}
   sdk_key:
 
+bankHolidays:
+  api:
+    url: "https://www.gov.uk"
+
+scheduler:
+  enabled: ${SCHEDULER_ENABLED:true}
+  datasourceConf:
+    name: schedulerDataSource
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:5050}/${SCHEDULER_DB_NAME:fpl_scheduler}
+    username: ${SCHEDULER_DB_USER:fpl_scheduler}
+    password: ${SCHEDULER_DB_PASSWORD:fpl_scheduler}
+  quartzConf:
+    org.quartz:
+      scheduler:
+        instanceId: AUTO
+      jobStore:
+        isClustered: true
+        class: org.quartz.impl.jdbcjobstore.JobStoreTX
+        driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+        dataSource: schedulerDataSource
+  schedulerConf:
+    - name: 'Upcoming hearings'
+      enabled: true
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Finds upcoming hearings'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
+      cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
 ---
 
 spring:
@@ -210,6 +246,9 @@ feature:
         api:
           enabled: true
 
+scheduler:
+  enabled: false
+
 ---
 
 spring:
@@ -290,6 +329,10 @@ ccd:
     base:
       url: http://localhost:3451
 
+bankHolidays:
+  api:
+    url: http://localhost:8765
+
 appinsights:
   instrumentationkey: fake-key
 
@@ -324,3 +367,6 @@ feature:
       support:
         api:
           enabled: true
+
+scheduler:
+  enabled: false

@@ -54,6 +54,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         field("actionCMOPlaceholderHeading").blacklist("CU", JUDICIARY);
         field("actionCMOPlaceholderHint").blacklist("CU", JUDICIARY);
         field("dateSubmitted").blacklist("R", LOCAL_AUTHORITY);
+        field("evidenceHandled").blacklist(CAFCASS, LOCAL_AUTHORITY);
     }
 
     private void buildUniversalEvents() {
@@ -65,9 +66,22 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .explicitGrants()
             .grant("CRU", SYSTEM_UPDATE);
 
+        event("addFamilyManCaseNumber")
+            .forAllStates()
+            .name("Add case number")
+            .explicitGrants()
+            .grant("CRU", HMCTS_ADMIN)
+            .aboutToSubmitWebhook("add-case-number")
+            .submittedWebhook()
+            .fields()
+            .optional(CaseData::getFamilyManCaseNumber);
+
         event("handleSupplementaryEvidence")
             .forAllStates()
             .explicitGrants()
+            .grantHistoryOnly(CAFCASS)
+            .grant("CRU", HMCTS_ADMIN)
+            .grant("R", LOCAL_AUTHORITY, JUDICIARY, GATEKEEPER)
             .name("Handle supplementary evidence")
             .showEventNotes()
             .fields()
@@ -77,14 +91,16 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("attachScannedDocs")
             .forAllStates()
             .explicitGrants()
+            .grant("CRUD", BULK_SCAN, BULK_SCAN_SYSTEM_UPDATE)
             .endButtonLabel("")
             .name("Attach scanned docs")
             .fields()
-            .pageLabel("BulkScanning")
-            .field("scannedDocuments").context(DisplayContext.Optional).done()
+            .page(1)
+                .pageLabel("BulkScanning")
+                .field("scannedDocuments").context(DisplayContext.Optional).done()
             .page(2)
-            .pageLabel("BulkScanning")
-            .field("evidenceHandled").context(DisplayContext.Mandatory);
+                .pageLabel("BulkScanning")
+                .field("evidenceHandled").context(DisplayContext.Mandatory);
 
         event("allocatedJudge")
             .forAllStates()
@@ -96,6 +112,12 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .fields()
             .page("AllocatedJudge")
                 .field(CaseData::getAllocatedJudge);
+
+        event("addCaseNote")
+            .forAllStates()
+            .name("Add a case note")
+            .grant("CRU", JUDICIARY)
+            .aboutToSubmitWebhook("add-note");
     }
 
     private void buildWorkBasketResultFields() {
@@ -104,7 +126,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getFamilyManCaseNumber, "FamilyMan case number")
             .field("[STATE]", "State")
             .field(CaseData::getCaseLocalAuthority, "Local authority")
-            .field("dateAndTimeSubmitted", "Date submitted");
+            .field("dateAndTimeSubmitted", "Date submitted")
+            .field("evidenceHandled", "Supplementary evidence handled");
     }
 
     private void buildWorkBasketInputFields() {
@@ -112,7 +135,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getCaseLocalAuthority, "Local authority")
             .field(CaseData::getCaseName, "Case name")
             .field(CaseData::getFamilyManCaseNumber, "FamilyMan case number")
-            .field(CaseData::getDateSubmitted, "Date submitted");
+            .field("[CASE_REFERENCE]", "CCD Case Number")
+            .field(CaseData::getDateSubmitted, "Date submitted")
+            .field("evidenceHandled", "Supplementary evidence handled");
     }
 
     private void buildTabs() {
@@ -191,6 +216,12 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         tab("SentDocumentsTab", "Documents sent to parties")
             .exclude(CAFCASS, LOCAL_AUTHORITY)
             .field("documentsSentToParties");
+
+        tab("PaymentsTab", "Payment History")
+            .restrictedField("paymentHistory").exclude(CAFCASS, LOCAL_AUTHORITY);
+
+        tab("Notes", "Notes")
+            .restrictedField(CaseData::getCaseNotes).exclude(CAFCASS, LOCAL_AUTHORITY);
     }
 
 
@@ -339,7 +370,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .allWebhooks("draft-standard-directions")
                 .fields()
                     .page("judgeAndLegalAdvisor")
-                        .midEventWebhook()
                         .optional(CaseData::getJudgeAndLegalAdvisor)
                     .page("allPartiesDirections")
                         .field("allPartiesHearingDate", DisplayContext.ReadOnly, null, "Label", null, "The next hearing is on ${hearingDetails.startDate}.")
@@ -419,13 +449,6 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
     private void buildSubmittedEvents() {
         grant(Submitted, "CRU", HMCTS_ADMIN);
-        event("addFamilyManCaseNumber")
-                .forState(Submitted)
-                .name("Add case number")
-                .aboutToSubmitWebhook("add-case-number")
-                .submittedWebhook()
-                .fields()
-                    .optional(CaseData::getFamilyManCaseNumber);
 
         addHearingBookingDetails(Submitted)
             .grant("CRU", JUDICIARY, GATEKEEPER)

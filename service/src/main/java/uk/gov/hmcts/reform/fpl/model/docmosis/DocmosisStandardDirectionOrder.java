@@ -17,7 +17,7 @@ public class DocmosisStandardDirectionOrder {
     private final DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final String courtName;
     private final String familyManCaseNumber;
-    private final String generationDate;
+    private final String dateOfIssue;
     private final String complianceDeadline;
     private final List<DocmosisRespondent> respondents;
     private final List<DocmosisChildren> children;
@@ -26,6 +26,7 @@ public class DocmosisStandardDirectionOrder {
     private final DocmosisHearingBooking hearingBooking;
     private final List<DocmosisDirection> directions;
     private final String draftbackground;
+    private final String courtseal;
 
     public Map<String, Object> toMap(ObjectMapper mapper) {
         Map<String, Object> map = mapper.convertValue(this, new TypeReference<>() {});

@@ -98,8 +98,7 @@ public class PrepareDirectionsForDataStoreService {
      * @param caseData caseData containing custom role collections and standard directions order.
      */
     public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData,
-                                                              ComplyOnBehalfEvent eventId,
-                                                              String authorisation) {
+                                                              ComplyOnBehalfEvent eventId) {
         Map<DirectionAssignee, List<Element<Direction>>> customDirectionsMap =
             directionService.collectCustomDirectionsToMap(caseData);
 
@@ -121,14 +120,14 @@ public class PrepareDirectionsForDataStoreService {
 
                 case PARENTS_AND_RESPONDENTS:
                     List<Element<DirectionResponse>> respondentResponses = addValuesToListResponses(
-                        directions, eventId, authorisation, PARENTS_AND_RESPONDENTS);
+                        directions, eventId, PARENTS_AND_RESPONDENTS);
 
                     addResponseElementsToDirections(respondentResponses, directionsToComplyWith);
 
                     break;
                 case OTHERS:
                     List<Element<DirectionResponse>> otherResponses = addValuesToListResponses(
-                        directions, eventId, authorisation, OTHERS);
+                        directions, eventId, OTHERS);
 
                     addResponseElementsToDirections(otherResponses, directionsToComplyWith);
 
@@ -140,7 +139,6 @@ public class PrepareDirectionsForDataStoreService {
     //TODO: refactor of addCourtAssigneeAndDirectionId would remove dependency on eventId. FPLA-1485
     private List<Element<DirectionResponse>> addValuesToListResponses(List<Element<Direction>> directions,
                                                                       ComplyOnBehalfEvent eventId,
-                                                                      String authorisation,
                                                                       DirectionAssignee assignee) {
         final UUID[] id = new UUID[1];
 
@@ -151,19 +149,18 @@ public class PrepareDirectionsForDataStoreService {
                 return directionElement.getValue().getResponses();
             })
             .flatMap(List::stream)
-            .map(element -> getDirectionResponse(eventId, authorisation, id[0], element, assignee))
+            .map(element -> getDirectionResponse(eventId, id[0], element, assignee))
             .collect(toList());
     }
 
     private Element<DirectionResponse> getDirectionResponse(ComplyOnBehalfEvent event,
-                                                            String authorisation,
                                                             UUID id,
                                                             Element<DirectionResponse> response,
                                                             DirectionAssignee assignee) {
         if (event == COMPLY_ON_BEHALF_COURT) {
             return addCourtAssigneeAndDirectionId(id, response);
         }
-        return addResponderAssigneeAndDirectionId(response, authorisation, assignee, id);
+        return addResponderAssigneeAndDirectionId(response, assignee, id);
     }
 
     //TODO: if name of user complying for court is added then this can be merged with logic from method below. FPLA-1485
@@ -175,19 +172,18 @@ public class PrepareDirectionsForDataStoreService {
     }
 
     private Element<DirectionResponse> addResponderAssigneeAndDirectionId(Element<DirectionResponse> response,
-                                                                          String authorisation,
                                                                           DirectionAssignee assignee,
                                                                           UUID id) {
         return element(response.getId(), response.getValue().toBuilder()
             .assignee(assignee)
-            .responder(getUsername(response, authorisation))
+            .responder(getUsername(response))
             .directionId(id)
             .build());
     }
 
-    private String getUsername(Element<DirectionResponse> element, String authorisation) {
+    private String getUsername(Element<DirectionResponse> element) {
         if (isEmpty(element.getValue().getResponder())) {
-            return userDetailsService.getUserName(authorisation);
+            return userDetailsService.getUserName();
         }
         return element.getValue().getResponder();
     }

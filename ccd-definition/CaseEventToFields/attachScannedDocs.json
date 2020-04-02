@@ -8,8 +8,9 @@
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageLabel": "BulkScanning",
-    "PageColumnNumber" : 1,
-    "PageDisplayOrder": 1
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "No"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -20,7 +21,8 @@
     "DisplayContext": "MANDATORY",
     "PageID": 2,
     "PageLabel": "BulkScanning",
-    "PageColumnNumber" : 1,
-    "PageDisplayOrder": 1
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "No"
   }
 ]

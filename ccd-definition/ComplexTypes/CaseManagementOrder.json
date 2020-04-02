@@ -18,6 +18,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrder",
+    "ListElementCode": "dateOfIssue",
+    "FieldType": "Text",
+    "ElementLabel": "Date of issue",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
     "ListElementCode": "hearingDate",
     "FieldType": "Text",
     "ElementLabel": "Which hearing is this order for?",

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import com.launchdarkly.client.LDClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -9,23 +10,32 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -157,9 +167,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     class MakePaymentForCaseOrders {
 
         @Test
-        void shouldMakePaymentWhenFeatureToggleIsTrue() {
+        void shouldMakePaymentWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
             given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
             CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+            caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
             postSubmittedEvent(caseDetails);
 
@@ -170,20 +181,111 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         @Test
         void shouldNotMakePaymentWhenFeatureToggleIsFalse() {
             given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
+            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+            caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
-            postSubmittedEvent(enableSendToCtscOnCaseDetails(YES));
+            postSubmittedEvent(caseDetails);
 
             verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
         }
+
+        @Test
+        void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
+            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+            caseDetails.getData().put("displayAmountToPay", NO.getValue());
+
+            postSubmittedEvent(caseDetails);
+
+            verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
+        }
+
+        @AfterEach
+        void resetInvocations() {
+            reset(paymentService);
+        }
+    }
+
+    @Test
+    void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        caseDetails.getData().put("displayAmountToPay", YES.getValue());
+
+        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService)
+            .makePaymentForCaseOrders(any(), any());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "local-authority@local-authority.com",
+            Map.of("applicationType", "C110a"),
+            "12345");
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            "12345");
+    }
+
+    @Test
+    void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+
+        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService)
+            .makePaymentForCaseOrders(any(), any());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient, never()).sendEmail(
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA),
+            anyString(),
+            anyMap(),
+            anyString());
+
+        verify(notificationClient, never()).sendEmail(
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC),
+            anyString(),
+            anyMap(),
+            anyString());
+    }
+
+    @Test
+    void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            "local-authority@local-authority.com",
+            Map.of("applicationType", "C110a"),
+            "12345");
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            "12345");
+    }
+
+    private Map<String, Object> expectedCtscNotificationParameters() {
+        return Map.of("applicationType", "C110a",
+            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
     }
 
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
         return CaseDetails.builder()
             .id(CASE_REFERENCE)
-            .data(Map.of(
+            .data(new HashMap<>(Map.of(
                 "caseLocalAuthority", "example",
                 "sendToCtsc", enableCtsc.getValue()
-            )).build();
+            ))).build();
     }
 
     private ImmutableMap.Builder<String, Object> getCompleteParameters() {

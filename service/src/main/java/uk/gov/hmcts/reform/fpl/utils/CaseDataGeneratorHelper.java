@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -68,13 +67,13 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CaseDataGeneratorHelper {
 
-    private static final DateFormatterService DATE_FORMATTER_SERVICE = new DateFormatterService();
     private static final String FORMAT_STYLE = "h:mma, d MMMM yyyy";
 
     private CaseDataGeneratorHelper() {
@@ -149,60 +148,50 @@ public class CaseDataGeneratorHelper {
     }
 
     public static List<Element<Child>> createPopulatedChildren() {
-        return ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Bran")
-                        .lastName("Stark")
-                        .gender("Male")
-                        .dateOfBirth(LocalDate.now())
-                        .build())
+        return ElementUtils.wrapElements(
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Bran")
+                    .lastName("Stark")
+                    .gender("Boy")
+                    .dateOfBirth(LocalDate.now())
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Sansa")
-                        .lastName("Stark")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Sansa")
+                    .lastName("Stark")
+                    .gender("Boy")
+                    .dateOfBirth(LocalDate.now())
                     .build())
                 .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Jon")
-                        .lastName("Snow")
-                        .build())
+            Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Jon")
+                    .lastName("Snow")
+                    .gender("Girl")
+                    .dateOfBirth(LocalDate.now())
                     .build())
-                .build());
+                .build()
+        );
     }
 
     public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
         return Order.builder()
-            .directions(ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(randomUUID())
-                    .value(Direction.builder()
-                        .directionType("Test SDO type 1")
-                        .directionText("Test body 1")
-                        .directionNeeded(YES.getValue())
-                        .dateToBeCompletedBy(today)
-                        .assignee(ALL_PARTIES)
-                        .build())
+            .dateOfIssue("29 November 2019")
+            .directions(ElementUtils.wrapElements(Direction.builder()
+                    .directionType("Test SDO type 1")
+                    .directionText("Test body 1")
+                    .directionNeeded(YES.getValue())
+                    .dateToBeCompletedBy(today)
+                    .assignee(ALL_PARTIES)
                     .build(),
-                Element.<Direction>builder()
-                    .id(randomUUID())
-                    .value(Direction.builder()
-                        .directionType("Test SDO type 2")
-                        .directionText("Test body 2")
-                        .directionNeeded(YES.getValue())
-                        .dateToBeCompletedBy(today)
-                        .assignee(ALL_PARTIES)
-                        .build())
+                Direction.builder()
+                    .directionType("Test SDO type 2")
+                    .directionText("Test body 2")
+                    .directionNeeded(YES.getValue())
+                    .dateToBeCompletedBy(today)
+                    .assignee(ALL_PARTIES)
                     .build()
             ))
             .orderStatus(status)
@@ -285,6 +274,7 @@ public class CaseDataGeneratorHelper {
         return ImmutableList.of(
             Element.<GeneratedOrder>builder()
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Example Order")
                     .details(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -297,6 +287,7 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Winter is here")
                     .details("Westeros")
                     .date(formatLocalDateTimeBaseUsingFormat(
@@ -309,6 +300,7 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
+                    .type("Blank order (C21)")
                     .title("Black Sails")
                     .details("Long John Silver")
                     .date(formatLocalDateTimeBaseUsingFormat(
@@ -436,8 +428,7 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static ImmutableMap<String, Object> buildCaseDataMapForDraftCMODocmosisGeneration(
-        LocalDateTime localDateTime) {
+    public static ImmutableMap<String, Object> buildCaseDataMapForDraftCMODocmosisGeneration(LocalDateTime dateTime) {
 
         final List<Element<Direction>> cmoDirections = createCmoDirections();
 
@@ -456,15 +447,15 @@ public class CaseDataGeneratorHelper {
             .put("applicants", createPopulatedApplicants())
             .put("solicitor", createSolicitor())
             .put("children1", createPopulatedChildren())
-            .put(HEARING_DETAILS_KEY, createHearingBookings(localDateTime))
+            .put(HEARING_DETAILS_KEY, createHearingBookings(dateTime))
             .put("dateSubmitted", LocalDate.now())
             .put("respondents1", respondents)
             .put("others", others)
             .put(HEARING_DATE_LIST.getKey(), DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                    .label(DATE_FORMATTER_SERVICE.formatLocalDateToString(
-                        localDateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
+                    .label(formatLocalDateToString(
+                        dateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
                     .build())
                 .build())
             .put(SCHEDULE.getKey(), createSchedule(true))
@@ -480,6 +471,7 @@ public class CaseDataGeneratorHelper {
                 .build()))
             .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createApprovedCMO())
             .put("representatives", representatives)
+            .put("dateOfIssue", LocalDate.of(2020, 1, 15))
             .build();
     }
 

@@ -3,6 +3,7 @@ tags:
   ccd-idam-pr: false
 
 java:
+  aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest
   environment:
     IDAM_CLIENT_ID: fpl_case_service
@@ -23,9 +24,11 @@ java:
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
     AUTH_IDAM_CLIENT_BASEURL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
     AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    SCHEDULER_DB_USER: fpl_scheduler@fpl-case-service-{{ .Values.global.environment }}
+    SCHEDULER_DB_HOST: fpl-case-service-{{ .Values.global.environment }}.postgres.database.azure.com
+    SCHEDULER_DB_PORT: 5432
   keyVaults:
     fpl:
-      resourceGroup: fpl-case-service
       secrets:
         - notify-api-key
         - docmosis-api-key
@@ -44,4 +47,6 @@ java:
         - robotics-notification-recipient
         - ld-sdk-key
         - ctsc-inbox
+        - AppInsightsInstrumentationKey
+        - scheduler-db-password
   applicationPort: 4000

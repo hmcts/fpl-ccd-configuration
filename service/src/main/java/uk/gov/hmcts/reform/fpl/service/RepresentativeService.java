@@ -215,33 +215,18 @@ public class RepresentativeService {
         }
     }
 
-    public List<Element<Representative>> getRepresentativePartiesToNotify(List<Element<Representative>>
-                                                                              currentRepresentatives,
-        List<Element<Representative>> representativesBefore) {
-        if (isNotEmpty(representativesBefore)) {
-            List<Element<Representative>> changedRepresentatives = getChangedRepresentatives(currentRepresentatives,
-                representativesBefore);
-            return getRepresentativesWhoseServingPreferenceIsNotPost(changedRepresentatives);
-        } else {
-            if (isNotEmpty(currentRepresentatives)) {
-                return getRepresentativesWhoseServingPreferenceIsNotPost(currentRepresentatives);
+    public List<Representative> getUpdatedRepresentatives(List<Element<Representative>> currentRepresentatives,
+                                                          List<Element<Representative>> representativesBefore,
+                                                          RepresentativeServingPreferences servingPreferences) {
+        if (isNotEmpty(currentRepresentatives)) {
+            if (isNotEmpty(representativesBefore)) {
+                currentRepresentatives.removeAll(representativesBefore);
             }
+            return unwrapElements(currentRepresentatives.stream()
+                .filter(representative -> servingPreferences.equals(representative.getValue().getServingPreferences()))
+                .collect(Collectors.toList()));
+        } else {
+            return emptyList();
         }
-        return emptyList();
-    }
-
-    private List<Element<Representative>> getRepresentativesWhoseServingPreferenceIsNotPost(
-        List<Element<Representative>> representatives) {
-        return representatives.stream()
-            .filter(representative -> representative.getValue().getServingPreferences() != POST)
-            .collect(Collectors.toList());
-    }
-
-    private List<Element<Representative>> getChangedRepresentatives(List<Element<Representative>>
-                                                                        currentRepresentatives,
-        List<Element<Representative>> representativesBefore) {
-
-        currentRepresentatives.removeAll(representativesBefore);
-        return currentRepresentatives;
     }
 }

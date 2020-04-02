@@ -11,14 +11,19 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasGender;
 
 import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
+import javax.validation.groups.Default;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@HasGender(groups = {Default.class, SealedSDOGroup.class})
 public final class ChildParty extends Party {
 
     public final String firstName;
@@ -60,6 +65,8 @@ public final class ChildParty extends Party {
         return lastName;
     }
 
+    @NotNull(message = "Tell us the date of birth of all children in the case",
+        groups = {Default.class, SealedSDOGroup.class})
     @PastOrPresent(message = "Date of birth is in the future. You cannot send this application until that date")
     public LocalDate getDateOfBirth() {
         return dateOfBirth;

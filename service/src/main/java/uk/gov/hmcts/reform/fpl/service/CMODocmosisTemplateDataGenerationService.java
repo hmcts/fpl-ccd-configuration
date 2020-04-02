@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.io.IOException;
@@ -55,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 
@@ -73,6 +75,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final ObjectMapper mapper;
+    private final Time time;
 
     public Map<String, Object> getTemplateData(CaseData caseData, boolean draft) throws IOException {
         Map<String, Object> cmoTemplateData = new HashMap<>();
@@ -81,8 +84,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         final String localAuthorityCode = caseData.getCaseLocalAuthority();
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), DEFAULT));
-        cmoTemplateData.put("generationDate",
-            formatLocalDateToString(LocalDate.now(), FormatStyle.LONG));
+        cmoTemplateData.put("dateOfIssue", getIssuedDate(caseData.getDateOfIssue()));
         cmoTemplateData.put("complianceDeadline", caseData.getDateSubmitted() != null
             ? formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
             FormatStyle.LONG) : DEFAULT);
@@ -101,7 +103,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         cmoTemplateData.put("representatives",
             getRepresentatives(caseData, applicantName, caseData.getSolicitor()));
 
-        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
+        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, caseData.getCaseManagementOrder());
 
         HearingBooking nextHearing = null;
 
@@ -124,6 +126,10 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             cmoTemplateData.putAll(getDraftWaterMarkData());
         }
 
+        if (!draft) {
+            cmoTemplateData.putAll(getCourtSealData());
+        }
+
         List<Map<String, String>> recitals = buildRecitals(order.getRecitals());
         cmoTemplateData.put(RECITALS.getKey(), recitals);
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
@@ -135,6 +141,10 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         return cmoTemplateData;
     }
 
+    private String getIssuedDate(LocalDate dateOfIssue) {
+        return formatLocalDateToString(defaultIfNull(dateOfIssue, time.now().toLocalDate()), DATE);
+    }
+
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
         // children is validated as not null
         return caseData.getAllChildren().stream()
@@ -142,8 +152,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             .map(Child::getParty)
             .map(child -> ImmutableMap.of(
                 "name", child.getFullName(),
-                "gender", defaultIfNull(child.getGender(), DEFAULT),
-                "dateOfBirth", child.getDateOfBirth() == null ? DEFAULT :
+                "gender", defaultIfNull(child.getGender(), EMPTY),
+                "dateOfBirth", child.getDateOfBirth() == null ? EMPTY :
                     formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
             .collect(toList());
     }
@@ -171,14 +181,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
                 "name", respondent.getFullName(),
                 "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), DEFAULT)))
             .collect(toList());
-    }
-
-    private CaseManagementOrder getCaseManagementOrder(CaseData caseData) {
-        if (caseData.getCaseManagementOrder() != null) {
-            return caseData.getCaseManagementOrder();
-        }
-
-        return null;
     }
 
     private List<Map<String, Object>> getRepresentatives(CaseData caseData,

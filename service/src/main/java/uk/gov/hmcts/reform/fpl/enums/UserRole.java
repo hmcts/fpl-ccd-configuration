@@ -12,6 +12,8 @@ public enum UserRole implements HasRole {
     GATEKEEPER("caseworker-publiclaw-gatekeeper"),
     JUDICIARY("caseworker-publiclaw-judiciary"),
     SYSTEM_UPDATE("caseworker-publiclaw-systemupdate"),
+    BULK_SCAN("caseworker-publiclaw-bulkscan"),
+    BULK_SCAN_SYSTEM_UPDATE("caseworker-publiclaw-bulkscansystemupdate"),
     CCD_SOLICITOR("[SOLICITOR]"),
     CCD_LASOLICITOR("[LASOLICITOR]");
 

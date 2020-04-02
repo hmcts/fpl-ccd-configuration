@@ -90,6 +90,7 @@ class CaseValidatorServiceTest {
             "• Enter the applicant's full name",
             "• Enter the contact's full name",
             "• Enter a job title for the contact",
+            "• Enter a PBA number for the contact",
             "• Enter a valid address for the contact",
             "• Enter at least one telephone number for the contact",
             "• Enter an email address for the contact",
@@ -97,13 +98,16 @@ class CaseValidatorServiceTest {
             "• Enter the solicitor's email",
             "In the children section:",
             "• Tell us the names of all children in the case",
+            "• Tell us the gender of all children in the case",
+            "• Tell us the date of birth of all children in the case",
             "• Date of birth is in the future. You cannot send this application until that date",
             "In the documents section:",
             "• Tell us the status of all documents including those that you haven't uploaded",
             "In the hearing needed section:",
             "• Select an option for when you need a hearing",
             "In the respondents section:",
-            "• You need to add details to respondents",
+            "• Enter the respondent's full name",
+            "• Enter the respondent's relationship to child",
             "In the allocation proposal section:",
             "• You need to add details to allocation proposal",
             "In the grounds for the application section:",
@@ -193,20 +197,6 @@ class CaseValidatorServiceTest {
         assertThat(errors).isEmpty();
     }
 
-    @Test
-    void shouldNotReturnAnErrorWhenFirstRespondentHasFullNameButNotSecondRespondent() {
-        CaseData caseData = partiallyCompleteCaseData()
-            .grounds(grounds())
-            .applicants(applicants(true))
-            .solicitor(solicitor())
-            .respondents1(respondents())
-            .allocationProposal(allocationProposal())
-            .build();
-
-        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
-        assertThat(errors).isEmpty();
-    }
-
     @ParameterizedTest
     @MethodSource("invalidEmailAddresses")
     void shouldReturnAnErrorWhenApplicantPartyEmailAddressIsInvalid(final String email) {
@@ -260,14 +250,23 @@ class CaseValidatorServiceTest {
     private CaseData emptyMandatoryCaseData() {
         return CaseData.builder()
             .caseName("Test case")
-            .children1(wrapElements(Child.builder()
-                .party(ChildParty.builder()
-                    .dateOfBirth(now().plusDays(10))
-                    .build())
-                .build()))
+            .children1(wrapElements(
+                Child.builder()
+                    .party(ChildParty.builder()
+                        .dateOfBirth(now().plusDays(10))
+                        .build())
+                    .build(),
+                Child.builder()
+                    .party(ChildParty.builder()
+                        .build())
+                    .build()))
             .hearing(Hearing.builder().build())
             .applicants(wrapElements(Applicant.builder()
                 .party(ApplicantParty.builder().build())
+                .build()))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .build())
                 .build()))
             .solicitor(Solicitor.builder().build())
             .build();
@@ -313,6 +312,7 @@ class CaseValidatorServiceTest {
                 RespondentParty.builder()
                     .firstName("Timothy")
                     .lastName("Jones")
+                    .relationshipToChild("Uncle")
                     .build())
                 .build(),
             Respondent.builder().party(
@@ -346,6 +346,7 @@ class CaseValidatorServiceTest {
             .party(ApplicantParty.builder()
                 .organisationName("Harry Kane")
                 .jobTitle("Judge")
+                .pbaNumber("1234567")
                 .address(addressBuilder.build())
                 .email(EmailAddress.builder()
                     .email("Harrykane@hMCTS.net")

@@ -3,23 +3,50 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftSDO",
+    "CaseFieldID": "dateOfIssue_label",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "SdoDateOfIssue",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/date-of-issue/mid-event",
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "dateOfIssue",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "SdoDateOfIssue",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftSDO",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "PageID": "judgeAndLegalAdvisor",
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/mid-event"
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "allPartiesHearingDate",
-    "PageFieldDisplayOrder": 1,
+    "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "allPartiesDirections",
-    "PageDisplayOrder": 2,
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
     "PageColumnNumber": 1
   },
   {
@@ -27,10 +54,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "allParties",
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": "allPartiesDirections",
-    "PageDisplayOrder": 2,
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
     "PageColumnNumber": 1
   },
   {
@@ -38,10 +66,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "allPartiesCustom",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 4,
     "DisplayContext": "COMPLEX",
     "PageID": "allPartiesDirections",
-    "PageDisplayOrder": 2,
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
     "PageColumnNumber": 1
   },
   {
@@ -52,7 +81,8 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "localAuthorityDirections",
-    "PageDisplayOrder": 3,
+    "PageLabel": " ",
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1
   },
   {
@@ -63,7 +93,8 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
     "PageID": "localAuthorityDirections",
-    "PageDisplayOrder": 3,
+    "PageLabel": " ",
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1
   },
   {
@@ -74,7 +105,8 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": "localAuthorityDirections",
-    "PageDisplayOrder": 3,
+    "PageLabel": " ",
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1
   },
   {
@@ -85,7 +117,8 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "parentsAndRespondentsDirections",
-    "PageDisplayOrder": 4,
+    "PageLabel": " ",
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1
   },
   {
@@ -96,7 +129,8 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
     "PageID": "parentsAndRespondentsDirections",
-    "PageDisplayOrder": 4,
+    "PageLabel": " ",
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1
   },
   {
@@ -107,7 +141,8 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": "parentsAndRespondentsDirections",
-    "PageDisplayOrder": 4,
+    "PageLabel": " ",
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1
   },
   {
@@ -118,7 +153,8 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "cafcassDirections",
-    "PageDisplayOrder": 5,
+    "PageLabel": " ",
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1
   },
   {
@@ -129,7 +165,8 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
     "PageID": "cafcassDirections",
-    "PageDisplayOrder": 5,
+    "PageLabel": " ",
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1
   },
   {
@@ -140,7 +177,8 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": "cafcassDirections",
-    "PageDisplayOrder": 5,
+    "PageLabel": " ",
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1
   },
   {
@@ -151,7 +189,8 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "otherPartiesDirections",
-    "PageDisplayOrder": 6,
+    "PageLabel": " ",
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1
   },
   {
@@ -162,7 +201,8 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
     "PageID": "otherPartiesDirections",
-    "PageDisplayOrder": 6,
+    "PageLabel": " ",
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1
   },
   {
@@ -173,7 +213,8 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": "otherPartiesDirections",
-    "PageDisplayOrder": 6,
+    "PageLabel": " ",
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1
   },
   {
@@ -184,8 +225,10 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "courtDirections",
-    "PageDisplayOrder": 7,
-    "PageColumnNumber": 1
+    "PageLabel": " ",
+    "PageDisplayOrder": 8,
+    "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -195,7 +238,8 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
     "PageID": "courtDirections",
-    "PageDisplayOrder": 7,
+    "PageLabel": " ",
+    "PageDisplayOrder": 8,
     "PageColumnNumber": 1
   },
   {
@@ -206,7 +250,8 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": "courtDirections",
-    "PageDisplayOrder": 7,
+    "PageLabel": " ",
+    "PageDisplayOrder": 8,
     "PageColumnNumber": 1
   },
   {
@@ -217,7 +262,8 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "documentReview",
-    "PageDisplayOrder": 8,
+    "PageLabel": " ",
+    "PageDisplayOrder": 9,
     "PageColumnNumber": 1
   }
 ]

@@ -4,12 +4,15 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
@@ -31,6 +34,7 @@ import java.util.UUID;
 import static java.lang.Long.parseLong;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -41,16 +45,20 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.OTHER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAdminOrderIssuedTestHelper.getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
@@ -72,6 +80,9 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     PlacementSubmittedEventControllerTest() {
         super("placement");
@@ -226,14 +237,23 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             verify(notificationClient).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 "admin@family-court.com",
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 CASE_ID);
 
             verify(notificationClient, never()).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 "FamilyPublicLaw+ctsc@gmail.com",
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 CASE_ID);
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
+                eq("bill@example.com"),
+                dataCaptor.capture(),
+                eq(CASE_ID));
+
+            assertEquals(dataCaptor.getValue(),
+                getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
             verifyZeroInteractions(notificationClient);
         }
@@ -263,13 +283,13 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             verify(notificationClient, never()).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 "admin@family-court.com",
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 CASE_ID);
 
             verify(notificationClient).sendEmail(
                 ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
                 "FamilyPublicLaw+ctsc@gmail.com",
-                getExpectedPlacementParametersForAdminWhenNoRepresentativesServedByPost(),
+                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 CASE_ID);
         }
 
@@ -343,9 +363,13 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                         .build())),
                     "respondents1", wrapElements(respondent),
                     "representatives", List.of(element(representativeId, Representative.builder()
-                        .servingPreferences(DIGITAL_SERVICE)
-                        .email("representative@example.com")
-                        .build())),
+                            .servingPreferences(DIGITAL_SERVICE)
+                            .email("representative@example.com")
+                            .build()),
+                        element(randomUUID(), Representative.builder()
+                            .servingPreferences(EMAIL)
+                            .email("bill@example.com")
+                            .build())),
                     "children1", List.of(childElement),
                     "childrenList", childElement.getId()))
                 .build();

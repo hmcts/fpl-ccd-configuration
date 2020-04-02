@@ -10,11 +10,32 @@ java:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     GATEWAY_URL: https://gateway-${SERVICE_FQDN}
     FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
+    LD_USER_KEY: FPLA_PREVIEW
+    SCHEDULER_ENABLED: false
+  keyVaults:
+    fpl:
+      secrets:
+        - notify-api-key
+        - docmosis-api-key
+        - fpl-case-service-s2s-secret
+        - fpl-case-service-idam-client-secret
+        - local-authority-email-to-code-mapping
+        - local-authority-code-to-name-mapping
+        - local-authority-user-mapping
+        - local-authority-code-to-hmcts-court-mapping
+        - local-authority-code-to-cafcass-mapping
+        - local-authority-code-to-shared-inbox-mapping
+        - local-authority-fallback-inbox
+        - system-update-user-username
+        - system-update-user-password
+        - robotics-notification-sender
+        - robotics-notification-recipient
+        - ld-sdk-key
+        - ctsc-inbox
 
 ccd:
   ingressHost: ${SERVICE_FQDN}

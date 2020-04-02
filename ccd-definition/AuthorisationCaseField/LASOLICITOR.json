@@ -443,8 +443,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "paymentHistory",
+    "CaseFieldID": "displayAmountToPay",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   }
 ]

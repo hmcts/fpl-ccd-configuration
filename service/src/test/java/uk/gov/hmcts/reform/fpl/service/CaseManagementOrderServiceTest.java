@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.service.time.TimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ class CaseManagementOrderServiceTest {
     private CaseManagementOrderService service;
 
     @Test
-    void shouldAddDocumentToOrderWhenDocumentExists() throws IOException {
+    void shouldAddDocumentToOrderWhenDocumentExists() {
         CaseManagementOrder orderWithDoc = service.addDocument(CaseManagementOrder.builder().build(), document());
 
         assertThat(orderWithDoc.getOrderDoc()).isEqualTo(buildFromDocument(document()));

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -25,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -45,8 +46,10 @@ import java.util.stream.Stream;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 
 @Api
 @RestController
@@ -64,6 +67,8 @@ public class DraftOrdersController {
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final OrderValidationService orderValidationService;
     private final HearingBookingService hearingBookingService;
+    private final Time time;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -71,6 +76,8 @@ public class DraftOrdersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
+
+        caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
@@ -111,8 +118,6 @@ public class DraftOrdersController {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -121,6 +126,7 @@ public class DraftOrdersController {
             .standardDirectionOrder(Order.builder()
                 .directions(commonDirectionService.combineAllDirections(caseData))
                 .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+                .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
 
@@ -128,8 +134,6 @@ public class DraftOrdersController {
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
-            authorization,
-            userId,
             caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
@@ -150,8 +154,6 @@ public class DraftOrdersController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -169,6 +171,7 @@ public class DraftOrdersController {
                 .directions(commonDirectionService.combineAllDirections(caseData))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+                .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
 
@@ -176,8 +179,6 @@ public class DraftOrdersController {
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
-            authorization,
-            userId,
             caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
         );
 
@@ -191,6 +192,7 @@ public class DraftOrdersController {
 
         caseDetails.getData().put("standardDirectionOrder", order);
         caseDetails.getData().remove("judgeAndLegalAdvisor");
+        caseDetails.getData().remove("dateOfIssue");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -199,8 +201,6 @@ public class DraftOrdersController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
@@ -225,8 +225,7 @@ public class DraftOrdersController {
                 Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
             );
             applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
-                authorization,
-                userId));
+                requestData));
         }
     }
 
@@ -238,7 +237,7 @@ public class DraftOrdersController {
             .collect(Collectors.toList());
     }
 
-    private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
+    private Document getDocument(Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
         String docTitle = document.getDocumentTitle();
@@ -247,6 +246,6 @@ public class DraftOrdersController {
             docTitle = "draft-" + document.getDocumentTitle();
         }
 
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
+        return uploadDocumentService.uploadPDF(document.getBytes(), docTitle);
     }
 }
