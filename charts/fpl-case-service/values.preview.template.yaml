@@ -15,9 +15,9 @@ java:
     FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
     LD_USER_KEY: FPLA_PREVIEW
+    SCHEDULER_ENABLED: false
   keyVaults:
     fpl:
-      resourceGroup: fpl-case-service
       secrets:
         - notify-api-key
         - docmosis-api-key
@@ -36,7 +36,6 @@ java:
         - robotics-notification-recipient
         - ld-sdk-key
         - ctsc-inbox
-    SCHEDULER_ENABLED: false
 
 ccd:
   ingressHost: ${SERVICE_FQDN}

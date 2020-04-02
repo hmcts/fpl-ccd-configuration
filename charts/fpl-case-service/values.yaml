@@ -29,7 +29,6 @@ java:
     SCHEDULER_DB_PORT: 5432
   keyVaults:
     fpl:
-      resourceGroup: fpl-case-service
       secrets:
         - notify-api-key
         - docmosis-api-key
