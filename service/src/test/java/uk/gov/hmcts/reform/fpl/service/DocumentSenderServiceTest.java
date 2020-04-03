@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
@@ -42,17 +41,16 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 class DocumentSenderServiceTest {
 
     private static final String SERVICE_AUTH_TOKEN = "Service token";
-    private static final String AUTH_TOKEN = "User token";
-    private static final String USER_ID = UUID.randomUUID().toString();
     private static final LocalDateTime DATE = LocalDateTime.of(2019, 1, 1, 12, 0, 0);
     private static final String FORMATTED_DATE = "12:00pm, 1 January 2019";
     private static final String FAMILY_CASE_NUMBER = "familyCaseNumber";
     private static final String COVERSHEET_NAME = "Coversheet.pdf";
     private static final Long CASE_ID = 1L;
-    private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
+    private static final DocumentReference MAIN_DOCUMENT_REFERENCE = testDocumentReference();
     private static final byte[] MAIN_DOCUMENT_BYTES = new byte[]{1, 2, 3, 4, 5};
-    private static final List<Document> COVERSHEETS = List.of(testDocument(), testDocument());
+    private static final Document UPLOADED_MAIN_DOCUMENT = testDocument();
     private static final List<byte[]> COVER_DOCUMENTS_BYTES = List.of(new byte[]{0}, new byte[]{1});
+    private static final List<Document> COVERSHEETS = List.of(testDocument(), testDocument());
     private static final List<Representative> REPRESENTATIVES = List.of(testRepresentative(), testRepresentative());
 
     private DocumentSenderService documentSenderService;
@@ -75,24 +73,22 @@ class DocumentSenderServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
-    @Mock
-    private RequestData requestData;
-
     @Captor
     private ArgumentCaptor<LetterWithPdfsRequest> letterWithPdfsRequestArgumentCaptor;
 
     @BeforeEach
     void setup() {
         given(time.now()).willReturn(DATE);
-        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-        given(requestData.userId()).willReturn(USER_ID);
+        given(uploadDocumentService.uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename()))
+            .willReturn(UPLOADED_MAIN_DOCUMENT);
         given(uploadDocumentService.uploadPDF(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME))
             .willReturn(COVERSHEETS.get(0));
         given(uploadDocumentService.uploadPDF(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME))
             .willReturn(COVERSHEETS.get(1));
         given(sendLetterApi.sendLetter(anyString(),
             any(LetterWithPdfsRequest.class))).willReturn(new SendLetterResponse(UUID.randomUUID()));
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(MAIN_DOCUMENT_BYTES);
+        given(documentDownloadService.downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl()))
+            .willReturn(MAIN_DOCUMENT_BYTES);
         given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, REPRESENTATIVES.get(0)))
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(0)));
         given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, REPRESENTATIVES.get(1)))
@@ -105,18 +101,17 @@ class DocumentSenderServiceTest {
             documentDownloadService,
             docmosisCoverDocumentsService,
             authTokenGenerator,
-            uploadDocumentService,
-            requestData);
+            uploadDocumentService);
     }
 
     @Test
     void shouldMakeCorrectCallsToCreateAndSendDocuments() {
-        DocumentReference documentToBeSent = testDocumentReference();
         String familyCaseNumber = "familyCaseNumber";
 
-        documentSenderService.send(documentToBeSent, REPRESENTATIVES, CASE_ID, familyCaseNumber);
+        documentSenderService.send(MAIN_DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID, familyCaseNumber);
 
-        verify(documentDownloadService).downloadDocument(documentToBeSent.getBinaryUrl());
+        verify(documentDownloadService).downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl());
+        verify(uploadDocumentService).uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename());
         verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, REPRESENTATIVES.get(0));
         verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, REPRESENTATIVES.get(1));
         verify(uploadDocumentService).uploadPDF(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME);
@@ -134,18 +129,18 @@ class DocumentSenderServiceTest {
 
     @Test
     void shouldReturnSentDocumentsData() {
-        List<SentDocument> sentDocuments = documentSenderService.send(DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID,
+        List<SentDocument> sentDocuments = documentSenderService.send(MAIN_DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID,
             FAMILY_CASE_NUMBER);
 
         assertThat(sentDocuments.get(0)).isEqualTo(SentDocument.builder()
             .partyName(REPRESENTATIVES.get(0).getFullName())
-            .document(DOCUMENT_REFERENCE)
+            .document(buildFromDocument(UPLOADED_MAIN_DOCUMENT))
             .coversheet(buildFromDocument(COVERSHEETS.get(0)))
             .sentAt(FORMATTED_DATE).build());
 
         assertThat(sentDocuments.get(1)).isEqualTo(SentDocument.builder()
             .partyName(REPRESENTATIVES.get(1).getFullName())
-            .document(DOCUMENT_REFERENCE)
+            .document(buildFromDocument(UPLOADED_MAIN_DOCUMENT))
             .coversheet(buildFromDocument(COVERSHEETS.get(1)))
             .sentAt(FORMATTED_DATE).build());
     }
