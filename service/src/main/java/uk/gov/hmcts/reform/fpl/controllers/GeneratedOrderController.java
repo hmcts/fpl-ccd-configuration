@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +21,13 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
@@ -51,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Slf4j
 @Api
@@ -117,6 +122,23 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
+
+        if (caseData.getJudgeAndLegalAdvisor().useAllocatedJudge()) {
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+            Judge allocatedJudge = caseData.getAllocatedJudge();
+
+            JudgeAndLegalAdvisor.JudgeAndLegalAdvisorBuilder builder = JudgeAndLegalAdvisor.builder();
+
+            builder.judgeTitle(allocatedJudge.getJudgeTitle())
+                .otherTitle(allocatedJudge.getOtherTitle())
+                .judgeLastName(allocatedJudge.getJudgeLastName())
+                .judgeFullName(allocatedJudge.getJudgeFullName())
+                .legalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
+                .useAllocatedJudge(YES.getValue())
+                .allocatedJudgeLabel(judgeAndLegalAdvisor.getAllocatedJudgeLabel());
+
+            caseDetails.getData().put("judgeAndLegalAdvisor", builder.build());
+        }
 
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {

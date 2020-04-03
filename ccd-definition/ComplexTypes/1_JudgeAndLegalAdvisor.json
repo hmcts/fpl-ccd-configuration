@@ -2,6 +2,30 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
+    "ListElementCode": "allocatedJudgeLabel",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
+    "ListElementCode": "useAllocatedJudge",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this person still assigned to the hearing?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
+    "ListElementCode": "judgeSubHeading",
+    "FieldType": "Label",
+    "ElementLabel": "Who's now assigned to the case?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "JudgeOrMagistrateTitle",

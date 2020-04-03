@@ -66,9 +66,43 @@
     "ID": "JudgeAndLegalAdvisorComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "allocatedJudgeLabel",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "useAllocatedJudge",
+    "EventElementLabel": "Is this person still assigned to the hearing?",
+    "FieldDisplayOrder": 2,
+    "FieldShowCondition": "judgeAndLegalAdvisor.allocatedJudgeLabel!=\"\"",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeSubHeading",
+    "ElementLabel": "Who's now assigned to the case?",
+    "FieldDisplayOrder": 3,
+    "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\" OR judgeAndLegalAdvisor.allocatedJudgeLabel=\"\"",
+    "SecurityClassification": "Public",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
-    "FieldDisplayOrder": 1,
+    "FieldDisplayOrder": 4,
+    "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\" OR judgeAndLegalAdvisor.allocatedJudgeLabel=\"\"",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -78,7 +112,8 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 5,
+    "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\" OR judgeAndLegalAdvisor.allocatedJudgeLabel=\"\"",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -88,7 +123,8 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 6,
+    "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\" OR judgeAndLegalAdvisor.allocatedJudgeLabel=\"\"",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -98,7 +134,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Legal advisor's full name",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
   {
