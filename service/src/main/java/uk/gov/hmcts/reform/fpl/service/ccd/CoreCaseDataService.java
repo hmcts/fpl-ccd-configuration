@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
@@ -68,5 +69,12 @@ public class CoreCaseDataService {
 
     public CaseDetails findCaseDetailsById(final String caseId) {
         return coreCaseDataApi.getCase(requestData.authorisation(), authTokenGenerator.generate(), caseId);
+    }
+
+    public List<CaseDetails> searchCases(String caseType, String query) {
+        String userToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
+
+        return coreCaseDataApi.searchCases(userToken, authTokenGenerator.generate(), caseType, query)
+            .getCases();
     }
 }

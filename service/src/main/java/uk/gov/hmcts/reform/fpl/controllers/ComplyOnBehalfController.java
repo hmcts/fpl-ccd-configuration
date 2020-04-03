@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -70,13 +69,12 @@ public class ComplyOnBehalfController {
 
     @PostMapping("about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackrequest,
-        @RequestHeader(value = "authorization") String authorisation) {
+        @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         prepareDirectionsForDataStoreService.addComplyOnBehalfResponsesToDirectionsInOrder(
-            caseData, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()), authorisation);
+            caseData, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
 
         //TODO: new service for sdo vs cmo in placing directions FPLA-1470
         if (caseData.getServedCaseManagementOrders().isEmpty()) {

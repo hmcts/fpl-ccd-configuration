@@ -51,7 +51,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @BeforeEach
     void mocking() {
-        given(userDetailsService.getUserName(userAuthToken)).willReturn("Emma Taylor");
+        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
     }
 
     @Test
@@ -93,7 +93,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
             .build());
 
         verify(feeService, never()).getFeesDataForOrders(any());
-        assertThat(response.getData()).doesNotContainKey("amountToPay");
+        assertThat(response.getData()).doesNotContainKeys("amountToPay", "displayAmountToPay");
     }
 
     @Test

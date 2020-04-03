@@ -79,6 +79,7 @@ module.exports = {
     placement: 'Placement',
     handleSupplementaryEvidence: 'Handle supplementary evidence',
     bulkScan: 'Attach scanned docs',
+    addNote: 'Add a case note',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
 
-import java.io.IOException;
 import java.time.LocalDate;
 
 import static org.apache.http.HttpStatus.SC_OK;
@@ -98,7 +97,7 @@ public class RoboticsControllerTest {
         verify(emailService, never()).sendEmail(any(), any());
     }
 
-    private CaseDetails expectedCaseDetailsWithState(final String state) throws IOException {
+    private CaseDetails expectedCaseDetailsWithState(final String state) {
         CaseDetails caseDetails = populatedCaseDetails();
         caseDetails.setState(state);
         caseDetails.getData().put("dateSubmitted", LocalDate.now());
