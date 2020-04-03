@@ -24,10 +24,12 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,6 +61,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
     private static final Document COVERSHEET_DOCUMENT = testDocument();
     private static final byte[] COVERSHEET_BINARIES = testDocumentBinaries();
     private static final byte[] DOCUMENT_BINARIES = testDocumentBinaries();
+    private static final UUID LETTER_ID = UUID.randomUUID();
 
     @MockBean
     private Time time;
@@ -93,6 +96,8 @@ class SendDocumentControllerTest extends AbstractControllerTest {
             .willReturn(testDocmosisDocument(COVERSHEET_BINARIES));
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(COVERSHEET_DOCUMENT);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class)))
+            .willReturn(new SendLetterResponse(LETTER_ID));
     }
 
     @Test
@@ -127,6 +132,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
                 .document(documentToBeSent)
                 .coversheet(coversheet)
                 .sentAt("12:10pm, 5 January 2020")
+                .letterId(LETTER_ID.toString())
                 .build());
     }
 
