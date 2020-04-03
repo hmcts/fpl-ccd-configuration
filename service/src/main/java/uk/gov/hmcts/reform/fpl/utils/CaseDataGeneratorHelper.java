@@ -102,7 +102,7 @@ public class CaseDataGeneratorHelper {
                     .party(ApplicantParty.builder()
                         .organisationName("Bran Stark")
                         .jobTitle("Judge")
-                        .address(someAddress())
+                        .address(address())
                         .email(EmailAddress.builder()
                             .email("BranStark@hMCTS.net")
                             .build())
@@ -120,7 +120,7 @@ public class CaseDataGeneratorHelper {
                     .party(ApplicantParty.builder()
                         .organisationName("Sansa Stark")
                         .jobTitle("Judge")
-                        .address(someAddress())
+                        .address(address())
                         .email(EmailAddress.builder()
                             .email("Harrykane@hMCTS.net")
                             .build())
@@ -226,7 +226,7 @@ public class CaseDataGeneratorHelper {
                 .gender("Male")
                 .name("Kyle Stafford")
                 .telephone("02838882404")
-                .address(someAddress())
+                .address(address())
                 .build())
             .additionalOthers(ImmutableList.of(
                 Element.<Other>builder()
@@ -236,7 +236,7 @@ public class CaseDataGeneratorHelper {
                         .gender("Female")
                         .name("Sarah Simpson")
                         .telephone("02838882404")
-                        .address(someAddress())
+                        .address(address())
                         .build())
                     .build()
             )).build();
@@ -559,7 +559,7 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    private static Address someAddress() {
+    private static Address address() {
         return Address.builder()
             .addressLine1("1 Some street")
             .addressLine2("Some road")
