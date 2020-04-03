@@ -196,11 +196,11 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeAnswerInTab(3, 'Party', 'First name', respondents[0].firstName);
-  I.seeAnswerInTab(4, 'Party', 'Last name', respondents[0].lastName);
-  I.seeAnswerInTab(5, 'Party', 'Date of birth', '1 Jan 1980');
-  I.seeAnswerInTab(6, 'Party', 'Gender', respondents[0].gender);
-  I.seeAnswerInTab(7, 'Party', 'Place of birth', respondents[0].placeOfBirth);
+  I.seeAnswerInTab(1, 'Party', 'First name', respondents[0].firstName);
+  I.seeAnswerInTab(2, 'Party', 'Last name', respondents[0].lastName);
+  I.seeAnswerInTab(3, 'Party', 'Date of birth', '1 Jan 1980');
+  I.seeAnswerInTab(4, 'Party', 'Gender', respondents[0].gender);
+  I.seeAnswerInTab(5, 'Party', 'Place of birth', respondents[0].placeOfBirth);
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', respondents[0].address.buildingAndStreet.lineOne);
   I.seeAnswerInTab(2, 'Current address', '', respondents[0].address.buildingAndStreet.lineTwo);
   I.seeAnswerInTab(3, 'Current address', '', respondents[0].address.buildingAndStreet.lineThree);
@@ -208,10 +208,10 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', respondents[0].address.postcode);
   I.seeAnswerInTab(6, 'Current address', 'Country', respondents[0].address.country);
   I.seeAnswerInTab(1, 'Telephone', 'Telephone', respondents[0].telephone);
-  I.seeAnswerInTab(10, 'Party', 'What is the respondent\'s relationship to the child or children in this case?', 'mock reason');
-  I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from other parties?', 'No');
-  I.seeAnswerInTab(12, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
-  I.seeAnswerInTab(13, 'Party', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
+  I.seeAnswerInTab(8, 'Party', 'What is the respondent\'s relationship to the child or children in this case?', 'mock reason');
+  I.seeAnswerInTab(9, 'Party', 'Do you need contact details hidden from other parties?', 'No');
+  I.seeAnswerInTab(10, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
+  I.seeAnswerInTab(11, 'Party', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
 
   I.seeAnswerInTab(1, 'Party', 'First name', respondents[1].firstName);
   I.seeAnswerInTab(2, 'Party', 'Last name', respondents[1].lastName);
@@ -226,9 +226,6 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   caseViewPage.selectTab(caseViewPage.tabs.confidential);
   I.seeAnswerInTab(1, 'Party', 'First name', respondents[1].firstName);
   I.seeAnswerInTab(2, 'Party', 'Last name', respondents[1].lastName);
-  I.seeAnswerInTab(3, 'Party', 'Date of birth', '1 Jan 1955');
-  I.seeAnswerInTab(4, 'Party', 'Gender', respondents[1].gender);
-  I.seeAnswerInTab(5, 'Party', 'Place of birth', respondents[1].placeOfBirth);
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', respondents[1].address.buildingAndStreet.lineOne);
   I.seeAnswerInTab(2, 'Current address', '', respondents[1].address.buildingAndStreet.lineTwo);
   I.seeAnswerInTab(3, 'Current address', '', respondents[1].address.buildingAndStreet.lineThree);
@@ -236,10 +233,6 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', respondents[1].address.postcode);
   I.seeAnswerInTab(6, 'Current address', 'Country', respondents[1].address.country);
   I.seeAnswerInTab(1, 'Telephone', 'Telephone', respondents[1].telephone);
-  I.seeAnswerInTab(8, 'Party', 'What is the respondent\'s relationship to the child or children in this case?', 'mock reason');
-  I.seeAnswerInTab(9, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
-  I.seeAnswerInTab(10, 'Party', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(11, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 });
 
 Scenario('local authority enters applicant @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterApplicantEventPage) => {
