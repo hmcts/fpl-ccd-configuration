@@ -20,6 +20,7 @@ module.exports = {
   },
 
   searchForCasesWithHandledEvidences() {
+    I.waitForElement(this.fields.evidenceHandled);
     I.click(this.fields.evidenceHandled);
     I.click(this.fields.search);
   },
