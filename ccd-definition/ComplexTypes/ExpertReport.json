@@ -20,7 +20,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReport",
-    "ListElementCode": "detailsHidden",
+    "ListElementCode": "reportApproval",
     "FieldType": "YesOrNo",
     "ElementLabel": "Has it been approved?",
     "SecurityClassification": "Public"
@@ -28,11 +28,11 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReport",
-    "ListElementCode": "detailsHiddenReason",
+    "ListElementCode": "reportApprovalDate",
     "FieldType": "Date",
     "ElementLabel": "Date approved",
     "HintText": "For example, 27 3 2007",
-    "FieldShowCondition": "detailsHidden=\"Yes\"",
+    "FieldShowCondition": "reportApproval=\"Yes\"",
     "SecurityClassification": "Public"
   }
 ]

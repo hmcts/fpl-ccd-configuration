@@ -23,7 +23,7 @@
     "ID": "ExpertReport",
     "CaseEventID": "expertReport",
     "CaseFieldID": "expertReport",
-    "ListElementCode": "detailsHidden",
+    "ListElementCode": "reportApproval",
     "SecurityClassification": "Public",
     "DisplayContext": "OPTIONAL"
   },
@@ -32,8 +32,8 @@
     "ID": "ExpertReport",
     "CaseEventID": "expertReport",
     "CaseFieldID": "expertReport",
-    "ListElementCode": "detailsHiddenReason",
-    "FieldShowCondition": "expertReport.detailsHidden=\"Yes\"",
+    "ListElementCode": "reportApprovalDate",
+    "FieldShowCondition": "expertReport.reportApproval=\"Yes\"",
     "DisplayContext": "MANDATORY"
   }
 ]
