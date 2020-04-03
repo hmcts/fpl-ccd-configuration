@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
@@ -115,7 +115,7 @@ class CaseManagementOrderServiceTest {
             .build();
 
         CaseManagementOrder updatedCaseManagementOrder =
-            service.addNextHearingToCMO(createHearingBookingDynmaicList(), caseManagementOrder);
+            service.addNextHearingToCMO(createHearingBookingDynamicList(), caseManagementOrder);
 
         NextHearing nextHearing = updatedCaseManagementOrder.getNextHearing();
 
