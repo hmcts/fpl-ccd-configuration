@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
@@ -101,7 +100,7 @@ class EmailNotificationHelperTest {
         final LocalDateTime dateInTenMonths = LocalDateTime.now().plusMonths(10);
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
-            .hearingDetails(createHearingBookings(dateInTenMonths))
+            .hearingDetails(CaseDataGeneratorHelper.createHearingBookingsFromInitialDate(dateInTenMonths))
             .familyManCaseNumber("FamilyManCaseNumber")
             .build();
 
