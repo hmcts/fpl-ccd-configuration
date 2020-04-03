@@ -4,6 +4,7 @@ const orders = require('../fixtures/orders.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
 const c2Payment = require('../fixtures/c2Payment.js');
+const expertReportLog = require('../fixtures/expertReportLog.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -280,7 +281,12 @@ Scenario('HMCTS admin update FamilyMan reference number after sending case to ga
 
 Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage, addExpertReportEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
-  addExpertReportEventPage.addExpertReportLog();
-  // await I.completeEvent('Save and continue');
-  // I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
+  addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.addExpertReportLog);
+  caseViewPage.selectTab(caseViewPage.tabs.expertReports);
+  I.seeAnswerInTab('1', 'Report 1', 'What type of report have you requested?', 'Peadiatric');
+  I.seeAnswerInTab('2', 'Report 1', 'Date requested', '1 Mar 2020');
+  I.seeAnswerInTab('3', 'Report 1', 'Has it been approved?', 'Yes');
+  I.seeAnswerInTab('4', 'Report 1', 'Date approved', '2 Apr 2020');
 });

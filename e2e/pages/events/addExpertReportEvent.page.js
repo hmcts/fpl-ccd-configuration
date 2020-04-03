@@ -2,8 +2,8 @@ const {I} = inject();
 
 module.exports = {
   fields: {
-    expertReportList: '#expertReport_0_expertReportList',
-    expertReportDate: {
+    reportList: '#expertReport_0_expertReportList',
+    reportRequestDate: {
       day: '#expertReport_0_expertReportDateRequested-day',
       month: '#expertReport_0_expertReportDateRequested-month',
       year: '#expertReport_0_expertReportDateRequested-year',
@@ -16,15 +16,15 @@ module.exports = {
     reportApproval: '#expertReport_0_reportApproval-Yes',
   },
 
-  addExpertReportLog() {
+  addExpertReportLog(expertReportLog) {
     I.click('Add new');
-    I.selectOption(this.fields.expertReportList, 'Peadiatric');
-    I.fillField(this.fields.expertReportDate.day, '01');
-    I.fillField(this.fields.expertReportDate.month, '03');
-    I.fillField(this.fields.expertReportDate.year, '2003');
+    I.selectOption(this.fields.reportList, expertReportLog.reportList.value);
+    I.fillField(this.fields.reportRequestDate.day, expertReportLog.reportRequestDate.day);
+    I.fillField(this.fields.reportRequestDate.month, expertReportLog.reportRequestDate.month);
+    I.fillField(this.fields.reportRequestDate.year, expertReportLog.reportRequestDate.year);
     I.click(this.fields.reportApproval);
-    I.fillField(this.fields.reportApprovalDate.day, '1');
-    I.fillField(this.fields.reportApprovalDate.month, '3');
-    I.fillField(this.fields.reportApprovalDate.year, '2003');
+    I.fillField(this.fields.reportApprovalDate.day, expertReportLog.reportApprovalDate.day);
+    I.fillField(this.fields.reportApprovalDate.month, expertReportLog.reportApprovalDate.month);
+    I.fillField(this.fields.reportApprovalDate.year, expertReportLog.reportApprovalDate.year);
   },
 };
