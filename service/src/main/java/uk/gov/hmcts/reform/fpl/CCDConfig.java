@@ -718,9 +718,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .aboutToSubmitWebhook("cmo-progression");
     }
 
-    @SuppressWarnings("unchecked")
     private EventBuilder<CaseData, UserRole, State> buildLimitedUploadDocuments(State state, int displayOrder) {
-        return (EventBuilder<CaseData, UserRole, State>) event("limitedUploadDocuments")
+        return event("limitedUploadDocuments")
             .forState(state)
             .name("Documents")
             .description("Upload documents")
@@ -728,9 +727,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .explicitGrants()
             .grant("CRU", CCD_SOLICITOR)
             .fields()
-            .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection",
-                "CourtAdminDocument", "Other documents")
-            .eventBuilder();
+                .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection",
+                    "CourtAdminDocument", "Other documents")
+            .done();
     }
 
 
@@ -804,9 +803,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .optional(Direction::getDateToBeCompletedBy);
     }
 
-    @SuppressWarnings("unchecked")
     private EventBuilder<CaseData, UserRole, State> addHearingBookingDetails(State state) {
-        return (EventBuilder<CaseData, UserRole, State>) event( "hearingBookingDetails")
+        return event( "hearingBookingDetails")
             .forState(state)
             .grant("CRU", HMCTS_ADMIN)
             .name("Add hearing details")
@@ -831,7 +829,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .optional(JudgeAndLegalAdvisor::getLegalAdvisorName)
                     .done()
                 .done()
-            .eventBuilder();
+            .done();
     }
 
     private void buildSharedEvents(State state) {
