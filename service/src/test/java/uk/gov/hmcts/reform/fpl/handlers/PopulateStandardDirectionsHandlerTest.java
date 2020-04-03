@@ -223,6 +223,61 @@ class PopulateStandardDirectionsHandlerTest {
             .extracting("value")
             .isEqualTo(Map.of(
                 "assignee", "LOCAL_AUTHORITY",
+                "dateToBeCompletedBy", "2020-01-01T15:30:00",
+                "directionText", "- Test body's 1 \n\n- Two",
+                "directionType", "Direction",
+                "directionRemovable", "No",
+                "readOnly", "No",
+                "responses", EMPTY_LIST));
+
+        verify(coreCaseDataApi).submitEventForCaseWorker(
+            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
+                .eventToken(TOKEN)
+                .event(Event.builder()
+                    .id(CASE_EVENT)
+                    .build())
+                .data(callbackRequest.getCaseDetails().getData())
+                .build());
+    }
+
+    //TODO: this test just asserts previous functionality. To be looked into in FPLA-1516.
+    @Test
+    void shouldAddNoCompleteByDateWhenNoHearings() throws IOException {
+        CallbackRequest callbackRequest = callbackRequest();
+        callbackRequest.getCaseDetails().getData().remove("hearingDetails");
+
+        given(coreCaseDataApi.startEventForCaseWorker(
+            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
+            .willReturn(StartEventResponse.builder()
+                .caseDetails(callbackRequest.getCaseDetails())
+                .eventId(CASE_EVENT)
+                .token(TOKEN)
+                .build());
+
+        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
+            .directions(ImmutableList.of(
+                DirectionConfiguration.builder()
+                    .assignee(LOCAL_AUTHORITY)
+                    .title("Direction")
+                    .text("- Test body's 1 \n\n- Two")
+                    .display(Display.builder()
+                        .delta("0")
+                        .due(Display.Due.BY)
+                        .templateDateFormat("h:mma, d MMMM yyyy")
+                        .directionRemovable(false)
+                        .build())
+                    .build()
+            ))
+            .build());
+
+        populateStandardDirectionsHandler.populateStandardDirections(
+            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+
+        assertThat(objectMapper.convertValue(
+            callbackRequest.getCaseDetails().getData().get("localAuthorityDirections"), List.class).get(0))
+            .extracting("value")
+            .isEqualTo(Map.of(
+                "assignee", "LOCAL_AUTHORITY",
                 "directionText", "- Test body's 1 \n\n- Two",
                 "directionType", "Direction",
                 "directionRemovable", "No",
