@@ -21,8 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
@@ -38,6 +36,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 
 @Api
 @RestController
@@ -50,8 +49,6 @@ public class NoticeOfProceedingsController {
     private final UploadDocumentService uploadDocumentService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
-    private final DateFormatterService dateFormatterService;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -59,12 +56,9 @@ public class NoticeOfProceedingsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class).isEmpty()) {
-            HearingBooking hearingBooking = hearingBookingService
-                .getMostUrgentHearingBooking(caseData.getHearingDetails());
-
-            caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
-                dateFormatterService.formatLocalDateToString(
-                    hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG)));
+            hearingBookingService.getFirstHearing(caseData.getHearingDetails())
+                .ifPresent(hearingBooking ->
+                    caseDetails.getData().put("proceedingLabel", buildProceedingLabel(hearingBooking)));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -77,15 +71,13 @@ public class NoticeOfProceedingsController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         Map<String, Object> templateData = noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 
-        List<Document> uploadedDocuments = generateAndUploadDocuments(templateData,
-            templateTypes);
+        List<Document> uploadedDocuments = generateAndUploadDocuments(templateData, templateTypes);
 
         List<Element<DocumentBundle>> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
 
@@ -102,6 +94,11 @@ public class NoticeOfProceedingsController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private String buildProceedingLabel(HearingBooking hearingBooking) {
+        return String.format("The case management hearing will be on the %s.",
+            formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG));
     }
 
     private List<Element<DocumentBundle>> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {

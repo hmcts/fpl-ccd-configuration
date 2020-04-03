@@ -195,8 +195,7 @@ public class CaseDataExtractionService {
     }
 
     private DocmosisHearingBooking getHearingBookingData(List<Element<HearingBooking>> hearingDetails) {
-        return ofNullable(hearingDetails).map(hearingBookings -> {
-                HearingBooking hearing = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
+        return hearingBookingService.getFirstHearing(hearingDetails).map(hearing -> {
                 HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing.getVenue());
 
                 return DocmosisHearingBooking.builder()
