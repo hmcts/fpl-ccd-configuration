@@ -58,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -102,7 +102,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartShouldAddCurrentTimeAsDateOfIssuedWhenNotInCaseManagementOrder() {
         Map<String, Object> data = new HashMap<>();
-        data.put(HEARING_DETAILS_KEY, createHearingBookings(time.now()));
+        data.put(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(time.now()));
         data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createCaseManagementOrder(SEND_TO_JUDGE));
 
         CaseDetails caseDetails = buildCaseDetails(data);
@@ -115,7 +115,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartShouldAddPreviousTimeAsDateOfIssuedWhenInCaseManagementOrder() {
         Map<String, Object> data = new HashMap<>();
-        data.put(HEARING_DETAILS_KEY, createHearingBookings(time.now()));
+        data.put(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(time.now()));
         data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createCaseManagementOrder(SEND_TO_JUDGE).toBuilder()
             .dateOfIssue("20 March 2019")
             .build());
@@ -133,7 +133,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         final CaseManagementOrder order = createCaseManagementOrder(SEND_TO_JUDGE);
 
         data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
-        data.put(HEARING_DETAILS_KEY, createHearingBookings(LocalDateTime.now()));
+        data.put(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(LocalDateTime.now()));
 
         CaseDetails caseDetails = buildCaseDetails(data);
         List<String> expected = List.of(
