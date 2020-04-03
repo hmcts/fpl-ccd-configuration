@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 public class C2DocumentBundle {
     private final C2ApplicationType type;
     private final String nameOfRepresentative;
+    private final String usePbaPayment;
     private final String pbaNumber;
     private final String clientCode;
     private final String fileReference;

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +50,7 @@ class CafcassEmailContentProviderSDOIssuedTest {
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
+    void shouldReturnExpectedMapWithValidSDODetails() {
         Map<String, Object> expectedMap = getStandardDirectionTemplateParameters();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
@@ -66,15 +64,12 @@ class CafcassEmailContentProviderSDOIssuedTest {
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("title", CAFCASS_NAME)
-            .put("familyManCaseNumber", "12345,")
-            .put("leadRespondentsName", "Smith,")
-            .put("hearingDate", "1 January 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        return expectedMap;
+        return Map.of(
+            "title", CAFCASS_NAME,
+            "familyManCaseNumber", "12345,",
+            "leadRespondentsName", "Smith,",
+            "hearingDate", "1 January 2020",
+            "reference", "12345",
+            "caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
     }
 }

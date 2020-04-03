@@ -43,12 +43,12 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
     @BeforeEach
     void before() {
-        given(userDetailsService.getUserName(userAuthToken))
+        given(userDetailsService.getUserName())
             .willReturn(USER_NAME);
     }
 
     @Test
-    void shouldCreateC2DocumentBundle() throws Exception {
+    void shouldCreateC2DocumentBundle() {
         Map<String, Object> data = createTemporaryC2Document();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));

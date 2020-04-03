@@ -151,6 +151,7 @@ public class GeneratedOrderService {
         List<Child> children = getSelectedChildren(unwrapElements(caseData.getAllChildren()),
             caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren());
         List<Map<String, String>> childrenDetails = getChildrenDetails(children);
+        int childrenCount = children.size();
 
         switch (orderType) {
             case BLANK_ORDER:
@@ -170,7 +171,8 @@ public class GeneratedOrderService {
                         .put("childrenAct", "Section 31 Children Act 1989");
                 }
                 orderTemplateBuilder
-                    .put("orderDetails", getFormattedCareOrderDetails(children.size(),
+                    .put("localAuthorityName", getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+                    .put("orderDetails", getFormattedCareOrderDetails(childrenCount,
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
                 break;
             case SUPERVISION_ORDER:
@@ -179,14 +181,14 @@ public class GeneratedOrderService {
                         .put("orderTitle", orderTypeAndDocument.getFullType(INTERIM))
                         .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                         .put("orderDetails",
-                            getFormattedInterimSupervisionOrderDetails(children.size(),
+                            getFormattedInterimSupervisionOrderDetails(childrenCount,
                                 caseData.getCaseLocalAuthority(), interimEndDate));
                 } else {
                     orderTemplateBuilder
                         .put("orderTitle", orderTypeAndDocument.getFullType())
                         .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                         .put("orderDetails",
-                            getFormattedFinalSupervisionOrderDetails(children.size(),
+                            getFormattedFinalSupervisionOrderDetails(childrenCount,
                                 caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
                 }
                 break;
@@ -197,7 +199,6 @@ public class GeneratedOrderService {
                     .put("epoType", caseData.getEpoType())
                     .put("includePhrase", caseData.getEpoPhrase().getIncludePhrase())
                     .put("removalAddress", getFormattedRemovalAddress(caseData))
-                    .put("childrenCount", children.size())
                     .put("epoStartDateTime", formatEPODateTime(time.now()))
                     .put("epoEndDateTime", formatEPODateTime(caseData.getEpoEndDate()));
                 break;
@@ -214,6 +215,7 @@ public class GeneratedOrderService {
                 caseData.getJudgeAndLegalAdvisor()))
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .put("children", childrenDetails)
+            .put("childrenCount", childrenCount)
             .put("furtherDirections", caseData.getFurtherDirectionsText())
             .build();
 

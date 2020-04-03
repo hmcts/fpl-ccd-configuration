@@ -35,7 +35,6 @@ import static java.util.Locale.UK;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.emptyList;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -73,7 +72,7 @@ class CaseDataExtractionServiceTest {
 
     @BeforeEach
     void setup() {
-        given(userDetailsService.getUserName(any())).willReturn("Emma Taylor");
+        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
     }
 
     //TODO: there needs to be some clarity around what should happen when values are missing from template.

@@ -11,7 +11,8 @@ public enum CaseManagementOrderKeys {
     SCHEDULE("schedule"),
     RECITALS("recitals"),
     HEARING_DATE_LIST("cmoHearingDateList"),
-    NEXT_HEARING_DATE_LIST("nextHearingDateList");
+    NEXT_HEARING_DATE_LIST("nextHearingDateList"),
+    DATE_OF_ISSUE("dateOfIssue");
 
     @Getter
     private final String key;

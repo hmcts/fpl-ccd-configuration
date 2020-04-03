@@ -424,8 +424,7 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static ImmutableMap<String, Object> buildCaseDataMapForDraftCMODocmosisGeneration(
-        LocalDateTime localDateTime) {
+    public static ImmutableMap<String, Object> buildCaseDataMapForDraftCMODocmosisGeneration(LocalDateTime dateTime) {
 
         final List<Element<Direction>> cmoDirections = createCmoDirections();
 
@@ -444,14 +443,14 @@ public class CaseDataGeneratorHelper {
             .put("applicants", createPopulatedApplicants())
             .put("solicitor", createSolicitor())
             .put("children1", createPopulatedChildren())
-            .put(HEARING_DETAILS_KEY, createHearingBookings(localDateTime))
+            .put(HEARING_DETAILS_KEY, createHearingBookings(dateTime))
             .put("dateSubmitted", LocalDate.now())
             .put("respondents1", respondents)
             .put("others", others)
             .put(HEARING_DATE_LIST.getKey(), DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                    .label(formatLocalDateToString(localDateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
+                    .label(formatLocalDateToString(dateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
                     .build())
                 .build())
             .put(SCHEDULE.getKey(), createSchedule(true))
@@ -467,6 +466,7 @@ public class CaseDataGeneratorHelper {
                 .build()))
             .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createApprovedCMO())
             .put("representatives", representatives)
+            .put("dateOfIssue", LocalDate.of(2020, 1, 15))
             .build();
     }
 

@@ -10,17 +10,21 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
 @ExtendWith(SpringExtension.class)
 class DateFormatterHelperTest {
+    private static final String JANUARY_2019 = "1 January 2019";
 
     private static Stream<Arguments> dayOfMonthSuffixSource() {
         return Stream.of(
@@ -38,7 +42,7 @@ class DateFormatterHelperTest {
     void shouldFormatLocalDateInLongFormat() {
         LocalDate date = createDate();
         String formattedDate = formatLocalDateToString(date, FormatStyle.LONG);
-        assertThat(formattedDate).isEqualTo("1 January 2019");
+        assertThat(formattedDate).isEqualTo(JANUARY_2019);
     }
 
     @Test
@@ -78,6 +82,27 @@ class DateFormatterHelperTest {
             () -> getDayOfMonthSuffix(day));
 
         assertThat(exception.getMessage()).isEqualTo("Illegal day of month: " + day);
+    }
+
+    @Test
+    void shouldParseAFormattedDateToLocalDateWhenGivenCorrectFormat() {
+        LocalDate parsed = parseLocalDateFromStringUsingFormat(JANUARY_2019, DATE);
+        assertThat(parsed).isEqualTo(createDate());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFormatDoesNotMatchDate() {
+        assertThrows(DateTimeParseException.class, () -> parseLocalDateFromStringUsingFormat(JANUARY_2019, "d MM y"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDateIsNull() {
+        assertThrows(NullPointerException.class, () -> parseLocalDateFromStringUsingFormat(null, DATE));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFormatIsNull() {
+        assertThrows(NullPointerException.class, () -> parseLocalDateFromStringUsingFormat(JANUARY_2019, null));
     }
 
     private LocalDate createDate() {

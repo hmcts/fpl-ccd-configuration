@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ class GatekeeperEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
+    void shouldReturnExpectedMapWithValidCaseDetails() {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
@@ -75,7 +74,7 @@ class GatekeeperEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
+    void shouldReturnSuccessfullyWithEmptyCaseDetails() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
