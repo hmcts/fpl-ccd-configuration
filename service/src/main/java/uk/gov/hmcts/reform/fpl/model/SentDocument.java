@@ -13,4 +13,5 @@ public class SentDocument {
     DocumentReference document;
     DocumentReference coversheet;
     String sentAt;
+    String letterId;
 }
