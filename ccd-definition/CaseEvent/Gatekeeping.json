@@ -279,7 +279,7 @@
     "ID": "expertReportGatekeeping",
     "Name": "Log expert report",
     "Description": "Expert report event",
-    "DisplayOrder": 18,
+    "DisplayOrder": 17,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
