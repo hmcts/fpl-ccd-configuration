@@ -29,7 +29,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -80,7 +80,7 @@ public class OrderValidationServiceTest {
         return buildCaseData(orderStatus).toBuilder()
             .respondents1(buildRespondent("Uncle"))
             .children1(buildChild("Boy", LocalDate.now().minusYears(1)))
-            .hearingDetails(createHearingBookings(LocalDateTime.now()))
+            .hearingDetails(createHearingBookingsFromInitialDate(LocalDateTime.now()))
             .allocatedJudge(Judge.builder().build())
             .build();
     }
