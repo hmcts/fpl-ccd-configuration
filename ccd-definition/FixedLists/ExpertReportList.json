@@ -2,8 +2,64 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReportList",
-    "ListElementCode": "Peadiatric",
+    "ListElementCode": "peadiatric",
     "ListElement": "Peadiatric",
     "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReportList",
+    "ListElementCode": "peadiatricRadiologist",
+    "ListElement": "Peadiatric Radiologist",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReportList",
+    "ListElementCode": "OtherMedicalReport",
+    "ListElement": "Other Medical report",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReportList",
+    "ListElementCode": "OtherMedicalReport",
+    "ListElement": "Other Medical report",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReportList",
+    "ListElementCode": "residentialAssessment",
+    "ListElement": "Family Centre Assessments - Residential",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReportList",
+    "ListElementCode": "nonResidentialAssessment",
+    "ListElement": "Family Centre Assessments - NonResidential",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReportList",
+    "ListElementCode": "psychatricChildAndParent",
+    "ListElement": "Psychatric - On child and Parent(s)/carers",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReportList",
+    "ListElementCode": "psychatricOnChild",
+    "ListElement": "Psychatric - On child only",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReportList",
+    "ListElementCode": "psychatricOnParents",
+    "ListElement": "Adult Psychiatric Report on Parents(s)",
+    "DisplayOrder": 8
   }
 ]
