@@ -13,6 +13,7 @@
     "ListElementCode": "useAllocatedJudge",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this person still assigned to the hearing?",
+    "FieldShowCondition": "allocatedJudgeLabel!=\"\"",
     "SecurityClassification": "Public"
   },
   {
@@ -21,6 +22,7 @@
     "ListElementCode": "judgeSubHeading",
     "FieldType": "Label",
     "ElementLabel": "Who's now assigned to the case?",
+    "FieldShowCondition": "useAllocatedJudge=\"No\"",
     "SecurityClassification": "Public"
   },
   {
@@ -30,6 +32,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "JudgeOrMagistrateTitle",
     "ElementLabel": "Judge or magistrate's title",
+    "FieldShowCondition": "useAllocatedJudge=\"No\" OR allocatedJudgeLabel!=\"*\"",
     "SecurityClassification": "Public"
   },
   {

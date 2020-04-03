@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAssignedJudgeLabel;
 
 @Api
 @RestController
@@ -66,6 +69,17 @@ public class NoticeOfProceedingsController {
                 dateFormatterService.formatLocalDateToString(
                     hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG)));
         }
+
+        if (isNotEmpty(caseData.getAllocatedJudge())) {
+            String assignedJudgeLabel = buildAssignedJudgeLabel(caseData.getAllocatedJudge());
+
+            caseDetails.getData().put("noticeOfProceedings", ImmutableMap.of(
+                "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
+                    .allocatedJudgeLabel(assignedJudgeLabel)
+                    .build()
+            ));
+        }
+
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

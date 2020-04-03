@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -55,7 +53,8 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.migrateJudgeAndLegalAdvisor;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Slf4j
 @Api
@@ -123,23 +122,6 @@ public class GeneratedOrderController {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
 
-        if (caseData.getJudgeAndLegalAdvisor().useAllocatedJudge()) {
-            JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
-            Judge allocatedJudge = caseData.getAllocatedJudge();
-
-            JudgeAndLegalAdvisor.JudgeAndLegalAdvisorBuilder builder = JudgeAndLegalAdvisor.builder();
-
-            builder.judgeTitle(allocatedJudge.getJudgeTitle())
-                .otherTitle(allocatedJudge.getOtherTitle())
-                .judgeLastName(allocatedJudge.getJudgeLastName())
-                .judgeFullName(allocatedJudge.getJudgeFullName())
-                .legalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
-                .useAllocatedJudge(YES.getValue())
-                .allocatedJudgeLabel(judgeAndLegalAdvisor.getAllocatedJudgeLabel());
-
-            caseDetails.getData().put("judgeAndLegalAdvisor", builder.build());
-        }
-
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
             Document document = getDocument(caseData, DRAFT);
@@ -167,9 +149,20 @@ public class GeneratedOrderController {
         OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData
             .getOrderTypeAndDocument(), document);
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        if (judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
+            Judge allocatedJudge = caseData.getAllocatedJudge();
+            judgeAndLegalAdvisor = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+
+            caseDetails.getData().put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
+        }
+
+        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
         // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(orderTypeAndDocument, caseData.getOrder(),
-            caseData.getJudgeAndLegalAdvisor(), caseData.getDateOfIssue(), caseData.getOrderMonths(),
+            judgeAndLegalAdvisor, caseData.getDateOfIssue(), caseData.getOrderMonths(),
             caseData.getInterimEndDate()));
 
         caseDetails.getData().put("orderCollection", orders);

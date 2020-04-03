@@ -12,10 +12,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAssignedJudgeLabel;
 
 @Api
 @RestController
@@ -42,9 +42,5 @@ public class AssignJudgeController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    private String buildAssignedJudgeLabel(Judge judge) {
-        return String.format("Case assigned to: %s %s", judge.getJudgeOrMagistrateTitle(), judge.getJudgeName());
     }
 }

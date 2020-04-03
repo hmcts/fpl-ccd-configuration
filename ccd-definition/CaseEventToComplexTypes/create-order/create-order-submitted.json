@@ -79,7 +79,6 @@
     "ListElementCode": "useAllocatedJudge",
     "EventElementLabel": "Is this person still assigned to the hearing?",
     "FieldDisplayOrder": 2,
-    "FieldShowCondition": "judgeAndLegalAdvisor.allocatedJudgeLabel!=\"\"",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -90,7 +89,6 @@
     "ListElementCode": "judgeSubHeading",
     "ElementLabel": "Who's now assigned to the case?",
     "FieldDisplayOrder": 3,
-    "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\" OR judgeAndLegalAdvisor.allocatedJudgeLabel=\"\"",
     "SecurityClassification": "Public",
     "DisplayContext": "READONLY"
   },
@@ -102,7 +100,6 @@
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
     "FieldDisplayOrder": 4,
-    "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\" OR judgeAndLegalAdvisor.allocatedJudgeLabel=\"\"",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -113,7 +110,6 @@
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
     "FieldDisplayOrder": 5,
-    "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\" OR judgeAndLegalAdvisor.allocatedJudgeLabel=\"\"",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -124,7 +120,6 @@
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
     "FieldDisplayOrder": 6,
-    "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\" OR judgeAndLegalAdvisor.allocatedJudgeLabel=\"\"",
     "DisplayContext": "OPTIONAL"
   },
   {

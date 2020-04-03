@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,6 +10,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.migrateJudgeAndLegalAdvisor;
 
 class JudgeAndLegalAdvisorHelperTest {
 
@@ -96,6 +98,52 @@ class JudgeAndLegalAdvisorHelperTest {
         String magistrateName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
 
         assertThat(magistrateName).isEqualTo("His Excellency John Doe");
+    }
+
+    @Test
+    void shouldMigrateJudgeAndLegalAdvisorWhenAllocatedJudgeIncludesTitleAndLastName() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(MAGISTRATES)
+            .judgeLastName("Stevenson")
+            .legalAdvisorName("John Papa")
+            .build();
+
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Dread")
+            .build();
+
+        JudgeAndLegalAdvisor migratedJudge = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+
+        assertThat(migratedJudge.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
+        assertThat(migratedJudge.getJudgeLastName()).isEqualTo("Dread");
+        assertThat(migratedJudge.getLegalAdvisorName()).isEqualTo("John Papa");
+
+        assertThat(migratedJudge.getUseAllocatedJudge()).isNull();
+        assertThat(migratedJudge.getAllocatedJudgeLabel()).isNull();
+    }
+
+    @Test
+    void shouldMigrateJudgeAndLegalAdvisorWhenAllocatedJudgeIncludesOtherTitleAndFullName() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(MAGISTRATES)
+            .judgeLastName("Stevenson")
+            .legalAdvisorName("John Papa")
+            .build();
+
+        Judge allocatedJudge = Judge.builder()
+            .otherTitle("Mr")
+            .judgeFullName("Mark Watson")
+            .build();
+
+        JudgeAndLegalAdvisor migratedJudge = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+
+        assertThat(migratedJudge.getOtherTitle()).isEqualTo("Mr");
+        assertThat(migratedJudge.getJudgeFullName()).isEqualTo("Mark Watson");
+        assertThat(migratedJudge.getLegalAdvisorName()).isEqualTo("John Papa");
+
+        assertThat(migratedJudge.getUseAllocatedJudge()).isNull();
+        assertThat(migratedJudge.getAllocatedJudgeLabel()).isNull();
     }
 }
 
