@@ -99,14 +99,19 @@ public class PopulateStandardDirectionsHandler {
         return caseDetails.getData();
     }
 
+    // TODO: should really throw an exception. FPLA-1516
     private LocalDateTime getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
         return hearingBookingService.getFirstHearing(hearings)
             .map(HearingBooking::getStartDate)
-            .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
+            .orElse(null);
     }
 
     private Element<Direction> getDirectionElement(LocalDateTime hearingStartDate, DirectionConfiguration config) {
-        LocalDateTime completeBy = getCompleteByDate(hearingStartDate, config);
+        LocalDateTime completeBy = null;
+
+        if (hearingStartDate != null) {
+            completeBy = getCompleteByDate(hearingStartDate, config);
+        }
 
         return commonDirectionService.constructDirectionForCCD(config, completeBy);
     }

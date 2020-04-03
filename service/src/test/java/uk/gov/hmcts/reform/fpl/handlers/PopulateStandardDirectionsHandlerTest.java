@@ -37,7 +37,6 @@ import java.util.Map;
 
 import static java.util.Collections.EMPTY_LIST;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -241,8 +240,9 @@ class PopulateStandardDirectionsHandlerTest {
                 .build());
     }
 
+    //TODO: this test just asserts previous functionality. To be looked into in FPLA-1516.
     @Test
-    void shouldThrowIllegalStateExceptionWhenNoHearing() {
+    void shouldAddNoCompleteByDateWhenNoHearings() throws IOException {
         CallbackRequest callbackRequest = callbackRequest();
         callbackRequest.getCaseDetails().getData().remove("hearingDetails");
 
@@ -254,7 +254,43 @@ class PopulateStandardDirectionsHandlerTest {
                 .token(TOKEN)
                 .build());
 
-        assertThrows(IllegalStateException.class, () -> populateStandardDirectionsHandler.populateStandardDirections(
-                new PopulateStandardDirectionsEvent(callbackRequest, requestData)));
+        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
+            .directions(ImmutableList.of(
+                DirectionConfiguration.builder()
+                    .assignee(LOCAL_AUTHORITY)
+                    .title("Direction")
+                    .text("- Test body's 1 \n\n- Two")
+                    .display(Display.builder()
+                        .delta("0")
+                        .due(Display.Due.BY)
+                        .templateDateFormat("h:mma, d MMMM yyyy")
+                        .directionRemovable(false)
+                        .build())
+                    .build()
+            ))
+            .build());
+
+        populateStandardDirectionsHandler.populateStandardDirections(
+            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+
+        assertThat(objectMapper.convertValue(
+            callbackRequest.getCaseDetails().getData().get("localAuthorityDirections"), List.class).get(0))
+            .extracting("value")
+            .isEqualTo(Map.of(
+                "assignee", "LOCAL_AUTHORITY",
+                "directionText", "- Test body's 1 \n\n- Two",
+                "directionType", "Direction",
+                "directionRemovable", "No",
+                "readOnly", "No",
+                "responses", EMPTY_LIST));
+
+        verify(coreCaseDataApi).submitEventForCaseWorker(
+            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
+                .eventToken(TOKEN)
+                .event(Event.builder()
+                    .id(CASE_EVENT)
+                    .build())
+                .data(callbackRequest.getCaseDetails().getData())
+                .build());
     }
 }
