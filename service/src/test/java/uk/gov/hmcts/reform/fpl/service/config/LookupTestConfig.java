@@ -8,8 +8,6 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 @Configuration
 public class LookupTestConfig {
@@ -29,18 +27,6 @@ public class LookupTestConfig {
     @ConditionalOnMissingBean
     public CafcassLookupConfiguration cafcassLookupConfiguration() {
         return new CafcassLookupConfiguration("example=>cafcass:FamilyPublicLaw+cafcass@gmail.com");
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public DateFormatterService dateFormatterService() {
-        return new DateFormatterService();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public HearingBookingService hearingBookingService() {
-        return new HearingBookingService();
     }
 
     @ConditionalOnMissingBean

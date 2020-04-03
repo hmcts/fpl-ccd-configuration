@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.config.NotificationContentProviderTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -45,7 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
     HmctsEmailContentProvider.class, LookupTestConfig.class, CaseManagementOrderCaseLinkNotificationHandler.class,
     CaseManagementOrderDocumentLinkNotificationHandler.class, IssuedOrderAdminNotificationHandler.class,
-    HmctsAdminNotificationHandler.class})
+    HmctsAdminNotificationHandler.class, NotificationContentProviderTestConfig.class})
 public class CaseManagementOrderIssuedEventHandlerTest {
     @MockBean
     private RequestData requestData;
@@ -101,7 +102,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCtscAdminOfCMOIssued() throws Exception {
+    void shouldNotifyCtscAdminOfCMOIssued() {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -124,7 +125,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyRepresentativesOfCMOIssued() throws Exception {
+    void shouldNotifyRepresentativesOfCMOIssued() {
         CallbackRequest callbackRequest = buildCallbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 

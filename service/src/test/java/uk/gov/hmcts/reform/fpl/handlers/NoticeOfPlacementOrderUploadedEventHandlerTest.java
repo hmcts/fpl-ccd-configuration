@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.config.NotificationContentProviderTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -49,7 +50,8 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 @SpringBootTest(classes = {NoticeOfPlacementOrderUploadedEventHandler.class, InboxLookupService.class,
     JacksonAutoConfiguration.class, LookupTestConfig.class, HmctsEmailContentProvider.class,
     RepresentativeNotificationService.class, RepresentativeNotificationHandler.class,
-    IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class})
+    IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class,
+    NotificationContentProviderTestConfig.class})
 public class NoticeOfPlacementOrderUploadedEventHandlerTest {
     @Captor
     private ArgumentCaptor<Map<String, Object>> dataCaptor;
