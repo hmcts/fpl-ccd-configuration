@@ -11,11 +11,14 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 
@@ -43,9 +46,12 @@ public class DocumentSenderService {
                 caseId,
                 representative).getBytes();
 
-            sendLetterApi.sendLetter(authTokenGenerator.generate(),
-                new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary), SEND_LETTER_TYPE, Map.of()));
+            SendLetterResponse response = sendLetterApi.sendLetter(authTokenGenerator.generate(),
+                new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary),
+                    SEND_LETTER_TYPE,
+                    Map.of("caseId", caseId, "documentName", mainDocument.getFilename())));
 
+            String letterId = Optional.ofNullable(response).map(r -> r.letterId.toString()).orElse(EMPTY);
             var coversheet = uploadDocument(coverDocument, COVERSHEET_FILENAME);
 
             sentDocuments.add(SentDocument.builder()
@@ -53,6 +59,7 @@ public class DocumentSenderService {
                 .document(mainDocumentCopy)
                 .coversheet(coversheet)
                 .sentAt(formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
+                .letterId(letterId)
                 .build());
         }
 

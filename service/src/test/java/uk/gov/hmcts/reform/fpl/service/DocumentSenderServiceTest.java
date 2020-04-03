@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,6 +53,7 @@ class DocumentSenderServiceTest {
     private static final List<byte[]> COVER_DOCUMENTS_BYTES = List.of(new byte[]{0}, new byte[]{1});
     private static final List<Document> COVERSHEETS = List.of(testDocument(), testDocument());
     private static final List<Representative> REPRESENTATIVES = List.of(testRepresentative(), testRepresentative());
+    private static final List<UUID> LETTERS_IDS = List.of(UUID.randomUUID(), UUID.randomUUID());
 
     private DocumentSenderService documentSenderService;
 
@@ -85,8 +87,9 @@ class DocumentSenderServiceTest {
             .willReturn(COVERSHEETS.get(0));
         given(uploadDocumentService.uploadPDF(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME))
             .willReturn(COVERSHEETS.get(1));
-        given(sendLetterApi.sendLetter(anyString(),
-            any(LetterWithPdfsRequest.class))).willReturn(new SendLetterResponse(UUID.randomUUID()));
+        given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class)))
+            .willReturn(new SendLetterResponse(LETTERS_IDS.get(0)))
+            .willReturn(new SendLetterResponse(LETTERS_IDS.get(1)));
         given(documentDownloadService.downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl()))
             .willReturn(MAIN_DOCUMENT_BYTES);
         given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, REPRESENTATIVES.get(0)))
@@ -122,9 +125,13 @@ class DocumentSenderServiceTest {
         List<LetterWithPdfsRequest> letterWithPdfsRequestValues = letterWithPdfsRequestArgumentCaptor.getAllValues();
         assertThat(letterWithPdfsRequestValues.get(0).getDocuments())
             .isEqualTo(List.of(COVER_DOCUMENTS_BYTES.get(0), MAIN_DOCUMENT_BYTES));
+        assertThat(letterWithPdfsRequestValues.get(0).getAdditionalData())
+            .isEqualTo(Map.of("caseId", CASE_ID, "documentName", MAIN_DOCUMENT_REFERENCE.getFilename()));
         assertThat(letterWithPdfsRequestValues.get(1).getDocuments())
             .isEqualTo(List.of(COVER_DOCUMENTS_BYTES.get(1),
                 MAIN_DOCUMENT_BYTES));
+        assertThat(letterWithPdfsRequestValues.get(1).getAdditionalData())
+            .isEqualTo(Map.of("caseId", CASE_ID, "documentName", MAIN_DOCUMENT_REFERENCE.getFilename()));
     }
 
     @Test
@@ -136,12 +143,16 @@ class DocumentSenderServiceTest {
             .partyName(REPRESENTATIVES.get(0).getFullName())
             .document(buildFromDocument(UPLOADED_MAIN_DOCUMENT))
             .coversheet(buildFromDocument(COVERSHEETS.get(0)))
-            .sentAt(FORMATTED_DATE).build());
+            .sentAt(FORMATTED_DATE)
+            .letterId(LETTERS_IDS.get(0).toString())
+            .build());
 
         assertThat(sentDocuments.get(1)).isEqualTo(SentDocument.builder()
             .partyName(REPRESENTATIVES.get(1).getFullName())
             .document(buildFromDocument(UPLOADED_MAIN_DOCUMENT))
             .coversheet(buildFromDocument(COVERSHEETS.get(1)))
-            .sentAt(FORMATTED_DATE).build());
+            .sentAt(FORMATTED_DATE)
+            .letterId(LETTERS_IDS.get(1).toString())
+            .build());
     }
 }
