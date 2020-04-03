@@ -29,6 +29,8 @@ public class NotifyGatekeeperController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RequestData requestData;
 
+    //TODO: can we validate a hearing has been added at this point? Saves some nasty exceptions in the case of
+    // no hearing being present when populating standard directions FPLA-1516
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestBody CallbackRequest callbackRequest) {
