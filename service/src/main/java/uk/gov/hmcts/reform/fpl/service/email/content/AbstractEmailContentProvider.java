@@ -21,11 +21,13 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
+//TODO: refactor out dateFormatterService to provide static methods. Too many knock on effects to do within 1484
+// (FPLA-1482)
 public abstract class AbstractEmailContentProvider {
-
     final String uiBaseUrl;
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
@@ -73,12 +75,9 @@ public abstract class AbstractEmailContentProvider {
     }
 
     private String getHearingBooking(CaseData data) {
-        if (!isNull(data.getHearingDetails())) {
-            return dateFormatterService.formatLocalDateToString(
-                hearingBookingService.getMostUrgentHearingBooking(
-                    data.getHearingDetails()).getStartDate().toLocalDate(), FormatStyle.LONG);
-        }
-        return "";
+        return hearingBookingService.getFirstHearing(data.getHearingDetails())
+            .map(hearing -> formatLocalDateToString(hearing.getStartDate().toLocalDate(), FormatStyle.LONG))
+            .orElse("");
     }
 
     private List<String> buildOrdersAndDirections(Orders optionalOrders) {
