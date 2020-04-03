@@ -77,6 +77,7 @@ exports.config = {
     handleSupplementaryEvidenceEventPage: './e2e/pages/events/handleSupplementaryEvidenceEvent.page.js',
     attachScannedDocsEventPage: './e2e/pages/events/attachScannedDocsEvent.page.js',
     addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
+    addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js'
   },
   plugins: {
     autoDelay: {
