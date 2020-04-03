@@ -52,7 +52,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
@@ -65,7 +65,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long ID = 1L;
     private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
-    private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
+    private final List<Element<HearingBooking>> hearingDetails = createHearingBookingsFromInitialDate(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
 
@@ -149,8 +149,6 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldPopulateCaseManagementOrder() {
-        List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
-
         DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
