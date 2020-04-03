@@ -83,9 +83,8 @@ public class Other implements Representable, ConfidentialParty<Other> {
             .build();
     }
 
-    @JsonIgnore
     @Override
-    public Other getConfidentialDetails() {
+    public Other extractConfidentialDetails() {
         return Other.builder()
             .name(this.name)
             .address(this.address)
@@ -93,7 +92,6 @@ public class Other implements Representable, ConfidentialParty<Other> {
             .build();
     }
 
-    @JsonIgnore
     @Override
     public Other addConfidentialDetails(Party party) {
         Telephone telephone = ofNullable(party.telephoneNumber).orElse(Telephone.builder().build());
@@ -105,7 +103,6 @@ public class Other implements Representable, ConfidentialParty<Other> {
             .build();
     }
 
-    @JsonIgnore
     @Override
     public Other removeConfidentialDetails() {
         return this.toBuilder()

@@ -7,7 +7,7 @@ public interface ConfidentialParty<T> {
 
     Party getConfidentialParty();
 
-    T getConfidentialDetails();
+    T extractConfidentialDetails();
 
     T addConfidentialDetails(Party party);
 

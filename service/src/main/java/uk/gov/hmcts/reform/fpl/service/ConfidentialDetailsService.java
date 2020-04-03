@@ -37,7 +37,7 @@ public class ConfidentialDetailsService {
         return details.stream()
             .filter(element -> element.getValue() != null)
             .filter(element -> element.getValue().containsConfidentialDetails())
-            .map(item -> element(item.getId(), item.getValue().getConfidentialDetails()))
+            .map(item -> element(item.getId(), item.getValue().extractConfidentialDetails()))
             .collect(toList());
     }
 

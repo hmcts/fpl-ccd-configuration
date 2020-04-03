@@ -35,9 +35,8 @@ public class Child implements ConfidentialParty<Child>, Collection<Child> {
         return party;
     }
 
-    @JsonIgnore
     @Override
-    public Child getConfidentialDetails() {
+    public Child extractConfidentialDetails() {
         return this.toBuilder()
             .party(ChildParty.builder()
                 .firstName(this.party.firstName)
@@ -49,7 +48,6 @@ public class Child implements ConfidentialParty<Child>, Collection<Child> {
             .build();
     }
 
-    @JsonIgnore
     @Override
     public Child addConfidentialDetails(Party party) {
         return this.toBuilder()
@@ -63,7 +61,6 @@ public class Child implements ConfidentialParty<Child>, Collection<Child> {
             .build();
     }
 
-    @JsonIgnore
     @Override
     public Child removeConfidentialDetails() {
         return this.toBuilder()
@@ -75,7 +72,6 @@ public class Child implements ConfidentialParty<Child>, Collection<Child> {
             .build();
     }
 
-    @JsonIgnore
     @Override
     public Child expandCollection() {
         return Child.builder()

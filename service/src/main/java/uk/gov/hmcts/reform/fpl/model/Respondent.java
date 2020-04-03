@@ -51,9 +51,8 @@ public class Respondent implements Representable, ConfidentialParty<Respondent>,
         return party;
     }
 
-    @JsonIgnore
     @Override
-    public Respondent getConfidentialDetails() {
+    public Respondent extractConfidentialDetails() {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName(this.party.firstName)
@@ -65,7 +64,6 @@ public class Respondent implements Representable, ConfidentialParty<Respondent>,
             .build();
     }
 
-    @JsonIgnore
     @Override
     public Respondent addConfidentialDetails(Party party) {
         return this.toBuilder()
@@ -79,7 +77,6 @@ public class Respondent implements Representable, ConfidentialParty<Respondent>,
             .build();
     }
 
-    @JsonIgnore
     @Override
     public Respondent removeConfidentialDetails() {
         return this.toBuilder()
@@ -91,7 +88,6 @@ public class Respondent implements Representable, ConfidentialParty<Respondent>,
             .build();
     }
 
-    @JsonIgnore
     @Override
     public Respondent expandCollection() {
         return Respondent.builder()
