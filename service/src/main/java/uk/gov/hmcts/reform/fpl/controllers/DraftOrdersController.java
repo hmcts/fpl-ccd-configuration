@@ -97,16 +97,9 @@ public class DraftOrdersController {
     }
 
     private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
-        String hearingDate;
-
-        try {
-            LocalDateTime startDate = hearingBookingService.getMostUrgentHearingBooking(hearings).getStartDate();
-            hearingDate = formatLocalDateTimeBaseUsingFormat(startDate, DATE_TIME);
-        } catch (IllegalStateException e) {
-            hearingDate = "Please enter a hearing date";
-        }
-
-        return hearingDate;
+        return hearingBookingService.getFirstHearing(hearings)
+            .map(hearing -> formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME))
+            .orElse("Please enter a hearing date");
     }
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {
