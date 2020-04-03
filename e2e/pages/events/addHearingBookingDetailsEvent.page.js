@@ -38,6 +38,7 @@ module.exports = {
   async enterHearingDetails(hearingDetails) {
     const elementIndex = await this.getActiveElementIndex();
 
+    I.waitForElement(this.fields(elementIndex).hearingBooking.type.caseManagement);
     I.click(this.fields(elementIndex).hearingBooking.type);
     I.selectOption(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.second, hearingDetails.startDate.second);
@@ -56,15 +57,16 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
-    await this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName,
+
+    this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName,
       hearingDetails.judgeAndLegalAdvisor.legalAdvisorName,
       hearingDetails.judgeAndLegalAdvisor.judgeTitle,
-      hearingDetails.judgeAndLegalAdvisor.otherTitle
+      hearingDetails.judgeAndLegalAdvisor.otherTitle,
+      elementIndex
     );
   },
 
-  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, title, otherTitle) {
-    const elementIndex = await this.getActiveElementIndex();
+  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, title, otherTitle, elementIndex) {
     const complexTypeAppender = `hearingDetails_${elementIndex}_`;
     judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, title, otherTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, complexTypeAppender);

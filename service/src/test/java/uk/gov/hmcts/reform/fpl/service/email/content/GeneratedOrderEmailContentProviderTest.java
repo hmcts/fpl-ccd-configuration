@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     JacksonAutoConfiguration.class, GeneratedOrderEmailContentProvider.class, LookupTestConfig.class
 })
 class GeneratedOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
-    private static final LocalDate TODAY = LocalDate.now();
+    private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
     private static final String FAMILY_MAN_CASE_NUMBER = randomAlphabetic(8);
     private static final UUID DOCUMENT_ID = randomUUID();
     private static final String SUBJECT_LINE = "Jones, " + FAMILY_MAN_CASE_NUMBER;
@@ -66,18 +66,20 @@ class GeneratedOrderEmailContentProviderTest extends AbstractEmailContentProvide
                 "caseUrl")
             .containsExactly(SUBJECT_LINE,
                 LOCAL_AUTHORITY_NAME,
-                String.format("%s, hearing %s", SUBJECT_LINE, formatLocalDateToString(TODAY, FormatStyle.MEDIUM)),
+                String.format("%s, hearing %s", SUBJECT_LINE, localDateToString(FUTURE_DATE.toLocalDate())),
                 documentUrl,
                 CASE_REFERENCE,
                 buildCaseUrl(CASE_REFERENCE));
     }
 
-    private CaseDetails createCaseDetailsWithSingleOrderElement() {
-        final LocalDateTime now = LocalDateTime.now();
+    private String localDateToString(LocalDate date) {
+        return formatLocalDateToString(date, FormatStyle.MEDIUM);
+    }
 
+    private CaseDetails createCaseDetailsWithSingleOrderElement() {
         return CaseDetails.builder()
             .id(Long.parseLong(CASE_REFERENCE))
-            .data(Map.of(HEARING_DETAILS_KEY, createHearingBookings(now, now.plusDays(1)),
+            .data(Map.of(HEARING_DETAILS_KEY, createHearingBookings(FUTURE_DATE, FUTURE_DATE.plusDays(1)),
                 "orderCollection", wrapElements(GeneratedOrder.builder()
                     .title("Example Order")
                     .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")

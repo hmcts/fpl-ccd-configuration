@@ -73,11 +73,9 @@ abstract class AbstractEmailContentProvider {
     }
 
     private String getHearingBooking(CaseData data) {
-        if (!isNull(data.getHearingDetails())) {
-            return formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(
-                data.getHearingDetails()).getStartDate().toLocalDate(), FormatStyle.LONG);
-        }
-        return "";
+        return hearingBookingService.getFirstHearing(data.getHearingDetails())
+            .map(hearing -> formatLocalDateToString(hearing.getStartDate().toLocalDate(), FormatStyle.LONG))
+            .orElse("");
     }
 
     private List<String> buildOrdersAndDirections(Orders optionalOrders) {

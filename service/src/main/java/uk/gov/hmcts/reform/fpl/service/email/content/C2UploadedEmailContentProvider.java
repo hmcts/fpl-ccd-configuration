@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,10 +24,21 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     public Map<String, Object> buildC2UploadNotification(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = EmailNotificationHelper.buildSubjectLine(caseData);
+
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters(caseDetails))
+            .put("subjectLine", subjectLine)
+            .put("hearingDetailsCallout", subjectLine)
+            .put("reference", String.valueOf(caseDetails.getId()))
+            .build();
+    }
+
+    public Map<String, Object> buildC2UploadPbaPaymentNotTakenNotification(final CaseDetails caseDetails) {
+        return buildCommonNotificationParameters(caseDetails);
+    }
+
+    private Map<String, Object> buildCommonNotificationParameters(final CaseDetails caseDetails) {
         return Map.of(
-            "subjectLine", subjectLine,
-            "hearingDetailsCallout", subjectLine,
-            "reference", String.valueOf(caseDetails.getId()),
             "caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId()
         );
     }

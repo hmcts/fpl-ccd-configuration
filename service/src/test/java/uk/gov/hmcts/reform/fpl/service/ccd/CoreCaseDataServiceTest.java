@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.ccd;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,13 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
@@ -98,7 +100,7 @@ class CoreCaseDataServiceTest {
     }
 
     @Test
-    void shouldReturnMatchingCaseDetailsIdWhenSearchedByExistingCaseId() throws IOException {
+    void shouldReturnMatchingCaseDetailsIdWhenSearchedByExistingCaseId() {
         CaseDetails expectedCaseDetails = populatedCaseDetails();
 
         when(requestData.authorisation()).thenReturn(userAuthToken);
@@ -119,6 +121,24 @@ class CoreCaseDataServiceTest {
         CaseDetails returnedCaseDetails = service.findCaseDetailsById("111111111111");
 
         assertThat(returnedCaseDetails).isNull();
+    }
+
+    @Test
+    void shouldSearchCasesAsSystemUpdateUser() {
+        String query = "query";
+        String caseType = "caseType";
+
+        List<CaseDetails> cases = List.of(CaseDetails.builder().id(RandomUtils.nextLong()).build());
+        SearchResult searchResult = SearchResult.builder().cases(cases).build();
+
+        when(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).thenReturn(userAuthToken);
+        when(coreCaseDataApi.searchCases(userAuthToken, serviceAuthToken, caseType, query)).thenReturn(searchResult);
+
+        List<CaseDetails> casesFound = service.searchCases(caseType, query);
+
+        assertThat(casesFound).isEqualTo(cases);
+        verify(coreCaseDataApi).searchCases(userAuthToken, serviceAuthToken, caseType, query);
+        verify(idamClient).authenticateUser(userConfig.getUserName(), userConfig.getPassword());
     }
 
     private StartEventResponse buildStartEventResponse(String eventId, String eventToken) {

@@ -1,19 +1,17 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
-@Service
 public class DateFormatterHelper {
     public static final String DATE_TIME_AT = "d MMMM yyyy 'at' h:mma";
     public static final String TIME_DATE = "h:mma, d MMMM yyyy";
     public static final String DATE_TIME = "d MMMM yyyy, h:mma";
     public static final String DATE = "d MMMM yyyy";
+    public static final String DATE_SHORT_MONTH = "d MMM yyyy";
     public static final String DATE_WITH_ORDINAL_SUFFIX = "h:mma 'on the' d'%s' MMMM y";
 
     private DateFormatterHelper() {
@@ -30,6 +28,10 @@ public class DateFormatterHelper {
 
     public static String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {
         return dateTime.format(DateTimeFormatter.ofPattern(format, Locale.UK));
+    }
+
+    public static LocalDate parseLocalDateFromStringUsingFormat(String date, String format) {
+        return LocalDate.parse(date, DateTimeFormatter.ofPattern(format, Locale.UK));
     }
 
     public static String getDayOfMonthSuffix(int day) {
