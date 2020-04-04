@@ -28,17 +28,17 @@ public class DirectionResponse {
     private String respondingOnBehalfOf;
 
     @JsonGetter("respondingOnBehalfOfRespondent")
-    private String getRespondingOnBehalfOfRespondent() {
+    public String getRespondingOnBehalfOfRespondent() {
         return getValueIfContainsOrNull("RESPONDENT");
     }
 
     @JsonGetter("respondingOnBehalfOfOthers")
-    private String getRespondingOnBehalfOfOthers() {
+    public String getRespondingOnBehalfOfOthers() {
         return getValueIfContainsOrNull("OTHER");
     }
 
     @JsonGetter("respondingOnBehalfOfCafcass")
-    private String getRespondingOnBehalfOfCafcass() {
+    public String getRespondingOnBehalfOfCafcass() {
         return getValueIfContainsOrNull("CAFCASS");
     }
 

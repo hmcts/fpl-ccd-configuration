@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.ccd.sdk.types.CCD;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
@@ -22,9 +23,11 @@ public class HearingBooking {
     private final String venue;
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingBookingDetailsGroup.class)
+    @CCD(hint = "Use 24 hour format")
     private final LocalDateTime startDate;
     @TimeNotMidnight(message = "Enter a valid end time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter an end date in the future", groups = HearingBookingDetailsGroup.class)
+    @CCD(hint = "Use 24 hour format")
     private final LocalDateTime endDate;
     private final List<String> hearingNeedsBooked;
     private final String hearingNeedsDetails;

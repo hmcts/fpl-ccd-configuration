@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementChildId",
     "ElementLabel": "Child id",
@@ -11,7 +11,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementChildName",
     "SecurityClassification": "Public",
@@ -20,7 +20,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementApplication",
     "EventElementLabel": "Add document",
@@ -29,7 +29,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments",
     "EventElementLabel": "Upload supporting documents",
@@ -38,7 +38,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments",
     "EventElementLabel": "Upload confidential documents",
@@ -47,7 +47,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices",
     "EventElementLabel": "Upload placement order and notices",
@@ -56,7 +56,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments.type",
     "EventElementLabel": "Document type",
@@ -65,7 +65,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments.document",
     "EventElementLabel": "Add document",
@@ -74,7 +74,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments.description",
     "EventElementLabel": "Description",
@@ -83,7 +83,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.type_label",
     "EventElementLabel": "## For court official use only",
@@ -92,7 +92,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.type",
     "EventElementLabel": "Document type",
@@ -101,7 +101,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.document",
     "EventElementLabel": "Add PDF document",
@@ -110,7 +110,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementOrderAndNotices.description",
     "EventElementLabel": "Description",
@@ -119,7 +119,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments.type",
     "EventElementLabel": "Document type",
@@ -128,7 +128,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments.document",
     "EventElementLabel": "Add document",
@@ -137,7 +137,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "placementGatekeeping",
+    "CaseEventID": "placement",
     "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments.description",
     "EventElementLabel": "Description",

@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import static uk.gov.hmcts.reform.fpl.enums.State.*;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.*;
@@ -111,13 +113,20 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .grant("R", CAFCASS)
             .fields()
             .page("AllocatedJudge")
-                .field(CaseData::getAllocatedJudge);
+                .field(CaseData::getAllocatedJudge).complex()
+                    .mandatory(Judge::getJudgeTitle)
+                    .mandatory(Judge::getOtherTitle)
+                    .mandatory(Judge::getJudgeLastName)
+                    .mandatory(Judge::getJudgeFullName);
 
         event("addCaseNote")
             .forAllStates()
             .name("Add a case note")
             .grant("CRU", JUDICIARY)
-            .aboutToSubmitWebhook("add-note");
+            .aboutToSubmitWebhook("add-note")
+            .fields()
+            .page("CaseNote")
+                .mandatory(CaseData::getCaseNote);
     }
 
     private void buildWorkBasketResultFields() {
@@ -246,7 +255,11 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .allWebhooks("create-order")
                 .fields()
                 .page("OrderTypeAndDocument")
-                    .complex(CaseData::getOrderTypeAndDocument).done()
+                    .complex(CaseData::getOrderTypeAndDocument)
+                        .mandatory(OrderTypeAndDocument::getType)
+                        .mandatory(OrderTypeAndDocument::getSubtype)
+                        .readonly(OrderTypeAndDocument::getDocument, "document=\"DO_NOT_SHOW\"")
+                    .done()
                     .field("pageShow", DisplayContext.ReadOnly, "orderTypeAndDocument=\"DO_NOT_SHOW\"")
                 .page("OrderDateOfIssue")
                     .midEventWebhook("validate-order/date-of-issue")
@@ -263,7 +276,11 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .complex(CaseData::getChildSelector).done()
                 .page("OrderTitleAndDetails")
                     .showCondition("orderTypeAndDocument.type=\"BLANK_ORDER\"")
-                    .complex(CaseData::getOrder).done()
+                    .complex(CaseData::getOrder)
+                        .optional(GeneratedOrder::getTitle)
+                        .mandatory(GeneratedOrder::getDetails)
+                        .readonly(GeneratedOrder::getDate, "document=\"DO_NOT_SHOW\"")
+                    .done()
                 .page("OrderMonths")
                     .showCondition("orderTypeAndDocument.type=\"SUPERVISION_ORDER\" AND orderTypeAndDocument.subtype=\"FINAL\"")
                     .field(CaseData::getOrderMonths).context(DisplayContext.Mandatory).showSummary().done()
@@ -273,7 +290,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field(CaseData::getInterimEndDate).context(DisplayContext.Mandatory).showSummary().done()
                 .page("EPOChildren")
                     .showCondition("orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"")
-                    .complex(CaseData::getEpoChildren).done()
+                    .complex(CaseData::getEpoChildren)
+                        .mandatory(EPOChildren::getDescriptionNeeded)
+                        .optional(EPOChildren::getDescription)
+                    .done()
                 .page("EPOType")
                     .showCondition("orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"")
                     .midEventWebhook("validate-order/address")
@@ -289,7 +309,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .page("JudgeInformation")
                     .midEventWebhook("create-order/generate-document")
                     .complex(CaseData::getJudgeAndLegalAdvisor)
-                        .optional(JudgeAndLegalAdvisor::getJudgeTitle)
+                        .mandatory(JudgeAndLegalAdvisor::getJudgeTitle)
                         .mandatory(JudgeAndLegalAdvisor::getJudgeLastName)
                         .optional(JudgeAndLegalAdvisor::getJudgeFullName)
                         .optional(JudgeAndLegalAdvisor::getLegalAdvisorName).done()
@@ -369,6 +389,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Draft standard directions")
                 .allWebhooks("draft-standard-directions")
                 .fields()
+                    .page("SdoDateOfIssue")
+                        .midEventWebhook("validate-order/date-of-issue")
+                        .field("dateOfIssue_label").context(DisplayContext.ReadOnly).done()
+                        .mandatory(CaseData::getDateOfIssue)
                     .page("judgeAndLegalAdvisor")
                         .optional(CaseData::getJudgeAndLegalAdvisor)
                     .page("allPartiesDirections")
@@ -392,6 +416,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                         .immutableList(CaseData::getOtherPartiesDirections).complex(Direction.class, this::renderSDODirection)
                         .complex(CaseData::getOtherPartiesDirectionsCustom, Direction.class, this::renderSDODirectionsCustom, false)
                     .page("courtDirections")
+                        .midEventWebhook("draft-standard-directions")
                         .field("courtDirectionsHearingDate", DisplayContext.ReadOnly, null, "Label", null, "The next hearing is on ${hearingDetails.startDate}.")
                         .immutableList(CaseData::getCourtDirections).complex(Direction.class, this::renderSDODirection)
                         .complex(CaseData::getCourtDirectionsCustom, Direction.class, this::renderSDODirectionsCustom, false)
@@ -418,7 +443,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     }
 
     private void renderSDODirectionsCustom(FieldCollection.FieldCollectionBuilder<Direction,?> f)  {
-        f.optional(Direction::getDirectionType)
+        f.mandatory(Direction::getDirectionType)
                 .optional(Direction::getDirectionText)
                 .optional(Direction::getDateToBeCompletedBy);
     }
@@ -560,7 +585,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                      .label("respondentsDirectionLabelCMO", "## For the parents or respondents")
                      .field("respondents_label", DisplayContext.ReadOnly, null, "TextArea", null, " ")
                      .field(CaseData::getRespondentDirectionsCustomCMO).mutable().complex(Direction.class)
-                        .optional(Direction::getDirectionType)
+                        .mandatory(Direction::getDirectionType)
                         .mandatory(Direction::getDirectionText)
                         .mandatory(Direction::getParentsAndRespondentsAssignee)
                         .optional(Direction::getDateToBeCompletedBy)
@@ -574,6 +599,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                      .label("otherPartiesDirectionLabelCMO", "## For other parties")
                      .field("others_label", DisplayContext.ReadOnly, null, "TextArea", null, " ")
                      .field(CaseData::getOtherPartiesDirectionsCustomCMO).mutable().complex(Direction.class)
+                        .mandatory(Direction::getDirectionType)
+                        .mandatory(Direction::getDirectionText)
+                        .mandatory(Direction::getOtherPartiesAssignee)
+                        .optional(Direction::getDateToBeCompletedBy)
                     .done()
                 .page("courtDirections")
                     .showCondition("cmoToAction=\"\" OR cmoToAction.status!=\"SEND_TO_JUDGE\"")
@@ -590,7 +619,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("schedule", DisplayContext.Mandatory, null, "Schedule", null, "Schedule")
             .page("documentReview")
                 .showCondition("cmoToAction=\"\" OR cmoToAction.status!=\"SEND_TO_JUDGE\"")
-                .field(CaseData::getCaseManagementOrder).context(DisplayContext.Complex).done();
+                .field(CaseData::getCaseManagementOrder).complex()
+                    .field(CaseManagementOrder::getOrderDoc).label("Check the order").context(DisplayContext.ReadOnly).done()
+                    .readonly(CaseManagementOrder::getHearingDate, "orderDoc=\"DO_NOT_SHOW\"")
+                    .field(CaseManagementOrder::getStatus).label("Is this ready to be sent to the judge?").context(DisplayContext.Mandatory);
 
 
         event("actionCMO")
@@ -608,16 +640,33 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("actionCMOPlaceholderHint").context(DisplayContext.ReadOnly).done()
                 .page("NOT_SHOWN").previousPage()
                     .showCondition("actionCMOPlaceholderHeading=\"DO_NOT_SHOW\"")
-                    .field("cmoToAction").context(DisplayContext.Optional).done()
+                    .field(CaseData::getCaseManagementOrder_Judiciary).context(DisplayContext.Optional).complex()
+                        .readonly(CaseManagementOrder::getHearingDate)
+                        .readonly(CaseManagementOrder::getOrderDoc)
+                        .readonly(CaseManagementOrder::getHearingDate, "orderDoc=\"DO_NOT_SHOW\"")
+                    .done()
+                .page("OrderDateOfIssue")
+                    .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"")
+                    .midEventWebhook("validate-order/date-of-issue")
+                    .field("dateOfIssue_label").context(DisplayContext.ReadOnly).done()
+                    .mandatory(CaseData::getDateOfIssue)
                 .page("allPartiesDirections")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"")
                     .label("allPartiesLabelCMO", "## For all parties")
                     .field("allPartiesPrecedentLabelCMO").context(DisplayContext.ReadOnly).fieldTypeParameter("Direction").label("Add completed directions from the precedent library or your own template.").readOnly().done()
-                    .field(CaseData::getAllPartiesCustomCMO).mutable().complex(Direction.class, this::renderDirection)
+                    .field(CaseData::getAllPartiesCustomCMO).mutable().complex(Direction.class)
+                        .optional(Direction::getDirectionType)
+                        .mandatory(Direction::getDirectionText)
+                        .optional(Direction::getDateToBeCompletedBy)
+                    .done()
                 .page("localAuthorityDirections")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"")
                      .label("localAuthorityDirectionsLabelCMO", "## For the local authority")
-                     .field(CaseData::getLocalAuthorityDirectionsCustomCMO).mutable().complex(Direction.class, this::renderDirection)
+                     .field(CaseData::getLocalAuthorityDirectionsCustomCMO).mutable().complex(Direction.class)
+                        .optional(Direction::getDirectionType)
+                        .mandatory(Direction::getDirectionText)
+                        .optional(Direction::getDateToBeCompletedBy)
+                    .done()
                 .page("respondentsDirections")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"")
                      .label("respondentsDirectionLabelCMO", "## For the parents or respondents")
@@ -631,29 +680,46 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .page("cafcassDirections")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"")
                      .label("cafcassDirectionsLabelCMO", "## For Cafcass")
-                     .field(CaseData::getCafcassDirectionsCustomCMO).mutable().complex(Direction.class, this::renderDirection)
+                     .field(CaseData::getCafcassDirectionsCustomCMO).mutable().complex(Direction.class)
+                        .optional(Direction::getDirectionType)
+                        .mandatory(Direction::getDirectionText)
+                        .optional(Direction::getDateToBeCompletedBy)
+                    .done()
                 .page("otherPartiesDirections")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"")
                      .label("otherPartiesDirectionLabelCMO", "## For other parties")
                      .field("others_label", DisplayContext.ReadOnly, null, "TextArea", null, " ")
                      .field(CaseData::getOtherPartiesDirectionsCustomCMO).mutable().complex(Direction.class)
+                        .optional(Direction::getDirectionType)
+                        .mandatory(Direction::getDirectionText)
+                        .mandatory(Direction::getOtherPartiesAssignee)
+                        .optional(Direction::getDateToBeCompletedBy)
                     .done()
                 .page("courtDirections")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"")
                      .label("courtDirectionsLabelCMO", "## For the court")
-                     .field(CaseData::getCourtDirectionsCustomCMO).mutable().complex(Direction.class, this::renderDirection)
-                .page("recitals")
+                     .field(CaseData::getCourtDirectionsCustomCMO).mutable().complex(Direction.class)
+                        .optional(Direction::getDirectionType)
+                        .mandatory(Direction::getDirectionText)
+                        .optional(Direction::getDateToBeCompletedBy)
+                    .done()
+                 .page("recitals")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"")
                      .label("orderBasisLabel", "## Basis of order")
                      .label("addRecitalLabel", "### Add recital")
                      .field("recitals").context(DisplayContext.Optional).type("Collection").fieldTypeParameter("Recitals").label("Recitals").mutable().done()
                 .page("schedule")
+                    .midEventWebhook("action-cmo")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"") .field("schedule", DisplayContext.Mandatory, null, "Schedule", null, "Schedule")
-                    .midEventWebhook()
                     .field("schedule", DisplayContext.Mandatory, null, "Schedule", null, "Schedule")
                 .page("OrderActionDocumentReview")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\"")
-                    .field(CaseData::getOrderAction).context(DisplayContext.Complex).done()
+                    .field(CaseData::getOrderAction).context(DisplayContext.Complex).complex()
+                        .readonly(OrderAction::getDocument)
+                        .mandatory(OrderAction::getType)
+                        .mandatory(OrderAction::getNextHearingType)
+                        .mandatory(OrderAction::getChangeRequestedByJudge)
+                    .done()
                 .page("nextHearing")
                     .showCondition("cmoToAction.status=\"SEND_TO_JUDGE\" AND orderAction.type=\"SEND_TO_ALL_PARTIES\"")
                     .label("nextHearingDateHeading", "## Basis of order")
@@ -663,9 +729,12 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         addStatementOfService(PREPARE_FOR_HEARING);
         buildManageRepresentatives(PREPARE_FOR_HEARING, true, false);
 
-        renderComply( "COMPLY_LOCAL_AUTHORITY", LOCAL_AUTHORITY, CaseData::getLocalAuthorityDirections, DisplayContext.Mandatory, "Allows Local Authority user access to comply with their directions as well as ones for all parties");
-        renderComply( "COMPLY_CAFCASS", UserRole.CAFCASS, CaseData::getCafcassDirections, DisplayContext.Optional, "Allows Cafcass user access to comply with their directions as well as ones for all parties");
-        renderComply( "COMPLY_COURT", HMCTS_ADMIN, CaseData::getCourtDirectionsCustom, DisplayContext.Optional, "Event gives Court user access to comply with their directions as well as all parties");
+        renderComply( "COMPLY_LOCAL_AUTHORITY", LOCAL_AUTHORITY, CaseData::getLocalAuthorityDirections, DisplayContext.Mandatory, "Allows Local Authority user access to comply with their directions as well as ones for all parties",
+            DisplayContext.ReadOnly);
+        renderComply( "COMPLY_CAFCASS", UserRole.CAFCASS, CaseData::getCafcassDirections, DisplayContext.Optional, "Allows Cafcass user access to comply with their directions as well as ones for all parties",
+            DisplayContext.Optional);
+        renderComply( "COMPLY_COURT", HMCTS_ADMIN, CaseData::getCourtDirectionsCustom, DisplayContext.Optional, "Event gives Court user access to comply with their directions as well as all parties",
+            DisplayContext.Optional);
 
         // TODO: duplicate of renderComply
         event("COMPLY_OTHERS")
@@ -680,10 +749,43 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .fields()
             .page(1)
                 .label("respondents_label", "label")
-                .field(CaseData::getRespondentDirectionsCustom).done()
+                .field(CaseData::getRespondentDirectionsCustom).complex(Direction.class)
+                    .readonly(Direction::getDirectionType)
+                    .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
+                    .readonly(Direction::getDateToBeCompletedBy)
+                    .readonly(Direction::getParentsAndRespondentsAssignee, "respondentDirectionsCustom.parentsAndRespondentsAssignee != \"\"")
+                    .field("allParties_label").context(DisplayContext.ReadOnly).showCondition("respondentDirectionsCustom.parentsAndRespondentsAssignee = \"\"").done()
+                    .field(Direction::getResponses).complex(DirectionResponse.class)
+                        .readonly(DirectionResponse::getResponder)
+                        .readonly(DirectionResponse::getResponder)
+                        .mandatory(DirectionResponse::getRespondingOnBehalfOfRespondent)
+                        .optional(DirectionResponse::getComplied)
+                        .optional(DirectionResponse::getDocumentDetails)
+                        .optional(DirectionResponse::getFile)
+                        .field("cannotComplyTitle").context(DisplayContext.Optional).done()
+                        .mandatory(DirectionResponse::getCannotComplyReason)
+                        .optional(DirectionResponse::getC2Uploaded)
+                        .optional(DirectionResponse::getCannotComplyFile)
+                    .done()
+                .done()
             .page(2)
                 .label("others_label", "label")
-                .field(CaseData::getOtherPartiesDirectionsCustom);
+                .field(CaseData::getOtherPartiesDirectionsCustom).complex(Direction.class)
+                    .readonly(Direction::getDirectionType)
+                    .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
+                    .readonly(Direction::getDateToBeCompletedBy)
+                    .readonly(Direction::getOtherPartiesAssignee, "otherPartiesDirectionsCustom.otherPartiesAssignee=\"*\"")
+                    .field("allParties_label").context(DisplayContext.ReadOnly).showCondition("otherPartiesDirectionsCustom.otherPartiesAssignee = \"\"").done()
+                    .complex(Direction::getResponses, DirectionResponse.class)
+                        .readonly(DirectionResponse::getResponder)
+                        .mandatory(DirectionResponse::getRespondingOnBehalfOfOthers)
+                        .mandatory(DirectionResponse::getComplied)
+                        .optional(DirectionResponse::getDocumentDetails)
+                        .optional(DirectionResponse::getFile)
+                        .field("cannotComplyTitle").context(DisplayContext.Optional).done()
+                        .mandatory(DirectionResponse::getCannotComplyReason)
+                        .optional(DirectionResponse::getC2Uploaded)
+                        .optional(DirectionResponse::getCannotComplyFile);
 
         // TODO: duplicate of renderComply
         event("COMPLY_ON_BEHALF_COURT")
@@ -699,14 +801,59 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .page("Respondents directions")
                 .field("localAuthorityDirectionsLabelCMO").type("Label").label("## For the local authority").context(DisplayContext.ReadOnly).blacklist(HMCTS_ADMIN).done()
                 .label("respondents_label", "## For the local authority")
-                .field(CaseData::getRespondentDirectionsCustom).caseEventFieldLabel("Direction").complex().done()
+                .field(CaseData::getRespondentDirectionsCustom).caseEventFieldLabel("Direction").complex(Direction.class)
+                    .readonly(Direction::getDirectionType)
+                    .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
+                    .readonly(Direction::getDateToBeCompletedBy)
+                    .readonly(Direction::getParentsAndRespondentsAssignee, "servedCaseManagementOrders != \"\" AND respondentDirectionsCustom.parentsAndRespondentsAssignee != \"\"")
+                    .field("allParties_label", DisplayContext.ReadOnly, "servedCaseManagementOrders != \"\" AND respondentDirectionsCustom.parentsAndRespondentsAssignee = \"\"")
+                    .complex(Direction::getResponses, DirectionResponse.class)
+                        .mandatory(DirectionResponse::getRespondingOnBehalfOfRespondent)
+                        .optional(DirectionResponse::getComplied)
+                        .optional(DirectionResponse::getDocumentDetails)
+                        .optional(DirectionResponse::getFile)
+                        .field("cannotComplyTitle").context(DisplayContext.Optional).done()
+                        .mandatory(DirectionResponse::getCannotComplyReason)
+                        .optional(DirectionResponse::getC2Uploaded)
+                        .optional(DirectionResponse::getCannotComplyFile)
+                    .done()
+                .done()
             .page("Other party directions")
                 .field("otherPartiesDirectionLabelCMO").type("Label").label("## For the local authority").context(DisplayContext.ReadOnly).blacklist(HMCTS_ADMIN).done()
                 .label("others_label", "## For the local authority")
-                .field(CaseData::getOtherPartiesDirectionsCustom).caseEventFieldLabel("Direction").complex().done()
+                .field(CaseData::getOtherPartiesDirectionsCustom).caseEventFieldLabel("Direction").complex(Direction.class)
+                    .readonly(Direction::getDirectionType)
+                    .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
+                    .readonly(Direction::getDateToBeCompletedBy)
+                    .readonly(Direction::getOtherPartiesAssignee, "servedCaseManagementOrders != \"\" AND otherPartiesDirectionsCustom.otherPartiesAssignee != \"\"")
+                    .field("allParties_label", DisplayContext.ReadOnly, "servedCaseManagementOrders != \"\" AND otherPartiesDirectionsCustom.otherPartiesAssignee = \"\"")
+                    .complex(Direction::getResponses, DirectionResponse.class)
+                        .mandatory(DirectionResponse::getRespondingOnBehalfOfOthers)
+                        .optional(DirectionResponse::getComplied)
+                        .optional(DirectionResponse::getDocumentDetails)
+                        .optional(DirectionResponse::getFile)
+                        .field("cannotComplyTitle").context(DisplayContext.Optional).done()
+                        .mandatory(DirectionResponse::getCannotComplyReason)
+                        .optional(DirectionResponse::getC2Uploaded)
+                        .optional(DirectionResponse::getCannotComplyFile)
+                    .done()
+                .done()
             .page("Cafcass directions")
                 .field("cafcassDirectionsLabelCMO").type("Label").label("## For the local authority").context(DisplayContext.ReadOnly).blacklist(HMCTS_ADMIN).done()
-                .field(CaseData::getCafcassDirectionsCustom).caseEventFieldLabel("Direction").complex().done();
+                .field(CaseData::getCafcassDirectionsCustom).caseEventFieldLabel("Direction").complex(Direction.class)
+                    .readonly(Direction::getDirectionType)
+                    .readonly(Direction::getDirectionNeeded, "directionText = \"DO_NOT_SHOW\"")
+                    .readonly(Direction::getDateToBeCompletedBy)
+                    .complex(Direction::getResponse)
+                        .optional(DirectionResponse::getComplied)
+                        .optional(DirectionResponse::getDocumentDetails)
+                        .optional(DirectionResponse::getFile)
+                        .field("cannotComplyTitle").context(DisplayContext.Optional).done()
+                        .mandatory(DirectionResponse::getCannotComplyReason)
+                        .optional(DirectionResponse::getC2Uploaded)
+                        .optional(DirectionResponse::getCannotComplyFile)
+                    .done()
+                .done();
 
         buildPlacement(PREPARE_FOR_HEARING);
         event("internal-change:CMO_PROGRESSION")
@@ -750,8 +897,32 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .pageLabel("Application and supporting documents")
                 .field("placementChildName").showCondition("childrenList=\"DO NOT SHOW\"").context(DisplayContext.Mandatory).done()
                 .field("placementLabel").context(DisplayContext.ReadOnly).done()
-                .field("placement").done();
-
+                .field("placement").complex(Placement.class)
+                    .readonly(Placement::getChildId, "placementChildName = \"DO NOT SHOW\"")
+                    .mandatory(Placement::getChildName, "placementChildId = \"DO NOT SHOW\"")
+                    .mandatory(Placement::getApplication)
+                    .optional(Placement::getSupportingDocuments)
+                    .optional(Placement::getConfidentialDocuments)
+                    .optional(Placement::getOrderAndNotices)
+                    .optional(Placement::getConfidentialDocuments)
+                    .field(Placement::getConfidentialDocuments).complexWithParent(PlacementConfidentialDocument.class)
+                        .mandatory(PlacementConfidentialDocument::getType)
+                        .mandatory(PlacementConfidentialDocument::getDocument)
+                        .optional(PlacementConfidentialDocument::getDescription)
+                    .done()
+                    .field(Placement::getOrderAndNotices).complexWithParent(PlacementOrderAndNotices.class)
+                    .field("type_label").context(DisplayContext.Mandatory).done()
+                        .mandatory(PlacementOrderAndNotices::getType)
+                        .mandatory(PlacementOrderAndNotices::getDocument)
+                        .optional(PlacementOrderAndNotices::getDescription)
+                    .done()
+                    .optional(Placement::getSupportingDocuments)
+                    .field(Placement::getSupportingDocuments).complexWithParent(PlacementSupportingDocument.class)
+                        .mandatory(PlacementSupportingDocument::getType)
+                        .mandatory(PlacementSupportingDocument::getDocument)
+                        .optional(PlacementSupportingDocument::getDescription)
+                    .done()
+                .done();
     }
 
     private void buildManageRepresentatives(State state, boolean submittedWebhook,
@@ -772,7 +943,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .optional(CaseData::getRepresentatives);
     }
 
-    private void renderComply(String eventId, UserRole role, TypedPropertyGetter<CaseData, ?> getter, DisplayContext reasonContext, String description) {
+    private void renderComply(String eventId, UserRole role,
+        TypedPropertyGetter<CaseData, ?> getter, DisplayContext reasonContext, String description,
+        DisplayContext titleContext) {
         event(eventId)
                 .forState(PREPARE_FOR_HEARING)
                 .explicitGrants()
@@ -791,16 +964,16 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                         .optional(DirectionResponse::getComplied)
                         .optional(DirectionResponse::getDocumentDetails)
                         .optional(DirectionResponse::getFile)
-                        .field("cannotComplyTitle").context(DisplayContext.Optional).done()
+                        .field("cannotComplyTitle").context(titleContext).done()
                         .field(DirectionResponse::getCannotComplyReason, reasonContext)
                         .optional(DirectionResponse::getC2Uploaded)
                         .optional(DirectionResponse::getCannotComplyFile);
     }
 
     private void renderDirection(FieldCollection.FieldCollectionBuilder<Direction, ?> f) {
-        f.optional(Direction::getDirectionType)
-                .mandatory(Direction::getDirectionText)
-                .optional(Direction::getDateToBeCompletedBy);
+        f.mandatory(Direction::getDirectionType)
+            .mandatory(Direction::getDirectionText)
+            .optional(Direction::getDateToBeCompletedBy);
     }
 
     private EventBuilder<CaseData, UserRole, State> addHearingBookingDetails(State state) {
@@ -917,10 +1090,21 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         .aboutToSubmitWebhook()
         .submittedWebhook(withSubmittedWebhook)
         .fields()
+            .page(1)
+                .midEventWebhook("upload-c2/get-fee")
+                .mandatory(CaseData::getC2ApplicationType)
             .page(2)
-            .field(CaseData::getTemporaryC2Document).complex()
-                .mandatory(C2DocumentBundle::getDocument)
-                .mandatory(C2DocumentBundle::getDescription);
+                .midEventWebhook("upload-c2/validate-pba-number")
+                .field(CaseData::getTemporaryC2Document).complex()
+                    .optional(C2DocumentBundle::getNameOfRepresentative)
+                    .mandatory(C2DocumentBundle::getUsePbaPayment)
+                    .mandatory(C2DocumentBundle::getPbaNumber, "temporaryC2Document.usePbaPayment=\"Yes\"")
+                    .optional(C2DocumentBundle::getClientCode, "temporaryC2Document.usePbaPayment=\"Yes\"")
+                    .optional(C2DocumentBundle::getFileReference, "temporaryC2Document.usePbaPayment=\"Yes\"")
+                    .mandatory(C2DocumentBundle::getDocument)
+                    .mandatory(C2DocumentBundle::getDescription).done()
+                .field("displayAmountToPay").context(DisplayContext.ReadOnly).showCondition("c2ApplicationType=\"DO_NOT_SHOW\"").done()
+                .field("amountToPay").context(DisplayContext.ReadOnly).showCondition("displayAmountToPay=\"Yes\"").done();
     }
 
     private void buildOpen() {
@@ -1035,7 +1219,9 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .grant("CRU", CCD_LASOLICITOR)
                 .fields()
                     .label("allocationProposal_label", "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.")
-                    .field(CaseData::getAllocationProposal).context(DisplayContext.Complex);
+                    .field(CaseData::getAllocationProposal).complex()
+                        .mandatory(Allocation::getProposal)
+                        .optional(Allocation::getProposalReason);
 
         event("attendingHearing").forState(Open)
                 .name("Attending the hearing")
