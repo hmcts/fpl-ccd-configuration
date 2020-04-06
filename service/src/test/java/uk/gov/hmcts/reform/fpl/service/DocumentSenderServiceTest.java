@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {FixedTimeConfiguration.class, DateFormatterService.class})
+@ContextConfiguration(classes = {FixedTimeConfiguration.class})
 class DocumentSenderServiceTest {
 
     private static final String SERVICE_AUTH_TOKEN = "Service token";
