@@ -26,10 +26,10 @@ public class JudgeAndLegalAdvisorHelper {
             .orElse("");
     }
 
-    public static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor, Judge allocatedJudge) {
-        JudgeAndLegalAdvisor.JudgeAndLegalAdvisorBuilder builder = JudgeAndLegalAdvisor.builder();
-
-        return builder.judgeTitle(allocatedJudge.getJudgeTitle())
+    public static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                                   Judge allocatedJudge) {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(allocatedJudge.getJudgeTitle())
             .otherTitle(allocatedJudge.getOtherTitle())
             .judgeLastName(allocatedJudge.getJudgeLastName())
             .judgeFullName(allocatedJudge.getJudgeFullName())
