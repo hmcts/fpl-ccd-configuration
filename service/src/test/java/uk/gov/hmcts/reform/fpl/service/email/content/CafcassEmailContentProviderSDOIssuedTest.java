@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
-import java.io.IOException;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
@@ -19,7 +19,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, CafcassEmailContentProviderSDOIssued.class, LookupTestConfig.class
+    JacksonAutoConfiguration.class, CafcassEmailContentProviderSDOIssued.class, LookupTestConfig.class,
+    HearingBookingService.class
 })
 class CafcassEmailContentProviderSDOIssuedTest extends AbstractEmailContentProviderTest {
 
@@ -32,7 +33,7 @@ class CafcassEmailContentProviderSDOIssuedTest extends AbstractEmailContentProvi
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
+    void shouldReturnExpectedMapWithValidSDODetails() {
         Map<String, Object> expectedMap = getStandardDirectionTemplateParameters();
 
         assertThat(contentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(populatedCaseDetails(),

@@ -9,7 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.IOException;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
@@ -29,7 +28,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
     }
 
     @Test
-    void shouldBuildPlacementNotificationWithExpectedParameters() throws IOException {
+    void shouldBuildPlacementNotificationWithExpectedParameters() {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("respondentLastName", "Smith")
             .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
