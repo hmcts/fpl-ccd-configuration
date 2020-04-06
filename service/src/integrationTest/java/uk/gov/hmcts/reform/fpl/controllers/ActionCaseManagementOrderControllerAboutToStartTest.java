@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -49,7 +49,7 @@ public class ActionCaseManagementOrderControllerAboutToStartTest extends Abstrac
 
     @Test
     void shouldAddCurrentTimeAsDateOfIssuedWhenNotInCaseManagementOrder() {
-        Map<String, Object> data = Map.of(HEARING_DETAILS_KEY, createHearingBookings(time.now()),
+        Map<String, Object> data = Map.of(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(time.now()),
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createCaseManagementOrder(SEND_TO_JUDGE));
 
         CaseDetails caseDetails = buildCaseDetails(data);
@@ -65,7 +65,7 @@ public class ActionCaseManagementOrderControllerAboutToStartTest extends Abstrac
             .dateOfIssue("20 March 2019")
             .build();
 
-        Map<String, Object> data = Map.of(HEARING_DETAILS_KEY, createHearingBookings(time.now()),
+        Map<String, Object> data = Map.of(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(time.now()),
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
         CaseDetails caseDetails = buildCaseDetails(data);
@@ -80,7 +80,7 @@ public class ActionCaseManagementOrderControllerAboutToStartTest extends Abstrac
         final CaseManagementOrder order = createCaseManagementOrder(SEND_TO_JUDGE);
 
         Map<String, Object> data = Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
-            HEARING_DETAILS_KEY, createHearingBookings(LocalDateTime.now()));
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(LocalDateTime.now()));
 
         CaseDetails caseDetails = buildCaseDetails(data);
         List<String> expected = List.of(
