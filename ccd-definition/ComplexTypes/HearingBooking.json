@@ -67,7 +67,7 @@
     "ID": "HearingBooking",
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
-    "ElementLabel": "Judge and legal advisor",
+    "ElementLabel": "Judge and Justices' Legal Adviser",
     "SecurityClassification": "Public"
   }
 ]
