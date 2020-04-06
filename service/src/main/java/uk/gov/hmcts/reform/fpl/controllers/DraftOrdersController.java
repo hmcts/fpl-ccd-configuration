@@ -20,10 +20,12 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
@@ -50,6 +52,8 @@ import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.migrateJudgeAndLegalAdvisor;
 
 @Api
 @RestController
@@ -87,8 +91,23 @@ public class DraftOrdersController {
 
             directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-            caseDetails.getData()
-                .put("judgeAndLegalAdvisor", caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
+            caseDetails.getData().put("judgeAndLegalAdvisor",
+                caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
+        }
+
+        if (isNotEmpty(caseData.getAllocatedJudge())) {
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+
+            if (isNotEmpty(caseData.getStandardDirectionOrder())
+                && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
+                judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
+            } else {
+                judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
+            }
+
+            judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+
+            caseDetails.getData().put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -121,6 +140,17 @@ public class DraftOrdersController {
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        if (judgeAndLegalAdvisor != null && judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
+            Judge allocatedJudge = caseData.getAllocatedJudge();
+            judgeAndLegalAdvisor = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+
+            caseDetails.getData().put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
+
+            caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        }
 
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()

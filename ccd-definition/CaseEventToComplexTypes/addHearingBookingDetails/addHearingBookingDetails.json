@@ -78,9 +78,39 @@
     "ID": "HearingBookingDetails",
     "CaseEventID": "hearingBookingDetails",
     "CaseFieldID": "hearingDetails",
+    "ListElementCode": "judgeAndLegalAdvisor.allocatedJudgeLabel",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "judgeAndLegalAdvisor.useAllocatedJudge",
+    "EventElementLabel": "Is this person still assigned to the hearing?",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "judgeAndLegalAdvisor.judgeSubHeading",
+    "EventElementLabel": "Who's now assigned to the case?",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 11,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -90,7 +120,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.otherTitle",
     "EventElementLabel": "Title",
-    "FieldDisplayOrder": 9,
+    "FieldDisplayOrder": 12,
     "FieldShowCondition": "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"",
     "DisplayContext": "MANDATORY"
   },
@@ -101,7 +131,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.judgeLastName",
     "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 13,
     "FieldShowCondition": "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"",
     "DisplayContext": "MANDATORY"
   },
@@ -112,7 +142,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.judgeFullName",
     "EventElementLabel": "Full name",
-    "FieldDisplayOrder": 11,
+    "FieldDisplayOrder": 14,
     "FieldShowCondition": "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"",
     "DisplayContext": "OPTIONAL"
   },
@@ -123,9 +153,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.legalAdvisorName",
     "EventElementLabel": "Legal advisor's full name",
-    "FieldDisplayOrder": 12,
+    "FieldDisplayOrder": 15,
     "DisplayContext": "OPTIONAL"
   }
-
-
 ]

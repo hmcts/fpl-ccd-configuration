@@ -25,7 +25,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAssignedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
 @RestController
@@ -48,8 +48,7 @@ public class HearingBookingDetailsController {
         hearingDetails.removeAll(pastHearings);
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
-            String assignedJudgeLabel = buildAssignedJudgeLabel(caseData.getAllocatedJudge());
-            System.out.println("here");
+            String assignedJudgeLabel = buildAllocatedJudgeLabel(caseData.getAllocatedJudge());
 
             hearingDetails = hearingDetails.stream()
                 .map(element -> {

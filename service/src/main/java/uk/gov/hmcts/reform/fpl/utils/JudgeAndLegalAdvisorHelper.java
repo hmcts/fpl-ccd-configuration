@@ -29,15 +29,12 @@ public class JudgeAndLegalAdvisorHelper {
     public static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor, Judge allocatedJudge) {
         JudgeAndLegalAdvisor.JudgeAndLegalAdvisorBuilder builder = JudgeAndLegalAdvisor.builder();
 
-        builder.judgeTitle(allocatedJudge.getJudgeTitle())
+        return builder.judgeTitle(allocatedJudge.getJudgeTitle())
             .otherTitle(allocatedJudge.getOtherTitle())
             .judgeLastName(allocatedJudge.getJudgeLastName())
             .judgeFullName(allocatedJudge.getJudgeFullName())
-            .legalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName());
-
-        JudgeAndLegalAdvisor updatedJudgeAndLegalAdvisor = builder.build();
-        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
-        return updatedJudgeAndLegalAdvisor;
+            .legalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
+            .build();
     }
 
     public static void removeAllocatedJudgeProperties(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
@@ -45,7 +42,7 @@ public class JudgeAndLegalAdvisorHelper {
         judgeAndLegalAdvisor.setUseAllocatedJudge(null);
     }
 
-    public static String buildAssignedJudgeLabel(Judge judge) {
+    public static String buildAllocatedJudgeLabel(Judge judge) {
         return String.format("Case assigned to: %s %s", judge.getJudgeOrMagistrateTitle(), judge.getJudgeName());
     }
 

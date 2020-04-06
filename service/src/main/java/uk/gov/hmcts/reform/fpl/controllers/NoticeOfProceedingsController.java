@@ -18,12 +18,13 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -40,7 +41,9 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAssignedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.migrateJudgeAndLegalAdvisor;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Api
 @RestController
@@ -54,7 +57,6 @@ public class NoticeOfProceedingsController {
     private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
     private final DateFormatterService dateFormatterService;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -71,7 +73,7 @@ public class NoticeOfProceedingsController {
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
-            String assignedJudgeLabel = buildAssignedJudgeLabel(caseData.getAllocatedJudge());
+            String assignedJudgeLabel = buildAllocatedJudgeLabel(caseData.getAllocatedJudge());
 
             caseDetails.getData().put("noticeOfProceedings", ImmutableMap.of(
                 "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
@@ -79,7 +81,6 @@ public class NoticeOfProceedingsController {
                     .build()
             ));
         }
-
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -93,6 +94,21 @@ public class NoticeOfProceedingsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
+
+        if (judgeAndLegalAdvisor != null && judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
+            Judge allocatedJudge = caseData.getAllocatedJudge();
+
+            judgeAndLegalAdvisor = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+            removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
+            NoticeOfProceedings noticeOfProceedings = caseData.getNoticeOfProceedings();
+            noticeOfProceedings = noticeOfProceedings.toBuilder().judgeAndLegalAdvisor(judgeAndLegalAdvisor).build();
+
+            caseDetails.getData().put("noticeOfProceedings", noticeOfProceedings);
+            caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        }
 
         Map<String, Object> templateData = noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData);
 

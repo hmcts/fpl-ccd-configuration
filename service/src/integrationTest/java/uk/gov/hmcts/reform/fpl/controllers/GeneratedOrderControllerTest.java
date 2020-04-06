@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -140,6 +141,39 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(time.now().toLocalDate().toString());
     }
 
+    @Test
+    void aboutToStartShouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "allocatedJudge", Judge.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Richards")
+                    .build()
+            )).build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+            .isEqualTo("Case assigned to: His Honour Judge Richards");
+    }
+
+    @Test
+    void aboutToStartShouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build()
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
+    }
+
     //TODO TECHDEBT move tests for each callback to separate file as done with GeneratedOrderControllerSubmittedTest
     // FPLA-1468
     @Nested
@@ -244,7 +278,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void shouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
+        void aboutToSubmitShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(YES);
 
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)

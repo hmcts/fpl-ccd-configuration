@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -7,8 +8,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -17,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
@@ -64,6 +70,41 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
             .formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM yyyy"));
 
         assertThat(proceedingLabel).isEqualTo(expectedContent);
+    }
+
+    @Test
+    void shouldSetAssignJudgeLabelOnNoticeOfProceedingWhenAllocatedJudgeIsPopulated() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "allocatedJudge", Judge.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Richards")
+                    .build()
+            )).build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+            .isEqualTo("Case assigned to: His Honour Judge Richards");
+    }
+
+    @Test
+    void shouldNotSetAssignedJudgeLabelOnNoticeOfProceedingIfAllocatedJudgeNotSet() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "noticeOfProceedings", NoticeOfProceedings.builder()
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+                    .build()
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

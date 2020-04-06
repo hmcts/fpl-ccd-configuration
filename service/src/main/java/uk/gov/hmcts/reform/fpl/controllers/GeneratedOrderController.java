@@ -46,6 +46,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -53,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.migrateJudgeAndLegalAdvisor;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
@@ -86,6 +88,16 @@ public class GeneratedOrderController {
         if (errors.isEmpty()) {
             childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
             caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
+        }
+
+        if (isNotEmpty(caseData.getAllocatedJudge())) {
+            String assignedJudgeLabel = buildAllocatedJudgeLabel(caseData.getAllocatedJudge());
+
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+                .allocatedJudgeLabel(assignedJudgeLabel)
+                .build();
+
+            caseDetails.getData().put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -154,6 +166,7 @@ public class GeneratedOrderController {
         if (judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
             Judge allocatedJudge = caseData.getAllocatedJudge();
             judgeAndLegalAdvisor = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+            removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
             caseDetails.getData().put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
         }

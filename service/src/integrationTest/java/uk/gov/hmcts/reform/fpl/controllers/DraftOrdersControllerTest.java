@@ -60,6 +60,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
@@ -137,6 +139,70 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
                 .isEqualTo("1 January 2020, 12:00am"));
+    }
+
+    @Test
+    void aboutToStartShouldUpdateAllocatedJudgeLabelOnCurrentJudgeAndLegalAdvisorWhenExists() {
+        List<Direction> directions = createDirections();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "allocatedJudge", Judge.builder()
+                    .judgeTitle(HER_HONOUR_JUDGE)
+                    .judgeLastName("Richards")
+                    .build(),
+                "standardDirectionOrder", Order.builder()
+                    .directions(buildDirections(directions))
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeTitle(HIS_HONOUR_JUDGE)
+                        .judgeLastName("Davidson")
+                        .allocatedJudgeLabel("Case assigned to: His Honour Judge Davidson")
+                        .build())
+                    .build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isEqualTo("Case assigned to: Her Honour Judge Richards");
+        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
+        assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Davidson");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "allocatedJudge", Judge.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Richards")
+                    .build()
+            )).build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+            .isEqualTo("Case assigned to: His Honour Judge Richards");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build()
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
     }
 
     @Test
@@ -349,6 +415,42 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
                 "document_binary_url", document().links.binary.href,
                 "document_filename", document().originalDocumentName,
                 "document_url", document().links.self.href
+            ));
+        }
+
+        @Test
+        void midEventShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
+            given(uploadDocumentService.uploadPDF(pdf, DRAFT_ORDER_FILE_NAME))
+                .willReturn(document);
+
+            List<Element<Direction>> directions = buildDirections(
+                List.of(Direction.builder()
+                    .directionType("direction 1")
+                    .directionText("example")
+                    .assignee(LOCAL_AUTHORITY)
+                    .readOnly("No")
+                    .build()));
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(createCaseDataMap(directions)
+                    .put("dateOfIssue", time.now().toLocalDate().toString())
+                    .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
+                        .useAllocatedJudge("Yes")
+                        .build())
+                    .put("allocatedJudge", Judge.builder()
+                        .judgeTitle(HIS_HONOUR_JUDGE)
+                        .judgeLastName("Davidson")
+                        .build())
+                    .put("caseLocalAuthority", "example")
+                    .put("dateSubmitted", time.now().toLocalDate().toString())
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+
+            assertThat(callbackResponse.getData().get("judgeAndLegalAdvisor")).isEqualToComparingOnlyGivenFields(Map.of(
+                "judgeTitle", HIS_HONOUR_JUDGE,
+                "JudgeLastName", "Davidson"
             ));
         }
 
