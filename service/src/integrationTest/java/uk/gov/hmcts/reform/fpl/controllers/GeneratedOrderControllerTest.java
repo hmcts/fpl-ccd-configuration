@@ -39,7 +39,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -71,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -89,9 +89,6 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @Autowired
-    private DateFormatterService dateFormatterService;
 
     @Autowired
     private Time time;
@@ -221,8 +218,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             LocalDateTime orderExpiration = time.now().plusMonths(14);
             GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
                 "Final supervision order")
-                .expiryDate(
-                    dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
+                .expiryDate(formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
                 .build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
@@ -255,9 +251,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
             return GeneratedOrder.builder()
                 .type(fullType)
-                .dateOfIssue(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
+                .dateOfIssue(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
                 .document(expectedDocument())
-                .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
+                .date(formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .judgeAndLegalAdvisor(
                     JudgeAndLegalAdvisor.builder()
                         .judgeTitle(HER_HONOUR_JUDGE)
