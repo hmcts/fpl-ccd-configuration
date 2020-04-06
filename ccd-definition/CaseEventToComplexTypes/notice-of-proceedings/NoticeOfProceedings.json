@@ -35,7 +35,7 @@
     "CaseEventID": "createNoticeOfProceedings",
     "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "judgeAndLegalAdvisor.legalAdvisorName",
-    "EventElementLabel": "Legal advisor's full name",
+    "EventElementLabel": "Justices' Legal Adviser's full name",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
