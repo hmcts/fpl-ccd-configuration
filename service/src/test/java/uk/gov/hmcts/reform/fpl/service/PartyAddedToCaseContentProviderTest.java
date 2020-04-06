@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,14 +20,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, PartyAddedToCaseContentProvider.class,
-    DateFormatterService.class, HearingBookingService.class})
+    HearingBookingService.class})
 class PartyAddedToCaseContentProviderTest {
 
     @Autowired
     private HearingBookingService hearingBookingService;
 
-    @Autowired
-    private DateFormatterService dateFormatterService;
     @Autowired
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
@@ -38,11 +35,11 @@ class PartyAddedToCaseContentProviderTest {
     @BeforeEach
     void setup() {
         this.partyAddedToCaseContentProvider = new PartyAddedToCaseContentProvider(
-            "null", dateFormatterService, hearingBookingService, mapper);
+            "null", hearingBookingService, mapper);
     }
 
     @Test
-    void shouldGetPartyAddedToCaseByEmailNotificationParameters() throws IOException {
+    void shouldGetPartyAddedToCaseByEmailNotificationParameters() {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", "Smith")
             .put("familyManCaseNumber", "12345L")
@@ -53,7 +50,7 @@ class PartyAddedToCaseContentProviderTest {
     }
 
     @Test
-    void shouldGetPartyAddedToCaseThroughDigitalServiceNotificationParameters() throws IOException {
+    void shouldGetPartyAddedToCaseThroughDigitalServiceNotificationParameters() {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", "Smith")
             .put("familyManCaseNumber", "12345L")

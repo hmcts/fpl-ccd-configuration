@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.util.Map;
@@ -27,9 +26,8 @@ public class GeneratedOrderEmailContentProvider extends AbstractEmailContentProv
                                               ObjectMapper objectMapper,
                                               HearingBookingService hearingBookingService,
                                               LocalAuthorityNameLookupConfiguration
-                                                  localAuthorityNameLookupConfiguration,
-                                              DateFormatterService dateFormatterService) {
-        super(uiBaseUrl, dateFormatterService, hearingBookingService);
+                                                  localAuthorityNameLookupConfiguration) {
+        super(uiBaseUrl, hearingBookingService);
         this.objectMapper = objectMapper;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }

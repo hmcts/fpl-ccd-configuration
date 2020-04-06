@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
@@ -57,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
@@ -67,7 +66,6 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 @WebMvcTest(ActionCaseManagementOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControllerTest {
-
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -91,9 +89,6 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
     @MockBean
     private NotificationClient notificationClient;
-
-    @Autowired
-    private DateFormatterService dateFormatterService;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> dataCaptor;
@@ -222,7 +217,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     }
 
     @Test
-    void submittedShouldNotSendNotificationsWhenIssuedOrderNotApproved() {
+    void shouldNotSendNotificationsWhenIssuedOrderNotApproved() {
         CaseManagementOrder caseManagementOrder = getCaseManagementOrder();
 
         Map<String, Object> data = Map.of(
@@ -270,8 +265,9 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     }
 
     private Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParameters(String recipientName) {
-        final String subjectLine = "Jones, SACCCCCCCC5676576567, hearing "
-            + dateFormatterService.formatLocalDateToString(DATE_IN_3_MONTHS.toLocalDate(), FormatStyle.MEDIUM);
+        final String subjectLine = String.format("Jones, SACCCCCCCC5676576567, hearing %s",
+            formatLocalDateToString(DATE_IN_3_MONTHS.toLocalDate(), FormatStyle.MEDIUM));
+
         return ImmutableMap.<String, Object>builder()
             .put("localAuthorityNameOrRepresentativeFullName", recipientName)
             .put("subjectLineWithHearingDate", subjectLine)
