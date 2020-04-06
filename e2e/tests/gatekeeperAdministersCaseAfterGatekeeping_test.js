@@ -26,13 +26,13 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     //hmcts login, enter case number and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
-    caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
     enterFamilyManCaseNumberEventPage.enterCaseID();
     await I.completeEvent('Save and continue');
     await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
     await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
     await I.completeEvent('Save and continue');
-    caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
     I.signOut();
