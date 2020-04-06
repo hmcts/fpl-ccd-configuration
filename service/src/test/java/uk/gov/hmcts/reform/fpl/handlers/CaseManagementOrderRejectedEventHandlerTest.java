@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.config.NotificationContentProviderTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderRejectedEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, NotificationContentProviderTestConfig.class, HmctsEmailContentProvider.class})
+    LookupTestConfig.class, HearingBookingService.class, HmctsEmailContentProvider.class})
 public class CaseManagementOrderRejectedEventHandlerTest {
     @MockBean
     private RequestData requestData;

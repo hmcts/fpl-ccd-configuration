@@ -14,10 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.config.NotificationContentProviderTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -51,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
     JacksonAutoConfiguration.class, LookupTestConfig.class, HmctsEmailContentProvider.class,
     RepresentativeNotificationService.class, RepresentativeNotificationHandler.class,
     IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class,
-    NotificationContentProviderTestConfig.class})
+    HearingBookingService.class})
 public class NoticeOfPlacementOrderUploadedEventHandlerTest {
     @Captor
     private ArgumentCaptor<Map<String, Object>> dataCaptor;
