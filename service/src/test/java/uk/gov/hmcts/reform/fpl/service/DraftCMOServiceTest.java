@@ -40,16 +40,16 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDir
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, DateFormatterService.class, CommonDirectionService.class, DraftCMOService.class
+    JacksonAutoConfiguration.class, CommonDirectionService.class, DraftCMOService.class
 })
 class DraftCMOServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
 
     private final ObjectMapper mapper;
-    private final DateFormatterService dateFormatterService;
     private final DraftCMOService draftCMOService;
 
     private CaseManagementOrder caseManagementOrder;
@@ -59,11 +59,8 @@ class DraftCMOServiceTest {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    DraftCMOServiceTest(ObjectMapper mapper,
-                        DateFormatterService dateFormatterService,
-                        DraftCMOService draftCMOService) {
+    DraftCMOServiceTest(ObjectMapper mapper, DraftCMOService draftCMOService) {
         this.mapper = mapper;
-        this.dateFormatterService = dateFormatterService;
         this.draftCMOService = draftCMOService;
     }
 
@@ -258,7 +255,7 @@ class DraftCMOServiceTest {
     }
 
     private String formatLocalDateToMediumStyle(int i) {
-        return dateFormatterService.formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+        return formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
 
     @Nested
