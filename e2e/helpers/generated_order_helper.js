@@ -122,9 +122,9 @@ module.exports = {
       I.seeAnswerInTab(3, orderHeading, 'Date of issue', dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
     }
 
-    I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', order.judgeAndLegalAdvisor.judgeTitle);
-    I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', order.judgeAndLegalAdvisor.judgeLastName);
-    I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', order.judgeAndLegalAdvisor.legalAdvisorName);
+    I.seeAnswerInTab(1, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title', order.judgeAndLegalAdvisor.judgeTitle);
+    I.seeAnswerInTab(2, 'Judge and Justices\' Legal Adviser', 'Last name', order.judgeAndLegalAdvisor.judgeLastName);
+    I.seeAnswerInTab(3, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name', order.judgeAndLegalAdvisor.legalAdvisorName);
   },
 
   async assertOrderSentToParty(I, caseViewPage, partyName, order, orderNum) {
