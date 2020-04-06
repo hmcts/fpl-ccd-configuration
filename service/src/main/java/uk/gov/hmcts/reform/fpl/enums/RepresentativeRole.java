@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
 
 public enum RepresentativeRole {
     LA_LEGAL_REPRESENTATIVE(Type.LASOLICITOR, LASOLICITOR),
+    BARRISTER(Type.BARRISTER, CaseRole.BARRISTER),
     CAFCASS_GUARDIAN(Type.CAFCASS),
     CAFCASS_SOLICITOR(Type.CAFCASS),
     REPRESENTING_RESPONDENT_1(Type.RESPONDENT, 0, SOLICITOR),
@@ -59,6 +60,6 @@ public enum RepresentativeRole {
     }
 
     public enum Type {
-        OTHER, RESPONDENT, CAFCASS, LASOLICITOR
+        OTHER, RESPONDENT, CAFCASS, LASOLICITOR, BARRISTER
     }
 }
