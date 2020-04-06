@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDE
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingVenueLookUpService.class})
@@ -54,7 +55,6 @@ class NoticeOfProceedingsServiceTest {
         COURT_CODE);
     private static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
 
-    private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
@@ -62,15 +62,14 @@ class NoticeOfProceedingsServiceTest {
     private HearingVenueLookUpService hearingVenueLookUpService;
 
     private CommonCaseDataExtractionService commonCaseDataExtractionService = new CommonCaseDataExtractionService(
-        dateFormatterService, hearingVenueLookUpService);
+        hearingVenueLookUpService);
 
     private NoticeOfProceedingsService noticeOfProceedingService;
 
     @BeforeEach
     void setup() {
-        noticeOfProceedingService = new NoticeOfProceedingsService(dateFormatterService,
-            hearingBookingService, hmctsCourtLookupConfiguration, hearingVenueLookUpService,
-            commonCaseDataExtractionService);
+        noticeOfProceedingService = new NoticeOfProceedingsService(hearingBookingService, hmctsCourtLookupConfiguration,
+            hearingVenueLookUpService, commonCaseDataExtractionService);
     }
 
     @Test
@@ -209,8 +208,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
-        assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
-            .formatLocalDateToString(FUTURE_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("hearingDate")).isEqualTo(formatLocalDateToString(FUTURE_DATE, FormatStyle.LONG));
         assertThat(templateData.get("hearingVenue"))
             .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("8:30am");
