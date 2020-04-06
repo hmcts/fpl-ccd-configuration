@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 
@@ -36,14 +35,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocume
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createJudgeAndLegalAdvisor;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, GeneratedOrderEmailContentProvider.class,
-    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class})
+    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class})
 class GeneratedOrderEmailContentProviderTest {
-    private final DateFormatterService dateFormatterService = new DateFormatterService();
-    private final HearingBookingService hearingBookingService = new HearingBookingService();
-
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
 
@@ -52,6 +49,9 @@ class GeneratedOrderEmailContentProviderTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private HearingBookingService hearingBookingService;
 
     private GeneratedOrderEmailContentProvider orderEmailContentProvider;
 
@@ -62,7 +62,7 @@ class GeneratedOrderEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.orderEmailContentProvider = new GeneratedOrderEmailContentProvider("",
-            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService);
+            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration);
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
@@ -85,8 +85,8 @@ class GeneratedOrderEmailContentProviderTest {
             .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
                 "linkToDocument", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Local Authority",
-                (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(FUTURE_DATE.toLocalDate(),
-                    FormatStyle.MEDIUM)), documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
+                (subjectLine + ", hearing " + formatLocalDateToString(FUTURE_DATE.toLocalDate(), FormatStyle.MEDIUM)),
+                documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
     }
 
     private CaseDetails createCaseDetailsWithSingleOrderElement() {
