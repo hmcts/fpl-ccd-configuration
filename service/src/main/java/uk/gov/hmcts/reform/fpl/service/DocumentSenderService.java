@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

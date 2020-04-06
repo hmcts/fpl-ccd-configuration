@@ -82,7 +82,7 @@ module.exports = {
   },
 
   async enterDateOfIssue(date) {
-    I.fillDate(date);
+    await I.fillDate(date);
     await I.retryUntilExists(() => I.click('Continue'), this.fields.allParties);
   },
 };
