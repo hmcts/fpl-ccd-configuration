@@ -45,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT_MONTH;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
@@ -59,6 +58,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String HMCTS_ADMIN_INBOX = "admin@family-court.com";
     private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
+
 
     private static final Long caseId = 12345L;
     private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
@@ -212,7 +212,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     }
 
     private ImmutableMap.Builder<String, Object> commonNotificationParameters() {
-        String hearingDate = formatLocalDateTimeBaseUsingFormat(FUTURE_DATE, DATE_SHORT_MONTH);
+        String hearingDate = formatLocalDateTimeBaseUsingFormat(FUTURE_DATE, "d MMM yyyy");
         String subjectLine = String.format("Jones, %s, hearing %s", FAMILY_MAN_CASE_NUMBER, hearingDate);
 
         return ImmutableMap.<String, Object>builder()
