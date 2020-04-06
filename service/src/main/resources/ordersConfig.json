@@ -196,13 +196,13 @@
     },
     {
       "title": "Arrange interpreters",
-      "text": "At all hearings, the court must arrange an interpreter for respondents who need one in a language they understand.",
+      "text": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
       "assignee": "COURT",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": true,
-        "showDateOnly": true
+        "showDateOnly": false
       }
     }
   ]
