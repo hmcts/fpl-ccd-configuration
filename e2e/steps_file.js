@@ -23,7 +23,7 @@ const respondent = require('./fixtures/respondents');
 const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
-let ccc=this;
+
 'use strict';
 
 module.exports = function () {
@@ -91,89 +91,24 @@ module.exports = function () {
       }
     },
 
-
-
-    async getTabContent(tab, fields) {
-
-      let root = locate(`//table[@class="${tab}"]`);
-
-
-      let c=this;
-
-      let xx=  function(root, fields){
-        Object.getOwnPropertyNames(fields).forEach( x =>  {
-          console.log(typeof fields[x]);
-          if(typeof fields[x] === 'object'){
-            console.log("var "+x+" is object");
-            let v = locate(`${root}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${x}"]]]`);
-            xx(v, fields[x]);
-          }else{
-            console.log("var "+x+" is field with value "+fields[x]);
-
-            c.seeElement(locate(`${root}//*[@class="complex-panel-simple-field" and .//th/span]`).withText(x));
-            c.seeElement(locate(`${root}//*[@class="complex-panel-simple-field" and .//td/span]`).withText(fields[x]));
-
-          }}, this);
-      };
-
-      c.seeElement(root);
-      xx(root, fields);
-
-
-    },
-
-    seeInTab(pathToField, answer) {
+    seeInTab(pathToField, fieldValue) {
       let path = [].concat(pathToField);
-      let field = path.splice(-1,1)[0];
-
+      let fieldName = path.splice(-1, 1)[0];
       let selector = '//div[@class="tabs-panel"]';
 
       path.forEach(step => {
         selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
-        this.seeElement(selector);
       }, this);
 
-      this.seeElement(locate(`${selector}//*[@class="complex-panel-simple-field" and .//th/span]`).withText(field));
-      this.seeElement(locate(`${selector}//*[@class="complex-panel-simple-field" and .//td/span]`).withText(answer));
-    },
+      let fieldSelector = `${selector}//*[@class="complex-panel-simple-field" and .//th/span[text()="${fieldName}"]]`;
 
-    seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
-      const complexType = locate(`.//span[text() = "${complexTypeHeading}"]`);
-      const questionRow = locate(`${complexType}/../../../table/tbody/tr[${questionNo}]`);
-      this.seeElement(locate(`${questionRow}/th/span`).withText(question));
-      if (Array.isArray(answer)) {
-        let ansIndex = 1;
-        answer.forEach(ans => {
-          this.seeElement(locate(`${questionRow}/td/span//tr[${ansIndex}]`).withText(ans));
-          ansIndex++;
+      if (Array.isArray(fieldValue)) {
+        fieldValue.forEach((value, index) => {
+          this.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
         });
       } else {
-        this.seeElement(locate(`${questionRow}/td/span`).withText(answer));
+        this.seeElement(locate(fieldSelector).withText(fieldValue));
       }
-    },
-
-    seeSimpleAnswerInTab(sectionName, question, answer) {
-      const sectionLocator =  locate(`//div[@class="complex-panel"][//span[text()="${sectionName}"]]`);
-      const questionRow = locate(`${sectionLocator}//tr[@class="complex-panel-simple-field"][//span[text()="${question}"]]`);
-      this.seeElement(sectionLocator);
-      this.seeElement(questionRow);
-      this.seeElement(questionRow.withText(answer));
-    },
-
-    seeNestedAnswerInTab(questionNo, complexTypeHeading, complexTypeSubHeading, question, answer) {
-      const panelLocator = name => locate(`//div[@class="complex-panel"][//span[text()="${name}"]]`);
-
-      const topLevelLocator = panelLocator(complexTypeHeading);
-      const subLevelLocator = panelLocator(complexTypeSubHeading);
-      const rowLocator = locate(`${topLevelLocator}${subLevelLocator}/table/tbody/tr[${questionNo}]`);
-      const questionLocator = locate(`${rowLocator}/th/span`);
-      const answerLocator = locate(`${rowLocator}/td/span`);
-
-      this.seeElement(topLevelLocator);
-      this.seeElement(subLevelLocator);
-      this.seeElement(rowLocator);
-      this.seeElement(questionLocator.withText(question));
-      this.seeElement(answerLocator.withText(answer));
     },
 
     seeCaseInSearchResult(caseId) {
