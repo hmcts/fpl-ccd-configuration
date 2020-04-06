@@ -278,7 +278,7 @@ pitest {
   // Do we want to disable mutation tests on the controller unit tests?
   // All controllers fail PIT testing reducing score of just unit tests as of writing from 87% -> 72%
   excludedClasses.set(['uk.gov.hmcts.reform.fpl.controllers.*', 'uk.gov.hmcts.reform.fpl.config.*'])
-  threads.set(4)
+  threads.set(10)
   enableDefaultIncrementalAnalysis.set(true)
   historyInputLocation = 'build/reports/pitest/history'
   historyOutputLocation = 'build/reports/pitest/history'
