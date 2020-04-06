@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.time.format.FormatStyle;
@@ -17,11 +16,11 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 public class EmailNotificationHelper {
     private static final HearingBookingService hearingBookingService = new HearingBookingService();
-    private static final DateFormatterService dateFormatterService = new DateFormatterService();
 
     private EmailNotificationHelper() {
     }
@@ -58,8 +57,7 @@ public class EmailNotificationHelper {
     }
 
     private static String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {
-        return " hearing " + dateFormatterService.formatLocalDateToString(
-            hearingBookingService.getMostUrgentHearingBooking(
-                hearingBookings).getStartDate().toLocalDate(), FormatStyle.MEDIUM);
+        return " hearing " + formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(hearingBookings)
+            .getStartDate().toLocalDate(), FormatStyle.MEDIUM);
     }
 }

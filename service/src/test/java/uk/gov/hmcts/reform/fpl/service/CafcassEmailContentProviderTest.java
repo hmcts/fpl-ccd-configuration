@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CafcassEmailContentProvider.class,
-    DateFormatterService.class, HearingBookingService.class})
+    HearingBookingService.class})
 class CafcassEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -45,9 +45,6 @@ class CafcassEmailContentProviderTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private DateFormatterService dateFormatterService;
-
-    @Autowired
     private HearingBookingService hearingBookingService;
 
     private CafcassEmailContentProvider cafcassEmailContentProvider;
@@ -55,8 +52,8 @@ class CafcassEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.cafcassEmailContentProvider = new CafcassEmailContentProvider(
-            localAuthorityNameLookupConfiguration, cafcassLookupConfiguration, "null", dateFormatterService,
-            hearingBookingService, mapper);
+            localAuthorityNameLookupConfiguration, cafcassLookupConfiguration, "null", hearingBookingService,
+            mapper);
     }
 
     @Test
