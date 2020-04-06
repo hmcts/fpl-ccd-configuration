@@ -300,7 +300,9 @@ declare namespace CodeceptJS {
     addAnotherElementToCollection(): void,
     removeElementFromCollection(): void,
     retryUntilExists(action: Function, locator: string) : void,
-    fillDate(date: {day: number, month: number, year: number}, dateId: string): void
+    fillDate(date: {day: number, month: number, year: number}, dateId: string): void,
+    getTabContent(fields),
+    seeInTab(path, answer),
   }
 
   export interface config {

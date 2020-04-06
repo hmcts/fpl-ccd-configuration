@@ -23,7 +23,7 @@ const respondent = require('./fixtures/respondents');
 const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
-
+let ccc=this;
 'use strict';
 
 module.exports = function () {
@@ -89,6 +89,52 @@ module.exports = function () {
       } else {
         this.see(name);
       }
+    },
+
+
+
+    async getTabContent(tab, fields) {
+
+      let root = locate(`//table[@class="${tab}"]`);
+
+
+      let c=this;
+
+      let xx=  function(root, fields){
+        Object.getOwnPropertyNames(fields).forEach( x =>  {
+          console.log(typeof fields[x]);
+          if(typeof fields[x] === 'object'){
+            console.log("var "+x+" is object");
+            let v = locate(`${root}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${x}"]]]`);
+            xx(v, fields[x]);
+          }else{
+            console.log("var "+x+" is field with value "+fields[x]);
+
+            c.seeElement(locate(`${root}//*[@class="complex-panel-simple-field" and .//th/span]`).withText(x));
+            c.seeElement(locate(`${root}//*[@class="complex-panel-simple-field" and .//td/span]`).withText(fields[x]));
+
+          }}, this);
+      };
+
+      c.seeElement(root);
+      xx(root, fields);
+
+
+    },
+
+    seeInTab(pathToField, answer) {
+      let path = [].concat(pathToField);
+      let field = path.splice(-1,1)[0];
+
+      let selector = '//div[@class="tabs-panel"]';
+
+      path.forEach(step => {
+        selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
+        this.seeElement(selector);
+      }, this);
+
+      this.seeElement(locate(`${selector}//*[@class="complex-panel-simple-field" and .//th/span]`).withText(field));
+      this.seeElement(locate(`${selector}//*[@class="complex-panel-simple-field" and .//td/span]`).withText(answer));
     },
 
     seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
