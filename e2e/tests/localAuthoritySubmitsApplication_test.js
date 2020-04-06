@@ -238,7 +238,7 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   I.seeAnswerInTab(5, 'Address', 'Postcode/Zipcode', applicant.address.postcode);
   I.seeAnswerInTab(1, 'Telephone number', 'Telephone number', applicant.telephoneNumber);
   I.seeAnswerInTab(2, 'Telephone number', 'Name of person to contact', applicant.nameOfPersonToContact);
-  I.seeAnswerInTab(7, 'Party', 'Job title', applicant.jobTitle);
+  I.seeAnswerInTab(9, 'Party', 'Job title', applicant.jobTitle);
   I.seeAnswerInTab(1, 'Mobile number', 'Mobile number', applicant.mobileNumber);
   I.seeAnswerInTab(1, 'Email', 'Email', applicant.email);
   I.seeAnswerInTab(1, 'Solicitor', 'Solicitor\'s full name', 'John Smith');
