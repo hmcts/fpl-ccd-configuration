@@ -21,14 +21,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, PartyAddedToCaseContentProvider.class,
-    DateFormatterService.class, HearingBookingService.class})
+    HearingBookingService.class})
 class PartyAddedToCaseContentProviderTest {
 
     @Autowired
     private HearingBookingService hearingBookingService;
 
-    @Autowired
-    private DateFormatterService dateFormatterService;
     @Autowired
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
@@ -38,7 +36,7 @@ class PartyAddedToCaseContentProviderTest {
     @BeforeEach
     void setup() {
         this.partyAddedToCaseContentProvider = new PartyAddedToCaseContentProvider(
-            "null", dateFormatterService, hearingBookingService, mapper);
+            "null", hearingBookingService, mapper);
     }
 
     @Test

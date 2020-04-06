@@ -26,13 +26,13 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     //hmcts login, enter case number and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
-    caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
     enterFamilyManCaseNumberEventPage.enterCaseID();
     await I.completeEvent('Save and continue');
     await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
     await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
     await I.completeEvent('Save and continue');
-    caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
     I.signOut();
@@ -77,9 +77,9 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.welsh);
   I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
   I.seeAnswerInTab(6, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeAnswerInTab(1, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title', hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and Justices\' Legal Adviser', 'Last name', hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(3, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name', hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
 
   startDate = dateToString(hearingDetails[1].startDate);
   endDate = dateToString(hearingDetails[1].endDate);
@@ -91,10 +91,10 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.welsh);
   I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
   I.seeAnswerInTab(6, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Title', hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Last name', hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeAnswerInTab(1, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title', hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and Justices\' Legal Adviser', 'Title', hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
+  I.seeAnswerInTab(3, 'Judge and Justices\' Legal Adviser', 'Last name', hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(4, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
 Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {

@@ -21,8 +21,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class,
-    DateFormatterService.class, HearingBookingService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingBookingService.class})
 class FailedPBAPaymentContentProviderTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+la@gmail.com";
@@ -30,7 +29,6 @@ class FailedPBAPaymentContentProviderTest {
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
 
-    private final DateFormatterService dateFormatterService = new DateFormatterService();
     private final HearingBookingService hearingBookingService = new HearingBookingService();
 
     private FailedPBAPaymentContentProvider failedPBAPaymentContentProvider;
@@ -38,7 +36,7 @@ class FailedPBAPaymentContentProviderTest {
     @BeforeEach
     void setup() {
         this.failedPBAPaymentContentProvider = new FailedPBAPaymentContentProvider("",
-            hearingBookingService, dateFormatterService);
+            hearingBookingService);
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
