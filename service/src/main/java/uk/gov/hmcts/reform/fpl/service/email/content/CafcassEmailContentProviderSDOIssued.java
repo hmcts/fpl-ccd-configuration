@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.util.Map;
@@ -21,9 +20,8 @@ public class CafcassEmailContentProviderSDOIssued extends AbstractEmailContentPr
     public CafcassEmailContentProviderSDOIssued(CafcassLookupConfiguration cafcassLookupConfiguration,
                                                 @Value("${ccd.ui.base.url}") String uiBaseUrl,
                                                 ObjectMapper mapper,
-                                                DateFormatterService dateFormatterService,
                                                 HearingBookingService hearingBookingService) {
-        super(uiBaseUrl, dateFormatterService, hearingBookingService);
+        super(uiBaseUrl, hearingBookingService);
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
         this.mapper = mapper;
     }
