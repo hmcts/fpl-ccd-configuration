@@ -271,17 +271,19 @@ integration {
 pitest {
   pitestVersion.set('1.4.8')
   junit5PluginVersion.set('0.11')
-  // Do we want to enable mutation testing for the integrationTests
+  // Do we want to enable mutation testing for the integration tests
+  // Currently doesn't work with integration tests
+  // Exception in thread "main" org.pitest.help.PitHelpError: 5 tests did not pass without mutation when calculating line coverage. Mutation testing requires a green suite.
   testSourceSets.set([sourceSets.test/*, sourceSets.integrationTest*/])
   // Do we want to disable mutation tests on the controller unit tests?
-  // All controllers fail PIT testing reducing score as of writing from 87% -> 72%
+  // All controllers fail PIT testing reducing score of just unit tests as of writing from 87% -> 72%
   excludedClasses.set(['uk.gov.hmcts.reform.fpl.controllers.*', 'uk.gov.hmcts.reform.fpl.config.*'])
   threads.set(4)
   enableDefaultIncrementalAnalysis.set(true)
   historyInputLocation = 'build/reports/pitest/history'
   historyOutputLocation = 'build/reports/pitest/history'
   outputFormats.set(['XML', 'HTML'])
-  timestampedReports = false
-  mutationThreshold = 80
-  timeoutConstInMillis = 30000
+  timestampedReports.set(false)
+  mutationThreshold.set(80)
+  timeoutConstInMillis.set(30000)
 }
