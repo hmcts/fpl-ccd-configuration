@@ -2,15 +2,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReportList",
-    "ListElementCode": "peadiatric",
-    "ListElement": "Peadiatric",
+    "ListElementCode": "pediatric",
+    "ListElement": "Pediatric",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ExpertReportList",
-    "ListElementCode": "peadiatricRadiologist",
-    "ListElement": "Peadiatric Radiologist",
+    "ListElementCode": "pediatricRadiologist",
+    "ListElement": "Pediatric Radiologist",
     "DisplayOrder": 2
   },
   {
