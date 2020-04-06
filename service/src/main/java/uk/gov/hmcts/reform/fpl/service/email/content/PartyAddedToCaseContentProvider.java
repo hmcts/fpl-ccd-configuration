@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.util.Map;
@@ -25,10 +24,9 @@ public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvide
 
     @Autowired
     public PartyAddedToCaseContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                           DateFormatterService dateFormatterService,
                                            HearingBookingService hearingBookingService,
                                            ObjectMapper objectMapper) {
-        super(uiBaseUrl, dateFormatterService, hearingBookingService);
+        super(uiBaseUrl, hearingBookingService);
         this.objectMapper = objectMapper;
     }
 

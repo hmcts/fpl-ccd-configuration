@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.util.Map;
@@ -24,10 +23,9 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
     public HmctsEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                      @Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                     DateFormatterService dateFormatterService,
                                      HearingBookingService hearingBookingService,
                                      ObjectMapper mapper) {
-        super(uiBaseUrl,dateFormatterService,hearingBookingService);
+        super(uiBaseUrl, hearingBookingService);
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.mapper = mapper;

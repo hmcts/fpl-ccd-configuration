@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Child;
 import uk.gov.hmcts.reform.fpl.model.robotics.Respondent;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.model.robotics.Solicitor;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,11 +44,11 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.robotics.Gender.convertStringToGender;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoboticsDataService {
-    private final DateFormatterService dateFormatterService;
     private final ObjectMapper objectMapper;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final RoboticsDataValidatorService validatorService;
@@ -68,7 +67,7 @@ public class RoboticsDataService {
                 && isNotBlank(caseData.getAllocationProposal().getProposal())
                 ? caseData.getAllocationProposal().getProposal() :  null)
             .issueDate(isNotEmpty(caseData.getDateSubmitted())
-                ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted(), "dd-MM-yyyy") : "")
+                ? formatLocalDateToString(caseData.getDateSubmitted(), "dd-MM-yyyy") : "")
             .applicant(populateApplicant(caseData.getAllApplicants()))
             .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
             .caseId(caseId)
@@ -209,7 +208,7 @@ public class RoboticsDataService {
     }
 
     private String formatDob(final LocalDate date) {
-        return isEmpty(date) ? "" : dateFormatterService.formatLocalDateToString(date, "d-MMM-y").toUpperCase();
+        return isEmpty(date) ? "" : formatLocalDateToString(date, "d-MMM-y").toUpperCase();
     }
 
     private String deriveApplicationType(final Orders orders) {
