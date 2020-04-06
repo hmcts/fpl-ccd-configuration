@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
 public class UpcomingHearingsContentProvider {
