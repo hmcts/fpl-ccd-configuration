@@ -48,7 +48,7 @@ class ConfidentialDetailsServiceTest {
 
             List<Element<Child>> confidentialChildren = service.getConfidentialDetails(children);
 
-            assertThat(confidentialChildren).containsOnly(childWithConfidentialFields(ID, NO_VALUE));
+            assertThat(confidentialChildren).containsOnly(childWithConfidentialFieldsAndShowAddress(ID, NO_VALUE));
         }
 
         @Test
@@ -66,7 +66,7 @@ class ConfidentialDetailsServiceTest {
 
             List<Element<Child>> confidentialChildren = service.getConfidentialDetails(children);
 
-            assertThat(confidentialChildren).containsExactly(childWithConfidentialFields(ID, NO_VALUE));
+            assertThat(confidentialChildren).containsExactly(childWithConfidentialFieldsAndShowAddress(ID, NO_VALUE));
         }
 
         @Test
@@ -210,6 +210,17 @@ class ConfidentialDetailsServiceTest {
                     .email(EmailAddress.builder().email("email@email.com").build())
                     .address(Address.builder().addressLine1("Address Line 1").build())
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .build())
+                .build());
+        }
+
+        private Element<Child> childWithConfidentialFieldsAndShowAddress(UUID id, String detailsHidden) {
+            return element(id, Child.builder()
+                .party(baseChildBuilder(detailsHidden)
+                    .email(EmailAddress.builder().email("email@email.com").build())
+                    .address(Address.builder().addressLine1("Address Line 1").build())
+                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .showAddressInConfidentialTab("Yes")
                     .build())
                 .build());
         }

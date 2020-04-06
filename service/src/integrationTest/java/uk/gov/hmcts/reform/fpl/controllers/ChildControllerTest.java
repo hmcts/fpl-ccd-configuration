@@ -117,6 +117,7 @@ class ChildControllerTest extends AbstractControllerTest {
                 .address(child.getValue().getParty().address)
                 .telephoneNumber(child.getValue().getParty().telephoneNumber)
                 .email(child.getValue().getParty().email)
+                .showAddressInConfidentialTab("Yes")
                 .build())
             .build());
     }

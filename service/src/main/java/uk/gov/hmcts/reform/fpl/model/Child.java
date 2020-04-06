@@ -44,6 +44,7 @@ public class Child implements ConfidentialParty<Child>, Collection<Child> {
                 .address(this.party.address)
                 .telephoneNumber(this.party.telephoneNumber)
                 .email(this.party.email)
+                .showAddressInConfidentialTab("Yes")
                 .build())
             .build();
     }
