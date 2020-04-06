@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -48,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -67,9 +67,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
     @Autowired
     private Time time;
-
-    @Autowired
-    private DateFormatterService dateFormatterService;
 
     GeneratedOrderControllerAboutToSubmitTest() {
         super("create-order");
@@ -167,7 +164,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
             "Final supervision order")
             .expiryDate(
-                dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
+                formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
             .build();
 
         aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
@@ -200,9 +197,9 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
         return GeneratedOrder.builder()
             .type(fullType)
-            .dateOfIssue(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
+            .dateOfIssue(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
             .document(expectedDocument())
-            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
+            .date(formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
             .judgeAndLegalAdvisor(
                 JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HER_HONOUR_JUDGE)
