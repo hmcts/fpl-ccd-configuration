@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -80,14 +78,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
 
-    private static final Long caseId = 12345L;
+    private static final Long CASE_ID = 12345L;
     private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
 
     @MockBean
     private NotificationClient notificationClient;
-
-    @Autowired
-    private ObjectMapper mapper;
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -123,7 +118,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), caseId.toString());
+            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
     }
 
     private void cmoCommonAssertions(CaseData responseData, CaseData caseDataBefore) {
@@ -148,7 +143,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), caseId.toString());
+            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
     }
 
     @Test
@@ -184,7 +179,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("robert@example.com"),
             dataCaptor.capture(),
-            eq(caseId.toString()));
+            eq(CASE_ID.toString()));
 
         assertEquals(dataCaptor.getValue(), expectedReviewByRepresentativesNotificationParameters(DIGITAL_SERVICE));
 
@@ -192,7 +187,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("charlie@example.com"),
             dataCaptor.capture(),
-            eq(caseId.toString()));
+            eq(CASE_ID.toString()));
 
         assertEquals(dataCaptor.getValue(), expectedReviewByRepresentativesNotificationParameters(EMAIL));
     }
@@ -207,11 +202,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
     }
 
     @Test
@@ -224,11 +219,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
     }
 
     @Test
@@ -241,11 +236,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), caseId.toString()
+            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString()
         );
     }
 
@@ -261,7 +256,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .put("subjectLineWithHearingDate", subjectLine)
             .put("respondentLastName", "Jones")
             .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
-            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? formatCaseUrl("http://fake-url", caseId) : "")
+            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? formatCaseUrl("http://fake-url", CASE_ID) : "")
             .put("link_to_document", jsonFileObject)
             .build();
     }
@@ -287,8 +282,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         return ImmutableMap.<String, Object>builder()
             .put("subjectLineWithHearingDate", subjectLine)
-            .put("reference", caseId.toString())
-            .put("caseUrl", formatCaseUrl("http://fake-url", caseId));
+            .put("reference", CASE_ID.toString())
+            .put("caseUrl", formatCaseUrl("http://fake-url", CASE_ID));
     }
 
     private CaseManagementOrder buildOrder(CMOStatus status, ActionType actionType) {
