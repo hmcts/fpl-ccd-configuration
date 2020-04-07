@@ -25,5 +25,14 @@
     "Description": "LA Barrister role",
     "JurisdictionID": "PUBLICLAW",
     "SecurityClassification": "Public"
+  },
+  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "ID": "[BARRISTER]",
+  "Name": "Barrister",
+  "Description": "Barrister role",
+  "JurisdictionID": "PUBLICLAW",
+  "SecurityClassification": "Public"
   }
 ]
