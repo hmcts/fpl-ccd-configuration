@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -15,9 +17,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
-import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
+import uk.gov.hmcts.reform.fpl.model.robotics.Applicant;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
 
@@ -27,7 +29,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -94,6 +95,27 @@ public class RoboticsNotificationServiceTest {
         assertEmailDataAndAttachedJsonData(emailDataArgumentCaptor.getValue(), expectedRoboticsDataJson);
     }
 
+    @ParameterizedTest
+    @NullAndEmptySource
+    void notifyRoboticsOfSubmittedCaseDataShouldSendNotificationToRoboticsWhenApplicantContactNumberIsNullOrEmpty(
+        final String number) throws IOException {
+        RoboticsData expectedRoboticsData = expectedRoboticsDataWithUpdatedContactNumber(
+            EMERGENCY_PROTECTION_ORDER.getLabel(), number);
+
+        given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
+            .willReturn(expectedRoboticsData);
+
+        String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData);
+        given(roboticsDataService.convertRoboticsDataToJson(expectedRoboticsData))
+            .willReturn(expectedRoboticsDataJson);
+
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseDetails()));
+
+        verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
+
+        assertEmailDataAndAttachedJsonData(emailDataArgumentCaptor.getValue(), expectedRoboticsDataJson);
+    }
+
     @Test
     void resendRoboticsOfSubmittedCaseDataShouldSendNotificationToRobotics() throws IOException {
         RoboticsData expectedRoboticsData = expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel());
@@ -112,42 +134,32 @@ public class RoboticsNotificationServiceTest {
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldThrowRoboticsDataExceptionWhenOwningCourtCodeZero()
-        throws IOException {
+    void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenOwningCourtCodeZero() {
         CaseData caseData = prepareCaseData();
 
         given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
             .willReturn(invalidRoboticsDataWithZeroOwningCourt());
 
-        assertThrows(RoboticsDataException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(
-                new CaseNumberAdded(prepareCaseDetails())));
-
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldThrowRoboticsDataExceptionWhenRoboticsJsonDataNull()
-        throws IOException {
+    void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenRoboticsJsonDataNull() {
         CaseData caseData = prepareCaseData();
 
         given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
             .willReturn(expectedRoboticsData(EDUCATION_SUPERVISION_ORDER.getLabel()));
 
-        assertThrows(RoboticsDataException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(
-                prepareCaseDetails())));
-
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
 
-    private CaseData prepareCaseData() throws IOException {
+    private CaseData prepareCaseData() {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
         caseData.setDateSubmitted(NOW);
         return caseData;
     }
 
-    private CaseDetails prepareCaseDetails() throws IOException {
+    private CaseDetails prepareCaseDetails() {
         CaseDetails caseDetails = populatedCaseDetails();
 
         Map<String, Object> caseDataMap = populatedCaseDetails().getData();
@@ -167,5 +179,19 @@ public class RoboticsNotificationServiceTest {
             .extracting("data", "filename")
             .containsExactly(tuple(new ByteArrayResource(expectedRoboticsDataJson.getBytes()),
                 "CaseSubmitted_12345.json"));
+    }
+
+    private RoboticsData expectedRoboticsDataWithUpdatedContactNumber(final String applicationType,
+                                                                      final String number) {
+        RoboticsData roboticsData = expectedRoboticsData(applicationType);
+
+        Applicant roboticsUpdatedApplicant = roboticsData.getApplicant().toBuilder()
+            .mobileNumber(number)
+            .telephoneNumber(number)
+            .build();
+
+        return roboticsData.toBuilder()
+            .applicant(roboticsUpdatedApplicant)
+            .build();
     }
 }

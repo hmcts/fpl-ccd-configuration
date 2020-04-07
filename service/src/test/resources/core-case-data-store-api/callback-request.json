@@ -67,7 +67,7 @@
           "childInformation": "Cousin",
           "litigationIssues": "NO",
           "genderIdentification": "Unknown",
-          "representedBy" : []
+          "representedBy": []
         },
         "additionalOthers": [
           {
@@ -332,6 +332,7 @@
               "dateOfBirth": "1933-04-02",
               "placeOfBirth": "Reading",
               "litigationIssues": "NO",
+              "relationshipToChild": "Brother",
               "address": {
                 "AddressLine1": "Flat 90",
                 "AddressLine2": "Surrey street",
@@ -478,6 +479,9 @@
           }
         }
       ],
+      "c2ApplicationType": {
+        "type": "WITH_NOTICE"
+      },
       "orderTypeAndDocument": {
         "type": "BLANK_ORDER",
         "document": {
@@ -495,7 +499,66 @@
         "title": "Example Order",
         "details": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
       },
-      "familyManCaseNumber": "12345L"
+      "familyManCaseNumber": "12345L",
+      "representatives": [
+        {
+          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
+          "value": {
+            "fullName": "Fred Flinstone",
+            "positionInACase": "Cafcass Guardian",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": "fred@flinstone.com"
+          },
+          "telephoneNumber": "0717171717",
+          "servingPreferences": "DIGITAL_SERVICE",
+          "role": "CAFCASS_GUARDIAN"
+        },
+        {
+          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
+          "value": {
+            "fullName": "Barney Rubble",
+            "positionInACase": "Cafcass Solicitor",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": "barney@rubble.com"
+          },
+          "telephoneNumber": "0717171718",
+          "servingPreferences": "EMAIL",
+          "role": "CAFCASS_SOLICITOR"
+        }
+      ],
+      "hearingDetails": [
+        {
+          "id": "51d02c7f-2a51-424b-b299-a90b98bb1774",
+          "value": {
+            "startDate": "2020-01-01T15:30:00.000",
+            "endDate": "2020-01-02T14:30:00.000",
+            "type": "CASE_MANAGEMENT",
+            "venue": "1",
+            "judgeName": "1",
+            "judgeTitle": "1",
+            "hearingNeedsBooked": [
+              "INTERMEDIARY"
+            ],
+            "hearingNeedsDetails": "ok"
+          }
+        }
+      ]
     }
   },
   "case_details_before": {

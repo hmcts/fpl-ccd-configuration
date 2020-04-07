@@ -57,6 +57,7 @@
     "ListElementCode": "telephone",
     "FieldType": "Text",
     "ElementLabel": "Telephone number",
+    "Max": "24",
     "SecurityClassification": "Public"
   },
   {

@@ -38,13 +38,14 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
-//TODO: methods to be moved to CaseManagementOrderService and DirectionHelperService.
+//TODO: methods to be moved to CaseManagementOrderService and Directions services. FPLA-1479 / FPLA-1483
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
-    private final DateFormatterService dateFormatterService;
-    private final DirectionHelperService directionHelperService;
+    private final CommonDirectionService commonDirectionService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder,
@@ -65,6 +66,7 @@ public class DraftCMOService {
     public CaseManagementOrder prepareCMO(CaseData caseData, CaseManagementOrder order) {
         Optional<CaseManagementOrder> oldCMO = Optional.ofNullable(order);
         Optional<DynamicList> cmoHearingDateList = Optional.ofNullable(caseData.getCmoHearingDateList());
+        Optional<LocalDate> dateOfIssue = Optional.ofNullable(caseData.getDateOfIssue());
 
         return CaseManagementOrder.builder()
             .hearingDate(cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null))
@@ -76,6 +78,7 @@ public class DraftCMOService {
             .orderDoc(oldCMO.map(CaseManagementOrder::getOrderDoc).orElse(null))
             .action(oldCMO.map(CaseManagementOrder::getAction).orElse(null))
             .nextHearing(oldCMO.map(CaseManagementOrder::getNextHearing).orElse(null))
+            .dateOfIssue(dateOfIssue.map(date -> formatLocalDateToString(date, DATE)).orElse(null))
             .build();
     }
 
@@ -111,7 +114,7 @@ public class DraftCMOService {
 
     public void prepareCustomDirections(CaseDetails caseDetails, CaseManagementOrder order) {
         if (!isNull(order)) {
-            directionHelperService.sortDirectionsByAssignee(order.getDirections())
+            commonDirectionService.sortDirectionsByAssignee(order.getDirections())
                 .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
         } else {
             removeExistingCustomDirections(caseDetails);
@@ -150,22 +153,22 @@ public class DraftCMOService {
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustomCMO(),
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getAllPartiesCustomCMO(),
             ALL_PARTIES));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustomCMO(),
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustomCMO(),
             LOCAL_AUTHORITY));
 
-        directions.addAll(orderByParentsAndRespondentAssignee(directionHelperService.assignCustomDirections(
+        directions.addAll(orderByParentsAndRespondentAssignee(commonDirectionService.assignCustomDirections(
             caseData.getRespondentDirectionsCustomCMO(), PARENTS_AND_RESPONDENTS)));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCafcassDirectionsCustomCMO(),
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getCafcassDirectionsCustomCMO(),
             CAFCASS));
 
-        directions.addAll(orderByOtherPartiesAssignee(directionHelperService.assignCustomDirections(
+        directions.addAll(orderByOtherPartiesAssignee(commonDirectionService.assignCustomDirections(
             caseData.getOtherPartiesDirectionsCustomCMO(), OTHERS)));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCourtDirectionsCustomCMO(), COURT));
+        directions.addAll(commonDirectionService.assignCustomDirections(caseData.getCourtDirectionsCustomCMO(), COURT));
 
         return directions;
     }
@@ -187,6 +190,6 @@ public class DraftCMOService {
     }
 
     private String formatLocalDateToMediumStyle(LocalDate date) {
-        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+        return formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }

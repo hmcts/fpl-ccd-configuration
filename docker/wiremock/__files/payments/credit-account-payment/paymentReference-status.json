@@ -1,0 +1,11 @@
+{
+  "amount": 2055.00,
+  "reference": "RC-1584-0268-0774-3312",
+  "status": "Success",
+  "status_histories": [
+    {
+      "status": "Success",
+      "date_created": "2020-03-12T15:26:47.801+0000"
+    }
+  ]
+}

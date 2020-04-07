@@ -1,17 +1,18 @@
 package uk.gov.hmcts.reform.fpl.events;
 
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 public class CallbackEvent {
 
     private final CallbackRequest callbackRequest;
-    private final String authorization;
+    private final String authorisation;
     private final String userId;
 
-    CallbackEvent(CallbackRequest callbackRequest, String authorization, String userId) {
+    CallbackEvent(CallbackRequest callbackRequest, RequestData requestData) {
         this.callbackRequest = callbackRequest;
-        this.authorization = authorization;
-        this.userId = userId;
+        this.authorisation = requestData.authorisation();
+        this.userId = requestData.userId();
     }
 
     public CallbackRequest getCallbackRequest() {
@@ -19,7 +20,7 @@ public class CallbackEvent {
     }
 
     public String getAuthorization() {
-        return authorization;
+        return authorisation;
     }
 
     public String getUserId() {

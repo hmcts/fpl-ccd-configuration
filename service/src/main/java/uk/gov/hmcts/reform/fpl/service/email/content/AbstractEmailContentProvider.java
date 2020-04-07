@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.time.format.FormatStyle;
@@ -21,21 +20,16 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 public abstract class AbstractEmailContentProvider {
-
     final String uiBaseUrl;
-    private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
 
-    protected AbstractEmailContentProvider(String uiBaseUrl,
-                                           DateFormatterService dateFormatterService,
-                                           HearingBookingService hearingBookingService) {
+    protected AbstractEmailContentProvider(String uiBaseUrl, HearingBookingService hearingBookingService) {
         this.uiBaseUrl = uiBaseUrl;
-        this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
     }
 
@@ -56,7 +50,7 @@ public abstract class AbstractEmailContentProvider {
             .put("nonUrgentHearing", timeFrame.isPresent() && !timeFrame.get().equals("Same day") ? "Yes" : "No")
             .put("firstRespondentName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("reference", String.valueOf(caseId))
-            .put("caseUrl", formatCaseURL(caseId));
+            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseId));
     }
 
     ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(Long caseId, CaseData caseData) {
@@ -70,20 +64,13 @@ public abstract class AbstractEmailContentProvider {
                 .getLastName()) + ",")
             .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseId))
-            .put("caseUrl", formatCaseURL(caseId));
+            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseId));
     }
 
     private String getHearingBooking(CaseData data) {
-        if (!isNull(data.getHearingDetails())) {
-            return dateFormatterService.formatLocalDateToString(
-                hearingBookingService.getMostUrgentHearingBooking(
-                    data.getHearingDetails()).getStartDate().toLocalDate(), FormatStyle.LONG);
-        }
-        return "";
-    }
-
-    private String formatCaseURL(Long caseId) {
-        return String.format("%s/case/%s/%s/%s", uiBaseUrl, JURISDICTION, CASE_TYPE, caseId);
+        return hearingBookingService.getFirstHearing(data.getHearingDetails())
+            .map(hearing -> formatLocalDateToString(hearing.getStartDate().toLocalDate(), FormatStyle.LONG))
+            .orElse("");
     }
 
     private List<String> buildOrdersAndDirections(Orders optionalOrders) {

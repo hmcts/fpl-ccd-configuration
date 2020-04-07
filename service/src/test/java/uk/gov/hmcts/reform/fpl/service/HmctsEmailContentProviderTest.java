@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, HmctsEmailContentProvider.class,
-    DateFormatterService.class, HearingBookingService.class})
+    HearingBookingService.class})
 class HmctsEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -47,9 +46,6 @@ class HmctsEmailContentProviderTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private DateFormatterService dateFormatterService;
-
-    @Autowired
     private HearingBookingService hearingBookingService;
 
     private HmctsEmailContentProvider hmctsEmailContentProvider;
@@ -57,12 +53,12 @@ class HmctsEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.hmctsEmailContentProvider = new HmctsEmailContentProvider(
-            localAuthorityNameLookupConfiguration, hmctsCourtLookupConfiguration, "null", dateFormatterService,
+            localAuthorityNameLookupConfiguration, hmctsCourtLookupConfiguration, "null",
             hearingBookingService, mapper);
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
+    void shouldReturnExpectedMapWithValidCaseDetails() {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
@@ -91,7 +87,7 @@ class HmctsEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
+    void shouldReturnSuccessfullyWithEmptyCaseDetails() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("localAuthority", "Example Local Authority")

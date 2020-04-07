@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -41,6 +43,7 @@ public class RepresentativeService {
     private final CaseService caseService;
     private final OrganisationService organisationService;
     private final RepresentativeCaseRoleService representativeCaseRoleService;
+    private final ObjectMapper mapper;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -209,6 +212,21 @@ public class RepresentativeService {
                 return caseData.findOther(representative.getRole().getSequenceNo());
             default:
                 return Optional.empty();
+        }
+    }
+
+    public List<Representative> getUpdatedRepresentatives(List<Element<Representative>> currentRepresentatives,
+                                                          List<Element<Representative>> representativesBefore,
+                                                          RepresentativeServingPreferences servingPreferences) {
+        if (isNotEmpty(currentRepresentatives)) {
+            if (isNotEmpty(representativesBefore)) {
+                currentRepresentatives.removeAll(representativesBefore);
+            }
+            return unwrapElements(currentRepresentatives.stream()
+                .filter(representative -> servingPreferences.equals(representative.getValue().getServingPreferences()))
+                .collect(Collectors.toList()));
+        } else {
+            return emptyList();
         }
     }
 }

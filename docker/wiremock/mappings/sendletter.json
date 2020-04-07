@@ -1,0 +1,27 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/letters"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\"letter_id\": \"67ff45e6-5a7d-4759-a997-d0ec884e06e5\"}"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/health"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"status\": \"UP\"}"
+      }
+    }
+  ]
+}

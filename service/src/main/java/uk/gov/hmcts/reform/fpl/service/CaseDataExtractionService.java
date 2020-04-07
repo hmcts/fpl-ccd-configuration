@@ -1,229 +1,212 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
+import static java.lang.String.format;
+import static java.time.format.FormatStyle.LONG;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
-// Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
+//TODO: ensure everything is still working as expected - I don't think BLANK appears everywhere it used to. FPLA-1477
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
-
-    public static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
-    private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
-    private final DirectionHelperService directionHelperService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
-    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
+    private final CommonCaseDataExtractionService dataExtractionService;
 
-    // TODO
-    // No need to pass in CaseData to each method. Refactor to only use required model
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> getStandardOrderDirectionData(CaseData caseData) throws IOException {
-        ImmutableMap.Builder data = ImmutableMap.<String, Object>builder();
+    //TODO: when should this be used? see FPLA-1087
+    public static final String DEFAULT = "BLANK - please complete";
+    private static final int SDO_DIRECTION_INDEX_START = 2;
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getStandardDirectionOrder() != null
-            ? caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor() : caseData.getJudgeAndLegalAdvisor();
+    public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData) throws IOException {
+        DocmosisStandardDirectionOrder.Builder orderBuilder = DocmosisStandardDirectionOrder.builder();
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
-        data.put("judgeTitleAndName", defaultIfBlank(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-            judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
-        data.put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-            judgeAndLegalAdvisor));
+        orderBuilder
+            .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder))
+            .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .dateOfIssue(standardDirectionOrder.getDateOfIssue())
+            .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), LONG))
+            .children(getChildrenDetails(caseData.getAllChildren()))
+            .respondents(getRespondentsNameAndRelationship(caseData.getAllRespondents()))
+            .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
+            .applicantName(getApplicantName(caseData.findApplicant(0).orElse(Applicant.builder().build())))
+            .directions(getGroupedDirections(standardDirectionOrder))
+            .hearingBooking(getHearingBookingData(caseData.getHearingDetails()));
 
-        data.put("courtName", caseData.getCaseLocalAuthority() != null
-            ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName() : EMPTY_PLACEHOLDER);
-
-        data.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
-        data.put("generationDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG));
-        data.put("complianceDeadline", caseData.getDateSubmitted() != null
-            ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
-            FormatStyle.LONG) : EMPTY_PLACEHOLDER);
-        data.put("children", getChildrenDetails(caseData));
-
-        List<Map<String, String>> respondentsNameAndRelationship = getRespondentsNameAndRelationship(caseData);
-        data.put("respondents", respondentsNameAndRelationship);
-        data.put("respondentsProvided", !respondentsNameAndRelationship.isEmpty());
-
-        data.put("applicantName", getFirstApplicantName(caseData));
-        data.putAll(getGroupedDirections(caseData));
-        data.putAll(getHearingBookingData(caseData));
-
-        if (isNotEmpty(caseData.getStandardDirectionOrder())
-            && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
-            data.put("draftbackground", String.format("image:base64:%1$s", generateDraftWatermarkEncodedString()));
+        if (SEALED != standardDirectionOrder.getOrderStatus()) {
+            orderBuilder.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
         }
 
-        return data.build();
+        if (SEALED == standardDirectionOrder.getOrderStatus()) {
+            orderBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
+        }
+        return orderBuilder.build();
     }
 
-    private Map<String, Object> getHearingBookingData(CaseData caseData) {
-        if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
-            return ImmutableMap.<String, Object>builder()
-                .put("hearingDate", EMPTY_PLACEHOLDER)
-                .put("hearingVenue", EMPTY_PLACEHOLDER)
-                .put("preHearingAttendance", EMPTY_PLACEHOLDER)
-                .put("hearingTime", EMPTY_PLACEHOLDER)
-                .put("hearingJudgeTitleAndName", EMPTY_PLACEHOLDER)
-                .put("hearingLegalAdvisorName", "")
-                .build();
-        }
+    private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(Order standardDirectionOrder) {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = standardDirectionOrder.getJudgeAndLegalAdvisor();
 
-        HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
-            .getHearingDetails());
-
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
-
-        return ImmutableMap.<String, Object>builder()
-            .put("hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
-                prioritisedHearingBooking)
-                .orElse(""))
-            .put("hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue))
-            .put("preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
-                prioritisedHearingBooking))
-            .put("hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking))
-            .put("hearingJudgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
-            .put("hearingLegalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
+        return DocmosisJudgeAndLegalAdvisor.builder()
+            .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
+            .legalAdvisorName(getLegalAdvisorName(judgeAndLegalAdvisor))
             .build();
     }
 
-    String getFirstApplicantName(CaseData caseData) {
-        return caseData.getAllApplicants().stream()
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .map(Applicant::getParty)
-            .filter(Objects::nonNull)
+    private List<DocmosisChildren> getChildrenDetails(List<Element<Child>> children) {
+        return children.stream()
+            .map(element -> element.getValue().getParty())
+            .map(this::buildChild)
+            .collect(toList());
+    }
+
+    // TODO: see FPLA-1087
+    private DocmosisChildren buildChild(ChildParty child) {
+        return DocmosisChildren.builder()
+            .name(child.getFullName())
+            .gender(defaultIfNull(child.getGender(), DEFAULT))
+            .dateOfBirth(getDateOfBirth(child))
+            .build();
+    }
+
+    // TODO: see FPLA-1087
+    private String getDateOfBirth(ChildParty child) {
+        return ofNullable(child.getDateOfBirth())
+            .map(dateOfBirth -> formatLocalDateToString(dateOfBirth, LONG))
+            .orElse(DEFAULT);
+    }
+
+    private List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
+        return respondents.stream()
+            .map(element -> element.getValue().getParty())
+            .map(this::buildRespondent)
+            .collect(toList());
+    }
+
+    // TODO: see FPLA-1087
+    private DocmosisRespondent buildRespondent(RespondentParty respondent) {
+        return DocmosisRespondent.builder()
+            .name(respondent.getFullName())
+            .relationshipToChild(defaultIfNull(respondent.getRelationshipToChild(), DEFAULT))
+            .build();
+    }
+
+    private List<DocmosisDirection> getGroupedDirections(Order order) throws IOException {
+        OrderDefinition configOrder = ordersLookupService.getStandardDirectionOrder();
+
+        return ofNullable(order.getDirections()).map(directions -> {
+                ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
+
+                int directionNumber = SDO_DIRECTION_INDEX_START;
+                for (Element<Direction> direction : directions) {
+                    if (!"No".equals(direction.getValue().getDirectionNeeded())) {
+                        formattedDirections.add(DocmosisDirection.builder()
+                            .assignee(direction.getValue().getAssignee())
+                            .title(formatTitle(directionNumber++, direction.getValue(), configOrder.getDirections()))
+                            .body(direction.getValue().getDirectionText())
+                            .build());
+                    }
+                }
+                return formattedDirections.build();
+            }
+        ).orElse(ImmutableList.of());
+    }
+
+    private String getApplicantName(Applicant applicant) {
+        return ofNullable(applicant.getParty())
             .map(ApplicantParty::getOrganisationName)
-            .findFirst()
             .orElse("");
     }
 
-    private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData) throws IOException {
-        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
+    private String formatTitle(int index, Direction direction, List<DirectionConfiguration> directionConfigurations) {
 
-        if (caseData.getStandardDirectionOrder() == null) {
-            return ImmutableMap.of();
-        }
-
-        Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
-            directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
-                caseData.getStandardDirectionOrder().getDirections()));
-
-        ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
-
-        groupedDirections.forEach((key, value) -> {
-            List<Map<String, String>> directionsList = value.stream()
-                .map(Element::getValue)
-                .filter(direction -> !"No".equals(direction.getDirectionNeeded()))
-                .map(direction -> ImmutableMap.of(
-                    "title", formatTitle(direction, standardDirectionOrder.getDirections()),
-                    "body", defaultIfNull(direction.getDirectionText(), EMPTY_PLACEHOLDER)))
-                .collect(toList());
-
-            //TODO: temp refactoring to deal with PARENTS_AND_RESPONDENTS value change. SDO Template to be updated in
-            // future. Ticket in backlog: FPLA-1061.
-            if (key == PARENTS_AND_RESPONDENTS) {
-                formattedDirections.put("parentsAndRespondentsDirections", directionsList);
-
-            } else {
-                formattedDirections.put(key.getValue(), directionsList);
-            }
-        });
-
-        return formattedDirections.build();
-    }
-
-    List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
-
-        if (isEmpty(caseData.getRespondents1())) {
-            return ImmutableList.of();
-        }
-
-        return caseData.getRespondents1().stream()
-            .map(Element::getValue)
-            .map(Respondent::getParty)
-            .map(respondent -> ImmutableMap.of(
-                "name", respondent.getFirstName() == null && respondent.getLastName() == null
-                    ? EMPTY_PLACEHOLDER : defaultIfNull(respondent.getFirstName(), "") + " "
-                    + defaultIfNull(respondent.getLastName(), ""),
-                "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), EMPTY_PLACEHOLDER)))
-            .collect(toList());
-    }
-
-    List<Map<String, String>> getChildrenDetails(CaseData caseData) {
-        // children is validated as not null
-        return caseData.getAllChildren().stream()
-            .map(Element::getValue)
-            .map(Child::getParty)
-            .map(child -> ImmutableMap.of(
-                "name", child.getFirstName() + " " + child.getLastName(),
-                "gender", defaultIfNull(child.getGender(), EMPTY_PLACEHOLDER),
-                "dateOfBirth", child.getDateOfBirth() == null ? EMPTY_PLACEHOLDER :
-                    dateFormatterService.formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
-            .collect(toList());
-    }
-
-    private String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
-        @AllArgsConstructor
+        // default values here cover edge case where direction title is not found in configuration. Reusable for CMO?
         @NoArgsConstructor
-        @Data
         class DateFormattingConfig {
-            private String pattern = "h:mma, d MMMM yyyy";
-            private Display.Due due = Display.Due.BY;
+            private String pattern = TIME_DATE;
+            private Display.Due due = BY;
         }
 
-        DateFormattingConfig dateFormattingConfig = directions.stream()
-            .filter(directionConfiguration ->
-                directionConfiguration.getTitle().equals(direction.getDirectionType().substring(3)))
-            .map(DirectionConfiguration::getDisplay)
-            .map(display -> new DateFormattingConfig(display.getTemplateDateFormat(), display.getDue()))
-            .findAny()
-            .orElseGet(DateFormattingConfig::new);
+        final DateFormattingConfig config = new DateFormattingConfig();
 
-        return String.format(
-            "%s %s %s", direction.getDirectionType(), dateFormattingConfig.due.toString().toLowerCase(),
-            (direction.getDateToBeCompletedBy() != null ? dateFormatterService
-                .formatLocalDateTimeBaseUsingFormat(direction.getDateToBeCompletedBy(),
-                    dateFormattingConfig.getPattern()) : "unknown"));
+        // find the date configuration values for the given direction
+        for (DirectionConfiguration directionConfiguration : directionConfigurations) {
+            if (directionConfiguration.getTitle().equals(direction.getDirectionType())) {
+                Display display = directionConfiguration.getDisplay();
+                config.pattern = display.getTemplateDateFormat();
+                config.due = display.getDue();
+                break;
+            }
+        }
+
+        // create direction display title for docmosis in format "index. directionTitle (by / on) date"
+        // TODO: see FPLA-1087
+        return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
+            ofNullable(direction.getDateToBeCompletedBy())
+                .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
+                .orElse("unknown"));
+    }
+
+    private DocmosisHearingBooking getHearingBookingData(List<Element<HearingBooking>> hearingDetails) {
+        return hearingBookingService.getFirstHearing(hearingDetails).map(hearing -> {
+                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing.getVenue());
+
+                return DocmosisHearingBooking.builder()
+                    .hearingDate(dataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
+                    .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
+                    .preHearingAttendance(dataExtractionService.extractPrehearingAttendance(hearing))
+                    .hearingTime(dataExtractionService.getHearingTime(hearing))
+                    .hearingJudgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
+                    .hearingLegalAdvisorName(getLegalAdvisorName(hearing.getJudgeAndLegalAdvisor()))
+                    .build();
+            }
+        ).orElse(DocmosisHearingBooking.builder().build());
     }
 }

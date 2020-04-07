@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -348,6 +350,99 @@ class RepresentativesServiceTest {
             .containsExactly(responded1Representative1.getId(), responded1Representative2.getId());
         assertThat(unwrapElements(respondent2.getRepresentedBy()))
             .containsExactly(responded2Representative.getId());
+    }
+
+    @Test
+    void shouldGetUpdatedRepresentativesWhenNewRepresentativeAdded() {
+        CaseData caseDataBefore = CaseData.builder().representatives(emptyList()).build();
+        CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
+
+        List<Element<Representative>> expectedRepresentatives = createRepresentatives(EMAIL);
+
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
+
+        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+    }
+
+    @Test
+    void shouldGetUpdatedRepresentativesWhenNewRepresentativeAddedToEmptyCaseData() {
+        CaseData caseDataBefore = CaseData.builder().build();
+        CaseData caseData = buildCaseDataWithRepresentatives(DIGITAL_SERVICE);
+
+        List<Element<Representative>> expectedRepresentatives = createRepresentatives(DIGITAL_SERVICE);
+
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
+
+        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+    }
+
+    @Test
+    void shouldNotReturnAnyRepresentativesIfNewRepresentativeNotAdded() {
+        CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
+        CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
+
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
+
+        assertThat(updatedRepresentatives.isEmpty());
+    }
+
+    @Test
+    void shouldNotReturnAnyDigitalRepresentativesIfNewDigitalRepresentativeNotAdded() {
+        CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
+        CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
+
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
+
+        assertThat(updatedRepresentatives.isEmpty());
+    }
+
+    @Test
+    void shouldNotReturnAnyRepresentativesIfNoRepresentativesExist() {
+        CaseData caseDataBefore = CaseData.builder().build();
+        CaseData caseData = CaseData.builder().build();
+
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
+
+        assertThat(updatedRepresentatives.isEmpty());
+    }
+
+    @Test
+    void shouldGetUpdatedRepresentativesWhenRepresentativeChanged() {
+        CaseData caseDataBefore = buildCaseDataWithRepresentatives(DIGITAL_SERVICE);
+        CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
+
+        List<Element<Representative>> expectedRepresentatives = createRepresentatives(EMAIL);
+
+        List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
+
+        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+    }
+
+    private CaseData buildCaseDataWithRepresentatives(RepresentativeServingPreferences preference) {
+        return CaseData.builder()
+            .representatives(createRepresentatives(preference))
+            .build();
+    }
+
+    private List<Element<Representative>> createRepresentatives(
+        RepresentativeServingPreferences servingPreferences) {
+        List<Element<Representative>> representatives = new ArrayList<>();
+        Representative representative = Representative.builder()
+            .email("abc@example.com")
+            .fullName("Jon Snow")
+            .servingPreferences(servingPreferences)
+            .build();
+
+        Element.<Representative>builder().value(representative);
+        representatives.add(Element.<Representative>builder().value(representative).build());
+
+        return representatives;
     }
 
     private static CaseData caseWithRepresentatives(Representative... representatives) {

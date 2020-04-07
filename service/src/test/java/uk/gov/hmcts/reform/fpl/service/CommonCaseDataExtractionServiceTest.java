@@ -16,15 +16,13 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.service.CommonCaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createJudgeAndLegalAdvisor;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, CommonCaseDataExtractionService.class, DateFormatterService.class,
-    HearingVenueLookUpService.class
+    JacksonAutoConfiguration.class, CommonCaseDataExtractionService.class, HearingVenueLookUpService.class
 })
 class CommonCaseDataExtractionServiceTest {
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
@@ -146,8 +144,8 @@ class CommonCaseDataExtractionServiceTest {
         final Map<String, Object> judgeAndLegalAdvisorData = commonCaseDataExtractionService
             .getJudgeAndLegalAdvisorData(null);
 
-        assertThat(judgeAndLegalAdvisorData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(judgeAndLegalAdvisorData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(judgeAndLegalAdvisorData.get("judgeTitleAndName")).isEqualTo("");
+        assertThat(judgeAndLegalAdvisorData.get("legalAdvisorName")).isEqualTo("");
     }
 
 

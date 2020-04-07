@@ -25,11 +25,8 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
@@ -128,14 +125,14 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     private void verifyUpdateCaseRolesWasCalledOnceForEachUser() {
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(userAuthToken), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
-            refEq(new CaseUser(USER_IDS[0], CASE_ROLES)));
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(userAuthToken), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]),
-            refEq(new CaseUser(USER_IDS[1], CASE_ROLES)));
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(userAuthToken), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]),
-            refEq(new CaseUser(USER_IDS[2], CASE_ROLES)));
+        verify(caseUserApi).updateCaseRolesForUser(
+            userAuthToken, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[0],
+            new CaseUser(USER_IDS[0], CASE_ROLES));
+        verify(caseUserApi).updateCaseRolesForUser(
+            userAuthToken, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[1],
+            new CaseUser(USER_IDS[1], CASE_ROLES));
+        verify(caseUserApi).updateCaseRolesForUser(
+            userAuthToken, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[2],
+            new CaseUser(USER_IDS[2], CASE_ROLES));
     }
 }

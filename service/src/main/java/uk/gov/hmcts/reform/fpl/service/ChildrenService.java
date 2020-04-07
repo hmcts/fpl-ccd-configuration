@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
 
 @Service
@@ -84,5 +86,24 @@ public class ChildrenService {
             .partyId(randomUUID().toString())
             .partyType(INDIVIDUAL)
             .build());
+    }
+
+    public String getChildrenLabel(List<Element<Child>> children) {
+        if (isEmpty(children)) {
+            return "No children in the case";
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < children.size(); i++) {
+            final String name = children.get(i).getValue().getParty().getFullName();
+            builder.append(String.format("Child %d: %s%n", i + 1, name));
+        }
+
+        return builder.toString();
+    }
+
+    public void addPageShowToCaseDetails(CaseDetails caseDetails, List<Element<Child>> children) {
+        caseDetails.getData().put("pageShow", children.size() <= 1 ? "No" : "Yes");
     }
 }

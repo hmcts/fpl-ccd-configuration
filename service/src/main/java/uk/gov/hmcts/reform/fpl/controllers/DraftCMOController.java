@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 @Api
 @RestController
 @RequestMapping("/callback/draft-cmo")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final DraftCMOService draftCMOService;
@@ -46,25 +48,7 @@ public class DraftCMOController {
     private final RespondentService respondentService;
     private final OthersService othersService;
     private final CoreCaseDataService coreCaseDataService;
-
-    @Autowired
-    public DraftCMOController(ObjectMapper mapper,
-                              DraftCMOService draftCMOService,
-                              DocmosisDocumentGeneratorService docmosisService,
-                              UploadDocumentService uploadDocumentService,
-                              CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService,
-                              CoreCaseDataService coreCaseDataService,
-                              RespondentService respondentService,
-                              OthersService othersService) {
-        this.mapper = mapper;
-        this.draftCMOService = draftCMOService;
-        this.docmosisService = docmosisService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.docmosisTemplateDataGenerationService = docmosisTemplateDataGenerationService;
-        this.respondentService = respondentService;
-        this.othersService = othersService;
-        this.coreCaseDataService = coreCaseDataService;
-    }
+    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -85,9 +69,7 @@ public class DraftCMOController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestHeader("authorization") String authorization,
-                                                               @RequestHeader("user-id") String userId,
-                                                               @RequestBody CallbackRequest callbackRequest)
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest)
         throws IOException {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -96,7 +78,7 @@ public class DraftCMOController {
 
         Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData, true);
 
-        Document document = getDocument(authorization, userId, cmoTemplateData);
+        Document document = getDocument(cmoTemplateData);
 
         final DocumentReference reference = DocumentReference.builder()
             .url(document.links.self.href)
@@ -139,6 +121,7 @@ public class DraftCMOController {
     //TODO: logic for only calling this when necessary. When status change new vs old.
     // When new document to share.
     // When no data before.
+    // FPLA-1471
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         coreCaseDataService.triggerEvent(
@@ -157,10 +140,9 @@ public class DraftCMOController {
         return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
     }
 
-    private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
+    private Document getDocument(Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, CMO);
 
-        return uploadDocumentService.uploadPDF(
-            userId, authorization, document.getBytes(), "draft-" + document.getDocumentTitle());
+        return uploadDocumentService.uploadPDF(document.getBytes(), "draft-" + document.getDocumentTitle());
     }
 }

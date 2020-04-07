@@ -1,11 +1,13 @@
 const config = require('../config.js');
 const directions = require('../fixtures/directions');
+const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 
 let caseId;
 
 Feature('Comply with directions');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, draftStandardDirectionsEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, addHearingBookingDetailsEventPage, sendCaseToGatekeeperEventPage, draftStandardDirectionsEventPage,
+  allocatedJudgeEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -19,13 +21,16 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 
     I.signOut();
 
-    //hmcts login, add case number and send to gatekeeper
+    //hmcts login, add case number, add hearing details, allocated judge and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
-    caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
     enterFamilyManCaseNumberEventPage.enterCaseID();
     await I.completeEvent('Save and continue');
-    caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+    await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
+    await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
     I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
@@ -34,7 +39,11 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     //gatekeeper login, draft sdo and select issued
     await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
     await I.navigateToCaseDetails(caseId);
+    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+    await I.completeEvent('Save and continue');
     await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+    await draftStandardDirectionsEventPage.skipDateOfIssue();
     await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
     await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
     draftStandardDirectionsEventPage.markAsFinal();
@@ -47,7 +56,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 Scenario('hmcts admin complies with directions on behalf of other parties', async (I, caseViewPage, complyOnBehalfOfOthersEventPage) => {
   await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   await I.navigateToCaseDetails(caseId);
-  caseViewPage.goToNewActions(config.applicationActions.complyOnBehalfOf);
+  await caseViewPage.goToNewActions(config.applicationActions.complyOnBehalfOf);
   await complyOnBehalfOfOthersEventPage.addNewResponseOnBehalfOf('respondentDirectionsCustom', 'Respondent 1', 'Yes');
   await I.retryUntilExists(() => I.click('Continue'), '#otherPartiesDirectionsCustom');
   await I.retryUntilExists(() => I.click('Continue'), '#cafcassDirectionsCustom');

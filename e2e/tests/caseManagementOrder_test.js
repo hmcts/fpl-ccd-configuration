@@ -8,7 +8,8 @@ let caseId;
 
 Feature('Case Management Order Journey');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage,
+  allocatedJudgeEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -25,10 +26,10 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     //hmcts login, add case number and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
-    caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
     enterFamilyManCaseNumberEventPage.enterCaseID();
     await I.completeEvent('Save and continue');
-    caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
     I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
@@ -45,8 +46,14 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
     caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
+    //gatekeeper adds allocated judge
+    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+    await I.completeEvent('Save and continue');
+
     // gatekeeper login and create sdo
     await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+    await draftStandardDirectionsEventPage.skipDateOfIssue();
     await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
     await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
     await draftStandardDirectionsEventPage.markAsFinal();
@@ -73,7 +80,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await I.retryUntilExists(() => I.click('Continue'), '#caseManagementOrder_status');
   await draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
+  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview});
 });
 
 // This scenario relies on running after 'local authority creates CMO'
@@ -82,7 +89,7 @@ Scenario('Other parties cannot see the draft CMO document when it is marked for 
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.sendDraftForSelfReview(I, draftCaseManagementOrderEventPage);
 
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
+  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview});
 
   for (let userDetails of cmoHelper.allOtherPartyDetails) {
     await cmoHelper.assertUserCannotSeeDraftOrdersTab(I, userDetails, caseId);
@@ -90,14 +97,13 @@ Scenario('Other parties cannot see the draft CMO document when it is marked for 
 });
 
 // This scenario relies on running after 'local authority creates CMO'
-// Currently send to judge does the same as party review
 Scenario('Other parties can see the draft CMO document when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is party review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
 
   await cmoHelper.sendDraftForPartyReview(I, draftCaseManagementOrderEventPage);
 
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
+  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview});
 
   for (let otherPartyDetails of cmoHelper.allOtherPartyDetails) {
     await cmoHelper.assertUserCanSeeDraftCMODocument(I, otherPartyDetails, caseViewPage, caseId);
@@ -131,14 +137,21 @@ Scenario('Local Authority sends draft to Judge who requests corrections', async 
 
   await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
   await cmoHelper.actionDraft(I, actionCaseManagementOrderEventPage);
-
   await cmoHelper.switchUserAndNavigateToCase(I, {
     email: config.swanseaLocalAuthorityEmailUserOne,
     password: config.localAuthorityPassword,
   }, caseId);
 
-  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
+  const details = {
+    status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview,
+    hasIssuedDate: true,
+    orderActions: {
+      type: actionCaseManagementOrderEventPage.staticFields.statusRadioGroup.options.judgeRequestedChanges,
+      reason: 'Mock reason',
+    },
+  };
+
+  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, details);
 });
 
 
@@ -160,7 +173,7 @@ xScenario('Local Authority sends draft to Judge who approves CMO', async (I, cas
     email: config.judiciaryEmail,
     password: config.judiciaryPassword,
   }, caseId);
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge);
+  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge});
 
   // Approve CMO
   await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);

@@ -39,6 +39,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "dateOfIssue",
+    "FieldType": "Text",
+    "ElementLabel": "Date of issue",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "date",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
@@ -58,7 +66,7 @@
     "ID": "GeneratedOrder",
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
-    "ElementLabel": "Judge and legal advisor",
+    "ElementLabel": "Judge and Justices' Legal Adviser",
     "SecurityClassification": "Public"
   },
   {

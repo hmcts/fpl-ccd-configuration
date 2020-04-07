@@ -5,8 +5,18 @@
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "type",
-    "EventElementLabel": "Type of order",
+    "EventElementLabel": "",
     "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrderGatekeeping",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "subtype",
+    "EventElementLabel": "",
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -16,7 +26,7 @@
     "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "document",
     "EventElementLabel": "Order document",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "document=\"DO_NOT_SHOW\""
   },
@@ -87,7 +97,7 @@
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
-    "EventElementLabel": "Legal advisor's full name",
+    "EventElementLabel": "Justices' Legal Adviser's full name",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },

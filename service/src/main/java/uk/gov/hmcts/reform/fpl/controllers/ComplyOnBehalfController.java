@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -17,8 +17,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
+import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForUsersService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
 import java.util.List;
@@ -30,22 +32,14 @@ import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.
 @Api
 @RestController
 @RequestMapping("/callback/comply-on-behalf")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ComplyOnBehalfController {
     private final ObjectMapper mapper;
-    private final DirectionHelperService directionHelperService;
+    private final CommonDirectionService commonDirectionService;
+    private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
+    private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
     private final RespondentService respondentService;
     private final OthersService othersService;
-
-    @Autowired
-    public ComplyOnBehalfController(ObjectMapper mapper,
-                                    DirectionHelperService directionHelperService,
-                                    RespondentService respondentService,
-                                    OthersService othersService) {
-        this.mapper = mapper;
-        this.directionHelperService = directionHelperService;
-        this.respondentService = respondentService;
-        this.othersService = othersService;
-    }
 
     //TODO: filter responses with different userName in aboutToStart. Code below makes the assumption that only
     // the same responder will be able edit a response. Currently any solicitor can amend a response but the
@@ -55,14 +49,14 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Direction>> directionsToComplyWith = directionHelperService.getDirectionsToComplyWith(caseData);
+        List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
 
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
-            directionHelperService.sortDirectionsByAssignee(directionsToComplyWith);
+            commonDirectionService.sortDirectionsByAssignee(directionsToComplyWith);
 
-        directionHelperService.addEmptyDirectionsForAssigneeNotInMap(sortedDirections);
+        commonDirectionService.addEmptyDirectionsForAssigneeNotInMap(sortedDirections);
 
-        directionHelperService.addDirectionsToCaseDetails(
+        prepareDirectionsForUsersService.addDirectionsToCaseDetails(
             caseDetails, sortedDirections, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
@@ -75,15 +69,14 @@ public class ComplyOnBehalfController {
 
     @PostMapping("about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackrequest,
-        @RequestHeader(value = "authorization") String authorisation) {
+        @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        directionHelperService.addComplyOnBehalfResponsesToDirectionsInOrder(
-            caseData, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()), authorisation);
+        prepareDirectionsForDataStoreService.addComplyOnBehalfResponsesToDirectionsInOrder(
+            caseData, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
 
-        //TODO: new service for sdo vs cmo in placing directions
+        //TODO: new service for sdo vs cmo in placing directions FPLA-1470
         if (caseData.getServedCaseManagementOrders().isEmpty()) {
             caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
         } else {

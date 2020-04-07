@@ -12,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailContentProvider.class,
-    DateFormatterService.class, HearingBookingService.class})
+    HearingBookingService.class})
 class LocalAuthorityEmailContentProviderTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_NAME = "Test local authority";
@@ -44,13 +42,9 @@ class LocalAuthorityEmailContentProviderTest {
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
 
-    @MockBean
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-
     @Autowired
     private ObjectMapper mapper;
 
-    private final DateFormatterService dateFormatterService = new DateFormatterService();
     private final HearingBookingService hearingBookingService = new HearingBookingService();
 
     private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
@@ -58,12 +52,11 @@ class LocalAuthorityEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.localAuthorityEmailContentProvider = new LocalAuthorityEmailContentProvider(
-            localAuthorityNameLookupConfiguration, "", mapper, dateFormatterService,
-            hearingBookingService);
+            localAuthorityNameLookupConfiguration, "", mapper, hearingBookingService);
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
+    void shouldReturnExpectedMapWithValidSDODetails() {
         Map<String, Object> expectedMap = standardDirectionTemplateParameters();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))

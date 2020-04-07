@@ -17,6 +17,35 @@ module.exports = {
       },
     },
     directions: '#orderFurtherDirections_directions',
+    dateOfIssue: {
+      id: '#dateOfIssue',
+    },
+    interimEndDate: {
+      id: '#interimEndDate_interimEndDate',
+      options: {
+        endOfProceedings: 'At the end of the proceedings',
+        namedDate: 'On a named date',
+      },
+      endDate: {
+        day: '#interimEndDate_endDate-day',
+        month: '#interimEndDate_endDate-month',
+        year: '#interimEndDate_endDate-year',
+      },
+    },
+    childSelector: {
+      id: '#childSelector_childSelector',
+      selector: function (index) {
+        return `#childSelector_child${index}`;
+      },
+      selectorText: 'Yes',
+    },
+    allChildren: {
+      id: '#orderAppliesToAllChildren',
+      options: {
+        yes: 'Yes',
+        no: 'No',
+      },
+    },
     months: '#orderMonths',
     epo: {
       childrenDescription: {
@@ -102,5 +131,45 @@ module.exports = {
     I.fillField(this.fields.epo.endDate.hour, date.getHours());
     I.fillField(this.fields.epo.endDate.minute, date.getMinutes());
     I.fillField(this.fields.epo.endDate.second, date.getSeconds());
+  },
+
+  async selectEndOfProceedings() {
+    within(this.fields.interimEndDate.id, () => {
+      I.click(locate('label').withText(this.fields.interimEndDate.options.endOfProceedings));
+    });
+  },
+
+  async enterDateOfIssue(date) {
+    I.fillDate(date);
+  },
+
+  async selectAndEnterNamedDate(date) {
+    within(this.fields.interimEndDate.id, () => {
+      I.click(locate('label').withText(this.fields.interimEndDate.options.namedDate));
+    });
+    I.click(this.fields.interimEndDate.options.namedDate);
+    I.fillField(this.fields.interimEndDate.endDate.day, date.day);
+    I.fillField(this.fields.interimEndDate.endDate.month, date.month);
+    I.fillField(this.fields.interimEndDate.endDate.year, date.year);
+  },
+
+  async selectChildren(children = []) {
+    for (let child of children) {
+      within(this.fields.childSelector.selector(child), () => {
+        I.click(locate('label').withText(this.fields.childSelector.selectorText));
+      });
+    }
+  },
+
+  async useAllChildren() {
+    within(this.fields.allChildren.id, () => {
+      I.click(locate('label').withText(this.fields.allChildren.options.yes));
+    });
+  },
+
+  async notAllChildren() {
+    within(this.fields.allChildren.id, () => {
+      I.click(locate('label').withText(this.fields.allChildren.options.no));
+    });
   },
 };

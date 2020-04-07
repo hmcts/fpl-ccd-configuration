@@ -58,6 +58,7 @@ module.exports = {
     actionCaseManagementOrder: 'Action CMO',
     complyWithDirections: 'Comply with directions',
     complyOnBehalfOf: 'Comply on behalf of others',
+    allocatedJudge: 'Allocated Judge',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
@@ -75,9 +76,14 @@ module.exports = {
     uploadC2Documents: 'Upload a C2',
     draftStandardDirections: 'Draft standard directions',
     createOrder: 'Create an order',
+    placement: 'Placement',
+    handleSupplementaryEvidence: 'Handle supplementary evidence',
+    bulkScan: 'Attach scanned docs',
+    addNote: 'Add a case note',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
+  testNonEmptyPdfFile: './e2e/fixtures/mockFile.pdf',
   // urls
   presidentsGuidanceUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
   scheduleUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',

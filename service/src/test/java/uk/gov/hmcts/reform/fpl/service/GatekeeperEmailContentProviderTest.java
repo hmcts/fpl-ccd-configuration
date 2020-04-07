@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, GatekeeperEmailContentProvider.class,
-    DateFormatterService.class, HearingBookingService.class})
+    HearingBookingService.class})
 class GatekeeperEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -39,9 +38,6 @@ class GatekeeperEmailContentProviderTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private DateFormatterService dateFormatterService;
-
-    @Autowired
     private HearingBookingService hearingBookingService;
 
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
@@ -49,11 +45,11 @@ class GatekeeperEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.gatekeeperEmailContentProvider = new GatekeeperEmailContentProvider(localAuthorityNameLookupConfiguration,
-            "null", dateFormatterService, hearingBookingService, mapper);
+            "null", hearingBookingService, mapper);
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
+    void shouldReturnExpectedMapWithValidCaseDetails() {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
@@ -78,7 +74,7 @@ class GatekeeperEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
+    void shouldReturnSuccessfullyWithEmptyCaseDetails() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")

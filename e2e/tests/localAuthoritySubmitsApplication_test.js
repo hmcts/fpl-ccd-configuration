@@ -132,7 +132,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeAnswerInTab(14, 'Party', 'Father\'s full name', 'David Smith');
   I.seeAnswerInTab(15, 'Party', 'Does the father have parental responsibility?', 'Yes');
   I.seeAnswerInTab(16, 'Party', 'Name of social worker', 'James Jackson');
-  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567');
+  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567890');
   I.seeAnswerInTab(18, 'Party', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(19, 'Party', 'Do you need contact details hidden from other parties?', 'No');
   I.seeAnswerInTab(20, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'Yes');
@@ -151,7 +151,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeAnswerInTab(11, 'Party', 'Father\'s full name', 'David Smith');
   I.seeAnswerInTab(12, 'Party', 'Does the father have parental responsibility?', 'Yes');
   I.seeAnswerInTab(13, 'Party', 'Name of social worker', 'James Jackson');
-  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567');
+  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567890');
   I.seeAnswerInTab(15, 'Party', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(16, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(17, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
@@ -176,7 +176,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeAnswerInTab(12, 'Party', 'Father\'s full name', 'David Smith');
   I.seeAnswerInTab(13, 'Party', 'Does the father have parental responsibility?', 'Yes');
   I.seeAnswerInTab(14, 'Party', 'Name of social worker', 'James Jackson');
-  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567');
+  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567890');
   I.seeAnswerInTab(16, 'Party', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(17, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(18, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
@@ -251,15 +251,16 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(3, 'Party', 'Name of applicant', applicant.name);
   I.seeAnswerInTab(4, 'Party', 'Payment by account (PBA) number', applicant.pbaNumber);
+  I.seeAnswerInTab(5, 'Party', 'Client code', applicant.clientCode);
+  I.seeAnswerInTab(6, 'Party', 'Customer reference', applicant.customerReference);
   I.seeAnswerInTab(1, 'Address', 'Building and Street', applicant.address.buildingAndStreet.lineOne);
   I.seeAnswerInTab(2, 'Address', '', applicant.address.buildingAndStreet.lineTwo);
-  I.seeAnswerInTab(3, 'Address', '', applicant.address.buildingAndStreet.lineThree);
-  I.seeAnswerInTab(4, 'Address', 'Town or City', applicant.address.town);
+  I.seeAnswerInTab(3, 'Address', 'Town or City', applicant.address.town);
+  I.seeAnswerInTab(4, 'Address', 'County', applicant.address.county);
   I.seeAnswerInTab(5, 'Address', 'Postcode/Zipcode', applicant.address.postcode);
-  I.seeAnswerInTab(6, 'Address', 'Country', applicant.address.country);
   I.seeAnswerInTab(1, 'Telephone number', 'Telephone number', applicant.telephoneNumber);
   I.seeAnswerInTab(2, 'Telephone number', 'Name of person to contact', applicant.nameOfPersonToContact);
-  I.seeAnswerInTab(7, 'Party', 'Job title', applicant.jobTitle);
+  I.seeAnswerInTab(9, 'Party', 'Job title', applicant.jobTitle);
   I.seeAnswerInTab(1, 'Mobile number', 'Mobile number', applicant.mobileNumber);
   I.seeAnswerInTab(1, 'Email', 'Email', applicant.email);
   I.seeAnswerInTab(1, 'Solicitor', 'Solicitor\'s full name', 'John Smith');
@@ -473,6 +474,7 @@ Scenario('local authority tries to submit without giving consent', async (I, cas
 
 Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  // I.see('£2,055.00'); Disabled until Fee Register updated on AAT
   submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);

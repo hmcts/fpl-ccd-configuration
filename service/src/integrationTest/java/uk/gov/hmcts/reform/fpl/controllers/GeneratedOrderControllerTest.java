@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -25,10 +23,11 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
-import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -36,19 +35,22 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.lang.Long.parseLong;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,9 +59,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
@@ -70,33 +69,26 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class GeneratedOrderControllerTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
-    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
-
-    private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
+    private static final String CASE_ID = "12345";
+    private final byte[] pdf = {1, 2, 3, 4, 5};
+    private Document document;
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @MockBean
-    private NotificationClient notificationClient;
-
-    @Autowired
-    private DateFormatterService dateFormatterService;
 
     @Autowired
     private Time time;
@@ -105,10 +97,19 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         super("create-order");
     }
 
+    @BeforeEach
+    void setUp() {
+        document = document();
+        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
+
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
+    }
+
     @Test
-    void aboutToStartShouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
+    void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
+            .id(parseLong(CASE_ID))
             .data(Map.of("data", "some data"))
             .build();
 
@@ -118,56 +119,27 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldTriggerOrderEventWhenSubmitted() throws Exception {
-        String expectedCaseReference = "19898989";
-        postSubmittedEvent(buildCallbackRequest());
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
-    }
-
-    private CallbackRequest buildCallbackRequest() {
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(19898989L)
-                .data(ImmutableMap.of(
-                    "orderCollection", createOrders(),
-                    "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
-                    "respondents1", createRespondents(),
-                    "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-                    "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
-                .build())
+    void aboutToStartShouldSetDateOfIssueAsTodayByDefault() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(parseLong(CASE_ID))
+            .data(Map.of("familyManCaseNumber", "123"))
             .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(time.now().toLocalDate().toString());
     }
 
-    private Map<String, Object> commonNotificationParameters() {
-        final String documentUrl = "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
-        final String subjectLine = "Jones, " + FAMILY_MAN_CASE_NUMBER;
-
-        return ImmutableMap.<String, Object>builder()
-            .put("subjectLine", subjectLine)
-            .put("linkToDocument", documentUrl)
-            .put("hearingDetailsCallout", subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(
-                dateIn3Months.toLocalDate(), FormatStyle.MEDIUM))
-            .put("reference", "19898989")
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/19898989")
-            .build();
-    }
-
-    private Map<String, Object> expectedOrderLocalAuthorityParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(commonNotificationParameters())
-            .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
-            .build();
-    }
-
+    //TODO TECHDEBT move tests for each callback to separate file as done with GeneratedOrderControllerSubmittedTest
+    // FPLA-1468
     @Nested
     class AboutToSubmit {
 
         @Test
         void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(BLANK_ORDER, null)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .order(GeneratedOrder.builder()
                     .title("Example Order")
                     .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -183,17 +155,37 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             aboutToSubmitAssertions(callbackResponse.getData(), expectedC21Order);
         }
 
+        @Test
+        void aboutToSubmitShouldNotHaveDraftAppendedToFilename() {
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(CARE_ORDER, FINAL)
+                    .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            );
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+            final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(caseData.getOrderCollection().get(0).getValue().getDocument()).isEqualTo(expectedDocument());
+        }
+
         @ParameterizedTest
         @EnumSource(GeneratedOrderSubtype.class)
         void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
             GeneratedOrderSubtype subtype) {
-            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(CARE_ORDER, subtype)
-                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
+
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(CARE_ORDER, subtype)
+                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                    .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                    .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+            );
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
+            final String expiryDate = subtype == INTERIM ? "End of the proceedings" : null;
             GeneratedOrder expectedCareOrder = commonExpectedOrderComponents(
-                subtype.getLabel() + " " + "care order").build();
+                subtype.getLabel() + " " + "care order").expiryDate(expiryDate).build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedCareOrder);
         }
@@ -201,12 +193,15 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         @Test
         void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM)
-                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build()));
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+            );
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
             GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
-                "Interim supervision order").build();
+                "Interim supervision order").expiryDate("End of the proceedings").build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
         }
@@ -215,6 +210,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         void aboutToSubmitShouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .orderMonths(14));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -222,8 +218,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             LocalDateTime orderExpiration = time.now().plusMonths(14);
             GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
                 "Final supervision order")
-                .expiryDate(
-                    dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
+                .expiryDate(formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
                 .build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
@@ -249,14 +244,16 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                         .judgeLastName("Judy")
                         .legalAdvisorName("Peter Parker")
                         .build())
-                .familyManCaseNumber("12345L");
+                .familyManCaseNumber("12345L")
+                .dateOfIssue(time.now().toLocalDate());
         }
 
         private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
             return GeneratedOrder.builder()
                 .type(fullType)
-                .document(DocumentReference.builder().build())
-                .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
+                .dateOfIssue(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
+                .document(expectedDocument())
+                .date(formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .judgeAndLegalAdvisor(
                     JudgeAndLegalAdvisor.builder()
                         .judgeTitle(HER_HONOUR_JUDGE)
@@ -266,56 +263,109 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 );
         }
 
+        private DocumentReference expectedDocument() {
+            return DocumentReference.builder()
+                .binaryUrl(document.links.binary.href)
+                .filename("file.pdf")
+                .url(document.links.self.href)
+                .build();
+        }
+
         private void aboutToSubmitAssertions(Map<String, Object> data, GeneratedOrder expectedOrder) {
+            List<String> keys = stream(GeneratedOrderKey.values()).map(GeneratedOrderKey::getKey).collect(toList());
+            keys.addAll(stream(GeneratedEPOKey.values()).map(GeneratedEPOKey::getKey).collect(toList()));
+            keys.addAll(stream(InterimOrderKey.values()).map(InterimOrderKey::getKey).collect(toList()));
+
+            assertThat(data).doesNotContainKeys(keys.toArray(String[]::new));
+
             List<Element<GeneratedOrder>> orders = mapper.convertValue(data.get("orderCollection"),
                 new TypeReference<>() {});
-
-            Arrays.stream(GeneratedOrderKey.values())
-                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
-
-            Arrays.stream(GeneratedEPOKey.values())
-                .forEach(ccdField -> assertThat(data).doesNotContainKey(ccdField.getKey()));
 
             assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
         }
     }
 
-    @TestInstance(PER_CLASS)
     @Nested
-    class MidEvent {
-        private final byte[] pdf = {1, 2, 3, 4, 5};
-        private Document document;
+    class PopulateChildSelectorMidEvent {
+        @Test
+        void shouldPopulateChildSelectorAndLabelWhenNoIsSelected() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseDetails("No"), "populate-selector");
 
-        @BeforeEach
-        void setUp() {
-            document = document();
-            DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-            given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
+            assertThat(callbackResponse.getData().get("children_label"))
+                .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
+
+            assertThat(caseData.getChildSelector()).isEqualTo(getExpectedChildSelector());
         }
 
+        @Test
+        void shouldNotPopulateChildSelectorAndLabelWhenYesIsSelected() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseDetails("Yes"), "populate-selector");
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(callbackResponse.getData().get("children_label")).isNull();
+            assertThat(caseData.getChildSelector()).isNull();
+        }
+
+        private ChildSelector getExpectedChildSelector() {
+            return ChildSelector.builder()
+                .childCount("12")
+                .build();
+        }
+
+        private CaseDetails buildCaseDetails(String choice) {
+            CaseData caseData = CaseData.builder()
+                .children1(createChildren("Wallace", "Gromit"))
+                .orderAppliesToAllChildren(choice)
+                .build();
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+                .build();
+        }
+
+        private List<Element<Child>> createChildren(String... firstNames) {
+            Child[] children = new Child[firstNames.length];
+            for (int i = 0; i < firstNames.length; i++) {
+                children[i] = Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName(firstNames[i])
+                        .build())
+                    .build();
+            }
+            return wrapElements(children);
+        }
+    }
+
+    @TestInstance(PER_CLASS)
+    @Nested
+    class GenerateDocumentMidEvent {
         @ParameterizedTest
-        @MethodSource("midEventArgumentSource")
+        @MethodSource("generateDocumentMidEventArgumentSource")
         void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails,
                                                                        String fileName,
                                                                        DocmosisTemplates templateName) {
-            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                caseDetails, "generate-document");
 
             verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(), eq(templateName));
-            verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
+            verify(uploadDocumentService).uploadPDF(pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
+            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDraftDocument());
         }
 
         @Test
         void shouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
-            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections());
+            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), "generate-document");
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
-            verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
+            verify(uploadDocumentService, never()).uploadPDF(any(), any());
         }
 
         @AfterEach
@@ -324,7 +374,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             reset(uploadDocumentService);
         }
 
-        private Stream<Arguments> midEventArgumentSource() {
+        private Stream<Arguments> generateDocumentMidEventArgumentSource() {
             return Stream.of(
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
                 Arguments.of(generateCareOrderCaseDetails(INTERIM), "interim_care_order.pdf", ORDER),
@@ -339,7 +389,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
 
             dataBuilder.order(GeneratedOrder.builder().details("").build())
-                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build());
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
+                .dateOfIssue(time.now().toLocalDate());
 
             generateDefaultValues(dataBuilder);
             generateEpoValues(dataBuilder);
@@ -355,12 +406,8 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         private CaseDetails generateBlankOrderCaseDetails() {
-            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
-
-            dataBuilder.order(GeneratedOrder.builder().details("").build())
-                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
-
-            generateDefaultValues(dataBuilder);
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(BLANK_ORDER, null)
+                .order(GeneratedOrder.builder().details("").build());
 
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
@@ -380,6 +427,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
             dataBuilder.orderFurtherDirections(generateOrderFurtherDirections());
 
+            if (subtype == INTERIM) {
+                dataBuilder.interimEndDate(generateInterimEndDate());
+            }
+
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
@@ -390,6 +441,10 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
 
             dataBuilder.orderFurtherDirections(generateOrderFurtherDirections())
                 .orderMonths(5);
+
+            if (subtype == INTERIM) {
+                dataBuilder.interimEndDate(generateInterimEndDate());
+            }
 
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
@@ -402,11 +457,16 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .orderTypeAndDocument(OrderTypeAndDocument.builder()
                     .type(type)
                     .subtype(subtype)
-                    .build());
+                    .build())
+                .dateOfIssue(time.now().toLocalDate());
 
             generateDefaultValues(builder);
 
             return builder;
+        }
+
+        private InterimEndDate generateInterimEndDate() {
+            return InterimEndDate.builder().type(END_OF_PROCEEDINGS).build();
         }
 
         private void generateEpoValues(CaseData.CaseDataBuilder builder) {
@@ -441,7 +501,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build();
         }
 
-        private DocumentReference expectedDocument() {
+        private DocumentReference expectedDraftDocument() {
             return DocumentReference.builder()
                 .binaryUrl(document.links.binary.href)
                 .filename(document.originalDocumentName)
