@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
 public class CommonCaseDataExtractionService {
@@ -46,7 +47,7 @@ public class CommonCaseDataExtractionService {
     }
 
     private String formatDateTimeWithYear(LocalDateTime dateTime) {
-        return formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy, h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {

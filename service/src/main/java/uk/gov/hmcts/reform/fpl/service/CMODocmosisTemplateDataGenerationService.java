@@ -25,9 +25,9 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentedBy;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +45,8 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
@@ -62,6 +62,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CaseDataExtractionService caseDataExtractionService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final Time time;
 
     public DocmosisCaseManagementOrder getCaseManagementOrderData(CaseData caseData) throws IOException {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
@@ -85,7 +86,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisorData(hearingBooking.getJudgeAndLegalAdvisor()))
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
-            .dateOfIssue(formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
             .children(caseDataExtractionService.getChildrenDetails(caseData.getAllChildren()))
             .respondents(caseDataExtractionService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))

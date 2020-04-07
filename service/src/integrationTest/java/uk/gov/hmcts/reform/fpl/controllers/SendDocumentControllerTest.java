@@ -24,10 +24,12 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,6 +61,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
     private static final Document COVERSHEET_DOCUMENT = testDocument();
     private static final byte[] COVERSHEET_BINARIES = testDocumentBinaries();
     private static final byte[] DOCUMENT_BINARIES = testDocumentBinaries();
+    private static final UUID LETTER_ID = UUID.randomUUID();
 
     @MockBean
     private Time time;
@@ -91,8 +94,10 @@ class SendDocumentControllerTest extends AbstractControllerTest {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_BINARIES);
         given(docmosisCoverDocumentsService.createCoverDocuments(any(), any(), any()))
             .willReturn(testDocmosisDocument(COVERSHEET_BINARIES));
-        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(COVERSHEET_DOCUMENT);
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(COVERSHEET_DOCUMENT);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class)))
+            .willReturn(new SendLetterResponse(LETTER_ID));
     }
 
     @Test
@@ -112,7 +117,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
         verify(documentDownloadService).downloadDocument(documentToBeSent.getBinaryUrl());
         verify(sendLetterApi).sendLetter(anyString(), any(LetterWithPdfsRequest.class));
-        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, COVERSHEET_BINARIES, "Coversheet.pdf");
+        verify(uploadDocumentService).uploadPDF(COVERSHEET_BINARIES, "Coversheet.pdf");
         verify(docmosisCoverDocumentsService).createCoverDocuments(FAMILY_MAN_NO, caseDetails.getId(), representative1);
 
         List<DocumentsSentToParty> documentsSentToParties = unwrapElements(mapper.convertValue(
@@ -127,6 +132,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
                 .document(documentToBeSent)
                 .coversheet(coversheet)
                 .sentAt("12:10pm, 5 January 2020")
+                .letterId(LETTER_ID.toString())
                 .build());
     }
 
@@ -141,7 +147,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
         verify(docmosisCoverDocumentsService, never()).createCoverDocuments(any(), any(), any());
         verify(documentDownloadService, never()).downloadDocument(any());
-        verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
+        verify(uploadDocumentService, never()).uploadPDF(any(), any());
         verify(sendLetterApi, never()).sendLetter(any(), any(LetterWithPdfsRequest.class));
     }
 

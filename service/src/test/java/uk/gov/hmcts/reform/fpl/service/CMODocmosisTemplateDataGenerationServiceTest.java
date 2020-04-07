@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentedBy;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -39,17 +40,17 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CMODocmosisTemplateDataGenerationService.class})
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, DraftCMOService.class, CommonCaseDataExtractionService.class,
-    DateFormatterService.class, CommonDirectionService.class, HearingVenueLookUpService.class,
-    HearingBookingService.class, JsonOrdersLookupService.class, CaseDataExtractionService.class, LookupTestConfig.class
+    CommonDirectionService.class, HearingVenueLookUpService.class, HearingBookingService.class,
+    JsonOrdersLookupService.class, CaseDataExtractionService.class, LookupTestConfig.class, FixedTimeConfiguration.class
 })
 class CMODocmosisTemplateDataGenerationServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();

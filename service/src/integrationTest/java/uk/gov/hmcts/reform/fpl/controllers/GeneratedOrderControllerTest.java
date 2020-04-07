@@ -39,7 +39,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -71,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -91,9 +91,6 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
     private UploadDocumentService uploadDocumentService;
 
     @Autowired
-    private DateFormatterService dateFormatterService;
-
-    @Autowired
     private Time time;
 
     GeneratedOrderControllerTest() {
@@ -106,7 +103,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
     }
 
     @Test
@@ -221,8 +218,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             LocalDateTime orderExpiration = time.now().plusMonths(14);
             GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
                 "Final supervision order")
-                .expiryDate(
-                    dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
+                .expiryDate(formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y"))
                 .build();
 
             aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
@@ -255,9 +251,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
             return GeneratedOrder.builder()
                 .type(fullType)
-                .dateOfIssue(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
+                .dateOfIssue(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
                 .document(expectedDocument())
-                .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
+                .date(formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
                 .judgeAndLegalAdvisor(
                     JudgeAndLegalAdvisor.builder()
                         .judgeTitle(HER_HONOUR_JUDGE)
@@ -357,7 +353,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 caseDetails, "generate-document");
 
             verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(), eq(templateName));
-            verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, fileName);
+            verify(uploadDocumentService).uploadPDF(pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -369,7 +365,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), "generate-document");
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
-            verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
+            verify(uploadDocumentService, never()).uploadPDF(any(), any());
         }
 
         @AfterEach

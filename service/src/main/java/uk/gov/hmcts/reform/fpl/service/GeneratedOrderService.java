@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -48,32 +50,27 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 // REFACTOR: 27/01/2020 Extract docmosis logic into a new service that extends DocmosisTemplateDataGeneration
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderService {
-    private final DateFormatterService dateFormatterService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final Time time;
-
-    public GeneratedOrderService(DateFormatterService dateFormatterService,
-                                 HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                 LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                 Time time) {
-        this.dateFormatterService = dateFormatterService;
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-        this.time = time;
-    }
 
     public OrderTypeAndDocument buildOrderTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
         return typeAndDocument.toBuilder()
@@ -131,11 +128,11 @@ public class GeneratedOrderService {
         }
 
         orderBuilder.expiryDate(expiryDate)
-            .dateOfIssue(DateFormatterService.formatLocalDateToString(dateOfIssue, DATE))
+            .dateOfIssue(formatLocalDateToString(dateOfIssue, DATE))
             .type(typeAndDocument.getFullType(typeAndDocument.getSubtype()))
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-            .date(DateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE));
+            .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE));
 
         return Element.<GeneratedOrder>builder()
             .id(randomUUID())
@@ -154,6 +151,7 @@ public class GeneratedOrderService {
         List<Child> children = getSelectedChildren(unwrapElements(caseData.getAllChildren()),
             caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren());
         List<Map<String, String>> childrenDetails = getChildrenDetails(children);
+        int childrenCount = children.size();
 
         switch (orderType) {
             case BLANK_ORDER:
@@ -173,7 +171,8 @@ public class GeneratedOrderService {
                         .put("childrenAct", "Section 31 Children Act 1989");
                 }
                 orderTemplateBuilder
-                    .put("orderDetails", getFormattedCareOrderDetails(children.size(),
+                    .put("localAuthorityName", getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+                    .put("orderDetails", getFormattedCareOrderDetails(childrenCount,
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
                 break;
             case SUPERVISION_ORDER:
@@ -182,14 +181,14 @@ public class GeneratedOrderService {
                         .put("orderTitle", orderTypeAndDocument.getFullType(INTERIM))
                         .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                         .put("orderDetails",
-                            getFormattedInterimSupervisionOrderDetails(children.size(),
+                            getFormattedInterimSupervisionOrderDetails(childrenCount,
                                 caseData.getCaseLocalAuthority(), interimEndDate));
                 } else {
                     orderTemplateBuilder
                         .put("orderTitle", orderTypeAndDocument.getFullType())
                         .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                         .put("orderDetails",
-                            getFormattedFinalSupervisionOrderDetails(children.size(),
+                            getFormattedFinalSupervisionOrderDetails(childrenCount,
                                 caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
                 }
                 break;
@@ -200,7 +199,6 @@ public class GeneratedOrderService {
                     .put("epoType", caseData.getEpoType())
                     .put("includePhrase", caseData.getEpoPhrase().getIncludePhrase())
                     .put("removalAddress", getFormattedRemovalAddress(caseData))
-                    .put("childrenCount", children.size())
                     .put("epoStartDateTime", formatEPODateTime(time.now()))
                     .put("epoEndDateTime", formatEPODateTime(caseData.getEpoEndDate()));
                 break;
@@ -212,11 +210,12 @@ public class GeneratedOrderService {
             .put("orderType", orderType)
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
-            .put("dateOfIssue", DateFormatterService.formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+            .put("dateOfIssue", formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .put("children", childrenDetails)
+            .put("childrenCount", childrenCount)
             .put("furtherDirections", caseData.getFurtherDirectionsText())
             .build();
 
@@ -260,8 +259,7 @@ public class GeneratedOrderService {
                 return getInterimExpiryDate(interimEndDate);
             case FINAL:
                 requireNonNull(orderMonths);
-                return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                    time.now().plusMonths(orderMonths), "h:mma, d MMMM y");
+                return formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(orderMonths), TIME_DATE);
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + typeAndDocument.getSubtype());
         }
@@ -269,7 +267,7 @@ public class GeneratedOrderService {
 
     private String getInterimExpiryDate(InterimEndDate interimEndDate) {
         return interimEndDate.toLocalDateTime()
-            .map(dateTime -> dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma, d MMMM y"))
+            .map(dateTime -> formatLocalDateTimeBaseUsingFormat(dateTime, TIME_DATE))
             .orElse(END_OF_PROCEEDINGS.getLabel());
     }
 
@@ -302,9 +300,9 @@ public class GeneratedOrderService {
     private String getInterimEndDateString(InterimEndDate interimEndDate) {
         return interimEndDate.toLocalDateTime()
             .map(dateTime -> {
-                final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(dateTime.getDayOfMonth());
-                return dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                    dateTime, "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y");
+                final String dayOrdinalSuffix = getDayOfMonthSuffix(dateTime.getDayOfMonth());
+                return formatLocalDateTimeBaseUsingFormat(
+                    dateTime, String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix));
             })
             .orElse("the end of the proceedings");
     }
@@ -313,14 +311,14 @@ public class GeneratedOrderService {
                                                             String caseLocalAuthority,
                                                             int numOfMonths) {
         final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
-        final String dayOrdinalSuffix = dateFormatterService.getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
+        final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
         return String.format(
             "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
             getLocalAuthorityName(caseLocalAuthority),
             (numOfChildren == 1) ? "child" : "children",
             numOfMonths,
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(orderExpiration,
-                "h:mma 'on the' d'" + dayOrdinalSuffix + "' MMMM y"));
+            formatLocalDateTimeBaseUsingFormat(orderExpiration,
+                String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)));
     }
 
     private List<Child> getSelectedChildren(List<Child> allChildren, ChildSelector selector, String choice) {
@@ -339,8 +337,8 @@ public class GeneratedOrderService {
             .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
                 "gender", defaultIfNull(child.getGender(), ""),
-                "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
-                    .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
+                "dateOfBirth", child.getDateOfBirth() != null ? formatLocalDateToString(
+                    child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
     }
 
@@ -358,7 +356,7 @@ public class GeneratedOrderService {
     }
 
     private String formatEPODateTime(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy 'at' h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME_AT);
     }
 
     private String getFormattedRemovalAddress(CaseData caseData) {

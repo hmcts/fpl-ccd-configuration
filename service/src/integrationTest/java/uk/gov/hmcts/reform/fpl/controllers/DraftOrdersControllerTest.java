@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -71,26 +70,25 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-@SuppressWarnings("unchecked")
 class DraftOrdersControllerTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
-
-    private final DocumentReference documentReference = DocumentReference.builder().build();
+    private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder().build();
 
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
-    @MockBean
-    private DocmosisDocumentGeneratorService documentGeneratorService;
-    @MockBean
-    private UploadDocumentService uploadDocumentService;
-    @MockBean
-    private NotificationClient notificationClient;
-    @MockBean
-    private CoreCaseDataService coreCaseDataService;
 
     @MockBean
-    private InboxLookupService inboxLookupService;
+    private DocmosisDocumentGeneratorService documentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
+
+    @MockBean
+    private NotificationClient notificationClient;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Autowired
     private Time time;
@@ -172,7 +170,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             CASE_TYPE,
             CASE_ID,
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", documentReference));
+            Map.of("documentToBeSent", DOCUMENT_REFERENCE));
     }
 
     private List<Direction> createDirections() {
@@ -200,7 +198,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private ImmutableMap.Builder createCaseDataMap(List<Element<Direction>> directions) {
+    private ImmutableMap.Builder<String, Object> createCaseDataMap(List<Element<Direction>> directions) {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
         return builder
@@ -228,7 +226,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
     private CallbackRequest buildCallbackRequest(OrderStatus status) {
         Order order = Order.builder()
             .orderStatus(status)
-            .orderDoc(documentReference)
+            .orderDoc(DOCUMENT_REFERENCE)
             .build();
 
         return CallbackRequest.builder()
@@ -281,7 +279,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
         }
 
         private void makeRequestWithOrderStatus(OrderStatus status) {
-            Order order = Order.builder().orderStatus(status).orderDoc(documentReference).build();
+            Order order = Order.builder().orderStatus(status).orderDoc(DOCUMENT_REFERENCE).build();
 
             CallbackRequest request = CallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
@@ -322,7 +320,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         @Test
         void midEventShouldGenerateDraftStandardDirectionDocument() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, DRAFT_ORDER_FILE_NAME))
+            given(uploadDocumentService.uploadPDF(pdf, DRAFT_ORDER_FILE_NAME))
                 .willReturn(document);
 
             List<Element<Direction>> directions = buildDirections(
@@ -354,7 +352,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         @Test
         void aboutToSubmitShouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
+            given(uploadDocumentService.uploadPDF(pdf, SEALED_ORDER_FILE_NAME))
                 .willReturn(document);
 
             UUID uuid = UUID.randomUUID();
@@ -404,7 +402,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         @Test
         void aboutToSubmitShouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
+            given(uploadDocumentService.uploadPDF(pdf, SEALED_ORDER_FILE_NAME))
                 .willReturn(document());
 
             UUID uuid = UUID.randomUUID();
@@ -427,7 +425,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         @Test
         void aboutToSubmitShouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
-            given(uploadDocumentService.uploadPDF(userId, userAuthToken, pdf, SEALED_ORDER_FILE_NAME))
+            given(uploadDocumentService.uploadPDF(pdf, SEALED_ORDER_FILE_NAME))
                 .willReturn(document());
 
             CallbackRequest request = buildCallbackRequest(SEALED);

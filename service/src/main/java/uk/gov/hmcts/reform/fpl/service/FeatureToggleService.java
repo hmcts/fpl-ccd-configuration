@@ -11,21 +11,31 @@ public class FeatureToggleService {
 
     private final LDClient ldClient;
     private final LDUser ldUser;
+    private final LDUser.Builder ldUserBuilder;
 
     @Autowired
     public FeatureToggleService(LDClient ldClient, @Value("${ld.user_key}") String ldUserKey) {
         this.ldClient = ldClient;
-        this.ldUser = new LDUser.Builder(ldUserKey)
-            .custom("timestamp", String.valueOf(System.currentTimeMillis()))
-            .build();
+        this.ldUserBuilder = new LDUser.Builder(ldUserKey)
+            .custom("timestamp", String.valueOf(System.currentTimeMillis()));
+        this.ldUser = this.ldUserBuilder.build();
+
     }
 
     public boolean isXeroxPrintingEnabled() {
         return ldClient.boolVariation("xerox-printing", ldUser, false);
     }
 
-    public boolean isCtscEnabled() {
-        return ldClient.boolVariation("CTSC", ldUser, false);
+    public boolean isCtscEnabled(String localAuthorityName) {
+        return ldClient.boolVariation("CTSC",
+            ldUserBuilder.custom("localAuthorityName", localAuthorityName).build(),
+            false);
+    }
+
+    public boolean isCtscReportEnabled() {
+        return ldClient.boolVariation("CTSC",
+            ldUserBuilder.custom("report", true).build(),
+            false);
     }
 
     public boolean isFeesEnabled() {

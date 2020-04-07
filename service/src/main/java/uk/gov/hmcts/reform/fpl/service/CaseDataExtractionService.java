@@ -41,12 +41,12 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.TIME_DATE;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
@@ -197,8 +197,7 @@ public class CaseDataExtractionService {
     }
 
     private DocmosisHearingBooking getHearingBookingData(List<Element<HearingBooking>> hearingDetails) {
-        return ofNullable(hearingDetails).map(hearingBookings -> {
-                HearingBooking hearing = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
+        return hearingBookingService.getFirstHearing(hearingDetails).map(hearing -> {
                 HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing.getVenue());
 
                 return DocmosisHearingBooking.builder()

@@ -23,6 +23,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadC2DocumentsController.class)
@@ -51,7 +53,9 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .build(), "get-fee");
 
         verify(feeService).getFeesDataForC2(WITH_NOTICE);
-        assertThat(response.getData()).containsEntry("amountToPay", "1000");
+        assertThat(response.getData())
+            .containsEntry("amountToPay", "1000")
+            .containsEntry("displayAmountToPay", YES.getValue());
     }
 
     @Test
@@ -63,7 +67,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .build(), "get-fee");
 
         verify(feeService, never()).getFeesDataForC2(WITH_NOTICE);
-        assertThat(response.getData()).doesNotContainKey("amountToPay");
+        assertThat(response.getData()).doesNotContainKeys("amountToPay", "displayAmountToPay");
     }
 
     @Test
@@ -100,8 +104,9 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
             .build(), "get-fee");
 
-        assertThat(response.getErrors()).contains("XXX");
-        assertThat(response.getData()).doesNotContainKeys("amountToPay");
+        assertThat(response.getData())
+            .doesNotContainKey("amountToPay")
+            .containsEntry("displayAmountToPay", NO.getValue());
     }
 
     @Test

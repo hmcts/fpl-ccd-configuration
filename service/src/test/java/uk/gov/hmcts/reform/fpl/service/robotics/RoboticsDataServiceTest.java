@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.io.IOException;
@@ -58,7 +57,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
-    DateFormatterService.class, RoboticsDataValidatorService.class, ValidationAutoConfiguration.class})
+    RoboticsDataValidatorService.class, ValidationAutoConfiguration.class})
 public class RoboticsDataServiceTest {
     private static LocalDate NOW = LocalDate.now();
 
@@ -80,7 +79,8 @@ public class RoboticsDataServiceTest {
         String returnedRoboticsDataJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
         Map<String, Object> roboticsDataMap = objectMapper.reader()
-            .forType(new TypeReference<Map<String, Object>>() {})
+            .forType(new TypeReference<Map<String, Object>>() {
+            })
             .readValue(returnedRoboticsDataJson);
 
         assertThat(roboticsDataMap).doesNotContainKey("solicitor");
@@ -367,7 +367,8 @@ public class RoboticsDataServiceTest {
             assertThat(returnedRoboticsJson).isNotEmpty();
 
             Map<String, Object> returnedRoboticsDataMap = objectMapper.reader()
-                .forType(new TypeReference<Map<String, Object>>() {})
+                .forType(new TypeReference<Map<String, Object>>() {
+                })
                 .readValue(returnedRoboticsJson);
 
             assertThat(returnedRoboticsDataMap).doesNotContainKey("caseId");
@@ -494,7 +495,7 @@ public class RoboticsDataServiceTest {
             "C/+o 34 9090 7877");
     }
 
-    private CaseData prepareCaseData(LocalDate date) throws IOException {
+    private CaseData prepareCaseData(LocalDate date) {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
         caseData.setDateSubmitted(date);
 

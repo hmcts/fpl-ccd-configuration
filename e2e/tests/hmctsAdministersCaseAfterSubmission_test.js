@@ -3,6 +3,7 @@ const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const orders = require('../fixtures/orders.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
+const c2Payment = require('../fixtures/c2Payment.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -43,10 +44,11 @@ Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage
 });
 
 Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
-  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {}) {
+  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {
+  }) {
     await caseViewPage.goToNewActions(event);
     I_doActionsOnEditPage();
-    await I.completeEvent('Save and continue', { summary: summary, description: description });
+    await I.completeEvent('Save and continue', {summary: summary, description: description});
     I.seeEventSubmissionConfirmation(event);
     I.see(summary);
     I.see(description);
@@ -92,20 +94,28 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  uploadC2DocumentsEventPage.usePbaPayment();
+  uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  uploadC2DocumentsEventPage.usePbaPayment(false);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'C2 Application 1', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('4', 'C2 Application 1', 'Description', 'Rachel Zane C2');
+  I.seeAnswerInTab('5', 'C2 Application 1', 'Are you using PBA to pay?', 'Yes');
+  I.seeAnswerInTab('6', 'C2 Application 1', 'Payment by account (PBA) number', 'PBA0082848');
+  I.seeAnswerInTab('7', 'C2 Application 1', 'Client code', '8888');
+  I.seeAnswerInTab('8', 'C2 Application 1', 'Customer reference', 'Example reference');
   I.seeAnswerInTab('1', 'C2 Application 2', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('4', 'C2 Application 2', 'Description', 'Jessica Pearson C2');
+  I.seeAnswerInTab('5', 'C2 Application 2', 'Are you using PBA to pay?', 'No');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
@@ -127,9 +137,9 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.welsh);
   I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
   I.seeAnswerInTab(6, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeAnswerInTab(1, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title', hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and Justices\' Legal Adviser', 'Last name', hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(3, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name', hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
 
   startDate = dateToString(hearingDetails[1].startDate);
   endDate = dateToString(hearingDetails[1].endDate);
@@ -141,10 +151,10 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.welsh);
   I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
   I.seeAnswerInTab(6, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Title', hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Last name', hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeAnswerInTab(1, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title', hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and Justices\' Legal Adviser', 'Title', hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
+  I.seeAnswerInTab(3, 'Judge and Justices\' Legal Adviser', 'Last name', hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(4, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
 Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
@@ -210,7 +220,7 @@ Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewP
     await orderFunctions.createOrder(I, createOrderEventPage, order);
     I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
     await orderFunctions.assertOrder(I, caseViewPage, order, i + 1, defaultIssuedDate);
-    await orderFunctions.assertOrderSentToParty(I, caseViewPage,  representatives.servedByPost.fullName, order, i + 1);
+    await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order, i + 1);
   }
 });
 
@@ -249,4 +259,21 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+});
+
+Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteEventPage) => {
+  const note = 'Example note';
+  await caseViewPage.goToNewActions(config.administrationActions.addNote);
+  addNoteEventPage.addNote(note);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
+  caseViewPage.selectTab(caseViewPage.tabs.notes);
+  I.seeAnswerInTab('3', 'Note 1', 'Note', note);
+});
+
+Scenario('HMCTS admin update FamilyMan reference number after sending case to gatekeeper', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  enterFamilyManCaseNumberEventPage.enterCaseID('updatedmockcaseID');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 });

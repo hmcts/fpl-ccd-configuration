@@ -30,6 +30,7 @@ public class CaseManagementOrder {
     private final CMOStatus status;
     private final OrderAction action;
     private final NextHearing nextHearing;
+    private final String dateOfIssue;
 
     @JsonIgnore
     public boolean isDraft() {
