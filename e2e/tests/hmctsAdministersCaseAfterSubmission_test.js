@@ -283,7 +283,6 @@ Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
   addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
   await I.completeEvent('Save and continue');
-  // await I.click('Continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addExpertReportLog);
   caseViewPage.selectTab(caseViewPage.tabs.expertReports);
   I.seeAnswerInTab('1', 'Report 1', 'What type of report have you requested?', 'Pediatric');
