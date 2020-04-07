@@ -52,12 +52,11 @@ public class OthersController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        List<Element<Other>> allOthers = caseData.getAllOthers();
 
-        List<Element<Other>> confidentialOthers = confidentialService.getConfidentialDetails(caseData.getAllOthers());
+        confidentialService.addConfidentialDetailsToCase(caseDetails, allOthers, OTHER);
 
-        confidentialService.addConfidentialDetailsToCase(caseDetails, confidentialOthers, OTHER);
-
-        List<Element<Other>> others = confidentialService.removeConfidentialDetails(caseData.getAllOthers());
+        List<Element<Other>> others = confidentialService.removeConfidentialDetails(allOthers);
 
         caseDetails.getData().put("others", Others.builder()
             .firstOther(others.get(0).getValue())

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -73,9 +72,8 @@ public class Other implements Representable, ConfidentialParty<Other> {
         }
     }
 
-    @JsonIgnore
     @Override
-    public Party getConfidentialParty() {
+    public Party toParty() {
         return OtherParty.builder()
             .firstName(this.getName())
             .address(this.getAddress())

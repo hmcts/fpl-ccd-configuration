@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
+import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 
 @Api
 @RestController
@@ -38,7 +39,7 @@ public class ChildController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         caseDetails.getData().put("children1", confidentialDetailsService
-            .combineChildDetails(caseData.getAllChildren(), caseData.getConfidentialChildren()));
+            .prepareCollection(caseData.getAllChildren(), caseData.getConfidentialChildren(), expandCollection()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -60,13 +61,7 @@ public class ChildController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Child>> confidentialChildren =
-            confidentialDetailsService.getConfidentialDetails(caseData.getAllChildren());
-
-        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, confidentialChildren, CHILD);
-
-        caseDetails.getData()
-            .put("children1", confidentialDetailsService.removeConfidentialDetails(caseData.getAllChildren()));
+        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllChildren(), CHILD);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

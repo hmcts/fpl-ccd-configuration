@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
-import uk.gov.hmcts.reform.fpl.model.interfaces.Collection;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 
 import javax.validation.Valid;
@@ -18,7 +16,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
-public class Child implements ConfidentialParty<Child>, Collection<Child> {
+public class Child implements ConfidentialParty<Child> {
     @Valid
     @NotNull(message = "You need to add details to children")
     private final ChildParty party;
@@ -29,9 +27,8 @@ public class Child implements ConfidentialParty<Child>, Collection<Child> {
         return hiddenValue.equals("Yes");
     }
 
-    @JsonIgnore
     @Override
-    public Party getConfidentialParty() {
+    public Party toParty() {
         return party;
     }
 
@@ -73,12 +70,11 @@ public class Child implements ConfidentialParty<Child>, Collection<Child> {
             .build();
     }
 
-    @Override
-    public Child expandCollection() {
+    public static Child expandCollection() {
         return Child.builder()
-                .party(ChildParty.builder()
-                    .partyId(randomUUID().toString())
-                    .build())
-                .build();
+            .party(ChildParty.builder()
+                .partyId(randomUUID().toString())
+                .build())
+            .build();
     }
 }

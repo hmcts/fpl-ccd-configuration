@@ -48,7 +48,7 @@ class ConfidentialDetailsServiceTest {
 
             List<Element<Child>> confidentialChildren = service.getConfidentialDetails(children);
 
-            assertThat(confidentialChildren).containsOnly(childWithConfidentialFieldsAndShowAddress(ID, NO_VALUE));
+            assertThat(confidentialChildren).containsOnly(childWithConfidentialFieldsAndShowAddress());
         }
 
         @Test
@@ -66,7 +66,7 @@ class ConfidentialDetailsServiceTest {
 
             List<Element<Child>> confidentialChildren = service.getConfidentialDetails(children);
 
-            assertThat(confidentialChildren).containsExactly(childWithConfidentialFieldsAndShowAddress(ID, NO_VALUE));
+            assertThat(confidentialChildren).containsExactly(childWithConfidentialFieldsAndShowAddress());
         }
 
         @Test
@@ -86,7 +86,7 @@ class ConfidentialDetailsServiceTest {
 
         @Test
         void shouldAddEmptyElementWhenChildrenIsEmpty() {
-            List<Element<Child>> elements = service.combineChildDetails(List.of(), List.of());
+            List<Element<Child>> elements = service.prepareCollection(List.of(), List.of(), Child.expandCollection());
 
             assertThat(elements.get(0).getValue().getParty().partyId).isNotNull();
         }
@@ -97,8 +97,8 @@ class ConfidentialDetailsServiceTest {
                 .children1(List.of(childWithRemovedConfidentialFields(ID)))
                 .build();
 
-            List<Element<Child>> children = service.combineChildDetails(caseData.getAllChildren(),
-                caseData.getConfidentialChildren());
+            List<Element<Child>> children = service.prepareCollection(caseData.getAllChildren(),
+                caseData.getConfidentialChildren(), Child.expandCollection());
 
             assertThat(children).containsExactly(childWithRemovedConfidentialFields(ID));
         }
@@ -110,8 +110,8 @@ class ConfidentialDetailsServiceTest {
                 .confidentialChildren(List.of(childWithConfidentialFields(ID, CONFIDENTIAL)))
                 .build();
 
-            List<Element<Child>> children = service.combineChildDetails(caseData.getAllChildren(),
-                caseData.getConfidentialChildren());
+            List<Element<Child>> children = service.prepareCollection(caseData.getAllChildren(),
+                caseData.getConfidentialChildren(), Child.expandCollection());
 
             assertThat(children).containsOnly(childWithConfidentialFields(ID, CONFIDENTIAL));
         }
@@ -123,8 +123,8 @@ class ConfidentialDetailsServiceTest {
                 .confidentialChildren(List.of(childWithConfidentialFields(randomUUID(), CONFIDENTIAL)))
                 .build();
 
-            List<Element<Child>> children = service.combineChildDetails(caseData.getAllChildren(),
-                caseData.getConfidentialChildren());
+            List<Element<Child>> children = service.prepareCollection(caseData.getAllChildren(),
+                caseData.getConfidentialChildren(), Child.expandCollection());
 
             assertThat(children).containsOnly(childWithRemovedConfidentialFields(ID));
         }
@@ -136,8 +136,8 @@ class ConfidentialDetailsServiceTest {
                 .confidentialChildren(List.of(childWithConfidentialFields(ID, CONFIDENTIAL)))
                 .build();
 
-            List<Element<Child>> children = service.combineChildDetails(caseData.getAllChildren(),
-                caseData.getConfidentialChildren());
+            List<Element<Child>> children = service.prepareCollection(caseData.getAllChildren(),
+                caseData.getConfidentialChildren(), Child.expandCollection());
 
             assertThat(children).containsOnly(childWithConfidentialFields(ID, NOT_CONFIDENTIAL));
         }
@@ -160,8 +160,8 @@ class ConfidentialDetailsServiceTest {
                 .confidentialChildren(confidentialChildren)
                 .build();
 
-            List<Element<Child>> updatedChildren = service.combineChildDetails(caseData.getAllChildren(),
-                caseData.getConfidentialChildren());
+            List<Element<Child>> updatedChildren = service.prepareCollection(caseData.getAllChildren(),
+                caseData.getConfidentialChildren(), Child.expandCollection());
 
             assertThat(updatedChildren.get(0)).isEqualTo(confidentialChildren.get(0));
             assertThat(updatedChildren.get(1)).isEqualTo(children.get(1));
@@ -175,7 +175,8 @@ class ConfidentialDetailsServiceTest {
 
             service.addConfidentialDetailsToCase(caseDetails, children, CHILD);
 
-            assertThat(caseDetails.getData()).containsKeys(CHILD.getCaseDataKey());
+            assertThat(caseDetails.getData())
+                .containsKeys(CHILD.getCaseDataKey(), CHILD.getConfidentialKey());
         }
 
         @Test
@@ -214,9 +215,9 @@ class ConfidentialDetailsServiceTest {
                 .build());
         }
 
-        private Element<Child> childWithConfidentialFieldsAndShowAddress(UUID id, String detailsHidden) {
-            return element(id, Child.builder()
-                .party(baseChildBuilder(detailsHidden)
+        private Element<Child> childWithConfidentialFieldsAndShowAddress() {
+            return element(ID, Child.builder()
+                .party(baseChildBuilder(NO_VALUE)
                     .email(EmailAddress.builder().email("email@email.com").build())
                     .address(Address.builder().addressLine1("Address Line 1").build())
                     .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
@@ -278,7 +279,8 @@ class ConfidentialDetailsServiceTest {
 
             service.addConfidentialDetailsToCase(caseDetails, respondents, RESPONDENT);
 
-            assertThat(caseDetails.getData()).containsKeys(RESPONDENT.getCaseDataKey());
+            assertThat(caseDetails.getData())
+                .containsKeys(RESPONDENT.getCaseDataKey(), RESPONDENT.getConfidentialKey());
         }
 
         @Test
@@ -295,8 +297,8 @@ class ConfidentialDetailsServiceTest {
 
         @Test
         void shouldAddEmptyElementWhenRespondentIsEmpty() {
-            List<Element<Respondent>> elements = service.combineRespondentDetails(
-                List.of(), List.of());
+            List<Element<Respondent>> elements = service.prepareCollection(
+                List.of(), List.of(), Respondent.expandCollection());
 
             assertThat(elements.get(0).getValue().getParty().partyId).isNotNull();
         }
@@ -307,8 +309,8 @@ class ConfidentialDetailsServiceTest {
                 .respondents1(List.of(respondentWithRemovedConfidentialFields(ID)))
                 .build();
 
-            List<Element<Respondent>> confidentialRespondents = service.combineRespondentDetails(
-                caseData.getAllRespondents(), caseData.getConfidentialRespondents());
+            List<Element<Respondent>> confidentialRespondents = service.prepareCollection(
+                caseData.getAllRespondents(), caseData.getConfidentialRespondents(), Respondent.expandCollection());
 
             assertThat(confidentialRespondents).containsExactly(respondentWithRemovedConfidentialFields(ID));
         }
@@ -320,8 +322,8 @@ class ConfidentialDetailsServiceTest {
                 .confidentialRespondents(List.of(respondentWithConfidentialFields(ID, CONFIDENTIAL)))
                 .build();
 
-            List<Element<Respondent>> confidentialRespondents = service.combineRespondentDetails(
-                caseData.getAllRespondents(), caseData.getConfidentialRespondents());
+            List<Element<Respondent>> confidentialRespondents = service.prepareCollection(
+                caseData.getAllRespondents(), caseData.getConfidentialRespondents(), Respondent.expandCollection());
 
             assertThat(confidentialRespondents).containsOnly(respondentWithConfidentialFields(ID, CONFIDENTIAL));
         }
@@ -333,8 +335,8 @@ class ConfidentialDetailsServiceTest {
                 .confidentialRespondents(List.of(respondentWithConfidentialFields(randomUUID(), CONFIDENTIAL)))
                 .build();
 
-            List<Element<Respondent>> respondents = service.combineRespondentDetails(
-                caseData.getAllRespondents(), caseData.getConfidentialRespondents());
+            List<Element<Respondent>> respondents = service.prepareCollection(
+                caseData.getAllRespondents(), caseData.getConfidentialRespondents(), Respondent.expandCollection());
 
             assertThat(respondents).containsOnly(respondentWithRemovedConfidentialFields(ID));
         }
@@ -346,8 +348,8 @@ class ConfidentialDetailsServiceTest {
                 .confidentialRespondents(List.of(respondentWithConfidentialFields(ID, CONFIDENTIAL)))
                 .build();
 
-            List<Element<Respondent>> respondents = service.combineRespondentDetails(
-                caseData.getAllRespondents(), caseData.getConfidentialRespondents());
+            List<Element<Respondent>> respondents = service.prepareCollection(
+                caseData.getAllRespondents(), caseData.getConfidentialRespondents(), Respondent.expandCollection());
 
             assertThat(respondents).containsOnly(respondentWithConfidentialFields(ID, NOT_CONFIDENTIAL));
         }
@@ -370,8 +372,8 @@ class ConfidentialDetailsServiceTest {
                 .confidentialRespondents(confidentialRespondent)
                 .build();
 
-            List<Element<Respondent>> updatedRespondent = service.combineRespondentDetails(
-                caseData.getAllRespondents(), caseData.getConfidentialRespondents());
+            List<Element<Respondent>> updatedRespondent = service.prepareCollection(
+                caseData.getAllRespondents(), caseData.getConfidentialRespondents(), Respondent.expandCollection());
 
             assertThat(updatedRespondent.get(0)).isEqualTo(confidentialRespondent.get(0));
             assertThat(updatedRespondent.get(1)).isEqualTo(respondents.get(1));
@@ -401,7 +403,7 @@ class ConfidentialDetailsServiceTest {
                 .build());
         }
     }
-    
+
     @Nested
     class OthersTests {
         @Test
@@ -522,7 +524,7 @@ class ConfidentialDetailsServiceTest {
 
             service.addConfidentialDetailsToCase(caseDetails, others, OTHER);
 
-            assertThat(caseDetails.getData()).containsKeys(OTHER.getCaseDataKey());
+            assertThat(caseDetails.getData()).containsKeys(OTHER.getConfidentialKey());
         }
 
         @Test
@@ -550,9 +552,9 @@ class ConfidentialDetailsServiceTest {
 
         private Element<Other> otherWithConfidentialFields(UUID id, String detailsHidden) {
             return element(id, baseOtherBuilder(detailsHidden)
-                    .address(Address.builder().addressLine1("Address Line 1").build())
-                    .telephone("01227 831393")
-                    .build());
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephone("01227 831393")
+                .build());
         }
     }
 }

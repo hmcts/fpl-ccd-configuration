@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
-import uk.gov.hmcts.reform.fpl.model.interfaces.Collection;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
@@ -26,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Respondent implements Representable, ConfidentialParty<Respondent>, Collection<Respondent> {
+public class Respondent implements Representable, ConfidentialParty<Respondent> {
     @Valid
     @NotNull(message = "You need to add details to respondents")
     private final RespondentParty party;
@@ -45,9 +43,8 @@ public class Respondent implements Representable, ConfidentialParty<Respondent>,
         return hiddenValue.equals("Yes");
     }
 
-    @JsonIgnore
     @Override
-    public Party getConfidentialParty() {
+    public Party toParty() {
         return party;
     }
 
@@ -88,8 +85,7 @@ public class Respondent implements Representable, ConfidentialParty<Respondent>,
             .build();
     }
 
-    @Override
-    public Respondent expandCollection() {
+    public static Respondent expandCollection() {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .partyId(randomUUID().toString())

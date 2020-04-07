@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
 @Api
 @RestController
@@ -37,8 +38,8 @@ public class RespondentController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("respondents1", confidentialDetailsService
-            .combineRespondentDetails(caseData.getAllRespondents(), caseData.getConfidentialRespondents()));
+        caseDetails.getData().put("respondents1", confidentialDetailsService.prepareCollection(
+            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -60,14 +61,7 @@ public class RespondentController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Respondent>> confidentialRespondents = confidentialDetailsService
-            .getConfidentialDetails(caseData.getAllRespondents());
-
-        confidentialDetailsService
-            .addConfidentialDetailsToCase(caseDetails, confidentialRespondents, RESPONDENT);
-
-        caseDetails.getData()
-            .put("respondents1", confidentialDetailsService.removeConfidentialDetails(caseData.getAllRespondents()));
+        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllRespondents(), RESPONDENT);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 public interface ConfidentialParty<T> {
     boolean containsConfidentialDetails();
 
-    Party getConfidentialParty();
+    Party toParty();
 
     T extractConfidentialDetails();
 
