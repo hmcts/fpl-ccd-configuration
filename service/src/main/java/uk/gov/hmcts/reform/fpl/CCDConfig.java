@@ -46,6 +46,10 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         role(JUDICIARY, GATEKEEPER).has(HMCTS_ADMIN);
         role(SYSTEM_UPDATE).setApiOnly();
 
+        // Disable AuthorisationCaseField generation for these roles.
+        // TODO: complete configuration of permissions for these roles.
+        role(CCD_SOLICITOR, CCD_LASOLICITOR).noCaseEventToField();
+
         // Events
         buildUniversalEvents();
         buildOpen();
