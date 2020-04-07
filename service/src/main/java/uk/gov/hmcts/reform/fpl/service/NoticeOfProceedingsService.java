@@ -120,8 +120,8 @@ public class NoticeOfProceedingsService {
 
         if (childrenNames.contains(",")) {
             StringBuilder stringBuilder = new StringBuilder(childrenNames);
-            stringBuilder.replace(childrenNames.lastIndexOf(","),
-                childrenNames.lastIndexOf(",") + 1, " and");
+            stringBuilder.replace(childrenNames.lastIndexOf(','),
+                childrenNames.lastIndexOf(',') + 1, " and");
 
             childrenNames = stringBuilder.toString();
         }
