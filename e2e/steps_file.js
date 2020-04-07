@@ -203,6 +203,10 @@ module.exports = function () {
     },
 
     async fillDate(date, sectionId = 'form') {
+      if (date instanceof Date) {
+        date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear()};
+      }
+
       if (date) {
         return within(sectionId, () => {
           this.fillField('Day', date.day);
