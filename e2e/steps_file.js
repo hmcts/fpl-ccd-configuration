@@ -235,9 +235,7 @@ module.exports = function () {
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
      * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
-    async retryUntilExists(action, locator) {
-      const maxNumberOfTries = 4;
-
+    async retryUntilExists(action, locator, maxNumberOfTries = 6) {
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
         if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
