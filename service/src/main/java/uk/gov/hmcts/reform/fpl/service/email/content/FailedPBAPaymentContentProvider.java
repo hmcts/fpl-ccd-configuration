@@ -17,7 +17,7 @@ public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvide
 
     @Autowired
     public FailedPBAPaymentContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl) {
-        super(uiBaseUrl, null);
+        super(uiBaseUrl);
     }
 
     public Map<String, Object> buildCtscNotificationParameters(CaseDetails caseDetails,

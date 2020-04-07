@@ -25,7 +25,7 @@ public class UpcomingHearingsContentProvider extends AbstractEmailContentProvide
 
     @Autowired
     public UpcomingHearingsContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl) {
-        super(uiBaseUrl, null);
+        super(uiBaseUrl);
     }
 
     public Map<String, Object> buildParameters(final LocalDate dateOfHearing, final List<CaseDetails> casesToBeHeard) {
