@@ -1,0 +1,33 @@
+package uk.gov.hmcts.reform.fpl.utils;
+
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static org.apache.commons.lang3.RandomUtils.nextBytes;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
+
+public class NotifyAttachedDocumentLinkHelperTest {
+    @Test
+    void shouldGenerateAttachedDocumentLinkSuccessfully() {
+        byte[] documentContentstAsByte = nextBytes(20);
+        String documentContent = new String(Base64.encodeBase64(documentContentstAsByte), ISO_8859_1);
+
+        JSONObject expectedDocumentLink = new JSONObject().put("file", documentContent);
+
+        Optional<JSONObject> generatedDocumentLink = generateAttachedDocumentLink(documentContentstAsByte);
+        assertEquals(generatedDocumentLink.get(), expectedDocumentLink, true);
+    }
+
+    @Test
+    void shouldNotGenerateDocumentLinkWhenDocumentByteContentGreaterThanTwoMB() {
+        final byte[] documentContentsAsByte = nextBytes(5 * 1024 * 1024);
+
+        assertFalse(generateAttachedDocumentLink(documentContentsAsByte).isPresent());
+    }
+}
