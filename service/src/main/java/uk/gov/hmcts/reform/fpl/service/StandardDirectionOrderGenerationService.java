@@ -53,7 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 //TODO: ensure everything is still working as expected - I don't think BLANK appears everywhere it used to. FPLA-1477
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseDataExtractionService {
+public class StandardDirectionOrderGenerationService {
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;

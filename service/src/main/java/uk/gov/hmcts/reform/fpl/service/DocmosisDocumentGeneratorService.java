@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,34 +15,32 @@ import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
+import uk.gov.hmcts.reform.fpl.model.docmosis.AbstractDocmosisData;
 
 import java.util.Map;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocmosisDocumentGeneratorService {
     private final RestTemplate restTemplate;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final DocmosisConfiguration docmosisDocumentGenerationConfiguration;
+    private final DocmosisConfiguration configuration;
+    private final ObjectMapper mapper;
 
-    @Autowired
-    DocmosisDocumentGeneratorService(RestTemplate restTemplate,
-                                     DocmosisConfiguration docmosisDocumentGenerationConfiguration) {
-        this.restTemplate = restTemplate;
-        this.docmosisDocumentGenerationConfiguration = docmosisDocumentGenerationConfiguration;
+    public DocmosisDocument generatedDocmosisDocument(AbstractDocmosisData templateData, DocmosisTemplates template) {
+        return generateDocmosisDocument(templateData.toMap(mapper), template);
     }
 
-    public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData,
-                                                     DocmosisTemplates docmosisTemplate) {
+    public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData, DocmosisTemplates template) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         DocmosisRequest requestBody = DocmosisRequest.builder()
-            .templateName(docmosisTemplate.getTemplate())
+            .templateName(template.getTemplate())
             .data(templateData)
             .outputFormat("pdf")
             .outputName("IGNORED")
-            .accessKey(docmosisDocumentGenerationConfiguration.getAccessKey())
+            .accessKey(configuration.getAccessKey())
             .build();
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
@@ -50,13 +48,13 @@ public class DocmosisDocumentGeneratorService {
         byte[] response;
 
         try {
-            response = restTemplate.exchange(docmosisDocumentGenerationConfiguration.getUrl() + "/rs/render",
+            response = restTemplate.exchange(configuration.getUrl() + "/rs/render",
                 HttpMethod.POST, request, byte[].class).getBody();
         } catch (HttpClientErrorException.BadRequest ex) {
-            logger.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
+            log.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
             throw ex;
         }
 
-        return new DocmosisDocument(docmosisTemplate.getDocumentTitle(), response);
+        return new DocmosisDocument(template.getDocumentTitle(), response);
     }
 }

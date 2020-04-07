@@ -53,10 +53,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
-    LookupTestConfig.class, CaseDataExtractionService.class, HearingBookingService.class, CommonDirectionService.class,
-    CommonCaseDataExtractionService.class
+    LookupTestConfig.class, StandardDirectionOrderGenerationService.class, HearingBookingService.class,
+    CommonDirectionService.class, CommonCaseDataExtractionService.class
 })
-class CaseDataExtractionServiceTest {
+class StandardDirectionOrderGenerationServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Family Court";
     private static final LocalDate TODAY = LocalDate.now();
@@ -68,7 +68,7 @@ class CaseDataExtractionServiceTest {
     private CommonDirectionService commonDirectionService;
 
     @Autowired
-    private CaseDataExtractionService caseDataExtractionService;
+    private StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
 
     @BeforeEach
     void setup() {
@@ -83,7 +83,7 @@ class CaseDataExtractionServiceTest {
             .dateOfIssue("29 November 2019")
             .build();
 
-        DocmosisStandardDirectionOrder template = caseDataExtractionService
+        DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
             .getStandardOrderDirectionData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
@@ -111,7 +111,7 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldMapDirectionsForDraftSDOWhenAllAssignees() throws IOException {
-        DocmosisStandardDirectionOrder templateData = caseDataExtractionService
+        DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService
             .getStandardOrderDirectionData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
@@ -133,7 +133,7 @@ class CaseDataExtractionServiceTest {
             .standardDirectionOrder(createStandardDirectionOrders(TODAY.atStartOfDay(), DRAFT))
             .build();
 
-        DocmosisStandardDirectionOrder template = caseDataExtractionService
+        DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
             .getStandardOrderDirectionData(caseData);
 
         assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
@@ -168,7 +168,7 @@ class CaseDataExtractionServiceTest {
             .standardDirectionOrder(createStandardDirectionOrders(TODAY.atStartOfDay(), SEALED))
             .build();
 
-        DocmosisStandardDirectionOrder template = caseDataExtractionService
+        DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
             .getStandardOrderDirectionData(caseData);
 
         assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()

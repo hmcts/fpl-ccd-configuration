@@ -28,7 +28,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,26 +38,27 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
+import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {CMODocmosisTemplateDataGenerationService.class})
+@SpringBootTest(classes = {CaseManagementOrderGenerationService.class})
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, DraftCMOService.class, CommonCaseDataExtractionService.class,
     CommonDirectionService.class, HearingVenueLookUpService.class, HearingBookingService.class,
-    JsonOrdersLookupService.class, CaseDataExtractionService.class, LookupTestConfig.class, FixedTimeConfiguration.class
+    JsonOrdersLookupService.class, StandardDirectionOrderGenerationService.class, LookupTestConfig.class,
+    FixedTimeConfiguration.class
 })
-class CMODocmosisTemplateDataGenerationServiceTest {
+class CaseManagementOrderGenerationServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
     private static final String COURT_NAME = "Family Court";
     private static final String HEARING_VENUE = "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW";
 
     @Autowired
-    private CMODocmosisTemplateDataGenerationService service;
+    private CaseManagementOrderGenerationService service;
 
     @Test
     void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() throws IOException {
@@ -99,7 +99,6 @@ class CMODocmosisTemplateDataGenerationServiceTest {
                 .build()))
             .schedule(Schedule.builder().includeSchedule("No").build())
             .recitals(emptyList())
-            .caseManagementNumber(1)
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName(DEFAULT)
                 .legalAdvisorName("")
@@ -126,7 +125,6 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         return DocmosisCaseManagementOrder.builder()
             .courtName(COURT_NAME)
             .familyManCaseNumber("123")
-            //need to update document from generationDate -> dateOfIssue
             .dateOfIssue(formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG))
             .children(getExpectedChildren())
@@ -152,7 +150,6 @@ class CMODocmosisTemplateDataGenerationServiceTest {
             .scheduleProvided(true)
             .draftbackground(templateData.getDraftbackground())
             .courtseal(templateData.getCourtseal())
-            .caseManagementNumber(2)
             .build();
     }
 
@@ -210,17 +207,6 @@ class CMODocmosisTemplateDataGenerationServiceTest {
                         .phoneNumber("+44 71000001")
                         .build()))
                 .build());
-    }
-
-    private List<Map<String, Object>> getEmptyRepresentativeList() {
-        return List.of(
-            Map.of(
-                "name", DEFAULT,
-                "representedBy", List.of(
-                    Map.of("representativeName", DEFAULT,
-                        "representativeEmail", DEFAULT,
-                        "representativePhoneNumber", DEFAULT)))
-        );
     }
 
     private Schedule getExpectedSchedule() {

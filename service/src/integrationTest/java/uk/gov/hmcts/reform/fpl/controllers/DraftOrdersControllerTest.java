@@ -315,7 +315,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
         void setup() {
             DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, pdf);
 
-            given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+            given(documentGeneratorService.generatedDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         }
 
         @Test

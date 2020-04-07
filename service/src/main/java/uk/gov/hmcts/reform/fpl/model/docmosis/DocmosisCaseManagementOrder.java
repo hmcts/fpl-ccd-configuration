@@ -17,8 +17,6 @@ public class DocmosisCaseManagementOrder extends AbstractDocmosisOrder {
     //not needed can manage in doc
     private final boolean recitalsProvided;
 
-    private final int caseManagementNumber;
-
     //not needed can manage in doc
     private final int numberOfChildren;
 
@@ -41,7 +39,6 @@ public class DocmosisCaseManagementOrder extends AbstractDocmosisOrder {
                                        boolean scheduleProvided,
                                        List<DocmosisRecital> recitals,
                                        boolean recitalsProvided,
-                                       int caseManagementNumber,
                                        int numberOfChildren) {
         super(judgeAndLegalAdvisor, courtName, familyManCaseNumber, dateOfIssue, complianceDeadline, respondents,
             children, respondentsProvided, applicantName, hearingBooking, directions, draftbackground, courtseal);
@@ -50,7 +47,6 @@ public class DocmosisCaseManagementOrder extends AbstractDocmosisOrder {
         this.scheduleProvided = scheduleProvided;
         this.recitals = recitals;
         this.recitalsProvided = recitalsProvided;
-        this.caseManagementNumber = caseManagementNumber;
         this.numberOfChildren = numberOfChildren;
     }
 }

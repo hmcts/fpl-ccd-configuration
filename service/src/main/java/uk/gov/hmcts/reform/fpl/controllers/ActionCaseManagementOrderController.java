@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
+import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -56,7 +56,7 @@ public class ActionCaseManagementOrderController {
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
+    private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
     private final DocumentDownloadService documentDownloadService;
     private final RequestData requestData;

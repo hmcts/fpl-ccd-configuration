@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentedBy;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -44,7 +45,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.DEFAULT;
+import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -53,28 +54,24 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
+public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGeneration {
     private static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
 
     private final CommonCaseDataExtractionService dataExtractionService;
-    private final DraftCMOService draftCMOService;
+    private final DraftCMOService cmoService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final CaseDataExtractionService caseDataExtractionService;
+    private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final Time time;
 
     public DocmosisCaseManagementOrder getCaseManagementOrderData(CaseData caseData) throws IOException {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData,
-            caseData.getCaseManagementOrder());
+        CaseManagementOrder caseManagementOrder = cmoService.prepareCMO(caseData, caseData.getCaseManagementOrder());
 
         HearingBooking nextHearing = null;
 
-        if (caseManagementOrder.getNextHearing() != null
-            && caseManagementOrder.getNextHearing().getId() != null
-            && !caseManagementOrder.isDraft()) {
+        if (needsNextHearingDate(caseManagementOrder)) {
             UUID nextHearingId = caseManagementOrder.getNextHearing().getId();
             nextHearing = hearingBookingService.getHearingBookingByUUID(hearingDetails, nextHearingId);
         }
@@ -88,11 +85,10 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
-            .children(caseDataExtractionService.getChildrenDetails(caseData.getAllChildren()))
-            .respondents(caseDataExtractionService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
+            .children(standardDirectionOrderGenerationService.getChildrenDetails(caseData.getAllChildren()))
+            .respondents(getRespondentsNameAndRelationship(caseData))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
-            .applicantName(caseDataExtractionService.getApplicantName(caseData.findApplicant(0)
-                .orElse(Applicant.builder().build())))
+            .applicantName(getApplicantName(caseData))
             .directions(getGroupedCMODirections(caseManagementOrder))
             .hearingBooking(getHearingBookingData(nextHearing))
             .numberOfChildren(caseData.getAllChildren().size())
@@ -100,8 +96,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             .recitals(buildRecitals(caseManagementOrder.getRecitals()))
             .recitalsProvided(isNotEmpty(buildRecitals(caseManagementOrder.getRecitals())))
             .schedule(caseManagementOrder.getSchedule())
-            .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)))
-            .caseManagementNumber(caseData.getServedCaseManagementOrders().size() + 1);
+            .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)));
 
         if (caseManagementOrder.isDraft()) {
             order.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
@@ -112,6 +107,20 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         }
 
         return order.build();
+    }
+
+    private String getApplicantName(CaseData caseData) {
+        return standardDirectionOrderGenerationService.getApplicantName(caseData.findApplicant(0)
+            .orElse(Applicant.builder().build()));
+    }
+
+    private List<DocmosisRespondent> getRespondentsNameAndRelationship(CaseData caseData) {
+        return standardDirectionOrderGenerationService.getRespondentsNameAndRelationship(caseData.getAllRespondents());
+    }
+
+    private boolean needsNextHearingDate(CaseManagementOrder caseManagementOrder) {
+        return caseManagementOrder.getNextHearing() != null && caseManagementOrder.getNextHearing().getId() != null
+            && !caseManagementOrder.isDraft();
     }
 
     private String getScheduleProvided(CaseManagementOrder caseManagementOrder) {
