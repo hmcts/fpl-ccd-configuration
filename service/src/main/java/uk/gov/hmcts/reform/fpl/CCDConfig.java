@@ -354,8 +354,11 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .allWebhooks("case-submission")
                 .retries(1,2,3,4,5)
                 .fields()
+                    .midEventWebhook("case-submission")
                     .field("submissionConsentLabel").readOnly().type("Text").label(" ").done()
-                    .field("submissionConsent").mandatory().type("MultiSelectList").fieldTypeParameter("Consent").label(" ");
+                    .field("submissionConsent").mandatory().type("MultiSelectList").fieldTypeParameter("Consent").done()
+                    .field("displayAmountToPay").readOnly().showCondition("submissionConsentLabel=\"DO_NOT_SHOW\"").done()
+                    .field("amountToPay").readOnly().showCondition("displayAmountToPay=\"Yes\"");
 
         event("populateSDO")
                 .forStateTransition(Submitted, Gatekeeping)
