@@ -9,7 +9,7 @@ public abstract class AbstractEmailContentProvider {
     protected final String uiBaseUrl;
     protected final ObjectMapper mapper;
 
-    public AbstractEmailContentProvider(String uiBaseUrl) {
+    protected AbstractEmailContentProvider(String uiBaseUrl) {
         this(uiBaseUrl, null);
     }
 }
