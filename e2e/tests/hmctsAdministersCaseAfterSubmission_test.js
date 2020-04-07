@@ -9,6 +9,7 @@ const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
 let caseId;
+let submittedAt;
 
 Feature('Case administration after submission');
 
@@ -23,6 +24,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 
     // eslint-disable-next-line require-atomic-updates
     caseId = await I.grabTextFrom('.heading-h1');
+    submittedAt = new Date();
     console.log(`Case ${caseId} has been submitted`);
 
     I.signOut();
@@ -237,7 +239,7 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
 
 Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage) => {
   await I.navigateToCaseList();
-  await caseListPage.searchForCasesWithHandledEvidences();
+  await caseListPage.searchForCasesWithHandledEvidences(submittedAt);
   await I.dontSeeCaseInSearchResult(caseId);
 
   await I.navigateToCaseDetails(caseId);
@@ -247,7 +249,7 @@ Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, c
   await I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 
   await I.navigateToCaseList();
-  await caseListPage.searchForCasesWithHandledEvidences();
+  await caseListPage.searchForCasesWithHandledEvidences(submittedAt);
   await I.seeCaseInSearchResult(caseId);
 });
 
