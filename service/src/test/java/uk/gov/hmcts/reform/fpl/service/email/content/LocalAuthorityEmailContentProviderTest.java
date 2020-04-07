@@ -11,9 +11,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
-import java.io.IOException;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
@@ -25,7 +25,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, LocalAuthorityEmailContentProvider.class, LookupTestConfig.class
+    JacksonAutoConfiguration.class, LocalAuthorityEmailContentProvider.class, LookupTestConfig.class,
+    HearingBookingService.class
 })
 class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
@@ -38,7 +39,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
+    void shouldReturnExpectedMapWithValidSDODetails() {
         Map<String, Object> expectedMap = standardDirectionTemplateParameters();
 
         assertThat(localAuthorityEmailContentProvider

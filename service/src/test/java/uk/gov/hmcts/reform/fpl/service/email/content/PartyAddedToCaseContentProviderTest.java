@@ -9,7 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.IOException;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
@@ -31,7 +30,7 @@ class PartyAddedToCaseContentProviderTest extends AbstractEmailContentProviderTe
     }
 
     @Test
-    void shouldGetPartyAddedToCaseByEmailNotificationParameters() throws IOException {
+    void shouldGetPartyAddedToCaseByEmailNotificationParameters() {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", "Smith")
             .put("familyManCaseNumber", "12345L")
@@ -42,7 +41,7 @@ class PartyAddedToCaseContentProviderTest extends AbstractEmailContentProviderTe
     }
 
     @Test
-    void shouldGetPartyAddedToCaseThroughDigitalServiceNotificationParameters() throws IOException {
+    void shouldGetPartyAddedToCaseThroughDigitalServiceNotificationParameters() {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", "Smith")
             .put("familyManCaseNumber", "12345L")

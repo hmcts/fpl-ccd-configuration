@@ -1,44 +1,31 @@
-package uk.gov.hmcts.reform.fpl.service.email.content;
+package uk.gov.hmcts.reform.fpl.service.email.content.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
-import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-abstract class AbstractEmailContentProvider {
-    final String uiBaseUrl;
-
-    @Autowired
-    ObjectMapper mapper;
-
-    private final HearingBookingService hearingBookingService = new HearingBookingService();
-
-    protected AbstractEmailContentProvider(String uiBaseUrl) {
-        this.uiBaseUrl = uiBaseUrl;
+public abstract class CasePersonalisedContentProvider extends AbstractEmailContentProvider {
+    protected CasePersonalisedContentProvider(String uiBaseUrl, ObjectMapper mapper) {
+        super(uiBaseUrl, mapper);
     }
 
-    ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(Long caseId, CaseData caseData) {
+    protected ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(Long caseId, CaseData caseData) {
         List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
 
         Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
@@ -58,25 +45,6 @@ abstract class AbstractEmailContentProvider {
             .put("caseUrl", formatCaseUrl(uiBaseUrl, caseId));
     }
 
-    ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(Long caseId, CaseData caseData) {
-        return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber",
-                isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
-            .put("leadRespondentsName", capitalize(caseData.getRespondents1()
-                .get(0)
-                .getValue()
-                .getParty()
-                .getLastName()) + ",")
-            .put("hearingDate", getHearingBooking(caseData))
-            .put("reference", String.valueOf(caseId))
-            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseId));
-    }
-
-    private String getHearingBooking(CaseData data) {
-        return hearingBookingService.getFirstHearing(data.getHearingDetails())
-            .map(hearing -> formatLocalDateToString(hearing.getStartDate().toLocalDate(), FormatStyle.LONG))
-            .orElse("");
-    }
 
     private List<String> buildOrdersAndDirections(Orders optionalOrders) {
         ImmutableList.Builder<String> ordersAndDirectionsBuilder = ImmutableList.builder();
@@ -106,4 +74,5 @@ abstract class AbstractEmailContentProvider {
             .map(EmergencyProtectionOrderDirectionsType::getLabel)
             .forEach(builder::add);
     }
+
 }

@@ -10,7 +10,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -34,7 +33,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
+    void shouldReturnExpectedMapWithValidCaseDetails() {
         List<String> ordersAndDirections = List.of("Emergency protection order", "Contact with any named person");
 
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
@@ -57,7 +56,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
+    void shouldReturnSuccessfullyWithEmptyCaseDetails() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("localAuthority", LOCAL_AUTHORITY_NAME)

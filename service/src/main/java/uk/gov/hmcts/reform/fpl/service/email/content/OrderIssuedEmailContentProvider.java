@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
@@ -36,9 +38,10 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
 
     @Autowired
     protected OrderIssuedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                           HmctsCourtLookupConfiguration config,
-                                           RepresentativeService service) {
-        super(uiBaseUrl);
+                                              ObjectMapper mapper,
+                                              HmctsCourtLookupConfiguration config,
+                                              RepresentativeService service) {
+        super(uiBaseUrl, mapper);
         this.service = service;
         this.config = config;
     }
