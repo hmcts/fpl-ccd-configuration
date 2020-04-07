@@ -90,12 +90,12 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .restrictedField(CaseData::getHearing).exclude(LOCAL_AUTHORITY);
 
         tab("DraftOrdersTab", "Draft orders")
-            .exclude(LOCAL_AUTHORITY, HMCTS_ADMIN, CAFCASS, GATEKEEPER, JUDICIARY)
+            .exclude(LOCAL_AUTHORITY, HMCTS_ADMIN, GATEKEEPER, JUDICIARY)
             .showCondition("standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\"")
             .field(CaseData::getStandardDirectionOrder, "standardDirectionOrder.orderStatus!=\"SEALED\"")
             .field(CaseData::getSharedDraftCMODocument)
-            .field(CaseData::getCaseManagementOrder_Judiciary)
-            .field(CaseData::getCaseManagementOrder);
+            .restrictedField(CaseData::getCaseManagementOrder_Judiciary).exclude(CAFCASS)
+            .restrictedField(CaseData::getCaseManagementOrder).exclude(CAFCASS);
 
         tab("OrdersTab", "Orders")
             .exclude(LOCAL_AUTHORITY)
@@ -342,6 +342,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("submitApplication")
                 .forStateTransition(Open, Submitted)
                 .name("Submit application")
+                .displayOrder(17) // TODO - necessary?
                 .explicitGrants()
                 .grantHistoryOnly(LOCAL_AUTHORITY, HMCTS_ADMIN, GATEKEEPER, JUDICIARY, CAFCASS)
                 .grant("CRU", CCD_LASOLICITOR)
@@ -355,6 +356,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("populateSDO")
                 .forStateTransition(Submitted, Gatekeeping)
                 .name("Populate standard directions")
+                .displayOrder(14) // TODO - necessary?
                 .explicitGrants()
                 .grant("C", UserRole.SYSTEM_UPDATE)
                 .fields()
@@ -367,6 +369,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
         event("deleteApplication")
                 .forStateTransition(Open, Deleted)
+                .displayOrder(18) // TODO - necessary?
                 .grantHistoryOnly(LOCAL_AUTHORITY)
                 .grant("CRU", CCD_LASOLICITOR)
                 .name("Delete an application")
@@ -592,7 +595,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .page("allPartiesDirections")
                     .showCondition(notSendToJudge)
                     .label("allPartiesLabelCMO", "## For all parties")
-                .field("allPartiesPrecedentLabelCMO").readOnly().fieldTypeParameter("Direction").label("Add completed directions from the precedent library or your own template.").done()
+                .field("allPartiesPrecedentLabelCMO").readOnly().immutable().fieldTypeParameter("Direction").label("Add completed directions from the precedent library or your own template.").done()
                 .list(CaseData::getAllPartiesCustomCMO).complex(Direction.class, this::renderDirection)
                 .page("localAuthorityDirections")
                     .showCondition(notSendToJudge)
@@ -630,7 +633,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .showCondition(notSendToJudge)
                      .label("orderBasisLabel", "## Basis of order")
                      .label("addRecitalLabel", "### Add recital")
-                     .field("recitals").optional().type("Collection").fieldTypeParameter("Recitals").label("Recitals").mutable().done()
+                     .list("recitals").optional().fieldTypeParameter("Recitals").label("Recitals").done()
                 .page("schedule")
                     .showCondition(notSendToJudge) .field("schedule", Mandatory, null, "Schedule", null, "Schedule")
                     .midEventWebhook()
@@ -725,7 +728,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .showCondition(sendToJudge)
                      .field("orderBasisLabel").readOnly().blacklist(JUDICIARY).done()
                      .label("addRecitalLabel", "### Add recital")
-                     .field("recitals").optional().type("Collection").fieldTypeParameter("Recitals").label("Recitals").mutable().done()
+                     .list("recitals").optional().fieldTypeParameter("Recitals").label("Recitals").done()
                 .page("schedule")
                     .midEventWebhook("action-cmo")
                     .showCondition(sendToJudge) .field("schedule", Mandatory, null, "Schedule", null, "Schedule")
