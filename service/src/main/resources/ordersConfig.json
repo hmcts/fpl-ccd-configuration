@@ -95,13 +95,13 @@
     },
     {
       "title": "Send translated case documents to respondents",
-      "text": "Send translations of case documents to respondents who need them in a language they understand.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
+      "text": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": true,
-        "showDateOnly": true
+        "showDateOnly": false
       }
     },
     {
