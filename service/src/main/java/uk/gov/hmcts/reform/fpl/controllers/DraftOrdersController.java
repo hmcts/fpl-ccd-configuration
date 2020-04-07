@@ -196,6 +196,17 @@ public class DraftOrdersController {
                 .build();
         }
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        if (judgeAndLegalAdvisor != null && judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
+            Judge allocatedJudge = caseData.getAllocatedJudge();
+            judgeAndLegalAdvisor = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+
+            caseDetails.getData().put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
+
+            caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        }
+
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(commonDirectionService.combineAllDirections(caseData))

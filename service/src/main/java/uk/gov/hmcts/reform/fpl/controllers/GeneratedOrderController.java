@@ -134,6 +134,16 @@ public class GeneratedOrderController {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        if (judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
+            Judge allocatedJudge = caseData.getAllocatedJudge();
+            judgeAndLegalAdvisor = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+
+            caseDetails.getData().put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
+            caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        }
+
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
             Document document = getDocument(caseData, DRAFT);
