@@ -8,15 +8,16 @@ java:
   livenessDelay: 50
   environment:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
-    IDAM_CLIENT_ID: fpl_case_service
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     GATEWAY_URL: https://gateway-${SERVICE_FQDN}
+    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
+    FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
+    LD_USER_KEY: FPLA_PREVIEW
+    SCHEDULER_ENABLED: false
   keyVaults:
     fpl:
-      resourceGroup: fpl-case-service
       secrets:
         - notify-api-key
         - docmosis-api-key
@@ -31,12 +32,18 @@ java:
         - local-authority-fallback-inbox
         - system-update-user-username
         - system-update-user-password
+        - robotics-notification-sender
+        - robotics-notification-recipient
+        - ld-sdk-key
+        - ctsc-inbox
 
 ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
   cpuRequests: 250m
+  imagePullPolicy: Always
+
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     redirect_uris:

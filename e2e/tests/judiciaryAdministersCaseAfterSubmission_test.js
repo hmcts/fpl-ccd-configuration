@@ -1,5 +1,7 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
+const orders = require('../fixtures/orders.js');
+const orderFunctions = require('../helpers/generated_order_helper');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -10,7 +12,7 @@ Feature('Judiciary case administration after submission');
 Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.enterMandatoryFields();
+    await I.enterMandatoryFields({multipleChildren: true});
     await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit');
@@ -52,9 +54,9 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
   I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.welsh);
   I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
   I.seeAnswerInTab(6, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeAnswerInTab(1, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title', hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and Justices\' Legal Adviser', 'Last name', hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(3, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name', hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
 
   startDate = dateToString(hearingDetails[1].startDate);
   endDate = dateToString(hearingDetails[1].endDate);
@@ -66,26 +68,27 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
   I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.welsh);
   I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
   I.seeAnswerInTab(6, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Title', hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Last name', hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeAnswerInTab(1, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title', hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and Justices\' Legal Adviser', 'Title', hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
+  I.seeAnswerInTab(3, 'Judge and Justices\' Legal Adviser', 'Last name', hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(4, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('Judiciary creates C21 order for the case', async (I, caseViewPage, createC21OrderEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.createC21Order);
-  await createC21OrderEventPage.enterOrder();
-  I.click('Continue');
-  await createC21OrderEventPage.enterJudgeAndLegalAdvisor('Sotomayer', 'Peter Parker');
-  await I.completeEvent('Save and continue');
-  const now = new Date();
+Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
+  for (let i = 0; i < orders.length; i++) {
+    await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+    await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
+    I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+    await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
+  }
+});
 
-  I.seeEventSubmissionConfirmation(config.administrationActions.createC21Order);
-  caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'C21 order 1', 'Order title', 'Example Title');
-  I.seeAnswerInTab(3, 'C21 order 1', 'Order document', 'C21_order.pdf');
-  I.seeAnswerInTab(4, 'C21 order 1', 'Date and time of upload', dateFormat(now, 'd mmmm yyyy'));
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', 'Her Honour Judge');
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', 'Sotomayer');
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', 'Peter Parker');
+Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeAnswerInTab(1, 'Allocated Judge', 'Judge or magistrate\'s title', 'Her Honour Judge');
+  I.seeAnswerInTab(2, 'Allocated Judge', 'Last name', 'Moley');
 });

@@ -57,6 +57,7 @@
     "ListElementCode": "telephone",
     "FieldType": "Text",
     "ElementLabel": "Telephone number",
+    "Max": "24",
     "SecurityClassification": "Public"
   },
   {
@@ -64,8 +65,8 @@
     "ID": "Others",
     "ListElementCode": "childInformation",
     "FieldType": "TextArea",
-    "ElementLabel": "What is this person’s relationship to the child or children in this case?",
-    "HintText": "Include: the name of the child or children, this person’s relationship to them and whether this person has parental responsibility",
+    "ElementLabel": "What is this person's relationship to the child or children in this case?",
+    "HintText": "Include: the name of the child or children, this person's relationship to them and whether this person has parental responsibility",
     "SecurityClassification": "Public"
   },
   {
@@ -110,5 +111,15 @@
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "representedBy",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Text",
+    "ElementLabel": "Represented by",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "representedBy=\"DO_NOT_SHOW\""
   }
 ]

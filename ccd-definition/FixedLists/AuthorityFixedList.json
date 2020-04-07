@@ -74,6 +74,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CDF",
+    "ListElement": "Cardiff Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "ERY",
+    "ListElement": "East Riding of Yorkshire Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "FPLA",
     "ListElement": "FPLA team"
   }

@@ -17,4 +17,12 @@ public enum DirectionAssignee {
     public String getValue() {
         return value;
     }
+
+    public String toCustomDirectionField() {
+        return value.concat("Custom");
+    }
+
+    public String toHearingDateField() {
+        return value.concat("HearingDate");
+    }
 }

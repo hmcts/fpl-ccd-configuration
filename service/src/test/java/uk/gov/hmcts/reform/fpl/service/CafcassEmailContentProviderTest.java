@@ -1,18 +1,21 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -24,23 +27,37 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDet
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CafcassEmailContentProvider.class,
+    HearingBookingService.class})
 class CafcassEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String CAFCASS_NAME = "Test cafcass";
     private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
 
-    @Mock
+    @MockBean
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
-    @Mock
+    @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
-    @InjectMocks
+    @Autowired
+    private ObjectMapper mapper;
+
+    @Autowired
+    private HearingBookingService hearingBookingService;
+
     private CafcassEmailContentProvider cafcassEmailContentProvider;
 
+    @BeforeEach
+    void setup() {
+        this.cafcassEmailContentProvider = new CafcassEmailContentProvider(
+            localAuthorityNameLookupConfiguration, cafcassLookupConfiguration, "null", hearingBookingService,
+            mapper);
+    }
+
     @Test
-    void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
+    void shouldReturnExpectedMapWithValidCaseDetails() {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
@@ -50,7 +67,10 @@ class CafcassEmailContentProviderTest {
             .put("fullStop", "No")
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", "same day")
+            .put("urgentHearing", "Yes")
+            .put("nonUrgentHearing", "No")
+            .put("firstRespondentName", "Smith")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -66,7 +86,7 @@ class CafcassEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
+    void shouldReturnSuccessfullyWithEmptyCaseDetails() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("cafcass", CAFCASS_NAME)
             .put("localAuthority", "Example Local Authority")
@@ -75,6 +95,9 @@ class CafcassEmailContentProviderTest {
             .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
+            .put("urgentHearing", "No")
+            .put("nonUrgentHearing", "No")
+            .put("firstRespondentName", "")
             .put("reference", "123")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/123")
             .build();

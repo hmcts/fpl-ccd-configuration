@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -18,24 +18,15 @@ import java.util.Map;
 @Api
 @RestController
 @RequestMapping("/callback/case-initiation")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseInitiationController {
-
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
 
-
-    @Autowired
-    public CaseInitiationController(LocalAuthorityService localAuthorityNameService,
-                                    LocalAuthorityUserService localAuthorityUserService) {
-        this.localAuthorityNameService = localAuthorityNameService;
-        this.localAuthorityUserService = localAuthorityUserService;
-    }
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
-        @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackrequest) {
-        String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode(authorization);
+        String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
         Map<String, Object> data = caseDetails.getData();

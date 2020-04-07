@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,39 +15,35 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+
 @Api
 @RestController
 @RequestMapping("/callback/add-hearing-bookings")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingBookingDetailsController {
-    private final MapperService mapperService;
-    private final HearingBookingService hearingBookingService;
+    private final HearingBookingService service;
     private final ValidateGroupService validateGroupService;
     private final ObjectMapper mapper;
-
-    @Autowired
-    public HearingBookingDetailsController(MapperService mapperService,
-                                           HearingBookingService hearingBookingService,
-                                           ValidateGroupService validateGroupService,
-                                           ObjectMapper mapper) {
-        this.mapperService = mapperService;
-        this.hearingBookingService = hearingBookingService;
-        this.validateGroupService = validateGroupService;
-        this.mapper = mapper;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData));
+        List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
+
+        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetails);
+
+        hearingDetails.removeAll(pastHearings);
+
+        caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -58,13 +55,29 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(validateHearingBookings(caseData.getHearingDetails()))
+            .build();
+    }
 
-        final List<String> errors = validateHearingBookings(hearingDetails);
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
+        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
+
+        List<Element<HearingBooking>> combinedHearingDetails =
+            service.combineHearingDetails(caseData.getHearingDetails(), pastHearings);
+
+        caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(errors)
             .build();
     }
 

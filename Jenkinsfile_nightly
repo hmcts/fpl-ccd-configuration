@@ -12,7 +12,6 @@ def product = 'fpl'
 def component = 'case-service'
 
 withNightlyPipeline(type, product, component) {
-  enableMutationTest()
   enableFullFunctionalTest()
 
   after('mutationTest') {
@@ -22,7 +21,7 @@ withNightlyPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest') {
-    env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal'
+    env.URL = 'https://www-ccd.aat.platform.hmcts.net'
     env.PROXY_SERVER = 'proxyout.reform.hmcts.net:8080'
 
     try {

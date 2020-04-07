@@ -3,17 +3,17 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesCustomDirections",
     "CaseEventID": "draftCMO",
-    "CaseFieldID": "allPartiesCustom",
+    "CaseFieldID": "allPartiesCustomCMO",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesCustomDirections",
     "CaseEventID": "draftCMO",
-    "CaseFieldID": "allPartiesCustom",
+    "CaseFieldID": "allPartiesCustomCMO",
     "ListElementCode": "directionText",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
@@ -22,7 +22,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesCustomDirections",
     "CaseEventID": "draftCMO",
-    "CaseFieldID": "allPartiesCustom",
+    "CaseFieldID": "allPartiesCustomCMO",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"

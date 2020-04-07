@@ -1,0 +1,37 @@
+{
+  "payment_group_reference": "2020-1584026805523",
+  "payments": [
+    {
+      "amount": 2055.00,
+      "description": "Payment for case: 1584026518972697",
+      "reference": "RC-1584-0268-0774-3312",
+      "date_created": "2020-03-12T15:26:47.801+0000",
+      "date_updated": "2020-03-12T15:26:47.801+0000",
+      "currency": "GBP",
+      "ccd_case_number": "1584026518972697",
+      "case_reference": "some case reference",
+      "channel": "online",
+      "method": "payment by account",
+      "status": "Success",
+      "site_id": "ABA3",
+      "service_name": "Family Public Law",
+      "customer_reference": "case submission",
+      "account_number": "PBA0082848",
+      "organisation_name": "Swansea City Council",
+      "payment_allocation": []
+    }
+  ],
+  "remissions": [],
+  "fees": [
+    {
+      "id": 5465,
+      "code": "FEE0314",
+      "version": "1",
+      "volume": 1,
+      "calculated_amount": 2055.00,
+      "memo_line": "RECEIPT OF FEES - Family issue public",
+      "natural_account_code": "4481102160",
+      "description": "Application for proceedings under Section 31 of Act"
+    }
+  ]
+}

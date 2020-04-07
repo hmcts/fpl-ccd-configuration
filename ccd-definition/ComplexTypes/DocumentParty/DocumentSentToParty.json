@@ -1,0 +1,44 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentSentToParty",
+    "ListElementCode": "partyName",
+    "FieldType": "Text",
+    "ElementLabel": "Party name",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "document=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentSentToParty",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentSentToParty",
+    "ListElementCode": "coversheet",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentSentToParty",
+    "ListElementCode": "sentAt",
+    "FieldType": "Text",
+    "ElementLabel": "Date and time sent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentSentToParty",
+    "ListElementCode": "letterId",
+    "FieldType": "Text",
+    "ElementLabel": "ID from Send Letter Service",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "document=\"DO NOT SHOW\""
+  }
+]

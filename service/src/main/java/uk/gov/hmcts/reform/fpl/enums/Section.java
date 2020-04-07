@@ -10,10 +10,12 @@ public enum Section {
     CHILDREN("children", "children"),
     ORDERS("orders", "orders and directions needed"),
     RESPONDENTS("respondent", "respondents"),
+    REPRESENTATIVES("representative", "representatives"),
     GROUNDS("grounds", "grounds for the application"),
     HEARING("hearing", "hearing needed"),
     DOCUMENTS("document", "documents"),
-    CASENAME("casename", "case name");
+    CASENAME("casename", "case name"),
+    ALLOCATION_PROPOSAL("allocationproposal", "allocation proposal");
 
     private final String[] errorKeys;
     private final String sectionHeaderName;

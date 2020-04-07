@@ -1,20 +1,31 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.Map;
 import java.util.Optional;
+
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
 public class CommonCaseDataExtractionService {
-    private final DateFormatterService dateFormatterService;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
+    public static final String HEARING_EMPTY_PLACEHOLDER = "Hearing details will be added by the judge";
 
     @Autowired
-    public CommonCaseDataExtractionService(DateFormatterService dateFormatterService) {
-        this.dateFormatterService = dateFormatterService;
+    public CommonCaseDataExtractionService(HearingVenueLookUpService hearingVenueLookUpService) {
+        this.hearingVenueLookUpService = hearingVenueLookUpService;
     }
 
     public String getHearingTime(HearingBooking hearingBooking) {
@@ -40,11 +51,38 @@ public class CommonCaseDataExtractionService {
 
         // If they aren't on the same date return nothing
         if (hearingBooking.hasDatesOnSameDay()) {
-            hearingDate = dateFormatterService.formatLocalDateToString(
-                hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
+            hearingDate = formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
         }
 
         return Optional.ofNullable(hearingDate);
+    }
+
+    // NOTE: doesn't get anything to do with judge
+    public Map<String, Object> getHearingBookingData(final HearingBooking hearingBooking) {
+        if (hearingBooking == null) {
+            return ImmutableMap.of(
+                "hearingDate", HEARING_EMPTY_PLACEHOLDER,
+                "hearingVenue", HEARING_EMPTY_PLACEHOLDER,
+                "preHearingAttendance", HEARING_EMPTY_PLACEHOLDER,
+                "hearingTime", HEARING_EMPTY_PLACEHOLDER
+            );
+        }
+
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking.getVenue());
+
+        return ImmutableMap.of(
+            "hearingDate", getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""),
+            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
+            "preHearingAttendance", extractPrehearingAttendance(hearingBooking),
+            "hearingTime", getHearingTime(hearingBooking)
+        );
+    }
+
+    public Map<String, Object> getJudgeAndLegalAdvisorData(final JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        return ImmutableMap.of(
+            "judgeTitleAndName", formatJudgeTitleAndName(judgeAndLegalAdvisor),
+            "legalAdvisorName", getLegalAdvisorName(judgeAndLegalAdvisor)
+        );
     }
 
     public String extractPrehearingAttendance(HearingBooking booking) {
@@ -58,14 +96,14 @@ public class CommonCaseDataExtractionService {
     }
 
     private String formatDateTimeWithYear(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy, h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM, h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM, h:mma");
     }
 
     private String formatTime(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma");
+        return formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma");
     }
 }

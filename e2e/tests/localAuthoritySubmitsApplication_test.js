@@ -96,7 +96,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   await enterChildrenEventPage.enterParentsDetails();
   await enterChildrenEventPage.enterSocialWorkerDetails();
   await enterChildrenEventPage.defineChildAdditionalNeeds();
-  await enterChildrenEventPage.defineContactDetailsVisibility();
+  await enterChildrenEventPage.enterContactDetailsHidden('No');
   await enterChildrenEventPage.enterLitigationIssues('Yes', 'mock reason');
   await I.addAnotherElementToCollection();
   await enterChildrenEventPage.enterChildDetails('Susan', 'Wilson', '01', '07', '2016', 'Girl');
@@ -108,7 +108,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   await enterChildrenEventPage.enterParentsDetails();
   await enterChildrenEventPage.enterSocialWorkerDetails();
   await enterChildrenEventPage.defineChildAdditionalNeeds();
-  await enterChildrenEventPage.defineContactDetailsVisibility();
+  await enterChildrenEventPage.enterContactDetailsHidden('Yes');
   await enterChildrenEventPage.enterLitigationIssues('No');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
@@ -132,42 +132,61 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   I.seeAnswerInTab(14, 'Party', 'Father\'s full name', 'David Smith');
   I.seeAnswerInTab(15, 'Party', 'Does the father have parental responsibility?', 'Yes');
   I.seeAnswerInTab(16, 'Party', 'Name of social worker', 'James Jackson');
-  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567');
+  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567890');
   I.seeAnswerInTab(18, 'Party', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(19, 'Party', 'Do you need contact details hidden from other parties?', 'No');
   I.seeAnswerInTab(20, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'Yes');
   I.seeAnswerInTab(21, 'Party', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
 
-  I.seeAnswerInTab(3, 'Party', 'First name', 'Susan');
-  I.seeAnswerInTab(4, 'Party', 'Last name', 'Wilson');
-  I.seeAnswerInTab(5, 'Party', 'Date of birth', '1 Jul 2016');
-  I.seeAnswerInTab(6, 'Party', 'Gender', 'Girl');
-  I.seeAnswerInTab(7, 'Party', 'Child\'s living situation', 'Living with respondents');
-  I.seeAnswerInTab(8, 'Party', 'What date did they start staying here?', '2 Nov 2017');
+  I.seeAnswerInTab(1, 'Party', 'First name', 'Susan');
+  I.seeAnswerInTab(2, 'Party', 'Last name', 'Wilson');
+  I.seeAnswerInTab(3, 'Party', 'Date of birth', '1 Jul 2016');
+  I.seeAnswerInTab(4, 'Party', 'Gender', 'Girl');
+  I.seeAnswerInTab(5, 'Party', 'Child\'s living situation', 'Living with respondents');
+  I.seeAnswerInTab(6, 'Party', 'What date did they start staying here?', '2 Nov 2017');
+  I.seeAnswerInTab(7, 'Party', 'Key dates for this child', 'Tuesday the 11th');
+  I.seeAnswerInTab(8, 'Party', 'Brief summary of care and contact plan', 'care plan summary');
+  I.seeAnswerInTab(9, 'Party', 'Are you considering adoption at this stage?', 'No');
+  I.seeAnswerInTab(10, 'Party', 'Mother\'s full name', 'Laura Smith');
+  I.seeAnswerInTab(11, 'Party', 'Father\'s full name', 'David Smith');
+  I.seeAnswerInTab(12, 'Party', 'Does the father have parental responsibility?', 'Yes');
+  I.seeAnswerInTab(13, 'Party', 'Name of social worker', 'James Jackson');
+  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567890');
+  I.seeAnswerInTab(15, 'Party', 'Does the child have any additional needs?', 'No');
+  I.seeAnswerInTab(16, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
+  I.seeAnswerInTab(17, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
+
+  caseViewPage.selectTab(caseViewPage.tabs.confidential);
+  I.seeAnswerInTab(1, 'Party', 'First name', 'Susan');
+  I.seeAnswerInTab(2, 'Party', 'Last name', 'Wilson');
+  I.seeAnswerInTab(3, 'Party', 'Date of birth', '1 Jul 2016');
+  I.seeAnswerInTab(4, 'Party', 'Gender', 'Girl');
+  I.seeAnswerInTab(5, 'Party', 'Child\'s living situation', 'Living with respondents');
+  I.seeAnswerInTab(6, 'Party', 'What date did they start staying here?', '2 Nov 2017');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', '2 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
   I.seeAnswerInTab(3, 'Current address', '', 'Stokesley');
   I.seeAnswerInTab(4, 'Current address', 'Town or City', 'Middlesbrough');
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', 'TS9 5DQ');
   I.seeAnswerInTab(6, 'Current address', 'Country', 'United Kingdom');
-  I.seeAnswerInTab(10, 'Party', 'Key dates for this child', 'Tuesday the 11th');
-  I.seeAnswerInTab(11, 'Party', 'Brief summary of care and contact plan', 'care plan summary');
-  I.seeAnswerInTab(12, 'Party', 'Are you considering adoption at this stage?', 'No');
-  I.seeAnswerInTab(13, 'Party', 'Mother\'s full name', 'Laura Smith');
-  I.seeAnswerInTab(14, 'Party', 'Father\'s full name', 'David Smith');
-  I.seeAnswerInTab(15, 'Party', 'Does the father have parental responsibility?', 'Yes');
-  I.seeAnswerInTab(16, 'Party', 'Name of social worker', 'James Jackson');
-  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567');
-  I.seeAnswerInTab(18, 'Party', 'Does the child have any additional needs?', 'No');
-  I.seeAnswerInTab(19, 'Party', 'Do you need contact details hidden from other parties?', 'No');
-  I.seeAnswerInTab(20, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
+  I.seeAnswerInTab(8, 'Party', 'Key dates for this child', 'Tuesday the 11th');
+  I.seeAnswerInTab(9, 'Party', 'Brief summary of care and contact plan', 'care plan summary');
+  I.seeAnswerInTab(10, 'Party', 'Are you considering adoption at this stage?', 'No');
+  I.seeAnswerInTab(11, 'Party', 'Mother\'s full name', 'Laura Smith');
+  I.seeAnswerInTab(12, 'Party', 'Father\'s full name', 'David Smith');
+  I.seeAnswerInTab(13, 'Party', 'Does the father have parental responsibility?', 'Yes');
+  I.seeAnswerInTab(14, 'Party', 'Name of social worker', 'James Jackson');
+  I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567890');
+  I.seeAnswerInTab(16, 'Party', 'Does the child have any additional needs?', 'No');
+  I.seeAnswerInTab(17, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
+  I.seeAnswerInTab(18, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
 });
 
-Scenario('local authority enters respondents', async (I, caseViewPage, enterRespondentsEventPage) => {
+Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterRespondentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
-  await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
+  await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
   await I.addAnotherElementToCollection();
   await enterRespondentsEventPage.enterRespondent(respondents[1]);
@@ -189,17 +208,27 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', respondents[0].address.postcode);
   I.seeAnswerInTab(6, 'Current address', 'Country', respondents[0].address.country);
   I.seeAnswerInTab(1, 'Telephone', 'Telephone', respondents[0].telephone);
-  I.seeAnswerInTab(10, 'Party', 'What is the respondent’s relationship to the child or children in this case?', 'mock reason');
-  I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
-  I.seeAnswerInTab(12, 'Party', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(13, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
-  I.seeAnswerInTab(14, 'Party', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
+  I.seeAnswerInTab(10, 'Party', 'What is the respondent\'s relationship to the child or children in this case?', 'mock reason');
+  I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from other parties?', 'No');
+  I.seeAnswerInTab(12, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
+  I.seeAnswerInTab(13, 'Party', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
 
-  I.seeAnswerInTab(3, 'Party', 'First name', respondents[1].firstName);
-  I.seeAnswerInTab(4, 'Party', 'Last name', respondents[1].lastName);
-  I.seeAnswerInTab(5, 'Party', 'Date of birth', '1 Jan 1955');
-  I.seeAnswerInTab(6, 'Party', 'Gender', respondents[1].gender);
-  I.seeAnswerInTab(7, 'Party', 'Place of birth', respondents[1].placeOfBirth);
+  I.seeAnswerInTab(1, 'Party', 'First name', respondents[1].firstName);
+  I.seeAnswerInTab(2, 'Party', 'Last name', respondents[1].lastName);
+  I.seeAnswerInTab(3, 'Party', 'Date of birth', '1 Jan 1955');
+  I.seeAnswerInTab(4, 'Party', 'Gender', respondents[1].gender);
+  I.seeAnswerInTab(5, 'Party', 'Place of birth', respondents[1].placeOfBirth);
+  I.seeAnswerInTab(6, 'Party', 'What is the respondent\'s relationship to the child or children in this case?', 'mock reason');
+  I.seeAnswerInTab(7, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
+  I.seeAnswerInTab(8, 'Party', 'Give reason', 'mock reason');
+  I.seeAnswerInTab(9, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
+
+  caseViewPage.selectTab(caseViewPage.tabs.confidential);
+  I.seeAnswerInTab(1, 'Party', 'First name', respondents[1].firstName);
+  I.seeAnswerInTab(2, 'Party', 'Last name', respondents[1].lastName);
+  I.seeAnswerInTab(3, 'Party', 'Date of birth', '1 Jan 1955');
+  I.seeAnswerInTab(4, 'Party', 'Gender', respondents[1].gender);
+  I.seeAnswerInTab(5, 'Party', 'Place of birth', respondents[1].placeOfBirth);
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', respondents[1].address.buildingAndStreet.lineOne);
   I.seeAnswerInTab(2, 'Current address', '', respondents[1].address.buildingAndStreet.lineTwo);
   I.seeAnswerInTab(3, 'Current address', '', respondents[1].address.buildingAndStreet.lineThree);
@@ -207,10 +236,10 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', respondents[1].address.postcode);
   I.seeAnswerInTab(6, 'Current address', 'Country', respondents[1].address.country);
   I.seeAnswerInTab(1, 'Telephone', 'Telephone', respondents[1].telephone);
-  I.seeAnswerInTab(10, 'Party', 'What is the respondent’s relationship to the child or children in this case?', 'mock reason');
-  I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
-  I.seeAnswerInTab(12, 'Party', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(13, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
+  I.seeAnswerInTab(8, 'Party', 'What is the respondent\'s relationship to the child or children in this case?', 'mock reason');
+  I.seeAnswerInTab(9, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
+  I.seeAnswerInTab(10, 'Party', 'Give reason', 'mock reason');
+  I.seeAnswerInTab(11, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 });
 
 Scenario('local authority enters applicant @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterApplicantEventPage) => {
@@ -222,15 +251,16 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(3, 'Party', 'Name of applicant', applicant.name);
   I.seeAnswerInTab(4, 'Party', 'Payment by account (PBA) number', applicant.pbaNumber);
+  I.seeAnswerInTab(5, 'Party', 'Client code', applicant.clientCode);
+  I.seeAnswerInTab(6, 'Party', 'Customer reference', applicant.customerReference);
   I.seeAnswerInTab(1, 'Address', 'Building and Street', applicant.address.buildingAndStreet.lineOne);
   I.seeAnswerInTab(2, 'Address', '', applicant.address.buildingAndStreet.lineTwo);
-  I.seeAnswerInTab(3, 'Address', '', applicant.address.buildingAndStreet.lineThree);
-  I.seeAnswerInTab(4, 'Address', 'Town or City', applicant.address.town);
+  I.seeAnswerInTab(3, 'Address', 'Town or City', applicant.address.town);
+  I.seeAnswerInTab(4, 'Address', 'County', applicant.address.county);
   I.seeAnswerInTab(5, 'Address', 'Postcode/Zipcode', applicant.address.postcode);
-  I.seeAnswerInTab(6, 'Address', 'Country', applicant.address.country);
   I.seeAnswerInTab(1, 'Telephone number', 'Telephone number', applicant.telephoneNumber);
   I.seeAnswerInTab(2, 'Telephone number', 'Name of person to contact', applicant.nameOfPersonToContact);
-  I.seeAnswerInTab(7, 'Party', 'Job title', applicant.jobTitle);
+  I.seeAnswerInTab(9, 'Party', 'Job title', applicant.jobTitle);
   I.seeAnswerInTab(1, 'Mobile number', 'Mobile number', applicant.mobileNumber);
   I.seeAnswerInTab(1, 'Email', 'Email', applicant.email);
   I.seeAnswerInTab(1, 'Solicitor', 'Solicitor\'s full name', 'John Smith');
@@ -245,9 +275,9 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   await caseViewPage.goToNewActions(config.applicationActions.enterOthers);
   await enterOthersEventPage.enterOtherDetails(others[0]);
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
-  await enterOthersEventPage.enterContactDetailsHidden('Yes');
+  await enterOthersEventPage.enterContactDetailsHidden('No');
   await enterOthersEventPage.enterLitigationIssues('No');
-  await I.addAnotherElementToCollection();
+  await I.addAnotherElementToCollection('Other person');
   await enterOthersEventPage.enterOtherDetails(others[1]);
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
   await enterOthersEventPage.enterContactDetailsHidden('Yes');
@@ -266,27 +296,29 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', 'RG4 7AA');
   I.seeAnswerInTab(6, 'Current address', 'Country', 'United Kingdom');
   I.seeAnswerInTab(6, 'Person 1', 'Telephone number', '07888288288');
-  I.seeAnswerInTab(7, 'Person 1', 'What is this person’s relationship to the child or children in this case?', 'Tim Smith');
-  I.seeAnswerInTab(8, 'Person 1', 'Do you need contact details hidden from other parties?', 'Yes');
-  I.seeAnswerInTab(9, 'Person 1', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(10, 'Person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
+  I.seeAnswerInTab(7, 'Person 1', 'What is this person\'s relationship to the child or children in this case?', 'Tim Smith');
+  I.seeAnswerInTab(8, 'Person 1', 'Do you need contact details hidden from other parties?', 'No');
+  I.seeAnswerInTab(9, 'Person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 
   I.seeAnswerInTab(1, 'Other person 1', 'Full name', 'Paul Wilsdon');
   I.seeAnswerInTab(2, 'Other person 1', 'Date of birth', '1 Jan 1984');
   I.seeAnswerInTab(3, 'Other person 1', 'Gender', 'Male');
   I.seeAnswerInTab(4, 'Other person 1', 'Place of birth', 'Wales');
+  I.seeAnswerInTab(5, 'Other person 1', 'What is this person\'s relationship to the child or children in this case?', 'Tim Smith');
+  I.seeAnswerInTab(6, 'Other person 1', 'Do you need contact details hidden from other parties?', 'Yes');
+  I.seeAnswerInTab(7, 'Other person 1', 'Give reason', 'mock reason');
+  I.seeAnswerInTab(8, 'Other person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
+  I.seeAnswerInTab(9, 'Other person 1', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
+
+  caseViewPage.selectTab(caseViewPage.tabs.confidential);
+  I.seeAnswerInTab(1, 'Others 1', 'Full name', 'Paul Wilsdon');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', '2 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
   I.seeAnswerInTab(3, 'Current address', '', 'Stokesley');
   I.seeAnswerInTab(4, 'Current address', 'Town or City', 'Middlesbrough');
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', 'TS9 5DQ');
   I.seeAnswerInTab(6, 'Current address', 'Country', 'United Kingdom');
-  I.seeAnswerInTab(6, 'Other person 1', 'Telephone number', '07888288288');
-  I.seeAnswerInTab(7, 'Other person 1', 'What is this person’s relationship to the child or children in this case?', 'Tim Smith');
-  I.seeAnswerInTab(8, 'Other person 1', 'Do you need contact details hidden from other parties?', 'Yes');
-  I.seeAnswerInTab(9, 'Other person 1', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(10, 'Other person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
-  I.seeAnswerInTab(11, 'Other person 1', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
+  I.seeAnswerInTab(3, 'Others 1', 'Telephone number', '07888288288');
 });
 
 Scenario('local authority enters grounds for non EPO application @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterGroundsForApplicationEventPage) => {
@@ -362,7 +394,7 @@ Scenario('local authority enters international element', async (I, caseViewPage,
   I.seeAnswerInTab(9, 'International element', 'Give reason', 'International involvement reason');
 });
 
-Scenario('local authority enters other proceedings',async (I, caseViewPage, enterOtherProceedingsEventPage) => {
+Scenario('local authority enters other proceedings', async (I, caseViewPage, enterOtherProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
   enterOtherProceedingsEventPage.selectNoForProceeding();
   enterOtherProceedingsEventPage.selectYesForProceeding();
@@ -401,7 +433,7 @@ Scenario('local authority enters allocation proposal', async (I, caseViewPage, e
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
 });
 
-Scenario('local authority enters attending hearing',async (I, caseViewPage, enterAttendingHearingEventPage) => {
+Scenario('local authority enters attending hearing', async (I, caseViewPage, enterAttendingHearingEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAttendingHearing);
   enterAttendingHearingEventPage.enterInterpreter();
   enterAttendingHearingEventPage.enterWelshProceedings();
@@ -442,6 +474,7 @@ Scenario('local authority tries to submit without giving consent', async (I, cas
 
 Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  // I.see('£2,055.00'); Disabled until Fee Register updated on AAT
   submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);

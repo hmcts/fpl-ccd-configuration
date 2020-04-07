@@ -5,6 +5,7 @@ const config = require('./config');
 
 const loginPage = require('./pages/login.page');
 const caseViewPage = require('./pages/caseView.page');
+const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
 const ordersAndDirectionsNeededEventPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
@@ -19,6 +20,7 @@ const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.
 const applicant = require('./fixtures/applicant');
 const solicitor = require('./fixtures/solicitor');
 const respondent = require('./fixtures/respondents');
+const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -104,13 +106,45 @@ module.exports = function () {
       }
     },
 
+    seeSimpleAnswerInTab(sectionName, question, answer) {
+      const sectionLocator =  locate(`//div[@class="complex-panel"][//span[text()="${sectionName}"]]`);
+      const questionRow = locate(`${sectionLocator}//tr[@class="complex-panel-simple-field"][//span[text()="${question}"]]`);
+      this.seeElement(sectionLocator);
+      this.seeElement(questionRow);
+      this.seeElement(questionRow.withText(answer));
+    },
+
+    seeNestedAnswerInTab(questionNo, complexTypeHeading, complexTypeSubHeading, question, answer) {
+      const panelLocator = name => locate(`//div[@class="complex-panel"][//span[text()="${name}"]]`);
+
+      const topLevelLocator = panelLocator(complexTypeHeading);
+      const subLevelLocator = panelLocator(complexTypeSubHeading);
+      const rowLocator = locate(`${topLevelLocator}${subLevelLocator}/table/tbody/tr[${questionNo}]`);
+      const questionLocator = locate(`${rowLocator}/th/span`);
+      const answerLocator = locate(`${rowLocator}/td/span`);
+
+      this.seeElement(topLevelLocator);
+      this.seeElement(subLevelLocator);
+      this.seeElement(rowLocator);
+      this.seeElement(questionLocator.withText(question));
+      this.seeElement(answerLocator.withText(answer));
+    },
+
+    seeCaseInSearchResult(caseId) {
+      this.seeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    },
+
+    dontSeeCaseInSearchResult(caseId) {
+      this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    },
+
     signOut() {
       this.click('Sign Out');
       this.wait(2); // in seconds
     },
 
     async navigateToCaseDetails(caseId) {
-      const normalisedCaseId = caseId.replace(/\D/g, '');
+      const normalisedCaseId = normalizeCaseId(caseId);
 
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
@@ -120,13 +154,17 @@ module.exports = function () {
       }
     },
 
+    async navigateToCaseList(){
+      await caseListPage.navigate();
+    },
+
     async enterAllocationProposal () {
       await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
       enterAllocationProposalEventPage.selectAllocationProposal('District judge');
       await this.completeEvent('Save and continue');
     },
 
-    async enterMandatoryFields () {
+    async enterMandatoryFields (settings) {
       await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
       ordersAndDirectionsNeededEventPage.checkCareOrder();
       await this.completeEvent('Save and continue');
@@ -139,6 +177,10 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
+      if(settings && settings.multipleChildren){
+        await this.addAnotherElementToCollection('Child');
+        await enterChildrenEventPage.enterChildDetails('John', 'Black', '02', '09', '2016');
+      }
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
       await enterRespondentsEventPage.enterRespondent(respondent[0]);
@@ -155,13 +197,46 @@ module.exports = function () {
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
       await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
+      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
+      await this.completeEvent('Save and continue');
     },
 
-    async addAnotherElementToCollection() {
+    async fillDate(date, sectionId = 'form') {
+      if (date) {
+        return within(sectionId, () => {
+          this.fillField('Day', date.day);
+          this.fillField('Month', date.month);
+          this.fillField('Year', date.year);
+        });
+      }
+    },
+
+    async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
-      this.click('Add new');
+      if(collectionName) {
+        this.click(locate('button')
+          .inside(locate('div').withChild(locate('h2').withText(collectionName)))
+          .withText('Add new'));
+      } else {
+        this.click('Add new');
+      }
       this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
       this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
+    },
+
+    async removeElementFromCollection(collectionName, index = 1) {
+      if(collectionName) {
+        await this.click(locate('button')
+          .inside(locate('div').withChild(locate('h2').withText(collectionName)))
+          .withText('Remove')
+          .at(index));
+      } else {
+        await this.click('Remove');
+      }
+      this.click(locate('button')
+        .inside('.mat-dialog-container')
+        .withText('Remove'));
     },
 
     /**
