@@ -77,7 +77,7 @@
     "CaseEventID": "createOrder",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "useAllocatedJudge",
-    "EventElementLabel": "Is this person still assigned to the hearing?",
+    "EventElementLabel": "Is this judge issuing the order?",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
@@ -87,7 +87,7 @@
     "CaseEventID": "createOrder",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeSubHeading",
-    "ElementLabel": "Who's now assigned to the case?",
+    "ElementLabel": "Who is issuing the order?",
     "FieldDisplayOrder": 3,
     "SecurityClassification": "Public",
     "DisplayContext": "READONLY"

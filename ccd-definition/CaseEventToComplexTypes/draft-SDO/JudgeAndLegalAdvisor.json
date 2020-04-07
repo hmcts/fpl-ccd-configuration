@@ -15,7 +15,7 @@
     "CaseEventID": "draftSDO",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "useAllocatedJudge",
-    "EventElementLabel": "Is this person still assigned to the hearing?",
+    "EventElementLabel": "Is this judge issuing the order?",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
@@ -25,7 +25,7 @@
     "CaseEventID": "draftSDO",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeSubHeading",
-    "EventElementLabel": "Who's now assigned to the case?",
+    "EventElementLabel": "Who is issuing the order?",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },

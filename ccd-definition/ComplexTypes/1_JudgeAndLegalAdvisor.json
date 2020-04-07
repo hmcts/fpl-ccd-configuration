@@ -12,7 +12,7 @@
     "ID": "JudgeAndLegalAdvisor",
     "ListElementCode": "useAllocatedJudge",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is this person still assigned to the hearing?",
+    "ElementLabel": "Is this judge issuing the order?",
     "FieldShowCondition": "allocatedJudgeLabel!=\"\"",
     "SecurityClassification": "Public"
   },
@@ -21,7 +21,7 @@
     "ID": "JudgeAndLegalAdvisor",
     "ListElementCode": "judgeSubHeading",
     "FieldType": "Label",
-    "ElementLabel": "Who's now assigned to the case?",
+    "ElementLabel": "Who is issuing the order?",
     "FieldShowCondition": "useAllocatedJudge=\"No\"",
     "SecurityClassification": "Public"
   },
