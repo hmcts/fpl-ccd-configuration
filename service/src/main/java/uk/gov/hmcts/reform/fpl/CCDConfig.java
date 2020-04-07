@@ -44,7 +44,7 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         // Describe the hierarchy of which roles go together.
         role(CCD_SOLICITOR, CCD_LASOLICITOR).has(LOCAL_AUTHORITY);
         role(JUDICIARY, GATEKEEPER).has(HMCTS_ADMIN);
-        role(SYSTEM_UPDATE).setApiOnly();
+        role(SYSTEM_UPDATE, BULK_SCAN, BULK_SCAN_SYSTEM_UPDATE).setApiOnly();
 
         // Disable AuthorisationCaseField generation for these roles.
         // TODO: complete configuration of permissions for these roles.
@@ -215,7 +215,8 @@ public class CCDConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .field("scannedDocuments").optional().done()
             .page(2)
                 .pageLabel("BulkScanning")
-                .field("evidenceHandled").mandatory();
+                .field("evidenceHandled").mandatory()
+                    .blacklist("D", BULK_SCAN, BULK_SCAN_SYSTEM_UPDATE);
 
         event("allocatedJudge")
             .forAllStates()
