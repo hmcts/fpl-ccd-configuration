@@ -40,11 +40,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
@@ -53,7 +54,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedOrderNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
@@ -73,12 +74,6 @@ class GeneratedOrderEventHandlerTest {
         .put("hearingDetailsCallout", subjectLine)
         .put("reference", "12345")
         .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-        .build();
-
-    final Map<String, Object> orderLocalAuthorityParameters = ImmutableMap.<String, Object>builder()
-        .putAll(c2Parameters)
-        .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
-        .put("linkToDocument", mostRecentUploadedDocumentUrl)
         .build();
 
     @Captor
@@ -114,10 +109,12 @@ class GeneratedOrderEventHandlerTest {
     @Autowired
     private GeneratedOrderEventHandler generatedOrderEventHandler;
 
+    private CaseData caseData;
+
     @BeforeEach
     void before() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
@@ -125,9 +122,9 @@ class GeneratedOrderEventHandlerTest {
         given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
             .willReturn(c2Parameters);
 
-        given(orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
-            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
-            .willReturn(orderLocalAuthorityParameters);
+        given(orderEmailContentProvider.buildOrderNotificationParameters(
+            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS))
+            .willReturn(getExpectedOrderNotificationParameters());
 
         given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, GENERATED_ORDER))
@@ -136,21 +133,15 @@ class GeneratedOrderEventHandlerTest {
         given(orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
-
-        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
-            .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
     }
 
     @Test
     void shouldNotifyPartiesOnOrderSubmission() {
+        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
+            .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
+
         generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
             requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
-
-        verify(notificationService).sendEmail(
-            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA,
-            LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            orderLocalAuthorityParameters,
-            "12345");
 
         verify(notificationService).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
@@ -165,6 +156,47 @@ class GeneratedOrderEventHandlerTest {
             eq("12345"));
 
         assertEquals(dataCaptor.getValue(), getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
+
+        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
+            DIGITAL_SERVICE))
+            .willReturn(getExpectedDigitalServedRepresentativesForAddingPartiesToCase());
+
+        generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
+            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+
+        verify(notificationService).sendEmail(
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
+            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            getExpectedOrderNotificationParameters(),
+            "12345");
+
+        verify(notificationService).sendEmail(
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
+            "fred@flinstone.com",
+            getExpectedOrderNotificationParameters(),
+            "12345");
+    }
+
+    @Test
+    void shouldNotifyLocalAuthorityAndDigitalRepresentativesOnOrderSubmission() {
+        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
+            DIGITAL_SERVICE))
+            .willReturn(getExpectedDigitalServedRepresentativesForAddingPartiesToCase());
+
+        generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
+            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+
+        verify(notificationService).sendEmail(
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
+            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            getExpectedOrderNotificationParameters(),
+            "12345");
+
+        verify(notificationService).sendEmail(
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
+            "fred@flinstone.com",
+            getExpectedOrderNotificationParameters(),
+            "12345");
     }
 
     @Test
@@ -194,6 +226,15 @@ class GeneratedOrderEventHandlerTest {
                 .email("barney@rubble.com")
                 .fullName("Barney Rubble")
                 .servingPreferences(EMAIL)
+                .build());
+    }
+
+    private List<Representative> getExpectedDigitalServedRepresentativesForAddingPartiesToCase() {
+        return ImmutableList.of(
+            Representative.builder()
+                .email("fred@flinstone.com")
+                .fullName("Fred Flinstone")
+                .servingPreferences(DIGITAL_SERVICE)
                 .build());
     }
 

@@ -19,8 +19,9 @@ import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentP
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
 @Slf4j
@@ -39,8 +40,6 @@ public class GeneratedOrderEventHandler {
     public void sendEmailsForOrder(final GeneratedOrderEvent orderEvent) {
         EventData eventData = new EventData(orderEvent);
 
-        sendOrderNotificationToLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
-            orderEvent.getMostRecentUploadedDocumentUrl());
         issuedOrderAdminNotificationHandler.sendToAdmin(eventData,
             orderEvent.getDocumentContents(), GENERATED_ORDER);
 
@@ -50,18 +49,28 @@ public class GeneratedOrderEventHandler {
 
         representativeNotificationHandler.sendOrderIssuedNotificationToRepresentatives(eventData,
             orderEvent.getDocumentContents(), representativesServedByEmail, GENERATED_ORDER);
+
+        notifyAllOthers(eventData, orderEvent.getDocumentContents());
     }
 
     private void sendOrderNotificationToLocalAuthority(final CaseDetails caseDetails,
                                                        final String localAuthorityCode,
-                                                       final String mostRecentUploadedDocumentUrl) {
-        Map<String, Object> localAuthorityParameters =
-            orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
-                caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
-
+                                                       final Map<String, Object> templateParameters) {
         String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
 
-        notificationService.sendEmail(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA, recipientEmail,
-            localAuthorityParameters, Long.toString(caseDetails.getId()));
+        notificationService.sendEmail(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
+            recipientEmail, templateParameters, Long.toString(caseDetails.getId()));
+    }
+
+    private void notifyAllOthers(final EventData eventData,
+                                 final byte[] documentContents) {
+        final String localAuthorityCode = eventData.getLocalAuthorityCode();
+        final CaseDetails caseDetails = eventData.getCaseDetails();
+        final Map<String, Object> templateParameters = orderEmailContentProvider.buildOrderNotificationParameters(
+                caseDetails, eventData.getLocalAuthorityCode(), documentContents);
+
+        sendOrderNotificationToLocalAuthority(caseDetails, localAuthorityCode, templateParameters);
+        representativeNotificationHandler.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES, templateParameters, eventData);
     }
 }

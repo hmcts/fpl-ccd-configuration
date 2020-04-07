@@ -2,20 +2,26 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 
+import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 public class NotificationEventHandlerTestData {
     static final String LOCAL_AUTHORITY_CODE = "example";
@@ -32,6 +38,7 @@ public class NotificationEventHandlerTestData {
     static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "barney@rubble.com";
     static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "fred@flinstone.com";
     static final byte[] DOCUMENT_CONTENTS = {1, 2, 3};
+    static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
 
     private NotificationEventHandlerTestData() {
     }
@@ -122,5 +129,20 @@ public class NotificationEventHandlerTestData {
                 .fullName("Barney Rubble")
                 .servingPreferences(EMAIL)
                 .build());
+    }
+
+    public static Map<String, Object> getExpectedOrderNotificationParameters() {
+        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENTS), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+        String subjectLine = "Jones, 111111111";
+
+        return Map.of("callOut",
+            (subjectLine + ", hearing " + formatLocalDateToString(FUTURE_DATE.toLocalDate(), FormatStyle.MEDIUM)),
+            "courtName", COURT_NAME,
+            "orderType", "Blank order (C21)",
+            "reference", "12345",
+            "caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345",
+            "attachedDocumentLink", jsonFileObject);
     }
 }
