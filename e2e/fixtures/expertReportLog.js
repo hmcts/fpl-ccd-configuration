@@ -1,7 +1,7 @@
 module.exports = [
   {
     reportList: {
-      value: 'Peadiatric',
+      value: 'Pediatric',
     },
     reportRequestDate: {
       day: '01',
