@@ -101,7 +101,7 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
   const today = new Date();
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.skipDateOfIssue();
-  await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
+  await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsDraft();
   await I.completeEvent('Save and continue');
