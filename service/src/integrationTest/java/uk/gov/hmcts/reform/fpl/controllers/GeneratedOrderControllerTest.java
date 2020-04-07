@@ -345,7 +345,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                         .judgeTitle(HER_HONOUR_JUDGE)
                         .judgeLastName("Judy")
                         .legalAdvisorName("Peter Parker")
-                        .useAllocatedJudge(NO.getValue())
+                        .useAllocatedJudge(null)
                         .build()
                 );
         }

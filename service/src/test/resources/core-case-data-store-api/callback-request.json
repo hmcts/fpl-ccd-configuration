@@ -456,7 +456,12 @@
       "noticeOfProceedings": {
         "proceedingTypes": [
           "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
-        ]
+        ],
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "judgeLastName": "Judy",
+          "legalAdvisorName": "Peter Parker"
+        }
       },
       "temporaryC2Document": {
         "document": {
