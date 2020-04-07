@@ -285,5 +285,5 @@ pitest {
   outputFormats.set(['XML', 'HTML'])
   timestampedReports.set(false)
   mutationThreshold.set(80)
-  timeoutConstInMillis.set(30000)
+  timeoutConstInMillis.set(60000)
 }
