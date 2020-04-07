@@ -1,16 +1,20 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDoc;
 
 import java.util.Map;
 
@@ -19,10 +23,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {DocmosisCoverDocumentsService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, DocmosisCoverDocumentsService.class})
 class DocmosisCoverDocumentsServiceTest {
 
-    private final DocmosisCoverDocumentsService documentsService;
+    private DocmosisCoverDocumentsService documentsService;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @MockBean
     DocmosisDocumentGeneratorService documentGeneratorService;
@@ -45,7 +52,7 @@ class DocmosisCoverDocumentsServiceTest {
         String familyManCaseNumber = "12345";
         Long ccdCaseNumber = 1234123412341234L;
         Representative testRepresentative = buildRepresentative();
-        Map<String, Object> generalLetterData = documentsService.buildCoverDocumentsData(familyManCaseNumber,
+        DocmosisCoverDoc coverDocData = documentsService.buildCoverDocumentsData(familyManCaseNumber,
             ccdCaseNumber, testRepresentative);
 
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
@@ -55,16 +62,16 @@ class DocmosisCoverDocumentsServiceTest {
             .put("representativeAddress", "1 Petty France\nSt James's Park\nLondon")
             .build();
 
-        assertThat(generalLetterData).isEqualTo(expectedMap);
+        assertThat(coverDocData.toMap(mapper)).isEqualTo(expectedMap);
     }
 
     @Test
     void shouldDefaultNullFamilyManCaseNumberToEmptyString() {
         Long ccdCaseNumber = 1234123412341234L;
-        Map<String, Object> generalLetterData = documentsService.buildCoverDocumentsData(null,
+        DocmosisCoverDoc coverDoc = documentsService.buildCoverDocumentsData(null,
             ccdCaseNumber,  buildRepresentative());
 
-        assertThat(generalLetterData.get("familyManCaseNumber")).isEqualTo("");
+        assertThat(coverDoc.getFamilyManCaseNumber()).isEqualTo("");
     }
 
     private Representative buildRepresentative() {
