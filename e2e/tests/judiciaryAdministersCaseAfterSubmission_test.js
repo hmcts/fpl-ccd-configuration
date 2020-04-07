@@ -9,7 +9,7 @@ let caseId;
 
 Feature('Judiciary case administration after submission');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, allocatedJudgeEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields({multipleChildren: true});
@@ -84,15 +84,7 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
   I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPage, allocatedJudgeEventPage, addHearingBookingDetailsEventPage, createOrderEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeAnswerInTab(1, 'Allocated Judge', 'Judge or magistrate\'s title', 'Her Honour Judge');
-  I.seeAnswerInTab(2, 'Allocated Judge', 'Last name', 'Moley');
-
+Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPage, addHearingBookingDetailsEventPage, createOrderEventPage) => {
   for (let i = 0; i < orders.length; i++) {
     const defaultIssuedDate = new Date();
     await caseViewPage.goToNewActions(config.administrationActions.createOrder);

@@ -97,7 +97,7 @@ const enterJudgeAndLegalAdvisor = async (I, createOrderEventPage, order, hasAllo
   } else {
     await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
   }
-}
+};
 
 module.exports = {
   async createOrder(I, createOrderEventPage, order, hasAllocatedJudge) {
