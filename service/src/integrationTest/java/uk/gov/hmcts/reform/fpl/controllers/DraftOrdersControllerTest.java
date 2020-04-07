@@ -167,7 +167,8 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
-        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isEqualTo("Case assigned to: Her Honour Judge Richards");
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isEqualTo(
+            "Case assigned to: Her Honour Judge Richards");
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
         assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Davidson");
     }

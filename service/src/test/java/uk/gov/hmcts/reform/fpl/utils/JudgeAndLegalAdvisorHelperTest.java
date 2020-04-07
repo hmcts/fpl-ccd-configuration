@@ -8,11 +8,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.migrateJudgeAndLegalAdvisor;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+
 class JudgeAndLegalAdvisorHelperTest {
 
     @Test
@@ -89,7 +90,7 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    private void shouldExtractOtherTitleDescriptionWhenOtherTitleSelected() {
+    void shouldExtractOtherTitleDescriptionWhenOtherTitleSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(OTHER)
             .otherTitle("His Excellency")
@@ -102,11 +103,13 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    void shouldMigrateJudgeAndLegalAdvisorWhenAllocatedJudgeIncludesTitleAndLastName() {
+    void shouldReturnAllocatedJudgeWhenUseAllocatedJudgeSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(MAGISTRATES)
             .judgeLastName("Stevenson")
             .legalAdvisorName("John Papa")
+            .useAllocatedJudge("Yes")
+            .allocatedJudgeLabel("Case assigned to: His Honour Judge Dread")
             .build();
 
         Judge allocatedJudge = Judge.builder()
@@ -114,33 +117,33 @@ class JudgeAndLegalAdvisorHelperTest {
             .judgeLastName("Dread")
             .build();
 
-        JudgeAndLegalAdvisor migratedJudge = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+        JudgeAndLegalAdvisor expectedJudge = getSelectedJudge(judgeAndLegalAdvisor, allocatedJudge);
 
-        assertThat(migratedJudge.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
-        assertThat(migratedJudge.getJudgeLastName()).isEqualTo("Dread");
-        assertThat(migratedJudge.getLegalAdvisorName()).isEqualTo("John Papa");
+        assertThat(expectedJudge.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
+        assertThat(expectedJudge.getJudgeLastName()).isEqualTo("Dread");
+        assertThat(expectedJudge.getLegalAdvisorName()).isEqualTo("John Papa");
     }
 
     @Test
-    void shouldMigrateJudgeAndLegalAdvisorWhenAllocatedJudgeIncludesOtherTitleAndLastName() {
+    void shouldReturnInputtedJudgeWhenUseAllocatedJudgeNotSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(MAGISTRATES)
             .judgeLastName("Stevenson")
             .legalAdvisorName("John Papa")
+            .useAllocatedJudge("No")
+            .allocatedJudgeLabel("Case assigned to: His Honour Judge Dread")
             .build();
 
         Judge allocatedJudge = Judge.builder()
-            .judgeTitle(OTHER)
-            .otherTitle("Mr")
-            .judgeLastName("Watson")
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Dread")
             .build();
 
-        JudgeAndLegalAdvisor migratedJudge = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+        JudgeAndLegalAdvisor expectedJudge = getSelectedJudge(judgeAndLegalAdvisor, allocatedJudge);
 
-        assertThat(migratedJudge.getJudgeTitle()).isEqualTo(OTHER);
-        assertThat(migratedJudge.getOtherTitle()).isEqualTo("Mr");
-        assertThat(migratedJudge.getJudgeLastName()).isEqualTo("Watson");
-        assertThat(migratedJudge.getLegalAdvisorName()).isEqualTo("John Papa");
+        assertThat(expectedJudge.getJudgeTitle()).isEqualTo(MAGISTRATES);
+        assertThat(expectedJudge.getJudgeLastName()).isEqualTo("Stevenson");
+        assertThat(expectedJudge.getLegalAdvisorName()).isEqualTo("John Papa");
     }
 
     @Test

@@ -41,7 +41,7 @@
     "ListElementCode": "otherTitle",
     "FieldType": "Text",
     "ElementLabel": "Title",
-    "FieldShowCondition": "judgeTitle=\"OTHER\"",
+    "FieldShowCondition": "judgeTitle=\"OTHER\" AND useAllocatedJudge!=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
@@ -50,7 +50,7 @@
     "ListElementCode": "judgeLastName",
     "FieldType": "Text",
     "ElementLabel": "Last name",
-    "FieldShowCondition": "judgeTitle!=\"MAGISTRATES\" AND judgeTitle!=\"\"",
+    "FieldShowCondition": "judgeTitle!=\"MAGISTRATES\" AND judgeTitle!=\"\" AND useAllocatedJudge!=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
@@ -59,7 +59,7 @@
     "ListElementCode": "judgeFullName",
     "FieldType": "Text",
     "ElementLabel": "Full name",
-    "FieldShowCondition": "judgeTitle=\"MAGISTRATES\"",
+    "FieldShowCondition": "judgeTitle=\"MAGISTRATES\" AND useAllocatedJudge!=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {

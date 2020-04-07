@@ -26,14 +26,25 @@ public class JudgeAndLegalAdvisorHelper {
             .orElse("");
     }
 
-    public static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
-                                                                   Judge allocatedJudge) {
+    public static JudgeAndLegalAdvisor getSelectedJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                        Judge allocatedJudge) {
+        if (judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
+            return migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
+        } else {
+            return judgeAndLegalAdvisor;
+        }
+    }
+
+    private static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                                    Judge allocatedJudge) {
         return JudgeAndLegalAdvisor.builder()
             .judgeTitle(allocatedJudge.getJudgeTitle())
             .otherTitle(allocatedJudge.getOtherTitle())
             .judgeLastName(allocatedJudge.getJudgeLastName())
             .judgeFullName(allocatedJudge.getJudgeFullName())
             .legalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
+            .allocatedJudgeLabel(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+            .useAllocatedJudge(judgeAndLegalAdvisor.getUseAllocatedJudge())
             .build();
     }
 

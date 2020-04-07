@@ -183,12 +183,13 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
-            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .order(GeneratedOrder.builder()
-                    .title("Example Order")
-                    .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                    .build()));
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
+                    .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                    .order(GeneratedOrder.builder()
+                        .title("Example Order")
+                        .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                        .build()));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -242,10 +243,11 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
-            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM, judgeAndLegalAdvisor)
-                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM, judgeAndLegalAdvisor)
+                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                    .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                    .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
             );
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -260,10 +262,11 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         void aboutToSubmitShouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
-            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
-                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .orderMonths(14));
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
+                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                    .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                    .orderMonths(14));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -281,14 +284,15 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         void aboutToSubmitShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(YES);
 
-            final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
-                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .orderMonths(14)
-                .allocatedJudge(Judge.builder()
-                    .judgeTitle(HIS_HONOUR_JUDGE)
-                    .judgeLastName("Robinson")
-                    .build()));
+            final CaseDetails caseDetails = buildCaseDetails(
+                commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
+                    .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                    .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                    .orderMonths(14)
+                    .allocatedJudge(Judge.builder()
+                        .judgeTitle(HIS_HONOUR_JUDGE)
+                        .judgeLastName("Robinson")
+                        .build()));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);

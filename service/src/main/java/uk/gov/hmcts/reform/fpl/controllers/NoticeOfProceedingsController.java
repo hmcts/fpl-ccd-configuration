@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -42,7 +41,7 @@ import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.migrateJudgeAndLegalAdvisor;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Api
@@ -95,20 +94,16 @@ public class NoticeOfProceedingsController {
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+            caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
 
-        if (judgeAndLegalAdvisor != null && judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
-            Judge allocatedJudge = caseData.getAllocatedJudge();
+        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
-            judgeAndLegalAdvisor = migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
-            removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+        NoticeOfProceedings noticeOfProceedings = caseData.getNoticeOfProceedings();
+        noticeOfProceedings = noticeOfProceedings.toBuilder().judgeAndLegalAdvisor(judgeAndLegalAdvisor).build();
 
-            NoticeOfProceedings noticeOfProceedings = caseData.getNoticeOfProceedings();
-            noticeOfProceedings = noticeOfProceedings.toBuilder().judgeAndLegalAdvisor(judgeAndLegalAdvisor).build();
-
-            caseDetails.getData().put("noticeOfProceedings", noticeOfProceedings);
-            caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        }
+        caseDetails.getData().put("noticeOfProceedings", noticeOfProceedings);
+        caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         Map<String, Object> templateData = noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData);
 
