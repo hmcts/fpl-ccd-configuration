@@ -40,10 +40,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
     HearingBookingService.class, LookupTestConfig.class})
 class GeneratedOrderEmailContentProviderTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
-    private static final byte[] DOCUMENT_CONTENTS = {1, 2, 3};
+    private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusMonths(3);
+    private static final byte[] DOCUMENT_CONTENTS = {1, 2, 3, 4, 5};
     private static final String COURT_EMAIL_ADDRESS = "admin@family-court.com";
-    private static final String COURT_NAME = "Test court";
+    private static final String COURT_NAME = "Family Court";
     private static final String COURT_CODE = "000";
 
     @MockBean
@@ -61,7 +61,7 @@ class GeneratedOrderEmailContentProviderTest {
 
     @BeforeEach
     void setup() {
-        this.orderEmailContentProvider = new GeneratedOrderEmailContentProvider("",
+        this.orderEmailContentProvider = new GeneratedOrderEmailContentProvider("http://fake-url",
             objectMapper, hearingBookingService, courtLookupConfiguration);
 
         given(courtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
@@ -83,7 +83,7 @@ class GeneratedOrderEmailContentProviderTest {
 
     private CaseDetails createCaseDetailsWithSingleOrderElement() {
         return CaseDetails.builder()
-            .id(167888L)
+            .id(12345L)
             .data(ImmutableMap.of(HEARING_DETAILS_KEY, createHearingBookings(FUTURE_DATE, FUTURE_DATE.plusDays(1)),
                 "orderCollection", ImmutableList.of(
                     Element.<GeneratedOrder>builder()
@@ -98,7 +98,7 @@ class GeneratedOrderEmailContentProviderTest {
                             .build())
                         .build()),
                 "respondents1", createRespondents(),
-                "familyManCaseNumber", "111111111"))
+                "familyManCaseNumber", "SACCCCCCCC5676576567"))
             .build();
     }
 }

@@ -27,7 +27,7 @@ public class NotificationEventHandlerTestData {
     static final String LOCAL_AUTHORITY_CODE = "example";
     static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     static final String COURT_EMAIL_ADDRESS = "admin@family-court.com";
-    static final String COURT_NAME = "Test court";
+    static final String COURT_NAME = "Family Court";
     static final String AUTH_TOKEN = "Bearer token";
     static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
     static final String CAFCASS_NAME = "cafcass";
@@ -37,8 +37,8 @@ public class NotificationEventHandlerTestData {
     static final String CTSC_INBOX = "Ctsc+test@gmail.com";
     static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "barney@rubble.com";
     static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "fred@flinstone.com";
-    static final byte[] DOCUMENT_CONTENTS = {1, 2, 3};
-    static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
+    static final byte[] DOCUMENT_CONTENTS = {1, 2, 3, 4, 5};
+    static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusMonths(3);
 
     private NotificationEventHandlerTestData() {
     }
@@ -135,14 +135,14 @@ public class NotificationEventHandlerTestData {
         String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENTS), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
-        String subjectLine = "Jones, 111111111";
+        String subjectLine = "Jones, SACCCCCCCC5676576567";
 
         return Map.of("callOut",
             (subjectLine + ", hearing " + formatLocalDateToString(FUTURE_DATE.toLocalDate(), FormatStyle.MEDIUM)),
             "courtName", COURT_NAME,
             "orderType", "Blank order (C21)",
             "reference", "12345",
-            "caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345",
+            "caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345",
             "attachedDocumentLink", jsonFileObject);
     }
 }
