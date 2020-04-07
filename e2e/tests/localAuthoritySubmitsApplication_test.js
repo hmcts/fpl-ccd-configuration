@@ -427,7 +427,7 @@ Scenario('local authority enters other proceedings', async (I, caseViewPage, ent
 
 Scenario('local authority enters allocation proposal', async (I, caseViewPage, enterAllocationProposalEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-  enterAllocationProposalEventPage.selectAllocationProposal('Lay justices');
+  enterAllocationProposalEventPage.selectAllocationProposal('Magistrate');
   enterAllocationProposalEventPage.enterProposalReason('test');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
