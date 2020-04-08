@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.Loc
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,7 +42,7 @@ class FailedPBAPaymentContentProviderTest {
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidCtscNotificationParameters() throws IOException {
+    void shouldReturnExpectedMapWithValidCtscNotificationParameters() {
         Map<String, Object> expectedMap = getExpectedCtscNotificationParameters();
 
         assertThat(failedPBAPaymentContentProvider.buildCtscNotificationParameters(populatedCaseDetails(),
