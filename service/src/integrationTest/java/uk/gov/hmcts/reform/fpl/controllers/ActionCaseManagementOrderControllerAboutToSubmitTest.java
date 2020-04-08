@@ -82,7 +82,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     void setup() {
         DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
-        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(documentGeneratorService.generatedDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document());
 
         populatedCaseDetails = populatedCaseDetails();

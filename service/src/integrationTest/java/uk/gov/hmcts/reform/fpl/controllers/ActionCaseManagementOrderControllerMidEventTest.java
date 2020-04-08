@@ -45,14 +45,14 @@ public class ActionCaseManagementOrderControllerMidEventTest extends AbstractCon
     @Test
     void shouldAddDocumentReferenceToOrderAction() {
         Document document = document();
+        DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
-        given(documentGeneratorService.generateDocmosisDocument(any(), any()))
-            .willReturn(new DocmosisDocument("case-management-order.pdf", PDF));
+        given(documentGeneratorService.generatedDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
 
         CaseDetails caseDetails = populatedCaseDetails();
-        caseDetails.getData()
-            .put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder().build());
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
+            CaseManagementOrder.builder().build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 

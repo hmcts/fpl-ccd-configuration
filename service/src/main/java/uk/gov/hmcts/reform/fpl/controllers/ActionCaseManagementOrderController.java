@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -23,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEM
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.DATE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
@@ -74,7 +75,7 @@ public class ActionCaseManagementOrderController {
         }
 
         caseDetails.getData().putAll(caseManagementOrderService
-                .extractMapFieldsFromCaseManagementOrder(caseManagementOrder));
+            .extractMapFieldsFromCaseManagementOrder(caseManagementOrder));
 
         draftCMOService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
@@ -188,13 +189,10 @@ public class ActionCaseManagementOrderController {
     }
 
     private Document getDocument(CaseData data, boolean draft) throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getCaseManagementOrderData(data)
-            .toMap(mapper);
+        DocmosisCaseManagementOrder templateData = templateDataGenerationService.getCaseManagementOrderData(data);
+        DocmosisDocument document = docmosisDocumentGeneratorService.generatedDocmosisDocument(templateData, CMO);
 
-        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            cmoDocumentTemplateData, DocmosisTemplates.CMO);
-
-        String documentTitle = (draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle());
+        String documentTitle = draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle();
 
         return uploadDocumentService.uploadPDF(document.getBytes(), documentTitle);
     }
