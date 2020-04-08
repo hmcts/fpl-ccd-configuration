@@ -27,11 +27,11 @@ class DocmosisCoverDocumentsServiceTest {
 
     private DocmosisDocument docmosisDocument;
 
+    private Representative testRepresentative;
+
     private static final String FAMILY_MAN_NUMBER = "12345";
 
     private static final Long CCD_CASE_NUMBER = 1234123412341234L;
-
-    Representative testRepresentative;
 
     @MockBean
     DocmosisDocumentGeneratorService documentGeneratorService;
