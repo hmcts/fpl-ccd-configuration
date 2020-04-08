@@ -105,6 +105,6 @@ Scenario('Judiciary creates notice of proceedings documents with allocated judge
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6a.pdf']);
-  I.seeInTab(['Notice of proceedings 2', 'File name', 'Notice_of_proceedings_c6.pdf']);
+  I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6a.pdf');
+  I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6.pdf');
 });
