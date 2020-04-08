@@ -63,7 +63,7 @@ Scenario('hmcts admin complies with directions on behalf of other parties', asyn
   await I.completeEvent('Save and continue');
   await I.seeEventSubmissionConfirmation(config.applicationActions.complyOnBehalfOf);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'Compliance 1', 'Party', 'Court');
-  I.seeAnswerInTab(2, 'Compliance 1', 'Complying on behalf of', 'Respondent 1');
-  I.seeAnswerInTab(4, 'Compliance 1', 'Has this direction been complied with?', 'Yes');
+  I.seeInTab(['Compliance 1', 'Party'], 'Court');
+  I.seeInTab(['Compliance 1', 'Complying on behalf of'], 'Respondent 1');
+  I.seeInTab(['Compliance 1', 'Has this direction been complied with?'], 'Yes');
 });
