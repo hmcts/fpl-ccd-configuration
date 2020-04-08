@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.fpl.utils;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Optional;
 
@@ -27,6 +30,15 @@ public class NotifyAttachedDocumentLinkHelperTest {
     @Test
     void shouldNotGenerateDocumentLinkWhenDocumentByteContentGreaterThanTwoMB() {
         final byte[] documentContentsAsByte = nextBytes(5 * 1024 * 1024);
+
+        assertFalse(generateAttachedDocumentLink(documentContentsAsByte).isPresent());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0})
+    @NullSource
+    void shouldNotGenerateDocumentLinkWhenDocumentByteContentIsEmptyOrNull(final Integer value) {
+        final byte[] documentContentsAsByte = value == null ? null : nextBytes(value);
 
         assertFalse(generateAttachedDocumentLink(documentContentsAsByte).isPresent());
     }
