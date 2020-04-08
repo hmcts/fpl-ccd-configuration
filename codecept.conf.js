@@ -12,7 +12,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       keepCookies: true,
-      waitForTimeout: 30000,
+      waitForTimeout: 20000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
