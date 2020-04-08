@@ -35,6 +35,68 @@
     "ID": "HearingBookingDetails",
     "CaseEventID": "hearingBookingDetails",
     "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress",
+    "SecurityClassification": "Public",
+    "FieldDisplayOrder": 4,
+    "FieldShowCondition": "hearingDetails.venue=\"OTHER\"",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.AddressLine1",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.County",
+    "SecurityClassification": "Public",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.PostCode",
+    "SecurityClassification": "Public",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.Country",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingDetails",
+    "CaseEventID": "hearingBookingDetails",
+    "CaseFieldID": "hearingDetails",
     "ListElementCode": "startDate",
     "EventElementLabel": "Start date and time",
     "HintText": "Use 24 hour format",
