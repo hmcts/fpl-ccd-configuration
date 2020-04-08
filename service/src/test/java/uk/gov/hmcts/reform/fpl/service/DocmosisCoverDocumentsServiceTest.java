@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
@@ -37,7 +38,7 @@ class DocmosisCoverDocumentsServiceTest {
         byte[] pdf = {1, 2, 3, 4, 5};
         DocmosisDocument docmosisDocument = new DocmosisDocument("example.pdf", pdf);
 
-        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDocmosisDocument(anyMap(), any())).willReturn(docmosisDocument);
     }
 
     @Test

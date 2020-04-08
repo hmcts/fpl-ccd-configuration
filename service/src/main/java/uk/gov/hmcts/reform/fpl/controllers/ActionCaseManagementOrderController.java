@@ -189,8 +189,8 @@ public class ActionCaseManagementOrderController {
     }
 
     private Document getDocument(CaseData data, boolean draft) throws IOException {
-        DocmosisCaseManagementOrder templateData = templateDataGenerationService.getCaseManagementOrderData(data);
-        DocmosisDocument document = docmosisDocumentGeneratorService.generatedDocmosisDocument(templateData, CMO);
+        DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(data);
+        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, CMO);
 
         String documentTitle = draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle();
 

@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.AbstractDocmosisData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -315,7 +316,8 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
         void setup() {
             DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, pdf);
 
-            given(documentGeneratorService.generatedDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+            given(documentGeneratorService.generateDocmosisDocument(any(AbstractDocmosisData.class), any()))
+                .willReturn(docmosisDocument);
         }
 
         @Test

@@ -65,7 +65,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final Time time;
 
-    public DocmosisCaseManagementOrder getCaseManagementOrderData(CaseData caseData) throws IOException {
+    public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) throws IOException {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
         CaseManagementOrder caseManagementOrder = cmoService.prepareCMO(caseData, caseData.getCaseManagementOrder());
 

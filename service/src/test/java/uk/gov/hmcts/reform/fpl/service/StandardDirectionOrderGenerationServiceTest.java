@@ -84,7 +84,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .build();
 
         DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
-            .getStandardOrderDirectionData(CaseData.builder()
+            .getTemplateData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
                 .standardDirectionOrder(order)
@@ -112,7 +112,7 @@ class StandardDirectionOrderGenerationServiceTest {
     @Test
     void shouldMapDirectionsForDraftSDOWhenAllAssignees() throws IOException {
         DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService
-            .getStandardOrderDirectionData(CaseData.builder()
+            .getTemplateData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
                 .standardDirectionOrder(Order.builder().directions(getDirections()).build())
@@ -134,7 +134,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .build();
 
         DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
-            .getStandardOrderDirectionData(caseData);
+            .getTemplateData(caseData);
 
         assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
@@ -169,7 +169,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .build();
 
         DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
-            .getStandardOrderDirectionData(caseData);
+            .getTemplateData(caseData);
 
         assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()

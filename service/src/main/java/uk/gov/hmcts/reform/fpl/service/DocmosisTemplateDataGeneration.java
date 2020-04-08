@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 
-public abstract class DocmosisTemplateDataGeneration {
+public abstract class DocmosisTemplateDataGeneration<T> {
     static final String BASE_64 = "image:base64:%1$s";
 
     // REFACTOR: 05/12/2019 make not static when all document generation uses this abstract class
@@ -20,4 +22,6 @@ public abstract class DocmosisTemplateDataGeneration {
         byte[] fileContent = is.readAllBytes();
         return Base64.getEncoder().encodeToString(fileContent);
     }
+
+    public abstract T getTemplateData(CaseData caseData) throws IOException;
 }

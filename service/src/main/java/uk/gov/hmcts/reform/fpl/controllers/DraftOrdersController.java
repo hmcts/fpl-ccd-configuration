@@ -127,7 +127,7 @@ public class DraftOrdersController {
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
-        Document document = getDocument(standardDirectionOrderGenerationService.getStandardOrderDirectionData(updated));
+        Document document = getDocument(standardDirectionOrderGenerationService.getTemplateData(updated));
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
             .orderDoc(DocumentReference.builder()
@@ -170,7 +170,7 @@ public class DraftOrdersController {
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
-        Document document = getDocument(standardDirectionOrderGenerationService.getStandardOrderDirectionData(updated));
+        Document document = getDocument(standardDirectionOrderGenerationService.getTemplateData(updated));
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
             .orderDoc(DocumentReference.builder()
@@ -228,7 +228,7 @@ public class DraftOrdersController {
     }
 
     private Document getDocument(AbstractDocmosisOrder templateData) {
-        DocmosisDocument document = docmosisService.generatedDocmosisDocument(templateData, DocmosisTemplates.SDO);
+        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
         String docTitle = document.getDocumentTitle();
 

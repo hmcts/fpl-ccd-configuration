@@ -53,7 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 //TODO: ensure everything is still working as expected - I don't think BLANK appears everywhere it used to. FPLA-1477
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class StandardDirectionOrderGenerationService {
+public class StandardDirectionOrderGenerationService extends DocmosisTemplateDataGeneration {
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
@@ -64,7 +64,7 @@ public class StandardDirectionOrderGenerationService {
     public static final String DEFAULT = "BLANK - please complete";
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
-    public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData) throws IOException {
+    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder orderBuilder =
             DocmosisStandardDirectionOrder.builder();
 

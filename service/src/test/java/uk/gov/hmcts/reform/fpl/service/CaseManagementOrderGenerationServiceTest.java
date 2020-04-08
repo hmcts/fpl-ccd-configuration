@@ -71,7 +71,7 @@ class CaseManagementOrderGenerationServiceTest {
             .caseManagementOrder(CaseManagementOrder.builder().build())
             .build();
 
-        DocmosisCaseManagementOrder templateData = service.getCaseManagementOrderData(caseData);
+        DocmosisCaseManagementOrder templateData = service.getTemplateData(caseData);
 
         assertThat(templateData).isEqualToComparingFieldByField(caseManagementOrderWithEmptyFields(templateData));
     }
@@ -79,7 +79,7 @@ class CaseManagementOrderGenerationServiceTest {
     @Test
     void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
         CaseData caseData = buildCaseDataForCMODocmosisGeneration(NOW);
-        DocmosisCaseManagementOrder templateData = service.getCaseManagementOrderData(caseData);
+        DocmosisCaseManagementOrder templateData = service.getTemplateData(caseData);
 
         //template data needs to be passed in for the draft and court seal image assertions.
         assertThat(templateData).isEqualToComparingFieldByField(expectedCaseManagementOrder(templateData));
