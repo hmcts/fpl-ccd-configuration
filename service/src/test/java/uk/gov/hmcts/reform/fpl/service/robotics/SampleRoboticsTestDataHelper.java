@@ -7,15 +7,14 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Child;
 import uk.gov.hmcts.reform.fpl.model.robotics.Respondent;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.model.robotics.Solicitor;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 public class SampleRoboticsTestDataHelper {
-    private static DateFormatterService dateFormatterService = new DateFormatterService();
     private static LocalDate NOW = LocalDate.now();
 
     private SampleRoboticsTestDataHelper() {
@@ -35,7 +34,7 @@ public class SampleRoboticsTestDataHelper {
             .harmAlleged(true)
             .internationalElement(true)
             .allocation("Section 9 circuit judge")
-            .issueDate(dateFormatterService.formatLocalDateToString(NOW, "dd-MM-yyyy"))
+            .issueDate(formatLocalDateToString(NOW, "dd-MM-yyyy"))
             .applicant(expectedApplicant())
             .owningCourt(11)
             .caseId(12345L)

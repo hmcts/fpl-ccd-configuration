@@ -24,13 +24,13 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     //hmcts login, add case number, add hearing details, allocated judge and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
-    caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
     enterFamilyManCaseNumberEventPage.enterCaseID();
     await I.completeEvent('Save and continue');
     await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
     await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
     await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
-    caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
     I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
@@ -56,14 +56,14 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 Scenario('hmcts admin complies with directions on behalf of other parties', async (I, caseViewPage, complyOnBehalfOfOthersEventPage) => {
   await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   await I.navigateToCaseDetails(caseId);
-  caseViewPage.goToNewActions(config.applicationActions.complyOnBehalfOf);
+  await caseViewPage.goToNewActions(config.applicationActions.complyOnBehalfOf);
   await complyOnBehalfOfOthersEventPage.addNewResponseOnBehalfOf('respondentDirectionsCustom', 'Respondent 1', 'Yes');
   await I.retryUntilExists(() => I.click('Continue'), '#otherPartiesDirectionsCustom');
   await I.retryUntilExists(() => I.click('Continue'), '#cafcassDirectionsCustom');
   await I.completeEvent('Save and continue');
   await I.seeEventSubmissionConfirmation(config.applicationActions.complyOnBehalfOf);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'Compliance 1', 'Party', 'Court');
-  I.seeAnswerInTab(2, 'Compliance 1', 'Complying on behalf of', 'Respondent 1');
-  I.seeAnswerInTab(4, 'Compliance 1', 'Has this direction been complied with?', 'Yes');
+  I.seeInTab(['Compliance 1', 'Party'], 'Court');
+  I.seeInTab(['Compliance 1', 'Complying on behalf of'], 'Respondent 1');
+  I.seeInTab(['Compliance 1', 'Has this direction been complied with?'], 'Yes');
 });

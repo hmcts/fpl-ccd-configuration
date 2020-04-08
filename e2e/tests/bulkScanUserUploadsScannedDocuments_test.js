@@ -33,12 +33,12 @@ Before(async (I, caseViewPage, submitApplicationEventPage, handleSupplementaryEv
 
 Scenario('HMCTS admin can see Documents scanned in with Bulk Scan', async (I, caseViewPage) => {
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeAnswerInTab(1, 'Scanned Documents 1', 'Document type', scannedDocument.type);
-  I.seeAnswerInTab(2, 'Scanned Documents 1', 'Document subtype', scannedDocument.subtype);
-  I.seeAnswerInTab(3, 'Scanned Documents 1', 'Document url', 'mockFile.txt');
-  I.seeAnswerInTab(4, 'Scanned Documents 1', 'Document control number', scannedDocument.controlNumber);
-  I.seeAnswerInTab(5, 'Scanned Documents 1', 'File name', scannedDocument.fileName);
-  I.seeAnswerInTab(6, 'Scanned Documents 1', 'Scanned date', '1 Jan 2050, 12:00:00 PM');
-  I.seeAnswerInTab(7, 'Scanned Documents 1', 'Delivery date', '1 Jan 2050, 12:00:00 PM');
-  I.seeAnswerInTab(8, 'Scanned Documents 1', 'Exception record reference', scannedDocument.exceptionRecordReference);
+  I.seeInTab(['Scanned Documents 1', 'Document type'], scannedDocument.type);
+  I.seeInTab(['Scanned Documents 1', 'Document subtype'], scannedDocument.subtype);
+  I.seeInTab(['Scanned Documents 1', 'Document url'], 'mockFile.txt');
+  I.seeInTab(['Scanned Documents 1', 'Document control number'], scannedDocument.controlNumber);
+  I.seeInTab(['Scanned Documents 1', 'File name'], scannedDocument.fileName);
+  I.seeInTab(['Scanned Documents 1', 'Scanned date'], '1 Jan 2050, 12:00:00 PM');
+  I.seeInTab(['Scanned Documents 1', 'Delivery date'], '1 Jan 2050, 12:00:00 PM');
+  I.seeInTab(['Scanned Documents 1', 'Exception record reference'], scannedDocument.exceptionRecordReference);
 });

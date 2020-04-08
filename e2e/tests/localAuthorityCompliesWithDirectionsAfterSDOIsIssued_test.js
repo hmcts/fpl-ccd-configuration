@@ -25,7 +25,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     //hmcts login, add case number, add hearing details and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
-    caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
     enterFamilyManCaseNumberEventPage.enterCaseID();
     await I.completeEvent('Save and continue');
     await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
@@ -34,7 +34,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
     await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
     await I.completeEvent('Save and continue');
-    caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
     I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
@@ -57,13 +57,13 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 Scenario('local authority complies with directions', async (I, caseViewPage, complyWithDirectionsEventPage) => {
   await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   await I.navigateToCaseDetails(caseId);
-  caseViewPage.goToNewActions(config.applicationActions.complyWithDirections);
+  await caseViewPage.goToNewActions(config.applicationActions.complyWithDirections);
   await complyWithDirectionsEventPage.canComplyWithDirection('localAuthorityDirections', 0, response, config.testFile);
   await I.completeEvent('Save and continue');
   await I.seeEventSubmissionConfirmation(config.applicationActions.complyWithDirections);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'Compliance 1', 'Party', 'Local Authority');
-  I.seeAnswerInTab(3, 'Compliance 1', 'Has this direction been complied with?', 'Yes');
-  I.seeAnswerInTab(4, 'Compliance 1', 'Give details', response.complied.yes.documentDetails);
-  I.seeAnswerInTab(5, 'Compliance 1', 'Upload file', 'mockFile.txt');
+  I.seeInTab(['Compliance 1', 'Party'], 'Local Authority');
+  I.seeInTab(['Compliance 1', 'Has this direction been complied with?'], 'Yes');
+  I.seeInTab(['Compliance 1', 'Give details'], response.complied.yes.documentDetails);
+  I.seeInTab(['Compliance 1', 'Upload file'], 'mockFile.txt');
 });

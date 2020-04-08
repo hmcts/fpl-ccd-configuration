@@ -5,13 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -19,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
@@ -58,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
@@ -77,10 +75,11 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     private static final String CAFCASS_EMAIL_ADDRESS = "cafcass@cafcass.com";
     private static final String CMO_EVENT_KEY = "internal-change:CMO_PROGRESSION";
     private static final String SEND_DOCUMENT_KEY = "internal-change:SEND_DOCUMENT";
+    private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
     private static final UUID ID = randomUUID();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-    private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
-    private final DocumentReference cmoDocument = DocumentReference.buildFromDocument(document());
+    private static final DocumentReference CMO_DOCUMENT = DocumentReference.buildFromDocument(document());
+    private static final LocalDateTime DATE_IN_3_MONTHS = LocalDateTime.now().plusMonths(3);
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -91,26 +90,20 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     @MockBean
     private NotificationClient notificationClient;
 
-    @Autowired
-    private DateFormatterService dateFormatterService;
-
     @Captor
     private ArgumentCaptor<Map<String, Object>> dataCaptor;
-
-    private Document document;
 
     ActionCaseManagementOrderControllerSubmittedTest() {
         super("action-cmo");
     }
 
     @BeforeEach
-    void setup() {
-        document = document();
+    void setUp() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
     }
 
     @Test
-    void submittedShouldTriggerCMOProgressionEventAndSendCaseLinkNotificationsWhenIssuedOrderApproved()
+    void shouldTriggerCMOProgressionEventAndSendCaseLinkNotificationsWhenIssuedOrderApproved()
         throws Exception {
         List<Element<Representative>> representativesServedByDigitalService =
             buildRepresentativesServedByDigitalService();
@@ -141,7 +134,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     }
 
     @Test
-    void submittedShouldTriggerCMOProgressionEventAndSendDocumentLinkNotificationsWhenIssuedOrderApproved()
+    void shouldTriggerCMOProgressionEventAndSendDocumentLinkNotificationsWhenIssuedOrderApproved()
         throws Exception {
         List<Element<Representative>> representativesServedByEmail = buildRepresentativesServedByEmail();
 
@@ -170,7 +163,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     }
 
     @Test
-    void submittedShouldNotifyHmctsAdminWhenRepresentativesServedByPost() throws Exception {
+    void shouldNotifyHmctsAdminWhenRepresentativesServedByPost() throws Exception {
         List<Element<Representative>> representativeServedByPost = buildRepresentativesServedByPost();
 
         CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativeServedByPost);
@@ -188,7 +181,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
+            eq(ADMIN_EMAIL_ADDRESS),
             dataCaptor.capture(),
             eq(CASE_ID));
 
@@ -198,7 +191,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     }
 
     @Test
-    void submittedShouldNotifyCtscAdminWhenRepresentativesServedByPostAndCtscIsEnabled() throws Exception {
+    void shouldNotifyCtscAdminWhenRepresentativesServedByPostAndCtscIsEnabled() throws Exception {
         List<Element<Representative>> representativeServedByPost = buildRepresentativesServedByPost();
 
         CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativeServedByPost);
@@ -212,7 +205,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
+            eq(ADMIN_EMAIL_ADDRESS),
             dataCaptor.capture(),
             eq(CASE_ID));
 
@@ -224,7 +217,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     }
 
     @Test
-    void submittedShouldNotSendNotificationsWhenIssuedOrderNotApproved() {
+    void shouldNotSendNotificationsWhenIssuedOrderNotApproved() {
         CaseManagementOrder caseManagementOrder = getCaseManagementOrder();
 
         Map<String, Object> data = Map.of(
@@ -267,13 +260,14 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())
-            .orderDoc(cmoDocument)
+            .orderDoc(CMO_DOCUMENT)
             .build();
     }
 
     private Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParameters(String recipientName) {
-        final String subjectLine = "Jones, SACCCCCCCC5676576567, hearing "
-            + dateFormatterService.formatLocalDateToString(dateIn3Months.toLocalDate(), FormatStyle.MEDIUM);
+        final String subjectLine = String.format("Jones, SACCCCCCCC5676576567, hearing %s",
+            formatLocalDateToString(DATE_IN_3_MONTHS.toLocalDate(), FormatStyle.MEDIUM));
+
         return ImmutableMap.<String, Object>builder()
             .put("localAuthorityNameOrRepresentativeFullName", recipientName)
             .put("subjectLineWithHearingDate", subjectLine)
@@ -288,11 +282,11 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-            "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
+            "hearingDetails", createHearingBookings(DATE_IN_3_MONTHS, DATE_IN_3_MONTHS.plusHours(4)),
             REPRESENTATIVES, representatives,
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)
-                .orderDoc(cmoDocument)
+                .orderDoc(CMO_DOCUMENT)
                 .action(OrderAction.builder()
                     .type(SEND_TO_ALL_PARTIES)
                     .build())
@@ -332,7 +326,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     private void verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded() throws NotificationClientException {
         verify(notificationClient).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-            "admin@family-court.com",
+            ADMIN_EMAIL_ADDRESS,
             getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
             CASE_ID);
     }
@@ -342,7 +336,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             CASE_TYPE,
             12345L,
             SEND_DOCUMENT_KEY,
-            Map.of("documentToBeSent", cmoDocument));
+            Map.of("documentToBeSent", CMO_DOCUMENT));
     }
 
     private List<Element<Representative>> buildRepresentativesServedByEmail() {

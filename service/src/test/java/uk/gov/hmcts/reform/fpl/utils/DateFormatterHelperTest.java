@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,24 +14,24 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.parseLocalDateFromStringUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
-class DateFormatterServiceTest {
-    public static final String JANUARY_2019 = "1 January 2019";
-    private final DateFormatterService dateFormatterService = new DateFormatterService();
+class DateFormatterHelperTest {
+    private static final String JANUARY_2019 = "1 January 2019";
 
     private static Stream<Arguments> dayOfMonthSuffixSource() {
         return Stream.of(
-            Arguments.of(new int[] {
+            Arguments.of(new int[]{
                 4, 5, 6, 7, 8, 9, 10, 11, 12,
                 13, 14, 15, 16, 17, 18, 19, 20,
                 24, 25, 26, 27, 28, 29, 30}, "th"),
-            Arguments.of(new int[] {1, 21, 31}, "st"),
-            Arguments.of(new int[] {2, 22}, "nd"),
-            Arguments.of(new int[] {3, 23}, "rd")
+            Arguments.of(new int[]{1, 21, 31}, "st"),
+            Arguments.of(new int[]{2, 22}, "nd"),
+            Arguments.of(new int[]{3, 23}, "rd")
         );
     }
 
@@ -67,7 +67,7 @@ class DateFormatterServiceTest {
     @MethodSource(value = "dayOfMonthSuffixSource")
     void shouldReturnExpectedSuffixWhenGivenAValidDay(int[] days, String expected) {
         for (int day : days) {
-            String suffix = dateFormatterService.getDayOfMonthSuffix(day);
+            String suffix = getDayOfMonthSuffix(day);
             assertThat(suffix).isEqualTo(expected);
         }
     }
@@ -76,7 +76,7 @@ class DateFormatterServiceTest {
     @ValueSource(ints = {0, 32})
     void shouldThrowErrorWhenDayOfMonthIsInvalid(int day) {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> dateFormatterService.getDayOfMonthSuffix(day));
+            () -> getDayOfMonthSuffix(day));
 
         assertThat(exception.getMessage()).isEqualTo("Illegal day of month: " + day);
     }
