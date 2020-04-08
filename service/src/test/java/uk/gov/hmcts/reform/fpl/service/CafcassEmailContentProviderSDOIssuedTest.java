@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CafcassEmailContentProviderSDOIssued.class,
-    DateFormatterService.class, HearingBookingService.class})
+    HearingBookingService.class})
 class CafcassEmailContentProviderSDOIssuedTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String CAFCASS_NAME = "Test cafcass";
@@ -40,7 +39,6 @@ class CafcassEmailContentProviderSDOIssuedTest {
     @Autowired
     private ObjectMapper mapper;
 
-    private final DateFormatterService dateFormatterService = new DateFormatterService();
     private final HearingBookingService hearingBookingService = new HearingBookingService();
 
     private CafcassEmailContentProviderSDOIssued contentProviderSDOIssued;
@@ -48,7 +46,7 @@ class CafcassEmailContentProviderSDOIssuedTest {
     @BeforeEach
     void setup() {
         this.contentProviderSDOIssued = new CafcassEmailContentProviderSDOIssued(
-            cafcassLookupConfiguration, "", mapper, dateFormatterService, hearingBookingService);
+            cafcassLookupConfiguration, "", mapper, hearingBookingService);
     }
 
     @Test
@@ -66,15 +64,12 @@ class CafcassEmailContentProviderSDOIssuedTest {
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("title", CAFCASS_NAME)
-            .put("familyManCaseNumber", "12345,")
-            .put("leadRespondentsName", "Smith,")
-            .put("hearingDate", "1 January 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        return expectedMap;
+        return Map.of(
+            "title", CAFCASS_NAME,
+            "familyManCaseNumber", "12345,",
+            "leadRespondentsName", "Smith,",
+            "hearingDate", "1 January 2020",
+            "reference", "12345",
+            "caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
     }
 }

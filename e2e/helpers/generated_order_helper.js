@@ -120,30 +120,30 @@ module.exports = {
   async assertOrder(I, caseViewPage, order, orderNum, defaultIssuedDate, hasAllocatedJudge = false) {
     const orderHeading = 'Order ' + orderNum;
     caseViewPage.selectTab(caseViewPage.tabs.orders);
-    I.seeAnswerInTab(1, orderHeading, 'Type of order', order.fullType);
+    I.seeInTab([orderHeading, 'Type of order'], order.fullType);
 
     if (order.type === 'Blank order (C21)') {
-      I.seeAnswerInTab(2, orderHeading, 'Order title', order.title);
-      I.seeAnswerInTab(4, orderHeading, 'Order document', order.document);
-      I.seeAnswerInTab(5, orderHeading, 'Date of issue', dateFormat(defaultIssuedDate, 'd mmmm yyyy'));
+      I.seeInTab([orderHeading, 'Order title'], order.title);
+      I.seeInTab([orderHeading, 'Order document'], order.document);
+      I.seeInTab([orderHeading, 'Date of issue'], dateFormat(defaultIssuedDate, 'd mmmm yyyy'));
     } else {
-      I.seeAnswerInTab(2, orderHeading, 'Order document', order.document);
-      I.seeAnswerInTab(3, orderHeading, 'Date of issue', dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
+      I.seeInTab([orderHeading, 'Order document'], order.document);
+      I.seeInTab([orderHeading, 'Date of issue'], dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
     }
 
     if (hasAllocatedJudge) {
-      I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', 'Her Honour Judge');
-      I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', 'Moley');
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
     } else {
-      I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', order.judgeAndLegalAdvisor.judgeTitle);
-      I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', order.judgeAndLegalAdvisor.judgeLastName);
-      I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', order.judgeAndLegalAdvisor.legalAdvisorName);
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.judgeAndLegalAdvisor.judgeTitle);
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], order.judgeAndLegalAdvisor.judgeLastName);
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.judgeAndLegalAdvisor.legalAdvisorName);
     }
   },
 
   async assertOrderSentToParty(I, caseViewPage, partyName, order, orderNum) {
     caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
-    I.seeAnswerInTab(1, 'Party 1', 'Representative name', partyName);
-    I.seeNestedAnswerInTab(2, 'Party 1', `Document ${orderNum}`, 'File', order.document);
+    I.seeInTab(['Party 1', 'Representative name'], partyName);
+    I.seeInTab(['Party 1', `Document ${orderNum}`, 'File'], order.document);
   },
 };

@@ -47,10 +47,10 @@ import java.util.stream.Stream;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.DATE_TIME;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
@@ -116,16 +116,9 @@ public class DraftOrdersController {
     }
 
     private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
-        String hearingDate;
-
-        try {
-            LocalDateTime startDate = hearingBookingService.getMostUrgentHearingBooking(hearings).getStartDate();
-            hearingDate = formatLocalDateTimeBaseUsingFormat(startDate, DATE_TIME);
-        } catch (IllegalStateException e) {
-            hearingDate = "Please enter a hearing date";
-        }
-
-        return hearingDate;
+        return hearingBookingService.getFirstHearing(hearings)
+            .map(hearing -> formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME))
+            .orElse("Please enter a hearing date");
     }
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {

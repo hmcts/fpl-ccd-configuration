@@ -67,7 +67,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "JudgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
-    "ElementLabel": "Legal advisor's full name",
+    "ElementLabel": "Justices' Legal Adviser's full name",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   }

@@ -19,7 +19,9 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  searchForCasesWithHandledEvidences() {
+  searchForCasesWithHandledEvidences(submittedAt) {
+    I.waitForElement(this.fields.evidenceHandled);
+    I.fillDate(submittedAt);
     I.click(this.fields.evidenceHandled);
     I.click(this.fields.search);
   },

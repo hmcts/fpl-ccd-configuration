@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.service.notify.NotificationClientException;
@@ -42,9 +41,8 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
                                            ObjectMapper objectMapper,
                                            HearingBookingService hearingBookingService,
                                            HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                           DateFormatterService dateFormatterService,
                                            RepresentativeService representativeService) {
-        super(uiBaseUrl, dateFormatterService, hearingBookingService);
+        super(uiBaseUrl, hearingBookingService);
         this.objectMapper = objectMapper;
         this.representativeService = representativeService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;

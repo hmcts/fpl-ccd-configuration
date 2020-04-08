@@ -66,15 +66,14 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.service.DateFormatterService.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CaseDataGeneratorHelper {
-
-    private static final String FORMAT_STYLE = "h:mma, d MMMM yyyy";
 
     private CaseDataGeneratorHelper() {
         // NO-OP
@@ -102,14 +101,7 @@ public class CaseDataGeneratorHelper {
                     .party(ApplicantParty.builder()
                         .organisationName("Bran Stark")
                         .jobTitle("Judge")
-                        .address(Address.builder()
-                            .addressLine1("1 Some street")
-                            .addressLine2("Some road")
-                            .postTown("some town")
-                            .postcode("BT66 7RR")
-                            .county("Some county")
-                            .country("UK")
-                            .build())
+                        .address(address())
                         .email(EmailAddress.builder()
                             .email("BranStark@hMCTS.net")
                             .build())
@@ -127,14 +119,7 @@ public class CaseDataGeneratorHelper {
                     .party(ApplicantParty.builder()
                         .organisationName("Sansa Stark")
                         .jobTitle("Judge")
-                        .address(Address.builder()
-                            .addressLine1("1 Some street")
-                            .addressLine2("Some road")
-                            .postTown("some town")
-                            .postcode("BT66 7RR")
-                            .county("Some county")
-                            .country("UK")
-                            .build())
+                        .address(address())
                         .email(EmailAddress.builder()
                             .email("Harrykane@hMCTS.net")
                             .build())
@@ -240,14 +225,7 @@ public class CaseDataGeneratorHelper {
                 .gender("Male")
                 .name("Kyle Stafford")
                 .telephone("02838882404")
-                .address(Address.builder()
-                    .addressLine1("1 Some street")
-                    .addressLine2("Some road")
-                    .postTown("some town")
-                    .postcode("BT66 7RR")
-                    .county("Some county")
-                    .country("UK")
-                    .build())
+                .address(address())
                 .build())
             .additionalOthers(ImmutableList.of(
                 Element.<Other>builder()
@@ -257,29 +235,22 @@ public class CaseDataGeneratorHelper {
                         .gender("Female")
                         .name("Sarah Simpson")
                         .telephone("02838882404")
-                        .address(Address.builder()
-                            .addressLine1("1 Some street")
-                            .addressLine2("Some road")
-                            .postTown("some town")
-                            .postcode("BT66 7RR")
-                            .county("Some county")
-                            .country("UK")
-                            .build())
+                        .address(address())
                         .build())
                     .build()
             )).build();
     }
 
     public static List<Element<GeneratedOrder>> createOrders(DocumentReference lastOrderDocumentReference) {
+        final String orderType = "Blank order (C21)";
         return ImmutableList.of(
             Element.<GeneratedOrder>builder()
                 .value(GeneratedOrder.builder()
-                    .type("Blank order (C21)")
+                    .type(orderType)
                     .title("Example Order")
                     .details(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                    .date(formatLocalDateTimeBaseUsingFormat(
-                        LocalDateTime.now().plusDays(57), FORMAT_STYLE))
+                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(57), TIME_DATE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
                         "Judy", null, HER_HONOUR_JUDGE))
                     .build())
@@ -287,11 +258,10 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
-                    .type("Blank order (C21)")
+                    .type(orderType)
                     .title("Winter is here")
                     .details("Westeros")
-                    .date(formatLocalDateTimeBaseUsingFormat(
-                        LocalDateTime.now().plusDays(59), FORMAT_STYLE))
+                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(59), TIME_DATE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
                         "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
                     .document(createDocumentReference(randomUUID().toString()))
@@ -300,11 +270,10 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
-                    .type("Blank order (C21)")
+                    .type(orderType)
                     .title("Black Sails")
                     .details("Long John Silver")
-                    .date(formatLocalDateTimeBaseUsingFormat(
-                        LocalDateTime.now().plusDays(60), FORMAT_STYLE))
+                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(60), TIME_DATE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
                         "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
                     .document(lastOrderDocumentReference)
@@ -320,7 +289,7 @@ public class CaseDataGeneratorHelper {
             .build());
     }
 
-    public static List<Element<HearingBooking>> createHearingBookings(LocalDateTime date) {
+    public static List<Element<HearingBooking>> createHearingBookingsFromInitialDate(LocalDateTime date) {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
@@ -447,15 +416,14 @@ public class CaseDataGeneratorHelper {
             .put("applicants", createPopulatedApplicants())
             .put("solicitor", createSolicitor())
             .put("children1", createPopulatedChildren())
-            .put(HEARING_DETAILS_KEY, createHearingBookings(dateTime))
+            .put(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(dateTime))
             .put("dateSubmitted", LocalDate.now())
             .put("respondents1", respondents)
             .put("others", others)
             .put(HEARING_DATE_LIST.getKey(), DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                    .label(formatLocalDateToString(
-                        dateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
+                    .label(formatLocalDateToString(dateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
                     .build())
                 .build())
             .put(SCHEDULE.getKey(), createSchedule(true))
@@ -565,7 +533,7 @@ public class CaseDataGeneratorHelper {
             .collect(Collectors.toList());
     }
 
-    public static DynamicList createHearingBookingDynmaicList() {
+    public static DynamicList createHearingBookingDynamicList() {
         return DynamicList.builder()
             .value(DynamicListElement.builder()
                 .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
@@ -583,6 +551,17 @@ public class CaseDataGeneratorHelper {
             .nextHearing(NextHearing.builder()
                 .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                 .build())
+            .build();
+    }
+
+    private static Address address() {
+        return Address.builder()
+            .addressLine1("1 Some street")
+            .addressLine2("Some road")
+            .postTown("some town")
+            .postcode("BT66 7RR")
+            .county("Some county")
+            .country("UK")
             .build();
     }
 }

@@ -524,7 +524,7 @@
           },
           "telephoneNumber": "0717171717",
           "servingPreferences": "DIGITAL_SERVICE",
-          "role" : "CAFCASS_GUARDIAN"
+          "role": "CAFCASS_GUARDIAN"
         },
         {
           "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
@@ -544,7 +544,24 @@
           },
           "telephoneNumber": "0717171718",
           "servingPreferences": "EMAIL",
-          "role" : "CAFCASS_SOLICITOR"
+          "role": "CAFCASS_SOLICITOR"
+        }
+      ],
+      "hearingDetails": [
+        {
+          "id": "51d02c7f-2a51-424b-b299-a90b98bb1774",
+          "value": {
+            "startDate": "2020-01-01T15:30:00.000",
+            "endDate": "2020-01-02T14:30:00.000",
+            "type": "CASE_MANAGEMENT",
+            "venue": "1",
+            "judgeName": "1",
+            "judgeTitle": "1",
+            "hearingNeedsBooked": [
+              "INTERMEDIARY"
+            ],
+            "hearingNeedsDetails": "ok"
+          }
         }
       ]
     }

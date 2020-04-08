@@ -128,7 +128,7 @@
     "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
-    "EventElementLabel": "Legal advisor's full name",
+    "EventElementLabel": "Justices' Legal Adviser's full name",
     "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },

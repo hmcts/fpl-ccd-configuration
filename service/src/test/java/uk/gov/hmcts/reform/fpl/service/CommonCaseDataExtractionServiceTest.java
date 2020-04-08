@@ -22,8 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createJudgeA
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, CommonCaseDataExtractionService.class, DateFormatterService.class,
-    HearingVenueLookUpService.class
+    JacksonAutoConfiguration.class, CommonCaseDataExtractionService.class, HearingVenueLookUpService.class
 })
 class CommonCaseDataExtractionServiceTest {
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
@@ -42,7 +41,7 @@ class CommonCaseDataExtractionServiceTest {
         final Optional<String> hearingDate = commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
             hearingBooking);
 
-        assertThat(hearingDate.isEmpty());
+        assertThat(hearingDate).isEmpty();
     }
 
     @Test
