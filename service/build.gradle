@@ -274,8 +274,6 @@ pitest {
   // tests did not pass without mutation when calculating line coverage. Mutation testing requires a green suite.
   // will require more in depth investigation
   testSourceSets.set([sourceSets.test/*, sourceSets.integrationTest*/])
-  // Do we want to disable mutation tests on the controller unit tests?
-  // All controllers fail PIT testing as we don't unit test them reducing score of just unit tests as of writing from 85% -> 72%
   excludedClasses.set(['uk.gov.hmcts.reform.fpl.controllers.*', 'uk.gov.hmcts.reform.fpl.config.*'])
   threads.set(10)
   enableDefaultIncrementalAnalysis.set(true)
