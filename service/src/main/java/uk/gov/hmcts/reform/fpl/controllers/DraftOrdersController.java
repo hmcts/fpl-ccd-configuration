@@ -74,6 +74,8 @@ public class DraftOrdersController {
     private final Time time;
     private final RequestData requestData;
 
+    private static final String JUDGE_AND_LEGAL_ADIVSOR_KEY = "judgeAndLegalAdvisor";
+
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -91,7 +93,7 @@ public class DraftOrdersController {
 
             directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-            caseDetails.getData().put("judgeAndLegalAdvisor",
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADIVSOR_KEY,
                 caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
         }
 
@@ -107,7 +109,7 @@ public class DraftOrdersController {
 
             judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
 
-            caseDetails.getData().put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADIVSOR_KEY, judgeAndLegalAdvisor);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -211,7 +213,7 @@ public class DraftOrdersController {
             .build();
 
         caseDetails.getData().put("standardDirectionOrder", order);
-        caseDetails.getData().remove("judgeAndLegalAdvisor");
+        caseDetails.getData().remove(JUDGE_AND_LEGAL_ADIVSOR_KEY);
         caseDetails.getData().remove("dateOfIssue");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
