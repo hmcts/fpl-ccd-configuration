@@ -123,4 +123,13 @@ public class NotificationEventHandlerTestData {
                 .servingPreferences(EMAIL)
                 .build());
     }
+
+    public static List<Representative> getExpectedDigitalRepresentativesForAddingPartiesToCase() {
+        return ImmutableList.of(
+            Representative.builder()
+                .email("fred@flinstone.com")
+                .fullName("Fred Flinstone")
+                .servingPreferences(DIGITAL_SERVICE)
+                .build());
+    }
 }
