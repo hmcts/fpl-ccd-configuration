@@ -8,6 +8,7 @@ const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
 let caseId;
+let submittedAt;
 
 Feature('Case administration after submission');
 
@@ -22,6 +23,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 
     // eslint-disable-next-line require-atomic-updates
     caseId = await I.grabTextFrom('.heading-h1');
+    submittedAt = new Date();
     console.log(`Case ${caseId} has been submitted`);
 
     I.signOut();
@@ -31,7 +33,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('HMCTS admin confirms payment', async  (I, caseViewPage) => {
+Scenario('HMCTS admin confirms payment', async (I, caseViewPage) => {
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
   I.see('Processed payments'); // Test to pass AAT, to make better
 });
@@ -84,10 +86,10 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('mockFile.txt');
-  I.seeAnswerInTab('1', 'Other documents 1', 'Document name', 'Document 1');
-  I.seeAnswerInTab('2', 'Other documents 1', 'Upload a file', 'mockFile.txt');
-  I.seeAnswerInTab('1', 'Other documents 2', 'Document name', 'Document 2');
-  I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
+  I.seeInTab(['Other documents 1', 'Document name'], 'Document 1');
+  I.seeInTab(['Other documents 1', 'Upload a file'], 'mockFile.txt');
+  I.seeInTab(['Other documents 2', 'Document name'], 'Document 2');
+  I.seeInTab(['Other documents 2', 'Upload a file'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
@@ -107,15 +109,15 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeAnswerInTab('1', 'C2 Application 1', 'Upload a file', 'mockFile.txt');
-  I.seeAnswerInTab('4', 'C2 Application 1', 'Description', 'Rachel Zane C2');
-  I.seeAnswerInTab('5', 'C2 Application 1', 'Are you using PBA to pay?', 'Yes');
-  I.seeAnswerInTab('6', 'C2 Application 1', 'Payment by account (PBA) number', 'PBA0082848');
-  I.seeAnswerInTab('7', 'C2 Application 1', 'Client code', '8888');
-  I.seeAnswerInTab('8', 'C2 Application 1', 'Customer reference', 'Example reference');
-  I.seeAnswerInTab('1', 'C2 Application 2', 'Upload a file', 'mockFile.txt');
-  I.seeAnswerInTab('4', 'C2 Application 2', 'Description', 'Jessica Pearson C2');
-  I.seeAnswerInTab('5', 'C2 Application 2', 'Are you using PBA to pay?', 'No');
+  I.seeInTab(['C2 Application 1', 'Upload a file'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'Description'], 'Rachel Zane C2');
+  I.seeInTab(['C2 Application 1', 'Are you using PBA to pay?'], 'Yes');
+  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], 'PBA0082848');
+  I.seeInTab(['C2 Application 1', 'Client code'], '8888');
+  I.seeInTab(['C2 Application 1', 'Customer reference'], 'Example reference');
+  I.seeInTab(['C2 Application 2', 'Upload a file'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 2', 'Description'], 'Jessica Pearson C2');
+  I.seeInTab(['C2 Application 2', 'Are you using PBA to pay?'], 'No');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
@@ -129,32 +131,28 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
 
   let startDate = dateToString(hearingDetails[0].startDate);
   let endDate = dateToString(hearingDetails[0].endDate);
-  I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
-  I.seeAnswerInTab(2, 'Hearing 1', 'Venue', hearingDetails[0].venue);
-  I.seeAnswerInTab(3, 'Hearing 1', 'Start date and time', dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeAnswerInTab(4, 'Hearing 1', 'End date and time', dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeAnswerInTab(5, 'Hearing 1', 'Hearing needs booked', hearingDetails[0].type.interpreter);
-  I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.welsh);
-  I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
-  I.seeAnswerInTab(6, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
-  I.seeAnswerInTab(1, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title', hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and Justices\' Legal Adviser', 'Last name', hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(3, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name', hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
+  I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
+  I.seeInTab(['Hearing 1', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeInTab(['Hearing 1', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeInTab(['Hearing 1', 'Hearing needs booked'], [hearingDetails[0].type.interpreter, hearingDetails[0].type.welsh,hearingDetails[0].type.somethingElse]);
+  I.seeInTab(['Hearing 1', 'Give details'], hearingDetails[0].giveDetails);
+  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
+  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Last name'], hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
+  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
 
   startDate = dateToString(hearingDetails[1].startDate);
   endDate = dateToString(hearingDetails[1].endDate);
-  I.seeAnswerInTab(1, 'Hearing 2', 'Type of hearing', hearingDetails[1].caseManagement);
-  I.seeAnswerInTab(2, 'Hearing 2', 'Venue', hearingDetails[1].venue);
-  I.seeAnswerInTab(3, 'Hearing 2', 'Start date and time', dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeAnswerInTab(4, 'Hearing 2', 'End date and time', dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeAnswerInTab(5, 'Hearing 2', 'Hearing needs booked', hearingDetails[1].type.interpreter);
-  I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.welsh);
-  I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
-  I.seeAnswerInTab(6, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
-  I.seeAnswerInTab(1, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title', hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and Justices\' Legal Adviser', 'Title', hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
-  I.seeAnswerInTab(3, 'Judge and Justices\' Legal Adviser', 'Last name', hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(4, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 2', 'Type of hearing'], hearingDetails[1].caseManagement);
+  I.seeInTab(['Hearing 2', 'Venue'], hearingDetails[1].venue);
+  I.seeInTab(['Hearing 2', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeInTab(['Hearing 2', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeInTab(['Hearing 2', 'Hearing needs booked'], [hearingDetails[1].type.interpreter, hearingDetails[1].type.welsh, hearingDetails[1].type.somethingElse]);
+  I.seeInTab(['Hearing 2', 'Give details'], hearingDetails[1].giveDetails);
+  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
+  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Title'], hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
+  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Last name'], hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
+  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
 Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
@@ -172,19 +170,19 @@ Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, 
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeAnswerInTab(1, 'Representatives 1', 'Full name', representative1.fullName);
-  I.seeAnswerInTab(2, 'Representatives 1', 'Position in a case', representative1.positionInACase);
-  I.seeAnswerInTab(3, 'Representatives 1', 'Email address', representative1.email);
-  I.seeAnswerInTab(4, 'Representatives 1', 'Phone number', representative1.telephone);
-  I.seeAnswerInTab(5, 'Representatives 1', 'How do they want to get case information?', representative1.servingPreferences);
-  I.seeAnswerInTab(6, 'Representatives 1', 'Who are they?', representative1.role);
+  I.seeInTab(['Representatives 1', 'Full name'], representative1.fullName);
+  I.seeInTab(['Representatives 1', 'Position in a case'], representative1.positionInACase);
+  I.seeInTab(['Representatives 1', 'Email address'], representative1.email);
+  I.seeInTab(['Representatives 1', 'Phone number'], representative1.telephone);
+  I.seeInTab(['Representatives 1', 'How do they want to get case information?'], representative1.servingPreferences);
+  I.seeInTab(['Representatives 1', 'Who are they?'], representative1.role);
+  I.seeInTab(['Representatives 1', 'Email address'], representative1.email);
+  I.seeInTab(['Representatives 2', 'Phone number'], representative2.telephone);
 
-  I.seeAnswerInTab(1, 'Representatives 2', 'Full name', representative2.fullName);
-  I.seeAnswerInTab(2, 'Representatives 2', 'Position in a case', representative2.positionInACase);
-  I.seeAnswerInTab(3, 'Representatives 1', 'Email address', representative1.email);
-  I.seeAnswerInTab(4, 'Representatives 2', 'Phone number', representative2.telephone);
-  I.seeAnswerInTab(6, 'Representatives 2', 'How do they want to get case information?', representative2.servingPreferences);
-  I.seeAnswerInTab(7, 'Representatives 2', 'Who are they?', representative2.role);
+  I.seeInTab(['Representatives 2', 'Full name'], representative2.fullName);
+  I.seeInTab(['Representatives 2', 'Position in a case'], representative2.positionInACase);
+  I.seeInTab(['Representatives 2', 'How do they want to get case information?'], representative2.servingPreferences);
+  I.seeInTab(['Representatives 2', 'Who are they?'], representative2.role);
 
   I.signOut();
   await I.signIn(representative1.email, config.localAuthorityPassword);
@@ -234,13 +232,13 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');
-  I.seeAnswerInTab('1', 'Notice of proceedings 2', 'File name', 'Notice_of_proceedings_c6a.pdf');
+  I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
+  I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
 });
 
 Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage) => {
   await I.navigateToCaseList();
-  await caseListPage.searchForCasesWithHandledEvidences();
+  await caseListPage.searchForCasesWithHandledEvidences(submittedAt);
   await I.dontSeeCaseInSearchResult(caseId);
 
   await I.navigateToCaseDetails(caseId);
@@ -250,7 +248,7 @@ Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, c
   await I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 
   await I.navigateToCaseList();
-  await caseListPage.searchForCasesWithHandledEvidences();
+  await caseListPage.searchForCasesWithHandledEvidences(submittedAt);
   await I.seeCaseInSearchResult(caseId);
 });
 
@@ -268,7 +266,7 @@ Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteE
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
   caseViewPage.selectTab(caseViewPage.tabs.notes);
-  I.seeAnswerInTab('3', 'Note 1', 'Note', note);
+  I.seeInTab(['Note 1', 'Note'], note);
 });
 
 Scenario('HMCTS admin update FamilyMan reference number after sending case to gatekeeper', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {

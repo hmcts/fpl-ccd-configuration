@@ -44,8 +44,8 @@ Scenario('gatekeeper enters allocation decision with incorrect allocation propos
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
-  I.seeAnswerInTab(1, 'Allocation decision', 'Which level of judge is needed for this case?', 'District judge');
-  I.seeAnswerInTab(2, 'Allocation decision', 'Give reason', 'test');
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'District judge');
+  I.seeInTab(['Allocation decision', 'Give reason'], 'test');
 });
 
 Scenario('gatekeeper enters allocation decision with correct allocation proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
