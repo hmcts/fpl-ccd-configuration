@@ -79,7 +79,7 @@ public class NoticeOfProceedingsService {
 
     private Map<String, Object>  getHearingBookingData(List<Element<HearingBooking>> hearingBookings) {
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
 
         return ImmutableMap.of(
             "hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
