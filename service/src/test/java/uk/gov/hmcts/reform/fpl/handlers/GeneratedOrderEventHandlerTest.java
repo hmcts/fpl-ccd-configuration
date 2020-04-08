@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentP
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import java.util.List;
 import java.util.Map;
@@ -86,9 +85,6 @@ class GeneratedOrderEventHandlerTest {
 
     @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
-
-    @MockBean
-    private IdamApi idamApi;
 
     @MockBean
     private InboxLookupService inboxLookupService;
