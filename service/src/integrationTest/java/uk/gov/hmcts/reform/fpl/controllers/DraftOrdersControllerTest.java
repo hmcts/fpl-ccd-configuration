@@ -59,7 +59,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -145,10 +144,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
-                "allocatedJudge", Judge.builder()
-                    .judgeTitle(HER_HONOUR_JUDGE)
-                    .judgeLastName("Richards")
-                    .build(),
+                "allocatedJudge", buildAllocatedJudge(),
                 "standardDirectionOrder", Order.builder()
                     .directions(buildDirections(directions))
                     .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -166,7 +162,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isEqualTo(
-            "Case assigned to: Her Honour Judge Richards");
+            "Case assigned to: His Honour Judge Richards");
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
         assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Davidson");
     }
@@ -175,10 +171,7 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
     void aboutToStartCallbackShouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
-                "allocatedJudge", Judge.builder()
-                    .judgeTitle(HIS_HONOUR_JUDGE)
-                    .judgeLastName("Richards")
-                    .build()
+                "allocatedJudge", buildAllocatedJudge()
             )).build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
@@ -238,6 +231,13 @@ class DraftOrdersControllerTest extends AbstractControllerTest {
             CASE_ID,
             SEND_DOCUMENT_EVENT,
             Map.of("documentToBeSent", DOCUMENT_REFERENCE));
+    }
+
+    private Judge buildAllocatedJudge() {
+        return Judge.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Richards")
+            .build();
     }
 
     private List<Direction> createDirections() {
