@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumbe
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocmosisCoverDocumentsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-    private final ObjectMapper mapper;
 
     public DocmosisDocument createCoverDocuments(String familyManCaseNumber,
                                                  Long caseNumber,
@@ -24,7 +22,7 @@ public class DocmosisCoverDocumentsService {
         DocmosisCoverDocument coverDocumentData = buildCoverDocumentsData(familyManCaseNumber,
                                                                           caseNumber,
                                                                           representative);
-        return docmosisDocumentGeneratorService.generateDocmosisDocument(coverDocumentData.toMap(mapper), COVER_DOCS);
+        return docmosisDocumentGeneratorService.generatedDocmosisDocument(coverDocumentData, COVER_DOCS);
     }
 
     DocmosisCoverDocument buildCoverDocumentsData(String familyManCaseNumber,

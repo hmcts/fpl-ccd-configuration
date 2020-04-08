@@ -20,21 +20,17 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { JacksonAutoConfiguration.class, DocmosisCoverDocumentsService.class })
 class DocmosisCoverDocumentsServiceTest {
-
-    public static final String NULL_FAMILY_MAN_NUMBER = null;
-
-    private DocmosisCoverDocumentsService documentsService;
-
-    private DocmosisDocument docmosisDocument;
-
-    private Representative testRepresentative;
-
+    private static final String NULL_FAMILY_MAN_NUMBER = null;
     private static final String FAMILY_MAN_NUMBER = "12345";
-
     private static final Long CCD_CASE_NUMBER = 1234123412341234L;
 
+    private byte[] pdf = { 1, 2, 3, 4, 5 };
+    private DocmosisDocument docmosisDocument = new DocmosisDocument("example.pdf", pdf);
+    private Representative testRepresentative = buildRepresentative();
+    private DocmosisCoverDocumentsService documentsService;
+
     @MockBean
-    DocmosisDocumentGeneratorService documentGeneratorService;
+    private DocmosisDocumentGeneratorService documentGeneratorService;
 
     @Autowired
     DocmosisCoverDocumentsServiceTest(DocmosisCoverDocumentsService documentsService) {
@@ -43,24 +39,19 @@ class DocmosisCoverDocumentsServiceTest {
 
     @BeforeEach
     void setup() {
-        byte[] pdf = {1, 2, 3, 4, 5};
-        testRepresentative = buildRepresentative();
-        docmosisDocument = new DocmosisDocument("example.pdf", pdf);
-
-        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(documentGeneratorService.generatedDocmosisDocument(any(), any())).willReturn(docmosisDocument);
     }
 
     @Test
-    void shouldGenerateDocmosisDocumentWhenAllDataProvided() {
-        DocmosisDocument coverDocument = documentsService.createCoverDocuments(FAMILY_MAN_NUMBER,
+    void shouldGenerateExpectedDocumentWhenAllDataProvided() {
+        DocmosisDocument pdfDocument = documentsService.createCoverDocuments(FAMILY_MAN_NUMBER,
             CCD_CASE_NUMBER, testRepresentative);
 
-        assertThat(coverDocument).isEqualTo(docmosisDocument);
+        assertThat(pdfDocument).isEqualTo(docmosisDocument);
     }
 
-
     @Test
-    void shouldBuildCoverDocumentsWhenAllDataProvided() {
+    void shouldGenerateExpectedDataWhenAllDataProvided() {
         DocmosisCoverDocument coverDocumentData = documentsService.buildCoverDocumentsData(FAMILY_MAN_NUMBER,
             CCD_CASE_NUMBER, testRepresentative);
 
@@ -78,7 +69,7 @@ class DocmosisCoverDocumentsServiceTest {
         assertThat(coverDocumentData.getFamilyManCaseNumber()).isEqualTo("");
     }
 
-    private Representative buildRepresentative() {
+    private static Representative buildRepresentative() {
         return Representative.builder()
             .fullName("Mark Jones")
             .address(Address.builder()

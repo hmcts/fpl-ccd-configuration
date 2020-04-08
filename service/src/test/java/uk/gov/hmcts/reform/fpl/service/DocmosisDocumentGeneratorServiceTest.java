@@ -1,13 +1,17 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
@@ -22,7 +26,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class DocmosisDocumentGeneratorServiceTest {
+
     @Mock
     private RestTemplate restTemplate;
 
@@ -30,16 +36,19 @@ class DocmosisDocumentGeneratorServiceTest {
     private ResponseEntity<byte[]> tornadoResponse;
 
     @Mock
-    private DocmosisConfiguration docmosisDocumentGenerationConfiguration;
+    private DocmosisConfiguration configuration;
 
     @Captor
     ArgumentCaptor<HttpEntity<DocmosisRequest>> argumentCaptor;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Test
     void shouldInvokesTornado() {
         Map<String, Object> placeholders = getTemplatePlaceholders();
 
-        when(restTemplate.exchange(eq(docmosisDocumentGenerationConfiguration.getUrl() + "/rs/render"),
+        when(restTemplate.exchange(eq(configuration.getUrl() + "/rs/render"),
             eq(HttpMethod.POST), argumentCaptor.capture(), eq(byte[].class))).thenReturn(tornadoResponse);
 
         byte[] expectedResponse = {1, 2, 3};
@@ -68,9 +77,6 @@ class DocmosisDocumentGeneratorServiceTest {
     }
 
     private DocmosisDocumentGeneratorService createServiceInstance() {
-        return new DocmosisDocumentGeneratorService(
-            restTemplate,
-            docmosisDocumentGenerationConfiguration
-        );
+        return new DocmosisDocumentGeneratorService(restTemplate, configuration, mapper);
     }
 }
