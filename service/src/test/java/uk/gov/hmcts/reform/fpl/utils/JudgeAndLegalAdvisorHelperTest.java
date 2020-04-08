@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
@@ -8,6 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
@@ -104,13 +107,7 @@ class JudgeAndLegalAdvisorHelperTest {
 
     @Test
     void shouldReturnAllocatedJudgeWhenUseAllocatedJudgeSelected() {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeTitle(MAGISTRATES)
-            .judgeLastName("Stevenson")
-            .legalAdvisorName("John Papa")
-            .useAllocatedJudge("Yes")
-            .allocatedJudgeLabel("Case assigned to: His Honour Judge Dread")
-            .build();
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(YES);
 
         Judge allocatedJudge = buildJudge();
 
@@ -123,13 +120,7 @@ class JudgeAndLegalAdvisorHelperTest {
 
     @Test
     void shouldReturnInputtedJudgeWhenUseAllocatedJudgeNotSelected() {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeTitle(MAGISTRATES)
-            .judgeLastName("Stevenson")
-            .legalAdvisorName("John Papa")
-            .useAllocatedJudge("No")
-            .allocatedJudgeLabel("Case assigned to: His Honour Judge Dread")
-            .build();
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         Judge allocatedJudge = buildJudge();
 
@@ -173,6 +164,16 @@ class JudgeAndLegalAdvisorHelperTest {
 
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isNull();
+    }
+
+    private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(MAGISTRATES)
+            .judgeLastName("Stevenson")
+            .legalAdvisorName("John Papa")
+            .useAllocatedJudge(useAllocatedJudge.getValue())
+            .allocatedJudgeLabel("Case assigned to: His Honour Judge Dread")
+            .build();
     }
 
     private Judge buildJudge() {

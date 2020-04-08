@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -90,13 +91,7 @@ public class GeneratedOrderController {
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
-            String assignedJudgeLabel = buildAllocatedJudgeLabel(caseData.getAllocatedJudge());
-
-            JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-                .allocatedJudgeLabel(assignedJudgeLabel)
-                .build();
-
-            caseDetails.getData().put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
+            caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -200,6 +195,14 @@ public class GeneratedOrderController {
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
+    }
+
+    private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
+        String assignedJudgeLabel = buildAllocatedJudgeLabel(allocatedJudge);
+
+        return JudgeAndLegalAdvisor.builder()
+            .allocatedJudgeLabel(assignedJudgeLabel)
+            .build();
     }
 
     private Document getDocument(CaseData caseData,

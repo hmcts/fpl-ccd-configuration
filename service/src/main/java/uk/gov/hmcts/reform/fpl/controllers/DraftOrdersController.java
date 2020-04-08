@@ -74,7 +74,7 @@ public class DraftOrdersController {
     private final Time time;
     private final RequestData requestData;
 
-    private static final String JUDGE_AND_LEGAL_ADIVSOR_KEY = "judgeAndLegalAdvisor";
+    private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -93,28 +93,30 @@ public class DraftOrdersController {
 
             directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADIVSOR_KEY,
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY,
                 caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
-            JudgeAndLegalAdvisor judgeAndLegalAdvisor;
-
-            if (isNotEmpty(caseData.getStandardDirectionOrder())
-                && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
-                judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
-            } else {
-                judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
-            }
-
-            judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
-
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADIVSOR_KEY, judgeAndLegalAdvisor);
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, setAllocatedJudgeLabel(caseData));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private JudgeAndLegalAdvisor setAllocatedJudgeLabel(CaseData caseData) {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
+
+        if (isNotEmpty(caseData.getStandardDirectionOrder())
+            && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
+            judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
+        }
+
+        judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+
+        return judgeAndLegalAdvisor;
     }
 
     private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
@@ -213,7 +215,7 @@ public class DraftOrdersController {
             .build();
 
         caseDetails.getData().put("standardDirectionOrder", order);
-        caseDetails.getData().remove(JUDGE_AND_LEGAL_ADIVSOR_KEY);
+        caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
         caseDetails.getData().remove("dateOfIssue");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
