@@ -273,7 +273,7 @@ pitest {
   // Currently doesn't work with integration tests
   // tests did not pass without mutation when calculating line coverage. Mutation testing requires a green suite.
   // will require more in depth investigation
-  testSourceSets.set([sourceSets.test/*, sourceSets.integrationTest*/])
+  testSourceSets.set([sourceSets.test, sourceSets.integrationTest])
   excludedClasses.set(['uk.gov.hmcts.reform.fpl.controllers.*', 'uk.gov.hmcts.reform.fpl.config.*'])
   threads.set(10)
   enableDefaultIncrementalAnalysis.set(true)
@@ -283,6 +283,7 @@ pitest {
   timestampedReports.set(false)
   mutationThreshold.set(80)
   timeoutConstInMillis.set(30000)
+//  verbose.set(true)
   mutators.set([
     'CONDITIONALS_BOUNDARY',
     'INCREMENTS',
