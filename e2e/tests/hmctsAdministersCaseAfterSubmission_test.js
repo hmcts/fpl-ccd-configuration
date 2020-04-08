@@ -290,8 +290,8 @@ Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addExpertReportLog);
   caseViewPage.selectTab(caseViewPage.tabs.expertReports);
-  I.seeAnswerInTab('1', 'Report 1', 'What type of report have you requested?', 'Pediatric');
-  I.seeAnswerInTab('2', 'Report 1', 'Date requested', '1 Mar 2020');
-  I.seeAnswerInTab('3', 'Report 1', 'Has it been approved?', 'Yes');
-  I.seeAnswerInTab('4', 'Report 1', 'Date approved', '2 Apr 2020');
+  I.seeInTab(['Report 1', 'What type of report have you requested?'], 'Pediatric');
+  I.seeInTab(['Report 1', 'Date requested'], '1 Mar 2020');
+  I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
+  I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
 });
