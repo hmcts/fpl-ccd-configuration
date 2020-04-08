@@ -57,6 +57,9 @@ public class Other implements Representable, ConfidentialParty<Other> {
     @EqualsAndHashCode(callSuper = true)
     private static class OtherParty extends Party {
 
+        //sonarqube complaining about 9 params in constructor. Should be no more than 7.
+        // need to have constructor here to allow inheritance from Party. Will be address in others data migration.
+        @SuppressWarnings("squid:S00107")
         @Builder
         private OtherParty(String partyId,
                            PartyType partyType,
@@ -92,12 +95,12 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @Override
     public Other addConfidentialDetails(Party party) {
-        Telephone telephone = ofNullable(party.telephoneNumber).orElse(Telephone.builder().build());
+        Telephone telephoneNumber = ofNullable(party.telephoneNumber).orElse(Telephone.builder().build());
 
         return this.toBuilder()
             .name(party.firstName)
             .address(party.address)
-            .telephone(ofNullable(telephone.getTelephoneNumber()).orElse(""))
+            .telephone(ofNullable(telephoneNumber.getTelephoneNumber()).orElse(""))
             .build();
     }
 
