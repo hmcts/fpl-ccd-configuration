@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class GeneratedOrderEventHandler {
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
-    private final RepresentativeNotificationHandler representativeNotificationHandler;
+    private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
 
     @EventListener
@@ -52,7 +53,7 @@ public class GeneratedOrderEventHandler {
             orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
                 eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, GENERATED_ORDER);
 
-        representativeNotificationHandler.sendToRepresentativesByServedPreference(EMAIL,
+        representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES, templateParameters, eventData);
     }
 
@@ -65,7 +66,7 @@ public class GeneratedOrderEventHandler {
                 caseDetails, eventData.getLocalAuthorityCode(), documentContents, GENERATED_ORDER);
 
         sendToLocalAuthority(caseDetails, localAuthorityCode, templateParameters);
-        representativeNotificationHandler.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
+        representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES, templateParameters, eventData);
     }
 
