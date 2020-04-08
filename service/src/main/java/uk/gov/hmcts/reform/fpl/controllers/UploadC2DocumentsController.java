@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -42,6 +41,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Api
 @RestController
@@ -162,8 +163,7 @@ public class UploadC2DocumentsController {
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(userDetailsService.getUserName())
-            .uploadedDateTime(DateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
-                .toLocalDateTime(), "h:mma, d MMMM yyyy"));
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(zonedDateTime.toLocalDateTime(), TIME_DATE));
 
         if (featureToggleService.isFeesEnabled()) {
             c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));

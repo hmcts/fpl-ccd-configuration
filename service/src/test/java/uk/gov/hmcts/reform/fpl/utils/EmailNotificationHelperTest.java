@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,12 +14,12 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 class EmailNotificationHelperTest {
-    private final DateFormatterService dateFormatterService = new DateFormatterService();
 
     @Test
     void subjectLineShouldBeEmptyWhenNoRespondentOrCaseNumberEmpty() {
@@ -106,7 +105,7 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing "
-            + dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy");
+            + formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy");
         String subjectLine = buildSubjectLine(caseData);
         String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
             caseData.getHearingDetails());
