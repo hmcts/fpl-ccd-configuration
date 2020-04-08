@@ -27,15 +27,13 @@ class DocmosisCoverDocumentsServiceTest {
     private byte[] pdf = { 1, 2, 3, 4, 5 };
     private DocmosisDocument docmosisDocument = new DocmosisDocument("example.pdf", pdf);
     private Representative testRepresentative = buildRepresentative();
+
+    @Autowired
     private DocmosisCoverDocumentsService documentsService;
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
-    @Autowired
-    DocmosisCoverDocumentsServiceTest(DocmosisCoverDocumentsService documentsService) {
-        this.documentsService = documentsService;
-    }
 
     @BeforeEach
     void setup() {
@@ -80,3 +78,4 @@ class DocmosisCoverDocumentsServiceTest {
             .build();
     }
 }
+
