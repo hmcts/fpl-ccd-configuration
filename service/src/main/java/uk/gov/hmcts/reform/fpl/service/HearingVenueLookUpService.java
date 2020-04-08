@@ -6,11 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -43,7 +45,19 @@ public class HearingVenueLookUpService {
         }
     }
 
-    HearingVenue getHearingVenue(final String venueId) {
+    public HearingVenue getHearingVenue(final HearingBooking hearingBooking) {
+        if (Objects.isNull(hearingBooking.getVenueCustomAddress())) {
+            return getHearingVenue(hearingBooking.getVenue());
+        } else {
+            return HearingVenue.builder()
+                .hearingVenueId("OTHER")
+                .venue("Other")
+                .address(hearingBooking.getVenueCustomAddress())
+                .build();
+        }
+    }
+
+    private HearingVenue getHearingVenue(final String venueId) {
         return this.hearingVenues.stream()
             .filter(hearingVenue -> venueId.equalsIgnoreCase(hearingVenue.getHearingVenueId()))
             .findFirst()
