@@ -112,10 +112,7 @@ class JudgeAndLegalAdvisorHelperTest {
             .allocatedJudgeLabel("Case assigned to: His Honour Judge Dread")
             .build();
 
-        Judge allocatedJudge = Judge.builder()
-            .judgeTitle(HIS_HONOUR_JUDGE)
-            .judgeLastName("Dread")
-            .build();
+        Judge allocatedJudge = buildJudge();
 
         JudgeAndLegalAdvisor expectedJudge = getSelectedJudge(judgeAndLegalAdvisor, allocatedJudge);
 
@@ -134,10 +131,7 @@ class JudgeAndLegalAdvisorHelperTest {
             .allocatedJudgeLabel("Case assigned to: His Honour Judge Dread")
             .build();
 
-        Judge allocatedJudge = Judge.builder()
-            .judgeTitle(HIS_HONOUR_JUDGE)
-            .judgeLastName("Dread")
-            .build();
+        Judge allocatedJudge = buildJudge();
 
         JudgeAndLegalAdvisor expectedJudge = getSelectedJudge(judgeAndLegalAdvisor, allocatedJudge);
 
@@ -148,10 +142,7 @@ class JudgeAndLegalAdvisorHelperTest {
 
     @Test
     void shouldBuildAllocatedJudgeLabelWhenAllocatedJudgeIncludesTitleAndLastName() {
-        Judge allocatedJudge = Judge.builder()
-            .judgeTitle(HIS_HONOUR_JUDGE)
-            .judgeLastName("Dread")
-            .build();
+        Judge allocatedJudge = buildJudge();
 
         String label = buildAllocatedJudgeLabel(allocatedJudge);
 
@@ -182,6 +173,13 @@ class JudgeAndLegalAdvisorHelperTest {
 
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isNull();
+    }
+
+    private Judge buildJudge() {
+        return Judge.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Dread")
+            .build();
     }
 }
 
