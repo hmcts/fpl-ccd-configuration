@@ -62,7 +62,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     public Map<String, Object> buildCMOPartyReviewParameters(final CaseDetails caseDetails,
                                                              byte[] documentContents,
                                                              RepresentativeServingPreferences servingPreference) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
 
         return ImmutableMap.<String, Object>builder()
