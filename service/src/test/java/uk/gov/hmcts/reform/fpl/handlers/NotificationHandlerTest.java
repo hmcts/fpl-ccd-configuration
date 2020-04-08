@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,10 +27,12 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
@@ -68,6 +72,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -84,6 +89,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
@@ -109,6 +115,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
@@ -607,6 +614,49 @@ class NotificationHandlerTest {
                 "12345");
         }
 
+        @Test
+        void shouldNotifyRepresentativesOfCMOReadyForPartyReview() {
+            CallbackRequest callbackRequest = callbackRequest();
+            CaseDetails caseDetails = callbackRequest().getCaseDetails();
+            CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+
+            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
+                DIGITAL_SERVICE))
+                .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
+
+            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
+                EMAIL))
+                .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
+
+            given(caseManagementOrderEmailContentProvider.buildCMOPartyReviewParameters(caseDetails, documentContents,
+                DIGITAL_SERVICE))
+                .willReturn((getCMOReadyforReviewByPartiesNotificationParameters(DIGITAL_SERVICE)));
+
+            given(caseManagementOrderEmailContentProvider.buildCMOPartyReviewParameters(caseDetails, documentContents,
+                EMAIL))
+                .willReturn((getCMOReadyforReviewByPartiesNotificationParameters(EMAIL)));
+
+            notificationHandler.sendEmailForCaseManagementOrderReadyForPartyReview(
+                new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest, requestData, documentContents));
+
+            verify(notificationService).sendEmail(
+                eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
+                eq("fred@flinstone.com"),
+                dataCaptor.capture(),
+                eq("12345"));
+
+            assertEquals(dataCaptor.getValue(), getCMOReadyforReviewByPartiesNotificationParameters(DIGITAL_SERVICE));
+
+            verify(notificationService).sendEmail(
+                eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
+                eq("barney@rubble.com"),
+                dataCaptor.capture(),
+                eq("12345"));
+
+            assertEquals(dataCaptor.getValue(), getCMOReadyforReviewByPartiesNotificationParameters(EMAIL));
+
+        }
+
         private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
             return ImmutableMap.<String, Object>builder()
                 .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
@@ -617,6 +667,22 @@ class NotificationHandlerTest {
         private ImmutableMap<String, Object> getCMOReadyForJudgeNotificationParameters() {
             return ImmutableMap.<String, Object>builder()
                 .putAll(expectedCommonCMONotificationParameters())
+                .build();
+        }
+
+        private Map<String, Object> getCMOReadyforReviewByPartiesNotificationParameters(
+            RepresentativeServingPreferences servingPreference) {
+            String fileContent = new String(Base64.encodeBase64(documentContents), ISO_8859_1);
+            JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+            final String subjectLine = "Jones, SACCCCCCCC5676576567," + " hearing 1 Feb 2020";
+
+            return ImmutableMap.<String, Object>builder()
+                .put("subjectLineWithHearingDate", subjectLine)
+                .put("respondentLastName", "Jones")
+                .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
+                .put("caseUrl", servingPreference == DIGITAL_SERVICE ? formatCaseUrl("http://fake-url", 12345L) : "")
+                .put("link_to_document", jsonFileObject)
                 .build();
         }
 
