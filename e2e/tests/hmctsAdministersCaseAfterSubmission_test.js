@@ -224,11 +224,11 @@ Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewP
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
-  await createNoticeOfProceedingsEventPage.checkC6();
-  await createNoticeOfProceedingsEventPage.checkC6A();
-  await createNoticeOfProceedingsEventPage.selectJudgeTitle();
-  await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
-  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
+  createNoticeOfProceedingsEventPage.checkC6();
+  createNoticeOfProceedingsEventPage.checkC6A();
+  createNoticeOfProceedingsEventPage.selectJudgeTitle();
+  createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
