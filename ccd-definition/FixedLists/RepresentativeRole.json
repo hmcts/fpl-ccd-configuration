@@ -9,162 +9,169 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
+    "ListElementCode": "LA_BARRISTER",
+    "ListElement": "LA Barrister",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RepresentativeRole",
     "ListElementCode": "BARRISTER",
     "ListElement": "Barrister",
-    "DisplayOrder": 2
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "CAFCASS_GUARDIAN",
     "ListElement": "Cafcass Guardian",
-    "DisplayOrder": 3
+    "DisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "CAFCASS_SOLICITOR",
     "ListElement": "Cafcass Solicitor",
-    "DisplayOrder": 4
+    "DisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_1",
     "ListElement": "Representing respondent 1",
-    "DisplayOrder": 5
+    "DisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_2",
     "ListElement": "Representing respondent 2",
-    "DisplayOrder": 6
+    "DisplayOrder": 7
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_3",
     "ListElement": "Representing respondent 3",
-    "DisplayOrder": 7
+    "DisplayOrder": 8
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_4",
     "ListElement": "Representing respondent 4",
-    "DisplayOrder": 8
+    "DisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_5",
     "ListElement": "Representing respondent 5",
-    "DisplayOrder": 9
+    "DisplayOrder": 10
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_6",
     "ListElement": "Representing respondent 6",
-    "DisplayOrder": 10
+    "DisplayOrder": 11
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_7",
     "ListElement": "Representing respondent 7",
-    "DisplayOrder": 11
+    "DisplayOrder": 12
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_8",
     "ListElement": "Representing respondent 8",
-    "DisplayOrder": 12
+    "DisplayOrder": 13
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_9",
     "ListElement": "Representing respondent 9",
-    "DisplayOrder": 13
+    "DisplayOrder": 14
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_RESPONDENT_10",
     "ListElement": "Representing respondent 10",
-    "DisplayOrder": 14
+    "DisplayOrder": 15
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_PERSON_1",
     "ListElement": "Representing person 1",
-    "DisplayOrder": 15
+    "DisplayOrder": 16
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_OTHER_PERSON_1",
     "ListElement": "Representing other person 1",
-    "DisplayOrder": 16
+    "DisplayOrder": 17
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_OTHER_PERSON_2",
     "ListElement": "Representing other person 2",
-    "DisplayOrder": 17
+    "DisplayOrder": 18
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_OTHER_PERSON_3",
     "ListElement": "Representing other person 3",
-    "DisplayOrder": 18
+    "DisplayOrder": 19
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_OTHER_PERSON_4",
     "ListElement": "Representing other person 4",
-    "DisplayOrder": 19
+    "DisplayOrder": 20
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_OTHER_PERSON_5",
     "ListElement": "Representing other person 5",
-    "DisplayOrder": 20
+    "DisplayOrder": 21
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_OTHER_PERSON_6",
     "ListElement": "Representing other person 6",
-    "DisplayOrder": 21
+    "DisplayOrder": 22
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_OTHER_PERSON_7",
     "ListElement": "Representing other person 7",
-    "DisplayOrder": 22
+    "DisplayOrder": 23
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_OTHER_PERSON_8",
     "ListElement": "Representing other person 8",
-    "DisplayOrder": 23
+    "DisplayOrder": 24
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "REPRESENTING_OTHER_PERSON_9",
     "ListElement": "Representing other person 9",
-    "DisplayOrder": 24
+    "DisplayOrder": 25
   }
 ]

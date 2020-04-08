@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -40,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -122,6 +120,7 @@ class CaseManagementOrderGenerationServiceTest {
     }
 
     private DocmosisCaseManagementOrder expectedCaseManagementOrder(DocmosisCaseManagementOrder templateData) {
+        String hearingDateOnDifferentDays = "";
         return DocmosisCaseManagementOrder.builder()
             .courtName(COURT_NAME)
             .familyManCaseNumber("123")
@@ -134,7 +133,7 @@ class CaseManagementOrderGenerationServiceTest {
             .respondentsProvided(true)
             .representatives(getExpectedRepresentatives())
             .hearingBooking(DocmosisHearingBooking.builder()
-                .hearingDate(formatLocalDateToString(LocalDate.now(), DATE))
+                .hearingDate(hearingDateOnDifferentDays)
                 .hearingVenue(HEARING_VENUE)
                 .preHearingAttendance(formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "d MMMM yyyy, h:mma"))
                 .hearingTime(getHearingTime())

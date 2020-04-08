@@ -21,19 +21,24 @@ public class CommonCaseDataExtractionService {
 
         if (hearingBooking.hasDatesOnSameDay()) {
             // Example 3:30pm - 5:30pm
-            hearingTime = String.format("%s - %s",
-                formatTime(startDate), formatTime(endDate));
+            hearingTime = String.format("%s - %s", formatTime(startDate), formatTime(endDate));
         } else {
             // Example 18 June, 3:40pm - 19 June, 2:30pm
-            hearingTime = String.format("%s - %s", formatDateTime(startDate),
-                formatDateTime(endDate));
+            hearingTime = String.format("%s - %s", formatDateTime(startDate), formatDateTime(endDate));
         }
 
         return hearingTime;
     }
 
     Optional<String> getHearingDateIfHearingsOnSameDay(HearingBooking hearingBooking) {
-        return Optional.of(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG));
+        String hearingDate = null;
+
+        // If they aren't on the same date return nothing
+        if (hearingBooking.hasDatesOnSameDay()) {
+            hearingDate = formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
+        }
+
+        return Optional.ofNullable(hearingDate);
     }
 
     String extractPrehearingAttendance(HearingBooking booking) {
