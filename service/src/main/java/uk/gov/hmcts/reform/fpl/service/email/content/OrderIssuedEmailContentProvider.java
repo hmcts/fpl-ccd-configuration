@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.formatRepresentativesForPostNotification;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
@@ -84,6 +85,17 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
+    public Map<String, Object> buildOrderNotificationParameters(final CaseDetails caseDetails,
+                                                                final String localAuthorityCode,
+                                                                final byte[] documentContents,
+                                                                final IssuedOrderType issuedOrderType) {
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildNotificationParametersForRepresentatives(caseDetails, localAuthorityCode, documentContents,
+                issuedOrderType))
+            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()))
+            .build();
+    }
+
     private String buildCallout(CaseData caseData) {
         return "^" + buildSubjectLineWithHearingBookingDateSuffix(buildSubjectLine(caseData),
             caseData.getHearingDetails());
@@ -118,11 +130,8 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
         ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
 
-        try {
-            url.put("documentLink", prepareUpload(documentContents));
-        } catch (NotificationClientException e) {
-            log.error("Unable to send notification due to ", e);
-        }
+        generateAttachedDocumentLink(documentContents).ifPresent(
+            attachedDocumentLink -> url.put("documentLink", attachedDocumentLink));
 
         return url.build();
     }

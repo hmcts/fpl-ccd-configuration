@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 
 import java.util.Map;
@@ -27,7 +26,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 public class GeneratedOrderEventHandler {
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
-    private final GeneratedOrderEmailContentProvider orderEmailContentProvider;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final RepresentativeNotificationHandler representativeNotificationHandler;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
@@ -62,8 +60,9 @@ public class GeneratedOrderEventHandler {
                                                                                final byte[] documentContents,
                                                                                final String localAuthorityCode,
                                                                                final CaseDetails caseDetails) {
-        final Map<String, Object> templateParameters = orderEmailContentProvider.buildOrderNotificationParameters(
-            caseDetails, eventData.getLocalAuthorityCode(), documentContents);
+        final Map<String, Object> templateParameters =
+            orderIssuedEmailContentProvider.buildOrderNotificationParameters(
+                caseDetails, eventData.getLocalAuthorityCode(), documentContents, GENERATED_ORDER);
 
         sendToLocalAuthority(caseDetails, localAuthorityCode, templateParameters);
         representativeNotificationHandler.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,

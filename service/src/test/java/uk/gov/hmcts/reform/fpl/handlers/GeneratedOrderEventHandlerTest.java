@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -81,9 +80,6 @@ class GeneratedOrderEventHandlerTest {
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @MockBean
-    private GeneratedOrderEmailContentProvider orderEmailContentProvider;
-
-    @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
     @MockBean
@@ -114,8 +110,8 @@ class GeneratedOrderEventHandlerTest {
         given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
             .willReturn(c2Parameters);
 
-        given(orderEmailContentProvider.buildOrderNotificationParameters(
-            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS))
+        given(orderIssuedEmailContentProvider.buildOrderNotificationParameters(
+            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedOrderNotificationParameters());
 
         given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(

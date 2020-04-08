@@ -135,14 +135,14 @@ public class NotificationEventHandlerTestData {
         String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENTS), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
-        String subjectLine = "Jones, SACCCCCCCC5676576567";
+        String subjectLine = "^Jones, SACCCCCCCC5676576567";
 
-        return Map.of("callOut",
+        return Map.of("callout",
             (subjectLine + ", hearing " + formatLocalDateToString(FUTURE_DATE.toLocalDate(), FormatStyle.MEDIUM)),
             "courtName", COURT_NAME,
-            "orderType", "Blank order (C21)",
-            "reference", "12345",
+            "orderType", "blank order (c21)",
+            "respondentLastName", "Jones",
             "caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345",
-            "attachedDocumentLink", jsonFileObject);
+            "documentLink", jsonFileObject);
     }
 }
