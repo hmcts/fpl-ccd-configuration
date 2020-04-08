@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Map;
@@ -45,8 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUr
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderReadyForPartyReviewEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, RepresentativeNotificationHandler.class, RepresentativeNotificationService.class,
-    OrderIssuedEmailContentProvider.class, HearingBookingService.class})
+    LookupTestConfig.class, RepresentativeNotificationService.class, HearingBookingService.class})
 public class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
     @Captor
     private ArgumentCaptor<Map<String, Object>> dataCaptor;

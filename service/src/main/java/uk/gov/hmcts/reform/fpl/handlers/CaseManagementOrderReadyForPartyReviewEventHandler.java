@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderReadyForPartyReviewEventHandler {
-    private final RepresentativeNotificationHandler representativeNotificationHandler;
+    private final RepresentativeNotificationService representativeNotificationService;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @EventListener
@@ -28,13 +29,13 @@ public class CaseManagementOrderReadyForPartyReviewEventHandler {
         Map<String, Object> digitalRepresentativesParameters = caseManagementOrderEmailContentProvider
             .buildCMOPartyReviewParameters(eventData.getCaseDetails(), event.getDocumentContents(), DIGITAL_SERVICE);
 
-        representativeNotificationHandler.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
+        representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
             CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, digitalRepresentativesParameters, eventData);
 
         Map<String, Object> emailRepresentativesParameters = caseManagementOrderEmailContentProvider
             .buildCMOPartyReviewParameters(eventData.getCaseDetails(), event.getDocumentContents(), EMAIL);
 
-        representativeNotificationHandler.sendToRepresentativesByServedPreference(EMAIL,
+        representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
             CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, emailRepresentativesParameters, eventData);
 
     }

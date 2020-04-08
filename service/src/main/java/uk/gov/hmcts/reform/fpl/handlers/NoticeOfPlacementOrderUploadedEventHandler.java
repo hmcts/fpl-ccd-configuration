@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
-    private final RepresentativeNotificationHandler representativeNotificationHandler;
+    private final RepresentativeNotificationService representativeNotificationService;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
 
@@ -45,7 +46,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
         issuedOrderAdminNotificationHandler.sendToAdmin(eventData,
             noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
 
-        representativeNotificationHandler.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
+        representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, parameters, eventData);
 
         Map<String, Object> representativesTemplateParameters =
@@ -53,7 +54,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
                 eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
                 noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
 
-        representativeNotificationHandler.sendToRepresentativesByServedPreference(EMAIL,
+        representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES, representativesTemplateParameters, eventData);
     }
 }
