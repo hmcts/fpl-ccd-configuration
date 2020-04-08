@@ -425,7 +425,7 @@ Scenario('local authority enters other proceedings', async (I, caseViewPage, ent
   I.seeInTab(['Additional proceedings 1', 'Is the same guardian needed?'], 'Yes');
 });
 
-Scenario('local authority enters allocation proposal', async (I, caseViewPage, enterAllocationProposalEventPage) => {
+Scenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterAllocationProposalEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
   enterAllocationProposalEventPage.selectAllocationProposal('Magistrate');
   enterAllocationProposalEventPage.enterProposalReason('test');
