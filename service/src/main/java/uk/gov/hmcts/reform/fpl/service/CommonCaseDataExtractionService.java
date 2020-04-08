@@ -68,7 +68,7 @@ public class CommonCaseDataExtractionService {
             );
         }
 
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking.getVenue());
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
 
         return ImmutableMap.of(
             "hearingDate", getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""),

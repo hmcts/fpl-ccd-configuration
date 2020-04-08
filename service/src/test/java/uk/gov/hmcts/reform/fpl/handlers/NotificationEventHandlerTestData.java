@@ -131,6 +131,15 @@ public class NotificationEventHandlerTestData {
                 .build());
     }
 
+    public static List<Representative> getExpectedDigitalRepresentativesForAddingPartiesToCase() {
+        return ImmutableList.of(
+            Representative.builder()
+                .email("fred@flinstone.com")
+                .fullName("Fred Flinstone")
+                .servingPreferences(DIGITAL_SERVICE)
+                .build());
+    }
+
     public static Map<String, Object> getExpectedOrderNotificationParameters() {
         String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENTS), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
