@@ -120,7 +120,6 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         Arrays.stream(scheduleKeys).forEach(key -> assertThat(templateData.get(key)).isEqualTo(DEFAULT));
         assertThat(templateData.get("scheduleProvided")).isEqualTo(false);
         assertThat(templateData.get("draftbackground")).isNotNull();
-        assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
     }
 
     @Test
@@ -161,7 +160,6 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
         assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
         assertThat(templateData.get("draftbackground")).isNotNull();
-        assertThat(templateData.get("caseManagementNumber")).isEqualTo(2);
     }
 
     @Test
