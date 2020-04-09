@@ -21,10 +21,10 @@ public class C2PbaPaymentNotTakenEventHandler {
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @EventListener
-    public void sendNotifications(final C2PbaPaymentNotTakenEvent event) {
-        EventData eventData = new EventData(event);
-        String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
-        Map<String, Object> parameters = c2UploadedEmailContentProvider
+    public void sendEmail(final C2PbaPaymentNotTakenEvent event) {
+        final EventData eventData = new EventData(event);
+        final String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
+        final Map<String, Object> parameters = c2UploadedEmailContentProvider
             .buildC2UploadPbaPaymentNotTakenNotification(eventData.getCaseDetails());
 
         notificationService.sendEmail(C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE, email, parameters,

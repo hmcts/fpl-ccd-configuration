@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
@@ -67,7 +66,7 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
         given(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(caseDetails))
             .willReturn(c2PaymentNotTakenParameters);
 
-        c2PbaPaymentNotTakenEventHandler.sendNotifications(
+        c2PbaPaymentNotTakenEventHandler.sendEmail(
             new C2PbaPaymentNotTakenEvent(callbackRequest(), requestData));
 
         verify(notificationService).sendEmail(
@@ -76,7 +75,7 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCtscAdminWhenUploadedC2IsNotUsingPbaPaymentAndCtscIsEnabled() throws IOException {
+    void shouldNotifyCtscAdminWhenUploadedC2IsNotUsingPbaPaymentAndCtscIsEnabled() {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -89,7 +88,7 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
         given(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(caseDetails))
             .willReturn(c2PaymentNotTakenParameters);
 
-        c2PbaPaymentNotTakenEventHandler.sendNotifications(
+        c2PbaPaymentNotTakenEventHandler.sendEmail(
             new C2PbaPaymentNotTakenEvent(callbackRequest, requestData));
 
         verify(notificationService).sendEmail(
