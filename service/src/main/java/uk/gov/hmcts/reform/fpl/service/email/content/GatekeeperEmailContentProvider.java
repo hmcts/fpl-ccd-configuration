@@ -7,31 +7,27 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.CasePersonalisedContentProvider;
 
 import java.util.Map;
 
 @Service
-public class GatekeeperEmailContentProvider extends AbstractEmailContentProvider {
-
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-    private final ObjectMapper mapper;
+public class GatekeeperEmailContentProvider extends CasePersonalisedContentProvider {
+    private final LocalAuthorityNameLookupConfiguration config;
 
     @Autowired
-    public GatekeeperEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                          @Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                          HearingBookingService hearingBookingService,
-                                          ObjectMapper mapper) {
-        super(uiBaseUrl, hearingBookingService);
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-        this.mapper = mapper;
+    protected GatekeeperEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                             ObjectMapper mapper,
+                                             LocalAuthorityNameLookupConfiguration config) {
+        super(uiBaseUrl, mapper);
+        this.config = config;
     }
 
     public Map<String, Object> buildGatekeeperNotification(CaseDetails caseDetails, String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
-            .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
+            .put("localAuthority", config.getLocalAuthorityName(localAuthorityCode))
             .build();
     }
 }

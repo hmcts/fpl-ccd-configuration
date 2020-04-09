@@ -3,12 +3,13 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
@@ -23,13 +24,11 @@ import static uk.gov.service.notify.NotificationClient.prepareUpload;
 @Slf4j
 @Service
 public class CaseManagementOrderEmailContentProvider extends AbstractEmailContentProvider {
-    private final ObjectMapper objectMapper;
 
+    @Autowired
     protected CaseManagementOrderEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                                      HearingBookingService hearingBookingService,
-                                                      ObjectMapper objectMapper) {
-        super(uiBaseUrl, hearingBookingService);
-        this.objectMapper = objectMapper;
+                                                      ObjectMapper mapper) {
+        super(uiBaseUrl, mapper);
     }
 
     public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
@@ -52,7 +51,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     }
 
     public Map<String, Object> buildCMORejectedByJudgeNotificationParameters(final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
@@ -63,7 +62,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     public Map<String, Object> buildCMOPartyReviewParameters(final CaseDetails caseDetails,
                                                              byte[] documentContents,
                                                              RepresentativeServingPreferences servingPreference) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
 
         return ImmutableMap.<String, Object>builder()
@@ -77,7 +76,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     }
 
     public Map<String, Object> buildCMOReadyForJudgeReviewNotificationParameters(final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
@@ -88,7 +87,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     }
 
     private Map<String, Object> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
 
         return ImmutableMap.of(
