@@ -1,17 +1,16 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Map;
+import javax.annotation.PostConstruct;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -19,23 +18,15 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, PartyAddedToCaseContentProvider.class,
-    HearingBookingService.class})
-class PartyAddedToCaseContentProviderTest {
-
-    @Autowired
-    private HearingBookingService hearingBookingService;
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, PartyAddedToCaseContentProvider.class})
+class PartyAddedToCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
-    @Autowired
-    private ObjectMapper mapper;
-
-    @BeforeEach
-    void setup() {
-        this.partyAddedToCaseContentProvider = new PartyAddedToCaseContentProvider(
-            "null", hearingBookingService, mapper);
+    @PostConstruct
+    void setField() {
+        ReflectionTestUtils.setField(partyAddedToCaseContentProvider, "uiBaseUrl", BASE_URL);
     }
 
     @Test
@@ -54,7 +45,7 @@ class PartyAddedToCaseContentProviderTest {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", "Smith")
             .put("familyManCaseNumber", "12345L")
-            .put("caseUrl", "null/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
+            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
             .build();
 
         assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(

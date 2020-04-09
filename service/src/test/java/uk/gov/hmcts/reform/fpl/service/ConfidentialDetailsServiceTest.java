@@ -182,7 +182,7 @@ class ConfidentialDetailsServiceTest {
         @Test
         void shouldRemoveConfidentialDetailsFromCaseDetailsWhenNoConfidentialDetails() {
             Map<String, Object> data = new HashMap<>();
-            data.put(CHILD.getCaseDataKey(), "");
+            data.put(CHILD.getConfidentialKey(), "");
 
             CaseDetails caseDetails = CaseDetails.builder().data(data).build();
 
@@ -286,7 +286,7 @@ class ConfidentialDetailsServiceTest {
         @Test
         void shouldRemoveConfidentialDetailsFromCaseDetailsWhenNoConfidentialDetails() {
             Map<String, Object> data = new HashMap<>();
-            data.put(RESPONDENT.getCaseDataKey(), "");
+            data.put(RESPONDENT.getConfidentialKey(), "");
 
             CaseDetails caseDetails = CaseDetails.builder().data(data).build();
 
@@ -530,7 +530,7 @@ class ConfidentialDetailsServiceTest {
         @Test
         void shouldRemoveConfidentialDetailsFromCaseDetailsWhenNoConfidentialDetails() {
             Map<String, Object> data = new HashMap<>();
-            data.put(OTHER.getCaseDataKey(), "");
+            data.put(OTHER.getConfidentialKey(), "");
 
             CaseDetails caseDetails = CaseDetails.builder().data(data).build();
 
