@@ -67,7 +67,7 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
         given(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(caseDetails))
             .willReturn(c2PaymentNotTakenParameters);
 
-        c2PbaPaymentNotTakenEventHandler.sendEmailForC2UploadPbaPaymentNotTaken(
+        c2PbaPaymentNotTakenEventHandler.sendNotifications(
             new C2PbaPaymentNotTakenEvent(callbackRequest(), requestData));
 
         verify(notificationService).sendEmail(
@@ -89,7 +89,7 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
         given(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(caseDetails))
             .willReturn(c2PaymentNotTakenParameters);
 
-        c2PbaPaymentNotTakenEventHandler.sendEmailForC2UploadPbaPaymentNotTaken(
+        c2PbaPaymentNotTakenEventHandler.sendNotifications(
             new C2PbaPaymentNotTakenEvent(callbackRequest, requestData));
 
         verify(notificationService).sendEmail(

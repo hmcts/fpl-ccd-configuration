@@ -99,7 +99,7 @@ public class C2UploadedEventHandlerTest {
                 .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
                     COURT_CODE));
 
-            c2UploadedEventHandler.sendEmailForC2Upload(
+            c2UploadedEventHandler.sendNotifications(
                 new C2UploadedEvent(callbackRequest(), requestData));
 
             verify(notificationService).sendEmail(
@@ -120,7 +120,7 @@ public class C2UploadedEventHandlerTest {
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
                 .willReturn(c2Parameters);
 
-            c2UploadedEventHandler.sendEmailForC2Upload(
+            c2UploadedEventHandler.sendNotifications(
                 new C2UploadedEvent(callbackRequest, requestData));
 
             verify(notificationService).sendEmail(
@@ -135,7 +135,7 @@ public class C2UploadedEventHandlerTest {
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
 
-            c2UploadedEventHandler.sendEmailForC2Upload(
+            c2UploadedEventHandler.sendNotifications(
                 new C2UploadedEvent(callbackRequest(), requestData));
 
             verify(notificationService, never())

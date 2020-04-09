@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.event.EventData;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HmctsAdminNotificationHandler {
@@ -18,7 +20,7 @@ public class HmctsAdminNotificationHandler {
     public String getHmctsAdminEmail(final EventData eventData) {
         String ctscValue = getCtscValue(eventData.getCaseDetails().getData());
 
-        if (ctscValue.equals("Yes")) {
+        if (YES.getValue().equals(ctscValue)) {
             return ctscEmailLookupConfiguration.getEmail();
         }
 

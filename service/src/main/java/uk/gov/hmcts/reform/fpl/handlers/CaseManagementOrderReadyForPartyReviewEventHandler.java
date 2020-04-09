@@ -37,6 +37,5 @@ public class CaseManagementOrderReadyForPartyReviewEventHandler {
 
         representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
             CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, emailRepresentativesParameters, eventData);
-
     }
 }

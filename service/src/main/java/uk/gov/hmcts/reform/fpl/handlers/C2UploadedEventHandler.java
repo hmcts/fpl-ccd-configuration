@@ -27,7 +27,7 @@ public class C2UploadedEventHandler {
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @EventListener
-    public void sendEmailForC2Upload(final C2UploadedEvent event) {
+    public void sendNotifications(final C2UploadedEvent event) {
         List<String> roles = idamApi.retrieveUserInfo(requestData.authorisation()).getRoles();
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             EventData eventData = new EventData(event);
