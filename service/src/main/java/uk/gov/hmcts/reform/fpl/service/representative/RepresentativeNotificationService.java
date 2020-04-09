@@ -32,11 +32,12 @@ public class RepresentativeNotificationService {
             caseData.getRepresentatives(), servedPreference);
 
         if (!representatives.isEmpty()) {
-            sendNotificationToRepresentatives(eventData, templateParameters, representatives, templateId);
+            sendNotificationToRepresentatives(eventData.getReference(), templateParameters, representatives,
+                templateId);
         }
     }
 
-    private void sendNotificationToRepresentatives(final EventData eventData,
+    private void sendNotificationToRepresentatives(final String caseId,
                                                    final Map<String, Object> parameters,
                                                    final List<Representative> representatives,
                                                    final String templateId) {
@@ -46,6 +47,6 @@ public class RepresentativeNotificationService {
                 templateId,
                 representative.getEmail(),
                 parameters,
-                eventData.getReference()));
+                caseId));
     }
 }
