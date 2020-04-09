@@ -80,3 +80,4 @@ class DocmosisDocumentGeneratorServiceTest {
         return new DocmosisDocumentGeneratorService(restTemplate, configuration, mapper);
     }
 }
+
