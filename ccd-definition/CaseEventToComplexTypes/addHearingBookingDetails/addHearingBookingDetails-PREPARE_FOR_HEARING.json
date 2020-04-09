@@ -35,10 +35,72 @@
     "ID": "HearingBookingDetails-PREPARE_FOR_HEARING",
     "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
     "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress",
+    "SecurityClassification": "Public",
+    "FieldDisplayOrder": 4,
+    "FieldShowCondition": "hearingDetails.venue=\"OTHER\"",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "HearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.AddressLine1",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "HearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "HearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "HearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "HearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.County",
+    "SecurityClassification": "Public",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "HearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.PostCode",
+    "SecurityClassification": "Public",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "ID": "HearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseFieldID": "hearingDetails",
+    "ListElementCode": "venueCustomAddress.Country",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
+    "CaseFieldID": "hearingDetails",
     "ListElementCode": "startDate",
     "EventElementLabel": "Start date and time",
     "HintText": "Use 24 hour format",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -49,7 +111,7 @@
     "ListElementCode": "endDate",
     "EventElementLabel": "End date and time",
     "HintText": "Use 24 hour format",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -59,7 +121,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "hearingNeedsBooked",
     "EventElementLabel": "Hearing needs booked",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -69,7 +131,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "hearingNeedsDetails",
     "EventElementLabel": "Give details",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 8,
     "FieldShowCondition": "hearingDetails.hearingNeedsBooked!=\"NONE\"",
     "DisplayContext": "MANDATORY"
   },
@@ -80,7 +142,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -90,7 +152,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.otherTitle",
     "EventElementLabel": "Title",
-    "FieldDisplayOrder": 9,
+    "FieldDisplayOrder": 10,
     "FieldShowCondition": "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"",
     "DisplayContext": "MANDATORY"
   },
@@ -101,7 +163,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.judgeLastName",
     "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 11,
     "FieldShowCondition": "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"",
     "DisplayContext": "MANDATORY"
   },
@@ -112,7 +174,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.judgeFullName",
     "EventElementLabel": "Full name",
-    "FieldDisplayOrder": 11,
+    "FieldDisplayOrder": 12,
     "FieldShowCondition": "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"",
     "DisplayContext": "OPTIONAL"
   },
@@ -123,9 +185,7 @@
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.legalAdvisorName",
     "EventElementLabel": "Justices' Legal Adviser's full name",
-    "FieldDisplayOrder": 12,
+    "FieldDisplayOrder": 13,
     "DisplayContext": "OPTIONAL"
   }
-
-
 ]

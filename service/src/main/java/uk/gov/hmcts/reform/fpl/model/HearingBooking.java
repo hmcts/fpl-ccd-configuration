@@ -20,6 +20,7 @@ public class HearingBooking {
     private final String type;
     private final String typeDetails;
     private final String venue;
+    private final Address venueCustomAddress;
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingBookingDetailsGroup.class)
     private final LocalDateTime startDate;
