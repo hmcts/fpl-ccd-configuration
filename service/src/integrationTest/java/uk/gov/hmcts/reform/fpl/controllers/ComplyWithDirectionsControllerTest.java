@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -45,20 +46,11 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldCafcassDirectionToCafcassCollectionWhenCourtRespondsOnBehalfOf() {
+    void shouldAddCorrectResponsesToCafcassAndCourtDirectionCollectionsWhenCourtIsResponding() {
         UUID uuid = randomUUID();
-
-        DirectionResponse responseForCafcass = DirectionResponse.builder()
-            .directionId(uuid)
-            .assignee(COURT)
-            .complied("Yes")
+        DirectionResponse responseForCourt = directionResponseBuilder(uuid).build();
+        DirectionResponse responseForCafcass = directionResponseBuilder(uuid)
             .respondingOnBehalfOf("CAFCASS")
-            .build();
-
-        DirectionResponse responseForCourt = DirectionResponse.builder()
-            .directionId(uuid)
-            .assignee(COURT)
-            .complied("Yes")
             .build();
 
         List<Element<Direction>> directions = List.of(element(uuid, Direction.builder()
@@ -66,15 +58,11 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .responses(wrapElements(responseForCafcass, responseForCourt))
             .build()));
 
-        Order sdo = Order.builder().directions(directions).build();
-
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of("standardDirectionOrder", sdo))
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("standardDirectionOrder", Order.builder().directions(directions).build()))
             .build();
 
-        CaseData caseData = getCaseData(postAboutToStartEvent(request));
+        CaseData caseData = getCaseData(postAboutToStartEvent(caseDetails));
 
         assertThat(unwrapElements(caseData.getCafcassDirections()))
             .containsOnly(Direction.builder()
@@ -244,5 +232,12 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .put(CAFCASS.getValue(), buildDirections(Direction.builder().assignee(CAFCASS).build()))
             .put(OTHERS.getValue(), buildDirections(Direction.builder().assignee(OTHERS).build()))
             .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()));
+    }
+
+    private DirectionResponse.DirectionResponseBuilder directionResponseBuilder(UUID uuid) {
+        return DirectionResponse.builder()
+            .directionId(uuid)
+            .assignee(COURT)
+            .complied("Yes");
     }
 }
