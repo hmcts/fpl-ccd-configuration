@@ -55,7 +55,7 @@ public class ConfidentialDetailsService {
             }
             caseDetails.getData().put(type.getConfidentialKey(), confidentialDetails);
         } else {
-            caseDetails.getData().remove(type.getCaseDataKey());
+            caseDetails.getData().remove(type.getConfidentialKey());
         }
     }
 
