@@ -74,15 +74,13 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(actualResponses(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS))
-            .isEqualTo(expectedResponses("RESPONDENT_1"))
-            .hasSize(1);
+            .isEqualTo(expectedResponses("RESPONDENT_1"));
 
-        assertThat(getDirections(caseData.getCafcassDirectionsCustom(), CAFCASS).get(0).getValue().getResponse())
-            .isEqualTo(expectedResponses("CAFCASS").get(0).getValue());
+        assertThat(actualResponses(caseData.getCafcassDirectionsCustom(), CAFCASS))
+            .isEqualTo(expectedResponses("CAFCASS"));
 
         assertThat(actualResponses(caseData.getOtherPartiesDirectionsCustom(), OTHERS))
-            .isEqualTo(expectedResponses("OTHER_1"))
-            .hasSize(1);
+            .isEqualTo(expectedResponses("OTHER_1"));
 
         assertThat(response.getData().get("respondents_label")).isEqualTo("Respondent 1 - John Doe\n");
         assertThat(response.getData().get("others_label")).isEqualTo("Person 1 - John Smith\n");

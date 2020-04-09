@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
@@ -69,9 +70,9 @@ public class PrepareDirectionsForUsersService {
                 case CAFCASS:
                     directions.addAll(clone);
 
-                    List<Element<Direction>> cafcassDirections = extractPartyResponse(COURT, directions);
+                    filterResponsesNotCompliedOnBehalfOfByTheCourt("CAFCASS", directions);
 
-                    caseDetails.getData().put(assignee.toCustomDirectionField(), cafcassDirections);
+                    caseDetails.getData().put(assignee.toCustomDirectionField(), directions);
 
                     break;
             }
@@ -119,15 +120,24 @@ public class PrepareDirectionsForUsersService {
                                                   List<Element<Direction>> directions) {
         return directions.stream()
             .map(element -> element(element.getId(), element.getValue().toBuilder()
-                .response(element.getValue().getResponses().stream()
-                    .filter(response -> response.getValue().getDirectionId().equals(element.getId()))
-                    .filter(response -> response.getValue().getAssignee().equals(assignee))
-                    .map(Element::getValue)
-                    .findFirst()
-                    .orElse(null))
+                .response(getResponse(assignee, element))
                 .responses(emptyList())
                 .build()))
             .collect(toList());
+    }
+
+    private DirectionResponse getResponse(DirectionAssignee assignee, Element<Direction> element) {
+        return element.getValue().getResponses().stream()
+            .filter(response -> response.getValue().getDirectionId().equals(element.getId()))
+            .filter(response -> {
+                if (response.getValue().getRespondingOnBehalfOf() != null) {
+                    return response.getValue().getRespondingOnBehalfOf().equals(assignee.toString());
+                }
+                return response.getValue().getAssignee().equals(assignee);
+            })
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
     }
 
     /**
@@ -143,10 +153,12 @@ public class PrepareDirectionsForUsersService {
     public void addAssigneeDirectionKeyValuePairsToCaseData(DirectionAssignee assignee,
                                                             List<Element<Direction>> directions,
                                                             CaseDetails caseDetails) {
+        List<Element<Direction>> directionsWithResponse = extractPartyResponse(assignee, directions);
+
         if (assignee.equals(COURT)) {
-            caseDetails.getData().put(assignee.getValue().concat("Custom"), extractPartyResponse(assignee, directions));
+            caseDetails.getData().put(assignee.getValue().concat("Custom"), directionsWithResponse);
         } else {
-            caseDetails.getData().put(assignee.getValue(), extractPartyResponse(assignee, directions));
+            caseDetails.getData().put(assignee.getValue(), directionsWithResponse);
         }
     }
 }

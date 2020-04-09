@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -41,6 +42,51 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
 
     ComplyWithDirectionsControllerTest() {
         super("comply-with-directions");
+    }
+
+    @Test
+    void shouldCafcassDirectionToCafcassCollectionWhenCourtRespondsOnBehalfOf() {
+        UUID uuid = randomUUID();
+
+        DirectionResponse responseForCafcass = DirectionResponse.builder()
+            .directionId(uuid)
+            .assignee(COURT)
+            .complied("Yes")
+            .respondingOnBehalfOf("CAFCASS")
+            .build();
+
+        DirectionResponse responseForCourt = DirectionResponse.builder()
+            .directionId(uuid)
+            .assignee(COURT)
+            .complied("Yes")
+            .build();
+
+        List<Element<Direction>> directions = List.of(element(uuid, Direction.builder()
+            .assignee(ALL_PARTIES)
+            .responses(wrapElements(responseForCafcass, responseForCourt))
+            .build()));
+
+        Order sdo = Order.builder().directions(directions).build();
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of("standardDirectionOrder", sdo))
+                .build())
+            .build();
+
+        CaseData caseData = getCaseData(postAboutToStartEvent(request));
+
+        assertThat(unwrapElements(caseData.getCafcassDirections()))
+            .containsOnly(Direction.builder()
+                .assignee(ALL_PARTIES)
+                .response(responseForCafcass)
+                .build());
+
+        assertThat(unwrapElements(caseData.getCourtDirectionsCustom()))
+            .containsOnly(Direction.builder()
+                .assignee(ALL_PARTIES)
+                .response(responseForCourt)
+                .build());
     }
 
     @Test
@@ -127,8 +173,8 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
 
     private List<Element<CaseManagementOrder>> caseManagementOrders(UUID uuid) {
         return wrapElements(CaseManagementOrder.builder()
-                .directions(directions(uuid))
-                .build());
+            .directions(directions(uuid))
+            .build());
     }
 
     private Order order(UUID uuid) {
@@ -141,10 +187,10 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
 
     private List<Element<Direction>> directions(UUID uuid) {
         return List.of(element(uuid, Direction.builder()
-                .response(DirectionResponse.builder()
-                    .complied("Yes")
-                    .build())
-                .build()));
+            .response(DirectionResponse.builder()
+                .complied("Yes")
+                .build())
+            .build()));
     }
 
     private List<Direction> directionsForAllRoles() {
