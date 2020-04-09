@@ -15,7 +15,7 @@
     "CaseEventID": "createNoticeOfProceedings",
     "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "judgeAndLegalAdvisor.useAllocatedJudge",
-    "EventElementLabel": "Is this the judge issuing the notice?",
+    "EventElementLabel": "Is this judge creating the notice?",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
@@ -25,7 +25,7 @@
     "CaseEventID": "createNoticeOfProceedings",
     "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "judgeAndLegalAdvisor.judgeSubHeading",
-    "EventElementLabel": "Enter the judge who is issuing the notice",
+    "EventElementLabel": "Who is creating the notice?",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
