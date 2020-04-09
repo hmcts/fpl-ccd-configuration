@@ -136,8 +136,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         cmoTemplateData.putAll(getSchedule(order));
 
-        cmoTemplateData.put("caseManagementNumber", caseData.getServedCaseManagementOrders().size() + 1);
-
         return cmoTemplateData;
     }
 
