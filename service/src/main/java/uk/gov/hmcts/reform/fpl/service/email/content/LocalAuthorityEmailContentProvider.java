@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
 
 import java.util.Map;
 
@@ -15,17 +16,16 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUr
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
-public class LocalAuthorityEmailContentProvider extends AbstractEmailContentProvider {
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-    private final ObjectMapper mapper;
+public class LocalAuthorityEmailContentProvider extends StandardDirectionOrderContent {
+    private final LocalAuthorityNameLookupConfiguration config;
 
     @Autowired
-    public LocalAuthorityEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfig,
-                                              @Value("${ccd.ui.base.url}") String uiBaseUrl, ObjectMapper mapper,
-                                              HearingBookingService hearingBookingService) {
-        super(uiBaseUrl, hearingBookingService);
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfig;
-        this.mapper = mapper;
+    protected LocalAuthorityEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                                 ObjectMapper mapper,
+                                                 HearingBookingService hearingBookingService,
+                                                 LocalAuthorityNameLookupConfiguration config) {
+        super(uiBaseUrl, mapper, hearingBookingService);
+        this.config = config;
     }
 
     public Map<String, Object> buildLocalAuthorityStandardDirectionOrderIssuedNotification(CaseDetails caseDetails,
@@ -33,7 +33,7 @@ public class LocalAuthorityEmailContentProvider extends AbstractEmailContentProv
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return super.getSDOPersonalisationBuilder(caseDetails.getId(), caseData)
-            .put("title", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
+            .put("title", config.getLocalAuthorityName(localAuthorityCode))
             .build();
     }
 
