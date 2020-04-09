@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 @Configuration
 public class LookupTestConfig {
 
+    @ConditionalOnMissingBean
     @Bean
     public HmctsCourtLookupConfiguration courtLookupConfiguration() {
         return new HmctsCourtLookupConfiguration("example=>Family Court:admin@family-court.com:11");
@@ -33,6 +34,18 @@ public class LookupTestConfig {
     @Bean
     public LocalAuthorityNameLookupConfiguration nameLookupConfiguration() {
         return new LocalAuthorityNameLookupConfiguration("example=>Example Local Authority");
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public LocalAuthorityEmailLookupConfiguration emailLookupConfiguration() {
+        return new LocalAuthorityEmailLookupConfiguration("example=>local-authority@fake-email.com");
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public CafcassLookupConfiguration cafcassLookupConfiguration() {
+        return new CafcassLookupConfiguration("example=>cafcass:cafcass@fake-email.com");
     }
 
     @Bean
