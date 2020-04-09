@@ -2,26 +2,32 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 
+import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 public class NotificationEventHandlerTestData {
     static final String LOCAL_AUTHORITY_CODE = "example";
     static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     static final String COURT_EMAIL_ADDRESS = "admin@family-court.com";
-    static final String COURT_NAME = "Test court";
+    static final String COURT_NAME = "Family Court";
     static final String AUTH_TOKEN = "Bearer token";
     static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
     static final String CAFCASS_NAME = "cafcass";
@@ -31,7 +37,8 @@ public class NotificationEventHandlerTestData {
     static final String CTSC_INBOX = "Ctsc+test@gmail.com";
     static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "barney@rubble.com";
     static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "fred@flinstone.com";
-    static final byte[] DOCUMENT_CONTENTS = {1, 2, 3};
+    static final byte[] DOCUMENT_CONTENTS = {1, 2, 3, 4, 5};
+    static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusMonths(3);
 
     private NotificationEventHandlerTestData() {
     }
@@ -131,5 +138,20 @@ public class NotificationEventHandlerTestData {
                 .fullName("Fred Flinstone")
                 .servingPreferences(DIGITAL_SERVICE)
                 .build());
+    }
+
+    public static Map<String, Object> getExpectedOrderNotificationParameters() {
+        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENTS), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+        String subjectLine = "^Jones, SACCCCCCCC5676576567";
+
+        return Map.of("callout",
+            (subjectLine + ", hearing " + formatLocalDateToString(FUTURE_DATE.toLocalDate(), FormatStyle.MEDIUM)),
+            "courtName", COURT_NAME,
+            "orderType", "blank order (c21)",
+            "respondentLastName", "Jones",
+            "caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345",
+            "documentLink", jsonFileObject);
     }
 }

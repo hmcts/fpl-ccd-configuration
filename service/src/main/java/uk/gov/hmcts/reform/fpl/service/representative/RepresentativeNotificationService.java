@@ -32,20 +32,21 @@ public class RepresentativeNotificationService {
             caseData.getRepresentatives(), servedPreference);
 
         if (!representatives.isEmpty()) {
-            sendNotificationToRepresentatives(eventData, templateParameters, representatives, templateId);
+            sendNotificationToRepresentatives(eventData.getReference(), templateParameters, representatives,
+                templateId);
         }
     }
 
-    public void sendNotificationToRepresentatives(final EventData eventData,
-                                                  final Map<String, Object> parameters,
-                                                  final List<Representative> representatives,
-                                                  final String templateId) {
+    private void sendNotificationToRepresentatives(final String caseId,
+                                                   final Map<String, Object> parameters,
+                                                   final List<Representative> representatives,
+                                                   final String templateId) {
         representatives.stream()
             .filter(representative -> isNotBlank(representative.getEmail()))
             .forEach(representative -> notificationService.sendEmail(
                 templateId,
                 representative.getEmail(),
                 parameters,
-                eventData.getReference()));
+                caseId));
     }
 }
