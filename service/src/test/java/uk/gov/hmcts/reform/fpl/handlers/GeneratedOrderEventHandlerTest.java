@@ -183,5 +183,4 @@ class GeneratedOrderEventHandlerTest {
                 .servingPreferences(DIGITAL_SERVICE)
                 .build());
     }
-
 }
