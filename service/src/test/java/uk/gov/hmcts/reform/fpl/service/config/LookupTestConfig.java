@@ -36,21 +36,9 @@ public class LookupTestConfig {
         return new LocalAuthorityNameLookupConfiguration("example=>Example Local Authority");
     }
 
-    @ConditionalOnMissingBean
     @Bean
+    @ConditionalOnMissingBean
     public LocalAuthorityEmailLookupConfiguration emailLookupConfiguration() {
-        return new LocalAuthorityEmailLookupConfiguration("example=>local-authority@fake-email.com");
-    }
-
-    @ConditionalOnMissingBean
-    @Bean
-    public CafcassLookupConfiguration cafcassLookupConfiguration() {
-        return new CafcassLookupConfiguration("example=>cafcass:cafcass@fake-email.com");
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration() {
         return new LocalAuthorityEmailLookupConfiguration("example=>FamilyPublicLaw+sa@gmail.com");
     }
 }
