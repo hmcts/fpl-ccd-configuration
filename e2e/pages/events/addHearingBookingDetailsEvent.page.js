@@ -1,5 +1,6 @@
 const { I } = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
   fields: function (index) {
@@ -31,6 +32,7 @@ module.exports = {
           somethingElse: `#hearingDetails_${index}_hearingNeedsBooked-SOMETHING_ELSE`,
         },
         giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
+        venueCustomAddress: `#hearingDetails_${index}_venueCustomAddress_venueCustomAddress`,
       },
     };
   },
@@ -41,6 +43,13 @@ module.exports = {
     I.waitForElement(this.fields(elementIndex).hearingBooking.type.caseManagement);
     I.click(this.fields(elementIndex).hearingBooking.type);
     I.selectOption(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
+
+    if(hearingDetails.venue === 'Other') {
+      within(this.fields(elementIndex).hearingBooking.venueCustomAddress, () => {
+        postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
+      });
+    }
+
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.second, hearingDetails.startDate.second);
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.minute, hearingDetails.startDate.minute);
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.hour, hearingDetails.startDate.hour);
