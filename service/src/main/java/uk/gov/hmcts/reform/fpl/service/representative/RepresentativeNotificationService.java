@@ -36,10 +36,10 @@ public class RepresentativeNotificationService {
         }
     }
 
-    public void sendNotificationToRepresentatives(final EventData eventData,
-                                                  final Map<String, Object> parameters,
-                                                  final List<Representative> representatives,
-                                                  final String templateId) {
+    private void sendNotificationToRepresentatives(final EventData eventData,
+                                                   final Map<String, Object> parameters,
+                                                   final List<Representative> representatives,
+                                                   final String templateId) {
         representatives.stream()
             .filter(representative -> isNotBlank(representative.getEmail()))
             .forEach(representative -> notificationService.sendEmail(
