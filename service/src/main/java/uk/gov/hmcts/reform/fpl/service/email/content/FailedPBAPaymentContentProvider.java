@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import java.util.Map;
 
@@ -16,13 +16,12 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUr
 public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {
 
     @Autowired
-    public FailedPBAPaymentContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                           HearingBookingService hearingBookingService) {
-        super(uiBaseUrl, hearingBookingService);
+    public FailedPBAPaymentContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl) {
+        super(uiBaseUrl);
     }
 
     public Map<String, Object> buildCtscNotificationParameters(CaseDetails caseDetails,
-        ApplicationType applicationType) {
+                                                               ApplicationType applicationType) {
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters(applicationType))
             .put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()))
@@ -34,7 +33,6 @@ public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvide
     }
 
     private Map<String, Object> buildCommonNotificationParameters(ApplicationType applicationType) {
-        return Map.of(
-            "applicationType", applicationType.getType());
+        return Map.of("applicationType", applicationType.getType());
     }
 }

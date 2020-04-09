@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import java.util.Map;
 
@@ -20,14 +20,10 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @Service
 public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvider {
 
-    private final ObjectMapper objectMapper;
-
     @Autowired
-    public PartyAddedToCaseContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                           HearingBookingService hearingBookingService,
-                                           ObjectMapper objectMapper) {
-        super(uiBaseUrl, hearingBookingService);
-        this.objectMapper = objectMapper;
+    protected PartyAddedToCaseContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                              ObjectMapper mapper) {
+        super(uiBaseUrl, mapper);
     }
 
     public Map<String, Object> getPartyAddedToCaseNotificationParameters(CaseDetails caseDetails,
@@ -43,7 +39,7 @@ public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvide
 
     private ImmutableMap.Builder<String, Object> buildPartyAddedToCaseCommonNotificationParams(
         final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
