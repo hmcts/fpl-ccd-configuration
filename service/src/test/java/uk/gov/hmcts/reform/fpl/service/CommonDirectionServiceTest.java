@@ -159,7 +159,8 @@ class CommonDirectionServiceTest {
             .build());
     }
 
-    //TODO FPLA-1481 will probably remove that test, but not it counts even if the directions as marked as not needed due to CMO issue
+    //TODO FPLA-1481 will probably remove that test, but now it counts even if the directions as
+    // marked as not needed due to CMO issue
     @Test
     void numberDirections_shouldApplyCorrectNumberingWhenDirectionsAreMarkedAsNotNeeded() {
         List<Element<Direction>> directions = directionsMarkedAsRemoved();
@@ -168,7 +169,8 @@ class CommonDirectionServiceTest {
             .map(direction -> direction.getValue().getDirectionType())
             .collect(toList());
 
-        List<String> expectedDirectionTypes = asList("2. direction", "3. direction", "4. direction", "5. direction", "6. direction", "7. direction");
+        List<String> expectedDirectionTypes = asList("2. direction", "3. direction", "4. direction", "5. direction",
+            "6. direction", "7. direction");
 
         assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionTypes);
     }
