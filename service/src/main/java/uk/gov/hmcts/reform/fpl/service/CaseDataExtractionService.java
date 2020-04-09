@@ -196,7 +196,7 @@ public class CaseDataExtractionService {
 
     private DocmosisHearingBooking getHearingBookingData(List<Element<HearingBooking>> hearingDetails) {
         return hearingBookingService.getFirstHearing(hearingDetails).map(hearing -> {
-                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing.getVenue());
+                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
 
                 return DocmosisHearingBooking.builder()
                     .hearingDate(dataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
