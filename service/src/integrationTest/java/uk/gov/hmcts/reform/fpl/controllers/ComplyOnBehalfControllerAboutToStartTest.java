@@ -76,8 +76,8 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
         assertThat(actualResponses(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS))
             .isEqualTo(expectedResponses("RESPONDENT_1"));
 
-        assertThat(actualResponses(caseData.getCafcassDirectionsCustom(), CAFCASS))
-            .isEqualTo(expectedResponses("CAFCASS"));
+        assertThat(getDirections(caseData.getCafcassDirectionsCustom(), CAFCASS).get(0).getValue().getResponse())
+            .isEqualTo(expectedResponses("CAFCASS").get(0).getValue());
 
         assertThat(actualResponses(caseData.getOtherPartiesDirectionsCustom(), OTHERS))
             .isEqualTo(expectedResponses("OTHER_1"));

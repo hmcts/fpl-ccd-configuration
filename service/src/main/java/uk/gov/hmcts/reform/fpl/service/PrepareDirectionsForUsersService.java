@@ -70,9 +70,9 @@ public class PrepareDirectionsForUsersService {
                 case CAFCASS:
                     directions.addAll(clone);
 
-                    filterResponsesNotCompliedOnBehalfOfByTheCourt("CAFCASS", directions);
+                    List<Element<Direction>> cafcassDirections = extractPartyResponse(CAFCASS, directions);
 
-                    caseDetails.getData().put(assignee.toCustomDirectionField(), directions);
+                    caseDetails.getData().put(assignee.toCustomDirectionField(), cafcassDirections);
 
                     break;
             }
@@ -130,7 +130,7 @@ public class PrepareDirectionsForUsersService {
         return element.getValue().getResponses().stream()
             .filter(response -> response.getValue().getDirectionId().equals(element.getId()))
             .filter(response -> {
-                if (response.getValue().getRespondingOnBehalfOf() != null) {
+                if ("CAFCASS".equals(response.getValue().getRespondingOnBehalfOf())) {
                     return response.getValue().getRespondingOnBehalfOf().equals(assignee.toString());
                 }
                 return response.getValue().getAssignee().equals(assignee);
