@@ -413,6 +413,8 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 .caseDetailsBefore(caseDetailsBefore)
                 .build();
 
+            given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+
             postSubmittedEvent(callbackRequest);
 
             verify(coreCaseDataService).triggerEvent("PUBLICLAW",
