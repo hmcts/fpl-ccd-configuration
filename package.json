@@ -12,7 +12,7 @@
     "husky": "^3.1.0",
     "mocha-junit-reporter": "^1.23.3",
     "mocha-multi": "^1.1.3",
-    "mochawesome": "^5.0.0",
+    "mochawesome": "^6.0.0",
     "puppeteer": "^2.0.0"
   },
   "scripts": {
