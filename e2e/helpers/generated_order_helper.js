@@ -1,32 +1,33 @@
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
-const createBlankOrder = async (I, createOrderEventPage, order) => {
+const createBlankOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
   await createOrderEventPage.selectType(order.type);
   await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.title);
   await createOrderEventPage.enterC21OrderDetails();
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
+  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.completeEvent('Save and continue');
 };
 
-const createCareOrder = async (I, createOrderEventPage, order) => {
+const createCareOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
   await createOrderEventPage.selectType(order.type, order.subtype);
   await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
   if (order.subtype === 'Interim') {
     await fillInterimEndDate(I, createOrderEventPage, order);
   }
+
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
+  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
 };
 
-const createSupervisionOrder = async (I, createOrderEventPage, order) => {
+const createSupervisionOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
   await createOrderEventPage.selectType(order.type, order.subtype);
   await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
@@ -37,13 +38,13 @@ const createSupervisionOrder = async (I, createOrderEventPage, order) => {
     await fillInterimEndDate(I, createOrderEventPage, order);
   }
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
+  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
 };
 
-const createEmergencyProtectionOrder = async (I, createOrderEventPage, order) => {
+const createEmergencyProtectionOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
   const tomorrow = new Date(Date.now() + (3600 * 1000 * 24));
 
   await createOrderEventPage.selectType(order.type);
@@ -59,7 +60,7 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order) =>
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.epo.endDate.id);
   createOrderEventPage.enterEpoEndDate(tomorrow);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.judgeAndLegalAdvisorTitleId);
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
+  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
@@ -90,25 +91,33 @@ const selectChildren = async (I, createOrderEventPage, order) => {
   }
 };
 
+const enterJudgeAndLegalAdvisor = async (I, createOrderEventPage, order, hasAllocatedJudge) => {
+  if (hasAllocatedJudge) {
+    await createOrderEventPage.useAllocatedJudge(order.judgeAndLegalAdvisor.legalAdvisorName);
+  } else {
+    await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
+  }
+};
+
 module.exports = {
-  async createOrder(I, createOrderEventPage, order) {
+  async createOrder(I, createOrderEventPage, order, hasAllocatedJudge) {
     switch (order.type) {
       case 'Blank order (C21)':
-        await createBlankOrder(I, createOrderEventPage, order);
+        await createBlankOrder(I, createOrderEventPage, order, hasAllocatedJudge);
         break;
       case 'Care order':
-        await createCareOrder(I, createOrderEventPage, order);
+        await createCareOrder(I, createOrderEventPage, order, hasAllocatedJudge);
         break;
       case 'Supervision order':
-        await createSupervisionOrder(I, createOrderEventPage, order);
+        await createSupervisionOrder(I, createOrderEventPage, order, hasAllocatedJudge);
         break;
       case 'Emergency protection order':
-        await createEmergencyProtectionOrder(I, createOrderEventPage, order);
+        await createEmergencyProtectionOrder(I, createOrderEventPage, order, hasAllocatedJudge);
         break;
     }
   },
 
-  async assertOrder(I, caseViewPage, order, orderNum, defaultIssuedDate) {
+  async assertOrder(I, caseViewPage, order, orderNum, defaultIssuedDate, hasAllocatedJudge = false) {
     const orderHeading = 'Order ' + orderNum;
     caseViewPage.selectTab(caseViewPage.tabs.orders);
     I.seeInTab([orderHeading, 'Type of order'], order.fullType);
@@ -122,9 +131,14 @@ module.exports = {
       I.seeInTab([orderHeading, 'Date of issue'], dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
     }
 
-    I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.judgeAndLegalAdvisor.judgeTitle);
-    I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], order.judgeAndLegalAdvisor.judgeLastName);
-    I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.judgeAndLegalAdvisor.legalAdvisorName);
+    if (hasAllocatedJudge) {
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
+    } else {
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.judgeAndLegalAdvisor.judgeTitle);
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], order.judgeAndLegalAdvisor.judgeLastName);
+      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.judgeAndLegalAdvisor.legalAdvisorName);
+    }
   },
 
   async assertOrderSentToParty(I, caseViewPage, partyName, order, orderNum) {
