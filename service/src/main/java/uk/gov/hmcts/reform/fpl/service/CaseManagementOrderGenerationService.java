@@ -54,7 +54,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGeneration {
+public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGeneration<DocmosisCaseManagementOrder> {
     private static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
 
     private final CommonCaseDataExtractionService dataExtractionService;
