@@ -126,7 +126,7 @@
     "FieldType": "AddressUK",
     "ElementLabel": "Current address",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "livingSituation=\"*\""
+    "FieldShowCondition": "livingSituation=\"*\" OR showAddressInConfidentialTab=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -272,6 +272,15 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "showAddressInConfidentialTab",
+    "FieldType": "Text",
+    "ElementLabel": "Should Address field be shown in confidential tab",
+    "FieldShowCondition": "partyId=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   }
 ]
