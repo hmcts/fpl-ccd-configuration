@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,10 +21,10 @@ public class CaseNoteService {
     private final IdamClient idamClient;
 
     public CaseNote buildCaseNote(String authorisation, String note) {
-        UserDetails userDetails = idamClient.getUserDetails(authorisation);
+        UserInfo userDetails = idamClient.getUserInfo(authorisation);
 
         return CaseNote.builder()
-            .createdBy(userDetails.getFullName())
+            .createdBy(userDetails.getName())
             .date(LocalDate.now())
             .note(note)
             .build();
