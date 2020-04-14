@@ -170,6 +170,7 @@ public class CommonDirectionService {
     }
 
     //TODO: numbering done for SDO in formatTitle method. CMO to do the same? FPLA-1481
+
     /**
      * Iterates over a list of directions and adds numbers to the directionType starting from 2.
      *
@@ -180,7 +181,7 @@ public class CommonDirectionService {
         AtomicInteger at = new AtomicInteger(2);
 
         return directions.stream()
-            .filter(direction -> "Yes".equals(direction.getValue().getDirectionNeeded()))
+            //FIXME FPLA-1481 can deal with that but as this is only used by CMO the line below doesn't make sense
             .map(direction -> element(direction.getId(), direction.getValue().toBuilder()
                 .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
                 .build()))
