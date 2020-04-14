@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.google.common.collect.ImmutableMap;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -10,8 +12,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -28,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -80,6 +85,72 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
                 .isEqualTo("1 January 2020, 12:00am"));
+    }
+
+    @Test
+    void aboutToStartShouldUpdateAllocatedJudgeLabelOnCurrentJudgeAndLegalAdvisorWhenExists() {
+        List<Direction> directions = createDirections();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "allocatedJudge", buildAllocatedJudge(),
+                "standardDirectionOrder", Order.builder()
+                    .directions(buildDirections(directions))
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeTitle(HIS_HONOUR_JUDGE)
+                        .judgeLastName("Davidson")
+                        .allocatedJudgeLabel("Case assigned to: His Honour Judge Davidson")
+                        .build())
+                    .build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        AssertionsForClassTypes.assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isEqualTo(
+            "Case assigned to: His Honour Judge Richards");
+        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
+        AssertionsForClassTypes.assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Davidson");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "allocatedJudge", buildAllocatedJudge()
+            )).build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        AssertionsForClassTypes.assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+            .isEqualTo("Case assigned to: His Honour Judge Richards");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build()
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        AssertionsForClassTypes.assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
+    }
+
+    private Judge buildAllocatedJudge() {
+        return Judge.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Richards")
+            .build();
     }
 
     private List<Direction> createDirections() {
