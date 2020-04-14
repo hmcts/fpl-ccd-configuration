@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,12 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
@@ -37,6 +40,9 @@ import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Api
 @RestController
@@ -61,6 +67,16 @@ public class NoticeOfProceedingsController {
                     caseDetails.getData().put("proceedingLabel", buildProceedingLabel(hearingBooking)));
         }
 
+        if (isNotEmpty(caseData.getAllocatedJudge())) {
+            String assignedJudgeLabel = buildAllocatedJudgeLabel(caseData.getAllocatedJudge());
+
+            caseDetails.getData().put("noticeOfProceedings", ImmutableMap.of(
+                "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
+                    .allocatedJudgeLabel(assignedJudgeLabel)
+                    .build()
+            ));
+        }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class))
@@ -72,6 +88,17 @@ public class NoticeOfProceedingsController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+            caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
+
+        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
+        NoticeOfProceedings noticeOfProceedings = caseData.getNoticeOfProceedings();
+        noticeOfProceedings = noticeOfProceedings.toBuilder().judgeAndLegalAdvisor(judgeAndLegalAdvisor).build();
+
+        caseDetails.getData().put("noticeOfProceedings", noticeOfProceedings);
+        caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         Map<String, Object> templateData = noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData);
 
