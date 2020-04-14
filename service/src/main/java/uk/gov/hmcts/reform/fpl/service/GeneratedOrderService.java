@@ -140,7 +140,9 @@ public class GeneratedOrderService {
             .build();
     }
 
-    public Map<String, Object> getOrderTemplateData(CaseData caseData, OrderStatus orderStatus) throws IOException {
+    public Map<String, Object> getOrderTemplateData(CaseData caseData,
+                                                    OrderStatus orderStatus,
+                                                    JudgeAndLegalAdvisor judgeAndLegalAdvisor) throws IOException {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
 
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
@@ -212,8 +214,8 @@ public class GeneratedOrderService {
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("dateOfIssue", formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-                caseData.getJudgeAndLegalAdvisor()))
-            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
+                judgeAndLegalAdvisor))
+            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(judgeAndLegalAdvisor))
             .put("children", childrenDetails)
             .put("childrenCount", childrenCount)
             .put("furtherDirections", caseData.getFurtherDirectionsText())

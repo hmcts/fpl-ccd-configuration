@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +27,9 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class PrepareDirectionsForUsersServiceTest {
     private static final UUID DIRECTION_ID = randomUUID();
@@ -128,12 +130,12 @@ class PrepareDirectionsForUsersServiceTest {
                 .map(element -> element.getValue().toBuilder()
                     .responses(responses)
                     .build())
-                .map(element -> ElementUtils.element(DIRECTION_ID, element))
+                .map(element -> element(DIRECTION_ID, element))
                 .collect(toList());
         }
 
         private List<Element<DirectionResponse>> responsesForRespondent() {
-            return Lists.newArrayList(ElementUtils.element(RESPONSE_ID, DirectionResponse.builder()
+            return Lists.newArrayList(element(RESPONSE_ID, DirectionResponse.builder()
                 .assignee(COURT)
                 .respondingOnBehalfOf("RESPONDENT_1")
                 .complied("Yes")
@@ -207,14 +209,14 @@ class PrepareDirectionsForUsersServiceTest {
         }
 
         private List<Element<DirectionResponse>> createResponses(DirectionAssignee assignee, String onBehalfOf) {
-            return Lists.newArrayList(ElementUtils.element(DirectionResponse.builder()
+            return Lists.newArrayList(element(DirectionResponse.builder()
                 .assignee(assignee)
                 .respondingOnBehalfOf(onBehalfOf)
                 .build()));
         }
 
         private List<Element<Direction>> createDirectionWithResponses(List<Element<DirectionResponse>> responses) {
-            return Lists.newArrayList(ElementUtils.element(Direction.builder()
+            return Lists.newArrayList(element(Direction.builder()
                 .responses(responses)
                 .build()));
         }
@@ -222,11 +224,11 @@ class PrepareDirectionsForUsersServiceTest {
 
     @Nested
     class ExtractPartyResponse {
-        private final UUID responseId = randomUUID();
+        private final UUID directionId = randomUUID();
 
         @Test
         void shouldExtractListResponsesWhenDirectionIdMatches() {
-            List<Element<Direction>> directions = List.of(directionWithResponseFrom(LOCAL_AUTHORITY, responseId));
+            List<Element<Direction>> directions = List.of(directionWithResponseFrom(LOCAL_AUTHORITY, directionId));
 
             List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY, directions);
 
@@ -245,7 +247,7 @@ class PrepareDirectionsForUsersServiceTest {
 
         @Test
         void shouldSetResponseToNullWhenRoleDoesNotMatch() {
-            List<Element<Direction>> directions = List.of(directionWithResponseFrom(CAFCASS, responseId));
+            List<Element<Direction>> directions = List.of(directionWithResponseFrom(CAFCASS, directionId));
 
             List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY, directions);
 
@@ -263,17 +265,17 @@ class PrepareDirectionsForUsersServiceTest {
 
         @Test
         void shouldOnlyExtractPartyResponsesForGivenPartyWhenManyResponses() {
-            List<Element<Direction>> directions = List.of(ElementUtils.element(
-                responseId,
+            List<Element<Direction>> directions = List.of(element(
+                directionId,
                 Direction.builder()
                     .responses(List.of(
-                        ElementUtils.element(DirectionResponse.builder()
+                        element(DirectionResponse.builder()
                             .assignee(CAFCASS)
-                            .directionId(responseId)
+                            .directionId(directionId)
                             .build()),
-                        ElementUtils.element(DirectionResponse.builder()
+                        element(DirectionResponse.builder()
                             .assignee(LOCAL_AUTHORITY)
-                            .directionId(responseId)
+                            .directionId(directionId)
                             .build())))
                     .build()));
 
@@ -285,7 +287,7 @@ class PrepareDirectionsForUsersServiceTest {
         @Test
         void shouldPlaceResponsesWhenMultipleDirections() {
             List<Element<Direction>> directions = Lists.newArrayList(
-                directionWithResponseFrom(LOCAL_AUTHORITY, responseId),
+                directionWithResponseFrom(LOCAL_AUTHORITY, directionId),
                 directionWithResponseFrom(LOCAL_AUTHORITY, randomUUID()));
 
             List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY, directions);
@@ -295,9 +297,26 @@ class PrepareDirectionsForUsersServiceTest {
             assertThat(expected).hasSize(2);
         }
 
+        @Test
+        void shouldPlaceResponseForCafcassIntoCafcassDirectionsWhenAssigneeIsCourt() {
+            DirectionResponse response = DirectionResponse.builder()
+                .directionId(directionId)
+                .assignee(COURT)
+                .respondingOnBehalfOf("CAFCASS")
+                .build();
+
+            List<Element<Direction>> directions = List.of(element(directionId, Direction.builder()
+                .responses(wrapElements(response))
+                .build()));
+
+            List<Element<Direction>> expected = service.extractPartyResponse(CAFCASS, directions);
+
+            assertThat(unwrapElements(expected).get(0).getResponse()).isEqualTo(response);
+        }
+
         private Element<Direction> directionWithResponseFrom(DirectionAssignee assignee, UUID uuid) {
-            return ElementUtils.element(uuid, Direction.builder()
-                .responses(List.of(ElementUtils.element(
+            return element(uuid, Direction.builder()
+                .responses(List.of(element(
                     DirectionResponse.builder()
                         .assignee(assignee)
                         .directionId(uuid)
@@ -308,8 +327,8 @@ class PrepareDirectionsForUsersServiceTest {
         private Element<Direction> directionWithResponseForDifferentDirection(DirectionAssignee assignee,
                                                                               UUID directionId,
                                                                               UUID otherDirectionId) {
-            return ElementUtils.element(directionId, Direction.builder()
-                .responses(List.of(ElementUtils.element(
+            return element(directionId, Direction.builder()
+                .responses(List.of(element(
                     DirectionResponse.builder()
                         .assignee(assignee)
                         .directionId(otherDirectionId)
@@ -403,7 +422,7 @@ class PrepareDirectionsForUsersServiceTest {
     }
 
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee) {
-        return Lists.newArrayList(ElementUtils.element(DIRECTION_ID, Direction.builder()
+        return Lists.newArrayList(element(DIRECTION_ID, Direction.builder()
             .directionType("direction")
             .directionText("example direction text")
             .assignee(assignee)

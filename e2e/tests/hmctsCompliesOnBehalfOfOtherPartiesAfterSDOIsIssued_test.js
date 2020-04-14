@@ -44,7 +44,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     await I.completeEvent('Save and continue');
     await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
     await draftStandardDirectionsEventPage.skipDateOfIssue();
-    await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
+    await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
     await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
     draftStandardDirectionsEventPage.markAsFinal();
     await I.completeEvent('Save and continue');

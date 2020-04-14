@@ -35,6 +35,16 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
   await I.navigateToCaseDetails(caseId);
 });
 
+Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+  I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
+});
+
 Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
@@ -76,21 +86,31 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
   I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPage, addHearingBookingDetailsEventPage, createOrderEventPage) => {
   for (let i = 0; i < orders.length; i++) {
+    const defaultIssuedDate = new Date();
     await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-    await orderFunctions.createOrder(I, createOrderEventPage, orders[i]);
+    await orderFunctions.createOrder(I, createOrderEventPage, orders[i], true);
     I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-    await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1);
+    await orderFunctions.assertOrder(I, caseViewPage, orders[i], i + 1, defaultIssuedDate, true);
   }
 });
 
-Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+Scenario('Judiciary creates notice of proceedings documents with allocated judge', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  await createNoticeOfProceedingsEventPage.checkC6();
+  await createNoticeOfProceedingsEventPage.useAllocatedJudge();
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
-  I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
+  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  await createNoticeOfProceedingsEventPage.checkC6A();
+  await createNoticeOfProceedingsEventPage.useAlternateJudge();
+  await createNoticeOfProceedingsEventPage.selectJudgeTitle();
+  await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6a.pdf');
+  I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6.pdf');
 });
