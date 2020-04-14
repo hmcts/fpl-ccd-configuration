@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -95,6 +97,42 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
             "document_binary_url", document().links.binary.href,
             "document_filename", document().originalDocumentName,
             "document_url", document().links.self.href
+        ));
+    }
+
+    @Test
+    void midEventShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
+        given(uploadDocumentService.uploadPDF(PDF, DRAFT_ORDER_FILE_NAME))
+            .willReturn(document);
+
+        List<Element<Direction>> directions = buildDirections(
+            List.of(Direction.builder()
+                .directionType("direction 1")
+                .directionText("example")
+                .assignee(LOCAL_AUTHORITY)
+                .readOnly("No")
+                .build()));
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(createCaseDataMap(directions)
+                .put("dateOfIssue", time.now().toLocalDate().toString())
+                .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
+                    .useAllocatedJudge("Yes")
+                    .build())
+                .put("allocatedJudge", Judge.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Davidson")
+                    .build())
+                .put("caseLocalAuthority", "example")
+                .put("dateSubmitted", time.now().toLocalDate().toString())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+
+        assertThat(callbackResponse.getData().get("judgeAndLegalAdvisor")).isEqualToComparingOnlyGivenFields(Map.of(
+            "judgeTitle", HIS_HONOUR_JUDGE,
+            "JudgeLastName", "Davidson"
         ));
     }
 

@@ -89,6 +89,11 @@ module.exports = {
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
+  async useAllocatedJudge(legalAdvisorName) {
+    judgeAndLegalAdvisor.useAllocatedJudge();
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
+  },
+
   enterDirections(directions) {
     I.click(this.fields.directionsNeeded.options.yes);
     I.fillField(this.fields.directions, directions);

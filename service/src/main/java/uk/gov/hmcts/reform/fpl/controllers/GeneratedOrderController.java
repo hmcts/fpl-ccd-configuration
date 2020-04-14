@@ -20,10 +20,12 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
@@ -44,6 +46,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -51,6 +54,9 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Slf4j
 @Api
@@ -82,6 +88,10 @@ public class GeneratedOrderController {
         if (errors.isEmpty()) {
             childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
             caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
+        }
+
+        if (isNotEmpty(caseData.getAllocatedJudge())) {
+            caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -118,9 +128,12 @@ public class GeneratedOrderController {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
+            caseData.getAllocatedJudge());
+
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
-            Document document = getDocument(caseData, DRAFT);
+            Document document = getDocument(caseData, DRAFT, judgeAndLegalAdvisor);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
@@ -138,16 +151,21 @@ public class GeneratedOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document document = getDocument(caseData, SEALED);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+            caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
+
+        Document document = getDocument(caseData, SEALED, judgeAndLegalAdvisor);
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
         OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData
             .getOrderTypeAndDocument(), document);
 
+        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
         // Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(orderTypeAndDocument, caseData.getOrder(),
-            caseData.getJudgeAndLegalAdvisor(), caseData.getDateOfIssue(), caseData.getOrderMonths(),
+            judgeAndLegalAdvisor, caseData.getDateOfIssue(), caseData.getOrderMonths(),
             caseData.getInterimEndDate()));
 
         caseDetails.getData().put("orderCollection", orders);
@@ -179,13 +197,22 @@ public class GeneratedOrderController {
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
     }
 
+    private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
+        String assignedJudgeLabel = buildAllocatedJudgeLabel(allocatedJudge);
+
+        return JudgeAndLegalAdvisor.builder()
+            .allocatedJudgeLabel(assignedJudgeLabel)
+            .build();
+    }
+
     private Document getDocument(CaseData caseData,
-                                 OrderStatus orderStatus) throws IOException {
+                                 OrderStatus orderStatus,
+                                 JudgeAndLegalAdvisor judgeAndLegalAdvisor) throws IOException {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            service.getOrderTemplateData(caseData, orderStatus), templateType);
+            service.getOrderTemplateData(caseData, orderStatus, judgeAndLegalAdvisor), templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 

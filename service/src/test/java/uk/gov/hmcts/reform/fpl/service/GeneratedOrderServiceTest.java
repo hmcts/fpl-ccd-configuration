@@ -282,7 +282,8 @@ class GeneratedOrderServiceTest {
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
         Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData, SEALED);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, SEALED,
+            caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
         assertThat(templateData).containsKey("courtseal");
@@ -291,12 +292,13 @@ class GeneratedOrderServiceTest {
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseDataInDraft(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) throws IOException {
+                                                                  GeneratedOrderSubtype subtype) throws IOException {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
         Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData, DRAFT);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, DRAFT,
+            caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
         assertThat(templateData).containsKey("draftbackground");
