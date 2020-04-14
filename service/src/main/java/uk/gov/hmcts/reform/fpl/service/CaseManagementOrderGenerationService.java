@@ -138,7 +138,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
     private DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking) {
         return ofNullable(hearingBooking).map(hearing -> {
-                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing.getVenue());
+                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
 
                 return DocmosisHearingBooking.builder()
                     .hearingDate(dataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))

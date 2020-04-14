@@ -4,6 +4,7 @@ const orders = require('../fixtures/orders.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
 const c2Payment = require('../fixtures/c2Payment.js');
+const expertReportLog = require('../fixtures/expertReportLog.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -145,6 +146,13 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   endDate = dateToString(hearingDetails[1].endDate);
   I.seeInTab(['Hearing 2', 'Type of hearing'], hearingDetails[1].caseManagement);
   I.seeInTab(['Hearing 2', 'Venue'], hearingDetails[1].venue);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Building and Street'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineOne);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Address Line 2'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineTwo);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Address Line 3'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineThree);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Town or City'], hearingDetails[1].venueCustomAddress.town);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Postcode/Zipcode'], hearingDetails[1].venueCustomAddress.postcode);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Country'], hearingDetails[1].venueCustomAddress.country);
+
   I.seeInTab(['Hearing 2', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
   I.seeInTab(['Hearing 2', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
   I.seeInTab(['Hearing 2', 'Hearing needs booked'], [hearingDetails[1].type.interpreter, hearingDetails[1].type.welsh, hearingDetails[1].type.somethingElse]);
@@ -274,4 +282,16 @@ Scenario('HMCTS admin update FamilyMan reference number after sending case to ga
   enterFamilyManCaseNumberEventPage.enterCaseID('updatedmockcaseID');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
+});
+
+Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage, addExpertReportEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
+  addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.addExpertReportLog);
+  caseViewPage.selectTab(caseViewPage.tabs.expertReports);
+  I.seeInTab(['Report 1', 'What type of report have you requested?'], 'Pediatric');
+  I.seeInTab(['Report 1', 'Date requested'], '1 Mar 2020');
+  I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
+  I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
 });

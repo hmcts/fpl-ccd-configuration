@@ -8,27 +8,23 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.CasePersonalisedContentProvider;
 
 import java.util.Map;
 
 @Service
-public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
-
+public class CafcassEmailContentProvider extends CasePersonalisedContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
-    private final ObjectMapper mapper;
 
     @Autowired
-    public CafcassEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                       CafcassLookupConfiguration cafcassLookupConfiguration,
-                                       @Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                       HearingBookingService hearingBookingService,
-                                       ObjectMapper mapper) {
-        super(uiBaseUrl, hearingBookingService);
+    protected CafcassEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                          ObjectMapper mapper,
+                                          LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
+                                          CafcassLookupConfiguration cafcassLookupConfiguration) {
+        super(uiBaseUrl, mapper);
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
-        this.mapper = mapper;
     }
 
     public Map<String, Object> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
