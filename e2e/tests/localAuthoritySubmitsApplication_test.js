@@ -159,27 +159,12 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   caseViewPage.selectTab(caseViewPage.tabs.confidential);
   I.seeInTab(['Child 1', 'Party', 'First name'], 'Susan');
   I.seeInTab(['Child 1', 'Party', 'Last name'], 'Wilson');
-  I.seeInTab(['Child 1', 'Party', 'Date of birth'], '1 Jul 2016');
-  I.seeInTab(['Child 1', 'Party', 'Gender'], 'Girl');
-  I.seeInTab(['Child 1', 'Party', 'Child\'s living situation'], 'Living with respondents');
-  I.seeInTab(['Child 1', 'Party', 'What date did they start staying here?'], '2 Nov 2017');
   I.seeInTab(['Child 1', 'Current address', 'Building and Street'], '2 Three Tuns Wynd');
   I.seeInTab(['Child 1', 'Current address', 'Address Line 2'], 'High Street');
   I.seeInTab(['Child 1', 'Current address', 'Address Line 3'], 'Stokesley');
   I.seeInTab(['Child 1', 'Current address', 'Town or City'], 'Middlesbrough');
   I.seeInTab(['Child 1', 'Current address', 'Postcode/Zipcode'], 'TS9 5DQ');
   I.seeInTab(['Child 1', 'Current address', 'Country'], 'United Kingdom');
-  I.seeInTab(['Child 1', 'Key dates for this child'], 'Tuesday the 11th');
-  I.seeInTab(['Child 1', 'Brief summary of care and contact plan'], 'care plan summary');
-  I.seeInTab(['Child 1', 'Are you considering adoption at this stage?'], 'No');
-  I.seeInTab(['Child 1', 'Mother\'s full name'], 'Laura Smith');
-  I.seeInTab(['Child 1', 'Father\'s full name'], 'David Smith');
-  I.seeInTab(['Child 1', 'Does the father have parental responsibility?'], 'Yes');
-  I.seeInTab(['Child 1', 'Name of social worker'], 'James Jackson');
-  I.seeInTab(['Child 1', 'Social worker\'s telephone number', 'Telephone number'], '01234567890');
-  I.seeInTab(['Child 1', 'Does the child have any additional needs?'], 'No');
-  I.seeInTab(['Child 1', 'Do you need contact details hidden from other parties?'], 'Yes');
-  I.seeInTab(['Child 1', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)?'], 'No');
 });
 
 Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterRespondentsEventPage) => {
@@ -226,20 +211,12 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   caseViewPage.selectTab(caseViewPage.tabs.confidential);
   I.seeInTab(['Respondents 1', 'Party', 'First name'], respondents[1].firstName);
   I.seeInTab(['Respondents 1', 'Party', 'Last name'], respondents[1].lastName);
-  I.seeInTab(['Respondents 1', 'Party', 'Date of birth'], '1 Jan 1955');
-  I.seeInTab(['Respondents 1', 'Party', 'Gender'], respondents[1].gender);
-  I.seeInTab(['Respondents 1', 'Party', 'Place of birth'], respondents[1].placeOfBirth);
   I.seeInTab(['Respondents 1', 'Current address', 'Building and Street'], respondents[1].address.buildingAndStreet.lineOne);
   I.seeInTab(['Respondents 1', 'Current address', 'Address Line 2'], respondents[1].address.buildingAndStreet.lineTwo);
   I.seeInTab(['Respondents 1', 'Current address', 'Address Line 3'], respondents[1].address.buildingAndStreet.lineThree);
   I.seeInTab(['Respondents 1', 'Current address', 'Town or City'], respondents[1].address.town);
   I.seeInTab(['Respondents 1', 'Current address', 'Postcode/Zipcode'], respondents[1].address.postcode);
   I.seeInTab(['Respondents 1', 'Current address', 'Country'], respondents[1].address.country);
-  I.seeInTab(['Respondents 1', 'Telephone', 'Telephone number'], respondents[1].telephone);
-  I.seeInTab(['Respondents 1', 'What is the respondent\'s relationship to the child or children in this case?'], 'mock reason');
-  I.seeInTab(['Respondents 1', 'Do you need contact details hidden from other parties?'], 'Yes');
-  I.seeInTab(['Respondents 1', 'Give reason'], 'mock reason');
-  I.seeInTab(['Respondents 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?'], 'No');
 });
 
 Scenario('local authority enters applicant @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterApplicantEventPage) => {
