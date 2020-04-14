@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -29,10 +30,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedOrderNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
@@ -50,7 +52,6 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
-    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String CASE_ID = "12345";
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
@@ -79,6 +80,11 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         super("create-order");
     }
 
+    @BeforeEach
+    void init() {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+    }
+
     @AfterEach
     void resetInvocations() {
         reset(notificationClient);
@@ -90,10 +96,11 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
-            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA,
-            LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedOrderLocalAuthorityParameters(),
-            CASE_ID);
+            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
+            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            dataCaptor.capture(),
+            eq(CASE_ID));
+        assertEquals(dataCaptor.getValue(), getExpectedOrderNotificationParameters());
 
         verify(notificationClient).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
@@ -129,8 +136,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void submittedShouldNotifyHmctsAdminAndLAWhenRepresentativesNeedServingByPost() throws Exception {
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
-
         Map<String, Object> caseData = getCommonCaseData()
             .put("representatives", buildRepresentativesServedByPost())
             .build();
@@ -140,10 +145,11 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
-            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA,
-            LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedOrderLocalAuthorityParameters(),
-            CASE_ID);
+            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
+            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            dataCaptor.capture(),
+            eq(CASE_ID));
+        assertEquals(dataCaptor.getValue(), getExpectedOrderNotificationParameters());
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
@@ -159,8 +165,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void submittedShouldNotifyCtscAdminAndLAWhenRepresentativesNeedServingByPostAndCtscIsEnabled() throws Exception {
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
-
         Map<String, Object> caseData = getCommonCaseData()
             .put("representatives", buildRepresentativesServedByPost())
             .put("sendToCtsc", "Yes")
@@ -187,8 +191,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void submittedShouldNotifyRepresentativesServedByEmail() throws Exception {
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
-
         Map<String, Object> caseData = getCommonCaseData()
             .put("representatives", buildRepresentativesServedByEmail())
             .build();
@@ -240,13 +242,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
                 dateIn3Months.toLocalDate(), FormatStyle.MEDIUM))
             .put("reference", CASE_ID)
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + CASE_ID)
-            .build();
-    }
-
-    private Map<String, Object> expectedOrderLocalAuthorityParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(commonNotificationParameters())
-            .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
             .build();
     }
 
