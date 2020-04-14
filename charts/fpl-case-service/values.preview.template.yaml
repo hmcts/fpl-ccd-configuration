@@ -43,7 +43,6 @@ ccd:
   consulIP: ${CONSUL_LB_IP}
   cpuRequests: 250m
   imagePullPolicy: Always
-  debug: true
 
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr

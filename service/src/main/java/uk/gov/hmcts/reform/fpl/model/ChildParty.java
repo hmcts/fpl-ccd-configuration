@@ -46,6 +46,7 @@ public final class ChildParty extends Party {
     private final String detailsHiddenReason;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
+    private final String showAddressInConfidentialTab;
 
     @NotBlank(message = "Tell us the names of all children in the case")
     public String getFirstName() {
@@ -97,7 +98,8 @@ public final class ChildParty extends Party {
                       String detailsHidden,
                       String detailsHiddenReason,
                       String litigationIssues,
-                      String litigationIssuesDetails) {
+                      String litigationIssuesDetails,
+                      String showAddressInConfidentialTab) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
         this.gender = gender;
@@ -124,5 +126,6 @@ public final class ChildParty extends Party {
         this.detailsHiddenReason = detailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
+        this.showAddressInConfidentialTab = showAddressInConfidentialTab;
     }
 }
