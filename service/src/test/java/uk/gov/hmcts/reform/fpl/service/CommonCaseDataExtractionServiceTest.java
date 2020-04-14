@@ -41,7 +41,7 @@ class CommonCaseDataExtractionServiceTest {
         final Optional<String> hearingDate = commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
             hearingBooking);
 
-        assertThat(hearingDate.isEmpty());
+        assertThat(hearingDate).isEmpty();
     }
 
     @Test

@@ -12,7 +12,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       keepCookies: true,
-      waitForTimeout: 10000,
+      waitForTimeout: 20000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
@@ -77,6 +77,7 @@ exports.config = {
     handleSupplementaryEvidenceEventPage: './e2e/pages/events/handleSupplementaryEvidenceEvent.page.js',
     attachScannedDocsEventPage: './e2e/pages/events/attachScannedDocsEvent.page.js',
     addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
+    addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js'
   },
   plugins: {
     autoDelay: {

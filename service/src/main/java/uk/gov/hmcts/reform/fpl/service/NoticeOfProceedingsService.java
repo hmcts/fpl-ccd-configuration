@@ -79,7 +79,7 @@ public class NoticeOfProceedingsService {
 
     private Map<String, Object>  getHearingBookingData(List<Element<HearingBooking>> hearingBookings) {
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
 
         return ImmutableMap.of(
             "hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
@@ -120,8 +120,8 @@ public class NoticeOfProceedingsService {
 
         if (childrenNames.contains(",")) {
             StringBuilder stringBuilder = new StringBuilder(childrenNames);
-            stringBuilder.replace(childrenNames.lastIndexOf(","),
-                childrenNames.lastIndexOf(",") + 1, " and");
+            stringBuilder.replace(childrenNames.lastIndexOf(','),
+                childrenNames.lastIndexOf(',') + 1, " and");
 
             childrenNames = stringBuilder.toString();
         }
