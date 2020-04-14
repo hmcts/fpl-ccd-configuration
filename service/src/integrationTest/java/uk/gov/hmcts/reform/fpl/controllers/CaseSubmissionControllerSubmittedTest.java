@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import com.launchdarkly.client.LDClient;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,7 +28,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -163,49 +160,40 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         );
     }
 
-    @Nested
-    class MakePaymentForCaseOrders {
+    @Test
+    void shouldMakePaymentWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
-        @Test
-        void shouldMakePaymentWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
-            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-            caseDetails.getData().put("displayAmountToPay", YES.getValue());
+        postSubmittedEvent(caseDetails);
 
-            postSubmittedEvent(caseDetails);
-
-            verify(paymentService).makePaymentForCaseOrders(CASE_REFERENCE,
-                mapper.convertValue(caseDetails.getData(), CaseData.class));
-        }
-
-        @Test
-        void shouldNotMakePaymentWhenFeatureToggleIsFalse() {
-            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
-            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-            caseDetails.getData().put("displayAmountToPay", YES.getValue());
-
-            postSubmittedEvent(caseDetails);
-
-            verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
-        }
-
-        @Test
-        void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
-            given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-            caseDetails.getData().put("displayAmountToPay", NO.getValue());
-
-            postSubmittedEvent(caseDetails);
-
-            verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
-        }
-
-        @AfterEach
-        void resetInvocations() {
-            reset(paymentService);
-        }
+        verify(paymentService).makePaymentForCaseOrders(CASE_REFERENCE,
+            mapper.convertValue(caseDetails.getData(), CaseData.class));
     }
 
+    @Test
+    void shouldNotMakePaymentWhenFeatureToggleIsFalse() {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        caseDetails.getData().put("displayAmountToPay", YES.getValue());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
+    }
+
+    @Test
+    void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
+    }
+    
     @Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
@@ -234,9 +222,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-
-        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService)
-            .makePaymentForCaseOrders(any(), any());
 
         postSubmittedEvent(caseDetails);
 
