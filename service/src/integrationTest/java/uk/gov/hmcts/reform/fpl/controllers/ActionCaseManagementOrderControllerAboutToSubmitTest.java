@@ -1,15 +1,20 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -32,7 +37,9 @@ import java.util.UUID;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -50,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETA
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -70,6 +78,12 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
+
+    @SpyBean
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> capturedMap;
 
     ActionCaseManagementOrderControllerAboutToSubmitTest() {
         super("action-cmo");
@@ -96,7 +110,20 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         verify(uploadDocumentService).uploadPDF(PDF, "case-management-order.pdf");
+        verify(documentGeneratorService).generateDocmosisDocument(capturedMap.capture(), eq(DocmosisTemplates.CMO));
+
+        assertThat(capturedMap.getValue())
+            .contains(entry("hearingTime", expectedHearingTime()))
+            .contains(entry("preHearingAttendance", expectedPreHearing()));
         assertThat(caseData.getCaseManagementOrder()).isEqualTo(expectedCaseManagementOrder());
+    }
+
+    private String expectedPreHearing() {
+        return formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "h:mma");
+    }
+
+    private String expectedHearingTime() {
+        return formatLocalDateTimeBaseUsingFormat(NOW, "h:mma") + " - " + formatLocalDateTimeBaseUsingFormat(NOW, "h:mma");
     }
 
     @Test
