@@ -1465,13 +1465,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
-    "ListElementCode": "32",
-    "ListElement": "Liverpool Civil and Family Court",
-    "DisplayOrder": 209
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingVenue",
     "ListElementCode": "276",
     "ListElement": "Liverpool Crown Court",
     "DisplayOrder": 210
