@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +60,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder().build();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
-
-    Document document = document();
+    private static final Document DOCUMENT = document();
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
@@ -82,17 +80,15 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME)).willReturn(DOCUMENT);
     }
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-        given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME))
-            .willReturn(document);
-
-        UUID uuid = UUID.randomUUID();
+        UUID directionId = UUID.randomUUID();
 
         List<Element<Direction>> fullyPopulatedDirection = List.of(
-            element(uuid, Direction.builder()
+            element(directionId, Direction.builder()
                 .directionType("Identify alternative carers")
                 .directionText("Contact the parents to make sure there is a complete family tree showing family"
                     + " members who could be alternative carers.")
@@ -101,7 +97,8 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                 .readOnly("Yes")
                 .build()));
 
-        List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(uuid);
+        List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(
+            directionId);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(directionWithShowHideValuesRemoved)
@@ -129,19 +126,17 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                 .collect(toList());
 
         assertThat(localAuthorityDirections).isEqualTo(fullyPopulatedDirection);
-        AssertionsForClassTypes.assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
-        AssertionsForClassTypes.assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isNotNull();
-        AssertionsForClassTypes.assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
+        assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
+        assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isNotNull();
+        assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
     }
 
     @Test
-    void aboutToSubmitShouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
-        given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME))
-            .willReturn(document());
+    void shouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
+        UUID directionId = UUID.randomUUID();
 
-        UUID uuid = UUID.randomUUID();
-
-        List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(uuid);
+        List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(
+            directionId);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(directionWithShowHideValuesRemoved)
@@ -153,16 +148,12 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(response.getErrors())
-            .containsOnly("You need to enter a hearing date.");
+        assertThat(response.getErrors()).containsOnly("You need to enter a hearing date.");
     }
 
     @Test
-    void aboutToSubmitShouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
-        given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME))
-            .willReturn(document());
-
-        CallbackRequest request = buildCallbackRequest(SEALED);
+    void shouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
+        CallbackRequest request = buildCallbackRequest();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
 
@@ -194,12 +185,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
             .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()));
     }
 
-    private CallbackRequest buildCallbackRequest(OrderStatus status) {
-        Order order = Order.builder()
-            .orderStatus(status)
-            .orderDoc(DOCUMENT_REFERENCE)
-            .build();
-
+    private CallbackRequest buildCallbackRequest() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(CASE_ID)
@@ -225,7 +211,10 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                                 .build()
                         )
                     ),
-                    "standardDirectionOrder", order,
+                    "standardDirectionOrder", Order.builder()
+                        .orderStatus(OrderStatus.SEALED)
+                        .orderDoc(DOCUMENT_REFERENCE)
+                        .build(),
                     "caseLocalAuthority", "example"))
                 .build())
             .build();
