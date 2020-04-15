@@ -28,4 +28,12 @@ module.exports = {
   enterLegalAdvisorName(legalAdvisorName) {
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, 'noticeOfProceedings_');
   },
+
+  useAllocatedJudge() {
+    judgeAndLegalAdvisor.useAllocatedJudge('noticeOfProceedings_');
+  },
+
+  useAlternateJudge() {
+    judgeAndLegalAdvisor.useAlternateJudge('noticeOfProceedings_');
+  },
 };

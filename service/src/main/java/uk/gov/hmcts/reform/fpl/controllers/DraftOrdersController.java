@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.AbstractDocmosisOrder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
@@ -51,6 +52,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Api
 @RestController
@@ -71,6 +75,8 @@ public class DraftOrdersController {
     private final Time time;
     private final RequestData requestData;
 
+    private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
+
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -88,13 +94,30 @@ public class DraftOrdersController {
 
             directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-            caseDetails.getData()
-                .put("judgeAndLegalAdvisor", caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY,
+                caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
+        }
+
+        if (isNotEmpty(caseData.getAllocatedJudge())) {
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, setAllocatedJudgeLabel(caseData));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private JudgeAndLegalAdvisor setAllocatedJudgeLabel(CaseData caseData) {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
+
+        if (isNotEmpty(caseData.getStandardDirectionOrder())
+            && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
+            judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
+        }
+
+        judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+
+        return judgeAndLegalAdvisor;
     }
 
     private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
@@ -116,10 +139,13 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
+            caseData.getAllocatedJudge());
+
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(commonDirectionService.combineAllDirections(caseData))
-                .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
@@ -158,11 +184,16 @@ public class DraftOrdersController {
                 .build();
         }
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+            caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
+
+        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(commonDirectionService.combineAllDirections(caseData))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
-                .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
@@ -181,7 +212,7 @@ public class DraftOrdersController {
             .build();
 
         caseDetails.getData().put("standardDirectionOrder", order);
-        caseDetails.getData().remove("judgeAndLegalAdvisor");
+        caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
         caseDetails.getData().remove("dateOfIssue");
 
         return AboutToStartOrSubmitCallbackResponse.builder()

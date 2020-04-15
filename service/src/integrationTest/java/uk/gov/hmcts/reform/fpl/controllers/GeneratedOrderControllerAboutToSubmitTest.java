@@ -18,7 +18,9 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -47,6 +49,9 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -84,7 +89,10 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-        final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(BLANK_ORDER, null)
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .order(GeneratedOrder.builder()
                 .title("Example Order")
@@ -103,8 +111,10 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void aboutToSubmitShouldNotHaveDraftAppendedToFilename() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
         final CaseDetails caseDetails = buildCaseDetails(
-            commonCaseDetailsComponents(CARE_ORDER, FINAL)
+            commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
         );
 
@@ -119,9 +129,10 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     @EnumSource(GeneratedOrderSubtype.class)
     void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
         GeneratedOrderSubtype subtype) {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
-            commonCaseDetailsComponents(CARE_ORDER, subtype)
+            commonCaseDetailsComponents(CARE_ORDER, subtype, judgeAndLegalAdvisor)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
@@ -138,7 +149,10 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-        final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM)
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM, judgeAndLegalAdvisor)
             .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
@@ -154,7 +168,10 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void aboutToSubmitShouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-        final CaseDetails caseDetails = buildCaseDetails(commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL)
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
             .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .orderMonths(14));
@@ -171,6 +188,41 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         aboutToSubmitAssertions(callbackResponse.getData(), expectedSupervisionOrder);
     }
 
+    @Test
+    void aboutToSubmitShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(YES);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .orderMonths(14)
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Robinson")
+                    .build()));
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        GeneratedOrder generatedOrder = caseData.getOrderCollection().get(0).getValue();
+        JudgeAndLegalAdvisor migratedJudge = generatedOrder.getJudgeAndLegalAdvisor();
+
+        assertThat(migratedJudge.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
+        assertThat(migratedJudge.getJudgeLastName()).isEqualTo("Robinson");
+        assertThat(migratedJudge.getLegalAdvisorName()).isEqualTo("Peter Parker");
+    }
+
+
+    private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HER_HONOUR_JUDGE)
+            .judgeLastName("Judy")
+            .useAllocatedJudge(useAllocatedJudge.getValue())
+            .legalAdvisorName("Peter Parker")
+            .build();
+    }
+
     private CaseDetails buildCaseDetails(CaseData.CaseDataBuilder builder) {
         return CaseDetails.builder()
             .data(mapper.convertValue(builder.build(), new TypeReference<>() {}))
@@ -178,19 +230,15 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     private CaseData.CaseDataBuilder commonCaseDetailsComponents(GeneratedOrderType orderType,
-                                                                 GeneratedOrderSubtype subtype) {
+                                                                 GeneratedOrderSubtype subtype,
+                                                                 JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return CaseData.builder().orderTypeAndDocument(
             OrderTypeAndDocument.builder()
                 .type(orderType)
                 .subtype(subtype)
                 .document(DocumentReference.builder().build())
                 .build())
-            .judgeAndLegalAdvisor(
-                JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(HER_HONOUR_JUDGE)
-                    .judgeLastName("Judy")
-                    .legalAdvisorName("Peter Parker")
-                    .build())
+            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .familyManCaseNumber("12345L")
             .dateOfIssue(time.now().toLocalDate());
     }

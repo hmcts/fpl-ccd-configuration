@@ -83,9 +83,14 @@ module.exports = {
     I.fillField(this.fields.details, orders[0].details);
   },
 
-  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge) {
+  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge) {
     judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
+  },
+
+  useAllocatedJudge(legalAdvisorName) {
+    judgeAndLegalAdvisor.useAllocatedJudge();
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 

@@ -226,11 +226,13 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.mockito', module: 'mockito-core'
     exclude group: "com.vaadin.external.google", module:"android-json"
   }
   testCompile group: 'org.junit.jupiter', name :'junit-jupiter', version: '5.5.2'
+
   testCompile group: 'org.mockito', name :'mockito-core', version: '3.0.0'
   testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
 
@@ -265,16 +267,33 @@ integration {
 }
 
 pitest {
-  pitestVersion = '1.4.10'
-  testPlugin = 'junit5'
-  targetClasses = ['uk.gov.hmcts.reform.fpl.*']
-  testSourceSets = [sourceSets.test, sourceSets.integrationTest]
-  threads = 10
-  enableDefaultIncrementalAnalysis = true
+  pitestVersion.set('1.5.1')
+  junit5PluginVersion.set('0.11')
+  targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
+  // Rolling back to just the unit tests, the integration tests seem to break jenkins
+  testSourceSets.set([sourceSets.test/*, sourceSets.integrationTest*/])
+  // Excluding controllers until integration tests are working
+  excludedClasses.set(['uk.gov.hmcts.reform.fpl.controllers.*', 'uk.gov.hmcts.reform.fpl.config.*'])
+  threads.set(10)
+  enableDefaultIncrementalAnalysis.set(true)
   historyInputLocation = 'build/reports/pitest/history'
   historyOutputLocation = 'build/reports/pitest/history'
-  outputFormats = ['XML', 'HTML']
-  timestampedReports = false
-  mutationThreshold = 80
-  timeoutConstInMillis = 30000
+  outputFormats.set(['XML', 'HTML'])
+  timestampedReports.set(false)
+  mutationThreshold.set(80)
+  timeoutConstInMillis.set(30000)
+  mutators.set([
+    'CONDITIONALS_BOUNDARY',
+    'INCREMENTS',
+    'INVERT_NEGS',
+    'MATH',
+    'NEGATE_CONDITIONALS',
+    'VOID_METHOD_CALLS',
+    'EMPTY_RETURNS',
+    'FALSE_RETURNS',
+    'NULL_RETURNS',
+    'PRIMITIVE_RETURNS',
+    'TRUE_RETURNS',
+    'REMOVE_CONDITIONALS'
+  ])
 }
