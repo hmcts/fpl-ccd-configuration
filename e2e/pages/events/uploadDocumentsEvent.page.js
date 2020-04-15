@@ -41,6 +41,19 @@ module.exports = {
     });
   },
 
+  selectSWETAsNotRequired() {
+    within(this.fields.socialWorkEvidenceTemplateStatus, () => {
+      I.click(locate('label').withText('Not Required'));
+    });
+  },
+
+  uploadSocialWorkStatementAndGenogram(file) {
+    I.attachFile(this.documents.socialWorkStatementAndGenogramStatus, file);
+    within(this.fields.socialWorkAssessmentStatus, () => {
+      I.click(locate('label').withText('Attached'));
+    });
+  },
+
   uploadSocialWorkAssessment(file) {
     I.attachFile(this.documents.socialWorkAssessment, file);
     within(this.fields.socialWorkAssessmentStatus, () => {
