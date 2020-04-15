@@ -5,6 +5,7 @@
     "ListElementCode": "typeOfDocument",
     "FieldType": "Document",
     "ElementLabel": "Upload a file",
+    "FieldShowCondition": "documentStatus!=\"Not Required\"",
     "SecurityClassification": "Public"
   },
   {
