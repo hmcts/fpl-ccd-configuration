@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 @RequestMapping("/callback/notify-gatekeeper")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NotifyGatekeeperController {
+    private static final String GATEKEEPER_EMAIL_KEY = "gateKeeperEmail";
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -46,7 +47,7 @@ public class NotifyGatekeeperController {
             errors = validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class);
         }
 
-        caseDetails.getData().remove("gateKeeperEmail");
+        caseDetails.getData().remove(GATEKEEPER_EMAIL_KEY);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
