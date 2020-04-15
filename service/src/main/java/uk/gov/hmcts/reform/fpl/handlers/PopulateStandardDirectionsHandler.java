@@ -51,7 +51,7 @@ public class PopulateStandardDirectionsHandler {
     @EventListener
     public void populateStandardDirections(PopulateStandardDirectionsEvent event) throws IOException {
         String userToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
-        String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
+        String systemUpdateUserId = idamClient.getUserInfo(userToken).getUid();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
             userToken,
