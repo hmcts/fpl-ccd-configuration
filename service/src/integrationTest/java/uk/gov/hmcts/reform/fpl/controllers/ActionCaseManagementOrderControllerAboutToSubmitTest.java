@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -118,14 +117,6 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
         assertThat(caseData.getCaseManagementOrder()).isEqualTo(expectedCaseManagementOrder());
     }
 
-    private String expectedPreHearing() {
-        return formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "h:mma");
-    }
-
-    private String expectedHearingTime() {
-        return formatLocalDateTimeBaseUsingFormat(NOW, "h:mma") + " - " + formatLocalDateTimeBaseUsingFormat(NOW, "h:mma");
-    }
-
     @Test
     void shouldErrorIfHearingDateInFutureWhenSendToAllParties() {
         Map<String, Object> data = Map.of(
@@ -233,5 +224,17 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
             .caseTypeId(CASE_TYPE)
             .data(data)
             .build();
+    }
+
+    private String expectedPreHearing() {
+        return getStringDate(NOW.minusHours(1));
+    }
+
+    private String expectedHearingTime() {
+        return getStringDate(NOW) + " - " + getStringDate(NOW);
+    }
+
+    private String getStringDate(LocalDateTime now) {
+        return formatLocalDateTimeBaseUsingFormat(now, "h:mma");
     }
 }
