@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.Status;
-import uk.gov.hmcts.reform.rd.model.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +58,7 @@ public class OrganisationService {
             .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE)
             .getUsers()
             .stream()
-            .map(User::getUserIdentifier)
+            .map(OrganisationUser::getUserIdentifier)
             .collect(toList());
     }
 
