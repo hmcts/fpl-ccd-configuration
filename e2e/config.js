@@ -63,6 +63,7 @@ module.exports = {
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
     sendToGatekeeper: 'Send to gatekeeper',
+    notifyGatekeeper: 'Notify gatekeeper',
     amendChildren: 'Children',
     amendRespondents: 'Respondents',
     amendOther: 'Others to be given notice',
