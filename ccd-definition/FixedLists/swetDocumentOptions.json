@@ -11,13 +11,13 @@
     "ID": "swetDocumentOptions",
     "ListElementCode": "Not Required",
     "ListElement": "Not Required",
-    "DisplayOrder": 1
+    "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "swetDocumentOptions",
     "ListElementCode": "To follow",
     "ListElement": "To follow",
-    "DisplayOrder": 2
+    "DisplayOrder": 3
   }
 ]
