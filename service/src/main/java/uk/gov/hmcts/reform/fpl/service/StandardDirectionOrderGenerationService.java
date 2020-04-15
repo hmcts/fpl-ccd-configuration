@@ -41,9 +41,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -53,16 +50,18 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 //TODO: ensure everything is still working as expected - I don't think BLANK appears everywhere it used to. FPLA-1477
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class StandardDirectionOrderGenerationService extends DocmosisTemplateDataGeneration {
+public class StandardDirectionOrderGenerationService extends
+    DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
+
+    //TODO: when should this be used? see FPLA-1087
+    public static final String DEFAULT = "BLANK - please complete";
+    private static final int SDO_DIRECTION_INDEX_START = 2;
+
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService dataExtractionService;
-
-    //TODO: when should this be used? see FPLA-1087
-    public static final String DEFAULT = "BLANK - please complete";
-    private static final int SDO_DIRECTION_INDEX_START = 2;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder orderBuilder =
