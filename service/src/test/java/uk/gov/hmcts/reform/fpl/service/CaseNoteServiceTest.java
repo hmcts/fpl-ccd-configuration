@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,17 +34,14 @@ class CaseNoteServiceTest {
     private CaseNoteService service;
 
     private static final String userAuthToken = "Bearer";
-    private static final UserDetails userDetails = UserDetails.builder()
-        .forename("John")
-        .surname("Smith")
-        .build();
+    private static final UserInfo userDetails = UserInfo.builder().name("John Smith").build();
 
     @Nested
     class BuildCaseNote {
 
         @BeforeEach
         void setup() {
-            given(idamClient.getUserDetails(userAuthToken)).willReturn(userDetails);
+            given(idamClient.getUserInfo(userAuthToken)).willReturn(userDetails);
         }
 
         @ParameterizedTest
@@ -87,7 +84,7 @@ class CaseNoteServiceTest {
     private CaseNote caseNoteForToday(String note) {
         return CaseNote.builder()
             .note(note)
-            .createdBy(userDetails.getFullName())
+            .createdBy(userDetails.getName())
             .date(LocalDate.now())
             .build();
     }
@@ -95,7 +92,7 @@ class CaseNoteServiceTest {
     private CaseNote caseNoteWithDate(LocalDate date) {
         return CaseNote.builder()
             .note("note")
-            .createdBy(userDetails.getFullName())
+            .createdBy(userDetails.getName())
             .date(date)
             .build();
     }

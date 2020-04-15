@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
 import java.util.List;
@@ -92,8 +92,8 @@ class PopulateStandardDirectionsHandlerTest {
 
         given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
 
-        given(idamClient.getUserDetails(TOKEN)).willReturn(UserDetails.builder()
-            .id(USER_ID)
+        given(idamClient.getUserInfo(TOKEN)).willReturn(UserInfo.builder()
+            .uid(USER_ID)
             .build());
 
         given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
