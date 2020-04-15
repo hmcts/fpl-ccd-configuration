@@ -7,13 +7,14 @@ import java.util.Set;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LABARRISTER;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CAFCASSSOLICITOR;
 
 public enum RepresentativeRole {
     LA_LEGAL_REPRESENTATIVE(Type.LASOLICITOR, LASOLICITOR),
     LA_BARRISTER(Type.LABARRISTER, LABARRISTER),
     BARRISTER(Type.BARRISTER, CaseRole.BARRISTER),
     CAFCASS_GUARDIAN(Type.CAFCASS),
-    CAFCASS_SOLICITOR(Type.CAFCASS),
+    CAFCASS_SOLICITOR(Type.CAFCASS, CAFCASSSOLICITOR),
     REPRESENTING_RESPONDENT_1(Type.RESPONDENT, 0, SOLICITOR),
     REPRESENTING_RESPONDENT_2(Type.RESPONDENT, 1, SOLICITOR),
     REPRESENTING_RESPONDENT_3(Type.RESPONDENT, 2, SOLICITOR),
