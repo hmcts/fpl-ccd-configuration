@@ -38,6 +38,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.chomp;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
@@ -150,7 +151,7 @@ public class CaseDataExtractionService {
                         formattedDirections.add(DocmosisDirection.builder()
                             .assignee(direction.getValue().getAssignee())
                             .title(formatTitle(directionNumber++, direction.getValue(), configOrder.getDirections()))
-                            .body(direction.getValue().getDirectionText())
+                            .body(chomp(direction.getValue().getDirectionText()))
                             .build());
                     }
                 }
