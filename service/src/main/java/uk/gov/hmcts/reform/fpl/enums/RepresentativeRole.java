@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CAFCASSSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LABARRISTER;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CAFCASSSOLICITOR;
 
 public enum RepresentativeRole {
     LA_LEGAL_REPRESENTATIVE(Type.LASOLICITOR, LASOLICITOR),
