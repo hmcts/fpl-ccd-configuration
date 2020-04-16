@@ -143,7 +143,7 @@ public class ActionCaseManagementOrderController {
             order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
         }
 
-        Document document = getDocument(caseData, order.isDraft());
+        Document document = getDocument(caseData.toBuilder().caseManagementOrder(order).build(), order.isDraft());
 
         order = caseManagementOrderService.addDocument(order, document);
 
