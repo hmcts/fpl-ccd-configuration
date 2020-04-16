@@ -62,7 +62,7 @@ public class GeneratedOrderEventHandler {
                                                                                final String localAuthorityCode,
                                                                                final CaseDetails caseDetails) {
         final Map<String, Object> templateParameters =
-            orderIssuedEmailContentProvider.buildOrderNotificationParameters(
+            orderIssuedEmailContentProvider.buildNotificationParametersForCaseRoleUsers(
                 caseDetails, eventData.getLocalAuthorityCode(), documentContents, GENERATED_ORDER);
 
         sendToLocalAuthority(caseDetails, localAuthorityCode, templateParameters);

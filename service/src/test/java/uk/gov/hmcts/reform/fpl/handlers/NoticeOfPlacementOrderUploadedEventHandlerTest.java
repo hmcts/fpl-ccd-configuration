@@ -43,7 +43,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedEmailRepresentativesForAddingPartiesToCase;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForCaseRoleUsers;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
 @ExtendWith(SpringExtension.class)
@@ -86,9 +86,9 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
             caseDetails)).willReturn(parameters);
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
+        given(orderIssuedEmailContentProvider.buildNotificationParametersForCaseRoleUsers(
             caseDetails, LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
-            .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false));
+            .willReturn(getExpectedParametersForCaseRoleUsers(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
         given(orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
@@ -107,10 +107,13 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
             "12345");
 
         verify(notificationService).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-            COURT_EMAIL_ADDRESS,
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
-            "12345");
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(COURT_EMAIL_ADDRESS),
+            dataCaptor.capture(),
+            eq("12345"));
+
+        assertEquals(dataCaptor.getValue(),
+            getExpectedParametersForCaseRoleUsers(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),

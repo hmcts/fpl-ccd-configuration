@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +23,9 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailCon
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
@@ -39,8 +44,9 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.expectedRepresentatives;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getCMOIssuedCaseLinkNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForCaseRoleUsers;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
@@ -69,6 +75,9 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     @Autowired
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
 
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
+
     @Test
     void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() {
         CallbackRequest callbackRequest = callbackRequest();
@@ -81,9 +90,9 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             LOCAL_AUTHORITY_NAME))
             .willReturn(getCMOIssuedCaseLinkNotificationParameters());
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
+        given(orderIssuedEmailContentProvider.buildNotificationParametersForCaseRoleUsers(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, CMO))
-            .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
+            .willReturn(getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
             new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
@@ -95,10 +104,13 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             "12345");
 
         verify(notificationService).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-            COURT_EMAIL_ADDRESS,
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
-            "12345");
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(COURT_EMAIL_ADDRESS),
+            dataCaptor.capture(),
+            eq("12345"));
+
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
+
     }
 
     @Test
@@ -110,18 +122,20 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             LOCAL_AUTHORITY_NAME))
             .willReturn(getCMOIssuedCaseLinkNotificationParameters());
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
+        given(orderIssuedEmailContentProvider.buildNotificationParametersForCaseRoleUsers(
             callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, CMO))
-            .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true));
+            .willReturn(getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
             new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-            CTSC_INBOX,
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
-            "12345");
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(CTSC_INBOX),
+            dataCaptor.capture(),
+            eq("12345"));
+
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
     }
 
     @Test

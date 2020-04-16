@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -58,9 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedu
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForCaseRoleUsers;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -128,7 +128,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
             anyMap(), eq(CASE_ID));
 
-        verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded();
+        verifyNotificationSentToAdminWhenCMOIssued();
 
         verifyZeroInteractions(notificationClient);
     }
@@ -157,16 +157,14 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq("ragnar@example.com"),
             anyMap(), eq(CASE_ID));
 
-        verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded();
+        verifyNotificationSentToAdminWhenCMOIssued();
 
         verifyZeroInteractions(notificationClient);
     }
 
     @Test
-    void shouldNotifyHmctsAdminWhenRepresentativesServedByPost() throws Exception {
-        List<Element<Representative>> representativeServedByPost = buildRepresentativesServedByPost();
-
-        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativeServedByPost);
+    void shouldNotifyHmctsAdminWhenOrderIssued() throws Exception {
+        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(emptyList());
 
         postSubmittedEvent(caseDetails);
 
@@ -185,16 +183,14 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             dataCaptor.capture(),
             eq(CASE_ID));
 
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForAdminWhenRepresentativesServedByPost(true));
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
 
         verifyZeroInteractions(notificationClient);
     }
 
     @Test
-    void shouldNotifyCtscAdminWhenRepresentativesServedByPostAndCtscIsEnabled() throws Exception {
-        List<Element<Representative>> representativeServedByPost = buildRepresentativesServedByPost();
-
-        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativeServedByPost);
+    void shouldNotifyCtscAdminWhenCtscIsEnabled() throws Exception {
+        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(emptyList());
 
         caseDetails.setData(ImmutableMap.<String, Object>builder()
             .putAll(caseDetails.getData())
@@ -214,6 +210,8 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             dataCaptor.capture(),
             eq(CASE_ID));
+
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
     }
 
     @Test
@@ -323,12 +321,14 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME), CASE_ID);
     }
 
-    private void verifyNotificationSentToAdminWhenCMOIssuedWithNoServingNeeded() throws NotificationClientException {
+    private void verifyNotificationSentToAdminWhenCMOIssued() throws NotificationClientException {
         verify(notificationClient).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-            ADMIN_EMAIL_ADDRESS,
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
-            CASE_ID);
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(ADMIN_EMAIL_ADDRESS),
+            dataCaptor.capture(),
+            eq(CASE_ID));
+
+        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
     }
 
     private void verifySentDocumentEventTriggered() {
