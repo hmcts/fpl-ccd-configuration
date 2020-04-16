@@ -49,7 +49,7 @@ module.exports = {
 
   uploadSocialWorkStatementAndGenogram(file) {
     I.attachFile(this.documents.socialWorkStatementAndGenogram, file);
-    within(this.fields.socialWorkAssessmentStatus, () => {
+    within(this.fields.socialWorkStatementAndGenogramStatus, () => {
       I.click(locate('label').withText('Attached'));
     });
   },
