@@ -43,13 +43,14 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
@@ -216,14 +217,15 @@ public class GeneratedOrderService {
             .put("children", childrenDetails)
             .put("childrenCount", childrenCount)
             .put("furtherDirections", caseData.getFurtherDirectionsText())
+            .put("crest", CREST.getValue())
             .build();
 
         if (orderStatus == DRAFT) {
-            orderTemplateBuilder.put("draftbackground", IMAGE_REF_DRAFT_WATERMARK);
+            orderTemplateBuilder.put("draftbackground", DRAFT_WATERMARK.getValue());
         }
 
         if (orderStatus == SEALED) {
-            orderTemplateBuilder.put("courtseal", IMAGE_REF_COURT_SEAL);
+            orderTemplateBuilder.put("courtseal", COURT_SEAL.getValue());
         }
 
         return orderTemplateBuilder.build();

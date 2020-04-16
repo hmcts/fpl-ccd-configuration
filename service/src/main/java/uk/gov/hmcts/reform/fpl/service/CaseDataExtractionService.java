@@ -39,11 +39,11 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_CREST;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -80,12 +80,12 @@ public class CaseDataExtractionService {
             .applicantName(getApplicantName(caseData.findApplicant(0).orElse(Applicant.builder().build())))
             .directions(getGroupedDirections(standardDirectionOrder))
             .hearingBooking(getHearingBookingData(caseData.getHearingDetails()))
-            .crest(IMAGE_REF_CREST);
+            .crest(CREST.getValue());
 
         if (SEALED == standardDirectionOrder.getOrderStatus()) {
-            orderBuilder.courtseal(IMAGE_REF_COURT_SEAL);
+            orderBuilder.courtseal(COURT_SEAL.getValue());
         } else {
-            orderBuilder.draftbackground(IMAGE_REF_DRAFT_WATERMARK);
+            orderBuilder.draftbackground(DRAFT_WATERMARK.getValue());
         }
 
         return orderBuilder.build();

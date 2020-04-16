@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -46,6 +45,9 @@ import java.util.stream.Stream;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -277,7 +279,7 @@ class GeneratedOrderServiceTest {
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) throws IOException {
+                                                           GeneratedOrderSubtype subtype) {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
@@ -286,13 +288,13 @@ class GeneratedOrderServiceTest {
             caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsKey("courtseal");
+        assertThat(templateData).containsEntry("courtseal", COURT_SEAL.getValue());
     }
 
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseDataInDraft(GeneratedOrderType orderType,
-                                                                  GeneratedOrderSubtype subtype) throws IOException {
+                                                                  GeneratedOrderSubtype subtype) {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
@@ -301,7 +303,7 @@ class GeneratedOrderServiceTest {
             caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsKey("draftbackground");
+        assertThat(templateData).containsEntry("draftbackground", DRAFT_WATERMARK.getValue());
     }
 
     @Test
@@ -458,8 +460,8 @@ class GeneratedOrderServiceTest {
             .put("dateOfIssue", formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
-            .put("children", children);
-
+            .put("children", children)
+            .put("crest", CREST.getValue());
         return expectedMap.build();
     }
 

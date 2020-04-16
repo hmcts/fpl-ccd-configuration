@@ -6,26 +6,27 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.io.IOException;
 import java.util.Map;
 
-public abstract class DocmosisTemplateDataGeneration {
-    static final String IMAGE_REF_DRAFT_WATERMARK = "[userImage:draft-watermark.png]";
-    static final String IMAGE_REF_COURT_SEAL = "[userImage:family-court-seal.png]";
-    static final String IMAGE_REF_CREST = "[userImage:crest.png]";
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 
-    public static Map<String, Object> getDraftWaterMarkData() {
+public abstract class DocmosisTemplateDataGeneration {
+
+    protected static Map<String, Object> getDraftWaterMarkData() {
         return ImmutableMap.of(
-            "draftbackground", IMAGE_REF_DRAFT_WATERMARK
+            "draftbackground", DRAFT_WATERMARK.getValue()
         );
     }
 
     protected Map<String, Object> getCourtSealData() {
         return ImmutableMap.of(
-            "courtseal", IMAGE_REF_COURT_SEAL
+            "courtseal", COURT_SEAL.getValue()
         );
     }
 
     protected Map<String, Object> getCrestData() {
         return ImmutableMap.of(
-            "crest", IMAGE_REF_CREST
+            "crest", CREST.getValue()
         );
     }
 
