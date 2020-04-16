@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CafcassDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "cafcassDirections",
     "ListElementCode": "readOnly",
     "EventElementLabel": " ",
@@ -12,7 +12,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CafcassDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "cafcassDirections",
     "ListElementCode": "directionRemovable",
     "EventElementLabel": " ",
@@ -22,7 +22,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CafcassDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "cafcassDirections",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
@@ -32,7 +32,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CafcassDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "cafcassDirections",
     "ListElementCode": "directionNeeded",
     "EventElementLabel": " ",
@@ -42,7 +42,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CafcassDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "cafcassDirections",
     "ListElementCode": "directionText",
     "FieldDisplayOrder": 5,
@@ -52,7 +52,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CafcassDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "cafcassDirections",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 6,

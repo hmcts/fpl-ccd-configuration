@@ -1,0 +1,52 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrderNoCollections",
+    "ListElementCode": "orderDoc",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrderNoCollections",
+    "ListElementCode": "hearingDate",
+    "FieldType": "Date",
+    "ElementLabel": "The date of the hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrderNoCollections",
+    "ListElementCode": "dateOfIssue",
+    "FieldType": "Text",
+    "ElementLabel": "Date of issue",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrderNoCollections",
+    "ListElementCode": "directions",
+    "FieldType": "Collection",
+    "ElementLabel": "Directions",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrderNoCollections",
+    "ListElementCode": "orderStatus",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Is this the final version?",
+    "FieldTypeParameter": "OrderStatus",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrderNoCollections",
+    "ListElementCode": "judgeAndLegalAdvisor",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "ElementLabel": "Judge and Justices' Legal Adviser",
+    "SecurityClassification": "Public"
+  }
+]

@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "allParties",
     "ListElementCode": "readOnly",
     "EventElementLabel": " ",
@@ -12,7 +12,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "allParties",
     "ListElementCode": "directionRemovable",
     "EventElementLabel": " ",
@@ -22,7 +22,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "allParties",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
@@ -32,7 +32,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CourtDirections",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "allParties",
     "ListElementCode": "directionNeeded",
     "EventElementLabel": " ",
@@ -42,7 +42,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "allParties",
     "ListElementCode": "directionText",
     "FieldDisplayOrder": 5,
@@ -52,7 +52,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "allParties",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 6,

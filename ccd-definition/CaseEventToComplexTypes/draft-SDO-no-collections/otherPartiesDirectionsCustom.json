@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherPartiesDirectionsCustom",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
@@ -12,7 +12,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherPartiesDirectionsCustom",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "directionText",
     "FieldDisplayOrder": 2,
@@ -21,7 +21,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherPartiesDirectionsCustom",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 3,

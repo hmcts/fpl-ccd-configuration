@@ -1,9 +1,9 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
-    "CaseFieldID": "allParties",
+    "ID": "CafcassDirections",
+    "CaseEventID": "draftSDONoSingleList",
+    "CaseFieldID": "cafcassDirections",
     "ListElementCode": "readOnly",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
@@ -11,9 +11,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
-    "CaseFieldID": "allParties",
+    "ID": "CafcassDirections",
+    "CaseEventID": "draftSDONoSingleList",
+    "CaseFieldID": "cafcassDirections",
     "ListElementCode": "directionRemovable",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 2,
@@ -21,9 +21,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
-    "CaseFieldID": "allParties",
+    "ID": "CafcassDirections",
+    "CaseEventID": "draftSDONoSingleList",
+    "CaseFieldID": "cafcassDirections",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 3,
@@ -31,9 +31,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirections",
-    "CaseEventID": "draftSDONoCollections",
-    "CaseFieldID": "allParties",
+    "ID": "CafcassDirections",
+    "CaseEventID": "draftSDONoSingleList",
+    "CaseFieldID": "cafcassDirections",
     "ListElementCode": "directionNeeded",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 4,
@@ -41,19 +41,19 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
-    "CaseFieldID": "allParties",
+    "ID": "CafcassDirections",
+    "CaseEventID": "draftSDONoSingleList",
+    "CaseFieldID": "cafcassDirections",
     "ListElementCode": "directionText",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "allParties.readOnly!=\"Yes\" AND allParties.directionNeeded!=\"No\""
+    "FieldShowCondition": "cafcassDirections.readOnly!=\"Yes\" AND cafcassDirections.directionNeeded!=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllPartiesDirections",
-    "CaseEventID": "draftSDONoCollections",
-    "CaseFieldID": "allParties",
+    "ID": "CafcassDirections",
+    "CaseEventID": "draftSDONoSingleList",
+    "CaseFieldID": "cafcassDirections",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"

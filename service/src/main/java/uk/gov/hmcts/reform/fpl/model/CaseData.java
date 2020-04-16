@@ -126,6 +126,7 @@ public class CaseData {
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
     private final Order standardDirectionOrderNoSingleList;
+    private final Order standardDirectionOrderNoCollections;
 
     @NotNull(message = "You need to enter the allocated judge.", groups = SealedSDOGroup.class)
     private final Judge allocatedJudge;

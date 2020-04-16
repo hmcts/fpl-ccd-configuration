@@ -1,9 +1,9 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CafcassDirectionsCustom",
-    "CaseEventID": "draftSDONoCollections",
-    "CaseFieldID": "cafcassDirectionsCustom",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDONoSingleList",
+    "CaseFieldID": "allPartiesCustom",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
@@ -11,18 +11,18 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CafcassDirectionsCustom",
-    "CaseEventID": "draftSDONoCollections",
-    "CaseFieldID": "cafcassDirectionsCustom",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDONoSingleList",
+    "CaseFieldID": "allPartiesCustom",
     "ListElementCode": "directionText",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CafcassDirectionsCustom",
-    "CaseEventID": "draftSDONoCollections",
-    "CaseFieldID": "cafcassDirectionsCustom",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDONoSingleList",
+    "CaseFieldID": "allPartiesCustom",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"

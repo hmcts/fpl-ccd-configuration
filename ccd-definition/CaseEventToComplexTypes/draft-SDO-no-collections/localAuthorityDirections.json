@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthorityDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "readOnly",
     "EventElementLabel": " ",
@@ -12,7 +12,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthorityDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "directionRemovable",
     "EventElementLabel": " ",
@@ -22,7 +22,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthorityDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
@@ -32,7 +32,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthorityDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "directionNeeded",
     "EventElementLabel": " ",
@@ -42,7 +42,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthorityDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "directionText",
     "FieldDisplayOrder": 5,
@@ -52,7 +52,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LocalAuthorityDirections",
-    "CaseEventID": "draftSDONoSingleList",
+    "CaseEventID": "draftSDONoCollections",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 6,

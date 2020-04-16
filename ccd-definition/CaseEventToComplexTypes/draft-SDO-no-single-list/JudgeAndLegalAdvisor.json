@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "allocatedJudgeLabel",
     "EventElementLabel": " ",
@@ -12,7 +12,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "useAllocatedJudge",
     "EventElementLabel": "Is this judge issuing the order?",
@@ -22,7 +22,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeSubHeading",
     "EventElementLabel": "Who is issuing the order?",
@@ -32,7 +32,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
@@ -42,7 +42,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
@@ -52,7 +52,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
@@ -62,7 +62,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
-    "CaseEventID": "draftSDONoCollections",
+    "CaseEventID": "draftSDONoSingleList",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Justices' Legal Adviser's full name",
