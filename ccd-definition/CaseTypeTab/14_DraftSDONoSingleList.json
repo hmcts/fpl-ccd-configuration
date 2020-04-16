@@ -1,0 +1,156 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "allParties",
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "allPartiesCustom",
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "cafcassDirections",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "TabFieldDisplayOrder": 4,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "courtDirections",
+    "TabFieldDisplayOrder": 5,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "courtDirectionsCustom",
+    "TabFieldDisplayOrder": 6,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "TabFieldDisplayOrder": 7,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "localAuthorityDirections",
+    "TabFieldDisplayOrder": 8,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "localAuthorityDirectionsCustom",
+    "TabFieldDisplayOrder": 9,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "otherPartiesDirections",
+    "TabFieldDisplayOrder": 10,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "otherPartiesDirectionsCustom",
+    "TabFieldDisplayOrder": 11,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "respondentDirections",
+    "TabFieldDisplayOrder": 12,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "respondentDirectionsCustom",
+    "TabFieldDisplayOrder": 13,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftSDONoSingleListTab",
+    "TabLabel": "Draft SDO No Single List",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "standardDirectionOrderNoSingleList",
+    "TabFieldDisplayOrder": 14,
+    "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
+  }
+]
