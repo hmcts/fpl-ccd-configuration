@@ -35,7 +35,6 @@ module.exports = {
       uploadDocumentsEventPage.selectSWETAsNotRequired();
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
-      uploadDocumentsEventPage.uploadAdditionalDocuments(config.testFile);
       await I.completeEvent('Save and continue');
       I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
       caseViewPage.selectTab(caseViewPage.tabs.documents);
