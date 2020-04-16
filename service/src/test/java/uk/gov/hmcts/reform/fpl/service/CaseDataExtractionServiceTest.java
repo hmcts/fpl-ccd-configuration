@@ -39,6 +39,9 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_CREST;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
@@ -105,7 +108,8 @@ class CaseDataExtractionServiceTest {
             .respondentsProvided(false)
             .directions(emptyList())
             .applicantName("")
-            .draftbackground(template.getDraftbackground())
+            .crest(IMAGE_REF_CREST)
+            .draftbackground(IMAGE_REF_DRAFT_WATERMARK)
             .build());
     }
 
@@ -151,7 +155,8 @@ class CaseDataExtractionServiceTest {
             .respondentsProvided(false)
             .directions(getExpectedDirections())
             .applicantName("")
-            .draftbackground(template.getDraftbackground())
+            .crest(IMAGE_REF_CREST)
+            .draftbackground(IMAGE_REF_DRAFT_WATERMARK)
             .build());
     }
 
@@ -193,7 +198,8 @@ class CaseDataExtractionServiceTest {
             .respondentsProvided(true)
             .directions(getExpectedDirections())
             .applicantName("Bran Stark")
-            .courtseal(template.getCourtseal())
+            .crest(IMAGE_REF_CREST)
+            .courtseal(IMAGE_REF_COURT_SEAL)
             .build());
     }
 

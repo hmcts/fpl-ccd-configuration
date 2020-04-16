@@ -41,9 +41,9 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_CREST;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.IMAGE_REF_DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -79,15 +79,15 @@ public class CaseDataExtractionService {
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
             .applicantName(getApplicantName(caseData.findApplicant(0).orElse(Applicant.builder().build())))
             .directions(getGroupedDirections(standardDirectionOrder))
-            .hearingBooking(getHearingBookingData(caseData.getHearingDetails()));
-
-        if (SEALED != standardDirectionOrder.getOrderStatus()) {
-            orderBuilder.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
-        }
+            .hearingBooking(getHearingBookingData(caseData.getHearingDetails()))
+            .crest(IMAGE_REF_CREST);
 
         if (SEALED == standardDirectionOrder.getOrderStatus()) {
-            orderBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
+            orderBuilder.courtseal(IMAGE_REF_COURT_SEAL);
+        } else {
+            orderBuilder.draftbackground(IMAGE_REF_DRAFT_WATERMARK);
         }
+
         return orderBuilder.build();
     }
 

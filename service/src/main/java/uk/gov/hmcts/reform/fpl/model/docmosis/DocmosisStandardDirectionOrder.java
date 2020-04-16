@@ -27,6 +27,7 @@ public class DocmosisStandardDirectionOrder {
     private final List<DocmosisDirection> directions;
     private final String draftbackground;
     private final String courtseal;
+    private final String crest;
 
     public Map<String, Object> toMap(ObjectMapper mapper) {
         Map<String, Object> map = mapper.convertValue(this, new TypeReference<>() {});

@@ -4,38 +4,28 @@ import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
 import java.util.Map;
 
-import static java.lang.String.format;
-
 public abstract class DocmosisTemplateDataGeneration {
-    static final String BASE_64 = "image:base64:%1$s";
+    static final String IMAGE_REF_DRAFT_WATERMARK = "[userImage:draft-watermark.png]";
+    static final String IMAGE_REF_COURT_SEAL = "[userImage:family-court-seal.png]";
+    static final String IMAGE_REF_CREST = "[userImage:crest.png]";
 
-    // REFACTOR: 05/12/2019 make not static when all document generation uses this abstract class
-    public static String generateDraftWatermarkEncodedString() throws IOException {
-        InputStream is = DocmosisTemplateDataGeneration.class.getResourceAsStream("/assets/images/draft-watermark.png");
-        byte[] fileContent = is.readAllBytes();
-        return Base64.getEncoder().encodeToString(fileContent);
-    }
-
-    public static String generateCourtSealEncodedString() throws IOException {
-        InputStream is = DocmosisTemplateDataGeneration.class
-            .getResourceAsStream("/assets/images/family-court-seal.png");
-        byte[] fileContent = is.readAllBytes();
-        return Base64.getEncoder().encodeToString(fileContent);
-    }
-
-    protected Map<String, Object> getDraftWaterMarkData() throws IOException {
+    public static Map<String, Object> getDraftWaterMarkData() {
         return ImmutableMap.of(
-            "draftbackground", format(BASE_64, generateDraftWatermarkEncodedString())
+            "draftbackground", IMAGE_REF_DRAFT_WATERMARK
         );
     }
 
-    protected Map<String, Object> getCourtSealData() throws IOException {
+    protected Map<String, Object> getCourtSealData() {
         return ImmutableMap.of(
-            "courtseal", format(BASE_64, generateCourtSealEncodedString())
+            "courtseal", IMAGE_REF_COURT_SEAL
+        );
+    }
+
+    protected Map<String, Object> getCrestData() {
+        return ImmutableMap.of(
+            "crest", IMAGE_REF_CREST
         );
     }
 

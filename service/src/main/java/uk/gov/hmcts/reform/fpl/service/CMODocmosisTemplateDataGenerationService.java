@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -77,7 +76,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private final ObjectMapper mapper;
     private final Time time;
 
-    public Map<String, Object> getTemplateData(CaseData caseData, boolean draft) throws IOException {
+    public Map<String, Object> getTemplateData(CaseData caseData, boolean draft) {
         Map<String, Object> cmoTemplateData = new HashMap<>();
 
         final DynamicList hearingDateList = caseData.getCmoHearingDateList();
@@ -124,11 +123,11 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         if (draft) {
             cmoTemplateData.putAll(getDraftWaterMarkData());
-        }
-
-        if (!draft) {
+        } else {
             cmoTemplateData.putAll(getCourtSealData());
         }
+
+        cmoTemplateData.putAll(getCrestData());
 
         List<Map<String, String>> recitals = buildRecitals(order.getRecitals());
         cmoTemplateData.put(RECITALS.getKey(), recitals);
