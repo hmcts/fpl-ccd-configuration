@@ -8,7 +8,6 @@ import java.util.Map;
 public class AbstractDocmosisData {
 
     public Map<String, Object> toMap(ObjectMapper mapper) {
-        return mapper.convertValue(this, new TypeReference<>() {
-        });
+        return mapper.convertValue(this, new TypeReference<>() {});
     }
 }

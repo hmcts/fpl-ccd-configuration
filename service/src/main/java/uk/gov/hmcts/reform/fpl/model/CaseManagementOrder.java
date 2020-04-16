@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 
@@ -32,12 +30,10 @@ public class CaseManagementOrder {
     private final NextHearing nextHearing;
     private final String dateOfIssue;
 
-    @JsonIgnore
     public boolean isDraft() {
-        return ofNullable(action).map(x -> !SEND_TO_ALL_PARTIES.equals(action.getType())).orElse(true);
+        return action == null || !SEND_TO_ALL_PARTIES.equals(action.getType());
     }
 
-    @JsonIgnore
     public boolean isInJudgeReview() {
         return status == SEND_TO_JUDGE;
     }

@@ -2,14 +2,18 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -21,6 +25,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.AbstractDocmosisData;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -35,6 +41,7 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -53,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDir
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -75,16 +83,23 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
+    @SpyBean
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @Captor
+    private ArgumentCaptor<DocmosisCaseManagementOrder> capturedData;
+
     ActionCaseManagementOrderControllerAboutToSubmitTest() {
         super("action-cmo");
     }
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(AbstractDocmosisData.class), any()))
             .willReturn(docmosisDocument);
+
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document());
 
         populatedCaseDetails = populatedCaseDetails();
@@ -104,6 +119,12 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         verify(uploadDocumentService).uploadPDF(PDF, "case-management-order.pdf");
+        verify(documentGeneratorService).generateDocmosisDocument(capturedData.capture(), eq(DocmosisTemplates.CMO));
+
+        DocmosisHearingBooking hearingBooking = capturedData.getValue().getHearingBooking();
+
+        assertThat(hearingBooking.getHearingTime()).isEqualTo(expectedHearingTime());
+        assertThat(hearingBooking.getPreHearingAttendance()).isEqualTo(expectedPreHearing());
         assertThat(caseData.getCaseManagementOrder()).isEqualTo(expectedCaseManagementOrder());
     }
 
@@ -208,5 +229,17 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
             .caseTypeId(CASE_TYPE)
             .data(data)
             .build();
+    }
+
+    private String expectedPreHearing() {
+        return getStringDate(NOW.minusHours(1));
+    }
+
+    private String expectedHearingTime() {
+        return getStringDate(NOW) + " - " + getStringDate(NOW);
+    }
+
+    private String getStringDate(LocalDateTime now) {
+        return formatLocalDateTimeBaseUsingFormat(now, "h:mma");
     }
 }
