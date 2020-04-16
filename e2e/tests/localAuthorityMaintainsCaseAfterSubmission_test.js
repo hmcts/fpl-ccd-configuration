@@ -25,7 +25,8 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 
 Scenario('local authority uploads documents', uploadDocs.uploadDocuments());
 
-Scenario('local authority uploads documents', uploadDocs.uploadDocumentsWhenSWETNotRequired());
+Scenario('local authority uploads documents when SWET not required',
+  uploadDocs.uploadDocumentsWhenSWETNotRequired());
 
 Scenario('local authority uploads court bundle', uploadDocs.uploadCourtBundle());
 
