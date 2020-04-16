@@ -23,4 +23,10 @@ public class JsonOrdersLookupService implements OrdersLookupService {
 
         return this.objectMapper.readValue(content, OrderDefinition.class);
     }
+
+    public OrderDefinition getStandardDirectionOrderNoSingleList() throws IOException {
+        String content = readString("ordersConfigNoSingleList.json");
+
+        return this.objectMapper.readValue(content, OrderDefinition.class);
+    }
 }

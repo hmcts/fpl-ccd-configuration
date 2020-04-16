@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 
 import java.util.List;
@@ -21,9 +22,9 @@ public class OrderValidationService {
 
     private final Validator validator;
 
-    public List<String> validate(final CaseData caseData) {
+    public List<String> validate(final CaseData caseData, Order order) {
 
-        final OrderStatus orderStatus = caseData.getStandardDirectionOrder().getOrderStatus();
+        final OrderStatus orderStatus = order.getOrderStatus();
 
         if (SEALED.equals(orderStatus)) {
             return validator.validate(caseData, SealedSDOGroup.class)

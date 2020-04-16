@@ -57,9 +57,9 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 
 @Api
 @RestController
-@RequestMapping("/callback/draft-standard-directions")
+@RequestMapping("/callback/draft-standard-directions-no-single-list")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class DraftOrdersController {
+public class DraftSDONoSingleListController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
@@ -88,13 +88,13 @@ public class DraftOrdersController {
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
 
-        if (!isNull(caseData.getStandardDirectionOrder())) {
+        if (!isNull(caseData.getStandardDirectionOrderNoSingleList())) {
             Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
 
             directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
             caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY,
-                caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
+                caseData.getStandardDirectionOrderNoSingleList().getJudgeAndLegalAdvisor());
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
@@ -109,9 +109,9 @@ public class DraftOrdersController {
     private JudgeAndLegalAdvisor setAllocatedJudgeLabel(CaseData caseData) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
 
-        if (isNotEmpty(caseData.getStandardDirectionOrder())
-            && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
-            judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
+        if (isNotEmpty(caseData.getStandardDirectionOrderNoSingleList())
+            && isNotEmpty(caseData.getStandardDirectionOrderNoSingleList().getJudgeAndLegalAdvisor())) {
+            judgeAndLegalAdvisor = caseData.getStandardDirectionOrderNoSingleList().getJudgeAndLegalAdvisor();
         }
 
         judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
@@ -127,7 +127,7 @@ public class DraftOrdersController {
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {
         List<Element<Direction>> nonCustomDirections = commonDirectionService
-            .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
+            .removeCustomDirections(caseData.getStandardDirectionOrderNoSingleList().getDirections());
 
         return commonDirectionService.sortDirectionsByAssignee(nonCustomDirections);
     }
@@ -142,21 +142,21 @@ public class DraftOrdersController {
             caseData.getAllocatedJudge());
 
         CaseData updated = caseData.toBuilder()
-            .standardDirectionOrder(Order.builder()
-                .directions(commonDirectionService.combineAllDirections(caseData))
+            .standardDirectionOrderNoSingleList(Order.builder()
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
 
-        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
-            getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
+        //TODO: needs to be updated to display hidden values on separate lists
+//        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
+//            getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrderNoSingleList().getDirections());
 
         Document document = getDocument(
-            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrder()).toMap(mapper)
+            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrderNoSingleList()).toMap(mapper)
         );
 
-        Order order = updated.getStandardDirectionOrder().toBuilder()
+        Order order = updated.getStandardDirectionOrderNoSingleList().toBuilder()
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
@@ -164,7 +164,7 @@ public class DraftOrdersController {
                 .build())
             .build();
 
-        caseDetails.getData().put("standardDirectionOrder", order);
+        caseDetails.getData().put("standardDirectionOrderNoSingleList", order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -177,7 +177,7 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<String> validationErrors = orderValidationService.validate(caseData, caseData.getStandardDirectionOrder());
+        List<String> validationErrors = orderValidationService.validate(caseData, caseData.getStandardDirectionOrderNoSingleList());
         if (!validationErrors.isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
@@ -191,32 +191,29 @@ public class DraftOrdersController {
         removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
         CaseData updated = caseData.toBuilder()
-            .standardDirectionOrder(Order.builder()
-                .directions(commonDirectionService.combineAllDirections(caseData))
-                .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
+            .standardDirectionOrderNoSingleList(Order.builder()
+                .orderStatus(caseData.getStandardDirectionOrderNoSingleList().getOrderStatus())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
 
-
-
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
-            getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
+            getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrderNoSingleList().getDirections());
 
         Document document = getDocument(
-            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrder()).toMap(mapper)
+            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrderNoSingleList()).toMap(mapper)
         );
 
-        Order order = updated.getStandardDirectionOrder().toBuilder()
+        Order order = updated.getStandardDirectionOrderNoSingleList().toBuilder()
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
-                .filename(updated.getStandardDirectionOrder().getOrderStatus().getDocumentTitle())
+                .filename(updated.getStandardDirectionOrderNoSingleList().getOrderStatus().getDocumentTitle())
                 .build())
             .build();
 
-        caseDetails.getData().put("standardDirectionOrder", order);
+        caseDetails.getData().put("standardDirectionOrderNoSingleList", order);
         caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
         caseDetails.getData().remove("dateOfIssue");
 
@@ -230,8 +227,8 @@ public class DraftOrdersController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
-        if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
+        Order standardDirectionOrderNoSingleList = caseData.getStandardDirectionOrderNoSingleList();
+        if (standardDirectionOrderNoSingleList.getOrderStatus() != OrderStatus.SEALED) {
             return;
         }
 
@@ -242,13 +239,13 @@ public class DraftOrdersController {
             "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
         );
 
-        if (standardDirectionOrder.getOrderStatus() == SEALED) {
+        if (standardDirectionOrderNoSingleList.getOrderStatus() == SEALED) {
             coreCaseDataService.triggerEvent(
                 callbackRequest.getCaseDetails().getJurisdiction(),
                 callbackRequest.getCaseDetails().getCaseTypeId(),
                 callbackRequest.getCaseDetails().getId(),
                 "internal-change:SEND_DOCUMENT",
-                Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
+                Map.of("documentToBeSent", standardDirectionOrderNoSingleList.getOrderDoc())
             );
             applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
                 requestData));
@@ -257,7 +254,7 @@ public class DraftOrdersController {
 
     private List<Element<Direction>> getConfigDirectionsWithHiddenValues() throws IOException {
         // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
-        return ordersLookupService.getStandardDirectionOrder().getDirections()
+        return ordersLookupService.getStandardDirectionOrderNoSingleList().getDirections()
             .stream()
             .map(direction -> commonDirectionService.constructDirectionForCCD(direction, LocalDateTime.now()))
             .collect(Collectors.toList());

@@ -88,7 +88,7 @@ class CaseDataExtractionServiceTest {
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
                 .standardDirectionOrder(order)
-                .build());
+                .build(), Order.builder().build());
 
         assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
@@ -116,7 +116,7 @@ class CaseDataExtractionServiceTest {
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
                 .standardDirectionOrder(Order.builder().directions(getDirections()).build())
-                .build());
+                .build(), Order.builder().build());
 
         assertThat(templateData.getDirections()).containsAll(expectedDirections());
     }
@@ -134,7 +134,7 @@ class CaseDataExtractionServiceTest {
             .build();
 
         DocmosisStandardDirectionOrder template = caseDataExtractionService
-            .getStandardOrderDirectionData(caseData);
+            .getStandardOrderDirectionData(caseData, caseData.getStandardDirectionOrder());
 
         assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
@@ -169,7 +169,7 @@ class CaseDataExtractionServiceTest {
             .build();
 
         DocmosisStandardDirectionOrder template = caseDataExtractionService
-            .getStandardOrderDirectionData(caseData);
+            .getStandardOrderDirectionData(caseData, caseData.getStandardDirectionOrder());
 
         assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()

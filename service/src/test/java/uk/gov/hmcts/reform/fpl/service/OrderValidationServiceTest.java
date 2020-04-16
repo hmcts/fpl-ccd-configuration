@@ -46,7 +46,7 @@ public class OrderValidationServiceTest {
     void shouldNotValidateCaseWhenDraftingOrder() {
         CaseData caseData = buildCaseData(DRAFT);
 
-        final List<String> validationErrors = validationService.validate(caseData);
+        final List<String> validationErrors = validationService.validate(caseData, caseData.getStandardDirectionOrder());
 
         assertThat(validationErrors).isEmpty();
         verify(validator, never()).validate(any(), any());
@@ -56,7 +56,7 @@ public class OrderValidationServiceTest {
     void shouldSuccessfullyValidateCaseWithAllRequiredFieldsWhenSealingOrder() {
         CaseData caseData = buildCaseDataWithMandatoryFields(SEALED);
 
-        final List<String> validationErrors = validationService.validate(caseData);
+        final List<String> validationErrors = validationService.validate(caseData, caseData.getStandardDirectionOrder());
 
         assertThat(validationErrors).isEmpty();
     }
@@ -65,7 +65,7 @@ public class OrderValidationServiceTest {
     void shouldReturnValidationErrorsForACaseWithoutRequiredFieldsWhenSealingOrder() {
         CaseData caseData = buildCaseData(SEALED);
 
-        final List<String> validationErrors = validationService.validate(caseData);
+        final List<String> validationErrors = validationService.validate(caseData, caseData.getStandardDirectionOrder());
 
         assertThat(validationErrors).containsExactlyInAnyOrder(
             "You need to enter a hearing date.",

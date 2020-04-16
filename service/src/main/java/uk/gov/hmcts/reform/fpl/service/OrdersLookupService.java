@@ -6,4 +6,5 @@ import java.io.IOException;
 
 public interface OrdersLookupService {
     OrderDefinition getStandardDirectionOrder() throws IOException;
+    OrderDefinition getStandardDirectionOrderNoSingleList() throws IOException;
 }
