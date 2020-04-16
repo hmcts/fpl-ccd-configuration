@@ -91,11 +91,11 @@ const selectChildren = async (I, createOrderEventPage, order) => {
   }
 };
 
-const enterJudgeAndLegalAdvisor = async (I, createOrderEventPage, order, hasAllocatedJudge) => {
+const enterJudgeAndLegalAdvisor =  (I, createOrderEventPage, order, hasAllocatedJudge) => {
   if (hasAllocatedJudge) {
-    await createOrderEventPage.useAllocatedJudge(order.judgeAndLegalAdvisor.legalAdvisorName);
+    createOrderEventPage.useAllocatedJudge(order.judgeAndLegalAdvisor.legalAdvisorName);
   } else {
-    await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
+    createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
   }
 };
 
