@@ -1341,7 +1341,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "notifyGatekeeper",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
