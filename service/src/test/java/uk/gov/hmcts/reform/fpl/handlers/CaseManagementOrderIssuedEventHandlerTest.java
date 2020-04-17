@@ -90,7 +90,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             LOCAL_AUTHORITY_NAME))
             .willReturn(getCMOIssuedCaseLinkNotificationParameters());
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForCaseRoleUsers(
+        given(orderIssuedEmailContentProvider.buildParametersForCaseRoleUsers(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, CMO))
             .willReturn(getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
 
@@ -122,7 +122,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             LOCAL_AUTHORITY_NAME))
             .willReturn(getCMOIssuedCaseLinkNotificationParameters());
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForCaseRoleUsers(
+        given(orderIssuedEmailContentProvider.buildParametersForCaseRoleUsers(
             callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, CMO))
             .willReturn(getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
 

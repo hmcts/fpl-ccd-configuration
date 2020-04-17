@@ -29,6 +29,7 @@ public class OrderIssuedNotificationTestHelper {
     private static final String callout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().plusMonths(3)
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
+    //Returns expected notification parameters for admin, LA and digital representatives
     public static Map<String, Object> getExpectedParametersForCaseRoleUsers(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);

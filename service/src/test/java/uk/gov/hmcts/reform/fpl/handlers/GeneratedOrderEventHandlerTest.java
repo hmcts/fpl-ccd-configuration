@@ -91,11 +91,11 @@ class GeneratedOrderEventHandlerTest {
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForCaseRoleUsers(
+        given(orderIssuedEmailContentProvider.buildParametersForCaseRoleUsers(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedParametersForCaseRoleUsers(BLANK_ORDER.getLabel(), true));
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
+        given(orderIssuedEmailContentProvider.buildParametersForEmailServedRepresentatives(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
     }

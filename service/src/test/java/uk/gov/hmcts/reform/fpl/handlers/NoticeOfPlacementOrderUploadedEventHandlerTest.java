@@ -86,11 +86,11 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
             caseDetails)).willReturn(parameters);
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForCaseRoleUsers(
+        given(orderIssuedEmailContentProvider.buildParametersForCaseRoleUsers(
             caseDetails, LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
             .willReturn(getExpectedParametersForCaseRoleUsers(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
+        given(orderIssuedEmailContentProvider.buildParametersForEmailServedRepresentatives(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 

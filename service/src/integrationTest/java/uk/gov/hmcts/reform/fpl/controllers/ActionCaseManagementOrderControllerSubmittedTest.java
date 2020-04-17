@@ -189,7 +189,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     }
 
     @Test
-    void shouldNotifyCtscAdminWhenCtscIsEnabled() throws Exception {
+    void shouldNotifyCtscAdminWhenOrderIssuedAndCtscEnabled() throws Exception {
         CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(emptyList());
 
         caseDetails.setData(ImmutableMap.<String, Object>builder()

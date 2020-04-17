@@ -50,7 +50,7 @@ public class GeneratedOrderEventHandler {
     private void sendNotificationToEmailServedRepresentatives(final EventData eventData,
                                                               final byte[] documentContents) {
         final Map<String, Object> templateParameters =
-            orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
+            orderIssuedEmailContentProvider.buildParametersForEmailServedRepresentatives(
                 eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, GENERATED_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
@@ -62,7 +62,7 @@ public class GeneratedOrderEventHandler {
                                                                                final String localAuthorityCode,
                                                                                final CaseDetails caseDetails) {
         final Map<String, Object> templateParameters =
-            orderIssuedEmailContentProvider.buildNotificationParametersForCaseRoleUsers(
+            orderIssuedEmailContentProvider.buildParametersForCaseRoleUsers(
                 caseDetails, eventData.getLocalAuthorityCode(), documentContents, GENERATED_ORDER);
 
         sendToLocalAuthority(caseDetails, localAuthorityCode, templateParameters);

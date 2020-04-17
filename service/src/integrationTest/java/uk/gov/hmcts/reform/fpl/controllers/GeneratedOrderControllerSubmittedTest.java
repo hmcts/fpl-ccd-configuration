@@ -87,7 +87,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedShouldNotifyHmctsAdminAndLA() throws Exception {
+    void shouldNotifyHmctsAdminAndLAWhenOrderIssued() throws Exception {
         CaseDetails caseDetails = buildCaseDetails(getCommonCaseData().build());
         postSubmittedEvent(caseDetails);
 
@@ -112,7 +112,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedShouldNotifyCtscAdminWhenCtscIsEnabled() throws Exception {
+    void shouldNotifyCtscAdminWhenOrderIssuedAndCtscEnabled() throws Exception {
         Map<String, Object> caseData = getCommonCaseData().put("sendToCtsc", "Yes").build();
         CaseDetails caseDetails = buildCaseDetails(caseData);
 
@@ -136,7 +136,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedShouldNotifyRepresentativesServedByEmail() throws Exception {
+    void shouldNotifyRepresentativesServedByEmailWhenOrderIssued() throws Exception {
         Map<String, Object> caseData = getCommonCaseData()
             .put("representatives", buildRepresentativesServedByEmail())
             .build();
@@ -157,7 +157,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedShouldNotifyRepresentativesServedByDigitalService() throws Exception {
+    void shouldNotifyRepresentativesServedByDigitalServiceWhenOrderIssued() throws Exception {
         Map<String, Object> caseData = getCommonCaseData()
             .put("representatives", buildRepresentativesServedByDigitalService())
             .build();
