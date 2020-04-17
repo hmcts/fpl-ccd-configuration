@@ -47,11 +47,12 @@ public class LocalAuthorityUserService {
                                             String caseLocalAuthority) {
         List<String> userIds = findUserIds(caseLocalAuthority);
 
+        String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
         Stream.concat(userIds.stream(), Stream.of(requestData.userId()))
             .distinct()
+            .parallel()
             .forEach(id -> {
                 try {
-                    String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
                     caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, id,
                         new CaseUser(id, caseRoles));
 
