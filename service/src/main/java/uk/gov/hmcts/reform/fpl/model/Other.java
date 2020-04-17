@@ -95,11 +95,11 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @Override
     public Other addConfidentialDetails(Party party) {
-        Telephone telephoneNumber = ofNullable(party.telephoneNumber).orElse(Telephone.builder().build());
+        Telephone telephoneNumber = ofNullable(party.getTelephoneNumber()).orElse(Telephone.builder().build());
 
         return this.toBuilder()
-            .name(party.firstName)
-            .address(party.address)
+            .name(party.getFirstName())
+            .address(party.getAddress())
             .telephone(ofNullable(telephoneNumber.getTelephoneNumber()).orElse(""))
             .build();
     }

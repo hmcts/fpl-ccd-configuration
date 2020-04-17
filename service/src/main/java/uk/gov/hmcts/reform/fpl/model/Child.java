@@ -36,11 +36,11 @@ public class Child implements ConfidentialParty<Child> {
     public Child extractConfidentialDetails() {
         return this.toBuilder()
             .party(ChildParty.builder()
-                .firstName(this.party.firstName)
-                .lastName(this.party.lastName)
-                .address(this.party.address)
-                .telephoneNumber(this.party.telephoneNumber)
-                .email(this.party.email)
+                .firstName(this.party.getFirstName())
+                .lastName(this.party.getLastName())
+                .address(this.party.getAddress())
+                .telephoneNumber(this.party.getTelephoneNumber())
+                .email(this.party.getEmail())
                 .showAddressInConfidentialTab("Yes")
                 .build())
             .build();
@@ -50,11 +50,11 @@ public class Child implements ConfidentialParty<Child> {
     public Child addConfidentialDetails(Party party) {
         return this.toBuilder()
             .party(this.getParty().toBuilder()
-                .firstName(party.firstName)
-                .lastName(party.lastName)
-                .address(party.address)
-                .telephoneNumber(party.telephoneNumber)
-                .email(party.email)
+                .firstName(party.getFirstName())
+                .lastName(party.getLastName())
+                .address(party.getAddress())
+                .telephoneNumber(party.getTelephoneNumber())
+                .email(party.getEmail())
                 .build())
             .build();
     }

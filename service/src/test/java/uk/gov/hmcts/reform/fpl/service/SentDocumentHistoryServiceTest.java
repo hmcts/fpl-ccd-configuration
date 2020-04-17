@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
@@ -25,10 +25,10 @@ public class SentDocumentHistoryServiceTest {
         SentDocument documentSentToParty1 = sentDocument(PARTY_1);
         SentDocument documentSentToParty2 = sentDocument(PARTY_2);
 
-        List<Element<DocumentsSentToParty>> history = new ArrayList<>();
+        List<Element<SentDocuments>> history = new ArrayList<>();
         List<SentDocument> sentDocuments = List.of(documentSentToParty1, documentSentToParty2);
 
-        List<DocumentsSentToParty> updatedHistory = unwrapElements(sentDocumentHistoryService
+        List<SentDocuments> updatedHistory = unwrapElements(sentDocumentHistoryService
             .addToHistory(history, sentDocuments));
 
         assertThat(updatedHistory).hasSize(2);
@@ -47,10 +47,10 @@ public class SentDocumentHistoryServiceTest {
         SentDocument document1SentToParty = sentDocument(PARTY_1);
         SentDocument document2SentToParty = sentDocument(PARTY_1);
 
-        List<Element<DocumentsSentToParty>> history = new ArrayList<>();
+        List<Element<SentDocuments>> history = new ArrayList<>();
         List<SentDocument> sentDocuments = List.of(document1SentToParty, document2SentToParty);
 
-        List<DocumentsSentToParty> updatedHistory = unwrapElements(sentDocumentHistoryService
+        List<SentDocuments> updatedHistory = unwrapElements(sentDocumentHistoryService
             .addToHistory(history, sentDocuments));
 
         assertThat(updatedHistory).hasSize(1);
@@ -66,13 +66,13 @@ public class SentDocumentHistoryServiceTest {
         SentDocument document2SentToParty1 = sentDocument(PARTY_1);
         SentDocument document1SentToParty2 = sentDocument(PARTY_2);
 
-        DocumentsSentToParty documentsSentToParty1 = sentDocumentsHistory(PARTY_1, document1SentToParty1);
-        DocumentsSentToParty documentsSentToParty2 = sentDocumentsHistory(PARTY_2, document1SentToParty2);
+        SentDocuments documentsSentToParty1 = sentDocumentsHistory(PARTY_1, document1SentToParty1);
+        SentDocuments documentsSentToParty2 = sentDocumentsHistory(PARTY_2, document1SentToParty2);
 
-        List<Element<DocumentsSentToParty>> history = wrapElements(documentsSentToParty1, documentsSentToParty2);
+        List<Element<SentDocuments>> history = wrapElements(documentsSentToParty1, documentsSentToParty2);
         List<SentDocument> sentDocuments = List.of(document2SentToParty1);
 
-        List<DocumentsSentToParty> updatedHistory = unwrapElements(sentDocumentHistoryService
+        List<SentDocuments> updatedHistory = unwrapElements(sentDocumentHistoryService
             .addToHistory(history, sentDocuments));
 
         assertThat(updatedHistory).hasSize(2);
@@ -91,8 +91,8 @@ public class SentDocumentHistoryServiceTest {
             .build();
     }
 
-    private static DocumentsSentToParty sentDocumentsHistory(String partyName, SentDocument... sentDocuments) {
-        return DocumentsSentToParty.builder()
+    private static SentDocuments sentDocumentsHistory(String partyName, SentDocument... sentDocuments) {
+        return SentDocuments.builder()
             .partyName(partyName)
             .documentsSentToParty(wrapElements(sentDocuments))
             .build();

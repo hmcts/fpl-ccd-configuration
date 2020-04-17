@@ -56,7 +56,7 @@ class ApplicantServiceTest {
 
         assertThat(service.expandApplicantCollection(caseData, organisation)).hasSize(1);
         assertThat(unwrapElements(service.expandApplicantCollection(caseData, organisation))
-            .get(0).getParty().partyId).isEqualTo(uuid);
+            .get(0).getParty().getPartyId()).isEqualTo(uuid);
     }
 
     @Test
@@ -136,7 +136,7 @@ class ApplicantServiceTest {
 
         Applicant applicant = service.addHiddenValues(caseData).get(0).getValue();
 
-        assertThat(applicant.getParty().partyId).isEqualTo(uuid);
+        assertThat(applicant.getParty().getPartyId()).isEqualTo(uuid);
     }
 
     @Test
