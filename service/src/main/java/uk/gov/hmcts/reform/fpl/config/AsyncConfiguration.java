@@ -22,7 +22,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
 
         @Override
         public void handleUncaughtException(Throwable throwable, Method method, Object... obj) {
-            logger.error("Unexpected error occurred during async execution: " + throwable.getMessage(), throwable);
+            logger.error("Unexpected error occurred during async execution", throwable);
         }
     }
 
