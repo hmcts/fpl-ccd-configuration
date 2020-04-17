@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
-import uk.gov.hmcts.reform.fpl.model.docmosis.AbstractDocmosisData;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 
 import java.util.Map;
 
@@ -27,7 +27,7 @@ public class DocmosisDocumentGeneratorService {
     private final DocmosisConfiguration configuration;
     private final ObjectMapper mapper;
 
-    public DocmosisDocument generateDocmosisDocument(AbstractDocmosisData templateData, DocmosisTemplates template) {
+    public DocmosisDocument generateDocmosisDocument(DocmosisData templateData, DocmosisTemplates template) {
         return generateDocmosisDocument(templateData.toMap(mapper), template);
     }
 

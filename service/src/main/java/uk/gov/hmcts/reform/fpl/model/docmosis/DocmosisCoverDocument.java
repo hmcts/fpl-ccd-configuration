@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder(builderClassName = "Builder")
-public class DocmosisCoverDocument extends AbstractDocmosisData {
+public class DocmosisCoverDocument extends DocmosisData {
     private final String familyManCaseNumber;
     private final String ccdCaseNumber;
     private final String representativeName;

@@ -52,11 +52,11 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     public Respondent extractConfidentialDetails() {
         return Respondent.builder()
             .party(RespondentParty.builder()
-                .firstName(this.party.firstName)
-                .lastName(this.party.lastName)
-                .address(this.party.address)
-                .telephoneNumber(this.party.telephoneNumber)
-                .email(this.party.email)
+                .firstName(this.party.getFirstName())
+                .lastName(this.party.getLastName())
+                .address(this.party.getAddress())
+                .telephoneNumber(this.party.getTelephoneNumber())
+                .email(this.party.getEmail())
                 .build())
             .build();
     }
@@ -65,11 +65,11 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     public Respondent addConfidentialDetails(Party party) {
         return this.toBuilder()
             .party(this.getParty().toBuilder()
-                .firstName(party.firstName)
-                .lastName(party.lastName)
-                .address(party.address)
-                .telephoneNumber(party.telephoneNumber)
-                .email(party.email)
+                .firstName(party.getFirstName())
+                .lastName(party.getLastName())
+                .address(party.getAddress())
+                .telephoneNumber(party.getTelephoneNumber())
+                .email(party.getEmail())
                 .build())
             .build();
     }

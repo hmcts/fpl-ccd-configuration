@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 
-public class AbstractDocmosisData {
-
+public class DocmosisData {
     public Map<String, Object> toMap(ObjectMapper mapper) {
         return mapper.convertValue(this, new TypeReference<>() {});
     }

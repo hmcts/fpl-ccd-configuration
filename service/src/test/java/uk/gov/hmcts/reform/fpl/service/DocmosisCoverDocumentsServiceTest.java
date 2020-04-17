@@ -11,8 +11,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.docmosis.AbstractDocmosisData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDocument;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +38,7 @@ class DocmosisCoverDocumentsServiceTest {
 
     @BeforeEach
     void setup() {
-        given(documentGeneratorService.generateDocmosisDocument(any(AbstractDocmosisData.class), any()))
+        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(docmosisDocument);
     }
 

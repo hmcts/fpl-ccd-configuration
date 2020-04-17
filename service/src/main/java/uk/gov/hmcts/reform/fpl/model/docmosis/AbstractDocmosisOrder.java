@@ -12,7 +12,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Getter
 @AllArgsConstructor
-public class AbstractDocmosisOrder extends AbstractDocmosisData {
+public class AbstractDocmosisOrder extends DocmosisData {
     private final DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final String courtName;
     private final String familyManCaseNumber;

@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -69,6 +70,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CaseDataGeneratorHelper {
 
+    private static final String TELEPHONE = "02838882404";
+    
     private CaseDataGeneratorHelper() {
         // NO-OP
     }
@@ -100,7 +103,7 @@ public class CaseDataGeneratorHelper {
                             .email("BranStark@hMCTS.net")
                             .build())
                         .telephoneNumber(Telephone.builder()
-                            .telephoneNumber("02838882404")
+                            .telephoneNumber(TELEPHONE)
                             .contactDirection("Bran Stark")
                             .build())
                         .build())
@@ -118,7 +121,7 @@ public class CaseDataGeneratorHelper {
                             .email("Harrykane@hMCTS.net")
                             .build())
                         .telephoneNumber(Telephone.builder()
-                            .telephoneNumber("02838882404")
+                            .telephoneNumber(TELEPHONE)
                             .contactDirection("Sansa Stark")
                             .build())
                         .build())
@@ -218,7 +221,7 @@ public class CaseDataGeneratorHelper {
                 .DOB("02/02/05")
                 .gender("Male")
                 .name("Kyle Stafford")
-                .telephone("02838882404")
+                .telephone(TELEPHONE)
                 .address(address())
                 .build())
             .additionalOthers(ImmutableList.of(
@@ -228,7 +231,7 @@ public class CaseDataGeneratorHelper {
                         .DOB("02/02/05")
                         .gender("Female")
                         .name("Sarah Simpson")
-                        .telephone("02838882404")
+                        .telephone(TELEPHONE)
                         .address(address())
                         .build())
                     .build()
