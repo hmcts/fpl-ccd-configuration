@@ -69,7 +69,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
-    private final String gatekeeperEmail;
     private final String caseLocalAuthority;
     private final Risks risks;
     @NotNull(message = "You need to add details to orders and directions needed")

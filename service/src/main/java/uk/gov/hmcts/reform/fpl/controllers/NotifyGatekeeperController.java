@@ -21,9 +21,11 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
@@ -31,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequestMapping("/callback/notify-gatekeeper")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NotifyGatekeeperController {
+    private static final String GATEKEEPER_EMAIL_KEY = "gateKeeperEmails";
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -39,25 +42,28 @@ public class NotifyGatekeeperController {
     //TODO: can we validate a hearing has been added at this point? Saves some nasty exceptions in the case of
     // no hearing being present when populating standard directions FPLA-1516
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("gateKeeperEmails", resetGateKeeperEmailCollection());
+        List<String> errors = new ArrayList<>();
+        if (SUBMITTED.getValue().equals(caseDetails.getState())) {
+            errors = validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class);
+        }
+
+        caseDetails.getData().put(GATEKEEPER_EMAIL_KEY, resetGateKeeperEmailCollection());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class))
+            .errors(errors)
             .build();
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(
-        @RequestBody CallbackRequest callbackRequest) {
-
-        applicationEventPublisher.publishEvent(
-            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        if (SUBMITTED.getValue().equals(callbackRequest.getCaseDetails().getState())) {
+            applicationEventPublisher.publishEvent(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+        }
         applicationEventPublisher.publishEvent(new NotifyGatekeepersEvent(callbackRequest, requestData));
     }
 
