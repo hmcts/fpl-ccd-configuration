@@ -276,8 +276,6 @@ pitest {
   excludedClasses.set(['uk.gov.hmcts.reform.fpl.controllers.*', 'uk.gov.hmcts.reform.fpl.config.*'])
   threads.set(10)
   enableDefaultIncrementalAnalysis.set(true)
-  historyInputLocation = 'build/reports/pitest/history'
-  historyOutputLocation = 'build/reports/pitest/history'
   outputFormats.set(['XML', 'HTML'])
   timestampedReports.set(false)
   mutationThreshold.set(80)
