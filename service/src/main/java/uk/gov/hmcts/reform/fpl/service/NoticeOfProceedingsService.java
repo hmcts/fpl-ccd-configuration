@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisImages;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -70,6 +71,8 @@ public class NoticeOfProceedingsService {
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
                 caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
             .putAll(hearingBookingData)
+            .put("crest", DocmosisImages.CREST.getValue())
+            .put("courtseal", DocmosisImages.COURT_SEAL.getValue())
             .build();
     }
 

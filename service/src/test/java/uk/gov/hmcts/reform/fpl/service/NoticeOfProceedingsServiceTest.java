@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -215,6 +217,8 @@ class NoticeOfProceedingsServiceTest {
         assertThat(templateData.get("hearingTime")).isEqualTo("9:30am - 11:30am");
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Samuel Davidson");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("John Bishop");
+        assertThat(templateData.get("crest")).isEqualTo(CREST.getValue());
+        assertThat(templateData.get("courtseal")).isEqualTo(COURT_SEAL.getValue());
     }
 
     private JudgeAndLegalAdvisor createJudgeAndLegalAdvisor() {
