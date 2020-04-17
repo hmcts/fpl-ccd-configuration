@@ -60,49 +60,50 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RequestMapping("/callback/draft-standard-directions-no-collections")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftSDONoCollectionsController {
-    private final ObjectMapper mapper;
-    private final DocmosisDocumentGeneratorService docmosisService;
-    private final UploadDocumentService uploadDocumentService;
-    private final CaseDataExtractionService caseDataExtractionService;
-    private final CommonDirectionService commonDirectionService;
-    private final OrdersLookupService ordersLookupService;
-    private final CoreCaseDataService coreCaseDataService;
-    private final ApplicationEventPublisher applicationEventPublisher;
-    private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
-    private final OrderValidationService orderValidationService;
-    private final HearingBookingService hearingBookingService;
-    private final Time time;
-    private final RequestData requestData;
-
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
+
+    private final DocmosisDocumentGeneratorService docmosisService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final CommonDirectionService commonDirectionService;
+    private final Time time;
+    private final UploadDocumentService uploadDocumentService;
+    private final RequestData requestData;
+    private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
+    private final CoreCaseDataService coreCaseDataService;
+    private final CaseDataExtractionService caseDataExtractionService;
+    private final HearingBookingService hearingBookingService;
+    private final OrdersLookupService ordersLookupService;
+    private final ObjectMapper mapper;
+    private final OrderValidationService orderValidationService;
+
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseDetails caseDetailsss = callbackrequest.getCaseDetails();
+        CaseData caseDataaa = mapper.convertValue(caseDetailsss.getData(), CaseData.class);
 
-        String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
+        String hearingDate = getFirstHearingStartDate(caseDataaa.getHearingDetails());
 
-        caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
+        caseDetailsss.getData().put("dateOfIssue", time.now().toLocalDate());
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
-            caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
+            caseDetailsss.getData().put(assignee.toHearingDateField(), hearingDate));
 
-        if (!isNull(caseData.getStandardDirectionOrderNoCollections())) {
-            Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
+        if (!isNull(caseDataaa.getStandardDirectionOrderNoCollections())) {
+            Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseDataaa);
 
-            directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
+            directions.forEach((key, value) -> caseDetailsss.getData().put(key.getValue(), value));
 
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY,
-                caseData.getStandardDirectionOrderNoCollections().getJudgeAndLegalAdvisor());
+            caseDetailsss.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY,
+                caseDataaa.getStandardDirectionOrderNoCollections().getJudgeAndLegalAdvisor());
         }
 
-        if (isNotEmpty(caseData.getAllocatedJudge())) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, setAllocatedJudgeLabel(caseData));
+        if (isNotEmpty(caseDataaa.getAllocatedJudge())) {
+            caseDetailsss.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, setAllocatedJudgeLabel(caseDataaa));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(caseDetailsss.getData())
             .build();
     }
 
