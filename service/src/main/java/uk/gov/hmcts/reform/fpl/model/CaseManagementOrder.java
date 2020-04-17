@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -30,10 +31,12 @@ public class CaseManagementOrder {
     private final NextHearing nextHearing;
     private final String dateOfIssue;
 
+    @JsonIgnore
     public boolean isDraft() {
         return action == null || !SEND_TO_ALL_PARTIES.equals(action.getType());
     }
 
+    @JsonIgnore
     public boolean isInJudgeReview() {
         return status == SEND_TO_JUDGE;
     }
