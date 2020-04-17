@@ -4,7 +4,8 @@ buildscript {
   }
   configurations.maybeCreate('pitest')
   dependencies {
-    classpath group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.4.8'
+    // reverting from 1.4.8 -> 1.4.7 to get proper reports, fix appears to be in the works for 1.5.0
+    classpath group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.4.7'
   }
 }
 
