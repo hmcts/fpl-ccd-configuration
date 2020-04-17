@@ -48,16 +48,19 @@ public final class ChildParty extends Party {
     private final String litigationIssuesDetails;
     private final String showAddressInConfidentialTab;
 
+    @Override
     @NotBlank(message = "Tell us the names of all children in the case")
     public String getFirstName() {
         return super.getFirstName();
     }
 
+    @Override
     @NotBlank(message = "Tell us the names of all children in the case")
     public String getLastName() {
         return super.getLastName();
     }
 
+    @Override
     @NotNull(message = "Tell us the date of birth of all children in the case",
         groups = {Default.class, SealedSDOGroup.class})
     @PastOrPresent(message = "Date of birth is in the future. You cannot send this application until that date")
@@ -66,6 +69,7 @@ public final class ChildParty extends Party {
     }
 
     @Builder(toBuilder = true)
+    @SuppressWarnings("java:S107")
     public ChildParty(String partyId,
                       PartyType partyType,
                       String firstName,

@@ -46,6 +46,7 @@ public class CourtLevelAllocationService {
 
         if (caseData.getAllocationDecision().getProposal() == null) {
             decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
+            decisionBuilder.proposalReason(caseData.getAllocationProposal().getProposalReason());
             decisionBuilder.judgeLevelRadio(null);
         } else {
             // Setting radio here as to not display the question in tab

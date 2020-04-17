@@ -41,6 +41,13 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
   await I.navigateToCaseDetails(caseId);
 });
 
+Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async (I, caseViewPage, notifyGatekeeperEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.notifyGatekeeper);
+  notifyGatekeeperEventPage.enterEmail('gatekeeper@mailnesia.com');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.notifyGatekeeper);
+});
+
 Scenario('gatekeeper make allocation decision based on proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');

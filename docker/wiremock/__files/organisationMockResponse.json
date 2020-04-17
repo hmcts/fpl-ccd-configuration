@@ -8,7 +8,7 @@
     "lastName": "Powroznik",
     "email": "fpla.team3.aat@mailinator.com"
   },
-  "paymentAccount": [],
+  "paymentAccount": ["account1"],
   "contactInformation": [
     {
       "addressLine1": "Flat 12, Pinnacle Apartments",

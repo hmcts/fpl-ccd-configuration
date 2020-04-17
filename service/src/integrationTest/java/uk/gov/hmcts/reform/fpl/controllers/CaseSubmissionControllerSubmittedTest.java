@@ -200,7 +200,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
-        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService)
+        doThrow(new PaymentsApiException("", new Throwable())).when(paymentService)
             .makePaymentForCaseOrders(any(), any());
 
         postSubmittedEvent(caseDetails);
