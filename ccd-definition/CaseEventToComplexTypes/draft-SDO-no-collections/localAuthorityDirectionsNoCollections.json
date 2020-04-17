@@ -1,0 +1,42 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDONoCollections",
+    "CaseFieldID": "localAuthorityDirectionsNoCollections",
+    "ListElementCode": "laDirectionsList",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDONoCollections",
+    "CaseFieldID": "localAuthorityDirectionsNoCollections",
+    "ListElementCode": "sendDocumentsData.date",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDONoCollections",
+    "CaseFieldID": "localAuthorityDirectionsNoCollections",
+    "ListElementCode": "sendDocumentsData.description",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDONoCollections",
+    "CaseFieldID": "localAuthorityDirectionsNoCollections",
+    "ListElementCode": "sendAnnexDocsData.date",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  }
+]

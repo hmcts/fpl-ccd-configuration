@@ -1,0 +1,29 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirectionsNoCollections",
+    "ListElementCode": "laDirectionsList",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "LocalAuthorityDirectionsList",
+    "ElementLabel": "Select needed directions",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirectionsNoCollections",
+    "ListElementCode": "sendDocumentsData",
+    "FieldType": "DirectionData",
+    "ElementLabel": "Send documents to all parties",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "laDirectionsList CONTAINS \"sendDocs\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirectionsNoCollections",
+    "ListElementCode": "sendAnnexDocsData",
+    "FieldType": "DirectionData",
+    "ElementLabel": "Send missing annex documents to the court and all parties",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "laDirectionsList CONTAINS \"sendAnnexDocs\""
+  }
+]
