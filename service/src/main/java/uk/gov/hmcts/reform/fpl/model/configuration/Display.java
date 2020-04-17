@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -31,6 +33,11 @@ public class Display {
      * How many units due date is shifted by.
      */
     private String delta;
+
+    /**
+     * Time of the due date.
+     */
+    private LocalTime time;
 
     /**
      * I don't think this one makes sense - what would be point of shifting deadline post the hearing date?.
