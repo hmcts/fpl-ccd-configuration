@@ -66,6 +66,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderService {
+    private static final String ORDER_TITLE = "orderTitle";
+    private static final String CHILDREN_ACT = "childrenAct";
+    private static final String ORDER_DETAILS = "orderDetails";
+    private static final String CHILDREN = "children";
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final Time time;
@@ -156,38 +160,38 @@ public class GeneratedOrderService {
         switch (orderType) {
             case BLANK_ORDER:
                 orderTemplateBuilder
-                    .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
-                    .put("childrenAct", "Children Act 1989")
-                    .put("orderDetails", caseData.getOrder().getDetails());
+                    .put(ORDER_TITLE, defaultIfNull(caseData.getOrder().getTitle(), "Order"))
+                    .put(CHILDREN_ACT, "Children Act 1989")
+                    .put(ORDER_DETAILS, caseData.getOrder().getDetails());
                 break;
             case CARE_ORDER:
                 if (subtype == INTERIM) {
                     orderTemplateBuilder
-                        .put("orderTitle", orderTypeAndDocument.getFullType(INTERIM))
-                        .put("childrenAct", "Section 38 Children Act 1989");
+                        .put(ORDER_TITLE, orderTypeAndDocument.getFullType(INTERIM))
+                        .put(CHILDREN_ACT, "Section 38 Children Act 1989");
                 } else if (subtype == FINAL) {
                     orderTemplateBuilder
-                        .put("orderTitle", orderTypeAndDocument.getFullType())
-                        .put("childrenAct", "Section 31 Children Act 1989");
+                        .put(ORDER_TITLE, orderTypeAndDocument.getFullType())
+                        .put(CHILDREN_ACT, "Section 31 Children Act 1989");
                 }
                 orderTemplateBuilder
                     .put("localAuthorityName", getLocalAuthorityName(caseData.getCaseLocalAuthority()))
-                    .put("orderDetails", getFormattedCareOrderDetails(childrenCount,
+                    .put(ORDER_DETAILS, getFormattedCareOrderDetails(childrenCount,
                         caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
                 break;
             case SUPERVISION_ORDER:
                 if (subtype == INTERIM) {
                     orderTemplateBuilder
-                        .put("orderTitle", orderTypeAndDocument.getFullType(INTERIM))
-                        .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails",
+                        .put(ORDER_TITLE, orderTypeAndDocument.getFullType(INTERIM))
+                        .put(CHILDREN_ACT, "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                        .put(ORDER_DETAILS,
                             getFormattedInterimSupervisionOrderDetails(childrenCount,
                                 caseData.getCaseLocalAuthority(), interimEndDate));
                 } else {
                     orderTemplateBuilder
-                        .put("orderTitle", orderTypeAndDocument.getFullType())
-                        .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails",
+                        .put(ORDER_TITLE, orderTypeAndDocument.getFullType())
+                        .put(CHILDREN_ACT, "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                        .put(ORDER_DETAILS,
                             getFormattedFinalSupervisionOrderDetails(childrenCount,
                                 caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
                 }
@@ -214,7 +218,7 @@ public class GeneratedOrderService {
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 judgeAndLegalAdvisor))
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(judgeAndLegalAdvisor))
-            .put("children", childrenDetails)
+            .put(CHILDREN, childrenDetails)
             .put("childrenCount", childrenCount)
             .put("furtherDirections", caseData.getFurtherDirectionsText())
             .put("crest", CREST.getValue())
@@ -294,7 +298,7 @@ public class GeneratedOrderService {
                                                               InterimEndDate interimEndDate) {
         return String.format("It is ordered that %s supervises the %s until %s.",
             getLocalAuthorityName(caseLocalAuthority),
-            (numOfChildren == 1) ? "child" : "children",
+            (numOfChildren == 1) ? "child" : CHILDREN,
             getInterimEndDateString(interimEndDate));
     }
 
@@ -316,7 +320,7 @@ public class GeneratedOrderService {
         return String.format(
             "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
             getLocalAuthorityName(caseLocalAuthority),
-            (numOfChildren == 1) ? "child" : "children",
+            (numOfChildren == 1) ? "child" : CHILDREN,
             numOfMonths,
             formatLocalDateTimeBaseUsingFormat(orderExpiration,
                 String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)));
