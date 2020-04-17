@@ -90,10 +90,6 @@ public class CaseData {
     @NotNull(message = "You need to add details to respondents")
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
 
-    private Optional<Respondent> getFirstRespondent() {
-        return findRespondent(0);
-    }
-
     private final Proceeding proceeding;
 
     @NotNull(message = "You need to add details to solicitor")
@@ -234,14 +230,14 @@ public class CaseData {
     }
 
     @JsonSetter("caseManagementOrder")
-    private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
+    private void setCaseManagementOrderForLocalAuthority(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }
     }
 
     @JsonGetter("cmoToAction")
-    private CaseManagementOrder getCaseManagementOrder_Judiciary() {
+    private CaseManagementOrder getCaseManagementOrderForJudiciary() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
             return caseManagementOrder;
         }
@@ -249,7 +245,7 @@ public class CaseData {
     }
 
     @JsonSetter("cmoToAction")
-    private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
+    private void setCaseManagementOrderForJudiciary(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }

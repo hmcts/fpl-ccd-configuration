@@ -30,11 +30,13 @@ public final class RespondentParty extends Party {
     private final String litigationIssues;
     private final String litigationIssuesDetails;
 
+    @Override
     @NotBlank(message = "Enter the respondent's full name")
     public String getFirstName() {
         return super.getFirstName();
     }
 
+    @Override
     @NotBlank(message = "Enter the respondent's full name")
     public String getLastName() {
         return super.getLastName();
@@ -47,6 +49,7 @@ public final class RespondentParty extends Party {
     }
 
     @Builder(toBuilder = true, builderClassName = "RespondentPartyBuilder")
+    @SuppressWarnings("java:S107")
     public RespondentParty(String partyId,
                            PartyType partyType,
                            String firstName,
