@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
 
@@ -126,5 +128,25 @@ public class TestDataHelper {
             .type(type)
             .document(documentReference)
             .build();
+    }
+
+    public static Address testAddress() {
+        return Address.builder()
+            .addressLine1("Flat 1001")
+            .addressLine2("Pinnacle Apartments")
+            .addressLine3("Saffron Central Square")
+            .postcode("CRO 2GE")
+            .build();
+    }
+
+    public static Telephone testTelephone() {
+        return Telephone.builder()
+            .telephoneNumber("0795554444")
+            .contactDirection("Harry Kane")
+            .build();
+    }
+
+    public static EmailAddress testEmail() {
+        return EmailAddress.builder().email("test@test.com").build();
     }
 }

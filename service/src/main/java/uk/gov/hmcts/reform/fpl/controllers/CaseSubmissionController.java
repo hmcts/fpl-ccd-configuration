@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFil
 @RequestMapping("/callback/case-submission")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseSubmissionController {
+    private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
     private final UserDetailsService userDetailsService;
     private final DocumentGeneratorService documentGeneratorService;
@@ -76,7 +77,7 @@ public class CaseSubmissionController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.remove("displayAmountToPay");
+        data.remove(DISPLAY_AMOUNT_TO_PAY);
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
@@ -84,10 +85,10 @@ public class CaseSubmissionController {
                 if (featureToggleService.isFeesEnabled()) {
                     FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-                    data.put("displayAmountToPay", YES.getValue());
+                    data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
                 }
             } catch (FeeRegisterException ignore) {
-                data.put("displayAmountToPay", NO.getValue());
+                data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
             }
             String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName());
             data.put("submissionConsentLabel", label);
@@ -174,7 +175,7 @@ public class CaseSubmissionController {
                 }
             }
 
-            if (NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))) {
+            if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, requestData,
                     C110A_APPLICATION));
             }
@@ -189,6 +190,6 @@ public class CaseSubmissionController {
     }
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {
-        return YES.getValue().equals(caseDetails.getData().get("displayAmountToPay"));
+        return YES.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY));
     }
 }
