@@ -91,7 +91,6 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
             .applicantName(getApplicantName(caseData))
             .directions(getGroupedCMODirections(caseManagementOrder))
             .hearingBooking(getHearingBookingData(nextHearing))
-            .numberOfChildren(caseData.getAllChildren().size())
             .representatives(getRepresentatives(caseData))
             .recitals(buildRecitals(caseManagementOrder.getRecitals()))
             .recitalsProvided(isNotEmpty(buildRecitals(caseManagementOrder.getRecitals())))

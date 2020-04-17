@@ -9,16 +9,10 @@ import java.util.List;
 @Getter
 public class DocmosisCaseManagementOrder extends AbstractDocmosisOrder {
     private final List<DocmosisRepresentative> representatives;
-    private final Schedule schedule;
     private final boolean scheduleProvided;
-
+    private final Schedule schedule;
     private final List<DocmosisRecital> recitals;
-
-    //not needed can manage in doc
     private final boolean recitalsProvided;
-
-    //not needed can manage in doc
-    private final int numberOfChildren;
 
     @Builder
     public DocmosisCaseManagementOrder(DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor,
@@ -47,6 +41,5 @@ public class DocmosisCaseManagementOrder extends AbstractDocmosisOrder {
         this.scheduleProvided = scheduleProvided;
         this.recitals = recitals;
         this.recitalsProvided = recitalsProvided;
-        this.numberOfChildren = numberOfChildren;
     }
 }
