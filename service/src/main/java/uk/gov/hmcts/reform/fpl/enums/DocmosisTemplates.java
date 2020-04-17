@@ -8,7 +8,7 @@ public enum DocmosisTemplates {
     ORDER("FL-PLW-GOR-ENG-00218.doc", "order.pdf"),
     EPO("FL-PLW-GOR-ENG-00228.doc", "emergency_protection_order.pdf"),
     CMO("FL-PLW-GOR-ENG-00225.doc", "case_management_order.pdf"),
-    COVER_DOCS("FL-PLW-LET-ENG-00232.docx", "cover_documents.pdf");
+    COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "cover_documents.pdf");
 
     private final String template;
     private final String documentTitle;

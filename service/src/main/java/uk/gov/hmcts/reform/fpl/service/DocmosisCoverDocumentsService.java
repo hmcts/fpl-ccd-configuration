@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDocument;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.LOGO_LARGE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.LOGO_SMALL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.COVER_DOCS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 
@@ -33,6 +35,8 @@ public class DocmosisCoverDocumentsService {
                             .ccdCaseNumber(formatCCDCaseNumber(caseNumber))
                             .representativeName(representative.getFullName())
                             .representativeAddress(representative.getAddress().getAddressAsString("\n"))
+                            .logoLarge(LOGO_LARGE.getValue())
+                            .logoSmall(LOGO_SMALL.getValue())
                             .build();
     }
 }

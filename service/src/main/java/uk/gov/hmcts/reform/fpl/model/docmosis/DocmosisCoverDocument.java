@@ -12,4 +12,6 @@ public class DocmosisCoverDocument extends AbstractDocmosisData {
     private final String ccdCaseNumber;
     private final String representativeName;
     private final String representativeAddress;
+    private final String logoLarge;
+    private final String logoSmall;
 }

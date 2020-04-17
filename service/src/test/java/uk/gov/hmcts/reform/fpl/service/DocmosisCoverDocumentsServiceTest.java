@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisImages;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -16,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDocument;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.LOGO_LARGE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.LOGO_SMALL;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { JacksonAutoConfiguration.class, DocmosisCoverDocumentsService.class })
@@ -33,7 +36,6 @@ class DocmosisCoverDocumentsServiceTest {
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
-
 
     @BeforeEach
     void setup() {
@@ -57,6 +59,8 @@ class DocmosisCoverDocumentsServiceTest {
         assertThat(coverDocumentData.getCcdCaseNumber()).isEqualTo("1234-1234-1234-1234");
         assertThat(coverDocumentData.getRepresentativeName()).isEqualTo("Mark Jones");
         assertThat(coverDocumentData.getRepresentativeAddress()).isEqualTo("1 Petty France\nSt James's Park\nLondon");
+        assertThat(coverDocumentData.getLogoLarge()).isEqualTo(LOGO_LARGE.getValue());
+        assertThat(coverDocumentData.getLogoSmall()).isEqualTo(LOGO_SMALL.getValue());
     }
 
     @Test
