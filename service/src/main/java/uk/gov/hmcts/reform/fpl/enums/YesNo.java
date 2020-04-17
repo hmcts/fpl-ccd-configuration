@@ -13,7 +13,7 @@ public enum YesNo {
         this.value = value;
     }
 
-    public static YesNo from(Boolean val) {
+    public static YesNo from(boolean val) {
         return val ? YES : NO;
     }
 }

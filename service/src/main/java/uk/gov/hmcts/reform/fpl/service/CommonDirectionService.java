@@ -181,7 +181,7 @@ public class CommonDirectionService {
         AtomicInteger at = new AtomicInteger(2);
 
         return directions.stream()
-            //FIXME FPLA-1481 can deal with that but as this is only used by CMO the line below doesn't make sense
+            //TODO FPLA-1481 can deal with that but as this is only used by CMO the line below doesn't make sense
             .map(direction -> element(direction.getId(), direction.getValue().toBuilder()
                 .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
                 .build()))

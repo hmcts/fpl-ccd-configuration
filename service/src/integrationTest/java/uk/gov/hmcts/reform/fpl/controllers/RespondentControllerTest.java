@@ -100,18 +100,18 @@ class RespondentControllerTest extends AbstractControllerTest {
         assertThat(caseData.getConfidentialRespondents())
             .containsOnly(retainConfidentialDetails(initialData.getAllRespondents().get(0)));
 
-        assertThat(caseData.getRespondents1().get(0).getValue().getParty().address).isNull();
-        assertThat(caseData.getRespondents1().get(1).getValue().getParty().address).isNotNull();
+        assertThat(caseData.getRespondents1().get(0).getValue().getParty().getAddress()).isNull();
+        assertThat(caseData.getRespondents1().get(1).getValue().getParty().getAddress()).isNotNull();
     }
 
     private Element<Respondent> retainConfidentialDetails(Element<Respondent> respondent) {
         return element(respondent.getId(), Respondent.builder()
             .party(RespondentParty.builder()
-                .firstName(respondent.getValue().getParty().firstName)
-                .lastName(respondent.getValue().getParty().lastName)
-                .address(respondent.getValue().getParty().address)
-                .telephoneNumber(respondent.getValue().getParty().telephoneNumber)
-                .email(respondent.getValue().getParty().email)
+                .firstName(respondent.getValue().getParty().getFirstName())
+                .lastName(respondent.getValue().getParty().getLastName())
+                .address(respondent.getValue().getParty().getAddress())
+                .telephoneNumber(respondent.getValue().getParty().getTelephoneNumber())
+                .email(respondent.getValue().getParty().getEmail())
                 .build())
             .build());
     }

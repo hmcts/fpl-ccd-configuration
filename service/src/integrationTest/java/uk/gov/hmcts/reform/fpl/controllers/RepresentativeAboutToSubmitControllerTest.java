@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
-import uk.gov.hmcts.reform.rd.model.User;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.List;
 import java.util.Map;
@@ -81,7 +81,7 @@ class RepresentativeAboutToSubmitControllerTest extends AbstractControllerTest {
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
         given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representative.getEmail()))
-            .willReturn(new User(userId));
+            .willReturn(new OrganisationUser(userId));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
