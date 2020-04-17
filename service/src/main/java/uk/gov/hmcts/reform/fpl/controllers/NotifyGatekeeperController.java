@@ -12,12 +12,19 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
+import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
+
+import java.util.List;
+import java.util.UUID;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -37,6 +44,8 @@ public class NotifyGatekeeperController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+       caseDetails.getData().put("gateKeeperEmails", resetGateKeeperEmailCollection());
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class))
@@ -49,6 +58,12 @@ public class NotifyGatekeeperController {
 
         applicationEventPublisher.publishEvent(
             new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-        applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, requestData));
+        applicationEventPublisher.publishEvent(new NotifyGatekeepersEvent(callbackRequest, requestData));
+    }
+
+    private List<Element<EmailAddress>> resetGateKeeperEmailCollection() {
+        return List.of(
+            element(UUID.randomUUID(), EmailAddress.builder().email("").build())
+        );
     }
 }

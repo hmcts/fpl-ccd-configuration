@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,5 +73,30 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
 
         assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(emptyCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
+    }
+
+
+    @Test
+    void shouldFormatRecipientLabelCorrectlyWhenMultipleGatekeeperEmailsArePresent() {
+        List<String> gatekeeperEmails = ImmutableList.of(
+            "JohnSmith@gmail.com",
+            "SarahSimpson@gmail.com",
+            "JohnSamuels@gmail.com"
+        );
+
+        String formattedMessage = gatekeeperEmailContentProvider.buildRecipientsLabel(gatekeeperEmails,
+            "JohnSmith@gmail.com");
+
+        assertThat(formattedMessage).isEqualTo("SarahSimpson@gmail.com, JohnSamuels@gmail.com has also received" +
+            " this notification");
+    }
+
+    @Test
+    void shouldReturnEmptyStringIfOnlyOneRecipient() {
+        List<String> gatekeeperEmails = ImmutableList.of("JohnSmith@gmail.com");
+        String formattedMessage = gatekeeperEmailContentProvider.buildRecipientsLabel(gatekeeperEmails,
+            "JohnSmith@gmail.com");
+
+        assertThat(formattedMessage).isEqualTo("");
     }
 }

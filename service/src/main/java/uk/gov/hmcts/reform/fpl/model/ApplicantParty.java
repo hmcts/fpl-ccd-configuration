@@ -33,8 +33,6 @@ public class ApplicantParty extends Party implements TelephoneContacts {
     private final String pbaNumber;
     private final String clientCode;
     private final String customerReference;
-    @NotNull(message = "Enter a valid address for the contact")
-    @Valid
     private final Address address;
     @NotNull(message = "Enter an email address for the contact")
     @Valid

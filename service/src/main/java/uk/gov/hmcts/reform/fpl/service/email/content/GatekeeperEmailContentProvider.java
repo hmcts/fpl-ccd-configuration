@@ -9,7 +9,9 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.CasePersonalisedContentProvider;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class GatekeeperEmailContentProvider extends CasePersonalisedContentProvider {
@@ -29,5 +31,17 @@ public class GatekeeperEmailContentProvider extends CasePersonalisedContentProvi
         return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
             .put("localAuthority", config.getLocalAuthorityName(localAuthorityCode))
             .build();
+    }
+
+    public String buildRecipientsLabel(List<String> emailList, String recipientEmail) {
+        List<String> filteredEmailList = emailList.stream()
+            .filter(email -> !recipientEmail.equals(email))
+            .collect(Collectors.toList());
+
+        if (filteredEmailList.isEmpty()) {
+            return "";
+        }
+
+        return String.format("%s has also received this notification", String.join(", ", filteredEmailList));
     }
 }
