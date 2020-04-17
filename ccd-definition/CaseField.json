@@ -341,9 +341,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "gateKeeperLabel",
-    "Label": "Let the gatekeeper know there's a new case",
+    "Label": "### Let the gatekeeper know there's a new case",
     "FieldType": "Label",
-    "HintText": "You must add at least 1 gatekeeper",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gateKeeperHintLabel",
+    "Label": "You must add at least 1 gatekeeper",
+    "FieldType": "Label",
     "SecurityClassification": "Public"
   },
   {
@@ -362,8 +369,7 @@
     "Label": "Gatekeeper",
     "FieldType": "Collection",
     "FieldTypeParameter": "GateKeeperEmail",
-    "SecurityClassification": "Public",
-    "Max": 5
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",

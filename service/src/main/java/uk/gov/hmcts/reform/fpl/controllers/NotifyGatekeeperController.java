@@ -44,7 +44,7 @@ public class NotifyGatekeeperController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-       caseDetails.getData().put("gateKeeperEmails", resetGateKeeperEmailCollection());
+        caseDetails.getData().put("gateKeeperEmails", resetGateKeeperEmailCollection());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

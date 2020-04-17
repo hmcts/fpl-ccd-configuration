@@ -4,8 +4,8 @@ const { I } = inject();
 module.exports = {
   fields: function(index) {
     return {
-      email: `#gateKeeperEmails_${index}_email`
-    }
+      email: `#gateKeeperEmails_${index}_email`,
+    };
   },
 
   async enterEmail(email = 'familypubliclaw+gatekeeper@gmail.com') {

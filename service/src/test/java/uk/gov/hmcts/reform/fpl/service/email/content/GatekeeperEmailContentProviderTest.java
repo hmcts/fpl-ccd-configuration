@@ -87,8 +87,8 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         String formattedMessage = gatekeeperEmailContentProvider.buildRecipientsLabel(gatekeeperEmails,
             "JohnSmith@gmail.com");
 
-        assertThat(formattedMessage).isEqualTo("SarahSimpson@gmail.com, JohnSamuels@gmail.com has also received" +
-            " this notification");
+        assertThat(formattedMessage).isEqualTo("SarahSimpson@gmail.com, JohnSamuels@gmail.com has also received"
+            + " this notification");
     }
 
     @Test

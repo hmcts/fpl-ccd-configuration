@@ -269,7 +269,7 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   await sendCaseToGatekeeperEventPage.enterEmail();
   await I.addAnotherElementToCollection();
-  await sendCaseToGatekeeperEventPage.enterEmail("cafcass+gatekeeping@gmail.com");
+  await sendCaseToGatekeeperEventPage.enterEmail('cafcass+gatekeeping@gmail.com');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
