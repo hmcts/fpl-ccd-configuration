@@ -362,7 +362,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+        assertThat(updatedRepresentatives).isEqualTo(unwrapElements(expectedRepresentatives));
     }
 
     @Test
@@ -375,7 +375,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
 
-        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+        assertThat(updatedRepresentatives).isEqualTo(unwrapElements(expectedRepresentatives));
     }
 
     @Test
@@ -386,7 +386,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(updatedRepresentatives.isEmpty());
+        assertThat(updatedRepresentatives).isEmpty();
     }
 
     @Test
@@ -397,7 +397,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
 
-        assertThat(updatedRepresentatives.isEmpty());
+        assertThat(updatedRepresentatives).isEmpty();
     }
 
     @Test
@@ -408,7 +408,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
 
-        assertThat(updatedRepresentatives.isEmpty());
+        assertThat(updatedRepresentatives).isEmpty();
     }
 
     @Test
@@ -421,7 +421,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+        assertThat(updatedRepresentatives).isEqualTo(unwrapElements(expectedRepresentatives));
     }
 
     private CaseData buildCaseDataWithRepresentatives(RepresentativeServingPreferences preference) {

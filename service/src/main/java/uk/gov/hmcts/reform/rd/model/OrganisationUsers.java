@@ -11,6 +11,6 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Users {
-    private List<User> users;
+public class OrganisationUsers {
+    private List<OrganisationUser> users;
 }

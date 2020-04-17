@@ -75,6 +75,7 @@ public class PrepareDirectionsForUsersService {
                     caseDetails.getData().put(assignee.toCustomDirectionField(), cafcassDirections);
 
                     break;
+                default: break;
             }
         });
     }
