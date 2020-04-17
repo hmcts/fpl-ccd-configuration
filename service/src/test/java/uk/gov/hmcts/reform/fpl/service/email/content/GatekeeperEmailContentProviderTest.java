@@ -75,7 +75,6 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
     }
 
-
     @Test
     void shouldFormatRecipientLabelCorrectlyWhenMultipleGatekeeperEmailsArePresent() {
         List<String> gatekeeperEmails = ImmutableList.of(

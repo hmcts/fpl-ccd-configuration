@@ -76,7 +76,7 @@ class NotifyGatekeeperTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldBuildGatekeeperNotificationTemplateWithCompleteValues() throws Exception {
+    void shouldNotifyMultipleGatekeepersWithExpectedNotificationParameters() throws Exception {
         postSubmittedEvent(callbackRequest());
 
         verify(notificationClient, times(1)).sendEmail(
