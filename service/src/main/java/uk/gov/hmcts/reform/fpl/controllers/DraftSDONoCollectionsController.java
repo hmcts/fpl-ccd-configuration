@@ -149,11 +149,12 @@ public class DraftSDONoCollectionsController {
             .build();
 
         //TODO: needs to be updated to display hidden values on separate lists
-//        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
-//            getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrderNoSingleList().getDirections());
+        //      prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
+        //      getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrderNoSingleList().getDirections());
 
         Document document = getDocument(
-            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrderNoCollections()).toMap(mapper)
+            caseDataExtractionService.getStandardOrderDirectionData(updated,
+                updated.getStandardDirectionOrderNoCollections()).toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrderNoCollections().toBuilder()
@@ -177,7 +178,8 @@ public class DraftSDONoCollectionsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<String> validationErrors = orderValidationService.validate(caseData, caseData.getStandardDirectionOrderNoCollections());
+        List<String> validationErrors = orderValidationService.validate(caseData,
+            caseData.getStandardDirectionOrderNoCollections());
         if (!validationErrors.isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
@@ -198,11 +200,13 @@ public class DraftSDONoCollectionsController {
                 .build())
             .build();
 
-//        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
-//            getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrderNoCollections().getDirections());
+        //TODO: needs to be updated to display hidden values on separate lists
+        //    prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
+        //    getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrderNoCollections().getDirections());
 
         Document document = getDocument(
-            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrderNoCollections()).toMap(mapper)
+            caseDataExtractionService.getStandardOrderDirectionData(updated,
+                updated.getStandardDirectionOrderNoCollections()).toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrderNoCollections().toBuilder()

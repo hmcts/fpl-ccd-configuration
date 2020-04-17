@@ -64,7 +64,9 @@ public class CaseDataExtractionService {
     public static final String DEFAULT = "BLANK - please complete";
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
-    public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData, Order standardDirectionOrder) throws IOException {
+    public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData,
+                                                                        Order standardDirectionOrder)
+        throws IOException {
         DocmosisStandardDirectionOrder.Builder orderBuilder = DocmosisStandardDirectionOrder.builder();
 
         orderBuilder

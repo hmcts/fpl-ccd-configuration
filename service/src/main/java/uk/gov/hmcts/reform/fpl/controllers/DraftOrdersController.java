@@ -153,7 +153,8 @@ public class DraftOrdersController {
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
-            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrder()).toMap(mapper)
+            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrder())
+                .toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
@@ -205,7 +206,8 @@ public class DraftOrdersController {
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
-            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrder()).toMap(mapper)
+            caseDataExtractionService.getStandardOrderDirectionData(updated, updated.getStandardDirectionOrder())
+                .toMap(mapper)
         );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
