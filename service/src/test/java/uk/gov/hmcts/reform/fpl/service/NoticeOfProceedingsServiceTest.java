@@ -61,7 +61,8 @@ class NoticeOfProceedingsServiceTest {
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
 
-    private CommonCaseDataExtractionService commonCaseDataExtractionService = new CommonCaseDataExtractionService();
+    @Autowired
+    private CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     private NoticeOfProceedingsService noticeOfProceedingService;
 

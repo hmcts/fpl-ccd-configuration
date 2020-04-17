@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 
 import static java.lang.String.format;
 import static java.time.format.FormatStyle.LONG;
@@ -60,7 +61,6 @@ public class StandardDirectionOrderGenerationService extends
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService dataExtractionService;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
@@ -75,10 +75,10 @@ public class StandardDirectionOrderGenerationService extends
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(standardDirectionOrder.getDateOfIssue())
             .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), LONG))
-            .children(getChildrenDetails(caseData.getAllChildren()))
-            .respondents(getRespondentsNameAndRelationship(caseData.getAllRespondents()))
+            .children(dataExtractionService.getChildrenDetails(caseData.getAllChildren()))
+            .respondents(dataExtractionService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
-            .applicantName(getApplicantName(caseData.findApplicant(0).orElse(Applicant.builder().build())))
+            .applicantName(dataExtractionService.getApplicantName(caseData.getAllApplicants()))
             .directions(getGroupedDirections(standardDirectionOrder))
             .hearingBooking(getHearingBookingData(caseData.getHearingDetails()));
 
@@ -93,50 +93,7 @@ public class StandardDirectionOrderGenerationService extends
     }
 
     private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(Order standardDirectionOrder) {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = standardDirectionOrder.getJudgeAndLegalAdvisor();
-
-        return DocmosisJudgeAndLegalAdvisor.builder()
-            .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
-            .legalAdvisorName(getLegalAdvisorName(judgeAndLegalAdvisor))
-            .build();
-    }
-
-    public List<DocmosisChild> getChildrenDetails(List<Element<Child>> children) {
-        return children.stream()
-            .map(element -> element.getValue().getParty())
-            .map(this::buildChild)
-            .collect(toList());
-    }
-
-    // TODO: see FPLA-1087
-    private DocmosisChild buildChild(ChildParty child) {
-        return DocmosisChild.builder()
-            .name(child.getFullName())
-            .gender(defaultIfNull(child.getGender(), DEFAULT))
-            .dateOfBirth(getDateOfBirth(child))
-            .build();
-    }
-
-    // TODO: see FPLA-1087
-    private String getDateOfBirth(ChildParty child) {
-        return ofNullable(child.getDateOfBirth())
-            .map(dateOfBirth -> formatLocalDateToString(dateOfBirth, LONG))
-            .orElse(DEFAULT);
-    }
-
-    public List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
-        return respondents.stream()
-            .map(element -> element.getValue().getParty())
-            .map(this::buildRespondent)
-            .collect(toList());
-    }
-
-    // TODO: see FPLA-1087
-    private DocmosisRespondent buildRespondent(RespondentParty respondent) {
-        return DocmosisRespondent.builder()
-            .name(respondent.getFullName())
-            .relationshipToChild(defaultIfNull(respondent.getRelationshipToChild(), DEFAULT))
-            .build();
+        return dataExtractionService.getJudgeAndLegalAdvisor(standardDirectionOrder.getJudgeAndLegalAdvisor());
     }
 
     private List<DocmosisDirection> getGroupedDirections(Order order) throws IOException {
@@ -158,12 +115,6 @@ public class StandardDirectionOrderGenerationService extends
                 return formattedDirections.build();
             }
         ).orElse(ImmutableList.of());
-    }
-
-    public String getApplicantName(Applicant applicant) {
-        return ofNullable(applicant.getParty())
-            .map(ApplicantParty::getOrganisationName)
-            .orElse("");
     }
 
     private String formatTitle(int index, Direction direction, List<DirectionConfiguration> directionConfigurations) {
@@ -196,18 +147,8 @@ public class StandardDirectionOrderGenerationService extends
     }
 
     private DocmosisHearingBooking getHearingBookingData(List<Element<HearingBooking>> hearingDetails) {
-        return hearingBookingService.getFirstHearing(hearingDetails).map(hearing -> {
-                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
+        HearingBooking hearingBooking = hearingBookingService.getFirstHearing(hearingDetails).orElse(null);
 
-                return DocmosisHearingBooking.builder()
-                    .hearingDate(dataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
-                    .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
-                    .preHearingAttendance(dataExtractionService.extractPrehearingAttendance(hearing))
-                    .hearingTime(dataExtractionService.getHearingTime(hearing))
-                    .hearingJudgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
-                    .hearingLegalAdvisorName(getLegalAdvisorName(hearing.getJudgeAndLegalAdvisor()))
-                    .build();
-            }
-        ).orElse(DocmosisHearingBooking.builder().build());
+        return dataExtractionService.getHearingBookingData(hearingBooking, null);
     }
 }

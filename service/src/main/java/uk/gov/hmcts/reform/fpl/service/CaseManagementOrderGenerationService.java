@@ -61,8 +61,6 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
     private final DraftCMOService cmoService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
     private final Time time;
 
     public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) throws IOException {
@@ -80,17 +78,17 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
             caseData.getCmoHearingDateList());
 
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
-            .judgeAndLegalAdvisor(getJudgeAndLegalAdvisorData(hearingBooking.getJudgeAndLegalAdvisor()))
+            .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
-            .children(standardDirectionOrderGenerationService.getChildrenDetails(caseData.getAllChildren()))
-            .respondents(getRespondentsNameAndRelationship(caseData))
+            .children(dataExtractionService.getChildrenDetails(caseData.getAllChildren()))
+            .respondents(dataExtractionService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
-            .applicantName(getApplicantName(caseData))
+            .applicantName(dataExtractionService.getApplicantName(caseData.getApplicants()))
             .directions(getGroupedCMODirections(caseManagementOrder))
-            .hearingBooking(getHearingBookingData(nextHearing))
+            .hearingBooking(dataExtractionService.getHearingBookingData(nextHearing, HEARING_EMPTY_PLACEHOLDER))
             .representatives(getRepresentatives(caseData))
             .recitals(buildRecitals(caseManagementOrder.getRecitals()))
             .recitalsProvided(isNotEmpty(buildRecitals(caseManagementOrder.getRecitals())))
@@ -108,13 +106,8 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         return order.build();
     }
 
-    private String getApplicantName(CaseData caseData) {
-        return standardDirectionOrderGenerationService.getApplicantName(caseData.findApplicant(0)
-            .orElse(Applicant.builder().build()));
-    }
-
-    private List<DocmosisRespondent> getRespondentsNameAndRelationship(CaseData caseData) {
-        return standardDirectionOrderGenerationService.getRespondentsNameAndRelationship(caseData.getAllRespondents());
+    private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(HearingBooking hearingBooking) {
+        return dataExtractionService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor());
     }
 
     private boolean needsNextHearingDate(CaseManagementOrder caseManagementOrder) {
@@ -126,32 +119,6 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         return ofNullable(caseManagementOrder.getSchedule())
             .map(Schedule::getIncludeSchedule)
             .orElse("No");
-    }
-
-    private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisorData(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        return DocmosisJudgeAndLegalAdvisor.builder()
-            .judgeTitleAndName(defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor), DEFAULT))
-            .legalAdvisorName(getLegalAdvisorName(judgeAndLegalAdvisor))
-            .build();
-    }
-
-    private DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking) {
-        return ofNullable(hearingBooking).map(hearing -> {
-                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
-
-                return DocmosisHearingBooking.builder()
-                    .hearingDate(dataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
-                    .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
-                    .preHearingAttendance(dataExtractionService.extractPrehearingAttendance(hearing))
-                    .hearingTime(dataExtractionService.getHearingTime(hearing))
-                    .build();
-            }
-        ).orElse(DocmosisHearingBooking.builder()
-            .hearingDate(HEARING_EMPTY_PLACEHOLDER)
-            .hearingVenue(HEARING_EMPTY_PLACEHOLDER)
-            .preHearingAttendance(HEARING_EMPTY_PLACEHOLDER)
-            .hearingTime(HEARING_EMPTY_PLACEHOLDER)
-            .build());
     }
 
     private List<DocmosisRepresentative> getRepresentatives(CaseData caseData) {
