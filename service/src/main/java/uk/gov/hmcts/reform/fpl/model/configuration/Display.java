@@ -28,7 +28,7 @@ public class Display {
     private String delta;
 
     /**
-     * The time at which the direction deadline will occur
+     * The time at which the direction deadline will occur.
      */
     private String time;
 
