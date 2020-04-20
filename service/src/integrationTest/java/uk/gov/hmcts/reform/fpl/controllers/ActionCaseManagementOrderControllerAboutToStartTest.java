@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
@@ -36,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 @OverrideAutoConfiguration(enabled = true)
 public class ActionCaseManagementOrderControllerAboutToStartTest extends AbstractControllerTest {
 
-    private static final LocalDateTime NOW = LocalDateTime.now();
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
 
@@ -80,19 +78,19 @@ public class ActionCaseManagementOrderControllerAboutToStartTest extends Abstrac
         final CaseManagementOrder order = createCaseManagementOrder(SEND_TO_JUDGE);
 
         Map<String, Object> data = Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
-            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(LocalDateTime.now()));
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(time.now()));
 
         CaseDetails caseDetails = buildCaseDetails(data);
         List<String> expected = List.of(
-            NOW.plusDays(5).format(DATE_TIME_FORMATTER),
-            NOW.plusDays(2).format(DATE_TIME_FORMATTER));
+            time.now().plusDays(5).format(DATE_TIME_FORMATTER),
+            time.now().plusDays(2).format(DATE_TIME_FORMATTER));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(getHearingDates(response)).isEqualTo(expected);
-        assertThat(getHearingDates(response)).doesNotContain(NOW.format(DATE_TIME_FORMATTER));
+        assertThat(getHearingDates(response)).doesNotContain(time.now().format(DATE_TIME_FORMATTER));
         assertThat(caseData.getOrderAction()).isNull();
         assertThat(caseData.getSchedule()).isEqualTo(order.getSchedule());
         assertThat(caseData.getRecitals()).isEqualTo(order.getRecitals());
