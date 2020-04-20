@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
 
 @Configuration
+@SuppressWarnings("java:S1118")
 public class SecurityConfiguration {
+
     @Configuration
     @ConditionalOnProperty(value = "spring.security.enabled", havingValue = "true")
     static class SecurityConfigurationWithUserTokenValidator extends WebSecurityConfigurerAdapter {

@@ -68,7 +68,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
-    private final String gatekeeperEmail;
+    private final String gateKeeperEmail;
     private final String caseLocalAuthority;
     private final Risks risks;
     @NotNull(message = "You need to add details to orders and directions needed")
@@ -88,10 +88,6 @@ public class CaseData {
     @Valid
     @NotNull(message = "You need to add details to respondents")
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
-
-    private Optional<Respondent> getFirstRespondent() {
-        return findRespondent(0);
-    }
 
     private final Proceeding proceeding;
 
@@ -233,14 +229,14 @@ public class CaseData {
     }
 
     @JsonSetter("caseManagementOrder")
-    private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
+    private void setCaseManagementOrderForLocalAuthority(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }
     }
 
     @JsonGetter("cmoToAction")
-    private CaseManagementOrder getCaseManagementOrder_Judiciary() {
+    private CaseManagementOrder getCaseManagementOrderForJudiciary() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
             return caseManagementOrder;
         }
@@ -248,7 +244,7 @@ public class CaseData {
     }
 
     @JsonSetter("cmoToAction")
-    private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
+    private void setCaseManagementOrderForJudiciary(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }
