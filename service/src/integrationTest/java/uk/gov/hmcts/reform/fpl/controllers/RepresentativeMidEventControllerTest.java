@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
-import uk.gov.hmcts.reform.rd.model.User;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.Map;
 
@@ -87,7 +87,7 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
         given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail))
-            .willReturn(new User(RandomStringUtils.randomAlphanumeric(10)));
+            .willReturn(new OrganisationUser(RandomStringUtils.randomAlphanumeric(10)));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 

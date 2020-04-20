@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,8 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
-
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -44,9 +40,9 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.expectedRepresentatives;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getCMOIssuedCaseLinkNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForCaseRoleUsers;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
+import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
@@ -75,9 +71,6 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     @Autowired
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
 
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> dataCaptor;
-
     @Test
     void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() {
         CallbackRequest callbackRequest = callbackRequest();
@@ -90,9 +83,9 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             LOCAL_AUTHORITY_NAME))
             .willReturn(getCMOIssuedCaseLinkNotificationParameters());
 
-        given(orderIssuedEmailContentProvider.buildParametersForCaseRoleUsers(
+        given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, CMO))
-            .willReturn(getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
+            .willReturn(getExpectedCaseUrlParameters(CMO.getLabel(), true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
             new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
@@ -106,11 +99,8 @@ public class CaseManagementOrderIssuedEventHandlerTest {
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(COURT_EMAIL_ADDRESS),
-            dataCaptor.capture(),
+            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
             eq("12345"));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
-
     }
 
     @Test
@@ -122,9 +112,9 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             LOCAL_AUTHORITY_NAME))
             .willReturn(getCMOIssuedCaseLinkNotificationParameters());
 
-        given(orderIssuedEmailContentProvider.buildParametersForCaseRoleUsers(
+        given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
             callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, CMO))
-            .willReturn(getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
+            .willReturn(getExpectedCaseUrlParameters(CMO.getLabel(), true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
             new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
@@ -132,10 +122,8 @@ public class CaseManagementOrderIssuedEventHandlerTest {
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(CTSC_INBOX),
-            dataCaptor.capture(),
+            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
             eq("12345"));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
     }
 
     @Test

@@ -36,10 +36,11 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         this.config = config;
     }
 
-    public Map<String, Object> buildParametersForEmailServedRepresentatives(final CaseDetails caseDetails,
-                                                                            final String localAuthorityCode,
-                                                                            final byte[] documentContents,
-                                                                            final IssuedOrderType issuedOrderType) {
+    //For email served representatives (users without case access)
+    public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
+                                                             final String localAuthorityCode,
+                                                             final byte[] documentContents,
+                                                             final IssuedOrderType issuedOrderType) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
@@ -51,13 +52,13 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
-    //For admin, LA and digital served representatives
-    public Map<String, Object> buildParametersForCaseRoleUsers(final CaseDetails caseDetails,
-                                                               final String localAuthorityCode,
-                                                               final byte[] documentContents,
-                                                               final IssuedOrderType issuedOrderType) {
+    //For admin, LA and digital served representatives (users with case access)
+    public Map<String, Object> buildParametersWithCaseUrl(final CaseDetails caseDetails,
+                                                          final String localAuthorityCode,
+                                                          final byte[] documentContents,
+                                                          final IssuedOrderType issuedOrderType) {
         return ImmutableMap.<String, Object>builder()
-            .putAll(buildParametersForEmailServedRepresentatives(caseDetails, localAuthorityCode, documentContents,
+            .putAll(buildParametersWithoutCaseUrl(caseDetails, localAuthorityCode, documentContents,
                 issuedOrderType))
             .put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()))
             .build();

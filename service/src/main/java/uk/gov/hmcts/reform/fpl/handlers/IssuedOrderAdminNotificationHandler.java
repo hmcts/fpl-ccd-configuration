@@ -22,7 +22,7 @@ public class IssuedOrderAdminNotificationHandler {
     public void sendToAdmin(final EventData eventData,
                             final byte[] documentContents,
                             final IssuedOrderType issuedOrderType) {
-        Map<String, Object> parameters = orderIssuedEmailContentProvider.buildParametersForCaseRoleUsers(
+        Map<String, Object> parameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
             eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
 
         String email = adminNotificationHandler.getHmctsAdminEmail(eventData);

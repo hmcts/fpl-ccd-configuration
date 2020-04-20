@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -33,14 +32,13 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATI
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByDigitalService;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByEmail;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForCaseRoleUsers;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -69,9 +67,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> dataCaptor;
-
     GeneratedOrderControllerSubmittedTest() {
         super("create-order");
     }
@@ -87,25 +82,38 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotifyHmctsAdminAndLAWhenOrderIssued() throws Exception {
-        CaseDetails caseDetails = buildCaseDetails(getCommonCaseData().build());
+    void shouldNotifyRelevantPartiesWhenOrderIssued() throws Exception {
+        Map<String, Object> caseData = getCommonCaseData()
+            .put("representatives", buildRepresentatives())
+            .build();
+
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
         postSubmittedEvent(caseDetails);
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
+            eq("bill@example.com"),
+            eqJson(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true)),
+            eq(CASE_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
+            eq("paul@example.com"),
+            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
+            eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            dataCaptor.capture(),
+            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq(CASE_ID));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(BLANK_ORDER.getLabel(), true));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq("admin@family-court.com"),
-            dataCaptor.capture(),
+            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq(CASE_ID));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(BLANK_ORDER.getLabel(), true));
 
         verifyZeroInteractions(notificationClient);
         verifySendDocumentEventTriggered();
@@ -121,58 +129,14 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
-            dataCaptor.capture(),
+            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq(CASE_ID));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(BLANK_ORDER.getLabel(), true));
 
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq("admin@family-court.com"),
-            dataCaptor.capture(),
+            any(),
             eq(CASE_ID));
-
-        verifySendDocumentEventTriggered();
-    }
-
-    @Test
-    void shouldNotifyRepresentativesServedByEmailWhenOrderIssued() throws Exception {
-        Map<String, Object> caseData = getCommonCaseData()
-            .put("representatives", buildRepresentativesServedByEmail())
-            .build();
-
-        CaseDetails caseDetails = buildCaseDetails(caseData);
-
-        postSubmittedEvent(caseDetails);
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
-            eq("bill@example.com"),
-            dataCaptor.capture(),
-            eq(CASE_ID));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
-
-        verifySendDocumentEventTriggered();
-    }
-
-    @Test
-    void shouldNotifyRepresentativesServedByDigitalServiceWhenOrderIssued() throws Exception {
-        Map<String, Object> caseData = getCommonCaseData()
-            .put("representatives", buildRepresentativesServedByDigitalService())
-            .build();
-
-        CaseDetails caseDetails = buildCaseDetails(caseData);
-
-        postSubmittedEvent(caseDetails);
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
-            eq("paul@example.com"),
-            dataCaptor.capture(),
-            eq(CASE_ID));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(BLANK_ORDER.getLabel(), true));
 
         verifySendDocumentEventTriggered();
     }

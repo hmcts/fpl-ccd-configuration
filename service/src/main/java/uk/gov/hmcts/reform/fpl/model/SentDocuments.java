@@ -14,20 +14,20 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DocumentsSentToParty {
+public class SentDocuments {
     private final String partyName;
     private final List<Element<SentDocument>> documentsSentToParty;
 
-    public DocumentsSentToParty(String partyName, List<Element<SentDocument>> documentsSentToParty) {
+    public SentDocuments(String partyName, List<Element<SentDocument>> documentsSentToParty) {
         this.partyName = partyName;
         this.documentsSentToParty = defaultIfNull(documentsSentToParty, new ArrayList<>());
     }
 
-    public DocumentsSentToParty(String partyName) {
+    public SentDocuments(String partyName) {
         this(partyName, new ArrayList<>());
     }
 
-    public DocumentsSentToParty addDocument(SentDocument printedDocument) {
+    public SentDocuments addDocument(SentDocument printedDocument) {
         this.documentsSentToParty.add(ElementUtils.element(printedDocument));
         return this;
     }

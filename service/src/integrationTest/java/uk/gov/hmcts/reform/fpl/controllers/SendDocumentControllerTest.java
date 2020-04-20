@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -123,7 +123,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
         verify(uploadDocumentService).uploadPDF(COVERSHEET_BINARIES, "Coversheet.pdf");
         verify(docmosisCoverDocumentsService).createCoverDocuments(FAMILY_MAN_NO, caseDetails.getId(), representative1);
 
-        List<DocumentsSentToParty> documentsSentToParties = unwrapElements(mapper.convertValue(
+        List<SentDocuments> documentsSentToParties = unwrapElements(mapper.convertValue(
             callbackResponse.getData().get("documentsSentToParties"), new TypeReference<>() {
             }));
 

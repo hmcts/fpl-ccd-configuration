@@ -50,7 +50,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, parameters, eventData);
 
         Map<String, Object> representativesTemplateParameters =
-            orderIssuedEmailContentProvider.buildParametersForEmailServedRepresentatives(
+            orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
                 eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
                 noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
 

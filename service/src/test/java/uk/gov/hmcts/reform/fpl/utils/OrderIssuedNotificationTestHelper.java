@@ -30,7 +30,7 @@ public class OrderIssuedNotificationTestHelper {
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
     //Returns expected notification parameters for admin, LA and digital representatives
-    public static Map<String, Object> getExpectedParametersForCaseRoleUsers(String orderType, boolean withCallout) {
+    public static Map<String, Object> getExpectedCaseUrlParameters(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
@@ -54,30 +54,27 @@ public class OrderIssuedNotificationTestHelper {
             "documentLink", jsonFileObject);
     }
 
-    public static List<Element<Representative>> buildRepresentativesServedByDigitalService() {
+    public static List<Element<Representative>> buildRepresentatives() {
         return wrapElements(Representative.builder()
-            .email("paul@example.com")
-            .fullName("Paul Blart")
-            .address(Address.builder()
-                .addressLine1("Street")
-                .postTown("Town")
-                .postcode("Postcode")
-                .build())
-            .servingPreferences(DIGITAL_SERVICE)
-            .build());
-    }
-
-    public static List<Element<Representative>> buildRepresentativesServedByEmail() {
-        return wrapElements(Representative.builder()
-            .email("bill@example.com")
-            .fullName("Bill Bailey")
-            .address(Address.builder()
-                .addressLine1("Street")
-                .postTown("Town")
-                .postcode("Postcode")
-                .build())
-            .servingPreferences(EMAIL)
-            .build());
+                .email("paul@example.com")
+                .fullName("Paul Blart")
+                .address(Address.builder()
+                    .addressLine1("Street")
+                    .postTown("Town")
+                    .postcode("Postcode")
+                    .build())
+                .servingPreferences(DIGITAL_SERVICE)
+                .build(),
+            Representative.builder()
+                .email("bill@example.com")
+                .fullName("Bill Bailey")
+                .address(Address.builder()
+                    .addressLine1("Street")
+                    .postTown("Town")
+                    .postcode("Postcode")
+                    .build())
+                .servingPreferences(EMAIL)
+                .build());
     }
 }
 

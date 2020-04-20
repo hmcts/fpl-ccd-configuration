@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,10 +39,10 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedEmailRepresentativesForAddingPartiesToCase;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForCaseRoleUsers;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NoticeOfPlacementOrderUploadedEventHandler.class, InboxLookupService.class,
@@ -52,8 +50,6 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
     RepresentativeNotificationService.class, IssuedOrderAdminNotificationHandler.class,
     HmctsAdminNotificationHandler.class, HearingBookingService.class})
 public class NoticeOfPlacementOrderUploadedEventHandlerTest {
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     @MockBean
     private RequestData requestData;
@@ -86,11 +82,11 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
             caseDetails)).willReturn(parameters);
 
-        given(orderIssuedEmailContentProvider.buildParametersForCaseRoleUsers(
+        given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
             caseDetails, LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
-            .willReturn(getExpectedParametersForCaseRoleUsers(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
+            .willReturn(getExpectedCaseUrlParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
-        given(orderIssuedEmailContentProvider.buildParametersForEmailServedRepresentatives(
+        given(orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
@@ -109,19 +105,13 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(COURT_EMAIL_ADDRESS),
-            dataCaptor.capture(),
+            eqJson(getExpectedCaseUrlParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
             eq("12345"));
-
-        assertEquals(dataCaptor.getValue(),
-            getExpectedParametersForCaseRoleUsers(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
             eq("barney@rubble.com"),
-            dataCaptor.capture(),
+            eqJson(getExpectedParametersForRepresentatives(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
             eq("12345"));
-
-        assertEquals(dataCaptor.getValue(),
-            getExpectedParametersForRepresentatives(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
     }
 }

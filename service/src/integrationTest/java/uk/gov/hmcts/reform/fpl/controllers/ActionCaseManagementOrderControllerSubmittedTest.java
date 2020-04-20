@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -51,7 +49,6 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
@@ -60,7 +57,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedu
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForCaseRoleUsers;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
+import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -90,9 +88,6 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     @MockBean
     private NotificationClient notificationClient;
 
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> dataCaptor;
-
     ActionCaseManagementOrderControllerSubmittedTest() {
         super("action-cmo");
     }
@@ -117,17 +112,24 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verifySentDocumentEventTriggered();
 
         verify(notificationClient).sendEmail(
-            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, "abc@example.com",
-            getExpectedCMOIssuedCaseLinkNotificationParameters("Jon Snow"), CASE_ID);
+            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
+            "abc@example.com",
+            getExpectedCMOIssuedCaseLinkNotificationParameters("Jon Snow"),
+            CASE_ID);
 
         verify(notificationClient).sendEmail(
-            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, "xyz@example.com",
-            getExpectedCMOIssuedCaseLinkNotificationParameters("Hodo"), CASE_ID);
+            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
+            "xyz@example.com",
+            getExpectedCMOIssuedCaseLinkNotificationParameters("Hodo"),
+            CASE_ID);
 
         verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(), eq(CASE_ID));
+            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
+            eq(CAFCASS_EMAIL_ADDRESS),
+            anyMap(),
+            eq(CASE_ID));
 
+        verifyNotificationSentToCafcassWhenCMOIssued();
         verifyNotificationSentToAdminWhenCMOIssued();
 
         verifyZeroInteractions(notificationClient);
@@ -146,44 +148,25 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verifySentDocumentEventTriggered();
 
         verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(), eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq("jamie@example.com"),
-            anyMap(), eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq("ragnar@example.com"),
-            anyMap(), eq(CASE_ID));
-
-        verifyNotificationSentToAdminWhenCMOIssued();
-
-        verifyZeroInteractions(notificationClient);
-    }
-
-    @Test
-    void shouldNotifyHmctsAdminWhenOrderIssued() throws Exception {
-        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(emptyList());
-
-        postSubmittedEvent(caseDetails);
-
-        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
-        verifySentDocumentEventTriggered();
-
-        verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
             eq(CAFCASS_EMAIL_ADDRESS),
             anyMap(),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq(ADMIN_EMAIL_ADDRESS),
-            dataCaptor.capture(),
+            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
+            eq("jamie@example.com"),
+            anyMap(),
             eq(CASE_ID));
 
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
+        verify(notificationClient).sendEmail(
+            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
+            eq("ragnar@example.com"),
+            anyMap(),
+            eq(CASE_ID));
+
+        verifyNotificationSentToCafcassWhenCMOIssued();
+        verifyNotificationSentToAdminWhenCMOIssued();
 
         verifyZeroInteractions(notificationClient);
     }
@@ -202,16 +185,14 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
-            dataCaptor.capture(),
+            any(),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
-            dataCaptor.capture(),
+            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
             eq(CASE_ID));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
     }
 
     @Test
@@ -321,14 +302,20 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME), CASE_ID);
     }
 
+    private void verifyNotificationSentToCafcassWhenCMOIssued() throws NotificationClientException {
+        verify(notificationClient).sendEmail(
+            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
+            eq(CAFCASS_EMAIL_ADDRESS),
+            anyMap(),
+            eq(CASE_ID));
+    }
+
     private void verifyNotificationSentToAdminWhenCMOIssued() throws NotificationClientException {
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
-            dataCaptor.capture(),
+            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
             eq(CASE_ID));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForCaseRoleUsers(CMO.getLabel(), true));
     }
 
     private void verifySentDocumentEventTriggered() {
