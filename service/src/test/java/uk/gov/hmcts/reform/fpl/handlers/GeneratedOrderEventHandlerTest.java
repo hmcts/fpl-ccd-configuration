@@ -6,8 +6,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,10 +46,10 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedOrderNotificationParameters;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class, HmctsEmailContentProvider.class,
@@ -68,9 +66,6 @@ class GeneratedOrderEventHandlerTest {
         .put("reference", "12345")
         .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
         .build();
-
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     @MockBean
     private RequestData requestData;
@@ -143,28 +138,21 @@ class GeneratedOrderEventHandlerTest {
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
             eq("barney@rubble.com"),
-            dataCaptor.capture(),
+            eqJson(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true)),
             eq("12345"));
-
-        assertEquals(dataCaptor.getValue(), getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
 
         verify(notificationService).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            dataCaptor.capture(),
+            eqJson(getExpectedOrderNotificationParameters()),
             eq("12345"));
-
-        assertEquals(dataCaptor.getValue(), getExpectedOrderNotificationParameters());
 
         verify(notificationService).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq("fred@flinstone.com"),
-            dataCaptor.capture(),
+            eqJson(getExpectedOrderNotificationParameters()),
             eq("12345"));
-
-        assertEquals(dataCaptor.getValue(), getExpectedOrderNotificationParameters());
     }
-
 
     private List<Representative> getExpectedEmailRepresentativesForAddingPartiesToCase() {
         return ImmutableList.of(
