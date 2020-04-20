@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -63,11 +62,11 @@ public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerT
     void shouldNotifyMultipleGatekeepersWithExpectedNotificationParameters() throws Exception {
         postSubmittedEvent(callbackRequest());
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL,
             buildExpectedParameters(CAFCASS_EMAIL), "12345");
 
-        verify(notificationClient, times(1)).sendEmail(
+        verify(notificationClient).sendEmail(
             GATEKEEPER_SUBMISSION_TEMPLATE, CAFCASS_EMAIL,
             buildExpectedParameters(GATEKEEPER_EMAIL), "12345");
     }

@@ -348,7 +348,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "gateKeeperHintLabel",
+    "ID": "gatekeeperHintLabel",
     "Label": "You must add at least 1 gatekeeper",
     "FieldType": "Label",
     "SecurityClassification": "Public"
@@ -365,10 +365,10 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "gateKeeperEmails",
+    "ID": "gatekeeperEmails",
     "Label": "Gatekeeper",
     "FieldType": "Collection",
-    "FieldTypeParameter": "GateKeeperEmail",
+    "FieldTypeParameter": "GatekeeperEmail",
     "SecurityClassification": "Public"
   },
   {

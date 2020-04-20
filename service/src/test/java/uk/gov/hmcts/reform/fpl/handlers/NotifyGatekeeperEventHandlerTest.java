@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -70,11 +69,11 @@ public class NotifyGatekeeperEventHandlerTest {
         notifyGatekeeperEventHandler.sendEmailToGatekeeper(
             new NotifyGatekeepersEvent(callbackRequest(), requestData));
 
-        verify(notificationService, times(1)).sendEmail(
+        verify(notificationService).sendEmail(
             GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL_ADDRESS,
             expectedParameters, "12345");
 
-        verify(notificationService, times(1)).sendEmail(
+        verify(notificationService).sendEmail(
             GATEKEEPER_SUBMISSION_TEMPLATE, "Cafcass+gatekeeper@gmail.com",
             expectedParameters, "12345");
     }

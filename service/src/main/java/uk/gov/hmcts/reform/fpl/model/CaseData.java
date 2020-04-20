@@ -338,5 +338,5 @@ public class CaseData {
 
     private final String caseNote;
     private final List<Element<CaseNote>> caseNotes;
-    private final List<Element<EmailAddress>> gateKeeperEmails;
+    private final List<Element<EmailAddress>> gatekeeperEmails;
 }

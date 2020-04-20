@@ -36,7 +36,7 @@ public class NotifyGatekeeperEventHandler {
         Map<String, Object> commonParameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(
             eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
 
-        List<String> emailList = getDistinctGatekeeperEmails(caseData.getGateKeeperEmails());
+        List<String> emailList = getDistinctGatekeeperEmails(caseData.getGatekeeperEmails());
 
         emailList.forEach(recipientEmail -> {
             Map<String, Object> parameters = new HashMap<>(commonParameters);

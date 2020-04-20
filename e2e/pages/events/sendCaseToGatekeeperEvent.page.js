@@ -4,7 +4,7 @@ const { I } = inject();
 module.exports = {
   fields: function(index) {
     return {
-      email: `#gateKeeperEmails_${index}_email`,
+      email: `#gatekeeperEmails_${index}_email`,
     };
   },
 

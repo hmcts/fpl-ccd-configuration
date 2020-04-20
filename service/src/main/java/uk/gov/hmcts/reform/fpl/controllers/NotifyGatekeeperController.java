@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGrou
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -33,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequestMapping("/callback/notify-gatekeeper")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NotifyGatekeeperController {
-    private static final String GATEKEEPER_EMAIL_KEY = "gateKeeperEmails";
+    private static final String GATEKEEPER_EMAIL_KEY = "gatekeeperEmails";
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -69,7 +68,7 @@ public class NotifyGatekeeperController {
 
     private List<Element<EmailAddress>> resetGateKeeperEmailCollection() {
         return List.of(
-            element(UUID.randomUUID(), EmailAddress.builder().email("").build())
+            element(EmailAddress.builder().email("").build())
         );
     }
 }

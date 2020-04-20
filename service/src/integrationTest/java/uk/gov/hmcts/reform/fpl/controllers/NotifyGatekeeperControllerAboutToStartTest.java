@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,7 +59,7 @@ class NotifyGatekeeperControllerAboutToStartTest extends AbstractControllerTest 
             VALID_FAMILY_MAN_NUMBER, SUBMITTED));
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        List<Element<EmailAddress>> gateKeeperEmailAddresses = caseData.getGateKeeperEmails();
+        List<Element<EmailAddress>> gateKeeperEmailAddresses = caseData.getGatekeeperEmails();
 
         assertThat(gateKeeperEmailAddresses.size()).isEqualTo(1);
         assertThat(gateKeeperEmailAddresses.get(0).getValue().getEmail()).isEqualTo("");
@@ -71,9 +70,9 @@ class NotifyGatekeeperControllerAboutToStartTest extends AbstractControllerTest 
             .id(12345L)
             .data(Map.of(
                 "familyManCaseNumber", familyManNumber,
-                "gateKeeperEmails", wrapElements(
-                        element(UUID.randomUUID(), EmailAddress.builder().email("test1@gmail.com").build()),
-                        element(UUID.randomUUID(), EmailAddress.builder().email("test2@gmail.com").build()))
+                "gatekeeperEmails", wrapElements(
+                        element(EmailAddress.builder().email("test1@gmail.com").build()),
+                        element(EmailAddress.builder().email("test2@gmail.com").build()))
             ))
             .state(state)
             .build();
