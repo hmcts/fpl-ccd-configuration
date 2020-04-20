@@ -31,7 +31,6 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -70,12 +69,15 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
+    private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "abc@digitalrep.com";
+    private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "jamie@emailrep.com";
     private static final String CASE_ID = "12345";
     private static final String REPRESENTATIVES = "representatives";
     private static final String CAFCASS_EMAIL_ADDRESS = "cafcass@cafcass.com";
     private static final String CMO_EVENT_KEY = "internal-change:CMO_PROGRESSION";
     private static final String SEND_DOCUMENT_KEY = "internal-change:SEND_DOCUMENT";
     private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
+    private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
     private static final UUID ID = randomUUID();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final DocumentReference CMO_DOCUMENT = DocumentReference.buildFromDocument(document());
@@ -120,7 +122,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
         verify(notificationClient).sendEmail(
             CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
-            "abc@digitalrep.com",
+            DIGITAL_SERVED_REPRESENTATIVE_ADDRESS,
             getExpectedCMOIssuedCaseUrlParameters("Jon Snow"),
             CASE_ID);
 
@@ -132,7 +134,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
-            eq("jamie@emailrep.com"),
+            eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
             eqJson(getExpectedCMOIssuedDocumentLinkParameters("Jamie Lannister")),
             eq(CASE_ID));
 
@@ -159,12 +161,12 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
-            anyMap(),
-            eq(CASE_ID));
+            any(),
+            any());
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(CTSC_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
             eq(CASE_ID));
     }
@@ -271,12 +273,12 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
     private List<Element<Representative>> buildRepresentatives() {
         return wrapElements(Representative.builder()
-                .email("jamie@emailrep.com")
+                .email(EMAIL_SERVED_REPRESENTATIVE_ADDRESS)
                 .fullName("Jamie Lannister")
                 .servingPreferences(EMAIL)
                 .build(),
             Representative.builder()
-                .email("abc@digitalrep.com")
+                .email(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS)
                 .fullName("Jon Snow")
                 .servingPreferences(DIGITAL_SERVICE)
                 .build());

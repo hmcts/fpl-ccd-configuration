@@ -36,7 +36,6 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         this.config = config;
     }
 
-    //For email served representatives (users without case access)
     public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
                                                              final String localAuthorityCode,
                                                              final byte[] documentContents,
@@ -52,7 +51,6 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
-    //For admin, LA and digital served representatives (users with case access)
     public Map<String, Object> buildParametersWithCaseUrl(final CaseDetails caseDetails,
                                                           final String localAuthorityCode,
                                                           final byte[] documentContents,

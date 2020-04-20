@@ -46,6 +46,10 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
+    private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
+    private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
+    private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
+    private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String CASE_ID = "12345";
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
@@ -93,13 +97,13 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
-            eq("bill@example.com"),
+            eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
             eqJson(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true)),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
-            eq("paul@example.com"),
+            eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq(CASE_ID));
 
@@ -111,7 +115,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
+            eq(ADMIN_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq(CASE_ID));
 
@@ -128,15 +132,15 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            eq(CTSC_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq(CASE_ID));
 
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
+            eq(ADMIN_EMAIL_ADDRESS),
             any(),
-            eq(CASE_ID));
+            any());
 
         verifySendDocumentEventTriggered();
     }

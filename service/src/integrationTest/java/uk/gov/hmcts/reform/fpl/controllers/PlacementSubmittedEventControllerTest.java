@@ -205,6 +205,11 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
     class NoticeOfPlacementOrderNotification {
         private final Element<Child> childElement = testChild();
         private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocumentReference()));
+        private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
+        private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
+        private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
+        private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
+        private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
 
         @Test
         void shouldSendEmailNotificationsWhenNewNoticeOfPlacementOrder() throws NotificationClientException {
@@ -214,41 +219,40 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
             verify(notificationClient).sendEmail(
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-                "admin@family-court.com",
+                ADMIN_EMAIL_ADDRESS,
                 expectedParameters(),
                 CASE_ID);
 
             verify(notificationClient).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                "local-authority@local-authority.com",
+                LOCAL_AUTHORITY_EMAIL_ADDRESS,
                 expectedParameters(),
                 CASE_ID);
 
             verify(notificationClient).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                "representative@example.com",
+                DIGITAL_SERVED_REPRESENTATIVE_ADDRESS,
                 expectedParameters(),
                 CASE_ID);
+
+            verify(notificationClient).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
+                eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
+                eqJson(getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(),
+                    false)),
+                eq(CASE_ID));
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("admin@family-court.com"),
-                eqJson(
-                    getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
+                eq(ADMIN_EMAIL_ADDRESS),
+                eqJson(getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
                 eq(CASE_ID));
 
             verify(notificationClient, never()).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("FamilyPublicLaw+ctsc@gmail.com"),
+                eq(CTSC_EMAIL_ADDRESS),
                 any(),
-                eq(CASE_ID));
-
-            verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
-                eq("bill@example.com"),
-                eqJson(getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(),
-                    false)),
-                eq(CASE_ID));
+                any());
 
             verifyZeroInteractions(notificationClient);
         }
@@ -277,15 +281,14 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
             verify(notificationClient, never()).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("admin@family-court.com"),
+                eq(ADMIN_EMAIL_ADDRESS),
                 any(),
-                eq(CASE_ID));
+                any());
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                eq("FamilyPublicLaw+ctsc@gmail.com"),
-                eqJson(
-                    getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
+                eq(CTSC_EMAIL_ADDRESS),
+                eqJson(getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
                 eq(CASE_ID));
         }
 
@@ -294,16 +297,28 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequestWithMatchingCaseDetailsBefore());
 
             verify(notificationClient, never()).sendEmail(
-                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                "local-authority@local-authority.com",
-                expectedParameters(),
-                CASE_ID);
+                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                any(),
+                any());
 
             verify(notificationClient, never()).sendEmail(
-                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                "representative@example.com",
-                expectedParameters(),
-                CASE_ID);
+                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+                eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
+                any(),
+                any());
+
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(ADMIN_EMAIL_ADDRESS),
+                any(),
+                any());
+
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
+                eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
+                any(),
+                any());
         }
 
         private Map<String, Object> expectedParameters() {
@@ -360,11 +375,11 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                     "respondents1", wrapElements(respondent),
                     "representatives", List.of(element(representativeId, Representative.builder()
                             .servingPreferences(DIGITAL_SERVICE)
-                            .email("representative@example.com")
+                            .email(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS)
                             .build()),
                         element(randomUUID(), Representative.builder()
                             .servingPreferences(EMAIL)
-                            .email("bill@example.com")
+                            .email(EMAIL_SERVED_REPRESENTATIVE_ADDRESS)
                             .build())),
                     "children1", List.of(childElement),
                     "childrenList", childElement.getId()))
