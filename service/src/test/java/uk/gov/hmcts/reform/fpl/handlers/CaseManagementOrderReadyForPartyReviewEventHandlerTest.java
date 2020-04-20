@@ -6,6 +6,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,14 +38,16 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedDigitalRepresentativesForAddingPartiesToCase;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedEmailRepresentativesForAddingPartiesToCase;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
-import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderReadyForPartyReviewEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, RepresentativeNotificationService.class, HearingBookingService.class})
 public class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     @MockBean
     private RequestData requestData;
@@ -91,14 +95,18 @@ public class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
         verify(notificationService).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("fred@flinstone.com"),
-            eqJson(getCMOReadyforReviewByPartiesNotificationParameters(DIGITAL_SERVICE)),
+            dataCaptor.capture(),
             eq("12345"));
+
+        assertEquals(dataCaptor.getValue(), getCMOReadyforReviewByPartiesNotificationParameters(DIGITAL_SERVICE));
 
         verify(notificationService).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("barney@rubble.com"),
-            eqJson(getCMOReadyforReviewByPartiesNotificationParameters(EMAIL)),
+            dataCaptor.capture(),
             eq("12345"));
+
+        assertEquals(dataCaptor.getValue(), getCMOReadyforReviewByPartiesNotificationParameters(EMAIL));
     }
 
     private Map<String, Object> getCMOReadyforReviewByPartiesNotificationParameters(

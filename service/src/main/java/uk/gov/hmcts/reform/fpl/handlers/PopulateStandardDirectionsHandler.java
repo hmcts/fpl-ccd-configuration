@@ -23,13 +23,10 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
-import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +46,6 @@ public class PopulateStandardDirectionsHandler {
     private final SystemUpdateUserConfiguration userConfig;
     private final CommonDirectionService commonDirectionService;
     private final HearingBookingService hearingBookingService;
-    private final CalendarService calendarService;
 
     @Async
     @EventListener
@@ -123,20 +119,10 @@ public class PopulateStandardDirectionsHandler {
     private LocalDateTime getCompleteByDate(LocalDateTime startDate, DirectionConfiguration direction) {
         return ofNullable(direction.getDisplay().getDelta())
             .map(delta -> addDelta(startDate, parseInt(delta)))
-            .map(date -> getLocalDateTime(direction, date))
             .orElse(null);
     }
 
-    private LocalDateTime getLocalDateTime(DirectionConfiguration direction, LocalDate date) {
-        return ofNullable(direction.getDisplay().getTime())
-            .map(time -> LocalDateTime.of(date, LocalTime.parse(time)))
-            .orElse(date.atStartOfDay());
-    }
-
-    private LocalDate addDelta(LocalDateTime date, int delta) {
-        if (delta == 0) {
-            return date.toLocalDate();
-        }
-        return calendarService.getWorkingDayFrom(date.toLocalDate(), delta);
+    private LocalDateTime addDelta(LocalDateTime date, int delta) {
+        return date.plusDays(delta);
     }
 }

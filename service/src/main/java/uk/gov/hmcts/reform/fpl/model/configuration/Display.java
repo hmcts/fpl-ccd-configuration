@@ -21,6 +21,11 @@ public class Display {
     private Due due;
 
     private String templateDateFormat;
+    /**
+     * What fields should be used to prepopulate dueBy (optional sa it can be null so no prepopulation should happen.
+     * It looks like for now we will have only hearing.
+     */
+    private String relativeToDateType;
 
     /**
      * How many units due date is shifted by.
@@ -28,9 +33,9 @@ public class Display {
     private String delta;
 
     /**
-     * The time at which the direction deadline will occur.
+     * I don't think this one makes sense - what would be point of shifting deadline post the hearing date?.
      */
-    private String time;
+    private boolean isBefore;
 
     /**
      * If the direction can be removed (thus is optional) - should be rendered as yes / no question.

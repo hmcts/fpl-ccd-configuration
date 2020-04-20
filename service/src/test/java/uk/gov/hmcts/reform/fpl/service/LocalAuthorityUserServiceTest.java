@@ -26,7 +26,6 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
@@ -90,8 +89,6 @@ class LocalAuthorityUserServiceTest {
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1, USER_IDS);
-
-        verify(client, times(1)).authenticateUser(anyString(), anyString());
     }
 
     @Test

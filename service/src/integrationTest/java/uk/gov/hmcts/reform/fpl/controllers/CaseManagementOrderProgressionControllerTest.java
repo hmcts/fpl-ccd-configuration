@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -55,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -62,7 +65,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT_MONTH
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
-import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseManagementOrderProgressionController.class)
@@ -84,6 +86,9 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     CaseManagementOrderProgressionControllerTest() {
         super("cmo-progression");
@@ -173,14 +178,18 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         verify(notificationClient).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("robert@example.com"),
-            eqJson(expectedReviewByRepresentativesNotificationParameters(DIGITAL_SERVICE)),
+            dataCaptor.capture(),
             eq(CASE_ID.toString()));
+
+        assertEquals(dataCaptor.getValue(), expectedReviewByRepresentativesNotificationParameters(DIGITAL_SERVICE));
 
         verify(notificationClient).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("charlie@example.com"),
-            eqJson(expectedReviewByRepresentativesNotificationParameters(EMAIL)),
+            dataCaptor.capture(),
             eq(CASE_ID.toString()));
+
+        assertEquals(dataCaptor.getValue(), expectedReviewByRepresentativesNotificationParameters(EMAIL));
     }
 
     @Test
