@@ -191,7 +191,7 @@ public class CaseDataExtractionService {
         return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
             ofNullable(direction.getDateToBeCompletedBy())
                 .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
-                .orElse(""));
+                .orElse("unknown"));
     }
 
     private DocmosisHearingBooking getHearingBookingData(List<Element<HearingBooking>> hearingDetails) {
