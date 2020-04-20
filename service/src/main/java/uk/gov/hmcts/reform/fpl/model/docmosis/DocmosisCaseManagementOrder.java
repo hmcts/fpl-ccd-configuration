@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import java.util.List;
 
 @Getter
-public class DocmosisCaseManagementOrder extends AbstractDocmosisOrder {
+public class DocmosisCaseManagementOrder extends DocmosisOrder {
     private final List<DocmosisRepresentative> representatives;
     private final boolean scheduleProvided;
     private final Schedule schedule;
