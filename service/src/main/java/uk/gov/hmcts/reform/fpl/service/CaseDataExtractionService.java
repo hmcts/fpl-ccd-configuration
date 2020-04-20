@@ -61,7 +61,7 @@ public class CaseDataExtractionService {
     private final CommonCaseDataExtractionService dataExtractionService;
 
     //TODO: when should this be used? see FPLA-1087
-    public static final String DEFAULT = "BLANK - please complete";
+    public static final String DEFAULT = "";
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
     public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData) throws IOException {
