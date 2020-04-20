@@ -37,9 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.emptyList;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -108,8 +105,8 @@ class CaseDataExtractionServiceTest {
             .respondentsProvided(false)
             .directions(emptyList())
             .applicantName("")
-            .crest(CREST.getValue())
-            .draftbackground(DRAFT_WATERMARK.getValue())
+            .crest("[userImage:crest.png]")
+            .draftbackground("[userImage:draft-watermark.png]")
             .build());
     }
 
@@ -155,8 +152,8 @@ class CaseDataExtractionServiceTest {
             .respondentsProvided(false)
             .directions(getExpectedDirections())
             .applicantName("")
-            .crest(CREST.getValue())
-            .draftbackground(DRAFT_WATERMARK.getValue())
+            .crest("[userImage:crest.png]")
+            .draftbackground("[userImage:draft-watermark.png]")
             .build());
     }
 
@@ -198,8 +195,8 @@ class CaseDataExtractionServiceTest {
             .respondentsProvided(true)
             .directions(getExpectedDirections())
             .applicantName("Bran Stark")
-            .crest(CREST.getValue())
-            .courtseal(COURT_SEAL.getValue())
+            .crest("[userImage:crest.png]")
+            .courtseal("[userImage:family-court-seal.png]")
             .build());
     }
 

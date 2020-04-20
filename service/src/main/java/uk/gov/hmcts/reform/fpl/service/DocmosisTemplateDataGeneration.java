@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableMap;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisImages;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.io.IOException;
@@ -28,6 +29,14 @@ public abstract class DocmosisTemplateDataGeneration {
         return ImmutableMap.of(
             "crest", CREST.getValue()
         );
+    }
+
+    protected static String getHmctsLogoSmall() {
+        return DocmosisImages.HMCTS_LOGO_SMALL.getValue();
+    }
+
+    protected static String getHmctsLogoLarge() {
+        return DocmosisImages.HMCTS_LOGO_LARGE.getValue();
     }
 
     public abstract Map<String, Object> getTemplateData(CaseData caseData, boolean draft) throws IOException;

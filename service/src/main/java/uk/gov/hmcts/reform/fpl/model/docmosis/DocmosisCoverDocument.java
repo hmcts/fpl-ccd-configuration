@@ -12,6 +12,6 @@ public class DocmosisCoverDocument implements DocmosisData {
     private final String ccdCaseNumber;
     private final String representativeName;
     private final String representativeAddress;
-    private final String logoLarge;
-    private final String logoSmall;
+    private final String hmctsLogoLarge;
+    private final String hmctsLogoSmall;
 }

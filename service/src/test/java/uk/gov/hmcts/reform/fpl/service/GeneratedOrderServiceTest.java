@@ -45,9 +45,6 @@ import java.util.stream.Stream;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -288,7 +285,7 @@ class GeneratedOrderServiceTest {
             caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsEntry("courtseal", COURT_SEAL.getValue());
+        assertThat(templateData).containsEntry("courtseal", "[userImage:family-court-seal.png]");
     }
 
     @ParameterizedTest
@@ -303,7 +300,7 @@ class GeneratedOrderServiceTest {
             caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsEntry("draftbackground", DRAFT_WATERMARK.getValue());
+        assertThat(templateData).containsEntry("draftbackground", "[userImage:draft-watermark.png]");
     }
 
     @Test
@@ -461,7 +458,7 @@ class GeneratedOrderServiceTest {
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
             .put("children", children)
-            .put("crest", CREST.getValue());
+            .put("crest", "[userImage:crest.png]");
         return expectedMap.build();
     }
 
