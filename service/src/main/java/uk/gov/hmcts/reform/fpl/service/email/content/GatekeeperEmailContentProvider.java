@@ -34,14 +34,13 @@ public class GatekeeperEmailContentProvider extends CasePersonalisedContentProvi
     }
 
     public String buildRecipientsLabel(List<String> emailList, String recipientEmail) {
-        List<String> filteredEmailList = emailList.stream()
+        String formattedRecipients = emailList.stream()
             .filter(email -> !recipientEmail.equals(email))
-            .collect(Collectors.toList());
+            .collect(Collectors.joining(", "));
 
-        if (filteredEmailList.isEmpty()) {
-            return "";
+        if (!formattedRecipients.isEmpty()) {
+            return String.format("%s has also received this notification", formattedRecipients);
         }
-
-        return String.format("%s has also received this notification", String.join(", ", filteredEmailList));
+        return "";
     }
 }
