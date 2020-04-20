@@ -20,7 +20,7 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "needed1",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is this direction needed?",
+    "ElementLabel": "Request permission for expert evidence needed?",
     "SecurityClassification": "Public"
   },
   {
@@ -28,9 +28,10 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "date1",
     "FieldType": "DateTime",
-    "ElementLabel": "Due date and time",
+    "ElementLabel": "Request permission due date and time",
     "HintText": "For example, 31 3 2016 2 30 00",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needed1=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -45,7 +46,7 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "needed2",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is this direction needed?",
+    "ElementLabel": "Request help to take part in proceedings needed?",
     "SecurityClassification": "Public"
   },
   {
@@ -53,9 +54,10 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "date2",
     "FieldType": "DateTime",
-    "ElementLabel": "Due date and time",
+    "ElementLabel": "Request help to take part in proceedings due date and time",
     "HintText": "For example, 31 3 2016 2 30 00",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needed2=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -70,7 +72,7 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "needed3",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is this direction needed?",
+    "ElementLabel": "Ask for disclosure needed?",
     "SecurityClassification": "Public"
   },
   {
@@ -78,16 +80,17 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "date3",
     "FieldType": "DateTime",
-    "ElementLabel": "Due date and time",
+    "ElementLabel": "Ask for disclosure due date and time",
     "HintText": "For example, 31 3 2016 2 30 00",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needed3=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "title4",
     "FieldType": "Label",
-    "ElementLabel": "## Attend the pre-hearing and hearing",
+    "ElementLabel": " ",
     "SecurityClassification": "Public"
   },
   {
@@ -95,7 +98,7 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "needed4",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is this direction needed?",
+    "ElementLabel": "Attend the pre-hearing and hearing needed?",
     "SecurityClassification": "Public"
   },
   {
@@ -103,25 +106,27 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "description4",
     "FieldType": "TextArea",
-    "ElementLabel": "Description",
+    "ElementLabel": "Attend the pre-hearing description",
     "HintText": "Add more details",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needed4=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "date4",
     "FieldType": "DateTime",
-    "ElementLabel": "Due date and time",
+    "ElementLabel": "Attend the pre-hearing due date and time",
     "HintText": "For example, 31 3 2016 2 30 00",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needed4=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "title5",
     "FieldType": "Label",
-    "ElementLabel": "## Contact alternative carers",
+    "ElementLabel": " ",
     "SecurityClassification": "Public"
   },
   {
@@ -129,7 +134,7 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "needed5",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is this direction needed?",
+    "ElementLabel": "Contact alternative carers needed?",
     "SecurityClassification": "Public"
   },
   {
@@ -137,8 +142,9 @@
     "ID": "AllPartiesNoCollections",
     "ListElementCode": "date5",
     "FieldType": "DateTime",
-    "ElementLabel": "Due date and time",
+    "ElementLabel": "Contact alternative carers due date and time",
     "HintText": "For example, 31 3 2016 2 30 00",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "needed5=\"Yes\""
   }
 ]

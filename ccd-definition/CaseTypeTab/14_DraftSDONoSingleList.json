@@ -6,7 +6,7 @@
     "TabID": "DraftSDONoSingleListTab",
     "TabLabel": "Draft SDO No Single List",
     "TabDisplayOrder": 14,
-    "CaseFieldID": "allParties",
+    "CaseFieldID": "allPartiesNoSingleList",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "standardDirectionOrderNoSingleList.orderStatus!=\"SEALED\""
   },

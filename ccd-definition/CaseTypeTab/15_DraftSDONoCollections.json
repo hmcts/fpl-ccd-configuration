@@ -6,7 +6,7 @@
     "TabID": "DraftSDONoCollectionsTab",
     "TabLabel": "Draft SDO No Collections",
     "TabDisplayOrder": 14,
-    "CaseFieldID": "allParties",
+    "CaseFieldID": "allPartiesNoCollections",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "standardDirectionOrderNoCollections.orderStatus!=\"SEALED\""
   },
@@ -83,7 +83,7 @@
     "TabID": "DraftSDONoCollectionsTab",
     "TabLabel": "Draft SDO No Collections",
     "TabDisplayOrder": 14,
-    "CaseFieldID": "localAuthorityDirections",
+    "CaseFieldID": "localAuthorityDirectionsNoCollections",
     "TabFieldDisplayOrder": 8,
     "FieldShowCondition": "standardDirectionOrderNoCollections.orderStatus!=\"SEALED\""
   },
