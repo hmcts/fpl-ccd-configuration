@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -18,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
@@ -98,75 +100,47 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     }
 
     @Test
-    void shouldTriggerCMOProgressionEventAndSendCaseLinkNotificationsWhenIssuedOrderApproved()
+    void shouldTriggerCMOProgressionEventAndNotifyRelevantPartiesWhenCMOIssued()
         throws Exception {
-        List<Element<Representative>> representativesServedByDigitalService =
-            buildRepresentativesServedByDigitalService();
 
-        CaseDetails caseDetails =
-            populateRepresentativesByServedPreferenceData(representativesServedByDigitalService);
+        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(buildRepresentatives());
 
         postSubmittedEvent(caseDetails);
 
-        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
-        verifySentDocumentEventTriggered();
+        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, 12345L, CMO_EVENT_KEY);
+
+        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, 12345L, SEND_DOCUMENT_KEY,
+            Map.of("documentToBeSent", CMO_DOCUMENT));
 
         verify(notificationClient).sendEmail(
             CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
-            "abc@example.com",
-            getExpectedCMOIssuedCaseLinkNotificationParameters("Jon Snow"),
+            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            getExpectedCMOIssuedCaseUrlParameters(LOCAL_AUTHORITY_NAME),
             CASE_ID);
 
         verify(notificationClient).sendEmail(
             CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
-            "xyz@example.com",
-            getExpectedCMOIssuedCaseLinkNotificationParameters("Hodo"),
+            "abc@digitalrep.com",
+            getExpectedCMOIssuedCaseUrlParameters("Jon Snow"),
             CASE_ID);
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
             eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(),
-            eq(CASE_ID));
-
-        verifyNotificationSentToCafcassWhenCMOIssued();
-        verifyNotificationSentToAdminWhenCMOIssued();
-
-        verifyZeroInteractions(notificationClient);
-    }
-
-    @Test
-    void shouldTriggerCMOProgressionEventAndSendDocumentLinkNotificationsWhenIssuedOrderApproved()
-        throws Exception {
-        List<Element<Representative>> representativesServedByEmail = buildRepresentativesServedByEmail();
-
-        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativesServedByEmail);
-
-        postSubmittedEvent(caseDetails);
-
-        verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO();
-        verifySentDocumentEventTriggered();
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
-            eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(),
+            eqJson(getExpectedCMOIssuedDocumentLinkParameters("cafcass")),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
-            eq("jamie@example.com"),
-            anyMap(),
+            eq("jamie@emailrep.com"),
+            eqJson(getExpectedCMOIssuedDocumentLinkParameters("Jamie Lannister")),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
-            eq("ragnar@example.com"),
-            anyMap(),
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(ADMIN_EMAIL_ADDRESS),
+            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
             eq(CASE_ID));
-
-        verifyNotificationSentToCafcassWhenCMOIssued();
-        verifyNotificationSentToAdminWhenCMOIssued();
 
         verifyZeroInteractions(notificationClient);
     }
@@ -185,7 +159,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
-            any(),
+            anyMap(),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
@@ -243,7 +217,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             .build();
     }
 
-    private Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParameters(String recipientName) {
+    private Map<String, Object> getExpectedCMOIssuedCaseUrlParameters(String recipientName) {
         final String subjectLine = String.format("Jones, SACCCCCCCC5676576567, hearing %s",
             formatLocalDateToString(DATE_IN_3_MONTHS.toLocalDate(), FormatStyle.MEDIUM));
 
@@ -252,6 +226,22 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             .put("subjectLineWithHearingDate", subjectLine)
             .put("reference", CASE_ID)
             .put("caseUrl", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
+            .build();
+    }
+
+    private Map<String, Object> getExpectedCMOIssuedDocumentLinkParameters(String recipientName) {
+        final String subjectLine = String.format("Jones, SACCCCCCCC5676576567, hearing %s",
+            formatLocalDateToString(DATE_IN_3_MONTHS.toLocalDate(), FormatStyle.MEDIUM));
+
+        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+        return ImmutableMap.<String, Object>builder()
+            .put("cafcassOrRespondentName", recipientName)
+            .put("subjectLineWithHearingDate", subjectLine)
+            .put("reference", CASE_ID)
+            .put("caseUrl", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
+            .put("link_to_document", jsonFileObject)
             .build();
     }
 
@@ -272,19 +262,6 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
                 .build());
     }
 
-    private List<Element<Representative>> buildRepresentativesServedByDigitalService() {
-        return wrapElements(Representative.builder()
-            .email("abc@example.com")
-            .fullName("Jon Snow")
-            .servingPreferences(DIGITAL_SERVICE)
-            .build(), Representative.builder()
-            .build(), Representative.builder()
-            .email("xyz@example.com")
-            .fullName("Hodo")
-            .servingPreferences(DIGITAL_SERVICE)
-            .build());
-    }
-
     private CaseDetails populateRepresentativesByServedPreferenceData(
         List<Element<Representative>> representativesServedByPreference) {
         Map<String, Object> data = buildSubmittedRequestData(representativesServedByPreference);
@@ -292,49 +269,17 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         return buildCaseDetails(data);
     }
 
-    private void verifyCMOTriggerEventsAndNotificationSentToLocalAuthorityOnApprovedCMO()
-        throws NotificationClientException {
-        verify(coreCaseDataService)
-            .triggerEvent(JURISDICTION, CASE_TYPE, 12345L, CMO_EVENT_KEY);
-
-        verify(notificationClient).sendEmail(
-            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME), CASE_ID);
-    }
-
-    private void verifyNotificationSentToCafcassWhenCMOIssued() throws NotificationClientException {
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
-            eq(CAFCASS_EMAIL_ADDRESS),
-            anyMap(),
-            eq(CASE_ID));
-    }
-
-    private void verifyNotificationSentToAdminWhenCMOIssued() throws NotificationClientException {
-        verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq(ADMIN_EMAIL_ADDRESS),
-            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
-            eq(CASE_ID));
-    }
-
-    private void verifySentDocumentEventTriggered() {
-        verify(coreCaseDataService).triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            12345L,
-            SEND_DOCUMENT_KEY,
-            Map.of("documentToBeSent", CMO_DOCUMENT));
-    }
-
-    private List<Element<Representative>> buildRepresentativesServedByEmail() {
+    private List<Element<Representative>> buildRepresentatives() {
         return wrapElements(Representative.builder()
-            .email("jamie@example.com")
-            .fullName("Jamie Lannister")
-            .servingPreferences(EMAIL)
-            .build(), Representative.builder()
-            .email("ragnar@example.com")
-            .fullName("Ragnar")
-            .servingPreferences(EMAIL)
-            .build());
+                .email("jamie@emailrep.com")
+                .fullName("Jamie Lannister")
+                .servingPreferences(EMAIL)
+                .build(),
+            Representative.builder()
+                .email("abc@digitalrep.com")
+                .fullName("Jon Snow")
+                .servingPreferences(DIGITAL_SERVICE)
+                .build());
     }
 }
+
