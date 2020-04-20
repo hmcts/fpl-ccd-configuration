@@ -39,6 +39,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
@@ -150,7 +151,7 @@ public class CaseDataExtractionService {
                         formattedDirections.add(DocmosisDirection.builder()
                             .assignee(direction.getValue().getAssignee())
                             .title(formatTitle(directionNumber++, direction.getValue(), configOrder.getDirections()))
-                            .body(direction.getValue().getDirectionText())
+                            .body(trim(direction.getValue().getDirectionText()))
                             .build());
                     }
                 }
