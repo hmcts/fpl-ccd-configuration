@@ -99,8 +99,8 @@ class ChildControllerTest extends AbstractControllerTest {
         assertThat(caseData.getConfidentialChildren())
             .containsOnly(retainConfidentialDetails(initialData.getAllChildren().get(0)));
 
-        assertThat(caseData.getChildren1().get(0).getValue().getParty().address).isNull();
-        assertThat(caseData.getChildren1().get(1).getValue().getParty().address).isNotNull();
+        assertThat(caseData.getChildren1().get(0).getValue().getParty().getAddress()).isNull();
+        assertThat(caseData.getChildren1().get(1).getValue().getParty().getAddress()).isNotNull();
     }
 
     private Child createChildWithDateOfBirth(LocalDate date) {
@@ -112,11 +112,11 @@ class ChildControllerTest extends AbstractControllerTest {
     private Element<Child> retainConfidentialDetails(Element<Child> child) {
         return element(child.getId(), Child.builder()
             .party(ChildParty.builder()
-                .firstName(child.getValue().getParty().firstName)
-                .lastName(child.getValue().getParty().lastName)
-                .address(child.getValue().getParty().address)
-                .telephoneNumber(child.getValue().getParty().telephoneNumber)
-                .email(child.getValue().getParty().email)
+                .firstName(child.getValue().getParty().getFirstName())
+                .lastName(child.getValue().getParty().getLastName())
+                .address(child.getValue().getParty().getAddress())
+                .telephoneNumber(child.getValue().getParty().getTelephoneNumber())
+                .email(child.getValue().getParty().getEmail())
                 .showAddressInConfidentialTab("Yes")
                 .build())
             .build());
