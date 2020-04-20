@@ -7,17 +7,17 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.handlers.PopulateStandardDirectionsHandler;
 import uk.gov.service.notify.NotificationClient;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -27,8 +27,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @ActiveProfiles("integration-test")
 @WebMvcTest(NotifyGatekeeperController.class)
 @OverrideAutoConfiguration(enabled = true)
-class NotifyGatekeeperTest extends AbstractControllerTest {
+public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerTest {
     private static final String GATEKEEPER_EMAIL = "FamilyPublicLaw+gatekeeper@gmail.com";
+    private static final String SUBMITTED = "Submitted";
+    private static final String GATEKEEPING = "Gatekeeping";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -36,23 +38,23 @@ class NotifyGatekeeperTest extends AbstractControllerTest {
     @MockBean
     private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
 
-    NotifyGatekeeperTest() {
+    NotifyGatekeeperControllerSubmittedTest() {
         super("notify-gatekeeper");
     }
 
     @Test
-    void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails());
-
-        assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
-    }
-
-    @Test
     void shouldReturnPopulatedDirectionsByRoleInSubmittedCallback() throws Exception {
-        postSubmittedEvent(callbackRequest());
+        postSubmittedEvent(buildCallbackRequest(SUBMITTED));
 
         verify(populateStandardDirectionsHandler).populateStandardDirections(any(
             PopulateStandardDirectionsEvent.class));
+    }
+
+    @Test
+    void shouldNotPublishPopulateStandardDirectionsEventWhenEventIsNotInSubmittedState() throws IOException {
+        postSubmittedEvent(buildCallbackRequest(GATEKEEPING));
+
+        verify(populateStandardDirectionsHandler, never()).populateStandardDirections(any());
     }
 
     @Test
@@ -73,16 +75,15 @@ class NotifyGatekeeperTest extends AbstractControllerTest {
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
-        postSubmittedEvent(callbackRequest());
+        postSubmittedEvent(buildCallbackRequest(SUBMITTED));
 
         verify(notificationClient).sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL,
             expectedGatekeeperParameters, "12345");
     }
 
-    private CaseDetails caseDetails() {
-        return CaseDetails.builder()
-            .id(12345L)
-            .data(Map.of("data", "some data"))
-            .build();
+    private CallbackRequest buildCallbackRequest(String state) {
+        CallbackRequest callbackRequest = callbackRequest();
+        callbackRequest.getCaseDetails().setState(state);
+        return callbackRequest;
     }
 }

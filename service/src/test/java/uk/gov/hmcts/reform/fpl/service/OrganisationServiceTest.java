@@ -16,9 +16,9 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
+import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
 import uk.gov.hmcts.reform.rd.model.Status;
-import uk.gov.hmcts.reform.rd.model.User;
-import uk.gov.hmcts.reform.rd.model.Users;
 
 import java.util.List;
 import java.util.Map;
@@ -75,7 +75,7 @@ class OrganisationServiceTest {
 
     @Test
     void shouldReturnUsersFromOrganisationIfExistsInRefData() {
-        Users usersInAnOrganisation = prepareUsersForAnOrganisation();
+        OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE))
             .thenReturn(usersInAnOrganisation);
 
@@ -98,13 +98,13 @@ class OrganisationServiceTest {
             .hasMessage("Can't find users for AN local authority");
     }
 
-    private Users prepareUsersForAnOrganisation() {
-        return new Users(List.of(
-            User
+    private OrganisationUsers prepareUsersForAnOrganisation() {
+        return new OrganisationUsers(List.of(
+            OrganisationUser
                 .builder()
                 .userIdentifier("40")
                 .build(),
-            User
+            OrganisationUser
                 .builder()
                 .userIdentifier("41")
                 .build()
@@ -113,7 +113,7 @@ class OrganisationServiceTest {
 
     @Test
     void shouldFindUser() {
-        User user = new User(RandomStringUtils.randomAlphanumeric(10));
+        OrganisationUser user = new OrganisationUser(RandomStringUtils.randomAlphanumeric(10));
 
         when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenReturn(user);
 
