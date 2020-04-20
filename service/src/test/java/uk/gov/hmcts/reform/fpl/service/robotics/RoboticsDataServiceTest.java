@@ -58,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
     RoboticsDataValidatorService.class, ValidationAutoConfiguration.class})
-public class RoboticsDataServiceTest {
+class RoboticsDataServiceTest {
 
     private static LocalDate NOW = LocalDate.now();
 
@@ -405,14 +405,14 @@ public class RoboticsDataServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("inValidPhoneNumbers")
+    @MethodSource("invalidPhoneNumbers")
     void shouldThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsInValid(String phoneNumber) {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
         assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
     }
 
     @ParameterizedTest
-    @MethodSource("inValidInternationalPhoneNumbers")
+    @MethodSource("invalidInternationalPhoneNumbers")
     void shouldThrowRoboticsDataExceptionWhenApplicantInternationalPhoneNumberIsInValid(String phoneNumber) {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
         assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
@@ -441,42 +441,34 @@ public class RoboticsDataServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("inValidMobileNumbers")
+    @MethodSource("invalidPhoneNumbers")
     void shouldThrowRoboticsDataExceptionWhenApplicantMobileNumberIsInValid(String mobileNumber) {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(mobileNumber);
         assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
     }
 
     @ParameterizedTest
-    @MethodSource("inValidInternationalMobileNumbers")
+    @MethodSource("invalidInternationalPhoneNumbers")
     void shouldThrowRoboticsDataExceptionWhenApplicantInternationalMobileNumberIsInValid(String mobileNumber) {
         CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(mobileNumber);
         assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
     }
 
-    private static Stream<String> inValidPhoneNumbers() {
-        return Stream.of("01222233343444545556778889999887776655555544", "c/o", " ?.+ ");
+    private static Stream<String> invalidPhoneNumbers() {
+        return Stream.of("01222233343444545556778889999887776655555544");
     }
 
-    private static Stream<String> inValidInternationalPhoneNumbers() {
-        return Stream.of("+1800801920777777777888886565557778888", "c/o");
+    private static Stream<String> invalidInternationalPhoneNumbers() {
+        return Stream.of("+1800801920777777777888886565557778888");
     }
 
     private static Stream<String> validPhoneNumbers() {
         return Stream.of("(0)20-8579 7105", "0208 579 7105", "202 762 1401", "c/o02085797105",
-            "c/o 02085797105", "C/O02085797105");
+            "c/o 02085797105", "C/O02085797105", "N/A");
     }
 
     private static Stream<String> validInternationalPhoneNumbers() {
-        return Stream.of("c/o +44-(0)20-8579 7105", "+1 800 444 4444", "+1 914 232 9901", "C/O +1800 801 920");
-    }
-
-    private static Stream<String> inValidMobileNumbers() {
-        return Stream.of("c/o yo!", "078888888888888888888888656");
-    }
-
-    private static Stream<String> inValidInternationalMobileNumbers() {
-        return Stream.of("+1800801920777777777888886565557778888", "c/o");
+        return Stream.of("c/o +44-(0)20-8579 7105", "+1 800 444 4444", "+1 914 232 9901", "C/O +1800 801 920", "N/A");
     }
 
     private static Stream<String> validInternationalMobileNumbers() {
@@ -484,7 +476,8 @@ public class RoboticsDataServiceTest {
             "+234-804-677-9090",
             "+71 (908) (7888)",
             "+1.677.9898.888",
-            "C/+o 34 9090 7877");
+            "C/+o 34 9090 7877",
+            "N/A");
     }
 
     private CaseData prepareCaseData(LocalDate date) {
