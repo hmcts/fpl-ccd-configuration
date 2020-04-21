@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -36,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.StringUtils.left;
@@ -71,7 +72,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 public class CaseDataGeneratorHelper {
 
     private static final String TELEPHONE = "02838882404";
-    
+
     private CaseDataGeneratorHelper() {
         // NO-OP
     }
@@ -204,9 +205,9 @@ public class CaseDataGeneratorHelper {
         );
     }
 
-    public static Document createDocumentWithAttachedFile() {
+    public static Document createDocumentWithStatus(DocumentStatus status) {
         return Document.builder()
-            .documentStatus(ATTACHED.getLabel())
+            .documentStatus(ofNullable(status).map(DocumentStatus::getLabel).orElse(null))
             .typeOfDocument(DocumentReference.builder()
                 .filename("Mock file")
                 .build())
