@@ -310,8 +310,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "gateKeeperEmail",
+    "CaseFieldID": "gatekeeperHintLabel",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "gatekeeperEmails",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
   }
 ]
