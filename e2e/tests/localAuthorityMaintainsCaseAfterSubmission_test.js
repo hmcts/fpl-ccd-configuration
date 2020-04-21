@@ -32,6 +32,15 @@ Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocu
   uploadDocs.assertMandatoryDocuments();
 });
 
+Scenario('local authority uploads documents when SWET not required', async (I, caseViewPage, uploadDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  uploadDocs.uploadMandatoryDocuments(uploadDocumentsEventPage, false);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  uploadDocs.assertMandatoryDocuments(false);
+});
+
 Scenario('local authority uploads court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
