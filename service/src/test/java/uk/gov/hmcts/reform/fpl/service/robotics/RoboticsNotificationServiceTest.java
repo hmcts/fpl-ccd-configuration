@@ -29,10 +29,13 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
@@ -76,6 +79,32 @@ public class RoboticsNotificationServiceTest {
 
         roboticsNotificationService = new RoboticsNotificationService(emailService, roboticsDataService,
             roboticsEmailConfiguration, objectMapper);
+    }
+
+    @Test
+    void shouldSkipRobiticsNotificationWhenCaseDataNotPresent() {
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(null));
+        verify(emailService, never()).sendEmail(any(), any());
+    }
+
+    @Test
+    void shouldSkipRobiticsNotificationWhenNoCaseDataIsEmpty() {
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(CaseDetails.builder().build()));
+        verify(emailService, never()).sendEmail(any(), any());
+    }
+
+    @Test
+    void shouldRethrowException() {
+        Exception exception = new RuntimeException();
+        when(roboticsDataService.prepareRoboticsData(any(), any())).thenThrow(exception);
+
+        try {
+            roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseDetails()));
+            fail();
+        } catch (Exception e) {
+            assertThat(e).isEqualTo(exception);
+        }
+        verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
