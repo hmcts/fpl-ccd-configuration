@@ -6,7 +6,26 @@
     "case_type_id": "CARE_SUPERVISION_EPO",
     "security_classification": "PUBLIC",
     "case_data": {
-      "gateKeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
+      "gatekeeperEmails": [
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f541",
+          "value": {
+            "email": "FamilyPublicLaw+gatekeeper@gmail.com"
+          }
+        },
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f542",
+          "value": {
+            "email": "Cafcass+gatekeeper@gmail.com"
+          }
+        },
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f543",
+          "value": {
+            "email": "FamilyPublicLaw+gatekeeper@gmail.com"
+          }
+        }
+      ],
       "caseLocalAuthority": "example",
       "risks": {
         "neglect": "Yes",
