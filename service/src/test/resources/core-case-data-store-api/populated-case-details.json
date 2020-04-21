@@ -8,6 +8,7 @@
     "dateSubmitted": "2020-03-20",
     "gatekeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
     "caseLocalAuthority": "example",
+    "dateSubmitted":  "2020-01-01",
     "risks": {
       "neglect": "Yes",
       "sexualAbuse": "Yes",
