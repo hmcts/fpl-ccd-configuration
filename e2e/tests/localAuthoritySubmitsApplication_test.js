@@ -433,7 +433,14 @@ Scenario('local authority enters attending hearing', async (I, caseViewPage, ent
   I.seeInTab(['Attending the hearing', 'Give details'], 'I need this for this person');
 });
 
-Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', uploadDocs.assertMandatoryDocuments(), uploadDocs.uploadMandatoryDocuments());
+Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', async (I, caseViewPage, uploadDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  uploadDocs.uploadMandatoryDocuments(uploadDocumentsEventPage);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  uploadDocs.assertMandatoryDocuments();
+});
 
 Scenario('local authority cannot upload court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
