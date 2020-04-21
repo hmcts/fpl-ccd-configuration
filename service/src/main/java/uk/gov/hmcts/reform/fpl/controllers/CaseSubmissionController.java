@@ -26,15 +26,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
-import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
+import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -57,8 +57,7 @@ public class CaseSubmissionController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
     private final UserDetailsService userDetailsService;
-    private final DocumentGeneratorService documentGeneratorService;
-    private final UploadDocumentService uploadDocumentService;
+    private final CaseSubmissionService caseSubmissionService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CaseValidatorService caseValidatorService;
     private final ObjectMapper mapper;
@@ -131,15 +130,13 @@ public class CaseSubmissionController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest)
+            throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
-            Pair.of("userFullName", userDetailsService.getUserName())
-        );
-
-        Document document = uploadDocumentService.uploadPDF(pdf, buildFileName(caseDetails));
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData,
+                    userDetailsService.getUserName(), buildFileName(caseDetails));
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 

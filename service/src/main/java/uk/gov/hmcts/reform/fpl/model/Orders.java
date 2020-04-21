@@ -21,4 +21,8 @@ public class Orders {
     private final List<EmergencyProtectionOrdersType> emergencyProtectionOrders;
     private final String directions;
     private final List<EmergencyProtectionOrderDirectionsType> emergencyProtectionOrderDirections;
+    private final String otherOrder;
+    private final String emergencyProtectionOrderDetails;
+    private final String emergencyProtectionOrderDirectionDetails;
+    private final String directionDetails;
 }
