@@ -42,7 +42,6 @@ public class CaseDataExtractionService {
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService dataExtractionService;
 
-    //TODO: when should this be used? see FPLA-1087
     public static final String DEFAULT = "";
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
