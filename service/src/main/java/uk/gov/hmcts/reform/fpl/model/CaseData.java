@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -68,7 +69,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
-    private final String gateKeeperEmail;
     private final String caseLocalAuthority;
     private final Risks risks;
     @NotNull(message = "You need to add details to orders and directions needed")
@@ -338,4 +338,5 @@ public class CaseData {
 
     private final String caseNote;
     private final List<Element<CaseNote>> caseNotes;
+    private final List<Element<EmailAddress>> gatekeeperEmails;
 }
