@@ -1,43 +1,36 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableMap;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisImages;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HMCTS_LOGO_LARGE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HMCTS_LOGO_SMALL;
 
-public abstract class DocmosisTemplateDataGeneration {
+public abstract class DocmosisTemplateDataGeneration<T> {
 
-    protected static Map<String, Object> getDraftWaterMarkData() {
-        return ImmutableMap.of(
-            "draftbackground", DRAFT_WATERMARK.getValue()
-        );
+    protected String getDraftWaterMarkData() {
+        return DRAFT_WATERMARK.getValue();
     }
 
-    protected Map<String, Object> getCourtSealData() {
-        return ImmutableMap.of(
-            "courtseal", COURT_SEAL.getValue()
-        );
+    protected String getCourtSealData() {
+        return COURT_SEAL.getValue();
     }
 
-    protected Map<String, Object> getCrestData() {
-        return ImmutableMap.of(
-            "crest", CREST.getValue()
-        );
+    protected String getCrestData() {
+        return CREST.getValue();
     }
 
     protected static String getHmctsLogoSmall() {
-        return DocmosisImages.HMCTS_LOGO_SMALL.getValue();
+        return HMCTS_LOGO_SMALL.getValue();
     }
 
     protected static String getHmctsLogoLarge() {
-        return DocmosisImages.HMCTS_LOGO_LARGE.getValue();
+        return HMCTS_LOGO_LARGE.getValue();
     }
 
-    public abstract Map<String, Object> getTemplateData(CaseData caseData, boolean draft) throws IOException;
+    public abstract T getTemplateData(CaseData caseData) throws IOException;
 }

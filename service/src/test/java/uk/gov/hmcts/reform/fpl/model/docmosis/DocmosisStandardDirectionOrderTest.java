@@ -126,7 +126,7 @@ class DocmosisStandardDirectionOrderTest {
                 .name("Respondent")
                 .relationshipToChild("Father")
                 .build()))
-            .children(List.of(DocmosisChildren.builder()
+            .children(List.of(DocmosisChild.builder()
                 .name("child name")
                 .dateOfBirth("date of birth")
                 .build()))

@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
@@ -40,9 +40,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.trim;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -54,19 +51,23 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 //TODO: ensure everything is still working as expected - I don't think BLANK appears everywhere it used to. FPLA-1477
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseDataExtractionService {
+public class StandardDirectionOrderGenerationService extends
+    DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
+
+    //TODO: when should this be used? see FPLA-1087
+    public static final String DEFAULT = "BLANK - please complete";
+    private static final int SDO_DIRECTION_INDEX_START = 2;
+
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService dataExtractionService;
 
-    //TODO: when should this be used? see FPLA-1087
-    public static final String DEFAULT = "BLANK - please complete";
-    private static final int SDO_DIRECTION_INDEX_START = 2;
+    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
+        DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder orderBuilder =
+            DocmosisStandardDirectionOrder.builder();
 
-    public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData) throws IOException {
-        DocmosisStandardDirectionOrder.Builder orderBuilder = DocmosisStandardDirectionOrder.builder();
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         orderBuilder
@@ -81,12 +82,12 @@ public class CaseDataExtractionService {
             .applicantName(getApplicantName(caseData.findApplicant(0).orElse(Applicant.builder().build())))
             .directions(getGroupedDirections(standardDirectionOrder))
             .hearingBooking(getHearingBookingData(caseData.getHearingDetails()))
-            .crest(CREST.getValue());
+            .crest(getCrestData());
 
         if (SEALED == standardDirectionOrder.getOrderStatus()) {
-            orderBuilder.courtseal(COURT_SEAL.getValue());
+            orderBuilder.courtseal(getCourtSealData());
         } else {
-            orderBuilder.draftbackground(DRAFT_WATERMARK.getValue());
+            orderBuilder.draftbackground(getDraftWaterMarkData());
         }
 
         return orderBuilder.build();
@@ -101,7 +102,7 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    private List<DocmosisChildren> getChildrenDetails(List<Element<Child>> children) {
+    public List<DocmosisChild> getChildrenDetails(List<Element<Child>> children) {
         return children.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
@@ -109,8 +110,8 @@ public class CaseDataExtractionService {
     }
 
     // TODO: see FPLA-1087
-    private DocmosisChildren buildChild(ChildParty child) {
-        return DocmosisChildren.builder()
+    private DocmosisChild buildChild(ChildParty child) {
+        return DocmosisChild.builder()
             .name(child.getFullName())
             .gender(defaultIfNull(child.getGender(), DEFAULT))
             .dateOfBirth(getDateOfBirth(child))
@@ -124,7 +125,7 @@ public class CaseDataExtractionService {
             .orElse(DEFAULT);
     }
 
-    private List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
+    public List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
         return respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
@@ -160,7 +161,7 @@ public class CaseDataExtractionService {
         ).orElse(ImmutableList.of());
     }
 
-    private String getApplicantName(Applicant applicant) {
+    public String getApplicantName(Applicant applicant) {
         return ofNullable(applicant.getParty())
             .map(ApplicantParty::getOrganisationName)
             .orElse("");

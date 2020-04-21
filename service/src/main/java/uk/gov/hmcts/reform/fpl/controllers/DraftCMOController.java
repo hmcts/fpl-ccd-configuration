@@ -17,7 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
@@ -42,7 +43,7 @@ public class DraftCMOController {
     private final DraftCMOService draftCMOService;
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
-    private final CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService;
+    private final CaseManagementOrderGenerationService docmosisTemplateDataGenerationService;
     private final RespondentService respondentService;
     private final OthersService othersService;
     private final CoreCaseDataService coreCaseDataService;
@@ -72,9 +73,7 @@ public class DraftCMOController {
         final Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData, true);
-
-        Document document = getDocument(cmoTemplateData);
+        Document document = getDocument(docmosisTemplateDataGenerationService.getTemplateData(caseData));
 
         final DocumentReference reference = DocumentReference.builder()
             .url(document.links.self.href)
@@ -136,7 +135,7 @@ public class DraftCMOController {
         return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
     }
 
-    private Document getDocument(Map<String, Object> templateData) {
+    private Document getDocument(DocmosisData templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, CMO);
 
         return uploadDocumentService.uploadPDF(document.getBytes(), "draft-" + document.getDocumentTitle());
