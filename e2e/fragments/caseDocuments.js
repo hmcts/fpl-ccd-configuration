@@ -1,7 +1,7 @@
 const config = require('../config.js');
 
 module.exports = {
-  uploadDocuments() {
+  uploadMandatoryDocuments() {
     return async (I, caseViewPage, uploadDocumentsEventPage) => {
       await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
       uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
@@ -13,6 +13,11 @@ module.exports = {
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
       uploadDocumentsEventPage.uploadAdditionalDocuments(config.testFile);
       await I.completeEvent('Save and continue');
+    };
+  },
+
+  assertMandatoryDocuments() {
+    return (I, caseViewPage) => {
       I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
       caseViewPage.selectTab(caseViewPage.tabs.documents);
       I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');
@@ -31,6 +36,11 @@ module.exports = {
       I.seeElement(uploadDocumentsEventPage.documents.courtBundle);
       uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
       await I.completeEvent('Save and continue');
+    };
+  },
+
+  assertCourtBundle() {
+    return (I, caseViewPage) => {
       I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
       caseViewPage.selectTab(caseViewPage.tabs.documents);
       I.seeDocument('Court bundle', 'mockFile.txt');

@@ -36,6 +36,6 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('local authority uploads documents', uploadDocs.uploadDocuments());
+Scenario('local authority uploads documents', uploadDocs.assertMandatoryDocuments(), uploadDocs.uploadMandatoryDocuments());
 
-Scenario('local authority uploads court bundle', uploadDocs.uploadCourtBundle());
+Scenario('local authority uploads court bundle', uploadDocs.assertCourtBundle(), uploadDocs.uploadCourtBundle());

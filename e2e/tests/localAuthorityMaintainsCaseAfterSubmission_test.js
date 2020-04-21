@@ -23,9 +23,9 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   }
 });
 
-Scenario('local authority uploads documents', uploadDocs.uploadDocuments());
+Scenario('local authority uploads documents', uploadDocs.assertMandatoryDocuments(), uploadDocs.uploadMandatoryDocuments());
 
-Scenario('local authority uploads court bundle', uploadDocs.uploadCourtBundle());
+Scenario('local authority uploads court bundle', uploadDocs.assertCourtBundle(), uploadDocs.uploadCourtBundle());
 
 Scenario('local authority provides a statements of service', async (I, caseViewPage, loginPage, addStatementOfServiceEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);

@@ -6,7 +6,7 @@ const applicant = require('../fixtures/applicant.js');
 const solicitor = require('../fixtures/solicitor.js');
 const others = require('../fixtures/others.js');
 const otherProceedings = require('../fixtures/otherProceedingData');
-const caseDocs = require('../fragments/caseDocuments');
+const uploadDocs = require('../fragments/caseDocuments');
 
 let caseId;
 
@@ -433,7 +433,7 @@ Scenario('local authority enters attending hearing', async (I, caseViewPage, ent
   I.seeInTab(['Attending the hearing', 'Give details'], 'I need this for this person');
 });
 
-Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', caseDocs.uploadDocuments());
+Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', uploadDocs.assertMandatoryDocuments(), uploadDocs.uploadMandatoryDocuments());
 
 Scenario('local authority cannot upload court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
