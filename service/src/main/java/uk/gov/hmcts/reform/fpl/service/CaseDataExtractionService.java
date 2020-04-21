@@ -6,31 +6,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
-import uk.gov.hmcts.reform.fpl.model.Order;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.docmosis.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.time.format.FormatStyle.LONG;
@@ -42,12 +28,8 @@ import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.*;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.*;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
@@ -125,10 +107,23 @@ public class CaseDataExtractionService {
     }
 
     private List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
-        return respondents.stream()
+        List<DocmosisRespondent> respondentsNameAndRelationship = respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
             .collect(toList());
+
+        List<DocmosisRespondent> respondentsList = getCheck(respondentsNameAndRelationship);
+
+        return  respondentsList;
+    }
+
+    private List<DocmosisRespondent> getCheck (List<DocmosisRespondent> respondentsList){
+        List<DocmosisRespondent> newList = respondentsList.stream().filter(item->
+            !item.getName().isEmpty())
+            .collect(Collectors.toList());
+
+        return newList;
+
     }
 
     // TODO: see FPLA-1087
