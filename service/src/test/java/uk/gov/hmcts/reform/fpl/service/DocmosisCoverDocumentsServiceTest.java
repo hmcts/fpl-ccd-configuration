@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDocument;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +38,8 @@ class DocmosisCoverDocumentsServiceTest {
 
     @BeforeEach
     void setup() {
-        given(documentGeneratorService.generatedDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
+            .willReturn(docmosisDocument);
     }
 
     @Test
@@ -78,4 +80,3 @@ class DocmosisCoverDocumentsServiceTest {
             .build();
     }
 }
-
