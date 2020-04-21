@@ -260,9 +260,16 @@ Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, c
   await I.seeCaseInSearchResult(caseId);
 });
 
-Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
+Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage, enterFamilyManCaseNumberEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  enterFamilyManCaseNumberEventPage.enterCaseID();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
+
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  sendCaseToGatekeeperEventPage.enterEmail();
+  await sendCaseToGatekeeperEventPage.enterEmail();
+  await I.addAnotherElementToCollection();
+  await sendCaseToGatekeeperEventPage.enterEmail('cafcass+gatekeeping@gmail.com');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });

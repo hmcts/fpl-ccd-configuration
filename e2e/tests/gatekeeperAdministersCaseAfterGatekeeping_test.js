@@ -43,7 +43,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 
 Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async (I, caseViewPage, notifyGatekeeperEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.notifyGatekeeper);
-  notifyGatekeeperEventPage.enterEmail('gatekeeper@mailnesia.com');
+  await notifyGatekeeperEventPage.enterEmail('gatekeeper@mailnesia.com');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.notifyGatekeeper);
 });
