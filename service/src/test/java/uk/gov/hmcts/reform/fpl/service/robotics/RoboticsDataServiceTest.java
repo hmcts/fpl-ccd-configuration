@@ -7,40 +7,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
-import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static java.time.Month.APRIL;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONAssert.assertNotEquals;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -53,16 +42,12 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
-    RoboticsDataValidatorService.class, ValidationAutoConfiguration.class})
-class RoboticsDataServiceTest {
+@ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class})
+public class RoboticsDataServiceTest {
 
-    private static LocalDate NOW = LocalDate.now();
-
-    private static long CASE_ID = 12345L;
+    private static final long CASE_ID = 12345L;
 
     @Autowired
     private RoboticsDataService roboticsDataService;
@@ -88,15 +73,6 @@ class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldThrowRoboticsDataExceptionWhenWhenAllocationProposalNull() {
-        CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER).toBuilder()
-            .allocationProposal(null)
-            .build();
-
-        assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-    }
-
-    @Test
     void shouldReturnRoboticsDataWithExpectedlAllocationWhenAllocationProposalHasValue() {
         final String expectedAllocation = "To be moved";
 
@@ -113,7 +89,7 @@ class RoboticsDataServiceTest {
 
     @Test
     void shouldReturnEmergencySupervisionOrderLabelWhenOrderTypeEmergencySupervisionOrder() {
-        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseData = prepareCaseData();
 
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
@@ -122,7 +98,7 @@ class RoboticsDataServiceTest {
 
     @Test
     void shouldReturnFalseForHarmAllegedWhenRisksIsNull() {
-        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(null)
             .build();
@@ -134,7 +110,7 @@ class RoboticsDataServiceTest {
 
     @Test
     void shouldReturnFalseForHarmAllegedWhenNoSelectionForRisks() {
-        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder().build())
             .build();
@@ -146,7 +122,7 @@ class RoboticsDataServiceTest {
 
     @Test
     void shouldReturnTrueForHarmAllegedWhenOneOfTheOptionsForRisksIsYes() {
-        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder()
                 .physicalHarm("Yes")
@@ -163,7 +139,7 @@ class RoboticsDataServiceTest {
 
     @Test
     void shouldReturnFalseForHarmAllegedWhenAllOfTheOptionsForRisksIsNo() {
-        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder()
                 .physicalHarm("No")
@@ -180,7 +156,7 @@ class RoboticsDataServiceTest {
 
     @Test
     void shouldReturnFalseWhenInternationalElementIsNull() {
-        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
             .internationalElement(null)
             .build();
@@ -192,7 +168,7 @@ class RoboticsDataServiceTest {
 
     @Test
     void shouldReturnFalseWhenNoSelectionForInternationalElement() {
-        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
             .internationalElement(InternationalElement.builder().build())
             .build();
@@ -204,7 +180,7 @@ class RoboticsDataServiceTest {
 
     @Test
     void shouldReturnTrueWhenOneOfTheOptionsForInternationalElementIsYes() {
-        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
             .internationalElement(InternationalElement.builder()
                 .possibleCarer("Yes")
@@ -222,7 +198,7 @@ class RoboticsDataServiceTest {
 
     @Test
     void shouldReturnFalseWhenAllOfTheOptionsForInternationalElementIsNo() {
-        CaseData caseData = prepareCaseData(NOW);
+        CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
             .internationalElement(InternationalElement.builder()
                 .possibleCarer("No")
@@ -359,7 +335,7 @@ class RoboticsDataServiceTest {
 
         @Test
         void shouldNotHaveCaseIdPropertyWhenRoboticsDataDeserializes() throws IOException {
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(prepareCaseData(NOW), CASE_ID);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
             assertThat(returnedRoboticsJson).isNotEmpty();
@@ -373,116 +349,9 @@ class RoboticsDataServiceTest {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("validInternationalMobileNumbers")
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantMobileNumberIsValid(final String mobileNumber) {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(mobileNumber);
-
-        RoboticsData returnedRoboticsData = assertDoesNotThrow(
-            () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-
-        assertApplicantContactNumber(returnedRoboticsData.getApplicant().getMobileNumber());
-    }
-
-    @Test
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantInternationalMobileNumberIsValid() {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber("+(0) 777 977 777");
-        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantMobileNumberIsNullOrEmpty(final String mobileNumber) {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(mobileNumber);
-        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsNullOrEmpty(final String telephoneNumber) {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(telephoneNumber);
-        assertDoesNotThrow(() -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidPhoneNumbers")
-    void shouldThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsInValid(String phoneNumber) {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
-        assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidInternationalPhoneNumbers")
-    void shouldThrowRoboticsDataExceptionWhenApplicantInternationalPhoneNumberIsInValid(String phoneNumber) {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
-        assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-    }
-
-    @ParameterizedTest
-    @MethodSource("validPhoneNumbers")
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantPhoneNumberIsValid(String phoneNumber) {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
-
-        RoboticsData returnedRoboticsData = assertDoesNotThrow(
-            () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-
-        assertApplicantContactNumber(returnedRoboticsData.getApplicant().getTelephoneNumber());
-    }
-
-    @ParameterizedTest
-    @MethodSource("validInternationalPhoneNumbers")
-    void shouldNotThrowRoboticsDataExceptionWhenApplicantInternationalPhoneNumberIsValid(String phoneNumber) {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantTelephoneNumber(phoneNumber);
-
-        RoboticsData returnedRoboticsData = assertDoesNotThrow(
-            () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-
-        assertApplicantContactNumber(returnedRoboticsData.getApplicant().getTelephoneNumber());
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidPhoneNumbers")
-    void shouldThrowRoboticsDataExceptionWhenApplicantMobileNumberIsInValid(String mobileNumber) {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(mobileNumber);
-        assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidInternationalPhoneNumbers")
-    void shouldThrowRoboticsDataExceptionWhenApplicantInternationalMobileNumberIsInValid(String mobileNumber) {
-        CaseData caseData = prepareCaseDataWithUpdatedApplicantMobileNumber(mobileNumber);
-        assertThrows(RoboticsDataException.class, () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-    }
-
-    private static Stream<String> invalidPhoneNumbers() {
-        return Stream.of("01222233343444545556778889999887776655555544");
-    }
-
-    private static Stream<String> invalidInternationalPhoneNumbers() {
-        return Stream.of("+1800801920777777777888886565557778888");
-    }
-
-    private static Stream<String> validPhoneNumbers() {
-        return Stream.of("(0)20-8579 7105", "0208 579 7105", "202 762 1401", "c/o02085797105",
-            "c/o 02085797105", "C/O02085797105", "N/A");
-    }
-
-    private static Stream<String> validInternationalPhoneNumbers() {
-        return Stream.of("c/o +44-(0)20-8579 7105", "+1 800 444 4444", "+1 914 232 9901", "C/O +1800 801 920", "N/A");
-    }
-
-    private static Stream<String> validInternationalMobileNumbers() {
-        return Stream.of("+447788999777 c/o",
-            "+234-804-677-9090",
-            "+71 (908) (7888)",
-            "+1.677.9898.888",
-            "C/+o 34 9090 7877",
-            "N/A");
-    }
-
-    private CaseData prepareCaseData(LocalDate date) {
+    private CaseData prepareCaseData() {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
-        caseData.setDateSubmitted(date);
+        caseData.setDateSubmitted(LocalDate.now());
 
         RespondentParty respondentPartyWithConfidentialDetails = RespondentParty.builder()
             .firstName("Billy")
@@ -511,40 +380,10 @@ class RoboticsDataServiceTest {
     }
 
     private CaseData prepareCaseDataWithOrderType(final OrderType... orderTypes) {
-        return prepareCaseData(NOW).toBuilder()
+        return prepareCaseData().toBuilder()
             .orders(Orders.builder()
                 .orderType(asList(orderTypes))
                 .build())
             .build();
-    }
-
-    private CaseData prepareCaseDataWithUpdatedApplicantTelephoneNumber(final String telephoneNumber) {
-        return prepareCaseData(NOW).toBuilder()
-            .applicants(wrapElements(Applicant.builder()
-                .party(ApplicantParty.builder()
-                    .telephoneNumber(Telephone.builder()
-                        .telephoneNumber(telephoneNumber)
-                        .build())
-                    .build())
-                .build()))
-            .build();
-    }
-
-    private CaseData prepareCaseDataWithUpdatedApplicantMobileNumber(final String mobileNumber) {
-        return prepareCaseData(NOW).toBuilder()
-            .applicants(wrapElements(Applicant.builder()
-                .party(ApplicantParty.builder()
-                    .mobileNumber(Telephone.builder()
-                        .telephoneNumber(mobileNumber)
-                        .build())
-                    .build())
-                .build()))
-            .build();
-    }
-
-    private void assertApplicantContactNumber(final String contactNumber) {
-        String expectedFormattedNumber = contactNumber.replaceAll("(?!^)\\+|[^+\\d]+", "");
-
-        assertThat(contactNumber).isEqualTo(expectedFormattedNumber);
     }
 }
