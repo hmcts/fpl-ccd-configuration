@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.time.format.FormatStyle.LONG;
@@ -107,26 +106,13 @@ public class CaseDataExtractionService {
     }
 
     private List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
-        List<DocmosisRespondent> respondentsNameAndRelationship = respondents.stream()
+        return respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
+            .filter(item -> !item.getName().isEmpty())
             .collect(toList());
-
-        List<DocmosisRespondent> respondentsList = getCheck(respondentsNameAndRelationship);
-
-        return  respondentsList;
     }
 
-    private List<DocmosisRespondent> getCheck (List<DocmosisRespondent> respondentsList){
-        List<DocmosisRespondent> newList = respondentsList.stream().filter(item->
-            !item.getName().isEmpty())
-            .collect(Collectors.toList());
-
-        return newList;
-
-    }
-
-    // TODO: see FPLA-1087
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
