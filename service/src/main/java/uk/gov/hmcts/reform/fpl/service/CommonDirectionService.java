@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 /**
@@ -200,6 +201,7 @@ public class CommonDirectionService {
             .directionType(direction.getTitle())
             .directionText(direction.getText())
             .assignee(direction.getAssignee())
+            .directionNeeded(YES.getValue())
             .directionRemovable(booleanToYesOrNo(direction.getDisplay().isDirectionRemovable()))
             .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
             .dateToBeCompletedBy(completeBy)

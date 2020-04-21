@@ -138,6 +138,7 @@ class CommonDirectionServiceTest {
             .directionText("direction text")
             .readOnly("No")
             .directionRemovable("No")
+            .directionNeeded("Yes")
             .dateToBeCompletedBy(today)
             .assignee(LOCAL_AUTHORITY)
             .build());
@@ -154,6 +155,7 @@ class CommonDirectionServiceTest {
             .directionText("direction text")
             .readOnly("No")
             .directionRemovable("No")
+            .directionNeeded("Yes")
             .dateToBeCompletedBy(null)
             .assignee(LOCAL_AUTHORITY)
             .build());
