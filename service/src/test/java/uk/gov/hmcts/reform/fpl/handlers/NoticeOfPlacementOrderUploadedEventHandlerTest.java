@@ -40,7 +40,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedEmailRepresentativesForAddingPartiesToCase;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
@@ -82,11 +82,11 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
             caseDetails)).willReturn(parameters);
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForHmctsAdmin(
+        given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
             caseDetails, LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
-            .willReturn(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false));
+            .willReturn(getExpectedCaseUrlParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
-        given(orderIssuedEmailContentProvider.buildNotificationParametersForRepresentatives(
+        given(orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
 
@@ -103,10 +103,10 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
             "12345");
 
         verify(notificationService).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-            COURT_EMAIL_ADDRESS,
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
-            "12345");
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(COURT_EMAIL_ADDRESS),
+            eqJson(getExpectedCaseUrlParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
+            eq("12345"));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
