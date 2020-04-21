@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +66,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @WebMvcTest(ActionCaseManagementOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractControllerTest {
-    private static final LocalDateTime NOW = LocalDateTime.now();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final UUID ID = randomUUID();
 
@@ -141,7 +139,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     }
 
     @Test
-    void shouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() throws IOException {
+    void shouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() {
         populatedCaseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder());
         populatedCaseDetails.getData().put(ORDER_ACTION.getKey(), getOrderAction(JUDGE_REQUESTED_CHANGE));
 
@@ -176,7 +174,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 .build())
             .nextHearing(NextHearing.builder()
                 .id(ID)
-                .date(NOW.toString())
+                .date(timeNow().toString())
                 .build())
             .status(SEND_TO_JUDGE)
             .build();
@@ -204,8 +202,8 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
         return List.of(Element.<HearingBooking>builder()
             .id(ID)
             .value(HearingBooking.builder()
-                .startDate(NOW.plusDays(days))
-                .endDate(NOW.plusDays(days))
+                .startDate(timeNow().plusDays(days))
+                .endDate(timeNow().plusDays(days))
                 .venue("venue")
                 .build())
             .build());
@@ -217,7 +215,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(ID)
-            .label(NOW.toString())
+            .label(timeNow().toString())
             .build());
         return dynamicHearingDates;
     }
@@ -232,11 +230,11 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     }
 
     private String expectedPreHearing() {
-        return getStringDate(NOW.minusHours(1));
+        return getStringDate(timeNow().minusHours(1));
     }
 
     private String expectedHearingTime() {
-        return getStringDate(NOW) + " - " + getStringDate(NOW);
+        return getStringDate(timeNow()) + " - " + getStringDate(timeNow());
     }
 
     private String getStringDate(LocalDateTime now) {

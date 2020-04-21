@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @WebMvcTest(HearingBookingDetailsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class HearingBookingDetailsControllerAboutToStartTest extends AbstractControllerTest {
-    private static final LocalDateTime TODAY = LocalDateTime.now();
 
     HearingBookingDetailsControllerAboutToStartTest() {
         super("add-hearing-bookings");
@@ -42,8 +41,8 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
 
     @Test
     void shouldOnlyReturnHearingsWithFutureStartDateWhenHearingsInThePastExist() {
-        Element<HearingBooking> hearingDetail = bookingWithStartDate(TODAY.plusDays(5));
-        Element<HearingBooking> hearingDetailPast = bookingWithStartDate(TODAY.minusDays(5));
+        Element<HearingBooking> hearingDetail = bookingWithStartDate(timeNow().plusDays(5));
+        Element<HearingBooking> hearingDetailPast = bookingWithStartDate(timeNow().minusDays(5));
 
         List<Element<HearingBooking>> hearingDetails = newArrayList(hearingDetail, hearingDetailPast);
 

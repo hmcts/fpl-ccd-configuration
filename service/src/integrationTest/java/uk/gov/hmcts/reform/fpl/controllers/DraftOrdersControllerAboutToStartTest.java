@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
@@ -41,9 +39,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
 
-    @Autowired
-    private Time time;
-
     DraftOrdersControllerAboutToStartTest() {
         super("draft-standard-directions");
     }
@@ -66,7 +61,7 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
         assertThat(extractDirections(caseData.getCafcassDirections())).containsOnly(directions.get(3));
         assertThat(extractDirections(caseData.getOtherPartiesDirections())).containsOnly(directions.get(4));
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5)).hasSize(1);
-        assertThat(caseData.getDateOfIssue()).isEqualTo(time.now().toLocalDate());
+        assertThat(caseData.getDateOfIssue()).isEqualTo(dateNow());
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
@@ -75,10 +70,10 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartCallbackShouldPopulateCorrectHearingDate() {
-        LocalDateTime date = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
+        LocalDateTime hearingDate = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("hearingDetails", wrapElements(createHearingBooking(date, date.plusDays(1)))))
+            .data(Map.of("hearingDetails", wrapElements(createHearingBooking(hearingDate, hearingDate.plusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);

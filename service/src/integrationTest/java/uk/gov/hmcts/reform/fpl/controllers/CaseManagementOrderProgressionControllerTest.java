@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -68,16 +69,16 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @WebMvcTest(CaseManagementOrderProgressionController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseManagementOrderProgressionControllerTest extends AbstractControllerTest {
-    private static final UUID uuid = randomUUID();
+    private static final UUID ID = randomUUID();
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String HMCTS_ADMIN_INBOX = "admin@family-court.com";
     private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-
     private static final Long CASE_ID = 12345L;
-    private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusDays(1);
+
+    private LocalDateTime futureDate;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -87,6 +88,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
     CaseManagementOrderProgressionControllerTest() {
         super("cmo-progression");
+    }
+
+    @BeforeEach
+    void setUp() {
+        futureDate = timeNow().plusDays(1);
     }
 
     @Test
@@ -240,7 +246,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
-        final String hearingDate = formatLocalDateTimeBaseUsingFormat(FUTURE_DATE, DATE_SHORT_MONTH);
+        final String hearingDate = formatLocalDateTimeBaseUsingFormat(futureDate, DATE_SHORT_MONTH);
         final String subjectLine = "Jones, SACCCCCCCC5676576567, hearing " + hearingDate;
 
         return ImmutableMap.<String, Object>builder()
@@ -268,7 +274,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     }
 
     private ImmutableMap.Builder<String, Object> commonNotificationParameters() {
-        String hearingDate = formatLocalDateTimeBaseUsingFormat(FUTURE_DATE, DATE_SHORT_MONTH);
+        String hearingDate = formatLocalDateTimeBaseUsingFormat(futureDate, DATE_SHORT_MONTH);
         String subjectLine = String.format("Jones, %s, hearing %s", FAMILY_MAN_CASE_NUMBER, hearingDate);
 
         return ImmutableMap.<String, Object>builder()
@@ -280,7 +286,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private CaseManagementOrder buildOrder(CMOStatus status, ActionType actionType) {
         return CaseManagementOrder.builder()
             .status(status)
-            .id(uuid)
+            .id(ID)
             .orderDoc(createDocumentReference(randomUUID().toString()))
             .action(OrderAction.builder()
                 .type(actionType)
@@ -293,7 +299,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .id(12345L)
             .data(Map.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
                 "cmoEventId", cmoEvent.getId(),
-                "hearingDetails", createHearingBookings(FUTURE_DATE, FUTURE_DATE.plusHours(4)),
+                "hearingDetails", createHearingBookings(futureDate, futureDate.plusHours(4)),
                 "respondents1", createRespondents(),
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                 "sendToCtsc", enableCtsc,

@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
@@ -81,7 +80,6 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     private static final UUID ID = randomUUID();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final DocumentReference CMO_DOCUMENT = DocumentReference.buildFromDocument(document());
-    private static final LocalDateTime DATE_IN_3_MONTHS = LocalDateTime.now().plusMonths(3);
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -92,6 +90,8 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     @MockBean
     private NotificationClient notificationClient;
 
+    private LocalDateTime dateIn3Months;
+
     ActionCaseManagementOrderControllerSubmittedTest() {
         super("action-cmo");
     }
@@ -99,6 +99,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     @BeforeEach
     void setUp() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+        dateIn3Months = timeNow().plusMonths(3);
     }
 
     @Test
@@ -180,7 +181,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), caseManagementOrder.toBuilder()
-                .action(getOrderAction(JUDGE_REQUESTED_CHANGE))
+                .action(getOrderAction())
                 .build());
 
         CaseDetails caseDetails = buildCaseDetails(data);
@@ -201,9 +202,9 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             .build();
     }
 
-    private OrderAction getOrderAction(ActionType type) {
+    private OrderAction getOrderAction() {
         return OrderAction.builder()
-            .type(type)
+            .type(JUDGE_REQUESTED_CHANGE)
             .nextHearingType(ISSUES_RESOLUTION_HEARING)
             .build();
     }
@@ -221,7 +222,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
     private Map<String, Object> getExpectedCMOIssuedCaseUrlParameters(String recipientName) {
         final String subjectLine = String.format("Jones, SACCCCCCCC5676576567, hearing %s",
-            formatLocalDateToString(DATE_IN_3_MONTHS.toLocalDate(), FormatStyle.MEDIUM));
+            formatLocalDateToString(dateIn3Months.toLocalDate(), FormatStyle.MEDIUM));
 
         return ImmutableMap.<String, Object>builder()
             .put("localAuthorityNameOrRepresentativeFullName", recipientName)
@@ -233,7 +234,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
 
     private Map<String, Object> getExpectedCMOIssuedDocumentLinkParameters(String recipientName) {
         final String subjectLine = String.format("Jones, SACCCCCCCC5676576567, hearing %s",
-            formatLocalDateToString(DATE_IN_3_MONTHS.toLocalDate(), FormatStyle.MEDIUM));
+            formatLocalDateToString(dateIn3Months.toLocalDate(), FormatStyle.MEDIUM));
 
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
@@ -253,7 +254,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-            "hearingDetails", createHearingBookings(DATE_IN_3_MONTHS, DATE_IN_3_MONTHS.plusHours(4)),
+            "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
             REPRESENTATIVES, representatives,
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)

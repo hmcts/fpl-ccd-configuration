@@ -56,7 +56,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 @OverrideAutoConfiguration(enabled = true)
 class SendDocumentControllerTest extends AbstractControllerTest {
 
-    private static final String SERVICE_AUTH_TOKEN = "Service token";
     private static final String FAMILY_MAN_NO = RandomStringUtils.randomAlphabetic(10);
     private static final Document COVERSHEET_DOCUMENT = testDocument();
     private static final Document MAIN_DOCUMENT = testDocument();
