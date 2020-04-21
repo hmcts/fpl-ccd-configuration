@@ -69,6 +69,5 @@ ccd:
       ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
   definitionStoreApi:
     s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
-    image: hmctspublic.azurecr.io/ccd/definition-store-api:prod-199b0df1
   dataStoreApi:
     s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
