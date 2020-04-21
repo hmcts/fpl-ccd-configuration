@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @OverrideAutoConfiguration(enabled = true)
 public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerTest {
     private static final String GATEKEEPER_EMAIL = "FamilyPublicLaw+gatekeeper@gmail.com";
+    private static final String CAFCASS_EMAIL = "Cafcass+gatekeeper@gmail.com";
     private static final String SUBMITTED = "Submitted";
     private static final String GATEKEEPING = "Gatekeeping";
 
@@ -58,27 +59,40 @@ public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerT
     }
 
     @Test
-    void shouldBuildGatekeeperNotificationTemplateWithCompleteValues() throws Exception {
+    void shouldNotifyMultipleGatekeepersWithExpectedNotificationParameters() throws Exception {
+        postSubmittedEvent(callbackRequest());
+
+        verify(notificationClient).sendEmail(
+            GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL,
+            buildExpectedParameters(CAFCASS_EMAIL), "12345");
+
+        verify(notificationClient).sendEmail(
+            GATEKEEPER_SUBMISSION_TEMPLATE, CAFCASS_EMAIL,
+            buildExpectedParameters(GATEKEEPER_EMAIL), "12345");
+    }
+
+    private Map<String, Object> buildExpectedParameters(String email) {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
-        Map<String, Object> expectedGatekeeperParameters = ImmutableMap.<String, Object>builder()
-            .put("localAuthority", "Example Local Authority")
-            .put("dataPresent", "Yes")
-            .put("fullStop", "No")
-            .put("ordersAndDirections", ordersAndDirections)
-            .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "same day")
-            .put("urgentHearing", "Yes")
-            .put("nonUrgentHearing", "No")
-            .put("firstRespondentName", "Smith")
+
+        return ImmutableMap.<String, Object>builder()
             .put("reference", "12345")
+            .put("ordersAndDirections", ordersAndDirections)
+            .put("gatekeeper_recipients", buildRecipientLabel(email))
+            .put("urgentHearing", "Yes")
+            .put("fullStop", "No")
+            .put("timeFrameValue", "same day")
+            .put("localAuthority", "Example Local Authority")
+            .put("timeFramePresent", "Yes")
+            .put("nonUrgentHearing", "No")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .put("firstRespondentName", "Smith")
+            .put("dataPresent", "Yes")
             .build();
+    }
 
-        postSubmittedEvent(buildCallbackRequest(SUBMITTED));
-
-        verify(notificationClient).sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL,
-            expectedGatekeeperParameters, "12345");
+    private String buildRecipientLabel(String email) {
+        return String.format("%s has also received this notification", email);
     }
 
     private CallbackRequest buildCallbackRequest(String state) {
