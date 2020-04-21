@@ -13,7 +13,7 @@ def component = 'case-service'
 
 withNightlyPipeline(type, product, component) {
   enableMutationTest()
-  enableFullFunctionalTest()
+//  enableFullFunctionalTest()
 
   after('mutationTest') {
     withSonarQubeEnv('SonarQube') {
