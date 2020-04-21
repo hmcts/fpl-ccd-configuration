@@ -8,14 +8,13 @@ public class NotifyTemplates {
 
     public static final String HMCTS_COURT_SUBMISSION_TEMPLATE = "6027dfc4-fac8-473b-87b4-378f0a06b2b1";
     public static final String CAFCASS_SUBMISSION_TEMPLATE = "1f5303e3-94ba-485d-b33e-b364ee22767c";
-    public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "a79cffc8-7aec-445c-b310-7bed5fb479bc";
+    public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "1e8f7e14-64aa-44ce-a5c1-83affff5f1a0";
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE = "c06968ea-048b-49d6-a4b5-1f13ee995ba1";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "6b961e81-c5ff-4f6f-8c56-f90d932a2f9b";
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
-    public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA = "1f7c134e-f9c0-44ba-aa50-fce53eb208f7";
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =
         "a0f911cf-4010-4022-bf34-a183cd711b8e";
-    public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "c652061a-31db-4ec5-bcf7-4acec5943658";
+    public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "bb40930c-a583-4868-a1f6-1e398e7554d3";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
     public static final String CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE =

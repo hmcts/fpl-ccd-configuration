@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode()
 @Builder(builderClassName = "Builder")
 public class DocmosisCoverDocument implements DocmosisData {
     private final String familyManCaseNumber;
