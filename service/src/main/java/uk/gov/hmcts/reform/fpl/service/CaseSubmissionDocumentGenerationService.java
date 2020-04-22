@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -54,9 +56,10 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
             .risks(caseData.getRisks())
             .factorsParenting(caseData.getFactorsParenting())
             .proceeding(caseData.getProceeding())
-            .groundsForEPOReason(getGroundsForEPOReason(caseData))
-            .groundsThresholdReason(getGroundsThresholdReason(caseData))
-            .thresholdDetails(getThresholdDetails(caseData))
+            .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
+                caseData.getGroundsForEPO()))
+            .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
+            .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .userFullName(userDetailsService.getUserName());
         applicationFormBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
 
@@ -142,40 +145,43 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
     }
 
 
-    public String getGroundsForEPOReason(CaseData caseData) {
-        if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
-            if (isNotEmpty(caseData.getGroundsForEPO()) && isNotEmpty(caseData.getGroundsForEPO().getReason())) {
-                return caseData.getGroundsForEPO().getReason()
+    private String getGroundsForEPOReason(final List<OrderType> orderTypes, final GroundsForEPO groundsForEPO) {
+        if (isNotEmpty(orderTypes) && orderTypes.contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+
+            if (isNotEmpty(groundsForEPO) && isNotEmpty(groundsForEPO.getReason())) {
+                return groundsForEPO.getReason()
                     .stream()
-                    .map(reason -> EmergencyProtectionOrderReasonsType.valueOf((String) reason).getLabel())
+                    .map(reason -> EmergencyProtectionOrderReasonsType.valueOf(reason).getLabel())
                     .collect(joining(NEW_LINE));
             }
+
             return DEFAULT_STRING;
         }
+
         return BLANK_STRING;
     }
 
-    public String getThresholdDetails(CaseData caseData) {
-        if (isNotEmpty(caseData.getGrounds()) && StringUtils.isNotEmpty(caseData.getGrounds().getThresholdDetails())) {
-            return caseData.getGrounds().getThresholdDetails();
-        }
-        return DEFAULT_STRING;
+    private String getThresholdDetails(final Grounds grounds) {
+        return (isNotEmpty(grounds) && StringUtils.isNotEmpty(grounds.getThresholdDetails()))
+            ? grounds.getThresholdDetails() : DEFAULT_STRING;
     }
 
-    public String getGroundsThresholdReason(CaseData caseData) {
+    private String buildGroundsThresholdReason(final Grounds grounds) {
         StringBuilder sb = new StringBuilder();
-        if (isNotEmpty(caseData.getGrounds()) && isNotEmpty(caseData.getGrounds().getThresholdReason())) {
-            for (String thresholdReason : caseData.getGrounds().getThresholdReason()) {
-                if (StringUtils.equals(thresholdReason, "noCare") {
+
+        if (isNotEmpty(grounds) && isNotEmpty(grounds.getThresholdReason())) {
+            grounds.getThresholdReason().forEach(thresholdReason -> {
+                if (StringUtils.equals(thresholdReason, "noCare")) {
                     sb.append("Not receiving care that would be reasonably expected from a parent.");
                     sb.append(NEW_LINE);
-                } else if (StringUtils.equals(thresholdReason, "beyondControl") {
+
+                } else if (StringUtils.equals(thresholdReason, "beyondControl")) {
                     sb.append("Beyond parental control.");
                     sb.append(NEW_LINE);
                 }
-            }
-            return sb.toString();
+            });
         }
-        return DEFAULT_STRING;
+
+        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
     }
 }
