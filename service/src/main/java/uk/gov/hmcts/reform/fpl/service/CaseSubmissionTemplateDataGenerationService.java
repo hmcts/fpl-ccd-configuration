@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,6 +34,7 @@ import static java.lang.String.join;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -44,10 +44,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration<DocmosisSubmittedForm> {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
-    private static final String BLANK_STRING = "";
     private static final String YES = "Yes";
     private static final String NO = "No";
-    private static final LocalDate TODAY = LocalDate.now();
 
     private final UserDetailsService userDetailsService;
 
@@ -57,7 +55,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-            .submittedDate(formatLocalDateToString(TODAY, DATE))
+            .submittedDate(formatLocalDateToString(caseData.getDateSubmitted(), DATE))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
@@ -169,7 +167,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             return DEFAULT_STRING;
         }
 
-        return BLANK_STRING;
+        return EMPTY;
     }
 
     private String getThresholdDetails(final Grounds grounds) {
@@ -288,6 +286,6 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private String listToString(final List<String> givenList) {
         return ofNullable(givenList)
             .map(list -> join(NEW_LINE, list))
-            .orElse(BLANK_STRING);
+            .orElse(EMPTY);
     }
 }
