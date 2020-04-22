@@ -108,7 +108,7 @@ public class CaseDataExtractionService {
         return respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
-            .filter(item -> !item.getName().isEmpty())
+            .filter(item -> !item.getName().isEmpty() || !item.getRelationshipToChild().isEmpty())
             .collect(toList());
     }
 
