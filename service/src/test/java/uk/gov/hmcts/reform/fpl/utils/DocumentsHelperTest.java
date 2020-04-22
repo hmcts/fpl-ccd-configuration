@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusSet
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentUploaded;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-public class DocumentsHelperTest {
+class DocumentsHelperTest {
 
     @ParameterizedTest
     @EnumSource(DocumentStatus.class)

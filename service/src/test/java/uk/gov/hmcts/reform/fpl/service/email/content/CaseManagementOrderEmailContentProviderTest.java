@@ -7,7 +7,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.utils.AssertionHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,61 +51,61 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     }
 
     @Test
-    void shouldBuildCMOIssuedCaseLinkNotificationParameters() {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+    void shouldBuildCMOIssuedCaseLinkNotificationExpectedParameters() {
+        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("localAuthorityNameOrRepresentativeFullName", "testName")
-            .put("caseUrl", buildCaseUrl("12345"))
+            .put("caseUrl", buildCaseUrl())
             .put("subjectLineWithHearingDate", "lastName, 11")
             .put("reference", "12345")
             .build();
 
         assertThat(caseManagementOrderEmailContentProvider
             .buildCMOIssuedCaseLinkNotificationParameters(createCase(), "testName"))
-            .isEqualTo(expectedMap);
+            .isEqualTo(expectedParameters);
     }
 
     @Test
-    void shouldBuildCMOIssuedWithoutDocumentLinkNotificationParameters() {
+    void shouldBuildCMOIssuedWithoutDocumentLinkNotificationExpectedParameters() {
 
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("cafcassOrRespondentName", "testName")
-            .put("caseUrl", buildCaseUrl("12345"))
+            .put("caseUrl", buildCaseUrl())
             .put("subjectLineWithHearingDate", "lastName, 11")
             .put("reference", "12345")
             .build();
 
         assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
             createCase(), "testName", new byte[]{}))
-            .isEqualTo(expectedMap);
+            .isEqualTo(expectedParameters);
     }
 
     @Test
-    void shouldBuildCMOIssuedWithDocumentLinkNotificationParameters() throws JsonProcessingException {
+    void shouldBuildCMOIssuedWithDocumentLinkNotificationExpectedParameters() {
 
         byte[] documentContentAsByte = nextBytes(20);
         String documentContent = new String(Base64.encodeBase64(documentContentAsByte), ISO_8859_1);
 
         JSONObject expectedDocumentLink = new JSONObject().put("file", documentContent);
 
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("cafcassOrRespondentName", "testName")
-            .put("caseUrl", buildCaseUrl("12345"))
+            .put("caseUrl", buildCaseUrl())
             .put("subjectLineWithHearingDate", "lastName, 11")
             .put("link_to_document", expectedDocumentLink)
             .put("reference", "12345")
             .build();
 
-        String expected = objectMapper.writeValueAsString(expectedMap);
-        String actual = objectMapper.writeValueAsString(
+        Map<String, Object> actualParameters =
             caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
-                createCase(), "testName", documentContentAsByte));
+                createCase(), "testName", documentContentAsByte);
 
-        JSONAssert.assertEquals(expected, actual, true);
+        AssertionHelper.assertEquals(actualParameters, expectedParameters);
+
     }
 
     @Test
-    void shouldBuildCMOPartyReviewParameters() {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+    void shouldBuildCMOPartyReviewExpectedParameters() {
+        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("caseUrl", "")
             .put("digitalPreference", "No")
             .put("subjectLineWithHearingDate", "lastName, 11")
@@ -114,26 +114,26 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
         assertThat(caseManagementOrderEmailContentProvider
             .buildCMOPartyReviewParameters(createCase(), new byte[]{}, RepresentativeServingPreferences.POST))
-            .isEqualTo(expectedMap);
+            .isEqualTo(expectedParameters);
     }
 
     @Test
-    void shouldBuildCMORejectedByJudgeNotificationParameters() {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+    void shouldBuildCMORejectedByJudgeNotificationExpectedParameters() {
+        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("requestedChanges", "change it")
-            .put("caseUrl", buildCaseUrl("12345"))
+            .put("caseUrl", buildCaseUrl())
             .put("subjectLineWithHearingDate", "lastName, 11")
             .put("reference", "12345")
             .build();
 
         assertThat(caseManagementOrderEmailContentProvider
-            .buildCMORejectedByJudgeNotificationParameters(createCase())).isEqualTo(expectedMap);
+            .buildCMORejectedByJudgeNotificationParameters(createCase())).isEqualTo(expectedParameters);
     }
 
     @Test
-    void shouldBuildCMOReadyForJudgeReviewNotificationParameters() {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", buildCaseUrl("12345"))
+    void shouldBuildCMOReadyForJudgeReviewNotificationExpectedParameters() {
+        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
+            .put("caseUrl", buildCaseUrl())
             .put("respondentLastName", "lastName")
             .put("judgeName", "JudgeLastName")
             .put("judgeTitle", "Deputy District Judge")
@@ -142,11 +142,11 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .build();
 
         assertThat(caseManagementOrderEmailContentProvider
-            .buildCMOReadyForJudgeReviewNotificationParameters(createCase())).isEqualTo(expectedMap);
+            .buildCMOReadyForJudgeReviewNotificationParameters(createCase())).isEqualTo(expectedParameters);
     }
 
-    String buildCaseUrl(String caseId) {
-        return formatCaseUrl(BASE_URL, Long.parseLong(caseId));
+    String buildCaseUrl() {
+        return formatCaseUrl(BASE_URL, CaseManagementOrderEmailContentProviderTest.CASE_ID);
     }
 
     private CaseDetails createCase() {

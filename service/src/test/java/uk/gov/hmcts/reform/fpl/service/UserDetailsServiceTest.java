@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-public class UserDetailsServiceTest {
+class UserDetailsServiceTest {
 
     @Mock
     private IdamApi idamApi;

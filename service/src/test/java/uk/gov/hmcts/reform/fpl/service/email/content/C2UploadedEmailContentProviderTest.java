@@ -34,7 +34,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Test
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", buildCaseUrl("12345"))
+            .put("caseUrl", buildCaseUrl())
             .put("subjectLine","Smith, 12345")
             .put("hearingDetailsCallout","Smith, 12345")
             .put("reference","12345")
@@ -47,18 +47,18 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Test
     void shouldReturnExpectedPbaPaymentNotTakenNotification() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", buildCaseUrl("12345"))
+            .put("caseUrl", buildCaseUrl())
             .build();
 
         assertThat(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(createCase()))
             .isEqualTo(expectedMap);
     }
 
-    String buildCaseUrl(String caseId) {
-        return formatCaseUrl(BASE_URL, Long.parseLong(caseId));
+    String buildCaseUrl() {
+        return formatCaseUrl(BASE_URL, C2UploadedEmailContentProviderTest.CASE_ID);
     }
 
-    private CaseDetails createCase() {
+    private static CaseDetails createCase() {
         return CaseDetails.builder()
             .id(CASE_ID)
             .build();
