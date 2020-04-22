@@ -40,6 +40,7 @@ public class CaseSubmissionService extends DocmosisTemplateDataGeneration<Docmos
 
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
+    private final UserDetailsService userDetailsService;
 
     public Document generateSubmittedFormPDF(CaseData caseData, String userFullName, String pdfFileName)
             throws IOException {
@@ -143,6 +144,7 @@ public class CaseSubmissionService extends DocmosisTemplateDataGeneration<Docmos
     @Override
     public DocmosisSubmittedForm getTemplateData(CaseData caseData) throws IOException {
         // TODO Auto-generated method stub
+        String username = userDetailsService.getUserName();
         return null;
     }
 }
