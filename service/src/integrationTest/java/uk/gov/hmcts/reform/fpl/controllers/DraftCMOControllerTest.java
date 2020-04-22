@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -38,6 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyMap;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +56,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -65,8 +64,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @SuppressWarnings("unchecked")
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long ID = 1L;
-    private static final LocalDateTime TODAY = LocalDateTime.now();
-    private final List<Element<HearingBooking>> hearingDetails = createHearingBookingsFromInitialDate(TODAY);
+    private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
+    private final List<Element<HearingBooking>> hearingDetails = createHearingBookingsFromInitialDate(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
 
@@ -94,15 +93,15 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             "others", createOthers());
 
         List<String> expected = Arrays.asList(
-            TODAY.plusDays(5).format(dateTimeFormatter),
-            TODAY.plusDays(2).format(dateTimeFormatter));
+            TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
+            TODAYS_DATE.plusDays(2).format(dateTimeFormatter));
 
         CaseDetails caseDetails = buildCaseDetails(data);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
-        assertThat(getHearingDates(callbackResponse)).doesNotContain(TODAY.format(dateTimeFormatter));
+        assertThat(getHearingDates(callbackResponse)).doesNotContain(TODAYS_DATE.format(dateTimeFormatter));
 
         assertThat(callbackResponse.getData().get("respondents_label")).isEqualTo(
             "Respondent 1 - Timothy Jones\nRespondent 2 - Sarah Simpson\n");
@@ -124,23 +123,20 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         final Document document = document();
         final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
 
-        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
 
-        CaseDetails caseDetails = populatedCaseDetails();
-        caseDetails.getData()
-            .put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder().build());
+        CaseDetails caseDetails = buildCaseDetails(emptyMap());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         verify(uploadDocumentService).uploadPDF(pdf, "draft-case-management-order.pdf");
 
-        Map<String, Object> responseCaseData = callbackResponse.getData();
+        final Map<String, Object> responseCaseData = callbackResponse.getData();
 
         assertThat(responseCaseData).containsKey(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
 
-        CaseManagementOrder caseManagementOrder = mapper.convertValue(responseCaseData.get(
+        final CaseManagementOrder caseManagementOrder = mapper.convertValue(responseCaseData.get(
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class);
 
         assertThat(caseManagementOrder.getOrderDoc()).isEqualTo(
@@ -157,7 +153,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-            .label(TODAY.plusDays(5).toString())
+            .label(TODAYS_DATE.plusDays(5).toString())
             .build());
 
         Map<String, Object> data = new HashMap<>();
@@ -166,6 +162,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             data.put(direction.toCustomDirectionField().concat("CMO"),
                 createElementCollection(createUnassignedDirection()))
         );
+
 
         data.put(HEARING_DATE_LIST.getKey(), dynamicHearingDates);
         data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder()
@@ -182,7 +179,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
         assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
-        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(TODAY.plusDays(5).toString());
+        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(TODAYS_DATE.plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
         assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo("draft-case-management-order.pdf");
         assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");

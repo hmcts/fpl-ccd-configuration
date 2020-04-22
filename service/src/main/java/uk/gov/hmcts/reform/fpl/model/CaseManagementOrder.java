@@ -33,7 +33,7 @@ public class CaseManagementOrder {
 
     @JsonIgnore
     public boolean isDraft() {
-        return action == null || !SEND_TO_ALL_PARTIES.equals(action.getType());
+        return action == null || !action.getType().equals(SEND_TO_ALL_PARTIES);
     }
 
     @JsonIgnore
