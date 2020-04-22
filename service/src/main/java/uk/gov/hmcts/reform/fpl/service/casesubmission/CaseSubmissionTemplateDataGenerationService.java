@@ -49,6 +49,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -59,7 +60,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
-    private static final String STATUS_ATTACHED = "Attached";
 
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
@@ -255,7 +255,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private String getDisplayData(Document document) {
         if (isNotEmpty(document) && StringUtils.isNotEmpty(document.getDocumentStatus())) {
             StringBuilder sb = new StringBuilder(document.getDocumentStatus());
-            if (!equalsIgnoreCase(document.getDocumentStatus(), STATUS_ATTACHED)
+            if (!equalsIgnoreCase(document.getDocumentStatus(), ATTACHED.getLabel())
                 && StringUtils.isNotEmpty(document.getStatusReason())) {
                 sb.append(NEW_LINE).append(document.getStatusReason());
             }
