@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DocmosisChild {
+public class DocmosisChildren {
     public final String name;
     public final String gender;
     public final String dateOfBirth;
