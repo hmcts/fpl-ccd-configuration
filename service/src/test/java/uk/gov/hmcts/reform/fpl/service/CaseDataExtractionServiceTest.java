@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
@@ -53,10 +53,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
-    LookupTestConfig.class, StandardDirectionOrderGenerationService.class, HearingBookingService.class,
-    CommonDirectionService.class, CommonCaseDataExtractionService.class
+    LookupTestConfig.class, CaseDataExtractionService.class, HearingBookingService.class, CommonDirectionService.class,
+    CommonCaseDataExtractionService.class
 })
-class StandardDirectionOrderGenerationServiceTest {
+class CaseDataExtractionServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Family Court";
     private static final LocalDate TODAY = LocalDate.now();
@@ -68,7 +68,7 @@ class StandardDirectionOrderGenerationServiceTest {
     private CommonDirectionService commonDirectionService;
 
     @Autowired
-    private StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
+    private CaseDataExtractionService caseDataExtractionService;
 
     @BeforeEach
     void setup() {
@@ -83,14 +83,14 @@ class StandardDirectionOrderGenerationServiceTest {
             .dateOfIssue("29 November 2019")
             .build();
 
-        DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
-            .getTemplateData(CaseData.builder()
+        DocmosisStandardDirectionOrder template = caseDataExtractionService
+            .getStandardOrderDirectionData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
                 .standardDirectionOrder(order)
                 .build());
 
-        assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
+        assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("")
                 .legalAdvisorName("")
@@ -111,8 +111,8 @@ class StandardDirectionOrderGenerationServiceTest {
 
     @Test
     void shouldMapDirectionsForDraftSDOWhenAllAssignees() throws IOException {
-        DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService
-            .getTemplateData(CaseData.builder()
+        DocmosisStandardDirectionOrder templateData = caseDataExtractionService
+            .getStandardOrderDirectionData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(TODAY)
                 .standardDirectionOrder(Order.builder().directions(getDirections()).build())
@@ -133,10 +133,10 @@ class StandardDirectionOrderGenerationServiceTest {
             .standardDirectionOrder(createStandardDirectionOrders(TODAY.atStartOfDay(), DRAFT))
             .build();
 
-        DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
-            .getTemplateData(caseData);
+        DocmosisStandardDirectionOrder template = caseDataExtractionService
+            .getStandardOrderDirectionData(caseData);
 
-        assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
+        assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Smith")
                 .legalAdvisorName("Bob Ross")
@@ -168,10 +168,10 @@ class StandardDirectionOrderGenerationServiceTest {
             .standardDirectionOrder(createStandardDirectionOrders(TODAY.atStartOfDay(), SEALED))
             .build();
 
-        DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
-            .getTemplateData(caseData);
+        DocmosisStandardDirectionOrder template = caseDataExtractionService
+            .getStandardOrderDirectionData(caseData);
 
-        assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
+        assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Smith")
                 .legalAdvisorName("Bob Ross")
@@ -231,19 +231,19 @@ class StandardDirectionOrderGenerationServiceTest {
             .collect(toList());
     }
 
-    private List<DocmosisChild> getExpectedChildren() {
+    private List<DocmosisChildren> getExpectedChildren() {
         return List.of(
-            DocmosisChild.builder()
+            DocmosisChildren.builder()
                 .name("Bran Stark")
                 .gender("Boy")
                 .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build(),
-            DocmosisChild.builder()
+            DocmosisChildren.builder()
                 .name("Sansa Stark")
                 .gender("Boy")
                 .dateOfBirth(formatLocalDateToString(TODAY, LONG))
                 .build(),
-            DocmosisChild.builder()
+            DocmosisChildren.builder()
                 .name("Jon Snow")
                 .gender("Girl")
                 .dateOfBirth(formatLocalDateToString(TODAY, LONG))
