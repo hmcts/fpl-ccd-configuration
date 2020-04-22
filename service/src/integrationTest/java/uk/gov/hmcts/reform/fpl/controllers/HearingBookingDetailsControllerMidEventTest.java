@@ -35,7 +35,7 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
 
     @Test
     void shouldReturnAnErrorWhenHearingDateIsSetToYesterday() {
-        LocalDateTime yesterday = timeNow().minusDays(1);
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(yesterday, yesterday.plusDays(1)));
 
@@ -44,7 +44,7 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
 
     @Test
     void shouldNotReturnAnErrorWhenHearingDateIsSetToTomorrow() {
-        LocalDateTime tomorrow = timeNow().plusDays(1);
+        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(tomorrow, tomorrow.plusDays(1)));
 
@@ -53,7 +53,7 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
 
     @Test
     void shouldReturnAnErrorWhenHearingDateIsSetToToday() {
-        LocalDateTime today = timeNow();
+        LocalDateTime today = LocalDateTime.now();
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(today, today.plusDays(1)));
 
@@ -62,7 +62,7 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
 
     @Test
     void shouldReturnAnErrorWhenHearingDateIsSetInDistantPast() {
-        LocalDateTime pastDate = timeNow().minusYears(10000);
+        LocalDateTime pastDate = LocalDateTime.now().minusYears(10000);
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(pastDate, pastDate.plusDays(1)));
 
@@ -71,7 +71,7 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
 
     @Test
     void shouldNotReturnAnErrorWhenHearingDateIsSetInDistantFuture() {
-        LocalDateTime futureDate = timeNow().plusYears(1000);
+        LocalDateTime futureDate = LocalDateTime.now().plusYears(1000);
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(futureDate, futureDate.plusDays(1)));
 
@@ -80,7 +80,7 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
 
     @Test
     void shouldReturnAnErrorWhenExistingBookingIsUpdatedToPastDate() {
-        LocalDateTime date = timeNow().plusDays(5);
+        LocalDateTime date = LocalDateTime.now().plusDays(5);
         UUID hearingId = randomUUID();
 
         List<Element<HearingBooking>> newHearingBooking = listBookingWithStartDate(hearingId, date.minusYears(1));
