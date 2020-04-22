@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 
@@ -23,9 +24,9 @@ public class CaseSubmissionService  {
 
     public Document generateSubmittedFormPDF(final CaseData caseData, final String pdfFileName)
             throws IOException {
-        DocmosisSubmittedForm submittedFormData = documentGenerationService.getTemplateData(caseData);
+        Map<String, Object> submittedFormData = documentGenerationService.getTemplateData(caseData, false);
 
-        DocmosisDocument document = docmosisDocumentGeneratorService.generatedDocmosisDocument(
+        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             submittedFormData, C110A);
 
         return uploadDocumentService.uploadPDF(document.getBytes(), pdfFileName);

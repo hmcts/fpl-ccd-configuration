@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
+import uk.gov.hmcts.reform.fpl.model.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.DocmosisHearingPreferences;
@@ -38,4 +39,5 @@ public class DocmosisSubmittedForm implements DocmosisData {
     private final DocmosisRisks risks;
     private final DocmosisFactorsParenting factorsParenting;
     private final Proceeding proceeding;
+    private final DocmosisAnnexDocuments annexDocuments;
 }

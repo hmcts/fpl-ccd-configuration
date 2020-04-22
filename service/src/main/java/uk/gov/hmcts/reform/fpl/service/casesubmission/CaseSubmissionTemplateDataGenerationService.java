@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.DocmosisHearingPreferences;
@@ -28,6 +29,8 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
+import uk.gov.hmcts.reform.fpl.model.common.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
@@ -42,6 +45,7 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
@@ -55,6 +59,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private static final String DEFAULT_STRING = "-";
     private static final String YES = "Yes";
     private static final String NO = "No";
+    private static final String STATUS_ATTACHED = "Attached";
 
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
@@ -79,11 +84,13 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
                 caseData.getGroundsForEPO()))
             .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
+            .annexDocuments(b)
             .userFullName(userDetailsService.getUserName());
         applicationFormBuilder.courtseal((!draft ? format(BASE_64, generateCourtSealEncodedString())
             : format(BASE_64, generateDraftWatermarkEncodedString())));
 
-        return objectMapper.convertValue(applicationFormBuilder.build(), new TypeReference<>() {});
+        return objectMapper.convertValue(applicationFormBuilder.build(), new TypeReference<>() {
+        });
     }
 
     private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
@@ -233,6 +240,41 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .build();
     }
 
+    private DocmosisAnnexDocuments buildDocmosisAnnexDocuments(final CaseData caseData) {
+        return DocmosisAnnexDocuments.builder()
+            .socialWorkChronology(getDisplayData(caseData.getSocialWorkChronologyDocument()))
+            .socialWorkStatement(getDisplayData(caseData.getSocialWorkStatementDocument()))
+            .socialWorkAssessment(getDisplayData(caseData.getSocialWorkAssessmentDocument()))
+            .socialWorkCarePlan(getDisplayData(caseData.getSocialWorkCarePlanDocument()))
+            .socialWorkEvidenceTemplate(getDisplayData(caseData.getSocialWorkEvidenceTemplateDocument()))
+            .thresholdDocument(getDisplayData(caseData.getThresholdDocument()))
+            .checklistDocument(getDisplayData(caseData.getChecklistDocument()))
+            .otherSocialWorkDocuments(getDisplayData(caseData.getOtherSocialWorkDocuments()))
+            .build();
+    }
+
+    private String getDisplayData(Document document) {
+        if (isNotEmpty(document) && StringUtils.isNotEmpty(document.getDocumentStatus())) {
+            StringBuilder sb = new StringBuilder(document.getDocumentStatus());
+            if (equalsIgnoreCase(document.getDocumentStatus(), STATUS_ATTACHED) &&
+                StringUtils.isNotEmpty(document.getStatusReason())) {
+                sb.append(NEW_LINE).append(document.getStatusReason());
+            }
+            return sb.toString();
+
+        }
+        return DEFAULT_STRING;
+    }
+
+    private List<String> getDisplayData(List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
+        return otherSocialWorkDocuments.stream()
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .map(document ->
+                StringUtils.isNotEmpty(document.getDocumentTitle())
+                    ? document.getDocumentTitle() : DEFAULT_STRING)
+            .collect(toList());
+    }
 
     private DocmosisHearingPreferences buildDocmosisHearingPreferences(
         final HearingPreferences hearingPreferences) {
