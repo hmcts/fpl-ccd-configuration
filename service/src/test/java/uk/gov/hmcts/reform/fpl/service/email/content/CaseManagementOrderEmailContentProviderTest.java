@@ -59,7 +59,9 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .put("reference", "12345")
             .build();
 
-        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(createCase(), "testName")).isEqualTo(expectedMap);
+        assertThat(caseManagementOrderEmailContentProvider
+            .buildCMOIssuedCaseLinkNotificationParameters(createCase(), "testName"))
+            .isEqualTo(expectedMap);
     }
 
     @Test
@@ -72,7 +74,9 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .put("reference", "12345")
             .build();
 
-        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(createCase(), "testName", new byte[]{})).isEqualTo(expectedMap);
+        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
+            createCase(), "testName", new byte[]{}))
+            .isEqualTo(expectedMap);
     }
 
     @Test
@@ -92,7 +96,9 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .build();
 
         String expected = objectMapper.writeValueAsString(expectedMap);
-        String actual = objectMapper.writeValueAsString(caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(createCase(), "testName", documentContentAsByte));
+        String actual = objectMapper.writeValueAsString(
+            caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
+                createCase(), "testName", documentContentAsByte));
 
         JSONAssert.assertEquals(expected, actual, true);
     }
@@ -120,7 +126,8 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .put("reference", "12345")
             .build();
 
-        assertThat(caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(createCase())).isEqualTo(expectedMap);
+        assertThat(caseManagementOrderEmailContentProvider
+            .buildCMORejectedByJudgeNotificationParameters(createCase())).isEqualTo(expectedMap);
     }
 
     @Test
@@ -134,7 +141,8 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .put("reference", "12345")
             .build();
 
-        assertThat(caseManagementOrderEmailContentProvider.buildCMOReadyForJudgeReviewNotificationParameters(createCase())).isEqualTo(expectedMap);
+        assertThat(caseManagementOrderEmailContentProvider
+            .buildCMOReadyForJudgeReviewNotificationParameters(createCase())).isEqualTo(expectedMap);
     }
 
     String buildCaseUrl(String caseId) {

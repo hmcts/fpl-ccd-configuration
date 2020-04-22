@@ -69,7 +69,8 @@ class PeopleInCaseHelperTest {
 
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(representatives);
 
-        assertThat(formattedRepresentatives).containsExactlyInAnyOrder("John Smith\nA1, CR0 2GE", "Adam Black\nFlat 2, SE16 AB1");
+        assertThat(formattedRepresentatives)
+            .containsExactlyInAnyOrder("John Smith\nA1, CR0 2GE", "Adam Black\nFlat 2, SE16 AB1");
     }
 
     @Test

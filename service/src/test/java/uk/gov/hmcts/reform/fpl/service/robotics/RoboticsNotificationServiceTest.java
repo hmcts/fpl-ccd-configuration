@@ -89,7 +89,8 @@ public class RoboticsNotificationServiceTest {
 
     @Test
     void shouldSkipRobiticsNotificationWhenNoCaseDataIsEmpty() {
-        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(CaseDetails.builder().build()));
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(
+            new CaseNumberAdded(CaseDetails.builder().build()));
         verify(emailService, never()).sendEmail(any(), any());
     }
 

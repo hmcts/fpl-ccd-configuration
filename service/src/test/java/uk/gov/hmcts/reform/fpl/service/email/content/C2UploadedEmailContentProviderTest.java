@@ -40,7 +40,8 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
             .put("reference","12345")
             .build();
 
-        assertThat(c2UploadedEmailContentProvider.buildC2UploadNotification(populatedCaseDetails())).isEqualTo(expectedMap);
+        assertThat(c2UploadedEmailContentProvider.buildC2UploadNotification(populatedCaseDetails()))
+            .isEqualTo(expectedMap);
     }
 
     @Test
@@ -49,7 +50,8 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
             .put("caseUrl", buildCaseUrl("12345"))
             .build();
 
-        assertThat(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(createCase())).isEqualTo(expectedMap);
+        assertThat(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(createCase()))
+            .isEqualTo(expectedMap);
     }
 
     String buildCaseUrl(String caseId) {

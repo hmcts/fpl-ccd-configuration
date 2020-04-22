@@ -11,10 +11,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.util.List;
 import java.util.Optional;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
@@ -37,21 +37,24 @@ public class HasDocumentsIncludedInSwetValidatorTest {
 
     @Test
     void shouldReturnAnErrorIfDocumentStatusIsIncludedInSwetButSwetDocumentWasNotAttached() {
-        CaseData caseData = getCaseData(getDocument(null, ATTACHED), getDocument(null, INCLUDED_IN_SWET));
+        CaseData caseData = getCaseData(
+            getDocument(null, ATTACHED), getDocument(null, INCLUDED_IN_SWET));
         List<String> errorMessages = validateGroupService.validateGroup(caseData, UploadDocumentsGroup.class);
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnAnErrorIfDocumentStatusIsIncludedInSwetButSwetDocumentWasNotAttachedX() {
-        CaseData caseData = getCaseData(getDocument(testDocumentReference(), TO_FOLLOW), getDocument(null, INCLUDED_IN_SWET));
+        CaseData caseData = getCaseData(
+            getDocument(testDocumentReference(), TO_FOLLOW), getDocument(null, INCLUDED_IN_SWET));
         List<String> errorMessages = validateGroupService.validateGroup(caseData, UploadDocumentsGroup.class);
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
     @Test
     void shouldNotReturnAnErrorIfDocumentStatusIsIncludedInSwetAndSwetDocumentWasAttached() {
-        CaseData caseData = getCaseData(getDocument(testDocumentReference(), ATTACHED), getDocument(null, INCLUDED_IN_SWET));
+        CaseData caseData = getCaseData(
+            getDocument(testDocumentReference(), ATTACHED), getDocument(null, INCLUDED_IN_SWET));
 
         List<String> errorMessages = validateGroupService.validateGroup(caseData, UploadDocumentsGroup.class);
         assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
