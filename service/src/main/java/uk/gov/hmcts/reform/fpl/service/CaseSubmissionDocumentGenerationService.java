@@ -61,9 +61,9 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
             .allocation(caseData.getAllocationProposal())
             .hearing(caseData.getHearing())
             .hearingPreferences(caseData.getHearingPreferences())
-            .internationalElement(getDocmosisInternationalElement(caseData.getInternationalElement()))
-            .risks(getDocmosisRisks(caseData.getRisks()))
-            .factorsParenting(getDocmosisFactorsParenting(caseData.getFactorsParenting()))
+            .internationalElement(buildDocmosisInternationalElement(caseData.getInternationalElement()))
+            .risks(buildDocmosisRisks(caseData.getRisks()))
+            .factorsParenting(buildDocmosisFactorsParenting(caseData.getFactorsParenting()))
             .proceeding(caseData.getProceeding())
             .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO()))
