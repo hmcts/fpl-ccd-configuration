@@ -6,30 +6,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Map;
-import javax.annotation.PostConstruct;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProviderTest.BASE_URL;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { JacksonAutoConfiguration.class, C2UploadedEmailContentProvider.class })
+@TestPropertySource(properties = {"ccd.ui.base.url=" + BASE_URL})
 class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final Long CASE_ID = 12345L;
 
     @Autowired
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
-
-    @PostConstruct
-    void setField() {
-        ReflectionTestUtils.setField(c2UploadedEmailContentProvider, "uiBaseUrl", BASE_URL);
-    }
 
     @Test
     void shouldReturnExpectedMapWithGivenCaseDetails() {

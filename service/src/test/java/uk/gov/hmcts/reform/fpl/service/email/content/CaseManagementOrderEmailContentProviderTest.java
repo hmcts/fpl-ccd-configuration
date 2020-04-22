@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
@@ -9,8 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -23,31 +22,24 @@ import uk.gov.hmcts.reform.fpl.utils.AssertionHelper;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.apache.commons.lang3.RandomUtils.nextBytes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProviderTest.BASE_URL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseManagementOrderEmailContentProvider.class})
+@TestPropertySource(properties = {"ccd.ui.base.url=" + BASE_URL})
 class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final Long CASE_ID = 12345L;
 
     @Autowired
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @PostConstruct
-    void setField() {
-        ReflectionTestUtils.setField(caseManagementOrderEmailContentProvider, "uiBaseUrl", BASE_URL);
-    }
 
     @Test
     void shouldBuildCMOIssuedCaseLinkNotificationExpectedParameters() {
