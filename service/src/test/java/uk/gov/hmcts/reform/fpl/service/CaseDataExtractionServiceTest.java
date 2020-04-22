@@ -10,10 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
@@ -214,6 +211,48 @@ class CaseDataExtractionServiceTest {
             .getStandardOrderDirectionData(caseData);
 
         assertThat(template.getRespondents().isEmpty());
+    }
+
+    @Test
+    void shouldIncludeRespondentWhenRelationshipToChildIsPresent() throws IOException {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
+            .hearingDetails(createHearingBookings())
+            .dateSubmitted(LocalDate.now())
+            .respondents1(wrapElements(Respondent.builder().party(RespondentParty.builder()
+                .relationshipToChild("Sister").build()).build()))
+            .applicants(createPopulatedApplicants())
+            .standardDirectionOrder(createStandardDirectionOrders(TODAY.atStartOfDay(), SEALED))
+            .build();
+
+        DocmosisStandardDirectionOrder template = caseDataExtractionService
+            .getStandardOrderDirectionData(caseData);
+
+        assertThat(template.getRespondents().get(0).getRelationshipToChild().equals("Sister"));
+        assertThat(template.getRespondents().get(0).getName().isEmpty());
+    }
+
+    @Test
+    void shouldIncludeRespondentWhenRespondentNameIsPresent() throws IOException {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
+            .hearingDetails(createHearingBookings())
+            .dateSubmitted(LocalDate.now())
+            .respondents1(wrapElements(Respondent.builder().party(RespondentParty.builder()
+                .firstName("Marty").build()).build()))
+            .applicants(createPopulatedApplicants())
+            .standardDirectionOrder(createStandardDirectionOrders(TODAY.atStartOfDay(), SEALED))
+            .build();
+
+        DocmosisStandardDirectionOrder template = caseDataExtractionService
+            .getStandardOrderDirectionData(caseData);
+
+        assertThat(template.getRespondents().get(0).getName().equals("Marty"));
+        assertThat(template.getRespondents().get(0).getRelationshipToChild().isEmpty());
     }
 
     private List<DocmosisDirection> getExpectedDirections() {
