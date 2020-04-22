@@ -273,7 +273,11 @@ pitest {
   // Rolling back to just the unit tests, the integration tests seem to break jenkins
   testSourceSets.set([sourceSets.test/*, sourceSets.integrationTest*/])
   // Excluding controllers until integration tests are working
-  excludedClasses.set(['uk.gov.hmcts.reform.fpl.controllers.*', 'uk.gov.hmcts.reform.fpl.config.*'])
+  excludedClasses.set([
+    'uk.gov.hmcts.reform.fpl.controllers.*',
+    'uk.gov.hmcts.reform.fpl.config.*',
+    'uk.gov.hmcts.reform.fpl.exceptions.*'
+  ])
   threads.set(10)
   enableDefaultIncrementalAnalysis.set(true)
   outputFormats.set(['XML', 'HTML'])
