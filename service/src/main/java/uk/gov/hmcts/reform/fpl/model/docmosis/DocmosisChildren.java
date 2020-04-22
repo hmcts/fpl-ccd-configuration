@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DocmosisChild {
+public class DocmosisChildren {
     private final String name;
     private final String age;
     private final String gender;

@@ -8,15 +8,13 @@ import javax.validation.ConstraintValidatorContext;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusOf;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusSet;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentUploaded;
 
 public class HasAttachedDocumentValidator implements ConstraintValidator<HasAttachedDocument, Document> {
     @Override
     public boolean isValid(Document document, ConstraintValidatorContext constraintValidatorContext) {
-        if (!hasDocumentStatusSet(document)) {
-            return true;
-        } else if (hasDocumentStatusOf(document, ATTACHED)) {
+
+        if (hasDocumentStatusOf(document, ATTACHED)) {
             return hasDocumentUploaded(document);
         }
 

@@ -14,7 +14,8 @@ import javax.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentWithAttachedFile;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.TO_FOLLOW;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentWithStatus;
 
 @ExtendWith(SpringExtension.class)
 public class HasAttachedDocumentValidatorTest {
@@ -38,7 +39,28 @@ public class HasAttachedDocumentValidatorTest {
 
     @Test
     void shouldNotReturnAnErrorWhenStatusIsAttachedAndDocumentIsAttached() {
-        Document document = createDocumentWithAttachedFile();
+        Document document = createDocumentWithStatus(ATTACHED);
+        List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
+        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldNotReturnAnErrorWhenDocumentIsAttachedWithoutStatus() {
+        Document document = createDocumentWithStatus(null);
+        List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
+        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldNotReturnAnErrorWhenDocumentIsNotAttached() {
+        Document document = Document.builder().build();
+        List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
+        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldNotReturnAnErrorWhenDocumentStatusIsNotAttached() {
+        Document document = createDocumentWithStatus(TO_FOLLOW);
         List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
         assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
     }
