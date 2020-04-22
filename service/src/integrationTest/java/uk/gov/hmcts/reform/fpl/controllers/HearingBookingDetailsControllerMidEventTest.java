@@ -52,8 +52,8 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
     }
 
     @Test
-    void shouldReturnAnErrorWhenHearingDateIsSetToEarlierToday() {
-        LocalDateTime today = timeNow().minusMinutes(1);
+    void shouldReturnAnErrorWhenHearingDateIsSetToToday() {
+        LocalDateTime today = LocalDateTime.now(); // this needs to use LocalDateTime due to @Future validator
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(createHearing(today, today.plusDays(1)));
 
