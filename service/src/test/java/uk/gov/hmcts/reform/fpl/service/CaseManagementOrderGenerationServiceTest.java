@@ -8,8 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
@@ -28,7 +31,6 @@ import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.emptyList;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -37,10 +39,16 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
+import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_2;
+import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_2;
+import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_4;
 import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderGenerationService.class})
@@ -52,37 +60,67 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 })
 class CaseManagementOrderGenerationServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
-    private static final String COURT_NAME = "Family Court";
-    private static final String HEARING_VENUE = "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW";
+    private static final String COMPLETION_DATE_AND_TIME = "by 10:00am, 1 January 2099";
 
     @Autowired
     private CaseManagementOrderGenerationService service;
 
     @Test
     void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() throws IOException {
-        CaseData caseData = CaseData.builder()
+        DocmosisCaseManagementOrder templateData = service.getTemplateData(baseCaseData().build());
+
+        assertThat(templateData).isEqualToComparingFieldByField(caseManagementOrderWithEmptyFields(templateData));
+    }
+
+    @Test
+    void directionsShouldFormatAsExpectedWhenMultipleRespondentsAndOthers() throws IOException {
+        DocmosisCaseManagementOrder templateData = service.getTemplateData(caseDataWithDirections());
+
+        assertThat(templateData.getDirections()).containsExactly(getDocmosisDirections());
+    }
+
+    @Test
+    void directionShouldRemainGroupedByRespondentWhenMultipleDirectionsForDifferentRespondents() throws IOException {
+        List<Element<Direction>> respondentDirections = wrapElements(
+            direction(RESPONDENT_4, "Direction title 6"),
+            direction(RESPONDENT_1, "Direction title 2"),
+            direction(RESPONDENT_2, "Direction title 4"),
+            direction(RESPONDENT_1, "Direction title 3"),
+            direction(RESPONDENT_2, "Direction title 5"));
+
+        CaseData caseData = caseDataWithRespondentDirections(respondentDirections);
+
+        DocmosisCaseManagementOrder templateData = service.getTemplateData(caseData);
+
+        assertThat(templateData.getDirections()).containsExactly(correctlyOrderedDirections());
+    }
+
+    //TODO: this test can probably factor in the above two tests, whoever the buildCaseDataForCMODocmosisGeneration
+    // method and the methods it uses internally are heavily intertwined.
+    @Test
+    void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
+        DocmosisCaseManagementOrder templateData = service.getTemplateData(buildCaseDataForCMODocmosisGeneration(NOW));
+
+        //template data needs to be passed in for the draft and court seal image assertions.
+        assertThat(templateData).isEqualToComparingFieldByField(expectedCaseManagementOrder(templateData));
+    }
+
+    private CaseData.CaseDataBuilder baseCaseData() {
+        return CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
             .children1(emptyList())
             .dateSubmitted(NOW.toLocalDate())
             .respondents1(emptyList())
             .applicants(emptyList())
-            .schedule(Schedule.builder().includeSchedule("No").build())
-            .caseManagementOrder(CaseManagementOrder.builder().build())
-            .build();
-
-        DocmosisCaseManagementOrder templateData = service.getTemplateData(caseData);
-
-        assertThat(templateData).isEqualToComparingFieldByField(caseManagementOrderWithEmptyFields(templateData));
+            .schedule(Schedule.builder().includeSchedule("No").build());
     }
 
-    @Test
-    void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
-        CaseData caseData = buildCaseDataForCMODocmosisGeneration(NOW);
-        DocmosisCaseManagementOrder templateData = service.getTemplateData(caseData);
-
-        //template data needs to be passed in for the draft and court seal image assertions.
-        assertThat(templateData).isEqualToComparingFieldByField(expectedCaseManagementOrder(templateData));
+    private CaseData caseDataWithRespondentDirections(List<Element<Direction>> respondentDirections) {
+        return baseCaseData()
+            .respondentDirectionsCustomCMO(respondentDirections)
+            .allPartiesCustomCMO(wrapElements(direction()))
+            .build();
     }
 
     private DocmosisCaseManagementOrder caseManagementOrderWithEmptyFields(DocmosisCaseManagementOrder templateData) {
@@ -119,10 +157,95 @@ class CaseManagementOrderGenerationServiceTest {
             .build();
     }
 
+    private DocmosisDirection expectedDirection(DirectionAssignee assignee, String header, String title) {
+        return DocmosisDirection.builder()
+            .assignee(assignee)
+            .header(header)
+            .title(title + COMPLETION_DATE_AND_TIME)
+            .body("Mock direction text")
+            .build();
+    }
+
+    private DocmosisDirection[] correctlyOrderedDirections() {
+        return new DocmosisDirection[]{
+            expectedDirection(ALL_PARTIES, null, "2. Direction title 1 "),
+            expectedDirection(PARENTS_AND_RESPONDENTS, "For Respondent 1", "3. Direction title 2 "),
+            expectedDirection(PARENTS_AND_RESPONDENTS, null, "4. Direction title 3 "),
+            expectedDirection(PARENTS_AND_RESPONDENTS, "For Respondent 2", "5. Direction title 4 "),
+            expectedDirection(PARENTS_AND_RESPONDENTS, null, "6. Direction title 5 "),
+            expectedDirection(PARENTS_AND_RESPONDENTS, "For Respondent 4", "7. Direction title 6 ")
+        };
+    }
+
+    private DocmosisDirection[] getDocmosisDirections() {
+        return new DocmosisDirection[]{
+            expectedDirection(ALL_PARTIES, null, "2. Direction title 1 "),
+            expectedDirection(PARENTS_AND_RESPONDENTS, "For Respondent 1", "3. Direction title 2 "),
+            expectedDirection(PARENTS_AND_RESPONDENTS, null, "4. Direction title 3 "),
+            expectedDirection(PARENTS_AND_RESPONDENTS, "For Respondent 2", "5. Direction title 4 "),
+            expectedDirection(OTHERS, "For Person 1", "6. Direction title 5 "),
+            expectedDirection(OTHERS, null, "7. Direction title 6 "),
+            expectedDirection(OTHERS, "For Other person 1", "8. Direction title 7 ")
+        };
+    }
+
+    private List<DocmosisDirection> expectedDirections() {
+        return List.of(
+            expectedDirection(ALL_PARTIES, null, "2. Direction title "),
+            expectedDirection(LOCAL_AUTHORITY, null, "3. Direction title "),
+            expectedDirection(PARENTS_AND_RESPONDENTS, "For Respondent 1", "4. Direction title "),
+            expectedDirection(CAFCASS, null, "5. Direction title "),
+            expectedDirection(OTHERS, "For Person 1", "6. Direction title "),
+            expectedDirection(COURT, null, "7. Direction title ")
+        );
+    }
+
+    private CaseData caseDataWithDirections() {
+        return baseCaseData()
+            .respondentDirectionsCustomCMO(respondentDirections())
+            .otherPartiesDirectionsCustomCMO(otherDirections())
+            .allPartiesCustomCMO(wrapElements(direction()))
+            .build();
+    }
+
+    private List<Element<Direction>> respondentDirections() {
+        return wrapElements(
+            direction(RESPONDENT_1, "Direction title 2"),
+            direction(RESPONDENT_1, "Direction title 3"),
+            direction(RESPONDENT_2, "Direction title 4"));
+    }
+
+    private List<Element<Direction>> otherDirections() {
+        return wrapElements(
+            direction(OTHER_1, "Direction title 5"),
+            direction(OTHER_1, "Direction title 6"),
+            direction(OTHER_2, "Direction title 7"));
+    }
+
+    private Direction.DirectionBuilder getBaseDirection(String title, Direction.DirectionBuilder builder) {
+        return builder
+            .directionType(title)
+            .directionText("Mock direction text")
+            .dateToBeCompletedBy(LocalDateTime.of(2099, 1, 1, 10, 0, 0));
+    }
+
+    private Direction direction() {
+        return getBaseDirection("Direction title 1", Direction.builder()).build();
+    }
+
+    private Direction direction(ParentsAndRespondentsDirectionAssignee specificRespondent, String title) {
+        return getBaseDirection(title, Direction.builder().parentsAndRespondentsAssignee(specificRespondent)).build();
+    }
+
+    private Direction direction(OtherPartiesDirectionAssignee specificOther, String title) {
+        return getBaseDirection(title, Direction.builder().otherPartiesAssignee(specificOther)).build();
+    }
+
     private DocmosisCaseManagementOrder expectedCaseManagementOrder(DocmosisCaseManagementOrder templateData) {
         String hearingDateOnDifferentDays = "";
+
         return DocmosisCaseManagementOrder.builder()
-            .courtName(COURT_NAME)
+            .courtName("Family Court")
             .familyManCaseNumber("123")
             .dateOfIssue(formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG))
@@ -134,7 +257,7 @@ class CaseManagementOrderGenerationServiceTest {
             .representatives(getExpectedRepresentatives())
             .hearingBooking(DocmosisHearingBooking.builder()
                 .hearingDate(hearingDateOnDifferentDays)
-                .hearingVenue(HEARING_VENUE)
+                .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
                 .preHearingAttendance(formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "d MMMM yyyy, h:mma"))
                 .hearingTime(getHearingTime())
                 .build())
@@ -150,17 +273,6 @@ class CaseManagementOrderGenerationServiceTest {
             .draftbackground(templateData.getDraftbackground())
             .courtseal(templateData.getCourtseal())
             .build();
-    }
-
-    private List<DocmosisDirection> expectedDirections() {
-        return List.of(
-            getExpectedDirection(1, ALL_PARTIES, null),
-            getExpectedDirection(2, LOCAL_AUTHORITY, null),
-            getExpectedDirection(3, PARENTS_AND_RESPONDENTS, "Respondent 1"),
-            getExpectedDirection(4, PARENTS_AND_RESPONDENTS, null),
-            getExpectedDirection(5, CAFCASS, null),
-            getExpectedDirection(6, OTHERS, "Person 1"),
-            getExpectedDirection(7, COURT, null));
     }
 
     private List<DocmosisRepresentative> getExpectedRepresentatives() {
@@ -260,23 +372,6 @@ class CaseManagementOrderGenerationServiceTest {
             DocmosisRespondent.builder()
                 .name("Sarah Simpson")
                 .relationshipToChild("Mother")
-                .build());
-    }
-
-    private DocmosisDirection getExpectedDirection(int index, DirectionAssignee assignee, String header) {
-        String directionTitle = String.format("%d. Direction title by 10:00am, 1 January 2099", index);
-
-        return ofNullable(header)
-            .map(x -> DocmosisDirection.builder()
-                .header(String.format("For %s", x))
-                .assignee(assignee)
-                .title(directionTitle)
-                .body("Mock direction text")
-                .build())
-            .orElse(DocmosisDirection.builder()
-                .assignee(assignee)
-                .title(directionTitle)
-                .body("Mock direction text")
                 .build());
     }
 
