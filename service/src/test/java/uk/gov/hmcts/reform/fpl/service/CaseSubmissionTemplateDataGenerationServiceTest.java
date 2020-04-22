@@ -8,9 +8,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CaseSubmissionDocumentGenerationService.class, JacksonAutoConfiguration.class,
+@ContextConfiguration(classes = {CaseSubmissionTemplateDataGenerationService.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class})
-public class CaseSubmissionDocumentGenerationServiceTest {
+public class CaseSubmissionTemplateDataGenerationServiceTest {
     @MockBean
     private UserDetailsService userDetailsService;
 }

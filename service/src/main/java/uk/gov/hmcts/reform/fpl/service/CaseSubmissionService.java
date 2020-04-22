@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 public class CaseSubmissionService  {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final CaseSubmissionDocumentGenerationService documentGenerationService;
+    private final CaseSubmissionTemplateDataGenerationService documentGenerationService;
 
     public Document generateSubmittedFormPDF(final CaseData caseData, final String pdfFileName)
             throws IOException {

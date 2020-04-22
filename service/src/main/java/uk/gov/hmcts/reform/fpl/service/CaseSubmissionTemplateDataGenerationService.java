@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
-public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDataGeneration<DocmosisSubmittedForm> {
+public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration<DocmosisSubmittedForm> {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
     private static final String BLANK_STRING = "";
