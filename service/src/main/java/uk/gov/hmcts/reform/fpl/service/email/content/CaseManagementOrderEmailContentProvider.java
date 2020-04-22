@@ -11,13 +11,12 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
-import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 @Slf4j
 @Service
@@ -102,14 +101,10 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     }
 
     private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
-
         ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
 
-        try {
-            url.put("link_to_document", prepareUpload(documentContents));
-        } catch (NotificationClientException e) {
-            log.error("Unable to send notification for cafcass due to ", e);
-        }
+        generateAttachedDocumentLink(documentContents).ifPresent(
+            attachedDocumentLink -> url.put("link_to_document", attachedDocumentLink));
 
         return url.build();
     }
