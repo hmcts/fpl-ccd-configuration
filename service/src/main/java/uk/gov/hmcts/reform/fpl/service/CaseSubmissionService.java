@@ -61,8 +61,7 @@ public class CaseSubmissionService extends DocmosisTemplateDataGeneration<Docmos
                 .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
                 .allocation(caseData.getAllocationProposal())
                 .hearing(caseData.getHearing())
-                .hearingPreferences(caseData.getHearingPreferences())
-                .internationalElement(caseData.getInternationalElement())
+                .hearingPref(caseData.getHearingPreferences())
                 .userFullName(userFullName);
         applicationFormBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
 
