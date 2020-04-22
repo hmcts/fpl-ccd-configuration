@@ -47,7 +47,7 @@ public class LocalAuthorityUserService {
                                             String caseLocalAuthority) {
         List<String> userIds = findUserIds(caseLocalAuthority);
 
-        String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
+        String authentication = client.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
         Stream.concat(userIds.stream(), Stream.of(requestData.userId()))
             .distinct()
             .parallel()

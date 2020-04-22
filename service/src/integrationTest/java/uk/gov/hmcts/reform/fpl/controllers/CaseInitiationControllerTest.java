@@ -64,7 +64,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(client.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(userAuthToken);
+        given(client.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(userAuthToken);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 

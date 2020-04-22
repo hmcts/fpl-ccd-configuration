@@ -90,7 +90,7 @@ class PopulateStandardDirectionsHandlerTest {
         populateStandardDirectionsHandler = new PopulateStandardDirectionsHandler(objectMapper, ordersLookupService,
             coreCaseDataApi, authTokenGenerator, idamClient, userConfig, commonDirectionService, hearingBookingService);
 
-        given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
+        given(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
 
         given(idamClient.getUserInfo(TOKEN)).willReturn(UserInfo.builder()
             .uid(USER_ID)
