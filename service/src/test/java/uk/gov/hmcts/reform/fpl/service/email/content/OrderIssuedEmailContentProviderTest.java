@@ -32,8 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    HearingBookingService.class
+    JacksonAutoConfiguration.class, OrderIssuedEmailContentProvider.class, LookupTestConfig.class
 })
 @TestPropertySource(properties = {"ccd.ui.base.url=" + BASE_URL})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
