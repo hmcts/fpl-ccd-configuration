@@ -121,7 +121,7 @@ module.exports = function () {
 
     signOut() {
       this.click('Sign Out');
-      this.waitForText('Sign in', 10);
+      this.waitForText('Sign in', 20);
     },
 
     async navigateToCaseDetails(caseId) {
