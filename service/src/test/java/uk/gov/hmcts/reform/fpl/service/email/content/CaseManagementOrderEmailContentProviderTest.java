@@ -137,7 +137,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     }
 
     String buildCaseUrl() {
-        return formatCaseUrl(BASE_URL, CaseManagementOrderEmailContentProviderTest.CASE_ID);
+        return formatCaseUrl(BASE_URL, CASE_ID);
     }
 
     private CaseDetails createCase() {

@@ -51,7 +51,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     }
 
     String buildCaseUrl() {
-        return formatCaseUrl(BASE_URL, C2UploadedEmailContentProviderTest.CASE_ID);
+        return formatCaseUrl(BASE_URL, CASE_ID);
     }
 
     private static CaseDetails createCase() {
