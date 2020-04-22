@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.docmosis;
 
-import java.util.List;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,11 +7,12 @@ import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
-import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+
+import java.util.List;
+
 @Data
 @EqualsAndHashCode
 @Builder(builderClassName = "Builder")
