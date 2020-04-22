@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
@@ -38,6 +40,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(DraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
+    @Autowired
+    private Time time;
 
     DraftOrdersControllerAboutToStartTest() {
         super("draft-standard-directions");

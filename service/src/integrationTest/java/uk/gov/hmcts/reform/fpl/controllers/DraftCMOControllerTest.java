@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -35,6 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyMap;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,7 +53,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -118,23 +117,20 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         final Document document = document();
         final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
 
-        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
 
-        CaseDetails caseDetails = populatedCaseDetails();
-        caseDetails.getData()
-            .put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder().build());
+        CaseDetails caseDetails = buildCaseDetails(emptyMap());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         verify(uploadDocumentService).uploadPDF(pdf, "draft-case-management-order.pdf");
 
-        Map<String, Object> responseCaseData = callbackResponse.getData();
+        final Map<String, Object> responseCaseData = callbackResponse.getData();
 
         assertThat(responseCaseData).containsKey(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
 
-        CaseManagementOrder caseManagementOrder = mapper.convertValue(responseCaseData.get(
+        final CaseManagementOrder caseManagementOrder = mapper.convertValue(responseCaseData.get(
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class);
 
         assertThat(caseManagementOrder.getOrderDoc()).isEqualTo(

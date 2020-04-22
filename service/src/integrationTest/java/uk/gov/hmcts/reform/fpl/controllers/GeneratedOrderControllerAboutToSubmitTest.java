@@ -39,7 +39,6 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -78,7 +77,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         document = document();
         DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", PDF);
 
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(anyMap(), any())).willReturn(docmosisDocument);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
     }
 
