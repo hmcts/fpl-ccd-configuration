@@ -23,7 +23,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -96,7 +95,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         given(noticeOfProceedingsService.getNoticeOfProceedingTemplateData(any()))
             .willReturn(templateData);
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(anyMap(), any()))
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any()))
             .willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any()))
             .willReturn(document);
