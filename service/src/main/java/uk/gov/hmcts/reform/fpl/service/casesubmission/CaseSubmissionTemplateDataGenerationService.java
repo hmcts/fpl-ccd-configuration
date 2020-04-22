@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
+import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
 import java.util.List;
