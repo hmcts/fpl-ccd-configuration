@@ -1,6 +1,5 @@
 const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
-const uploadDocs = require('../fragments/caseDocuments');
 const placementHelper = require('../helpers/placement_helper.js');
 
 let caseId;
@@ -25,20 +24,20 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 
 Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocs.uploadMandatoryDocuments(uploadDocumentsEventPage);
+  uploadDocumentsEventPage.uploadCaseDocuments(config);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  uploadDocs.assertMandatoryDocuments();
+  uploadDocumentsEventPage.assertCaseDocuments();
 });
 
 Scenario('local authority uploads documents when SWET not required', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocs.uploadMandatoryDocuments(uploadDocumentsEventPage, false);
+  uploadDocumentsEventPage.uploadCaseDocuments(config, false);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  uploadDocs.assertMandatoryDocuments(false);
+  uploadDocumentsEventPage.assertCaseDocuments(config, false);
 });
 
 Scenario('local authority uploads court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {

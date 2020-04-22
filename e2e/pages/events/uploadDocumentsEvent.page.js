@@ -101,4 +101,42 @@ module.exports = {
   uploadCourtBundle(file) {
     I.attachFile(this.documents.courtBundle, file);
   },
+
+  uploadCaseDocuments(config, uploadSWET=true) {
+    this.selectSocialWorkChronologyToFollow(config.testFile);
+
+    if (uploadSWET) {
+      this.selectSocialWorkStatementIncludedInSWET();
+    } else {
+      this.uploadSocialWorkStatementAndGenogram(config.testFile);
+    }
+
+    this.uploadSocialWorkAssessment(config.testFile);
+    this.uploadCarePlan(config.testFile);
+
+    if (uploadSWET) {
+      this.uploadSWET(config.testFile);
+    } else {
+      this.selectSWETAsNotRequired();
+    }
+
+    this.uploadThresholdDocument(config.testFile);
+    this.uploadChecklistDocument(config.testFile);
+  },
+
+  assertCaseDocuments(hasUploadedSWET=true) {
+    I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');
+    I.seeDocument('Social work statement and genogram', 'mockFile.txt', 'Attached');
+    I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
+    I.seeDocument('Care plan', 'mockFile.txt', 'Attached');
+
+    if (hasUploadedSWET) {
+      I.seeDocument('Social work evidence template (SWET)', 'mockFile.txt', 'Attached');
+    } else {
+      I.seeDocument('Social work evidence template (SWET)', '', 'Not Required');
+    }
+
+    I.seeDocument('Threshold document', 'mockFile.txt', 'Attached');
+    I.seeDocument('Checklist document', 'mockFile.txt', 'Attached');
+  },
 };

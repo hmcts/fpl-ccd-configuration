@@ -1,5 +1,4 @@
 const config = require('../config.js');
-const uploadDocs = require('../fragments/caseDocuments');
 
 let caseId;
 
@@ -38,11 +37,11 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 
 Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocs.uploadMandatoryDocuments(uploadDocumentsEventPage);
+  uploadDocumentsEventPage.uploadCaseDocuments(config);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  uploadDocs.assertMandatoryDocuments();
+  uploadDocumentsEventPage.assertCaseDocuments();
 });
 
 Scenario('local authority uploads court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
