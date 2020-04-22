@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.docmosis;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Getter
 @AllArgsConstructor
-public class AbstractDocmosisOrder extends AbstractDocmosisData {
+public class DocmosisOrder implements DocmosisData {
     private final DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final String courtName;
     private final String familyManCaseNumber;
@@ -27,8 +28,9 @@ public class AbstractDocmosisOrder extends AbstractDocmosisData {
     private final String draftbackground;
     private final String courtseal;
 
+    @Override
     public Map<String, Object> toMap(ObjectMapper mapper) {
-        Map<String, Object> map = super.toMap(mapper);
+        Map<String, Object> map = mapper.convertValue(this, new TypeReference<>() {});
 
         if (isNotEmpty(this.directions)) {
             map.putAll(this.directions.stream().collect(groupingBy(direction -> direction.assignee.getValue())));

@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class DocmosisStandardDirectionOrder extends AbstractDocmosisOrder {
+public class DocmosisStandardDirectionOrder extends DocmosisOrder {
 
     @Builder
     public DocmosisStandardDirectionOrder(DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor,

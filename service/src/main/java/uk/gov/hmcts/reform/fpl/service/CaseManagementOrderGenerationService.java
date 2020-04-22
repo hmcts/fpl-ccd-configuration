@@ -4,32 +4,24 @@ import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentedBy;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,21 +39,16 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGeneration<DocmosisCaseManagementOrder> {
     private static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
 
+    private final HearingBookingService hearingBookingService;
     private final CommonCaseDataExtractionService dataExtractionService;
     private final DraftCMOService cmoService;
-    private final HearingBookingService hearingBookingService;
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final Time time;
 
     public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) throws IOException {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
@@ -79,14 +66,14 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
-            .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .courtName(dataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
-            .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
-            .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
+            .dateOfIssue(caseManagementOrder.getDateOfIssue())
+            .complianceDeadline(caseData.getComplianceDeadline())
             .children(dataExtractionService.getChildrenDetails(caseData.getAllChildren()))
             .respondents(dataExtractionService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
-            .applicantName(dataExtractionService.getApplicantName(caseData.getApplicants()))
+            .applicantName(dataExtractionService.getApplicantName(caseData.getAllApplicants()))
             .directions(getGroupedCMODirections(caseManagementOrder))
             .hearingBooking(dataExtractionService.getHearingBookingData(nextHearing, HEARING_EMPTY_PLACEHOLDER))
             .representatives(getRepresentatives(caseData))
@@ -99,7 +86,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
             order.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
         }
 
-        if (!caseManagementOrder.isDraft()) {
+        if (caseManagementOrder.isSealed()) {
             order.courtseal(format(BASE_64, generateCourtSealEncodedString()));
         }
 

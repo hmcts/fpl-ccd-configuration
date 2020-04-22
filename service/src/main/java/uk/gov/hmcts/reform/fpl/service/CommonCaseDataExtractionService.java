@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -38,7 +39,12 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 public class CommonCaseDataExtractionService {
     private static final String DEFAULT = "BLANK - please complete";
 
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+
+    String getCourtName(String localAuthority) {
+        return hmctsCourtLookupConfiguration.getCourt(localAuthority).getName();
+    }
 
     String getHearingTime(HearingBooking hearingBooking) {
         String hearingTime;
@@ -76,7 +82,6 @@ public class CommonCaseDataExtractionService {
 
     String getApplicantName(List<Element<Applicant>> applicants) {
         Applicant applicant = applicants.get(0).getValue();
-
         return ofNullable(applicant.getParty())
             .map(ApplicantParty::getOrganisationName)
             .orElse("");
@@ -105,12 +110,16 @@ public class CommonCaseDataExtractionService {
     DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking, String error) {
         return ofNullable(hearingBooking).map(hearing -> {
                 HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
+                DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor =
+                    getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
 
                 return DocmosisHearingBooking.builder()
                     .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
                     .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
                     .preHearingAttendance(extractPrehearingAttendance(hearing))
                     .hearingTime(getHearingTime(hearing))
+                    .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
+                    .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
                     .build();
             }
         ).orElse(DocmosisHearingBooking.builder()

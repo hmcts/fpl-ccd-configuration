@@ -211,7 +211,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             .put("displayAmountToPay", YES.getValue())
             .build();
 
-        doThrow(new PaymentsApiException(1, "", new Throwable())).when(paymentService).makePaymentForC2(any(), any());
+        doThrow(new PaymentsApiException("", new Throwable())).when(paymentService).makePaymentForC2(any(), any());
 
         postSubmittedEvent(createCase(caseData));
 

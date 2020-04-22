@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -40,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -60,6 +62,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Data
 @Builder(toBuilder = true)
@@ -68,7 +71,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
-    private final String gatekeeperEmail;
     private final String caseLocalAuthority;
     private final Risks risks;
     @NotNull(message = "You need to add details to orders and directions needed")
@@ -82,16 +84,11 @@ public class CaseData {
     private final GroundsForEPO groundsForEPO;
     @NotNull(message = "You need to add details to applicant")
     @Valid
-    private final List<@NotNull(message = "You need to add details to applicant")
-        Element<Applicant>> applicants;
+    private final List<@NotNull(message = "You need to add details to applicant") Element<Applicant>> applicants;
 
     @Valid
     @NotNull(message = "You need to add details to respondents")
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
-
-    private Optional<Respondent> getFirstRespondent() {
-        return findRespondent(0);
-    }
 
     private final Proceeding proceeding;
 
@@ -233,14 +230,14 @@ public class CaseData {
     }
 
     @JsonSetter("caseManagementOrder")
-    private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
+    private void setCaseManagementOrderForLocalAuthority(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }
     }
 
     @JsonGetter("cmoToAction")
-    private CaseManagementOrder getCaseManagementOrder_Judiciary() {
+    private CaseManagementOrder getCaseManagementOrderForJudiciary() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
             return caseManagementOrder;
         }
@@ -248,7 +245,7 @@ public class CaseData {
     }
 
     @JsonSetter("cmoToAction")
-    private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
+    private void setCaseManagementOrderForJudiciary(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }
@@ -342,4 +339,10 @@ public class CaseData {
 
     private final String caseNote;
     private final List<Element<CaseNote>> caseNotes;
+    private final List<Element<EmailAddress>> gatekeeperEmails;
+
+    @JsonIgnore
+    public String getComplianceDeadline() {
+        return formatLocalDateToString(dateSubmitted.plusWeeks(26), FormatStyle.LONG);
+    }
 }

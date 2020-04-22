@@ -88,7 +88,7 @@ class ConfidentialDetailsServiceTest {
         void shouldAddEmptyElementWhenChildrenIsEmpty() {
             List<Element<Child>> elements = service.prepareCollection(List.of(), List.of(), Child.expandCollection());
 
-            assertThat(elements.get(0).getValue().getParty().partyId).isNotNull();
+            assertThat(elements.get(0).getValue().getParty().getPartyId()).isNotNull();
         }
 
         @Test
@@ -300,7 +300,7 @@ class ConfidentialDetailsServiceTest {
             List<Element<Respondent>> elements = service.prepareCollection(
                 List.of(), List.of(), Respondent.expandCollection());
 
-            assertThat(elements.get(0).getValue().getParty().partyId).isNotNull();
+            assertThat(elements.get(0).getValue().getParty().getPartyId()).isNotNull();
         }
 
         @Test

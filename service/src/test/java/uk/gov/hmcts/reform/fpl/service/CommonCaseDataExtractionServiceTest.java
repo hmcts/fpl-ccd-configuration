@@ -3,9 +3,12 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -14,7 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = CommonCaseDataExtractionService.class)
+@SpringBootTest(classes = {CommonCaseDataExtractionService.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, HearingVenueLookUpService.class, LookupTestConfig.class
+})
 class CommonCaseDataExtractionServiceTest {
     private HearingBooking hearingBooking;
 

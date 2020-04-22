@@ -11,12 +11,14 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.AbstractDocmosisData;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -65,7 +67,7 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
         Document document = document();
 
-        given(documentGeneratorService.generateDocmosisDocument(any(AbstractDocmosisData.class), any()))
+        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(docmosisDocument);
 
         given(uploadDocumentService.uploadPDF(PDF, DRAFT_ORDER_FILE_NAME))
@@ -88,6 +90,7 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                 .put("caseLocalAuthority", "example")
                 .put("dateSubmitted", time.now().toLocalDate().toString())
+                .put("applicants", getApplicant())
                 .build())
             .build();
 
@@ -123,6 +126,7 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
                     .build())
                 .put("caseLocalAuthority", "example")
                 .put("dateSubmitted", time.now().toLocalDate().toString())
+                .put("applicants", getApplicant())
                 .build())
             .build();
 
@@ -155,4 +159,11 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
         return wrapElements(direction.toBuilder().directionType("Direction").build());
     }
 
+    private List<Element<Applicant>> getApplicant() {
+        return wrapElements(Applicant.builder()
+            .party(ApplicantParty.builder()
+                .organisationName("")
+                .build())
+            .build());
+    }
 }

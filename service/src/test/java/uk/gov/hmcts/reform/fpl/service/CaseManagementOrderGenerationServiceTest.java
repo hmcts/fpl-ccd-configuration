@@ -8,8 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
@@ -41,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationSe
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderGenerationService.class})
@@ -52,8 +56,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 })
 class CaseManagementOrderGenerationServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
-    private static final String COURT_NAME = "Family Court";
-    private static final String HEARING_VENUE = "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW";
 
     @Autowired
     private CaseManagementOrderGenerationService service;
@@ -66,7 +68,7 @@ class CaseManagementOrderGenerationServiceTest {
             .children1(emptyList())
             .dateSubmitted(NOW.toLocalDate())
             .respondents1(emptyList())
-            .applicants(emptyList())
+            .applicants(getApplicants())
             .schedule(Schedule.builder().includeSchedule("No").build())
             .caseManagementOrder(CaseManagementOrder.builder().build())
             .build();
@@ -98,12 +100,11 @@ class CaseManagementOrderGenerationServiceTest {
             .schedule(Schedule.builder().includeSchedule("No").build())
             .recitals(emptyList())
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
-                .judgeTitleAndName(DEFAULT)
+                .judgeTitleAndName("")
                 .legalAdvisorName("")
                 .build())
             .courtName("Family Court")
             .familyManCaseNumber("123")
-            .dateOfIssue(formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(NOW.plusWeeks(26).toLocalDate(), FormatStyle.LONG))
             .respondents(emptyList())
             .children(emptyList())
@@ -122,7 +123,7 @@ class CaseManagementOrderGenerationServiceTest {
     private DocmosisCaseManagementOrder expectedCaseManagementOrder(DocmosisCaseManagementOrder templateData) {
         String hearingDateOnDifferentDays = "";
         return DocmosisCaseManagementOrder.builder()
-            .courtName(COURT_NAME)
+            .courtName("Family Court")
             .familyManCaseNumber("123")
             .dateOfIssue(formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG))
@@ -134,9 +135,11 @@ class CaseManagementOrderGenerationServiceTest {
             .representatives(getExpectedRepresentatives())
             .hearingBooking(DocmosisHearingBooking.builder()
                 .hearingDate(hearingDateOnDifferentDays)
-                .hearingVenue(HEARING_VENUE)
+                .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
                 .preHearingAttendance(formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "d MMMM yyyy, h:mma"))
                 .hearingTime(getHearingTime())
+                .hearingJudgeTitleAndName("Her Honour Judge Law")
+                .hearingLegalAdvisorName("Peter Parker")
                 .build())
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Law")
@@ -283,5 +286,11 @@ class CaseManagementOrderGenerationServiceTest {
     private String getHearingTime() {
         return String.format("%s - %s", formatLocalDateTimeBaseUsingFormat(NOW, "d MMMM, h:mma"),
             formatLocalDateTimeBaseUsingFormat(NOW.plusDays(1), "d MMMM, h:mma"));
+    }
+
+    private List<Element<Applicant>> getApplicants() {
+        return wrapElements(Applicant.builder()
+            .party(ApplicantParty.builder().organisationName("").build())
+            .build());
     }
 }

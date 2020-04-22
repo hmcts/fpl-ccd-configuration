@@ -45,7 +45,7 @@ public class RoboticsNotificationServiceTest {
     private static final String EMAIL_RECIPIENT = "recipient@example.com";
     private static final String EMAIL_FROM = "no-reply@exaple.com";
 
-    private static long CASE_ID = 12345L;
+    private static final long CASE_ID = 12345L;
 
     private static final LocalDate NOW = LocalDate.now();
 

@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.docmosis.AbstractDocmosisData;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -124,7 +124,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         final Document document = document();
         final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
 
-        given(documentGeneratorService.generateDocmosisDocument(any(AbstractDocmosisData.class), any()))
+        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
 
