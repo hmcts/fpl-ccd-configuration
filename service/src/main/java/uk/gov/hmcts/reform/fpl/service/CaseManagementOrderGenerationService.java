@@ -248,30 +248,19 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
         for (Element<Direction> element : directions) {
             Direction direction = element.getValue();
+            DocmosisDirection.Builder builder = buildBaseDirection(direction, directionNumber++);
 
-            if (direction.getParentsAndRespondentsAssignee() != null) {
-                DocmosisDirection.Builder builder = buildBaseDirection(direction, directionNumber++);
-
-                if (direction.getParentsAndRespondentsAssignee() != respondentHeader) {
-                    respondentHeader = direction.getParentsAndRespondentsAssignee();
-                    builder.header("For " + respondentHeader.getLabel());
-                }
-
-                formattedDirections.add(builder.build());
-
-            } else if (direction.getOtherPartiesAssignee() != null) {
-                DocmosisDirection.Builder builder = buildBaseDirection(direction, directionNumber++);
-
-                if (direction.getOtherPartiesAssignee() != otherHeader) {
-                    otherHeader = direction.getOtherPartiesAssignee();
-                    builder.header("For " + otherHeader.getLabel());
-                }
-
-                formattedDirections.add(builder.build());
-
-            } else {
-                formattedDirections.add(buildBaseDirection(direction, directionNumber++).build());
+            if (hasNewRespondentAssignee(respondentHeader, direction)) {
+                respondentHeader = direction.getParentsAndRespondentsAssignee();
+                builder.header("For " + respondentHeader.getLabel());
             }
+
+            if (hasNewOtherAssignee(otherHeader, direction)) {
+                otherHeader = direction.getOtherPartiesAssignee();
+                builder.header("For " + otherHeader.getLabel());
+            }
+
+            formattedDirections.add(builder.build());
         }
 
         return formattedDirections.build();
@@ -283,6 +272,17 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
             .title(formatTitle(directionNumber, direction))
             .body(direction.getDirectionText());
     }
+
+    private boolean hasNewOtherAssignee(OtherPartiesDirectionAssignee other, Direction direction) {
+        OtherPartiesDirectionAssignee assignee = direction.getOtherPartiesAssignee();
+        return assignee != null && assignee != other;
+    }
+
+    private boolean hasNewRespondentAssignee(ParentsAndRespondentsDirectionAssignee respondent, Direction direction) {
+        ParentsAndRespondentsDirectionAssignee assignee = direction.getParentsAndRespondentsAssignee();
+        return assignee != null && assignee != respondent;
+    }
+
 
     private String formatTitle(int index, Direction direction) {
         return String.format("%d. %s by %s", index, direction.getDirectionType(),
