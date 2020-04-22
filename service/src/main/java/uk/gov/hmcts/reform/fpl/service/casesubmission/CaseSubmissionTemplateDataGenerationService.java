@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,6 +61,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private static final String YES = "Yes";
     private static final String NO = "No";
     private static final String STATUS_ATTACHED = "Attached";
+    private static LocalDate TODAY = LocalDate.now();
 
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
@@ -70,7 +72,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-            .submittedDate(formatLocalDateToString(caseData.getDateSubmitted(), DATE))
+            .submittedDate(formatLocalDateToString(TODAY, DATE))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
@@ -84,7 +86,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
                 caseData.getGroundsForEPO()))
             .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
-            .annexDocuments(b)
+            .annexDocuments(buildDocmosisAnnexDocuments(caseData))
             .userFullName(userDetailsService.getUserName());
         applicationFormBuilder.courtseal((!draft ? format(BASE_64, generateCourtSealEncodedString())
             : format(BASE_64, generateDraftWatermarkEncodedString())));
@@ -256,7 +258,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private String getDisplayData(Document document) {
         if (isNotEmpty(document) && StringUtils.isNotEmpty(document.getDocumentStatus())) {
             StringBuilder sb = new StringBuilder(document.getDocumentStatus());
-            if (equalsIgnoreCase(document.getDocumentStatus(), STATUS_ATTACHED) &&
+            if (!equalsIgnoreCase(document.getDocumentStatus(), STATUS_ATTACHED) &&
                 StringUtils.isNotEmpty(document.getStatusReason())) {
                 sb.append(NEW_LINE).append(document.getStatusReason());
             }
