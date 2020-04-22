@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,6 +49,8 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -58,10 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
-    private static final String YES = "Yes";
-    private static final String NO = "No";
     private static final String STATUS_ATTACHED = "Attached";
-    private static LocalDate TODAY = LocalDate.now();
 
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
@@ -72,7 +70,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-            .submittedDate(formatLocalDateToString(TODAY, DATE))
+            .submittedDate(formatLocalDateToString(caseData.getDateSubmitted(), DATE))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
@@ -91,8 +89,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         applicationFormBuilder.courtseal((!draft ? format(BASE_64, generateCourtSealEncodedString())
             : format(BASE_64, generateDraftWatermarkEncodedString())));
 
-        return objectMapper.convertValue(applicationFormBuilder.build(), new TypeReference<>() {
-        });
+        return objectMapper.convertValue(applicationFormBuilder.build(), new TypeReference<>() {});
     }
 
     private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
@@ -258,8 +255,8 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private String getDisplayData(Document document) {
         if (isNotEmpty(document) && StringUtils.isNotEmpty(document.getDocumentStatus())) {
             StringBuilder sb = new StringBuilder(document.getDocumentStatus());
-            if (!equalsIgnoreCase(document.getDocumentStatus(), STATUS_ATTACHED) &&
-                StringUtils.isNotEmpty(document.getStatusReason())) {
+            if (!equalsIgnoreCase(document.getDocumentStatus(), STATUS_ATTACHED)
+                && StringUtils.isNotEmpty(document.getStatusReason())) {
                 sb.append(NEW_LINE).append(document.getStatusReason());
             }
             return sb.toString();
@@ -390,15 +387,15 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         StringBuilder sb = new StringBuilder();
         sb.append(toYesOrNoOrDefaultValue(key));
 
-        return (equalsIgnoreCase(key, YES) && StringUtils.isNotEmpty(value))
+        return (equalsIgnoreCase(key, YES.getValue()) && StringUtils.isNotEmpty(value))
             ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
     }
 
     private String toYesOrNoOrDefaultValue(final String yesOrNo) {
-        if (equalsIgnoreCase(yesOrNo, YES)) {
-            return YES;
-        } else if (equalsIgnoreCase(yesOrNo, NO)) {
-            return NO;
+        if (equalsIgnoreCase(yesOrNo, YES.getValue())) {
+            return YES.getValue();
+        } else if (equalsIgnoreCase(yesOrNo, NO.getValue())) {
+            return NO.getValue();
         }
 
         return DEFAULT_STRING;
