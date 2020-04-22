@@ -11,11 +11,20 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+<<<<<<< Updated upstream
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+=======
+import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
+import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
+import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.InternationalElement;
+>>>>>>> Stashed changes
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 
@@ -25,6 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -36,6 +46,8 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
     private static final String BLANK_STRING = "";
+    private static final String YES = "Yes";
+    private static final String NO = "No";
     private static final LocalDate TODAY = LocalDate.now();
 
     private final UserDetailsService userDetailsService;
@@ -52,9 +64,9 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
             .allocation(caseData.getAllocationProposal())
             .hearing(caseData.getHearing())
             .hearingPreferences(caseData.getHearingPreferences())
-            .internationalElement(caseData.getInternationalElement())
-            .risks(caseData.getRisks())
-            .factorsParenting(caseData.getFactorsParenting())
+            .internationalElement(getDocmosisInternationalElement(caseData.getInternationalElement()))
+            .risks(getDocmosisRisks(caseData.getRisks()))
+            .factorsParenting(getDocmosisFactorsParenting(caseData.getFactorsParenting()))
             .proceeding(caseData.getProceeding())
             .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO()))
@@ -168,7 +180,6 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
 
     private String buildGroundsThresholdReason(final Grounds grounds) {
         StringBuilder sb = new StringBuilder();
-
         if (isNotEmpty(grounds) && isNotEmpty(grounds.getThresholdReason())) {
             grounds.getThresholdReason().forEach(thresholdReason -> {
                 if (StringUtils.equals(thresholdReason, "noCare")) {
@@ -183,5 +194,107 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
         }
 
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
+    }
+
+    private DocmosisRisks buildDocmosisRisks(Risks risks) {
+        return DocmosisRisks.builder()
+            .neglectDetails(
+                getConcatenatedDetails(
+                    risks.getNeglect(),
+                    listToString(risks.getNeglectOccurrences())
+                ))
+            .sexualAbuseDetails(
+                getConcatenatedDetails(
+                    risks.getSexualAbuse(),
+                    listToString(risks.getSexualAbuseOccurrences())
+                ))
+            .physicalHarmDetails(
+                getConcatenatedDetails(
+                    risks.getPhysicalHarm(),
+                    listToString(risks.getPhysicalHarmOccurrences())
+                ))
+            .emotionalHarmDetails(
+                getConcatenatedDetails(
+                    risks.getEmotionalHarm(),
+                    listToString(risks.getEmotionalHarmOccurrences())
+                ))
+            .build();
+    }
+
+    private DocmosisFactorsParenting buildDocmosisFactorsParenting(FactorsParenting factors) {
+        return DocmosisFactorsParenting.builder()
+            .alcoholDrugAbuseDetails(
+                getConcatenatedDetails(
+                    factors.getAlcoholDrugAbuse(),
+                    factors.getAlcoholDrugAbuseReason()
+                ))
+            .domesticViolenceDetails(
+                getConcatenatedDetails(
+                    factors.getDomesticViolence(),
+                    factors.getDomesticViolenceReason()
+                ))
+            .anythingElse(
+                getConcatenatedDetails(
+                    factors.getAnythingElse(),
+                    factors.getAnythingElseReason()
+                ))
+            .build();
+    }
+
+    private DocmosisInternationalElement buildDocmosisInternationalElement(InternationalElement ie) {
+        return DocmosisInternationalElement.builder()
+            .possibleCarer(
+                getConcatenatedDetails(
+                    ie.getPossibleCarer(),
+                    ie.getPossibleCarerReason()
+                ))
+            .significantEvents(
+                getConcatenatedDetails(
+                    ie.getSignificantEvents(),
+                    ie.getSignificantEventsReason()
+                ))
+            .proceedings(
+                getConcatenatedDetails(
+                    ie.getProceedings(),
+                    ie.getProceedingsReason()
+                ))
+            .internationalAuthorityInvolvement(
+                getConcatenatedDetails(
+                    ie.getInternationalAuthorityInvolvement(),
+                    ie.getInternationalAuthorityInvolvementDetails()
+                ))
+            .issues(
+                getConcatenatedDetails(
+                    ie.getIssues(),
+                    ie.getIssuesReason()
+                ))
+            .build();
+    }
+
+    private String getConcatenatedDetails(String name, String details) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(toYesOrNo(name));
+        if (StringUtils.equalsIgnoreCase(name, YES)) {
+            if (StringUtils.isNotEmpty(details)) {
+                sb.append(NEW_LINE);
+                sb.append(details);
+            }
+        }
+        return sb.toString();
+    }
+
+    public String toYesOrNo(String givenValue) {
+        if (StringUtils.equalsIgnoreCase(givenValue, YES)) {
+            return YES;
+        } else if (StringUtils.equalsIgnoreCase(givenValue, NO)) {
+            return NO;
+        }
+        return DEFAULT_STRING;
+    }
+
+    public String listToString(List<String> givenList) {
+        return ofNullable(givenList)
+            .map(list -> list.stream().collect(joining(NEW_LINE)))
+            .orElse(BLANK_STRING);
     }
 }
