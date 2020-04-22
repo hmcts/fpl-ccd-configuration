@@ -1,16 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
@@ -25,24 +18,28 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+
 import static java.lang.String.format;
-import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseSubmissionService extends DocmosisTemplateDataGeneration<DocmosisSubmittedForm> {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
-    private static LocalDate TODAY = LocalDate.now();
 
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final UserDetailsService userDetailsService;
 
-    public Document generateSubmittedFormPDF(CaseData caseData, String pdfFileName)
+    public Document generateSubmittedFormPDF(final CaseData caseData, final String pdfFileName)
             throws IOException {
         DocmosisSubmittedForm submittedFormData = getTemplateData(caseData);
 
@@ -51,13 +48,13 @@ public class CaseSubmissionService extends DocmosisTemplateDataGeneration<Docmos
         return uploadDocumentService.uploadPDF(document.getBytes(), pdfFileName);
     }
 
-    public DocmosisSubmittedForm getTemplateData(CaseData caseData) throws IOException {
+    public DocmosisSubmittedForm getTemplateData(final CaseData caseData) throws IOException {
         DocmosisSubmittedForm.Builder applicationFormBuilder = DocmosisSubmittedForm.builder();
 
         applicationFormBuilder
                 .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
                 .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-                .submittedDate(formatLocalDateToString(TODAY, DATE))
+                .submittedDate(formatLocalDateToString(caseData.getDateSubmitted(), DATE))
                 .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
                 .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
                 .allocation(caseData.getAllocationProposal())
@@ -73,64 +70,81 @@ public class CaseSubmissionService extends DocmosisTemplateDataGeneration<Docmos
         return applicationFormBuilder.build();
     }
 
-    public String getApplicantsOrganisations(List<Element<Applicant>> applicants) {
-        return applicants.stream().map(Element::getValue).filter(Objects::nonNull).map(Applicant::getParty)
-                .filter(Objects::nonNull).map(ApplicantParty::getOrganisationName).filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(NEW_LINE));
+    private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
+        return applicants.stream()
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .map(Applicant::getParty)
+            .filter(Objects::nonNull)
+            .map(ApplicantParty::getOrganisationName)
+            .filter(StringUtils::isNotBlank)
+            .collect(joining(NEW_LINE));
     }
 
-    public String getRespondentsNames(List<Element<Respondent>> respondents) {
-        return respondents.stream().map(Element::getValue).filter(Objects::nonNull).map(Respondent::getParty)
-                .filter(Objects::nonNull).map(RespondentParty::getFullName).filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(NEW_LINE));
+    private String getRespondentsNames(final List<Element<Respondent>> respondents) {
+        return respondents.stream()
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .map(Respondent::getParty)
+            .filter(Objects::nonNull)
+            .map(RespondentParty::getFullName)
+            .filter(StringUtils::isNotBlank)
+            .collect(joining(NEW_LINE));
     }
 
-    public String getOrdersNeeded(Orders orders) {
+    private String getOrdersNeeded(final Orders orders) {
         StringBuilder sb = new StringBuilder();
-        if (orders != null && orders.getOrderType() != null) {
+
+        if (orders != null && isNotEmpty(orders.getOrderType())) {
             sb.append(orders.getOrderType().stream()
                     .map(OrderType::getLabel)
-                    .collect(Collectors.joining(NEW_LINE)));
-            if (orders.getOtherOrder() != null) {
+                    .collect(joining(NEW_LINE)));
+
+            if (StringUtils.isNotEmpty(orders.getOtherOrder())) {
                 sb.append(orders.getOtherOrder());
                 sb.append(NEW_LINE);
             }
-            if (orders.getEmergencyProtectionOrders() != null) {
+
+            if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
                 sb.append(orders.getEmergencyProtectionOrders().stream()
                     .map(EmergencyProtectionOrdersType::getLabel)
-                    .collect(Collectors.joining(NEW_LINE)));
-                if (orders.getEmergencyProtectionOrderDetails() != null) {
+                    .collect(joining(NEW_LINE)));
+
+                if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDetails())) {
                     sb.append(orders.getEmergencyProtectionOrderDetails());
                 }
             }
-        } else {
-            sb.append(DEFAULT_STRING);
+
         }
-        return sb.toString();
+
+        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
     }
 
-    public String getDirectionsNeeded(Orders orders) {
+    private String getDirectionsNeeded(final Orders orders) {
         StringBuilder sb = new StringBuilder();
-        if (orders != null && (orders.getOrderType() != null || orders.getDirections() != null)) {
-            if (orders.getEmergencyProtectionOrderDirections() != null) {
+        if (orders != null && (isNotEmpty(orders.getOrderType()) || StringUtils.isNotEmpty(orders.getDirections()))) {
+
+            if (isNotEmpty(orders.getEmergencyProtectionOrderDirections())) {
                 sb.append(orders.getEmergencyProtectionOrderDirections().stream()
                     .map(EmergencyProtectionOrderDirectionsType::getLabel)
-                    .collect(Collectors.joining(NEW_LINE)));
+                    .collect(joining(NEW_LINE)));
             }
-            if (orders.getEmergencyProtectionOrderDirectionDetails() != null) {
+
+            if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
                 sb.append(orders.getEmergencyProtectionOrderDirectionDetails());
                 sb.append(NEW_LINE);
             }
-            if (orders.getDirections() != null) {
+
+            if (StringUtils.isNotEmpty(orders.getDirections())) {
                 sb.append(orders.getDirections());
                 sb.append(NEW_LINE);
             }
-            if (orders.getDirectionDetails() != null) {
+
+            if (StringUtils.isNotEmpty(orders.getDirectionDetails())) {
                 sb.append(orders.getDirectionDetails());
             }
-        } else {
-            sb.append(DEFAULT_STRING);
         }
-        return sb.toString();
+
+        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
     }
 }
