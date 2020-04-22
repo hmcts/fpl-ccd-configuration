@@ -134,8 +134,7 @@ public class CaseSubmissionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData,
-                    userDetailsService.getUserName(), buildFileName(caseDetails));
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, buildFileName(caseDetails));
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 public enum DocmosisTemplates {
-    C110A("FL-PLW-HNO-ENG-00095.docx", "case_submission_c110a.pdf"),
+    C110A("FL-PLW-APP-ENG-00095.docx", "case_submission_c110a.pdf"),
     C6("FL-PLW-HNO-ENG-00092.docx", "Notice_of_proceedings_c6.pdf"),
     C6A("FL-PLW-HNO-ENG-00093.docx", "Notice_of_proceedings_c6a.pdf"),
     SDO("FL-PLW-STD-ENG-00099.doc", "standard_directions_order.pdf"),

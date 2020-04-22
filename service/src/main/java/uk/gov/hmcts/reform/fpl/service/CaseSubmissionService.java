@@ -42,16 +42,16 @@ public class CaseSubmissionService extends DocmosisTemplateDataGeneration<Docmos
     private final UploadDocumentService uploadDocumentService;
     private final UserDetailsService userDetailsService;
 
-    public Document generateSubmittedFormPDF(CaseData caseData, String userFullName, String pdfFileName)
+    public Document generateSubmittedFormPDF(CaseData caseData, String pdfFileName)
             throws IOException {
-        DocmosisSubmittedForm submittedFormData = buildSubmittedFormData(caseData, userFullName);
+        DocmosisSubmittedForm submittedFormData = getTemplateData(caseData);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(submittedFormData, C110A);
 
         return uploadDocumentService.uploadPDF(document.getBytes(), pdfFileName);
     }
 
-    public DocmosisSubmittedForm buildSubmittedFormData(CaseData caseData, String userFullName) throws IOException {
+    public DocmosisSubmittedForm getTemplateData(CaseData caseData) throws IOException {
         DocmosisSubmittedForm.Builder applicationFormBuilder = DocmosisSubmittedForm.builder();
 
         applicationFormBuilder
@@ -62,8 +62,12 @@ public class CaseSubmissionService extends DocmosisTemplateDataGeneration<Docmos
                 .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
                 .allocation(caseData.getAllocationProposal())
                 .hearing(caseData.getHearing())
-                .hearingPref(caseData.getHearingPreferences())
-                .userFullName(userFullName);
+                .hearingPreferences(caseData.getHearingPreferences())
+                .internationalElement(caseData.getInternationalElement())
+                .risks(caseData.getRisks())
+                .factorsParenting(caseData.getFactorsParenting())
+                .proceeding(caseData.getProceeding())
+                .userFullName(userDetailsService.getUserName());
         applicationFormBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
 
         return applicationFormBuilder.build();
@@ -128,23 +132,5 @@ public class CaseSubmissionService extends DocmosisTemplateDataGeneration<Docmos
             sb.append(DEFAULT_STRING);
         }
         return sb.toString();
-    }
-
-    private String removeNewLineAtTheEnd(String documentData) {
-        if (documentData.contains(NEW_LINE)) {
-            StringBuilder stringBuilder = new StringBuilder(documentData);
-            stringBuilder.delete(documentData.lastIndexOf(NEW_LINE), documentData.lastIndexOf(NEW_LINE) + 1);
-
-            documentData = stringBuilder.toString();
-        }
-
-        return documentData;
-    }
-
-    @Override
-    public DocmosisSubmittedForm getTemplateData(CaseData caseData) throws IOException {
-        // TODO Auto-generated method stub
-        String username = userDetailsService.getUserName();
-        return null;
     }
 }
