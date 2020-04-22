@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.String.format;
@@ -43,15 +46,16 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
-public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration<DocmosisSubmittedForm> {
+public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
     private static final String YES = "Yes";
     private static final String NO = "No";
 
+    private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
 
-    public DocmosisSubmittedForm getTemplateData(final CaseData caseData) throws IOException {
+    public Map<String, Object> getTemplateData(final CaseData caseData, final boolean draft) throws IOException {
         DocmosisSubmittedForm.Builder applicationFormBuilder = DocmosisSubmittedForm.builder();
 
         applicationFormBuilder
@@ -72,9 +76,10 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .userFullName(userDetailsService.getUserName());
-        applicationFormBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
+        applicationFormBuilder.courtseal((!draft ? format(BASE_64, generateCourtSealEncodedString())
+            : format(BASE_64, generateDraftWatermarkEncodedString())));
 
-        return applicationFormBuilder.build();
+        return objectMapper.convertValue(applicationFormBuilder.build(), new TypeReference<>() {});
     }
 
     private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
