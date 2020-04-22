@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +46,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopula
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingVenueLookUpService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingVenueLookUpService.class,
+    HearingBookingService.class, FixedTimeConfiguration.class})
 class NoticeOfProceedingsServiceTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -53,10 +56,16 @@ class NoticeOfProceedingsServiceTest {
     private static final String COURT_CODE = "11";
     private static final String CONFIG = String.format("%s=>%s:%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL,
         COURT_CODE);
-    private static final LocalDate FUTURE_DATE = LocalDate.now().plusDays(1);
+    private LocalDate futureDate;
+    private List<Element<Child>> children;
 
-    private HearingBookingService hearingBookingService = new HearingBookingService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
+
+    @Autowired
+    private Time time;
+
+    @Autowired
+    private HearingBookingService hearingBookingService;
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
@@ -64,12 +73,15 @@ class NoticeOfProceedingsServiceTest {
     private CommonCaseDataExtractionService commonCaseDataExtractionService = new CommonCaseDataExtractionService(
         hearingVenueLookUpService);
 
+
     private NoticeOfProceedingsService noticeOfProceedingService;
 
     @BeforeEach
     void setup() {
         noticeOfProceedingService = new NoticeOfProceedingsService(hearingBookingService, hmctsCourtLookupConfiguration,
-            hearingVenueLookUpService, commonCaseDataExtractionService);
+            hearingVenueLookUpService, commonCaseDataExtractionService, time);
+        futureDate = time.now().toLocalDate().plusDays(1);
+        children = createPopulatedChildren(time.now().toLocalDate());
     }
 
     @Test
@@ -99,7 +111,7 @@ class NoticeOfProceedingsServiceTest {
     @Test
     void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(createPopulatedChildren())
+            .children1(children)
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(CARE_ORDER)).build())
             .noticeOfProceedings(NoticeOfProceedings.builder()
@@ -140,7 +152,7 @@ class NoticeOfProceedingsServiceTest {
     @Test
     void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(createPopulatedChildren())
+            .children1(children)
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(MAGISTRATES)
@@ -159,7 +171,7 @@ class NoticeOfProceedingsServiceTest {
     @Test
     void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(createPopulatedChildren())
+            .children1(children)
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(CARE_ORDER)).build())
             .noticeOfProceedings(NoticeOfProceedings.builder()
@@ -174,7 +186,7 @@ class NoticeOfProceedingsServiceTest {
     @Test
     void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(createPopulatedChildren())
+            .children1(children)
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(CARE_ORDER)).build())
             .noticeOfProceedings(NoticeOfProceedings.builder()
@@ -190,7 +202,7 @@ class NoticeOfProceedingsServiceTest {
     @Test
     void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(createPopulatedChildren())
+            .children1(children)
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
@@ -208,7 +220,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
-        assertThat(templateData.get("hearingDate")).isEqualTo(formatLocalDateToString(FUTURE_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("hearingDate")).isEqualTo(formatLocalDateToString(futureDate, FormatStyle.LONG));
         assertThat(templateData.get("hearingVenue"))
             .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("8:30am");
@@ -230,20 +242,20 @@ class NoticeOfProceedingsServiceTest {
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
                 .value(createHearingBooking(
-                    LocalDateTime.of(FUTURE_DATE, LocalTime.of(9, 30)),
-                    LocalDateTime.of(FUTURE_DATE, LocalTime.of(11, 30))))
+                    LocalDateTime.of(futureDate, LocalTime.of(9, 30)),
+                    LocalDateTime.of(futureDate, LocalTime.of(11, 30))))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
                 .value(createHearingBooking(
-                    LocalDateTime.of(FUTURE_DATE, LocalTime.of(12, 30)),
-                    LocalDateTime.of(FUTURE_DATE, LocalTime.of(13, 30))))
+                    LocalDateTime.of(futureDate, LocalTime.of(12, 30)),
+                    LocalDateTime.of(futureDate, LocalTime.of(13, 30))))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
                 .value(createHearingBooking(
-                    LocalDateTime.of(FUTURE_DATE, LocalTime.of(15, 30)),
-                    LocalDateTime.of(FUTURE_DATE, LocalTime.of(16, 0))))
+                    LocalDateTime.of(futureDate, LocalTime.of(15, 30)),
+                    LocalDateTime.of(futureDate, LocalTime.of(16, 0))))
                 .build()
         );
     }

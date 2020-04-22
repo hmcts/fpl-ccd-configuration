@@ -78,10 +78,10 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(directions)
-                .put("dateOfIssue", dateNow().toString())
+                .put("dateOfIssue", dateNow())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                 .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", dateNow().toString())
+                .put("dateSubmitted", dateNow())
                 .build())
             .build();
 
@@ -110,7 +110,7 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(directions)
-                .put("dateOfIssue", dateNow().toString())
+                .put("dateOfIssue", dateNow())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
                     .useAllocatedJudge("Yes")
                     .build())
@@ -119,7 +119,7 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
                     .judgeLastName("Davidson")
                     .build())
                 .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", dateNow().toString())
+                .put("dateSubmitted", dateNow())
                 .build())
             .build();
 

@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,8 +22,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingBookingService {
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
+
+    private final Time time;
 
     public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData) {
         return ofNullable(caseData.getHearingDetails())
@@ -34,7 +39,7 @@ public class HearingBookingService {
 
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
         return unwrapElements(hearingDetails).stream()
-            .filter(hearing -> hearing.getStartDate().isAfter(LocalDateTime.now()))
+            .filter(hearing -> hearing.getStartDate().isAfter(time.now()))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }

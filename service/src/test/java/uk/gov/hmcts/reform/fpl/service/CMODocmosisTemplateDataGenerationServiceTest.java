@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +41,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
     HearingBookingService.class, JsonOrdersLookupService.class, FixedTimeConfiguration.class
 })
 class CMODocmosisTemplateDataGenerationServiceTest {
-    private static final LocalDateTime NOW = LocalDateTime.now();
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
     private static final String COURT_NAME = "Test court";
@@ -124,7 +122,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
     @Test
     void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
-        final Map<String, Object> caseDataMap = buildCaseDataMapForDraftCMODocmosisGeneration(NOW);
+        final Map<String, Object> caseDataMap = buildCaseDataMapForDraftCMODocmosisGeneration(time.now());
 
         final CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
 
@@ -134,7 +132,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("dateOfIssue")).isEqualTo("15 January 2020");
         assertThat(templateData.get("complianceDeadline")).isEqualTo(
-            formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG));
+            formatLocalDateToString(time.now().toLocalDate().plusWeeks(26), FormatStyle.LONG));
         assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
         assertThat(templateData.get("numberOfChildren")).isEqualTo(getExpectedChildren().size());
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
@@ -143,7 +141,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("hearingDate")).isEqualTo("");
         assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_VENUE);
         assertThat(templateData.get("preHearingAttendance")).isEqualTo(
-            formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "d MMMM yyyy, h:mma"));
+            formatLocalDateTimeBaseUsingFormat(time.now().minusHours(1), "d MMMM yyyy, h:mma"));
         assertThat(templateData.get("hearingTime")).isEqualTo(getHearingTime());
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("Her Honour Judge Law");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("Peter Parker");
@@ -164,7 +162,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
     @Test
     void shouldReturnCourtSealInTemplateDataWhenCMOisNotInDraft() throws IOException {
-        final Map<String, Object> caseDataMap = buildCaseDataMapForDraftCMODocmosisGeneration(NOW);
+        final Map<String, Object> caseDataMap = buildCaseDataMapForDraftCMODocmosisGeneration(time.now());
 
         final CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
 
@@ -244,19 +242,20 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     }
 
     private List<Map<String, String>> getExpectedChildren() {
+        String dateOfBirth = formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG);
         return List.of(
             Map.of(
                 "name", "Bran Stark",
                 "gender", "Boy",
-                "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
+                "dateOfBirth", dateOfBirth),
             Map.of(
                 "name", "Sansa Stark",
                 "gender", "Boy",
-                "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
+                "dateOfBirth", dateOfBirth),
             Map.of(
                 "name", "Jon Snow",
                 "gender", "Girl",
-                "dateOfBirth", formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
+                "dateOfBirth", dateOfBirth)
         );
     }
 
@@ -297,7 +296,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     }
 
     private String getHearingTime() {
-        return String.format("%s - %s", formatLocalDateTimeBaseUsingFormat(NOW, "d MMMM, h:mma"),
-            formatLocalDateTimeBaseUsingFormat(NOW.plusDays(1), "d MMMM, h:mma"));
+        return String.format("%s - %s", formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM, h:mma"),
+            formatLocalDateTimeBaseUsingFormat(time.now().plusDays(1), "d MMMM, h:mma"));
     }
 }

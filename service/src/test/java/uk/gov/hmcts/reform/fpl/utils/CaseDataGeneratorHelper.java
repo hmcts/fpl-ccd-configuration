@@ -135,14 +135,14 @@ public class CaseDataGeneratorHelper {
                 .build());
     }
 
-    public static List<Element<Child>> createPopulatedChildren() {
+    public static List<Element<Child>> createPopulatedChildren(LocalDate dateOfBirth) {
         return ElementUtils.wrapElements(
             Child.builder()
                 .party(ChildParty.builder()
                     .firstName("Bran")
                     .lastName("Stark")
                     .gender("Boy")
-                    .dateOfBirth(LocalDate.now())
+                    .dateOfBirth(dateOfBirth)
                     .build())
                 .build(),
             Child.builder()
@@ -150,7 +150,7 @@ public class CaseDataGeneratorHelper {
                     .firstName("Sansa")
                     .lastName("Stark")
                     .gender("Boy")
-                    .dateOfBirth(LocalDate.now())
+                    .dateOfBirth(dateOfBirth)
                     .build())
                 .build(),
             Child.builder()
@@ -158,7 +158,7 @@ public class CaseDataGeneratorHelper {
                     .firstName("Jon")
                     .lastName("Snow")
                     .gender("Girl")
-                    .dateOfBirth(LocalDate.now())
+                    .dateOfBirth(dateOfBirth)
                     .build())
                 .build()
         );
@@ -418,9 +418,9 @@ public class CaseDataGeneratorHelper {
             .put("familyManCaseNumber", "123")
             .put("applicants", createPopulatedApplicants())
             .put("solicitor", createSolicitor())
-            .put("children1", createPopulatedChildren())
+            .put("children1", createPopulatedChildren(dateTime.toLocalDate()))
             .put(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(dateTime))
-            .put("dateSubmitted", LocalDate.now())
+            .put("dateSubmitted", dateTime)
             .put("respondents1", respondents)
             .put("others", others)
             .put(HEARING_DATE_LIST.getKey(), DynamicList.builder()

@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -257,7 +256,7 @@ public class DraftOrdersController {
         // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
         return ordersLookupService.getStandardDirectionOrder().getDirections()
             .stream()
-            .map(direction -> commonDirectionService.constructDirectionForCCD(direction, LocalDateTime.now()))
+            .map(direction -> commonDirectionService.constructDirectionForCCD(direction, time.now()))
             .collect(Collectors.toList());
     }
 
