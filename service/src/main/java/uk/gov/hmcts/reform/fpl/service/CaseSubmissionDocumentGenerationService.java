@@ -11,12 +11,12 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -31,9 +31,11 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -196,102 +198,96 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
     private DocmosisRisks buildDocmosisRisks(Risks risks) {
         return DocmosisRisks.builder()
             .neglectDetails(
-                getConcatenatedDetails(
+                concatenateKeyAndValue(
                     risks.getNeglect(),
                     listToString(risks.getNeglectOccurrences())
                 ))
             .sexualAbuseDetails(
-                getConcatenatedDetails(
+                concatenateKeyAndValue(
                     risks.getSexualAbuse(),
                     listToString(risks.getSexualAbuseOccurrences())
                 ))
             .physicalHarmDetails(
-                getConcatenatedDetails(
+                concatenateKeyAndValue(
                     risks.getPhysicalHarm(),
                     listToString(risks.getPhysicalHarmOccurrences())
                 ))
             .emotionalHarmDetails(
-                getConcatenatedDetails(
+                concatenateKeyAndValue(
                     risks.getEmotionalHarm(),
                     listToString(risks.getEmotionalHarmOccurrences())
                 ))
             .build();
     }
 
-    private DocmosisFactorsParenting buildDocmosisFactorsParenting(FactorsParenting factors) {
+    private DocmosisFactorsParenting buildDocmosisFactorsParenting(final FactorsParenting factors) {
         return DocmosisFactorsParenting.builder()
             .alcoholDrugAbuseDetails(
-                getConcatenatedDetails(
+                concatenateKeyAndValue(
                     factors.getAlcoholDrugAbuse(),
                     factors.getAlcoholDrugAbuseReason()
                 ))
             .domesticViolenceDetails(
-                getConcatenatedDetails(
+                concatenateKeyAndValue(
                     factors.getDomesticViolence(),
                     factors.getDomesticViolenceReason()
                 ))
             .anythingElse(
-                getConcatenatedDetails(
+                concatenateKeyAndValue(
                     factors.getAnythingElse(),
                     factors.getAnythingElseReason()
                 ))
             .build();
     }
 
-    private DocmosisInternationalElement buildDocmosisInternationalElement(InternationalElement ie) {
+    private DocmosisInternationalElement buildDocmosisInternationalElement(
+        final InternationalElement internationalElement) {
+        final boolean internationalElementPresent = (internationalElement != null);
         return DocmosisInternationalElement.builder()
-            .possibleCarer(
-                getConcatenatedDetails(
-                    ie.getPossibleCarer(),
-                    ie.getPossibleCarerReason()
-                ))
-            .significantEvents(
-                getConcatenatedDetails(
-                    ie.getSignificantEvents(),
-                    ie.getSignificantEventsReason()
-                ))
-            .proceedings(
-                getConcatenatedDetails(
-                    ie.getProceedings(),
-                    ie.getProceedingsReason()
-                ))
-            .internationalAuthorityInvolvement(
-                getConcatenatedDetails(
-                    ie.getInternationalAuthorityInvolvement(),
-                    ie.getInternationalAuthorityInvolvementDetails()
-                ))
-            .issues(
-                getConcatenatedDetails(
-                    ie.getIssues(),
-                    ie.getIssuesReason()
-                ))
+            .possibleCarer(internationalElementPresent
+                ? concatenateKeyAndValue(
+                    internationalElement.getPossibleCarer(),
+                    internationalElement.getPossibleCarerReason()) : DEFAULT_STRING)
+            .significantEvents(internationalElementPresent
+                ? concatenateKeyAndValue(
+                    internationalElement.getSignificantEvents(),
+                    internationalElement.getSignificantEventsReason()) : DEFAULT_STRING)
+            .proceedings(internationalElementPresent
+                ? concatenateKeyAndValue(
+                    internationalElement.getProceedings(),
+                    internationalElement.getProceedingsReason()) : DEFAULT_STRING)
+            .internationalAuthorityInvolvement(internationalElementPresent
+                ? concatenateKeyAndValue(
+                    internationalElement.getInternationalAuthorityInvolvement(),
+                    internationalElement.getInternationalAuthorityInvolvementDetails()) : DEFAULT_STRING)
+            .issues(internationalElementPresent
+                ? concatenateKeyAndValue(
+                    internationalElement.getIssues(),
+                    internationalElement.getIssuesReason()) : DEFAULT_STRING)
             .build();
     }
 
-    private String getConcatenatedDetails(String name, String details) {
+    private String concatenateKeyAndValue(final String key, final String value) {
         StringBuilder sb = new StringBuilder();
-        sb.append(toYesOrNo(name));
-        if (StringUtils.equalsIgnoreCase(name, YES)) {
-            if (StringUtils.isNotEmpty(details)) {
-                sb.append(NEW_LINE);
-                sb.append(details);
-            }
-        }
-        return sb.toString();
+        sb.append(toYesOrNoOrDefaultValue(key));
+
+        return (equalsIgnoreCase(key, YES) && StringUtils.isNotEmpty(value))
+            ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
     }
 
-    public String toYesOrNo(String givenValue) {
-        if (StringUtils.equalsIgnoreCase(givenValue, YES)) {
+    private String toYesOrNoOrDefaultValue(final String yesOrNo) {
+        if (equalsIgnoreCase(yesOrNo, YES)) {
             return YES;
-        } else if (StringUtils.equalsIgnoreCase(givenValue, NO)) {
+        } else if (equalsIgnoreCase(yesOrNo, NO)) {
             return NO;
         }
+
         return DEFAULT_STRING;
     }
 
-    public String listToString(List<String> givenList) {
+    private String listToString(final List<String> givenList) {
         return ofNullable(givenList)
-            .map(list -> list.stream().collect(joining(NEW_LINE)))
+            .map(list -> join(NEW_LINE, list))
             .orElse(BLANK_STRING);
     }
 }
