@@ -25,7 +25,8 @@ public class CaseSubmissionService  {
             throws IOException {
         DocmosisSubmittedForm submittedFormData = documentGenerationService.getTemplateData(caseData);
 
-        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(submittedFormData, C110A);
+        DocmosisDocument document = docmosisDocumentGeneratorService.generatedDocmosisDocument(
+            submittedFormData, C110A);
 
         return uploadDocumentService.uploadPDF(document.getBytes(), pdfFileName);
     }
