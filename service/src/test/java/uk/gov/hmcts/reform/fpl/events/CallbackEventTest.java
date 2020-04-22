@@ -22,7 +22,7 @@ class CallbackEventTest {
     private RequestData requestData;
 
     @Test
-    void shouldCarryDateAndRequestContextInformation() {
+    void shouldCarryDataAndRequestContextInformation() {
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .eventId(RandomStringUtils.randomAlphanumeric(10))
             .build();
