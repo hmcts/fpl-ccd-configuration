@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -56,24 +55,24 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
     @Autowired
     private Time time;
 
-    DraftOrdersControllerMidEventTest() {
+    private Document document = document();
+
+    public DraftOrdersControllerMidEventTest() {
         super("draft-standard-directions");
     }
 
     @BeforeEach
     void setup() {
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
-        Document document = document();
 
-        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(docmosisDocument);
-
-        given(uploadDocumentService.uploadPDF(PDF, DRAFT_ORDER_FILE_NAME))
-            .willReturn(document);
+        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
     }
 
     @Test
     void midEventShouldGenerateDraftStandardDirectionDocument() {
+        given(uploadDocumentService.uploadPDF(PDF, DRAFT_ORDER_FILE_NAME))
+            .willReturn(document);
+
         List<Element<Direction>> directions = buildDirections(
             List.of(Direction.builder()
                 .directionType("direction 1")
@@ -103,6 +102,9 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
 
     @Test
     void midEventShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
+        given(uploadDocumentService.uploadPDF(PDF, DRAFT_ORDER_FILE_NAME))
+            .willReturn(document);
+
         List<Element<Direction>> directions = buildDirections(
             List.of(Direction.builder()
                 .directionType("direction 1")
