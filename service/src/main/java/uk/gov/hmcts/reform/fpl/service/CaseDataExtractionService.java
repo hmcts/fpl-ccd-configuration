@@ -6,17 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
-import uk.gov.hmcts.reform.fpl.model.Order;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
@@ -28,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,6 +35,9 @@ import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
@@ -71,7 +63,7 @@ public class CaseDataExtractionService {
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(standardDirectionOrder.getDateOfIssue())
-            .complianceDeadline(DateFormatterHelper.formatLocalDateToString(caseData.getDateSubmitted()
+            .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted()
                 .plusWeeks(26), LONG))
             .children(getChildrenDetails(caseData.getAllChildren()))
             .respondents(getRespondentsNameAndRelationship(caseData.getAllRespondents()))
@@ -118,7 +110,7 @@ public class CaseDataExtractionService {
     // TODO: see FPLA-1087
     private String getDateOfBirth(ChildParty child) {
         return ofNullable(child.getDateOfBirth())
-            .map(dateOfBirth -> DateFormatterHelper.formatLocalDateToString(dateOfBirth, LONG))
+            .map(dateOfBirth -> formatLocalDateToString(dateOfBirth, LONG))
             .orElse(DEFAULT);
     }
 
@@ -169,7 +161,7 @@ public class CaseDataExtractionService {
         // default values here cover edge case where direction title is not found in configuration. Reusable for CMO?
         @NoArgsConstructor
         class DateFormattingConfig {
-            private String pattern = DateFormatterHelper.TIME_DATE;
+            private String pattern = TIME_DATE;
             private Display.Due due = BY;
         }
 
@@ -189,7 +181,7 @@ public class CaseDataExtractionService {
         // TODO: see FPLA-1087
         return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
             ofNullable(direction.getDateToBeCompletedBy())
-                .map(date -> DateFormatterHelper.formatLocalDateTimeBaseUsingFormat(date, config.pattern))
+                .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
                 .orElse("unknown"));
     }
 
