@@ -32,7 +32,7 @@ public class DocmosisSubmittedForm implements DocmosisData {
     private final String courtseal;
     private final String userFullName;
     private final String submittedDate;
-    private final String groundsForApplicationReason;
+    private final String groundsForEPOReason;
     private final String groundsThresholdReason;
     private final String thresholdDetails;
     private final Risks risks;

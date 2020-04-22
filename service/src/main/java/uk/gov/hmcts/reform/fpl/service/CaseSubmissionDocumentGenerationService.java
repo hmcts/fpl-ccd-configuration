@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
+import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,6 +33,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDataGeneration<DocmosisSubmittedForm> {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
+    private static final String BLANK_STRING = "";
+    private static final LocalDate TODAY = LocalDate.now();
 
     private final UserDetailsService userDetailsService;
 
@@ -40,7 +44,7 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-            .submittedDate(formatLocalDateToString(caseData.getDateSubmitted(), DATE))
+            .submittedDate(formatLocalDateToString(TODAY, DATE))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
@@ -50,6 +54,9 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
             .risks(caseData.getRisks())
             .factorsParenting(caseData.getFactorsParenting())
             .proceeding(caseData.getProceeding())
+            .groundsForEPOReason(getGroundsForEPOReason(caseData))
+            .groundsThresholdReason(getGroundsThresholdReason(caseData))
+            .thresholdDetails(getThresholdDetails(caseData))
             .userFullName(userDetailsService.getUserName());
         applicationFormBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
 
@@ -132,5 +139,43 @@ public class CaseSubmissionDocumentGenerationService extends DocmosisTemplateDat
         }
 
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
+    }
+
+
+    public String getGroundsForEPOReason(CaseData caseData) {
+        if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+            if (isNotEmpty(caseData.getGroundsForEPO()) && isNotEmpty(caseData.getGroundsForEPO().getReason())) {
+                return caseData.getGroundsForEPO().getReason()
+                    .stream()
+                    .map(reason -> EmergencyProtectionOrderReasonsType.valueOf((String) reason).getLabel())
+                    .collect(joining(NEW_LINE));
+            }
+            return DEFAULT_STRING;
+        }
+        return BLANK_STRING;
+    }
+
+    public String getThresholdDetails(CaseData caseData) {
+        if (isNotEmpty(caseData.getGrounds()) && StringUtils.isNotEmpty(caseData.getGrounds().getThresholdDetails())) {
+            return caseData.getGrounds().getThresholdDetails();
+        }
+        return DEFAULT_STRING;
+    }
+
+    public String getGroundsThresholdReason(CaseData caseData) {
+        StringBuilder sb = new StringBuilder();
+        if (isNotEmpty(caseData.getGrounds()) && isNotEmpty(caseData.getGrounds().getThresholdReason())) {
+            for (String thresholdReason : caseData.getGrounds().getThresholdReason()) {
+                if (StringUtils.equals(thresholdReason, "noCare") {
+                    sb.append("Not receiving care that would be reasonably expected from a parent.");
+                    sb.append(NEW_LINE);
+                } else if (StringUtils.equals(thresholdReason, "beyondControl") {
+                    sb.append("Beyond parental control.");
+                    sb.append(NEW_LINE);
+                }
+            }
+            return sb.toString();
+        }
+        return DEFAULT_STRING;
     }
 }
