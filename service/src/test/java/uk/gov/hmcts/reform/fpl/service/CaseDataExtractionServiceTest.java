@@ -197,6 +197,25 @@ class CaseDataExtractionServiceTest {
             .build());
     }
 
+    @Test
+    void shouldNotIncludeRespondentWhenEmptyRespondentIsAdded() throws IOException {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
+            .hearingDetails(createHearingBookings())
+            .dateSubmitted(LocalDate.now())
+            .respondents1(emptyList())
+            .applicants(createPopulatedApplicants())
+            .standardDirectionOrder(createStandardDirectionOrders(TODAY.atStartOfDay(), SEALED))
+            .build();
+
+        DocmosisStandardDirectionOrder template = caseDataExtractionService
+            .getStandardOrderDirectionData(caseData);
+
+        assertThat(template.getRespondents().isEmpty());
+    }
+
     private List<DocmosisDirection> getExpectedDirections() {
         return List.of(
             DocmosisDirection.builder()
