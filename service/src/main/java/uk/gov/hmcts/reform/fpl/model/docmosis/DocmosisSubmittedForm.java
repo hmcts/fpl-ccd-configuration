@@ -5,10 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
+import uk.gov.hmcts.reform.fpl.model.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.model.Hearing;
-import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 
 import java.util.List;
@@ -25,9 +25,9 @@ public class DocmosisSubmittedForm implements DocmosisData {
     private final String respondentNames;
     private final String ordersNeeded;
     private final String directionsNeeded;
-    private final Hearing hearing;
+    private final DocmosisHearing hearing;
     private final Allocation allocation;
-    private final HearingPreferences hearingPreferences;
+    private final DocmosisHearingPreferences hearingPreferences;
     private final DocmosisInternationalElement internationalElement;
     private final String courtseal;
     private final String userFullName;

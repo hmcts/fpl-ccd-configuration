@@ -14,11 +14,15 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
+import uk.gov.hmcts.reform.fpl.model.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -65,8 +69,8 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
-            .hearing(caseData.getHearing())
-            .hearingPreferences(caseData.getHearingPreferences())
+            .hearing(buildDocmosisHearing(caseData.getHearing()))
+            .hearingPreferences(buildDocmosisHearingPreferences(caseData.getHearingPreferences()))
             .internationalElement(buildDocmosisInternationalElement(caseData.getInternationalElement()))
             .risks(buildDocmosisRisks(caseData.getRisks()))
             .factorsParenting(buildDocmosisFactorsParenting(caseData.getFactorsParenting()))
@@ -200,48 +204,106 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
     }
 
-    private DocmosisRisks buildDocmosisRisks(Risks risks) {
-        return DocmosisRisks.builder()
-            .neglectDetails(
-                concatenateKeyAndValue(
-                    risks.getNeglect(),
-                    listToString(risks.getNeglectOccurrences())
-                ))
-            .sexualAbuseDetails(
-                concatenateKeyAndValue(
-                    risks.getSexualAbuse(),
-                    listToString(risks.getSexualAbuseOccurrences())
-                ))
-            .physicalHarmDetails(
-                concatenateKeyAndValue(
-                    risks.getPhysicalHarm(),
-                    listToString(risks.getPhysicalHarmOccurrences())
-                ))
-            .emotionalHarmDetails(
-                concatenateKeyAndValue(
-                    risks.getEmotionalHarm(),
-                    listToString(risks.getEmotionalHarmOccurrences())
-                ))
+    private DocmosisHearing buildDocmosisHearing(
+        final Hearing hearing) {
+        final boolean hearingPresent = (hearing != null);
+        return DocmosisHearing.builder()
+            .timeFrame(hearingPresent
+                ? concatenateKeyAndValue(
+                hearing.getTimeFrame(),
+                hearing.getReason()) : DEFAULT_STRING)
+            .typeAndReason(hearingPresent
+                ? concatenateKeyAndValue(
+                hearing.getType(),
+                hearing.getType_GiveReason()) : DEFAULT_STRING)
+            .withoutNoticeDetails(hearingPresent
+                ? concatenateKeyAndValue(
+                hearing.getWithoutNotice(),
+                hearing.getWithoutNoticeReason()) : DEFAULT_STRING)
+            .reducedNoticeDetails(hearingPresent
+                ? concatenateKeyAndValue(
+                hearing.getReducedNotice(),
+                hearing.getReducedNoticeReason()) : DEFAULT_STRING)
+            .respondentsAware(
+                hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
+                    ? hearing.getRespondentsAware() : DEFAULT_STRING)
+            .respondentsAwareReason(
+                hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
+                    ? hearing.getRespondentsAwareReason() : DEFAULT_STRING)
             .build();
     }
 
-    private DocmosisFactorsParenting buildDocmosisFactorsParenting(final FactorsParenting factors) {
+
+    private DocmosisHearingPreferences buildDocmosisHearingPreferences(
+        final HearingPreferences hearingPreferences) {
+        final boolean hearingPreferencesPresent = (hearingPreferences != null);
+        return DocmosisHearingPreferences.builder()
+            .interpreter(hearingPreferencesPresent
+                ? concatenateKeyAndValue(
+                hearingPreferences.getInterpreter(),
+                hearingPreferences.getInterpreterDetails()) : DEFAULT_STRING)
+            .welshDetails(hearingPreferencesPresent
+                ? concatenateKeyAndValue(
+                hearingPreferences.getWelsh(),
+                hearingPreferences.getWelshDetails()) : DEFAULT_STRING)
+            .intermediary(hearingPreferencesPresent
+                ? concatenateKeyAndValue(
+                hearingPreferences.getIntermediary(),
+                hearingPreferences.getIntermediaryDetails()) : DEFAULT_STRING)
+            .disabilityAssistance(hearingPreferencesPresent
+                ? concatenateKeyAndValue(
+                hearingPreferences.getDisabilityAssistance(),
+                hearingPreferences.getDisabilityAssistanceDetails()) : DEFAULT_STRING)
+            .extraSecurityMeasures(hearingPreferencesPresent
+                ? concatenateKeyAndValue(
+                hearingPreferences.getExtraSecurityMeasures(),
+                hearingPreferences.getExtraSecurityMeasuresDetails()) : DEFAULT_STRING)
+            .somethingElse(hearingPreferencesPresent
+                ? concatenateKeyAndValue(
+                hearingPreferences.getSomethingElse(),
+                hearingPreferences.getSomethingElseDetails()) : DEFAULT_STRING)
+            .build();
+    }
+
+    private DocmosisRisks buildDocmosisRisks(final Risks risks) {
+        final boolean risksPresent = (risks != null);
+        return DocmosisRisks.builder()
+            .neglectDetails(risksPresent
+                ? concatenateYesOrNoKeyAndValue(
+                risks.getNeglect(),
+                listToString(risks.getNeglectOccurrences())) : DEFAULT_STRING)
+            .sexualAbuseDetails(risksPresent
+                ? concatenateYesOrNoKeyAndValue(
+                risks.getSexualAbuse(),
+                listToString(risks.getSexualAbuseOccurrences())) : DEFAULT_STRING)
+            .physicalHarmDetails(risksPresent
+                ? concatenateYesOrNoKeyAndValue(
+                risks.getPhysicalHarm(),
+                listToString(risks.getPhysicalHarmOccurrences())) : DEFAULT_STRING)
+            .emotionalHarmDetails(risksPresent
+                ? concatenateYesOrNoKeyAndValue(
+                risks.getEmotionalHarm(),
+                listToString(risks.getEmotionalHarmOccurrences())) : DEFAULT_STRING)
+            .build();
+    }
+
+    private DocmosisFactorsParenting buildDocmosisFactorsParenting(
+        final FactorsParenting factorsParenting) {
+        final boolean factorsParentingPresent = (factorsParenting != null);
+
         return DocmosisFactorsParenting.builder()
-            .alcoholDrugAbuseDetails(
-                concatenateKeyAndValue(
-                    factors.getAlcoholDrugAbuse(),
-                    factors.getAlcoholDrugAbuseReason()
-                ))
-            .domesticViolenceDetails(
-                concatenateKeyAndValue(
-                    factors.getDomesticViolence(),
-                    factors.getDomesticViolenceReason()
-                ))
-            .anythingElse(
-                concatenateKeyAndValue(
-                    factors.getAnythingElse(),
-                    factors.getAnythingElseReason()
-                ))
+            .alcoholDrugAbuseDetails(factorsParentingPresent
+                ? concatenateYesOrNoKeyAndValue(
+                factorsParenting.getAlcoholDrugAbuse(),
+                factorsParenting.getAlcoholDrugAbuseReason()) : DEFAULT_STRING)
+            .domesticViolenceDetails(factorsParentingPresent
+                ? concatenateYesOrNoKeyAndValue(
+                factorsParenting.getDomesticViolence(),
+                factorsParenting.getDomesticViolenceReason()) : DEFAULT_STRING)
+            .anythingElse(factorsParentingPresent
+                ? concatenateYesOrNoKeyAndValue(
+                factorsParenting.getAnythingElse(),
+                factorsParenting.getAnythingElseReason()) : DEFAULT_STRING)
             .build();
     }
 
@@ -250,29 +312,37 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         final boolean internationalElementPresent = (internationalElement != null);
         return DocmosisInternationalElement.builder()
             .possibleCarer(internationalElementPresent
-                ? concatenateKeyAndValue(
-                    internationalElement.getPossibleCarer(),
-                    internationalElement.getPossibleCarerReason()) : DEFAULT_STRING)
+                ? concatenateYesOrNoKeyAndValue(
+                internationalElement.getPossibleCarer(),
+                internationalElement.getPossibleCarerReason()) : DEFAULT_STRING)
             .significantEvents(internationalElementPresent
-                ? concatenateKeyAndValue(
-                    internationalElement.getSignificantEvents(),
-                    internationalElement.getSignificantEventsReason()) : DEFAULT_STRING)
+                ? concatenateYesOrNoKeyAndValue(
+                internationalElement.getSignificantEvents(),
+                internationalElement.getSignificantEventsReason()) : DEFAULT_STRING)
             .proceedings(internationalElementPresent
-                ? concatenateKeyAndValue(
-                    internationalElement.getProceedings(),
-                    internationalElement.getProceedingsReason()) : DEFAULT_STRING)
+                ? concatenateYesOrNoKeyAndValue(
+                internationalElement.getProceedings(),
+                internationalElement.getProceedingsReason()) : DEFAULT_STRING)
             .internationalAuthorityInvolvement(internationalElementPresent
-                ? concatenateKeyAndValue(
-                    internationalElement.getInternationalAuthorityInvolvement(),
-                    internationalElement.getInternationalAuthorityInvolvementDetails()) : DEFAULT_STRING)
+                ? concatenateYesOrNoKeyAndValue(
+                internationalElement.getInternationalAuthorityInvolvement(),
+                internationalElement.getInternationalAuthorityInvolvementDetails()) : DEFAULT_STRING)
             .issues(internationalElementPresent
-                ? concatenateKeyAndValue(
-                    internationalElement.getIssues(),
-                    internationalElement.getIssuesReason()) : DEFAULT_STRING)
+                ? concatenateYesOrNoKeyAndValue(
+                internationalElement.getIssues(),
+                internationalElement.getIssuesReason()) : DEFAULT_STRING)
             .build();
     }
 
     private String concatenateKeyAndValue(final String key, final String value) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(StringUtils.isNotEmpty(key) ? key : DEFAULT_STRING);
+
+        return StringUtils.isNotEmpty(value)
+            ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
+    }
+
+    private String concatenateYesOrNoKeyAndValue(final String key, final String value) {
         StringBuilder sb = new StringBuilder();
         sb.append(toYesOrNoOrDefaultValue(key));
 
