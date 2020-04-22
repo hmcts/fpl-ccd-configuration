@@ -14,8 +14,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
@@ -29,29 +29,17 @@ public class OrderIssuedNotificationTestHelper {
     private static final String callout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().plusMonths(3)
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
-    public static Map<String, Object> getExpectedParametersForAdminWhenRepresentativesServedByPost(
-        boolean withCallout) {
+    public static Map<String, Object> getExpectedCaseUrlParameters(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
-        return Map.of("needsPosting", "Yes",
-            "doesNotNeedPosting", "No",
+        return Map.of(
+            "orderType", orderType.toLowerCase(),
             "callout", withCallout ? callout : "",
             "courtName", EXAMPLE_COURT,
-            "caseUrlOrDocumentLink", jsonFileObject,
-            "respondentLastName", "Jones",
-            "representatives", List.of("Paul Blart\nStreet, Town, Postcode"));
-    }
-
-    public static Map<String, Object> getExpectedParametersForAdminWhenNoRepresentativesServedByPost(
-        boolean withCallout) {
-        return Map.of("needsPosting", "No",
-            "doesNotNeedPosting", "Yes",
-            "callout", withCallout ? callout : "",
-            "courtName", EXAMPLE_COURT,
-            "caseUrlOrDocumentLink", formatCaseUrl("http://fake-url", 12345L),
-            "respondentLastName", "Jones",
-            "representatives", "");
+            "documentLink", jsonFileObject,
+            "caseUrl", formatCaseUrl("http://fake-url", 12345L),
+            "respondentLastName", "Jones");
     }
 
     public static Map<String, Object> getExpectedParametersForRepresentatives(String orderType, boolean withCallout) {
@@ -65,30 +53,27 @@ public class OrderIssuedNotificationTestHelper {
             "documentLink", jsonFileObject);
     }
 
-    public static List<Element<Representative>> buildRepresentativesServedByPost() {
+    public static List<Element<Representative>> buildRepresentatives() {
         return wrapElements(Representative.builder()
-            .email("paul@example.com")
-            .fullName("Paul Blart")
-            .address(Address.builder()
-                .addressLine1("Street")
-                .postTown("Town")
-                .postcode("Postcode")
-                .build())
-            .servingPreferences(POST)
-            .build());
-    }
-
-    public static List<Element<Representative>> buildRepresentativesServedByEmail() {
-        return wrapElements(Representative.builder()
-            .email("bill@example.com")
-            .fullName("Bill Bailey")
-            .address(Address.builder()
-                .addressLine1("Street")
-                .postTown("Town")
-                .postcode("Postcode")
-                .build())
-            .servingPreferences(EMAIL)
-            .build());
+                .email("paul@example.com")
+                .fullName("Paul Blart")
+                .address(Address.builder()
+                    .addressLine1("Street")
+                    .postTown("Town")
+                    .postcode("Postcode")
+                    .build())
+                .servingPreferences(DIGITAL_SERVICE)
+                .build(),
+            Representative.builder()
+                .email("bill@example.com")
+                .fullName("Bill Bailey")
+                .address(Address.builder()
+                    .addressLine1("Street")
+                    .postTown("Town")
+                    .postcode("Postcode")
+                    .build())
+                .servingPreferences(EMAIL)
+                .build());
     }
 }
 

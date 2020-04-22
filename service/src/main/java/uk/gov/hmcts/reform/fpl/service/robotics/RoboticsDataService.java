@@ -51,10 +51,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class RoboticsDataService {
     private final ObjectMapper objectMapper;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final RoboticsDataValidatorService validatorService;
 
     public RoboticsData prepareRoboticsData(final CaseData caseData, final Long caseId) {
-        final RoboticsData roboticsData = RoboticsData.builder()
+        return RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
             .feePaid(2055.00)
@@ -72,14 +71,6 @@ public class RoboticsDataService {
             .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
             .caseId(caseId)
             .build();
-
-        List<String> validationErrors = validatorService.validate(roboticsData);
-        if (isNotEmpty(validationErrors)) {
-            throw new RoboticsDataException(String.format("failed validation with these error(s) %s",
-                validationErrors));
-        }
-
-        return roboticsData;
     }
 
     public String convertRoboticsDataToJson(final RoboticsData roboticsData) {
