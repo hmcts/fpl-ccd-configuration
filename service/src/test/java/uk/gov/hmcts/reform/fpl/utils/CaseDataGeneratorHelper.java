@@ -71,7 +71,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 public class CaseDataGeneratorHelper {
 
     private static final String TELEPHONE = "02838882404";
-    
+
     private CaseDataGeneratorHelper() {
         // NO-OP
     }
