@@ -34,6 +34,7 @@ module.exports = function () {
         if (await this.waitForSelector('#global-header') == null) {
           return;
         }
+
         const user = await this.grabText('#user-name');
         if (user !== undefined) {
           if (user.toLowerCase().includes(username)) {
@@ -41,6 +42,7 @@ module.exports = function () {
           }
           this.signOut();
         }
+
         loginPage.signIn(username, password);
       }, '#sign-out');
     },

@@ -58,8 +58,7 @@ module.exports = class PuppeteerHelpers extends Helper {
    * @returns {Promise<string|undefined>}
    */
   async grabText(locator) {
-    const elements = await this.locateSelector(locator)
-      .catch(e => { console.log(`${e}`); return []; });
+    const elements = await this.locateSelector(locator);
 
     const texts = elements.map(async (element) => {
       return (await element.getProperty('innerText')).jsonValue();
