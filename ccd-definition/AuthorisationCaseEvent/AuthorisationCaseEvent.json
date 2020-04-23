@@ -1331,8 +1331,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseEventID": "notifyGatekeeper",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "notifyGatekeeper",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
   },
