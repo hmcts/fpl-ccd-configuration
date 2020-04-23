@@ -28,11 +28,14 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
+import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
@@ -65,6 +68,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
+    private static final String CONFIDENTIAL = "Confidential";
     private static final LocalDate TODAY = LocalDate.now();
 
     private final ObjectMapper objectMapper;
@@ -86,6 +90,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .risks(buildDocmosisRisks(caseData.getRisks()))
             .factorsParenting(buildDocmosisFactorsParenting(caseData.getFactorsParenting()))
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents()))
+            .applicants(buildDocmosisApplicants(caseData.getApplicants(), caseData.getSolicitor()))
             .proceeding(caseData.getProceeding())
             .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO()))
@@ -227,20 +232,34 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .collect(toList());
     }
 
+    private List<DocmosisApplicant> buildDocmosisApplicants(List<Element<Applicant>> applicants, Solicitor solicitor) {
+        return applicants.stream()
+            .map(element -> element.getValue().getParty())
+            .map(applicant -> buildApplicant(applicant, solicitor))
+            .collect(toList());
+    }
+
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
+        final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
             .age(formatAge(respondent.getDateOfBirth()))
             .gender(displayGender(respondent.getGender(), respondent.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
-            .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
-            .address(getDefaultIfNullOrEmpty(respondent.getAddress().getAddressAsString(NEW_LINE)))
+            .placeOfBirth(getDefaultIfNull(respondent.getPlaceOfBirth()))
+            .address(
+                isConfidential
+                    ? CONFIDENTIAL
+                    : getDefaultIfNull(respondent.getAddress().getAddressAsString(NEW_LINE)))
+            .telephoneNumber(
+                isConfidential
+                    ? CONFIDENTIAL
+                    : getDefaultIfNull(getTelephoneNumber(respondent.getTelephoneNumber())))
             .contactDetailsHidden(toYesOrNoOrDefaultValue(respondent.getContactDetailsHidden()))
             .contactDetailsHiddenDetails(
                 concatenateYesOrNoKeyAndValue(
                     respondent.getContactDetailsHidden(),
                     respondent.getContactDetailsHiddenReason()))
-            .telephoneNumber(getTelephoneNumber(respondent.getTelephoneNumber()))
             .litigationIssuesDetails(
                 concatenateYesOrNoKeyAndValue(
                     respondent.getLitigationIssues(),
@@ -249,7 +268,33 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .build();
     }
 
-    private String displayGender(final String gender, final String genderIdentification) {
+    private DocmosisApplicant buildApplicant(ApplicantParty applicant, Solicitor solicitor) {
+        boolean solicitorPresent = (solicitor != null);
+        return DocmosisApplicant.builder()
+            .organisationName(getDefaultIfNull(applicant.getOrganisationName()))
+            .contactName(getContactName(applicant.getTelephoneNumber()))
+            .jobTitle(getDefaultIfNull(applicant.getJobTitle()))
+            .address(getDefaultIfNull(applicant.getAddress().getAddressAsString(NEW_LINE)))
+            .email(getEmail(applicant.getEmail()))
+            .mobileNumber(getTelephoneNumber(applicant.getMobileNumber()))
+            .telephoneNumber(getTelephoneNumber(applicant.getTelephoneNumber()))
+            .pbaNumber(getDefaultIfNull(applicant.getPbaNumber()))
+            .solicitorName(
+                solicitorPresent ? getDefaultIfNull(solicitor.getName()) : DEFAULT_STRING)
+            .solicitorMobile(
+                solicitorPresent ? getDefaultIfNull(solicitor.getMobile()) : DEFAULT_STRING)
+            .solicitorTelephone(
+                solicitorPresent ? getDefaultIfNull(solicitor.getTelephone()) : DEFAULT_STRING)
+            .solicitorEmail(
+                solicitorPresent ? getDefaultIfNull(solicitor.getEmail()) : DEFAULT_STRING)
+            .solicitorDx(
+                solicitorPresent ? getDefaultIfNull(solicitor.getDx()) : DEFAULT_STRING)
+            .solicitorReference(
+                solicitorPresent ? getDefaultIfNull(solicitor.getReference()) : DEFAULT_STRING)
+            .build();
+    }
+
+    private String displayGender(String gender, String genderIdentification) {
         if (StringUtils.isNotEmpty(gender)) {
             if ((equalsIgnoreCase(gender, "They identify in another way")
                 && StringUtils.isNotEmpty(genderIdentification))) {
@@ -260,9 +305,19 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         return DEFAULT_STRING;
     }
 
+    private String getEmail(EmailAddress email) {
+        return isNotEmpty(email) && StringUtils.isNotEmpty(email.getEmail())
+            ? email.getEmail() : DEFAULT_STRING;
+    }
+
     private String getTelephoneNumber(Telephone telephone) {
         return isNotEmpty(telephone) && StringUtils.isNotEmpty(telephone.getTelephoneNumber())
             ? telephone.getTelephoneNumber() : DEFAULT_STRING;
+    }
+
+    private String getContactName(Telephone telephone) {
+        return isNotEmpty(telephone) && StringUtils.isNotEmpty(telephone.getContactDirection())
+            ? telephone.getContactDirection() : DEFAULT_STRING;
     }
 
     private String getDefaultIfNullOrEmpty(final String value) {
