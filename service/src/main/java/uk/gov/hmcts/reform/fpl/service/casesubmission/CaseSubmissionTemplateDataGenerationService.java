@@ -93,7 +93,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             applicationFormBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
         }
 
-        return objectMapper.convertValue(applicationFormBuilder.build(), new TypeReference<>() {});
+        return applicationFormBuilder.build().toMap(objectMapper);
     }
 
     private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
