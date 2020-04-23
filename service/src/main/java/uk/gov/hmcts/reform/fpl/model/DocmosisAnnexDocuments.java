@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisSocialWorkOther;
 
 import java.util.List;
 
@@ -17,5 +18,5 @@ public class DocmosisAnnexDocuments {
     private final String socialWorkEvidenceTemplate;
     private final String thresholdDocument;
     private final String checklistDocument;
-    private final List<String> otherSocialWorkDocuments;
+    private final List<DocmosisSocialWorkOther> others;
 }

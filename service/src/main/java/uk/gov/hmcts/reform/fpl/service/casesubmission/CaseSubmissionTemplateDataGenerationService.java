@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +27,19 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
+    private static LocalDate TODAY = LocalDate.now();
 
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
@@ -69,7 +74,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-            .submittedDate(formatLocalDateToString(caseData.getDateSubmitted(), DATE))
+            .submittedDate(formatLocalDateToString(TODAY, DATE))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
@@ -78,6 +83,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .internationalElement(buildDocmosisInternationalElement(caseData.getInternationalElement()))
             .risks(buildDocmosisRisks(caseData.getRisks()))
             .factorsParenting(buildDocmosisFactorsParenting(caseData.getFactorsParenting()))
+            .respondents(buildDocmosisRespondents(caseData.getAllRespondents()))
             .proceeding(caseData.getProceeding())
             .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO()))
@@ -213,6 +219,77 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
     }
 
+    private List<DocmosisRespondent> buildDocmosisRespondents(List<Element<Respondent>> respondents) {
+        return respondents.stream()
+            .map(element -> element.getValue().getParty())
+            .map(this::buildRespondent)
+            .collect(toList());
+    }
+
+    private DocmosisRespondent buildRespondent(RespondentParty respondent) {
+        return DocmosisRespondent.builder()
+            .name(respondent.getFullName())
+            .age(getAge(respondent.getDateOfBirth()))
+            .gender(displayGender(respondent.getGender(), respondent.getGenderIdentification()))
+            .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
+            .placeOfBirth(getDefaultIfNull(respondent.getPlaceOfBirth()))
+            .address(getDefaultIfNull(respondent.getAddress().getAddressAsString(NEW_LINE)))
+            .contactDetailsHidden(toYesOrNoOrDefaultValue(respondent.getContactDetailsHidden()))
+            .contactDetailsHiddenDetails(
+                concatenateYesOrNoKeyAndValue(
+                    respondent.getContactDetailsHidden(),
+                    respondent.getContactDetailsHiddenReason()))
+            .telephoneNumber(getTelephoneNumber(respondent.getTelephoneNumber()))
+            .litigationIssuesDetails(
+                concatenateYesOrNoKeyAndValue(
+                    respondent.getLitigationIssues(),
+                    respondent.getLitigationIssuesDetails()))
+            .relationshipToChild(getDefaultIfNull(respondent.getRelationshipToChild()))
+            .build();
+    }
+
+    private String displayGender(String gender, String genderIdentification) {
+        if (StringUtils.isNotEmpty(gender)) {
+            if ((equalsIgnoreCase(gender, "They identify in another way") &&
+                StringUtils.isNotEmpty(genderIdentification))) {
+                return genderIdentification;
+            }
+            return gender;
+        }
+        return DEFAULT_STRING;
+    }
+
+    private String getTelephoneNumber(Telephone telephone) {
+        return isNotEmpty(telephone) && StringUtils.isNotEmpty(telephone.getTelephoneNumber())
+            ? telephone.getTelephoneNumber() : DEFAULT_STRING;
+    }
+
+    private String getDefaultIfNull(String value) {
+        return StringUtils.isEmpty(value) ? DEFAULT_STRING : value;
+    }
+
+    private String getAge(LocalDate dateOfBirth) {
+        Period period = Period.between(dateOfBirth, TODAY);
+        int years = period.getYears();
+        int months = period.getMonths();
+        int days = period.getDays();
+        if (years > 1) {
+            return years + " years old";
+        } else if (years == 1) {
+            return years + " year old";
+        } else if (months > 1) {
+            return months + " months old";
+        } else if (months == 1) {
+            return months + " month old";
+        } else if (days > 1) {
+            return days + " days old";
+        } else if (days == 1) {
+            return days + " day old";
+        } else {
+            return "0 days old";
+        }
+    }
+
     private DocmosisHearing buildDocmosisHearing(
         final Hearing hearing) {
         final boolean hearingPresent = (hearing != null);
@@ -251,7 +328,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .socialWorkEvidenceTemplate(getDisplayData(caseData.getSocialWorkEvidenceTemplateDocument()))
             .thresholdDocument(getDisplayData(caseData.getThresholdDocument()))
             .checklistDocument(getDisplayData(caseData.getChecklistDocument()))
-            .otherSocialWorkDocuments(getDisplayData(caseData.getOtherSocialWorkDocuments()))
+            .others(getDisplayData(caseData.getOtherSocialWorkDocuments()))
             .build();
     }
 
@@ -268,14 +345,20 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         return DEFAULT_STRING;
     }
 
-    private List<String> getDisplayData(List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
+    private List<DocmosisSocialWorkOther> getDisplayData(
+        List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
         return otherSocialWorkDocuments.stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
-            .map(document ->
-                StringUtils.isNotEmpty(document.getDocumentTitle())
-                    ? document.getDocumentTitle() : DEFAULT_STRING)
+            .map(this::buildDocmosisSocialWorkOther)
             .collect(toList());
+    }
+
+    private DocmosisSocialWorkOther buildDocmosisSocialWorkOther(DocumentSocialWorkOther document) {
+        return DocmosisSocialWorkOther.builder()
+            .documentTitle(
+                StringUtils.isNotEmpty(document.getDocumentTitle()) ? document.getDocumentTitle() : DEFAULT_STRING)
+            .build();
     }
 
     private DocmosisHearingPreferences buildDocmosisHearingPreferences(
