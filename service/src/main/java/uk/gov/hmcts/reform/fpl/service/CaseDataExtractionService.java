@@ -61,8 +61,7 @@ public class CaseDataExtractionService {
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService dataExtractionService;
 
-    //TODO: when should this be used? see FPLA-1087
-    public static final String DEFAULT = "BLANK - please complete";
+    public static final String DEFAULT = "";
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
     public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData) throws IOException {
@@ -74,7 +73,8 @@ public class CaseDataExtractionService {
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(standardDirectionOrder.getDateOfIssue())
-            .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), LONG))
+            .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted()
+                .plusWeeks(26), LONG))
             .children(getChildrenDetails(caseData.getAllChildren()))
             .respondents(getRespondentsNameAndRelationship(caseData.getAllRespondents()))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
@@ -131,7 +131,6 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    // TODO: see FPLA-1087
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
