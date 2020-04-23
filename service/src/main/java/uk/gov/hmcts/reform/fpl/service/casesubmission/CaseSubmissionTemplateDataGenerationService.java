@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.AgeFormatHelper.formatAge;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -63,7 +65,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
-    private static LocalDate TODAY = LocalDate.now();
+    private static final LocalDate TODAY = LocalDate.now();
 
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
@@ -179,7 +181,6 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
     }
 
-
     private String getGroundsForEPOReason(final List<OrderType> orderTypes, final GroundsForEPO groundsForEPO) {
         if (isNotEmpty(orderTypes) && orderTypes.contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
 
@@ -219,7 +220,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
     }
 
-    private List<DocmosisRespondent> buildDocmosisRespondents(List<Element<Respondent>> respondents) {
+    private List<DocmosisRespondent> buildDocmosisRespondents(final List<Element<Respondent>> respondents) {
         return respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
@@ -229,11 +230,11 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
-            .age(getAge(respondent.getDateOfBirth()))
+            .age(formatAge(respondent.getDateOfBirth()))
             .gender(displayGender(respondent.getGender(), respondent.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
-            .placeOfBirth(getDefaultIfNull(respondent.getPlaceOfBirth()))
-            .address(getDefaultIfNull(respondent.getAddress().getAddressAsString(NEW_LINE)))
+            .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
+            .address(getDefaultIfNullOrEmpty(respondent.getAddress().getAddressAsString(NEW_LINE)))
             .contactDetailsHidden(toYesOrNoOrDefaultValue(respondent.getContactDetailsHidden()))
             .contactDetailsHiddenDetails(
                 concatenateYesOrNoKeyAndValue(
@@ -244,14 +245,14 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
                 concatenateYesOrNoKeyAndValue(
                     respondent.getLitigationIssues(),
                     respondent.getLitigationIssuesDetails()))
-            .relationshipToChild(getDefaultIfNull(respondent.getRelationshipToChild()))
+            .relationshipToChild(getDefaultIfNullOrEmpty(respondent.getRelationshipToChild()))
             .build();
     }
 
-    private String displayGender(String gender, String genderIdentification) {
+    private String displayGender(final String gender, final String genderIdentification) {
         if (StringUtils.isNotEmpty(gender)) {
-            if ((equalsIgnoreCase(gender, "They identify in another way") &&
-                StringUtils.isNotEmpty(genderIdentification))) {
+            if ((equalsIgnoreCase(gender, "They identify in another way")
+                && StringUtils.isNotEmpty(genderIdentification))) {
                 return genderIdentification;
             }
             return gender;
@@ -264,12 +265,12 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             ? telephone.getTelephoneNumber() : DEFAULT_STRING;
     }
 
-    private String getDefaultIfNull(String value) {
+    private String getDefaultIfNullOrEmpty(final String value) {
         return StringUtils.isEmpty(value) ? DEFAULT_STRING : value;
     }
 
-    private String getAge(LocalDate dateOfBirth) {
-        Period period = Period.between(dateOfBirth, TODAY);
+    private String calculateAge(final LocalDate dateOfBirth) {
+        final Period period = Period.between(dateOfBirth, TODAY);
         int years = period.getYears();
         int months = period.getMonths();
         int days = period.getDays();
