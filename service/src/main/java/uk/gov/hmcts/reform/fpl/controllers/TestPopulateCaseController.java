@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,18 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
 @Api
 @RestController
@@ -32,8 +24,6 @@ import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFil
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TestPopulateCaseController {
     private final ObjectMapper mapper;
-    private final DocumentGeneratorService documentGeneratorService;
-    private final UploadDocumentService uploadDocumentService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
@@ -41,8 +31,7 @@ public class TestPopulateCaseController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
-        //TODO: get filename from case data and remove it afterwards
-//        String filename = "mandatorySubmissionFields";
+        //TODO: add enum with available files -> easy switch for different additional actions (e.g. uploading document)
         String filename = data.get("caseDataFilename").toString();
 
         List<String> errors = new ArrayList<>();
