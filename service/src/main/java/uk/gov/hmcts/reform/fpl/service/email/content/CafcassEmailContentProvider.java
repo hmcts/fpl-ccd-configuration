@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.CafcassSubmissionTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.CasePersonalisedContentProvider;
 
 import java.util.Map;
@@ -30,7 +31,10 @@ public class CafcassEmailContentProvider extends CasePersonalisedContentProvider
     public Map<String, Object> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        mapper.convertValue(getCasePersonalisationBuilder(caseDetails.getId(), caseData), CafcassSubmissionTemplate.class);
+
         return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
+
             .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();
