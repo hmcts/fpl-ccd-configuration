@@ -62,6 +62,10 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
+import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLICE_POWER_ENDS;
+import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -75,9 +79,6 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
     private static final String CONFIDENTIAL = "Confidential";
-    private static final String HOSPITAL_SOON_TO_BE_DISCHARGED = "In hospital and soon to be discharged";
-    private static final String REMOVED_BY_POLICE_POWER_ENDS = "Removed by Police, powers ending soon";
-    private static final String VOLUNTARILY_SECTION_CARE_ORDER = "Voluntarily in section 20 care order";
     private static final LocalDate TODAY = LocalDate.now();
 
     private final ObjectMapper objectMapper;
@@ -266,7 +267,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             if (isNotEmpty(others.getAdditionalOthers())) {
                 listOfOtherParties.addAll(
                     others.getAdditionalOthers().stream()
-                        .map(element -> element.getValue())
+                        .map(Element::getValue)
                         .map(this::buildOtherParty)
                         .collect(toList()));
             }
@@ -415,7 +416,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     }
 
 
-    private String getChildLivingSituation(ChildParty child, boolean isConfidential) {
+    private String getChildLivingSituation(final ChildParty child, final boolean isConfidential) {
         if (StringUtils.isNotEmpty(child.getLivingSituation())) {
             StringBuilder sb = new StringBuilder(child.getLivingSituation());
             if (isConfidential) {
@@ -423,7 +424,8 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             } else if (isNotEmpty(child.getAddress())) {
                 sb.append(child.getAddress().getAddressAsString(NEW_LINE));
             }
-            switch (child.getLivingSituation()) {
+
+            switch (fromString(child.getLivingSituation())) {
                 case HOSPITAL_SOON_TO_BE_DISCHARGED:
                     if (child.getDischargeDate() != null) {
                         sb.append("Discharge date: ").append(formatLocalDateToString(child.getDischargeDate(), DATE));
