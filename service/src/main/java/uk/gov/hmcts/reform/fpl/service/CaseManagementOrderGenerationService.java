@@ -4,10 +4,8 @@ import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -50,7 +48,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGeneration<DocmosisCaseManagementOrder> {
     private static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
 
-    private final HearingBookingService hearingBookingService;
+    private final HearingBookingService hearingService;
     private final CommonCaseDataExtractionService dataExtractionService;
     private final DraftCMOService cmoService;
 
@@ -62,11 +60,11 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
         if (needsNextHearingDate(caseManagementOrder)) {
             UUID nextHearingId = caseManagementOrder.getNextHearing().getId();
-            nextHearing = hearingBookingService.getHearingBookingByUUID(hearingDetails, nextHearingId);
+            nextHearing = hearingService.getHearingBookingByUUID(hearingDetails, nextHearingId);
         }
 
-        HearingBooking hearingBooking = hearingBookingService.getHearingBooking(hearingDetails,
-            caseData.getCmoHearingDateList());
+        HearingBooking hearingBooking = hearingService
+            .getHearingBookingByUUID(hearingDetails, caseManagementOrder.getId());
 
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
