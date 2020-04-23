@@ -17,6 +17,5 @@ public class DocmosisOtherParty {
     private final String detailsHiddenReason;
     private final String telephoneNumber;
     private final String relationshipToChild;
-    private final String litigationIssues;
     private final String litigationIssuesDetails;
 }

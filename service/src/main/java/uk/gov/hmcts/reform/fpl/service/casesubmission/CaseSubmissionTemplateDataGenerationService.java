@@ -27,6 +27,8 @@ import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
@@ -39,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
@@ -46,6 +49,7 @@ import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -97,6 +101,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents()))
             .applicants(buildDocmosisApplicants(caseData.getAllApplicants(), caseData.getSolicitor()))
             .children(buildDocmosisChildren(caseData.getAllChildren()))
+            .others(buildDocmosisOthers(caseData.getOthers()))
             .proceeding(caseData.getProceeding())
             .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO()))
@@ -251,6 +256,50 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
             .collect(toList());
+    }
+
+
+    private List<DocmosisOtherParty> buildDocmosisOthers(final Others others) {
+        List<DocmosisOtherParty> listOfOtherParties = new ArrayList<>();
+        if (isNotEmpty(others)) {
+            listOfOtherParties.add(buildOtherParty(others.getFirstOther()));
+            if (isNotEmpty(others.getAdditionalOthers())) {
+                listOfOtherParties.addAll(
+                    others.getAdditionalOthers().stream()
+                        .map(element -> element.getValue())
+                        .map(this::buildOtherParty)
+                        .collect(toList()));
+            }
+        }
+        return listOfOtherParties;
+    }
+
+    private DocmosisOtherParty buildOtherParty(final Other other) {
+        final boolean isConfidential = equalsIgnoreCase(other.getDetailsHidden(), YES.getValue());
+        return DocmosisOtherParty.builder()
+            .name(other.getName())
+            .gender(displayGender(other.getGender(), other.getGenderIdentification()))
+            .dateOfBirth(other.getDOB())
+            .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
+            .address(
+                isConfidential
+                    ? CONFIDENTIAL
+                    : getDefaultIfNullOrEmpty(other.getAddress().getAddressAsString(NEW_LINE)))
+            .telephoneNumber(
+                isConfidential
+                    ? CONFIDENTIAL
+                    : getDefaultIfNullOrEmpty(other.getTelephone()))
+            .detailsHidden(toYesOrNoOrDefaultValue(other.getDetailsHidden()))
+            .detailsHiddenReason(
+                concatenateYesOrNoKeyAndValue(
+                    other.getDetailsHidden(),
+                    other.getDetailsHiddenReason()))
+            .litigationIssuesDetails(
+                concatenateYesOrNoKeyAndValue(
+                    other.getLitigationIssues(),
+                    other.getLitigationIssuesDetails()))
+            .relationshipToChild(getDefaultIfNullOrEmpty(other.getRelationshipToChild()))
+            .build();
     }
 
     private DocmosisChildren buildChild(ChildParty child) {
