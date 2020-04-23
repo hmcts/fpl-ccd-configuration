@@ -25,15 +25,14 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
-import uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -64,7 +63,7 @@ public class DraftOrdersController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
-    private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
+    private final CaseDataExtractionService caseDataExtractionService;
     private final CommonDirectionService commonDirectionService;
     private final OrdersLookupService ordersLookupService;
     private final CoreCaseDataService coreCaseDataService;
@@ -153,9 +152,12 @@ public class DraftOrdersController {
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
-        Document document = getDocument(standardDirectionOrderGenerationService.getTemplateData(updated));
+        Document document = getDocument(
+            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
+        );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
+            .directions(List.of())
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
@@ -201,7 +203,9 @@ public class DraftOrdersController {
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
-        Document document = getDocument(standardDirectionOrderGenerationService.getTemplateData(updated));
+        Document document = getDocument(
+            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
+        );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
             .orderDoc(DocumentReference.builder()
@@ -258,12 +262,12 @@ public class DraftOrdersController {
             .collect(Collectors.toList());
     }
 
-    private Document getDocument(DocmosisOrder templateData) {
+    private Document getDocument(Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
         String docTitle = document.getDocumentTitle();
 
-        if (isNotEmpty(templateData.getDraftbackground())) {
+        if (isNotEmpty(templateData.get("draftbackground"))) {
             docTitle = "draft-" + document.getDocumentTitle();
         }
 

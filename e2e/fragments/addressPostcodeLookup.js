@@ -34,11 +34,30 @@ module.exports = {
 
   enterAddressManually(address) {
     I.click(this.cantEnterPostcodeLink);
-    I.fillField(this.fields.buildingAndStreet.lineOne, address.buildingAndStreet.lineOne);
-    I.fillField(this.fields.buildingAndStreet.lineTwo, address.buildingAndStreet.lineTwo);
-    I.fillField(this.fields.buildingAndStreet.lineThree, address.buildingAndStreet.lineThree);
-    I.fillField(this.fields.town, address.town);
-    I.fillField(this.fields.postcode, address.postcode);
-    I.fillField(this.fields.country, address.country);
+    if(address.buildingAndStreet.lineOne) {
+      I.fillField(this.fields.buildingAndStreet.lineOne, address.buildingAndStreet.lineOne);
+    }
+    if(address.buildingAndStreet.lineTwo) {
+      I.fillField(this.fields.buildingAndStreet.lineTwo, address.buildingAndStreet.lineTwo);
+    }
+    if(address.buildingAndStreet.lineThree) {
+      I.fillField(this.fields.buildingAndStreet.lineThree, address.buildingAndStreet.lineThree);
+    }
+    if(address.town) {
+      I.fillField(this.fields.town, address.town);
+    }
+    if(address.postcode) {
+      I.fillField(this.fields.postcode, address.postcode);
+    }
+    if(address.country) {
+      I.fillField(this.fields.country, address.country);
+    }
   },
+
+  async enterAddressIfNotPresent(address) {
+    if(await I.canSee(this.cantEnterPostcodeLink)){
+      return this.enterAddressManually(address);
+    }
+  },
+
 };

@@ -22,7 +22,7 @@ public class DocmosisCoverDocumentsService {
         DocmosisCoverDocument coverDocumentData = buildCoverDocumentsData(familyManCaseNumber,
                                                                           caseNumber,
                                                                           representative);
-        return docmosisDocumentGeneratorService.generateDocmosisDocument(coverDocumentData, COVER_DOCS);
+        return docmosisDocumentGeneratorService.generatedDocmosisDocument(coverDocumentData, COVER_DOCS);
     }
 
     DocmosisCoverDocument buildCoverDocumentsData(String familyManCaseNumber,

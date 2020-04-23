@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -36,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,23 +45,29 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.StringUtils.left;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -71,7 +77,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 public class CaseDataGeneratorHelper {
 
     private static final String TELEPHONE = "02838882404";
-    
+
     private CaseDataGeneratorHelper() {
         // NO-OP
     }
@@ -204,9 +210,9 @@ public class CaseDataGeneratorHelper {
         );
     }
 
-    public static Document createDocumentWithAttachedFile() {
+    public static Document createDocumentWithStatus(DocumentStatus status) {
         return Document.builder()
-            .documentStatus(ATTACHED.getLabel())
+            .documentStatus(ofNullable(status).map(DocumentStatus::getLabel).orElse(null))
             .typeOfDocument(DocumentReference.builder()
                 .filename("Mock file")
                 .build())
@@ -332,26 +338,26 @@ public class CaseDataGeneratorHelper {
         );
     }
 
+    private static Direction createDirection(DirectionAssignee assignee) {
+        return Direction.builder()
+            .directionText("Mock direction text")
+            .directionNeeded(YES.getValue())
+            .assignee(assignee)
+            .build();
+    }
+
     private static Direction createCustomDirection(DirectionAssignee assignee) {
         return Direction.builder()
-            .directionType("Direction title")
             .directionText("Mock direction text")
             .directionNeeded(YES.getValue())
             .assignee(assignee)
             .readOnly("No")
             .custom("Yes")
-            .dateToBeCompletedBy(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
             .build();
     }
 
     public static Direction createUnassignedDirection() {
-        return Direction.builder()
-            .directionType("Direction title")
-            .directionText("Mock direction text")
-            .directionNeeded(YES.getValue())
-            .dateToBeCompletedBy(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
-            .assignee(null)
-            .build();
+        return createDirection(null);
     }
 
     public static List<Element<Direction>> createCmoDirections() {
@@ -394,7 +400,8 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static CaseData buildCaseDataForCMODocmosisGeneration(LocalDateTime dateTime) {
+    public static ImmutableMap<String, Object> buildCaseDataMapForDraftCMODocmosisGeneration(LocalDateTime dateTime) {
+
         final List<Element<Direction>> cmoDirections = createCmoDirections();
 
         List<Element<Respondent>> respondents = createRespondents();
@@ -406,33 +413,36 @@ public class CaseDataGeneratorHelper {
             createRepresentativesFor(respondents.get(1).getValue()),
             createRepresentativesFor(others.getFirstOther()));
 
-        return CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
-            .children1(createPopulatedChildren())
-            .hearingDetails(createHearingBookingsFromInitialDate(dateTime))
-            .dateSubmitted(LocalDate.now())
-            .respondents1(respondents)
-            .others(others)
-            .solicitor(createSolicitor())
-            .applicants(createPopulatedApplicants())
-            .cmoHearingDateList(DynamicList.builder()
+        return ImmutableMap.<String, Object>builder()
+            .put("caseLocalAuthority", "example")
+            .put("familyManCaseNumber", "123")
+            .put("applicants", createPopulatedApplicants())
+            .put("solicitor", createSolicitor())
+            .put("children1", createPopulatedChildren())
+            .put(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(dateTime))
+            .put("dateSubmitted", LocalDate.now())
+            .put("respondents1", respondents)
+            .put("others", others)
+            .put(HEARING_DATE_LIST.getKey(), DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                     .label(formatLocalDateToString(dateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
                     .build())
                 .build())
-            .schedule(createSchedule(true))
-            .recitals(createRecitals())
-            .representatives(representatives)
-            .allPartiesCustomCMO(getDirectionByAssignee(cmoDirections, ALL_PARTIES))
-            .localAuthorityDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
-            .courtDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, COURT))
-            .cafcassDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, CAFCASS))
-            .otherPartiesDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, OTHERS))
-            .respondentDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
-            .caseManagementOrder(createApprovedCMO())
-            .servedCaseManagementOrders(wrapElements(CaseManagementOrder.builder().build()))
+            .put(SCHEDULE.getKey(), createSchedule(true))
+            .put(RECITALS.getKey(), createRecitals())
+            .put("allPartiesCustomCMO", getDirectionByAssignee(cmoDirections, ALL_PARTIES))
+            .put("localAuthorityDirectionsCustomCMO", getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
+            .put("courtDirectionsCustomCMO", getDirectionByAssignee(cmoDirections, COURT))
+            .put("cafcassDirectionsCustomCMO", getDirectionByAssignee(cmoDirections, CAFCASS))
+            .put("otherPartiesDirectionsCustomCMO", getDirectionByAssignee(cmoDirections, OTHERS))
+            .put("respondentDirectionsCustomCMO", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
+            .put(SERVED_CASE_MANAGEMENT_ORDERS.getKey(), ImmutableList.of(Element.<CaseManagementOrder>builder()
+                .value(CaseManagementOrder.builder().build())
+                .build()))
+            .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createApprovedCMO())
+            .put("representatives", representatives)
+            .put("dateOfIssue", LocalDate.of(2020, 1, 15))
             .build();
     }
 

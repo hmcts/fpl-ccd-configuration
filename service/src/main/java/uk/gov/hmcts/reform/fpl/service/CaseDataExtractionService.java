@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
@@ -42,6 +42,9 @@ import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -51,23 +54,18 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 //TODO: ensure everything is still working as expected - I don't think BLANK appears everywhere it used to. FPLA-1477
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class StandardDirectionOrderGenerationService extends
-    DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
-
-    //TODO: when should this be used? see FPLA-1087
-    public static final String DEFAULT = "BLANK - please complete";
-    private static final int SDO_DIRECTION_INDEX_START = 2;
-
+public class CaseDataExtractionService {
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService dataExtractionService;
 
-    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
-        DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder orderBuilder =
-            DocmosisStandardDirectionOrder.builder();
+    public static final String DEFAULT = "";
+    private static final int SDO_DIRECTION_INDEX_START = 2;
 
+    public DocmosisStandardDirectionOrder getStandardOrderDirectionData(CaseData caseData) throws IOException {
+        DocmosisStandardDirectionOrder.Builder orderBuilder = DocmosisStandardDirectionOrder.builder();
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         orderBuilder
@@ -75,7 +73,8 @@ public class StandardDirectionOrderGenerationService extends
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(standardDirectionOrder.getDateOfIssue())
-            .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), LONG))
+            .complianceDeadline(formatLocalDateToString(caseData.getDateSubmitted()
+                .plusWeeks(26), LONG))
             .children(getChildrenDetails(caseData.getAllChildren()))
             .respondents(getRespondentsNameAndRelationship(caseData.getAllRespondents()))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
@@ -102,7 +101,7 @@ public class StandardDirectionOrderGenerationService extends
             .build();
     }
 
-    public List<DocmosisChild> getChildrenDetails(List<Element<Child>> children) {
+    private List<DocmosisChildren> getChildrenDetails(List<Element<Child>> children) {
         return children.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
@@ -110,8 +109,8 @@ public class StandardDirectionOrderGenerationService extends
     }
 
     // TODO: see FPLA-1087
-    private DocmosisChild buildChild(ChildParty child) {
-        return DocmosisChild.builder()
+    private DocmosisChildren buildChild(ChildParty child) {
+        return DocmosisChildren.builder()
             .name(child.getFullName())
             .gender(defaultIfNull(child.getGender(), DEFAULT))
             .dateOfBirth(getDateOfBirth(child))
@@ -125,14 +124,13 @@ public class StandardDirectionOrderGenerationService extends
             .orElse(DEFAULT);
     }
 
-    public List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
+    private List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
         return respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
             .collect(toList());
     }
 
-    // TODO: see FPLA-1087
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
@@ -161,7 +159,7 @@ public class StandardDirectionOrderGenerationService extends
         ).orElse(ImmutableList.of());
     }
 
-    public String getApplicantName(Applicant applicant) {
+    private String getApplicantName(Applicant applicant) {
         return ofNullable(applicant.getParty())
             .map(ApplicantParty::getOrganisationName)
             .orElse("");
