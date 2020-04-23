@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
@@ -47,10 +48,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class DraftCMOService {
     private final CommonDirectionService commonDirectionService;
 
-    public Map<String, Object> extractIndividualCaseManagementOrderObjects(
-        CaseManagementOrder caseManagementOrder,
-        List<Element<HearingBooking>> hearingDetails) {
-
+    public Map<String, Object> extractCaseManagementOrderVariables(CaseManagementOrder caseManagementOrder,
+                                                                   List<Element<HearingBooking>> hearingDetails) {
         if (isNull(caseManagementOrder)) {
             caseManagementOrder = CaseManagementOrder.builder().build();
         }
@@ -64,13 +63,15 @@ public class DraftCMOService {
     }
 
     public CaseManagementOrder prepareCMO(CaseData caseData, CaseManagementOrder order) {
-        Optional<CaseManagementOrder> oldCMO = Optional.ofNullable(order);
-        Optional<DynamicList> cmoHearingDateList = Optional.ofNullable(caseData.getCmoHearingDateList());
-        Optional<LocalDate> dateOfIssue = Optional.ofNullable(caseData.getDateOfIssue());
+        Optional<CaseManagementOrder> oldCMO = ofNullable(order);
+        Optional<DynamicList> cmoHearingDateList = ofNullable(caseData.getCmoHearingDateList());
+        Optional<LocalDate> dateOfIssue = ofNullable(caseData.getDateOfIssue());
+
+        UUID idFromDynamicList = cmoHearingDateList.map(DynamicList::getValueCode).orElse(null);
 
         return CaseManagementOrder.builder()
             .hearingDate(cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null))
-            .id(cmoHearingDateList.map(DynamicList::getValueCode).orElse(null))
+            .id(oldCMO.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
             .directions(combineAllDirectionsForCmo(caseData))
             .schedule(caseData.getSchedule())
             .recitals(caseData.getRecitals())
