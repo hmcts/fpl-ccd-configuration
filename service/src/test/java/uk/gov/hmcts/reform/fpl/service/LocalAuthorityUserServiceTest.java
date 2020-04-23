@@ -71,7 +71,7 @@ class LocalAuthorityUserServiceTest {
             organisationService,
             authTokenGenerator, caseUserApi, client, userConfig, requestData);
 
-        given(client.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
+        given(client.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
@@ -91,7 +91,7 @@ class LocalAuthorityUserServiceTest {
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1, USER_IDS);
 
-        verify(client, times(1)).authenticateUser(anyString(), anyString());
+        verify(client, times(1)).getAccessToken(anyString(), anyString());
     }
 
     @Test

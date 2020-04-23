@@ -64,7 +64,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(client.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(userAuthToken);
+        given(client.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(userAuthToken);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
@@ -104,7 +104,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void updateCaseRolesShouldBeCalledOnceForEachUser() throws Exception {
+    void updateCaseRolesShouldBeCalledOnceForEachUser() throws InterruptedException {
         postSubmittedEvent(callbackRequest());
 
         Thread.sleep(3000);
@@ -113,7 +113,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldContinueAddingCaseRolesToUsersAfterGrantAccessFailure() throws Exception {
+    void shouldContinueAddingCaseRolesToUsersAfterGrantAccessFailure() throws InterruptedException {
         doThrow(RuntimeException.class).when(caseUserApi).updateCaseRolesForUser(
             any(), any(), any(), any(), any());
 
