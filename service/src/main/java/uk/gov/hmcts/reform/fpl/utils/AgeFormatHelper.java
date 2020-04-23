@@ -12,8 +12,10 @@ public class AgeFormatHelper {
 
     public static String formatAge(final LocalDate dateOfBirth) {
         final Period period = Period.between(dateOfBirth, now());
-        return String.join(formattedYears(period.getYears()), formattedMonths(period.getMonths()),
-            formattedDays(period.getDays()), " old");
+        final String formattedAge = format("%s %s %s old", formattedYears(period.getYears()), formattedMonths(period.getMonths()),
+            formattedDays(period.getDays()));
+
+        return formattedAge.trim().replaceAll("\\s+", " ");
     }
 
     private static String formattedYears(final int years) {
