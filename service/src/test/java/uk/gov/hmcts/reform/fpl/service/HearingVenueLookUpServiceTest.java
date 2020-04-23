@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,13 +19,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HearingVenueLookUpServiceTest {
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
 
     @Nested
     class HearingVenueLookup {
+
+        final HearingVenue predefinedHearingVenue = HearingVenue.builder()
+            .venue("Venue")
+            .hearingVenueId("Venue")
+            .address(Address.builder()
+                .addressLine1("Crown Building")
+                .addressLine2("Aberdare Hearing Centre")
+                .postTown("Aberdare")
+                .postcode("CF44 7DW")
+                .build())
+            .build();
+
         @Test
         void shouldReturnCustomVenueWhenCustomVenueAddressProvided() {
             Address venueAddress = Address.builder()
@@ -51,28 +59,31 @@ public class HearingVenueLookUpServiceTest {
         }
 
         @Test
-        void shouldReturnPredefinedVenueWhenCustomVenueAddressNotFound() {
+        void shouldReturnHearingVenueByVenueId() {
             HearingBooking hearingBooking = HearingBooking.builder().venue("Venue").build();
 
             HearingVenue actualHearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
 
-            HearingVenue expectedHearingVenue = HearingVenue.builder()
-                .venue("Venue")
-                .hearingVenueId("Venue")
-                .address(Address.builder()
-                    .addressLine1("Crown Building")
-                    .addressLine2("Aberdare Hearing Centre")
-                    .postTown("Aberdare")
-                    .postcode("CF44 7DW")
-                    .build())
-                .build();
+            assertThat(actualHearingVenue).isEqualTo(predefinedHearingVenue);
+        }
 
-            assertThat(actualHearingVenue).isEqualTo(expectedHearingVenue);
+        @Test
+        void shouldReturnHearingVenueByVenueIdWithCaseInsensitiveMatching() {
+            HearingBooking hearingBooking = HearingBooking.builder().venue("venue").build();
+
+            HearingVenue actualHearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
+
+            assertThat(actualHearingVenue).isEqualTo(predefinedHearingVenue);
         }
     }
 
     @Nested
     class HearingVenueFormatter {
+        @Test
+        void shouldReturnEmptyWhenHearingVenueIsNull() {
+            assertThat(hearingVenueLookUpService.buildHearingVenue(null)).isEmpty();
+        }
+
         @Test
         void shouldReturnEmptyWhenNoVenueAddress() {
             HearingVenue hearingVenue = HearingVenue.builder()
