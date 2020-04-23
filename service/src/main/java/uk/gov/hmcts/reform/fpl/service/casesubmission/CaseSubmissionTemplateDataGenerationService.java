@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

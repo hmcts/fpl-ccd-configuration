@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.COURT_SEAL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.DRAFT_WATERMARK_KEY;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDCaseSubmissionTemplateData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
@@ -48,11 +49,21 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     }
 
     @Test
-    void shouldReturnTemplateDataWithDraftWaterAsNullWhenCaseNotInDraft() throws IOException {
+    void shouldReturnTemplateDataWithCourtSealAsNotNullWhenCaseIsNotDraft() throws IOException {
         Map<String, Object> returnedTemplateData = templateDataGenerationService.getTemplateData(
             prepareCaseData(), false);
 
-        assertThat(returnedTemplateData).hasEntrySatisfying(DRAFT_WATERMARK_KEY, value -> assertThat(value).isNull());
+        assertThat(returnedTemplateData).hasEntrySatisfying(COURT_SEAL_KEY,
+            value -> assertThat(value).isNotNull());
+    }
+
+    @Test
+    void shouldReturnTemplateDataWithDraftWaterAsNotNullWhenCaseIsInDraft() throws IOException {
+        Map<String, Object> returnedTemplateData = templateDataGenerationService.getTemplateData(
+            prepareCaseData(), true);
+
+        assertThat(returnedTemplateData).hasEntrySatisfying(DRAFT_WATERMARK_KEY,
+            value -> assertThat(value).isNotNull());
     }
 
     private CaseData prepareCaseData() {

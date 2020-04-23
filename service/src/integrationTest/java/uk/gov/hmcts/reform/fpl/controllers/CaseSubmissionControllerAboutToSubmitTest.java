@@ -15,14 +15,16 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
-import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionTemplateDataGenerationService;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -47,7 +49,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     private FeatureToggleService featureToggleService;
 
     @MockBean
-    private CaseSubmissionTemplateDataGenerationService templateDataGenerationService;
+    private CaseSubmissionService caseSubmissionService;
 
     @Autowired
     private Time time;
@@ -59,11 +61,13 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @BeforeEach
-    void mocking() {
+    void mocking() throws IOException {
         byte[] pdf = {1, 2, 3, 4, 5};
 
         given(userDetailsService.getUserName())
             .willReturn("Emma Taylor");
+        given(caseSubmissionService.generateSubmittedFormPDF(any(), any()))
+            .willReturn(document);
         given(uploadDocumentService.uploadPDF(pdf, "2313.pdf"))
             .willReturn(document);
     }
