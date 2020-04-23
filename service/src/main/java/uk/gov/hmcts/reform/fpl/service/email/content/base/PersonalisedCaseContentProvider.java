@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.NotifyCaseContent;
+import uk.gov.hmcts.reform.fpl.model.notify.PersonalisedTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,16 +22,17 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-public abstract class CasePersonalisedContentProvider extends AbstractEmailContentProvider {
-    protected CasePersonalisedContentProvider(String uiBaseUrl, ObjectMapper mapper) {
+// What should this class be called? Is this a good name for it?
+public abstract class PersonalisedCaseContentProvider extends AbstractEmailContentProvider {
+    protected PersonalisedCaseContentProvider(String uiBaseUrl, ObjectMapper mapper) {
         super(uiBaseUrl, mapper);
     }
 
-    protected <T extends NotifyCaseContent> T addCasePersonalisationBuilder(T template,
-                                                                            Long caseId,
-                                                                            Orders orders,
-                                                                            Hearing hearing,
-                                                                            List<Element<Respondent>> respondents1) {
+    protected <T extends PersonalisedTemplate> T addPersonalisedContent(T template,
+                                                                        Long caseId,
+                                                                        Orders orders,
+                                                                        Hearing hearing,
+                                                                        List<Element<Respondent>> respondents1) {
         List<String> ordersAndDirections = buildOrdersAndDirections(orders);
 
         Optional<String> timeFrame = Optional.ofNullable(hearing)

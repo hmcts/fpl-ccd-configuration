@@ -1,14 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model.notify;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 
 import java.util.List;
 
-@Setter
-@Getter
-public class NotifyCaseContent implements NotifyData {
+// Don't like the name
+@Data
+public class PersonalisedTemplate implements NotifyData {
     private List<String> ordersAndDirections;
     private YesNo dataPresent;
     private YesNo fullStop;

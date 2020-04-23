@@ -7,7 +7,6 @@ import java.util.Map;
 
 public interface NotifyData {
     default Map<String, Object> toMap(ObjectMapper mapper) {
-        return mapper.convertValue(this, new TypeReference<>() {
-        });
+        return mapper.convertValue(this, new TypeReference<>() {});
     }
 }

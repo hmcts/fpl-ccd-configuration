@@ -9,10 +9,10 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.CafcassSubmissionTemplate;
-import uk.gov.hmcts.reform.fpl.service.email.content.base.CasePersonalisedContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.PersonalisedCaseContentProvider;
 
 @Service
-public class CafcassEmailContentProvider extends CasePersonalisedContentProvider {
+public class CafcassEmailContentProvider extends PersonalisedCaseContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
 
@@ -31,11 +31,8 @@ public class CafcassEmailContentProvider extends CasePersonalisedContentProvider
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CafcassSubmissionTemplate template = addCasePersonalisationBuilder(new CafcassSubmissionTemplate(),
-            caseDetails.getId(),
-            caseData.getOrders(),
-            caseData.getHearing(),
-            caseData.getRespondents1());
+        CafcassSubmissionTemplate template = addPersonalisedContent(new CafcassSubmissionTemplate(),
+            caseDetails.getId(), caseData.getOrders(), caseData.getHearing(), caseData.getRespondents1());
 
         template.setCafcass(cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName());
         template.setLocalAuthority(localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode));

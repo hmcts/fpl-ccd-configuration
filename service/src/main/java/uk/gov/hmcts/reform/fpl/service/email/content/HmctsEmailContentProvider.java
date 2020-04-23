@@ -8,12 +8,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.email.content.base.CasePersonalisedContentProvider;
-
-import java.util.Map;
+import uk.gov.hmcts.reform.fpl.model.notify.HmctsSubmissionTemplate;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.PersonalisedCaseContentProvider;
 
 @Service
-public class HmctsEmailContentProvider extends CasePersonalisedContentProvider {
+public class HmctsEmailContentProvider extends PersonalisedCaseContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
@@ -27,13 +26,19 @@ public class HmctsEmailContentProvider extends CasePersonalisedContentProvider {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
-    public Map<String, Object> buildHmctsSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
+    public HmctsSubmissionTemplate buildHmctsSubmissionNotification(CaseDetails caseDetails,
+                                                                    String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.addCasePersonalisationBuilder(caseDetails.getId(), caseData.getOrders(),
-            caseData.getHearing(), caseData.getRespondents1())
-            .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
-            .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .build();
+        HmctsSubmissionTemplate template = super.addPersonalisedContent(new HmctsSubmissionTemplate(),
+            caseDetails.getId(),
+            caseData.getOrders(),
+            caseData.getHearing(),
+            caseData.getRespondents1());
+
+        template.setCourt(hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName());
+        template.setLocalAuthority(localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode));
+
+        return template;
     }
 }
