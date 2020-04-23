@@ -37,7 +37,7 @@
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -57,7 +57,7 @@
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
     "FieldDisplayOrder": 6,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
