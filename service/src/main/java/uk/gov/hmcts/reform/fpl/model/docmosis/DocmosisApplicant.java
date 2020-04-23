@@ -9,7 +9,7 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisApplicant {
     private final String organisationName;
-    private final String contactDirection;
+    private final String contactName;
     private final String jobTitle;
     private final String address;
     private final String email;
@@ -20,6 +20,6 @@ public class DocmosisApplicant {
     private final String solicitorMobile;
     private final String solicitorTelephone;
     private final String solicitorEmail;
-    private final String solicitorDXNumber;
+    private final String solicitorDx;
     private final String solicitorReference;
 }
