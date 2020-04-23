@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model.docmosis;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.model.Address;
 
 @Data
 @Builder
@@ -13,7 +12,7 @@ public class DocmosisChildren {
     private final String age;
     private final String gender;
     private final String dateOfBirth;
-    private final Address address;
+    private final String address;
     private final String livingSituation;
     private final String livingSituationDetails;
     private final String keyDates;

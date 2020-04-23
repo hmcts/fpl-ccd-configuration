@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
+    private static final String CONFIDENTIAL = "Confidential";
     private static LocalDate TODAY = LocalDate.now();
 
     private final ObjectMapper objectMapper;
@@ -227,19 +229,22 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     }
 
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
+        final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
             .age(getAge(respondent.getDateOfBirth()))
             .gender(displayGender(respondent.getGender(), respondent.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
             .placeOfBirth(getDefaultIfNull(respondent.getPlaceOfBirth()))
-            .address(getDefaultIfNull(respondent.getAddress().getAddressAsString(NEW_LINE)))
+            .address(
+                isConfidential ? CONFIDENTIAL : respondent.getAddress().getAddressAsString(NEW_LINE))
+            .telephoneNumber(
+                isConfidential ? CONFIDENTIAL : getTelephoneNumber(respondent.getTelephoneNumber()))
             .contactDetailsHidden(toYesOrNoOrDefaultValue(respondent.getContactDetailsHidden()))
             .contactDetailsHiddenDetails(
                 concatenateYesOrNoKeyAndValue(
                     respondent.getContactDetailsHidden(),
                     respondent.getContactDetailsHiddenReason()))
-            .telephoneNumber(getTelephoneNumber(respondent.getTelephoneNumber()))
             .litigationIssuesDetails(
                 concatenateYesOrNoKeyAndValue(
                     respondent.getLitigationIssues(),

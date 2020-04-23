@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model.docmosis;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.model.Address;
 
 @Data
 @Builder
@@ -12,7 +11,7 @@ public class DocmosisApplicant {
     private final String organisationName;
     private final String contactDirection;
     private final String jobTitle;
-    private final Address address;
+    private final String address;
     private final String email;
     private final String mobileNumber;
     private final String telephoneNumber;
