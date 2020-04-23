@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.notify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public final class GatekeeperNotificationTemplate extends PersonalisedTemplate {
     private String localAuthority;
     @JsonProperty("gatekeeper_recipients")

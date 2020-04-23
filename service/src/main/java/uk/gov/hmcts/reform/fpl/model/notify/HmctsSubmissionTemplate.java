@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model.notify;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public final class HmctsSubmissionTemplate extends PersonalisedTemplate {
     private String court;
     private String localAuthority;

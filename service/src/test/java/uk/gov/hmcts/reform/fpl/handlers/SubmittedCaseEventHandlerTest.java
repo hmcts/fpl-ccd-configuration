@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.CafcassSubmissionTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.HmctsSubmissionTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.PersonalisedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -21,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -58,6 +63,9 @@ public class SubmittedCaseEventHandlerTest {
     @Autowired
     private SubmittedCaseEventHandler submittedCaseEventHandler;
 
+    @Captor
+    private ArgumentCaptor<NotifyData> captor;
+
     @Test
     void shouldSendEmailToHmctsAdminWhenCtscIsDisabled() {
         final HmctsSubmissionTemplate expectedTemplate = commonExpectedTemplate(new HmctsSubmissionTemplate());
@@ -71,10 +79,12 @@ public class SubmittedCaseEventHandlerTest {
             new SubmittedCaseEvent(callbackRequest(), requestData));
 
         verify(notificationService).sendEmail(
-            HMCTS_COURT_SUBMISSION_TEMPLATE,
-            COURT_EMAIL_ADDRESS,
-            expectedTemplate,
-            "12345");
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
+            eq(COURT_EMAIL_ADDRESS),
+            captor.capture(),
+            eq("12345"));
+
+        assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplate);
     }
 
     @Test
@@ -92,10 +102,12 @@ public class SubmittedCaseEventHandlerTest {
         submittedCaseEventHandler.sendEmailToHmctsAdmin(new SubmittedCaseEvent(callbackRequest, requestData));
 
         verify(notificationService).sendEmail(
-            HMCTS_COURT_SUBMISSION_TEMPLATE,
-            CTSC_INBOX,
-            expectedTemplate,
-            "12345");
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE),
+            eq(CTSC_INBOX),
+            captor.capture(),
+            eq("12345"));
+
+        assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplate);
     }
 
     @Test
@@ -111,10 +123,12 @@ public class SubmittedCaseEventHandlerTest {
             new SubmittedCaseEvent(callbackRequest(), requestData));
 
         verify(notificationService).sendEmail(
-            CAFCASS_SUBMISSION_TEMPLATE,
-            CAFCASS_EMAIL_ADDRESS,
-            expectedTemplate,
-            "12345");
+            eq(CAFCASS_SUBMISSION_TEMPLATE),
+            eq(CAFCASS_EMAIL_ADDRESS),
+            captor.capture(),
+            eq("12345"));
+
+        assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplate);
     }
 
     private <T extends PersonalisedTemplate> T commonExpectedTemplate(T template) {
