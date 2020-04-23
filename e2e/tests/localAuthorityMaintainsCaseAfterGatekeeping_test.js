@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const uploadDocs = require('../fragments/caseDocuments');
+const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
 
 let caseId;
 
@@ -36,6 +36,21 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('local authority uploads documents', uploadDocs.uploadDocuments());
+Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  uploadDocumentsHelper.assertCaseDocuments(I);
+});
 
-Scenario('local authority uploads court bundle', uploadDocs.uploadCourtBundle());
+Scenario('local authority uploads court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  I.seeElement(uploadDocumentsEventPage.documents.courtBundle);
+  uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeDocument('Court bundle', 'mockFile.txt');
+});

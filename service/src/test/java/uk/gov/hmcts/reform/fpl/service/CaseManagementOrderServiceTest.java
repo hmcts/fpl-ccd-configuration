@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.TimeConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.NextHearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -13,9 +15,11 @@ import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
-import uk.gov.hmcts.reform.fpl.service.time.TimeConfiguration;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,13 +37,18 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TimeConfiguration.class, CaseManagementOrderService.class,
     HearingBookingService.class})
 class CaseManagementOrderServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
+
+    @Autowired
+    private Time time;
 
     @Autowired
     private CaseManagementOrderService service;
@@ -132,6 +141,48 @@ class CaseManagementOrderServiceTest {
         CaseManagementOrder updatedCaseManagementOrder = service.addNextHearingToCMO(null, caseManagementOrder);
 
         assertThat(updatedCaseManagementOrder.getHearingDate()).isEqualTo("Test date");
+    }
+
+    @Test
+    void shouldGetCMOIssueDate() {
+        LocalDate expectedIssueDate = LocalDate.now().minusDays(1);
+        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+            .dateOfIssue(expectedIssueDate.format(DateTimeFormatter.ofPattern(DATE)))
+            .build();
+
+        LocalDate issueDate = service.getIssuedDate(caseManagementOrder);
+
+        assertThat(issueDate).isEqualTo(expectedIssueDate);
+    }
+
+    @Test
+    void shouldGetDefaultCMOIssueDate() {
+        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
+
+        LocalDate issueDate = service.getIssuedDate(caseManagementOrder);
+
+        assertThat(issueDate).isEqualTo(time.now().toLocalDate());
+    }
+
+    @Test
+    void shouldGetDefaultCMOIssueDateWhenCMODoesNotExists() {
+        LocalDate issueDate = service.getIssuedDate(null);
+
+        assertThat(issueDate).isEqualTo(time.now().toLocalDate());
+    }
+
+    @Test
+    void shouldRemoveDocumentFromOrderAction() {
+        OrderAction originalOrderAction = OrderAction.builder()
+            .document(testDocumentReference())
+            .type(SELF_REVIEW)
+            .nextHearingType(NextHearingType.FINAL_HEARING)
+            .changeRequestedByJudge("child dob")
+            .build();
+
+        OrderAction updatedOrderAction = service.removeDocumentFromOrderAction(originalOrderAction);
+
+        assertThat(updatedOrderAction).isEqualToIgnoringGivenFields(originalOrderAction, "document");
     }
 
     private CaseData.CaseDataBuilder caseDataWithCmo(UUID id) {
