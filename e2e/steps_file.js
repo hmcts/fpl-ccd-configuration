@@ -8,10 +8,10 @@ const caseViewPage = require('./pages/caseView.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const ordersAndDirectionsNeededEventPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
+const ordersAndDirectionsNeededEventPage = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
 const enterHearingNeededEventPage = require('./pages/events/enterHearingNeededEvent.page');
 const enterChildrenEventPage = require('./pages/events/enterChildrenEvent.page');
-const enterApplicantEventPage  = require('./pages/events/enterApplicantEvent.page');
+const enterApplicantEventPage = require('./pages/events/enterApplicantEvent.page');
 const enterGroundsEventPage = require('./pages/events/enterGroundsForApplicationEvent.page');
 const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
 const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
@@ -30,18 +30,22 @@ module.exports = function () {
   return actor({
     async signIn(username, password) {
       await this.retryUntilExists(async () => {
-        this.amOnPage(process.env.URL || 'http://localhost:3451');
-        if (await this.waitForSelector('#global-header') == null) {
-          return;
-        }
-        const user = await this.grabText('#user-name');
-        if (user !== undefined) {
-          if (user.toLowerCase().includes(username)) {
+        try {
+          this.amOnPage(process.env.URL || 'http://localhost:3451');
+          if (await this.waitForSelector('#global-header') == null) {
             return;
           }
-          this.signOut();
+          const user = await this.grabText('#user-name');
+          if (user !== undefined) {
+            if (user.toLowerCase().includes(username)) {
+              return;
+            }
+            this.signOut();
+          }
+          loginPage.signIn(username, password);
+        } catch (e) {
+          console.log(`Login issue ${e}`);
         }
-        loginPage.signIn(username, password);
       }, '#sign-out');
     },
 
@@ -133,17 +137,17 @@ module.exports = function () {
       }
     },
 
-    async navigateToCaseList(){
+    async navigateToCaseList() {
       await caseListPage.navigate();
     },
 
-    async enterAllocationProposal () {
+    async enterAllocationProposal() {
       await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
       enterAllocationProposalEventPage.selectAllocationProposal('District judge');
       await this.completeEvent('Save and continue');
     },
 
-    async enterMandatoryFields (settings) {
+    async enterMandatoryFields(settings) {
       await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
       ordersAndDirectionsNeededEventPage.checkCareOrder();
       await this.completeEvent('Save and continue');
@@ -156,7 +160,7 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
-      if(settings && settings.multipleChildren){
+      if (settings && settings.multipleChildren) {
         await this.addAnotherElementToCollection('Child');
         await enterChildrenEventPage.enterChildDetails('John', 'Black', '02', '09', '2016');
       }
@@ -197,7 +201,7 @@ module.exports = function () {
 
     async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
-      if(collectionName) {
+      if (collectionName) {
         this.click(locate('button')
           .inside(locate('div').withChild(locate('h2').withText(collectionName)))
           .withText('Add new'));
@@ -209,7 +213,7 @@ module.exports = function () {
     },
 
     async removeElementFromCollection(collectionName, index = 1) {
-      if(collectionName) {
+      if (collectionName) {
         await this.click(locate('button')
           .inside(locate('div').withChild(locate('h2').withText(collectionName)))
           .withText('Remove')
