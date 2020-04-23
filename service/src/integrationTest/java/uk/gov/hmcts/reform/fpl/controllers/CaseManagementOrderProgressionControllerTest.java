@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,7 +38,6 @@ import java.util.UUID;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -70,7 +68,6 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseManagementOrderProgressionController.class)
 @OverrideAutoConfiguration(enabled = true)
-@TestInstance(PER_CLASS)
 class CaseManagementOrderProgressionControllerTest extends AbstractControllerTest {
     private static final UUID HEARING_ID = randomUUID();
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -93,7 +90,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         super("cmo-progression");
     }
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         futureDate = now().plusDays(1);
     }
