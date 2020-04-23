@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
@@ -36,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
@@ -43,7 +46,6 @@ import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,6 +71,9 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
     private static final String CONFIDENTIAL = "Confidential";
+    private static final String HOSPITAL_SOON_TO_BE_DISCHARGED = "In hospital and soon to be discharged";
+    private static final String REMOVED_BY_POLICE_POWER_ENDS = "Removed by Police, powers ending soon";
+    private static final String VOLUNTARILY_SECTION_CARE_ORDER = "Voluntarily in section 20 care order";
     private static final LocalDate TODAY = LocalDate.now();
 
     private final ObjectMapper objectMapper;
@@ -90,7 +95,8 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .risks(buildDocmosisRisks(caseData.getRisks()))
             .factorsParenting(buildDocmosisFactorsParenting(caseData.getFactorsParenting()))
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents()))
-            .applicants(buildDocmosisApplicants(caseData.getApplicants(), caseData.getSolicitor()))
+            .applicants(buildDocmosisApplicants(caseData.getAllApplicants(), caseData.getSolicitor()))
+            .children(buildDocmosisChildren(caseData.getAllChildren()))
             .proceeding(caseData.getProceeding())
             .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO()))
@@ -232,11 +238,80 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .collect(toList());
     }
 
-    private List<DocmosisApplicant> buildDocmosisApplicants(final List<Element<Applicant>> applicants, Solicitor solicitor) {
+    private List<DocmosisApplicant> buildDocmosisApplicants(final List<Element<Applicant>> applicants,
+                                                            Solicitor solicitor) {
         return applicants.stream()
             .map(element -> element.getValue().getParty())
             .map(applicant -> buildApplicant(applicant, solicitor))
             .collect(toList());
+    }
+
+    private List<DocmosisChildren> buildDocmosisChildren(final List<Element<Child>> children) {
+        return children.stream()
+            .map(element -> element.getValue().getParty())
+            .map(this::buildChild)
+            .collect(toList());
+    }
+
+    private String getChildLivingSituation(ChildParty child, boolean isConfidential) {
+        if (StringUtils.isNotEmpty(child.getLivingSituation())) {
+            StringBuilder sb = new StringBuilder(child.getLivingSituation());
+            if (isConfidential) {
+                sb.append(NEW_LINE).append(CONFIDENTIAL);
+            } else if (isNotEmpty(child.getAddress())) {
+                sb.append(child.getAddress().getAddressAsString(NEW_LINE));
+            }
+            switch (child.getLivingSituation()) {
+                case HOSPITAL_SOON_TO_BE_DISCHARGED:
+                    if (child.getDischargeDate() != null) {
+                        sb.append("Discharge date: ").append(formatLocalDateToString(child.getDischargeDate(), DATE));
+                    }
+                    break;
+                case REMOVED_BY_POLICE_POWER_ENDS:
+                    if (child.getDatePowersEnd() != null) {
+                        sb.append("Date powers end: ").append(formatLocalDateToString(child.getDatePowersEnd(), DATE));
+                    }
+                    break;
+                case VOLUNTARILY_SECTION_CARE_ORDER:
+                    if (child.getCareStartDate() != null) {
+                        sb.append("Date this began: ").append(formatLocalDateToString(child.getCareStartDate(), DATE));
+                    }
+                    break;
+                default:
+                    if (child.getAddressChangeDate() != null) {
+                        sb.append("Date this began: ")
+                            .append(formatLocalDateToString(child.getAddressChangeDate(), DATE));
+                    }
+            }
+        }
+        return DEFAULT_STRING;
+    }
+
+    private DocmosisChildren buildChild(ChildParty child) {
+        final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
+        return DocmosisChildren.builder()
+            .name(child.getFullName())
+            .age(formatAge(child.getDateOfBirth()))
+            .gender(displayGender(child.getGender(), child.getGenderIdentification()))
+            .dateOfBirth(formatLocalDateToString(child.getDateOfBirth(), DATE))
+            .livingSituation(getChildLivingSituation(child, isConfidential))
+            .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
+            .careAndContactPlan(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
+            .adoption(getDefaultIfNullOrEmpty(child.getAdoption()))
+            .placementOrderApplication(getDefaultIfNullOrEmpty(child.getPlacementOrderApplication()))
+            .placementCourt(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
+            .mothersName(getDefaultIfNullOrEmpty(child.getMothersName()))
+            .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
+            .fathersResponsibility(getDefaultIfNullOrEmpty(child.getFathersResponsibility()))
+            .socialWorkerName(getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
+            .socialWorkerTelephoneNumber(getTelephoneNumber(child.getTelephoneNumber()))
+            .additionalNeeds(
+                concatenateKeyAndValue(child.getAdditionalNeeds(), child.getAdditionalNeedsDetails()))
+            .litigationIssues(
+                concatenateYesOrNoKeyAndValue(child.getLitigationIssues(), child.getLitigationIssuesDetails()))
+            .detailsHiddenDetails(
+                concatenateKeyAndValue(child.getDetailsHidden(), child.getDetailsHiddenReason()))
+            .build();
     }
 
     private DocmosisRespondent buildRespondent(final RespondentParty respondent) {
@@ -268,7 +343,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .build();
     }
 
-    private DocmosisApplicant buildApplicant(ApplicantParty applicant, Solicitor solicitor) {
+    private DocmosisApplicant buildApplicant(final ApplicantParty applicant, final Solicitor solicitor) {
         boolean solicitorPresent = (solicitor != null);
         return DocmosisApplicant.builder()
             .organisationName(getDefaultIfNullOrEmpty(applicant.getOrganisationName()))
@@ -305,7 +380,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         return DEFAULT_STRING;
     }
 
-    private String getEmail(EmailAddress email) {
+    private String getEmail(final EmailAddress email) {
         return isNotEmpty(email) && StringUtils.isNotEmpty(email.getEmail())
             ? email.getEmail() : DEFAULT_STRING;
     }
@@ -322,28 +397,6 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
 
     private String getDefaultIfNullOrEmpty(final String value) {
         return StringUtils.isEmpty(value) ? DEFAULT_STRING : value;
-    }
-
-    private String calculateAge(final LocalDate dateOfBirth) {
-        final Period period = Period.between(dateOfBirth, TODAY);
-        int years = period.getYears();
-        int months = period.getMonths();
-        int days = period.getDays();
-        if (years > 1) {
-            return years + " years old";
-        } else if (years == 1) {
-            return years + " year old";
-        } else if (months > 1) {
-            return months + " months old";
-        } else if (months == 1) {
-            return months + " month old";
-        } else if (days > 1) {
-            return days + " days old";
-        } else if (days == 1) {
-            return days + " day old";
-        } else {
-            return "0 days old";
-        }
     }
 
     private DocmosisHearing buildDocmosisHearing(

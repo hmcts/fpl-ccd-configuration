@@ -14,7 +14,6 @@ public class DocmosisChildren {
     private final String dateOfBirth;
     private final String address;
     private final String livingSituation;
-    private final String livingSituationDetails;
     private final String keyDates;
     private final String careAndContactPlan;
     private final String adoption;
@@ -26,9 +25,6 @@ public class DocmosisChildren {
     private final String socialWorkerName;
     private final String socialWorkerTelephoneNumber;
     private final String additionalNeeds;
-    private final String additionalNeedsDetails;
     private final String litigationIssues;
-    private final String litigationIssuesDetails;
-    private final String detailsHidden;
-    private final String detailsHiddenReason;
+    private final String detailsHiddenDetails;
 }
