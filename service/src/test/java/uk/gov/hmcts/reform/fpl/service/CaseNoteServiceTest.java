@@ -45,16 +45,11 @@ class CaseNoteServiceTest {
     @BeforeEach
     void setUp() {
         service = new CaseNoteService(idamClient, time);
+        given(idamClient.getUserInfo(userAuthToken)).willReturn(userDetails);
     }
 
     @Nested
     class BuildCaseNote {
-
-        @BeforeEach
-        void setUp() {
-            service = new CaseNoteService(idamClient, time);
-            given(idamClient.getUserInfo(userAuthToken)).willReturn(userDetails);
-        }
 
         @ParameterizedTest
         @ValueSource(strings = {"new note"})

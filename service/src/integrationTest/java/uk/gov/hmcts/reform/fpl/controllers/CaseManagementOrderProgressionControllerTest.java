@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -40,6 +39,7 @@ import java.util.UUID;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -70,8 +70,9 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseManagementOrderProgressionController.class)
 @OverrideAutoConfiguration(enabled = true)
+@TestInstance(PER_CLASS)
 class CaseManagementOrderProgressionControllerTest extends AbstractControllerTest {
-    private static final UUID ID = randomUUID();
+    private static final UUID HEARING_ID = randomUUID();
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
@@ -88,14 +89,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
-    @Autowired
-    private Time time;
-
     CaseManagementOrderProgressionControllerTest() {
         super("cmo-progression");
     }
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
         futureDate = now().plusDays(1);
     }
@@ -291,7 +289,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private CaseManagementOrder buildOrder(CMOStatus status, ActionType actionType) {
         return CaseManagementOrder.builder()
             .status(status)
-            .id(ID)
+            .id(HEARING_ID)
             .orderDoc(createDocumentReference(randomUUID().toString()))
             .action(OrderAction.builder()
                 .type(actionType)

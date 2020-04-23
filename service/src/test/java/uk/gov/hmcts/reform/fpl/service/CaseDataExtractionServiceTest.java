@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import static java.util.Locale.UK;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.emptyList;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     LookupTestConfig.class, CaseDataExtractionService.class, HearingBookingService.class, CommonDirectionService.class,
     CommonCaseDataExtractionService.class, FixedTimeConfiguration.class
 })
+@TestInstance(PER_CLASS)
 class CaseDataExtractionServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Family Court";
@@ -75,8 +78,8 @@ class CaseDataExtractionServiceTest {
     @Autowired
     private CaseDataExtractionService caseDataExtractionService;
 
-    @BeforeEach
-    void setup() {
+    @BeforeAll
+    void setUp() {
         given(userDetailsService.getUserName()).willReturn("Emma Taylor");
         today = time.now().toLocalDate();
     }

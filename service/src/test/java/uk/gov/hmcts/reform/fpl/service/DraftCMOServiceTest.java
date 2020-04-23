@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -32,6 +33,7 @@ import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
@@ -47,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, CommonDirectionService.class, DraftCMOService.class, FixedTimeConfiguration.class
 })
+@TestInstance(PER_CLASS)
 class DraftCMOServiceTest {
     @Autowired
     private Time time;
@@ -66,7 +69,7 @@ class DraftCMOServiceTest {
         this.draftCMOService = draftCMOService;
     }
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
         hearingDetails = createHearingBookingsFromInitialDate(time.now());
     }

@@ -54,7 +54,7 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void shouldReturnHearingsWhenNoHearingsExistInFuture() {
-        List<Element<HearingBooking>> hearingDetails = newArrayList(bookingWithStartDate(now().plusDays(-5)));
+        List<Element<HearingBooking>> hearingDetails = newArrayList(bookingWithStartDate(now().minusDays(5)));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
             Map.of(HEARING_DETAILS_KEY, emptyList()), Map.of(HEARING_DETAILS_KEY, hearingDetails)));

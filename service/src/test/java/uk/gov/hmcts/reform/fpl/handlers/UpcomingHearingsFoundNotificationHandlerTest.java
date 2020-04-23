@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -31,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {UpcomingHearingsFoundNotificationHandler.class, LookupTestConfig.class,
     FixedTimeConfiguration.class})
+@TestInstance(PER_CLASS)
 public class UpcomingHearingsFoundNotificationHandlerTest {
     @MockBean
     private NotificationService notificationService;
@@ -49,7 +52,7 @@ public class UpcomingHearingsFoundNotificationHandlerTest {
 
     private LocalDate hearingDate;
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
         hearingDate = time.now().toLocalDate();
     }
