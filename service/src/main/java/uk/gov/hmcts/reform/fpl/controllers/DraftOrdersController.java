@@ -157,6 +157,7 @@ public class DraftOrdersController {
         );
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
+            .directions(List.of())
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
