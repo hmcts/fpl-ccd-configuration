@@ -26,5 +26,5 @@ public class DocmosisChildren {
     private final String socialWorkerTelephoneNumber;
     private final String additionalNeeds;
     private final String litigationIssues;
-    private final String detailsHiddenDetails;
+    private final String detailsHiddenReason;
 }

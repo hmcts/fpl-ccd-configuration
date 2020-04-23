@@ -325,7 +325,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
                 concatenateKeyAndValue(child.getAdditionalNeeds(), child.getAdditionalNeedsDetails()))
             .litigationIssues(
                 concatenateYesOrNoKeyAndValue(child.getLitigationIssues(), child.getLitigationIssuesDetails()))
-            .detailsHiddenDetails(
+            .detailsHiddenReason(
                 concatenateKeyAndValue(child.getDetailsHidden(), child.getDetailsHiddenReason()))
             .build();
     }
@@ -447,6 +447,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
                             .append(formatLocalDateToString(child.getAddressChangeDate(), DATE));
                     }
             }
+            return sb.toString();
         }
         return DEFAULT_STRING;
     }
