@@ -83,13 +83,13 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() {
         Map<String, Object> data = ImmutableMap.of(
-            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(timeNow()),
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
             "respondents1", createRespondents(),
             "others", createOthers());
 
         List<String> expected = Arrays.asList(
-            timeNow().plusDays(5).format(DATE_TIME_FORMATTER),
-            timeNow().plusDays(2).format(DATE_TIME_FORMATTER));
+            now().plusDays(5).format(DATE_TIME_FORMATTER),
+            now().plusDays(2).format(DATE_TIME_FORMATTER));
 
         CaseDetails caseDetails = buildCaseDetails(data);
 
@@ -144,11 +144,11 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     @Test
     void aboutToSubmitShouldPopulateCaseManagementOrder() {
         DynamicList dynamicHearingDates = draftCMOService
-            .buildDynamicListFromHearingDetails(createHearingBookingsFromInitialDate(timeNow()));
+            .buildDynamicListFromHearingDetails(createHearingBookingsFromInitialDate(now()));
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-            .label(timeNow().plusDays(5).toString())
+            .label(now().plusDays(5).toString())
             .build());
 
         Map<String, Object> data = new HashMap<>();
@@ -173,7 +173,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
         assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
-        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(timeNow().plusDays(5).toString());
+        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(now().plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
         assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo("draft-case-management-order.pdf");
         assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");

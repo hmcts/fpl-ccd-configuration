@@ -170,7 +170,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 .build())
             .nextHearing(NextHearing.builder()
                 .id(ID)
-                .date(timeNow().toString())
+                .date(now().toString())
                 .build())
             .status(SEND_TO_JUDGE)
             .build();
@@ -198,8 +198,8 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
         return List.of(Element.<HearingBooking>builder()
             .id(ID)
             .value(HearingBooking.builder()
-                .startDate(timeNow().plusDays(days))
-                .endDate(timeNow().plusDays(days))
+                .startDate(now().plusDays(days))
+                .endDate(now().plusDays(days))
                 .venue("venue")
                 .build())
             .build());
@@ -211,7 +211,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(ID)
-            .label(timeNow().toString())
+            .label(now().toString())
             .build());
         return dynamicHearingDates;
     }
@@ -226,11 +226,11 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     }
 
     private String expectedPreHearing() {
-        return getStringDate(timeNow().minusHours(1));
+        return getStringDate(now().minusHours(1));
     }
 
     private String expectedHearingTime() {
-        return getStringDate(timeNow()) + " - " + getStringDate(timeNow());
+        return getStringDate(now()) + " - " + getStringDate(now());
     }
 
     private String getStringDate(LocalDateTime now) {

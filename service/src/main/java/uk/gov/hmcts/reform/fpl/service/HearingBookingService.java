@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.time.LocalDateTime.now;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -91,7 +90,7 @@ public class HearingBookingService {
     private boolean isPastHearing(Element<HearingBooking> element) {
         return ofNullable(element.getValue())
             .map(HearingBooking::getStartDate)
-            .filter(hearingDate -> hearingDate.isBefore(now()))
+            .filter(hearingDate -> hearingDate.isBefore(time.now()))
             .isPresent();
     }
 }

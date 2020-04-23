@@ -78,7 +78,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
     @BeforeEach
     void init() {
-        dateIn3Months = timeNow().plusMonths(3);
+        dateIn3Months = now().plusMonths(3);
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
     }
 

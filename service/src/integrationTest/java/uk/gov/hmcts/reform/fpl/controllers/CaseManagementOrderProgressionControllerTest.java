@@ -5,6 +5,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -86,13 +88,16 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
+    @Autowired
+    private Time time;
+
     CaseManagementOrderProgressionControllerTest() {
         super("cmo-progression");
     }
 
     @BeforeEach
     void setUp() {
-        futureDate = timeNow().plusDays(1);
+        futureDate = now().plusDays(1);
     }
 
     @Test

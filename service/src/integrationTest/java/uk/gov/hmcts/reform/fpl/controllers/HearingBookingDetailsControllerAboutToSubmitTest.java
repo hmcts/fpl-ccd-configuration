@@ -42,7 +42,7 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void shouldReturnHearingsWhenNoHearingsExistInPast() {
-        List<Element<HearingBooking>> hearingDetails = newArrayList(bookingWithStartDate(timeNow().plusDays(5)));
+        List<Element<HearingBooking>> hearingDetails = newArrayList(bookingWithStartDate(now().plusDays(5)));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
             Map.of(HEARING_DETAILS_KEY, hearingDetails), Map.of(HEARING_DETAILS_KEY, hearingDetails)));
@@ -54,7 +54,7 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void shouldReturnHearingsWhenNoHearingsExistInFuture() {
-        List<Element<HearingBooking>> hearingDetails = newArrayList(bookingWithStartDate(timeNow().plusDays(-5)));
+        List<Element<HearingBooking>> hearingDetails = newArrayList(bookingWithStartDate(now().plusDays(-5)));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
             Map.of(HEARING_DETAILS_KEY, emptyList()), Map.of(HEARING_DETAILS_KEY, hearingDetails)));
@@ -66,8 +66,8 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void shouldReturnHearingsWhenHearingsInPastAndFutureExist() {
-        Element<HearingBooking> hearingDetail = bookingWithStartDate(timeNow().plusDays(5));
-        Element<HearingBooking> hearingDetailPast = bookingWithStartDate(timeNow().minusDays(5));
+        Element<HearingBooking> hearingDetail = bookingWithStartDate(now().plusDays(5));
+        Element<HearingBooking> hearingDetailPast = bookingWithStartDate(now().minusDays(5));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
             Map.of(HEARING_DETAILS_KEY, newArrayList(hearingDetail)),

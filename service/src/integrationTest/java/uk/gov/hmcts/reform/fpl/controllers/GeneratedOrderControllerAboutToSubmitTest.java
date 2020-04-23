@@ -172,7 +172,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-        LocalDateTime orderExpiration = timeNow().plusMonths(14);
+        LocalDateTime orderExpiration = now().plusMonths(14);
         GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
             "Final supervision order")
             .expiryDate(
@@ -240,9 +240,9 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
         return GeneratedOrder.builder()
             .type(fullType)
-            .dateOfIssue(formatLocalDateTimeBaseUsingFormat(timeNow(), "d MMMM yyyy"))
+            .dateOfIssue(formatLocalDateTimeBaseUsingFormat(now(), "d MMMM yyyy"))
             .document(expectedDocument())
-            .date(formatLocalDateTimeBaseUsingFormat(timeNow(), "h:mma, d MMMM yyyy"))
+            .date(formatLocalDateTimeBaseUsingFormat(now(), "h:mma, d MMMM yyyy"))
             .judgeAndLegalAdvisor(
                 JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HER_HONOUR_JUDGE)

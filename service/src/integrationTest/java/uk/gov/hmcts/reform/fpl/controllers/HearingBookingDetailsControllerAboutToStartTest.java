@@ -41,8 +41,8 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
 
     @Test
     void shouldOnlyReturnHearingsWithFutureStartDateWhenHearingsInThePastExist() {
-        Element<HearingBooking> hearingDetail = bookingWithStartDate(timeNow().plusDays(5));
-        Element<HearingBooking> hearingDetailPast = bookingWithStartDate(timeNow().minusDays(5));
+        Element<HearingBooking> hearingDetail = bookingWithStartDate(now().plusDays(5));
+        Element<HearingBooking> hearingDetailPast = bookingWithStartDate(now().minusDays(5));
 
         List<Element<HearingBooking>> hearingDetails = newArrayList(hearingDetail, hearingDetailPast);
 

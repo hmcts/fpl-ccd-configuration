@@ -113,10 +113,10 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
     void midEventShouldReturnEmptyDirectionsListInStandardDirectionOrder() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(buildTestDirections())
-                .put("dateOfIssue", dateNow().toString())
+                .put("dateOfIssue", dateNow())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                 .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", dateNow().toString())
+                .put("dateSubmitted", dateNow())
                 .build())
             .build();
 

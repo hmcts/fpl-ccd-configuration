@@ -99,7 +99,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     @BeforeEach
     void setUp() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
-        dateIn3Months = timeNow().plusMonths(3);
+        dateIn3Months = now().plusMonths(3);
     }
 
     @Test

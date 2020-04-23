@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.validation.Validation;
 
-import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -270,7 +269,7 @@ class CaseValidatorServiceTest {
             .children1(wrapElements(
                 Child.builder()
                     .party(ChildParty.builder()
-                        .dateOfBirth(now().plusDays(10))
+                        .dateOfBirth(time.now().toLocalDate().plusDays(10))
                         .build())
                     .build(),
                 Child.builder()

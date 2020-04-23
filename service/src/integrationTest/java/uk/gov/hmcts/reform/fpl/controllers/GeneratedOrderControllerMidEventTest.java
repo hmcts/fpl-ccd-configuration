@@ -283,7 +283,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 .epoPhrase(EPOPhrase.builder()
                     .includePhrase("Yes")
                     .build())
-                .epoEndDate(timeNow())
+                .epoEndDate(now())
                 .epoType(REMOVE_TO_ACCOMMODATION)
                 .epoRemovalAddress(Address.builder()
                     .addressLine1("Unit 1")

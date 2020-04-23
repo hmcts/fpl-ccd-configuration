@@ -41,7 +41,7 @@ public class ActionCaseManagementOrderControllerAboutToStartTest extends Abstrac
 
     @Test
     void shouldAddCurrentTimeAsDateOfIssuedWhenNotInCaseManagementOrder() {
-        Map<String, Object> data = Map.of(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(timeNow()),
+        Map<String, Object> data = Map.of(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createCaseManagementOrder(SEND_TO_JUDGE));
 
         CaseDetails caseDetails = buildCaseDetails(data);
@@ -57,7 +57,7 @@ public class ActionCaseManagementOrderControllerAboutToStartTest extends Abstrac
             .dateOfIssue("20 March 2019")
             .build();
 
-        Map<String, Object> data = Map.of(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(timeNow()),
+        Map<String, Object> data = Map.of(HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
         CaseDetails caseDetails = buildCaseDetails(data);
@@ -73,7 +73,7 @@ public class ActionCaseManagementOrderControllerAboutToStartTest extends Abstrac
 
         Map<String, Object> data = Map.of(
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
-            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(timeNow()));
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()));
 
         CaseDetails caseDetails = buildCaseDetails(data);
 
@@ -81,9 +81,9 @@ public class ActionCaseManagementOrderControllerAboutToStartTest extends Abstrac
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(getHearingDates(caseData)).isEqualTo(List.of(
-            timeNow().plusDays(5).format(DATE_TIME_FORMATTER),
-            timeNow().plusDays(2).format(DATE_TIME_FORMATTER)));
+        assertThat(getHearingDates(caseData)).containsOnly(
+            now().plusDays(5).format(DATE_TIME_FORMATTER),
+            now().plusDays(2).format(DATE_TIME_FORMATTER));
 
         assertThat(caseData.getOrderAction()).isNull();
         assertThat(caseData.getSchedule()).isEqualTo(order.getSchedule());

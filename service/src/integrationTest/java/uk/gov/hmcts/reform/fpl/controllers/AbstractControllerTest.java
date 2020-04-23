@@ -202,7 +202,7 @@ abstract class AbstractControllerTest {
         return postSubmittedEvent(filename, SC_OK);
     }
 
-    LocalDateTime timeNow() {
+    LocalDateTime now() {
         return time.now();
     }
 

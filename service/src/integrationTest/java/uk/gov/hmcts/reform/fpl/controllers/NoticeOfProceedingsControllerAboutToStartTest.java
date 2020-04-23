@@ -61,7 +61,7 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
         String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
 
         String expectedContent = String.format("The case management hearing will be on the %s.",
-            formatLocalDateTimeBaseUsingFormat(timeNow(), DATE));
+            formatLocalDateTimeBaseUsingFormat(now(), DATE));
 
         assertThat(proceedingLabel).isEqualTo(expectedContent);
     }
@@ -103,8 +103,8 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
 
     private List<Element<HearingBooking>> createHearingBookings() {
         return ElementUtils.wrapElements(
-            createHearingBooking(timeNow().plusDays(5), timeNow().plusHours(6)),
-            createHearingBooking(timeNow().plusDays(2), timeNow().plusMinutes(45)),
-            createHearingBooking(timeNow(), timeNow().plusHours(2)));
+            createHearingBooking(now().plusDays(5), now().plusHours(6)),
+            createHearingBooking(now().plusDays(2), now().plusMinutes(45)),
+            createHearingBooking(now(), now().plusHours(2)));
     }
 }
