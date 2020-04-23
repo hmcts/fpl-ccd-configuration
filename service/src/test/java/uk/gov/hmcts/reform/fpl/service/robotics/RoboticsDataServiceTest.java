@@ -14,6 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -42,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class})
@@ -73,19 +76,70 @@ public class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnRoboticsDataWithExpectedlAllocationWhenAllocationProposalHasValue() {
-        final String expectedAllocation = "To be moved";
-
-        CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER).toBuilder()
-            .allocationProposal(Allocation.builder()
-                .proposal("To be moved")
-                .build())
+    void shouldReturnRoboticsDataWithoutApplicantNodeWhenApplicantIsNull() {
+        CaseData caseData = prepareCaseData().toBuilder()
+            .applicants(null)
             .build();
 
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
-        assertThat(roboticsData.getAllocation()).isEqualTo(expectedAllocation);
+        assertThat(roboticsData.getApplicant()).isNull();
     }
+
+    @Test
+    void shouldReturnRoboticsDataWithEmptyApplicant() {
+        CaseData caseData = prepareCaseData().toBuilder()
+            .applicants(wrapElements(Applicant.builder()
+                .party(ApplicantParty.builder().build())
+                .build()))
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+        assertThat(roboticsData.getApplicant())
+            .isEqualTo(uk.gov.hmcts.reform.fpl.model.robotics.Applicant.builder().build());
+    }
+
+    @Nested
+    class AllocationProposal {
+        @Test
+        void shouldReturnRoboticsDataWithExpectedAllocationWhenAllocationProposalHasValue() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .allocationProposal(Allocation.builder()
+                    .proposal("To be moved")
+                    .build())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+            assertThat(roboticsData.getAllocation()).isEqualTo(caseData.getAllocationProposal().getProposal());
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithoutAllocationWhenAllocationProposalHasEmptyProposal() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .allocationProposal(Allocation.builder()
+                    .proposal("")
+                    .build())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+            assertThat(roboticsData.getAllocation()).isNull();
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithoutAllocationWhenAllocationProposalNotPresent() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .allocationProposal(null)
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+            assertThat(roboticsData.getAllocation()).isNull();
+        }
+    }
+
 
     @Test
     void shouldReturnEmergencySupervisionOrderLabelWhenOrderTypeEmergencySupervisionOrder() {

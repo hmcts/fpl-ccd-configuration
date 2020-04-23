@@ -19,12 +19,10 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -36,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -66,23 +65,13 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(PDF, DRAFT_ORDER_FILE_NAME)).willReturn(document);
     }
 
     @Test
     void midEventShouldGenerateDraftStandardDirectionDocument() {
-        given(uploadDocumentService.uploadPDF(PDF, DRAFT_ORDER_FILE_NAME))
-            .willReturn(document);
-
-        List<Element<Direction>> directions = buildDirections(
-            List.of(Direction.builder()
-                .directionType("direction 1")
-                .directionText("example")
-                .assignee(LOCAL_AUTHORITY)
-                .readOnly("No")
-                .build()));
-
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(createCaseDataMap(directions)
+            .data(createCaseDataMap(buildTestDirections())
                 .put("dateOfIssue", time.now().toLocalDate().toString())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                 .put("caseLocalAuthority", "example")
@@ -102,19 +91,8 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
 
     @Test
     void midEventShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
-        given(uploadDocumentService.uploadPDF(PDF, DRAFT_ORDER_FILE_NAME))
-            .willReturn(document);
-
-        List<Element<Direction>> directions = buildDirections(
-            List.of(Direction.builder()
-                .directionType("direction 1")
-                .directionText("example")
-                .assignee(LOCAL_AUTHORITY)
-                .readOnly("No")
-                .build()));
-
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(createCaseDataMap(directions)
+            .data(createCaseDataMap(buildTestDirections())
                 .put("dateOfIssue", time.now().toLocalDate().toString())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
                     .useAllocatedJudge("Yes")
@@ -136,6 +114,23 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
         ));
     }
 
+    @Test
+    void midEventShouldReturnEmptyDirectionsListInStandardDirectionOrder() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(createCaseDataMap(buildTestDirections())
+                .put("dateOfIssue", time.now().toLocalDate().toString())
+                .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                .put("caseLocalAuthority", "example")
+                .put("dateSubmitted", time.now().toLocalDate().toString())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+
+        assertThat(callbackResponse.getData().get("standardDirectionOrder")).extracting("directions")
+            .isEqualTo(List.of());
+    }
+
     private ImmutableMap.Builder<String, Object> createCaseDataMap(List<Element<Direction>> directions) {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
@@ -149,8 +144,13 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
             .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()));
     }
 
-    private List<Element<Direction>> buildDirections(List<Direction> directions) {
-        return directions.stream().map(ElementUtils::element).collect(toList());
+    private List<Element<Direction>> buildTestDirections() {
+        return List.of(element(Direction.builder()
+            .directionType("direction 1")
+            .directionText("example")
+            .assignee(LOCAL_AUTHORITY)
+            .readOnly("No")
+            .build()));
     }
 
     private List<Element<Direction>> buildDirections(Direction direction) {
