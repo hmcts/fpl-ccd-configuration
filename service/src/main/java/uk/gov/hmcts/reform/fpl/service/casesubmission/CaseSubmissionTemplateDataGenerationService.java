@@ -232,29 +232,29 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .collect(toList());
     }
 
-    private List<DocmosisApplicant> buildDocmosisApplicants(List<Element<Applicant>> applicants, Solicitor solicitor) {
+    private List<DocmosisApplicant> buildDocmosisApplicants(final List<Element<Applicant>> applicants, Solicitor solicitor) {
         return applicants.stream()
             .map(element -> element.getValue().getParty())
             .map(applicant -> buildApplicant(applicant, solicitor))
             .collect(toList());
     }
 
-    private DocmosisRespondent buildRespondent(RespondentParty respondent) {
+    private DocmosisRespondent buildRespondent(final RespondentParty respondent) {
         final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
             .age(formatAge(respondent.getDateOfBirth()))
             .gender(displayGender(respondent.getGender(), respondent.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
-            .placeOfBirth(getDefaultIfNull(respondent.getPlaceOfBirth()))
+            .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
             .address(
                 isConfidential
                     ? CONFIDENTIAL
-                    : getDefaultIfNull(respondent.getAddress().getAddressAsString(NEW_LINE)))
+                    : getDefaultIfNullOrEmpty(respondent.getAddress().getAddressAsString(NEW_LINE)))
             .telephoneNumber(
                 isConfidential
                     ? CONFIDENTIAL
-                    : getDefaultIfNull(getTelephoneNumber(respondent.getTelephoneNumber())))
+                    : getDefaultIfNullOrEmpty(getTelephoneNumber(respondent.getTelephoneNumber())))
             .contactDetailsHidden(toYesOrNoOrDefaultValue(respondent.getContactDetailsHidden()))
             .contactDetailsHiddenDetails(
                 concatenateYesOrNoKeyAndValue(
@@ -271,30 +271,30 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private DocmosisApplicant buildApplicant(ApplicantParty applicant, Solicitor solicitor) {
         boolean solicitorPresent = (solicitor != null);
         return DocmosisApplicant.builder()
-            .organisationName(getDefaultIfNull(applicant.getOrganisationName()))
+            .organisationName(getDefaultIfNullOrEmpty(applicant.getOrganisationName()))
             .contactName(getContactName(applicant.getTelephoneNumber()))
-            .jobTitle(getDefaultIfNull(applicant.getJobTitle()))
-            .address(getDefaultIfNull(applicant.getAddress().getAddressAsString(NEW_LINE)))
+            .jobTitle(getDefaultIfNullOrEmpty(applicant.getJobTitle()))
+            .address(getDefaultIfNullOrEmpty(applicant.getAddress().getAddressAsString(NEW_LINE)))
             .email(getEmail(applicant.getEmail()))
             .mobileNumber(getTelephoneNumber(applicant.getMobileNumber()))
             .telephoneNumber(getTelephoneNumber(applicant.getTelephoneNumber()))
-            .pbaNumber(getDefaultIfNull(applicant.getPbaNumber()))
+            .pbaNumber(getDefaultIfNullOrEmpty(applicant.getPbaNumber()))
             .solicitorName(
-                solicitorPresent ? getDefaultIfNull(solicitor.getName()) : DEFAULT_STRING)
+                solicitorPresent ? getDefaultIfNullOrEmpty(solicitor.getName()) : DEFAULT_STRING)
             .solicitorMobile(
-                solicitorPresent ? getDefaultIfNull(solicitor.getMobile()) : DEFAULT_STRING)
+                solicitorPresent ? getDefaultIfNullOrEmpty(solicitor.getMobile()) : DEFAULT_STRING)
             .solicitorTelephone(
-                solicitorPresent ? getDefaultIfNull(solicitor.getTelephone()) : DEFAULT_STRING)
+                solicitorPresent ? getDefaultIfNullOrEmpty(solicitor.getTelephone()) : DEFAULT_STRING)
             .solicitorEmail(
-                solicitorPresent ? getDefaultIfNull(solicitor.getEmail()) : DEFAULT_STRING)
+                solicitorPresent ? getDefaultIfNullOrEmpty(solicitor.getEmail()) : DEFAULT_STRING)
             .solicitorDx(
-                solicitorPresent ? getDefaultIfNull(solicitor.getDx()) : DEFAULT_STRING)
+                solicitorPresent ? getDefaultIfNullOrEmpty(solicitor.getDx()) : DEFAULT_STRING)
             .solicitorReference(
-                solicitorPresent ? getDefaultIfNull(solicitor.getReference()) : DEFAULT_STRING)
+                solicitorPresent ? getDefaultIfNullOrEmpty(solicitor.getReference()) : DEFAULT_STRING)
             .build();
     }
 
-    private String displayGender(String gender, String genderIdentification) {
+    private String displayGender(final String gender, final String genderIdentification) {
         if (StringUtils.isNotEmpty(gender)) {
             if ((equalsIgnoreCase(gender, "They identify in another way")
                 && StringUtils.isNotEmpty(genderIdentification))) {
@@ -310,12 +310,12 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             ? email.getEmail() : DEFAULT_STRING;
     }
 
-    private String getTelephoneNumber(Telephone telephone) {
+    private String getTelephoneNumber(final Telephone telephone) {
         return isNotEmpty(telephone) && StringUtils.isNotEmpty(telephone.getTelephoneNumber())
             ? telephone.getTelephoneNumber() : DEFAULT_STRING;
     }
 
-    private String getContactName(Telephone telephone) {
+    private String getContactName(final Telephone telephone) {
         return isNotEmpty(telephone) && StringUtils.isNotEmpty(telephone.getContactDirection())
             ? telephone.getContactDirection() : DEFAULT_STRING;
     }
@@ -388,7 +388,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .build();
     }
 
-    private String getDisplayData(Document document) {
+    private String getDisplayData(final Document document) {
         if (isNotEmpty(document) && StringUtils.isNotEmpty(document.getDocumentStatus())) {
             StringBuilder sb = new StringBuilder(document.getDocumentStatus());
             if (!equalsIgnoreCase(document.getDocumentStatus(), ATTACHED.getLabel())
@@ -402,7 +402,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     }
 
     private List<DocmosisSocialWorkOther> getDisplayData(
-        List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
+        final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
         return otherSocialWorkDocuments.stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
