@@ -11,7 +11,9 @@ def component = "case-service"
 def serviceSecrets = [
   'fpl-${env}': [
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
-    secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD')
+    secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
+    secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
+    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
   ]
 ]
 

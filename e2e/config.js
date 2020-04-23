@@ -30,6 +30,8 @@ module.exports = {
   judiciaryPassword: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
   smokeTestLocalAuthorityEmail: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
   smokeTestLocalAuthorityPassword: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
+  systemUpdateEmail: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
+  systemUpdatePassword: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPassword,
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'CARE_SUPERVISION_EPO',
@@ -59,6 +61,7 @@ module.exports = {
     complyWithDirections: 'Comply with directions',
     complyOnBehalfOf: 'Comply on behalf of others',
     allocatedJudge: 'Allocated Judge',
+    populateCase: 'Populate case',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',

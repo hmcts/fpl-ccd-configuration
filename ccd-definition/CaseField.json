@@ -1301,5 +1301,13 @@
     "FieldTypeParameter": "CaseNote",
     "SecurityClassification": "Public",
     "Comment": "The note fields to be displayed in the tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseDataFilename",
+    "Label": "Case data filename",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
   }
 ]

@@ -1,0 +1,163 @@
+{
+  "orders": {
+    "orderType": [
+      "CARE_ORDER"
+    ]
+  },
+  "grounds": {
+    "thresholdReason": [
+      "noCare"
+    ],
+    "thresholdDetails": "mock threshold details"
+  },
+  "hearing": {
+    "reason": "test reason",
+    "timeFrame": "Same day"
+  },
+  "children1": [
+    {
+      "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+      "value": {
+        "party": {
+          "gender": "Boy",
+          "lastName": "Jones",
+          "firstName": "Timothy",
+          "dateOfBirth": "2015-08-01"
+        }
+      }
+    }
+  ],
+  "solicitor": {
+    "dx": "160010 Kingsway 7",
+    "name": "John Smith",
+    "email": "solicitor@email.com",
+    "mobile": "07000000000",
+    "reference": "reference",
+    "telephone": "00000000000"
+  },
+  "applicants": [
+    {
+      "id": "99ceafd0-de4b-4725-b78b-7625342febed",
+      "value": {
+        "party": {
+          "email": {
+            "email": "applicant@email.com"
+          },
+          "address": {
+            "County": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "London",
+            "AddressLine1": "Flat 12, Pinnacle Apartments",
+            "AddressLine2": "Saffron Central Square 11"
+          },
+          "partyId": "3a8785c6-178d-4138-bd1a-5eea0debed25",
+          "jobTitle": "Legal adviser",
+          "partyType": "ORGANISATION",
+          "pbaNumber": "PBA1234567",
+          "clientCode": "8888",
+          "mobileNumber": {
+            "telephoneNumber": "07000000000"
+          },
+          "telephoneNumber": {
+            "telephoneNumber": "00000000000",
+            "contactDirection": "Jonathon Walker"
+          },
+          "organisationName": "John Smith",
+          "customerReference": "Example reference"
+        },
+        "leadApplicantIndicator": "Yes"
+      }
+    }
+  ],
+  "sendToCtsc": "Yes",
+  "respondents1": [
+    {
+      "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+      "value": {
+        "party": {
+          "gender": "Male",
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "RG4 7AA",
+            "PostTown": "Reading",
+            "AddressLine1": "Flat 2",
+            "AddressLine2": "Caversham House 15-17",
+            "AddressLine3": "Church Road"
+          },
+          "lastName": "Bloggs",
+          "firstName": "Joe",
+          "dateOfBirth": "1980-01-01",
+          "placeOfBirth": "London",
+          "telephoneNumber": {
+            "telephoneNumber": "00000 000000"
+          },
+          "relationshipToChild": "Uncle"
+        }
+      }
+    }
+  ],
+  "dateSubmitted": "2020-04-23",
+  "submittedForm": {
+    "document_url": "http://dm-store:8080/documents/f58670eb-f039-4391-9eb8-e862e868f21d",
+    "document_filename": "Barnet_Council_v_Smith.pdf",
+    "document_binary_url": "http://dm-store:8080/documents/f58670eb-f039-4391-9eb8-e862e868f21d/binary"
+  },
+  "submissionConsent": [
+    "agree"
+  ],
+  "allocationProposal": {
+    "proposal": "District judge"
+  },
+  "displayAmountToPay": "Yes",
+  "dateAndTimeSubmitted": "2020-04-23T14:42:53.186078+01:00",
+  "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+  "documents_socialWorkOther": [],
+  "documents_checklist_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store:8080/documents/1e390553-efff-4c75-bd90-86cfee1d5258",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store:8080/documents/1e390553-efff-4c75-bd90-86cfee1d5258/binary"
+    }
+  },
+  "documents_threshold_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store:8080/documents/bb90a67e-fce6-4d67-a5b7-07be01b11229",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store:8080/documents/bb90a67e-fce6-4d67-a5b7-07be01b11229/binary"
+    }
+  },
+  "documents_socialWorkCarePlan_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store:8080/documents/92cadb8e-5e6c-474e-a70e-eb160a9a9199",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store:8080/documents/92cadb8e-5e6c-474e-a70e-eb160a9a9199/binary"
+    }
+  },
+  "documents_socialWorkStatement_document": {
+    "documentStatus": "Included in social work evidence template (SWET)"
+  },
+  "documents_socialWorkAssessment_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store:8080/documents/bf830983-2e10-473a-b466-d167a377aaae",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store:8080/documents/bf830983-2e10-473a-b466-d167a377aaae/binary"
+    }
+  },
+  "documents_socialWorkChronology_document": {
+    "statusReason": "mock reason",
+    "documentStatus": "To follow"
+  },
+  "documents_socialWorkEvidenceTemplate_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store:8080/documents/897417e6-ab96-495c-8a91-1fea20644ed6",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store:8080/documents/897417e6-ab96-495c-8a91-1fea20644ed6/binary"
+    }
+  }
+}
