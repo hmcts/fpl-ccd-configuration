@@ -86,8 +86,12 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(buildDocmosisAnnexDocuments(caseData))
             .userFullName(userDetailsService.getUserName());
-        applicationFormBuilder.courtseal((!draft ? format(BASE_64, generateCourtSealEncodedString())
-            : format(BASE_64, generateDraftWatermarkEncodedString())));
+
+        if (draft) {
+            applicationFormBuilder.draftWaterMark(format(BASE_64, generateDraftWatermarkEncodedString()));
+        } else {
+            applicationFormBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
+        }
 
         return objectMapper.convertValue(applicationFormBuilder.build(), new TypeReference<>() {});
     }

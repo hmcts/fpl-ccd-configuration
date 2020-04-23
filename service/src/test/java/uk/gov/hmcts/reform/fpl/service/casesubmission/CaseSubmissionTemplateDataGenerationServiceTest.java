@@ -16,7 +16,10 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.DRAFT_WATERMARK_KEY;
+import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDCaseSubmissionTemplateData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
@@ -37,9 +40,19 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedTemplateDataWhenAllDataPresent() throws IOException {
+    void shouldReturnExpectedTemplateDataWithCourtSealWhenAllDataPresent() throws IOException {
         Map<String, Object> returnedTemplateData = templateDataGenerationService.getTemplateData(
             prepareCaseData(), false);
+
+        assertThat(returnedTemplateData).isEqualTo(expectedDCaseSubmissionTemplateData());
+    }
+
+    @Test
+    void shouldReturnTemplateDataWithDraftWaterAsNullWhenCaseNotInDraft() throws IOException {
+        Map<String, Object> returnedTemplateData = templateDataGenerationService.getTemplateData(
+            prepareCaseData(), false);
+
+        assertThat(returnedTemplateData).hasEntrySatisfying(DRAFT_WATERMARK_KEY, value -> assertThat(value).isNull());
     }
 
     private CaseData prepareCaseData() {

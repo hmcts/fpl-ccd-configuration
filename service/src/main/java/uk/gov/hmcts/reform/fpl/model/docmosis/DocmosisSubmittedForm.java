@@ -31,6 +31,7 @@ public class DocmosisSubmittedForm implements DocmosisData {
     private final DocmosisHearingPreferences hearingPreferences;
     private final DocmosisInternationalElement internationalElement;
     private final String courtseal;
+    private final String draftWaterMark;
     private final String userFullName;
     private final String submittedDate;
     private final String groundsForEPOReason;
