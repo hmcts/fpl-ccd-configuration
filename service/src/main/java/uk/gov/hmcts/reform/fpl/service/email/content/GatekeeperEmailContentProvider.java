@@ -28,7 +28,8 @@ public class GatekeeperEmailContentProvider extends CasePersonalisedContentProvi
     public Map<String, Object> buildGatekeeperNotification(CaseDetails caseDetails, String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
+        return super.addCasePersonalisationBuilder(caseDetails.getId(), caseData.getOrders(),
+            caseData.getHearing(), caseData.getRespondents1())
             .put("localAuthority", config.getLocalAuthorityName(localAuthorityCode))
             .build();
     }

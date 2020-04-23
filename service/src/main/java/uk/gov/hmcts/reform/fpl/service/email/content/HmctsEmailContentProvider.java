@@ -30,7 +30,8 @@ public class HmctsEmailContentProvider extends CasePersonalisedContentProvider {
     public Map<String, Object> buildHmctsSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
+        return super.addCasePersonalisationBuilder(caseDetails.getId(), caseData.getOrders(),
+            caseData.getHearing(), caseData.getRespondents1())
             .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();

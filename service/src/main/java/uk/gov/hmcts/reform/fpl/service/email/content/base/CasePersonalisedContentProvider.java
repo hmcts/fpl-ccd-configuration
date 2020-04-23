@@ -6,9 +6,10 @@ import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyCaseContent;
 
 import java.util.Collections;
@@ -26,23 +27,30 @@ public abstract class CasePersonalisedContentProvider extends AbstractEmailConte
         super(uiBaseUrl, mapper);
     }
 
-    protected NotifyCaseContent.NotifyCaseContentBuilder getCasePersonalisationBuilder(Long caseId, CaseData caseData) {
-        List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
+    protected <T extends NotifyCaseContent> T addCasePersonalisationBuilder(T template,
+                                                                            Long caseId,
+                                                                            Orders orders,
+                                                                            Hearing hearing,
+                                                                            List<Element<Respondent>> respondents1) {
+        List<String> ordersAndDirections = buildOrdersAndDirections(orders);
 
-        Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
+        Optional<String> timeFrame = Optional.ofNullable(hearing)
             .map(Hearing::getTimeFrame)
             .filter(StringUtils::isNotBlank);
 
-        return NotifyCaseContent.builder()
-            .ordersAndDirections(!ordersAndDirections.isEmpty() ? ordersAndDirections : List.of(""))
-            .dataPresent(!ordersAndDirections.isEmpty() ? YES : NO)
-            .fullStop(!ordersAndDirections.isEmpty() ? NO : YES)
-            .timeFramePresent(timeFrame.isPresent() ? YES : NO)
-            .urgentHearing(timeFrame.isPresent() && timeFrame.get().equals("Same day") ? YES : NO)
-            .nonUrgentHearing(timeFrame.isPresent() && !timeFrame.get().equals("Same day") ? YES : NO)
-            .firstRespondentName(getFirstRespondentLastName(caseData.getRespondents1()))
-            .reference(String.valueOf(caseId))
-            .caseUrl(formatCaseUrl(uiBaseUrl, caseId));
+        // What if we just add the list no matter if it is empty or not,
+        // surely the parts below determine if it is going to be shown or not
+        template.setOrdersAndDirections(!ordersAndDirections.isEmpty() ? ordersAndDirections : List.of(""));
+        template.setDataPresent(!ordersAndDirections.isEmpty() ? YES : NO);
+        template.setFullStop(!ordersAndDirections.isEmpty() ? NO : YES);
+        template.setTimeFramePresent(timeFrame.isPresent() ? YES : NO);
+        template.setUrgentHearing(timeFrame.isPresent() && timeFrame.get().equals("Same day") ? YES : NO);
+        template.setNonUrgentHearing(timeFrame.isPresent() && !timeFrame.get().equals("Same day") ? YES : NO);
+        template.setFirstRespondentName(getFirstRespondentLastName(respondents1));
+        template.setReference(String.valueOf(caseId));
+        template.setCaseUrl(formatCaseUrl(uiBaseUrl, caseId));
+
+        return template;
     }
 
 
