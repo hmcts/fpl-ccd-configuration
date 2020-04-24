@@ -46,10 +46,12 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.pebble.AgeFilter;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.String.format;
@@ -64,7 +66,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.AgeFormatHelper.formatAge;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -76,6 +77,8 @@ public class CaseSubmissionTemplateDataGenerationService
     private static final String DEFAULT_STRING = "-";
     private static final String CONFIDENTIAL = "Confidential";
     private static final LocalDate TODAY = LocalDate.now();
+
+    private final AgeFilter ageFilter = new AgeFilter();
 
     private final UserDetailsService userDetailsService;
 
@@ -313,7 +316,7 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
         return DocmosisChild.builder()
             .name(child.getFullName())
-            .age(formatAge(child.getDateOfBirth()))
+            .age((String) ageFilter.apply(child.getDateOfBirth(), Map.of()))
             .gender(formatGenderDisplay(child.getGender(), child.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(child.getDateOfBirth(), DATE))
             .livingSituation(getChildLivingSituation(child, isConfidential))
@@ -340,7 +343,7 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
-            .age(formatAge(respondent.getDateOfBirth()))
+            .age((String) ageFilter.apply(respondent.getDateOfBirth(), Map.of()))
             .gender(formatGenderDisplay(respondent.getGender(), respondent.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
             .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
