@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -49,6 +51,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.time.format.DateTimeFormatter.ofLocalizedDate;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,10 +79,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long CASE_ID = 1L;
-    private static final LocalDateTime TODAY = LocalDateTime.now();
-    private static final List<Element<HearingBooking>> HEARING_DETAILS = createHearingBookingsFromInitialDate(TODAY);
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-        .localizedBy(Locale.UK);
+    private static final DateTimeFormatter FORMATTER = ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK);
+
+    @Autowired
+    private Time time;
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -96,18 +99,28 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     @Captor
     private ArgumentCaptor<DocmosisCaseManagementOrder> captor;
 
+    private LocalDateTime today;
+    private List<Element<HearingBooking>> hearingDetails;
+
+
     DraftCMOControllerTest() {
         super("draft-cmo");
+    }
+
+    @BeforeEach
+    void setup() {
+        today = time.now();
+        hearingDetails = createHearingBookingsFromInitialDate(today);
     }
 
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() {
         Map<String, Object> data = Map.of(
-            HEARING_DETAILS_KEY, HEARING_DETAILS,
+            HEARING_DETAILS_KEY, hearingDetails,
             "respondents1", createRespondents(),
             "others", createOthers());
 
-        List<String> expected = List.of(TODAY.plusDays(5).format(FORMATTER), TODAY.plusDays(2).format(FORMATTER));
+        List<String> expected = List.of(today.plusDays(5).format(FORMATTER), today.plusDays(2).format(FORMATTER));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -149,7 +162,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
         assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
-        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(TODAY.plusDays(5).toString());
+        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(today.plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
         assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo("draft-case-management-order.pdf");
         assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");
@@ -310,11 +323,11 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     }
 
     private CaseDetails prepareCaseDetailsForAboutToSubmit() {
-        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(HEARING_DETAILS);
+        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-            .label(TODAY.plusDays(5).toString())
+            .label(today.plusDays(5).toString())
             .build());
 
         Map<String, Object> data = new HashMap<>();

@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @OverrideAutoConfiguration(enabled = true)
 class CaseInitiationControllerTest extends AbstractControllerTest {
 
-    private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
     private static final String[] USER_IDS = {"1", "2", "3"};
     private static final String CASE_ID = "12345";
     private static final Set<String> CASE_ROLES = Set.of("[LASOLICITOR]", "[CREATOR]");
@@ -64,14 +63,14 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(client.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(userAuthToken);
+        given(client.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(USER_AUTH_TOKEN);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
         given(serviceAuthorisationApi.serviceToken(anyMap()))
             .willReturn(SERVICE_AUTH_TOKEN);
 
-        given(idamApi.retrieveUserInfo(userAuthToken)).willReturn(
+        given(idamApi.retrieveUserInfo(USER_AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub("user@example.gov.uk").build());
     }
 
@@ -94,7 +93,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
             .errors(List.of("The email address was not linked to a known Local Authority"))
             .build();
 
-        given(idamApi.retrieveUserInfo(userAuthToken))
+        given(idamApi.retrieveUserInfo(USER_AUTH_TOKEN))
             .willReturn(UserInfo.builder().sub("user@email.gov.uk").build());
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(
@@ -126,13 +125,13 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     private void verifyUpdateCaseRolesWasCalledOnceForEachUser() {
         verify(caseUserApi).updateCaseRolesForUser(
-            userAuthToken, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[0],
+            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[0],
             new CaseUser(USER_IDS[0], CASE_ROLES));
         verify(caseUserApi).updateCaseRolesForUser(
-            userAuthToken, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[1],
+            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[1],
             new CaseUser(USER_IDS[1], CASE_ROLES));
         verify(caseUserApi).updateCaseRolesForUser(
-            userAuthToken, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[2],
+            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[2],
             new CaseUser(USER_IDS[2], CASE_ROLES));
     }
 }

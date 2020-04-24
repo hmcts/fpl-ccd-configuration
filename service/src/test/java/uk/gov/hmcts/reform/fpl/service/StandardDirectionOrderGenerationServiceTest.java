@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -53,18 +56,24 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
     LookupTestConfig.class, StandardDirectionOrderGenerationService.class, HearingBookingService.class,
-    CommonCaseDataExtractionService.class
+    CommonCaseDataExtractionService.class, FixedTimeConfiguration.class
 })
 class StandardDirectionOrderGenerationServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Family Court";
-    private static final LocalDate TODAY = LocalDate.now();
+    private LocalDate today;
+
+    @Autowired
+    private Time time;
 
     @Autowired
     private StandardDirectionOrderGenerationService service;
-
-    //TODO: there needs to be some clarity around what should happen when values are missing from template.
-    // emptyCaseData is unrealistic scenario. FPLA-1486
+    
+    @BeforeEach
+    void setup() {
+        today = time.now().toLocalDate();
+    }
+    
     @Test
     void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
         Order order = Order.builder().dateOfIssue("29 November 2019").build();
@@ -108,7 +117,7 @@ class StandardDirectionOrderGenerationServiceTest {
     private CaseData getCaseData(Order order) {
         return CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .dateSubmitted(TODAY)
+            .dateSubmitted(today)
             .standardDirectionOrder(order)
             .applicants(getEmptyApplicants())
             .build();
@@ -129,10 +138,10 @@ class StandardDirectionOrderGenerationServiceTest {
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .familyManCaseNumber("123")
             .children1(emptyList())
-            .dateSubmitted(TODAY)
+            .dateSubmitted(today)
             .respondents1(emptyList())
             .applicants(getEmptyApplicants())
-            .standardDirectionOrder(createStandardDirectionOrders(TODAY.atStartOfDay(), DRAFT))
+            .standardDirectionOrder(createStandardDirectionOrders(today.atStartOfDay(), DRAFT))
             .build();
     }
 
@@ -150,7 +159,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .courtName(COURT_NAME)
             .familyManCaseNumber(familyManCaseNumber)
             .dateOfIssue(dateOfIssue)
-            .complianceDeadline(formatLocalDateToString(TODAY.plusWeeks(26), LONG))
+            .complianceDeadline(formatLocalDateToString(today.plusWeeks(26), LONG))
             .children(emptyList())
             .hearingBooking(DocmosisHearingBooking.builder().build())
             .respondents(emptyList())
@@ -171,10 +180,10 @@ class StandardDirectionOrderGenerationServiceTest {
             .courtName(COURT_NAME)
             .familyManCaseNumber("123")
             .dateOfIssue("29 November 2019")
-            .complianceDeadline(formatLocalDateToString(TODAY.plusWeeks(26), LONG))
+            .complianceDeadline(formatLocalDateToString(today.plusWeeks(26), LONG))
             .children(getExpectedChildren())
             .hearingBooking(DocmosisHearingBooking.builder()
-                .hearingDate(formatLocalDateToString(TODAY, LONG))
+                .hearingDate(formatLocalDateToString(today, LONG))
                 .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
                 .preHearingAttendance("11:00pm")
                 .hearingTime("12:00am - 12:00pm")
@@ -193,12 +202,12 @@ class StandardDirectionOrderGenerationServiceTest {
         return CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
-            .children1(createPopulatedChildren())
+            .children1(createPopulatedChildren(today))
             .hearingDetails(createHearingBookings())
             .dateSubmitted(LocalDate.now())
             .respondents1(createRespondents())
             .applicants(createPopulatedApplicants())
-            .standardDirectionOrder(createStandardDirectionOrders(TODAY.atStartOfDay(), SEALED))
+            .standardDirectionOrder(createStandardDirectionOrders(today.atStartOfDay(), SEALED))
             .build();
     }
 
@@ -206,12 +215,12 @@ class StandardDirectionOrderGenerationServiceTest {
         return List.of(
             DocmosisDirection.builder()
                 .assignee(ALL_PARTIES)
-                .title("2. Test SDO type 1 on " + TODAY.atStartOfDay().format(ofPattern(DATE_TIME_AT, UK)))
+                .title("2. Test SDO type 1 on " + today.atStartOfDay().format(ofPattern(DATE_TIME_AT, UK)))
                 .body("Test body 1")
                 .build(),
             DocmosisDirection.builder()
                 .assignee(ALL_PARTIES)
-                .title("3. Test SDO type 2 by " + TODAY.atStartOfDay().format(ofPattern(TIME_DATE, UK)))
+                .title("3. Test SDO type 2 by " + today.atStartOfDay().format(ofPattern(TIME_DATE, UK)))
                 .body("Test body 2")
                 .build());
     }
@@ -241,17 +250,17 @@ class StandardDirectionOrderGenerationServiceTest {
             DocmosisChild.builder()
                 .name("Bran Stark")
                 .gender("Boy")
-                .dateOfBirth(formatLocalDateToString(TODAY, LONG))
+                .dateOfBirth(formatLocalDateToString(today, LONG))
                 .build(),
             DocmosisChild.builder()
                 .name("Sansa Stark")
                 .gender("Boy")
-                .dateOfBirth(formatLocalDateToString(TODAY, LONG))
+                .dateOfBirth(formatLocalDateToString(today, LONG))
                 .build(),
             DocmosisChild.builder()
                 .name("Jon Snow")
                 .gender("Girl")
-                .dateOfBirth(formatLocalDateToString(TODAY, LONG))
+                .dateOfBirth(formatLocalDateToString(today, LONG))
                 .build()
         );
     }
@@ -270,6 +279,6 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
-        return wrapElements(createHearingBooking(TODAY.atStartOfDay(), TODAY.atTime(NOON)));
+        return wrapElements(createHearingBooking(today.atStartOfDay(), today.atTime(NOON)));
     }
 }
