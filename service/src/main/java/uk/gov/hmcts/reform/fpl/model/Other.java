@@ -41,7 +41,6 @@ public class Other implements Representable, ConfidentialParty<Other> {
     private final String litigationIssuesDetails;
     private final String detailsHidden;
     private final String detailsHiddenReason;
-    private final String relationshipToChild;
     private final List<Element<UUID>> representedBy = new ArrayList<>();
 
     public void addRepresentative(UUID representativeId) {

@@ -282,14 +282,14 @@ public class CaseData {
 
     @JsonIgnore
     public List<Element<OtherProceeding>> getAllProceedings() {
-        List<Element<OtherProceeding>> otherProceedinglist = new ArrayList<>();
+        List<Element<OtherProceeding>> otherProceedings = new ArrayList<>();
 
         ofNullable(this.getProceeding())
-            .map(Proceeding::getFirstProceeding).map(ElementUtils::element).ifPresent(otherProceedinglist::add);
+            .map(Proceeding::getFirstProceeding).map(ElementUtils::element).ifPresent(otherProceedings::add);
         ofNullable(this.getProceeding())
-            .map(Proceeding::getAdditionalProceedings).ifPresent(otherProceedinglist::addAll);
+            .map(Proceeding::getAdditionalProceedings).ifPresent(otherProceedings::addAll);
 
-        return Collections.unmodifiableList(otherProceedinglist);
+        return Collections.unmodifiableList(otherProceedings);
     }
 
     @JsonIgnore
