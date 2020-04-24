@@ -66,8 +66,8 @@ class DateFormatterHelperTest {
 
     @Test
     void shouldFormatLocalDateFromStringToStringInExpectedFormat() {
-        String formattedDate = formatLocalDateFromStringToStringUsingFormat("01/01/2019", "h:mma, d MMMM yyyy");
-        assertThat(formattedDate).isEqualTo("12:00pm, 1 January 2019");
+        String formattedDate = formatLocalDateFromStringToStringUsingFormat("2019-01-01", "d MMMM yyyy");
+        assertThat(formattedDate).isEqualTo("1 January 2019");
     }
 
 
