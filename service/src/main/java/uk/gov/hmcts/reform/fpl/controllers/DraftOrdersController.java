@@ -193,13 +193,14 @@ public class DraftOrdersController {
 
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(commonDirectionService.combineAllDirections(caseData))
+                .directions(commonDirectionService.removeUnneededDirections(commonDirectionService.combineAllDirections(caseData)))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
 
+        System.out.println(updated.getStandardDirectionOrder().getDirections().size());
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
@@ -214,6 +215,9 @@ public class DraftOrdersController {
                 .filename(updated.getStandardDirectionOrder().getOrderStatus().getDocumentTitle())
                 .build())
             .build();
+
+        Order orderTabView = order.toBuilder().directions(
+            commonDirectionService.removeUnneededDirections(order.getDirections())).build();
 
         caseDetails.getData().put("standardDirectionOrder", order);
         caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);

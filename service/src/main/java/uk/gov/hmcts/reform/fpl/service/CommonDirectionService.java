@@ -236,6 +236,14 @@ public class CommonDirectionService {
             .collect(toList());
     }
 
+    public List<Element<Direction>> removeUnneededDirections(List<Element<Direction>> directions) {
+        System.out.println(directions.size());
+        return directions
+            .stream()
+            .filter(element -> !"No".equals(element.getValue().getDirectionNeeded()))
+            .collect(toList());
+    }
+
     private String booleanToYesOrNo(boolean value) {
         return value ? "Yes" : "No";
     }
