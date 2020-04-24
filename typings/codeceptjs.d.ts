@@ -281,7 +281,7 @@ declare namespace CodeceptJS {
     navigateToUrl(url: string) : void,
     navigateToCaseDetails(caseId: string) : void,
     navigateToCaseList() : void,
-    logInAndCreateCase(username: string, password: string) : void,
+    logInAndCreateCase(username: string, password: string) : Promise<string>,
     completeEvent(buttonLocator) : Promise<void>,
     completeEvent(buttonLocator, changeDetails: { summary: string, description: string }) : Promise<void>,
     seeEventSubmissionConfirmation(event: string) : void,
@@ -295,6 +295,8 @@ declare namespace CodeceptJS {
     say(msg: string) : void,
     retryStep(opts: string) : void,
     enterMandatoryFields() : void,
+    populateCaseWithMandatoryFields(caseId: string, filename?: string): void
+    submitCase(caseId: string): void
     addAnotherElementToCollection(): void,
     removeElementFromCollection(): void,
     retryUntilExists(action: Function, locator: string) : void,

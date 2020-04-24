@@ -4,32 +4,14 @@ let caseId;
 
 Feature('Access segregation');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, populateCaseEventPage) => {
-  const startTime = Date.now();
+Before(async (I) => {
   if (!caseId) {
-    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.grabTextFrom('.heading-h1');
-    I.signOut();
+    const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    I.populateCaseWithMandatoryFields(caseId);
+    I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    I.submitCase(caseId);
 
-    //populate case with mandatory submission data
-    await I.signIn(config.systemUpdateEmail, config.systemUpdatePassword);
-    await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.applicationActions.populateCase);
-    populateCaseEventPage.setCaseDataFilename('mandatorySubmissionFields');
-    await I.completeEvent('Submit');
-    console.log(`case ${caseId} populated with mandatory submission fields`);
-
-    //log in back to submit case
-    await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-    submitApplicationEventPage.giveConsent();
-    await I.completeEvent('Submit');
-    console.log(`Case ${caseId} has been created`);
-
-    const timeDiff = (Date.now() - startTime) / 1000 ;
-    console.log(`Time elapsed: ${timeDiff}s`);
+    console.log(`Case ${caseId} has been submitted`);
     I.signOut();
   }
 });

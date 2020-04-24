@@ -16,6 +16,8 @@ const enterGroundsEventPage = require('./pages/events/enterGroundsForApplication
 const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
 const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
 const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.page');
+const populateCaseEventPage = require('./pages/events/populateCaseEvent.page');
+const submitApplicationEventPage = require('./pages/events/submitApplicationEvent.page');
 
 const applicant = require('./fixtures/applicant');
 const solicitor = require('./fixtures/solicitor');
@@ -53,6 +55,7 @@ module.exports = function () {
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
+      return this.grabTextFrom('.heading-h1');
     },
 
     async completeEvent(button, changeDetails) {
@@ -222,6 +225,21 @@ module.exports = function () {
       this.click(locate('button')
         .inside('.mat-dialog-container')
         .withText('Remove'));
+    },
+
+    async populateCaseWithMandatoryFields (caseId, filename = 'mandatorySubmissionFields') {
+      await this.signIn(config.systemUpdateEmail, config.systemUpdatePassword);
+      await this.navigateToCaseDetails(caseId);
+      await caseViewPage.goToNewActions(config.applicationActions.populateCase);
+      populateCaseEventPage.setCaseDataFilename(filename);
+      await this.completeEvent('Submit');
+    },
+
+    async submitCase (caseId) {
+      await this.navigateToCaseDetails(caseId);
+      await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+      submitApplicationEventPage.giveConsent();
+      await this.completeEvent('Submit');
     },
 
     /**
