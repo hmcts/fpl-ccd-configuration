@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @WebMvcTest(NoticeOfProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTest {
-    private static final LocalDateTime TODAY = LocalDateTime.now();
 
     NoticeOfProceedingsControllerAboutToStartTest() {
         super("notice-of-proceedings");
@@ -63,7 +61,7 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
         String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
 
         String expectedContent = String.format("The case management hearing will be on the %s.",
-            formatLocalDateTimeBaseUsingFormat(TODAY, DATE));
+            formatLocalDateTimeBaseUsingFormat(now(), DATE));
 
         assertThat(proceedingLabel).isEqualTo(expectedContent);
     }
@@ -105,8 +103,8 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
 
     private List<Element<HearingBooking>> createHearingBookings() {
         return ElementUtils.wrapElements(
-            createHearingBooking(TODAY.plusDays(5), TODAY.plusHours(6)),
-            createHearingBooking(TODAY.plusDays(2), TODAY.plusMinutes(45)),
-            createHearingBooking(TODAY, TODAY.plusHours(2)));
+            createHearingBooking(now().plusDays(5), now().plusHours(6)),
+            createHearingBooking(now().plusDays(2), now().plusMinutes(45)),
+            createHearingBooking(now(), now().plusHours(2)));
     }
 }

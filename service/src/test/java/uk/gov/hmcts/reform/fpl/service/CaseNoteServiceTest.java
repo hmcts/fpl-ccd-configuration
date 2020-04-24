@@ -7,11 +7,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -24,25 +27,29 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { CaseNoteService.class, FixedTimeConfiguration.class})
 class CaseNoteServiceTest {
 
-    @Mock
+    @Autowired
+    private Time time;
+
+    @MockBean
     private IdamClient idamClient;
 
-    @InjectMocks
     private CaseNoteService service;
 
     private static final String userAuthToken = "Bearer";
     private static final UserInfo userDetails = UserInfo.builder().name("John Smith").build();
 
+    @BeforeEach
+    void setUp() {
+        service = new CaseNoteService(idamClient, time);
+        given(idamClient.getUserInfo(userAuthToken)).willReturn(userDetails);
+    }
+
     @Nested
     class BuildCaseNote {
-
-        @BeforeEach
-        void setup() {
-            given(idamClient.getUserInfo(userAuthToken)).willReturn(userDetails);
-        }
 
         @ParameterizedTest
         @ValueSource(strings = {"new note"})
@@ -72,7 +79,7 @@ class CaseNoteServiceTest {
 
     @Test
     void shouldAddNoteToListWithNewestAtBottomWhenExistingNotes() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = time.now().toLocalDate();
         CaseNote newNote = caseNoteWithDate(today);
         CaseNote oldNote = caseNoteWithDate(today.minusDays(5));
 
@@ -85,7 +92,7 @@ class CaseNoteServiceTest {
         return CaseNote.builder()
             .note(note)
             .createdBy(userDetails.getName())
-            .date(LocalDate.now())
+            .date(time.now().toLocalDate())
             .build();
     }
 

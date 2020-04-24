@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.Map;
@@ -52,9 +50,6 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    @Autowired
-    private Time time;
-
     private Document document = document();
 
     DraftOrdersControllerMidEventTest() {
@@ -75,10 +70,10 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
     void midEventShouldGenerateDraftStandardDirectionDocument() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(buildTestDirections())
-                .put("dateOfIssue", time.now().toLocalDate().toString())
+                .put("dateOfIssue", dateNow())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                 .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", time.now().toLocalDate().toString())
+                .put("dateSubmitted", dateNow())
                 .build())
             .build();
 
@@ -96,7 +91,7 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
     void midEventShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(buildTestDirections())
-                .put("dateOfIssue", time.now().toLocalDate().toString())
+                .put("dateOfIssue", dateNow())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
                     .useAllocatedJudge("Yes")
                     .build())
@@ -105,7 +100,7 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
                     .judgeLastName("Davidson")
                     .build())
                 .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", time.now().toLocalDate().toString())
+                .put("dateSubmitted", dateNow())
                 .build())
             .build();
 
@@ -121,10 +116,10 @@ public class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
     void midEventShouldReturnEmptyDirectionsListInStandardDirectionOrder() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(buildTestDirections())
-                .put("dateOfIssue", time.now().toLocalDate().toString())
+                .put("dateOfIssue", dateNow())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                 .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", time.now().toLocalDate().toString())
+                .put("dateSubmitted", dateNow())
                 .build())
             .build();
 

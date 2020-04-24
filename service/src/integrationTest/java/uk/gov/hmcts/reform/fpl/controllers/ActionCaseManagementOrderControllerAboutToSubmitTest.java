@@ -67,7 +67,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @WebMvcTest(ActionCaseManagementOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractControllerTest {
-    private static final LocalDateTime NOW = LocalDateTime.now();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final UUID ID = randomUUID();
 
@@ -176,7 +175,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 .build())
             .nextHearing(NextHearing.builder()
                 .id(ID)
-                .date(NOW.toString())
+                .date(now().toString())
                 .build())
             .status(SEND_TO_JUDGE)
             .build();
@@ -204,8 +203,8 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
         return List.of(Element.<HearingBooking>builder()
             .id(ID)
             .value(HearingBooking.builder()
-                .startDate(NOW.plusDays(days))
-                .endDate(NOW.plusDays(days))
+                .startDate(now().plusDays(days))
+                .endDate(now().plusDays(days))
                 .venue("venue")
                 .build())
             .build());
@@ -217,7 +216,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(ID)
-            .label(NOW.toString())
+            .label(now().toString())
             .build());
         return dynamicHearingDates;
     }
@@ -232,11 +231,11 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     }
 
     private String expectedPreHearing() {
-        return getStringDate(NOW.minusHours(1));
+        return getStringDate(now().minusHours(1));
     }
 
     private String expectedHearingTime() {
-        return getStringDate(NOW) + " - " + getStringDate(NOW);
+        return getStringDate(now()) + " - " + getStringDate(now());
     }
 
     private String getStringDate(LocalDateTime now) {
