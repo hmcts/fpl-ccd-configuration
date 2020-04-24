@@ -11,13 +11,7 @@ Feature('Gatekeeper Case administration after gatekeeping');
 Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, allocatedJudgeEventPage) => {
   if (!caseId) {
     // eslint-disable-next-line require-atomic-updates
-    caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.populateCaseWithMandatoryFields(caseId);
-    await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.submitCase(caseId);
-
-    console.log(`Case ${caseId} has been submitted`);
-    I.signOut();
+    caseId = await I.submitNewCaseWithData();
 
     //hmcts login, enter case number and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);

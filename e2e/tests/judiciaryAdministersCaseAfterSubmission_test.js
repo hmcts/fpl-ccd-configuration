@@ -12,13 +12,7 @@ Feature('Judiciary case administration after submission');
 Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage) => {
   if (!caseId) {
     // eslint-disable-next-line require-atomic-updates
-    caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.populateCaseWithMandatoryFields(caseId, 'mandatoryMultipleChildren');
-    await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.submitCase(caseId);
-
-    console.log(`Case ${caseId} has been submitted`);
-    I.signOut();
+    caseId = await I.submitNewCaseWithData();
 
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);

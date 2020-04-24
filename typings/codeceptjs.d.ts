@@ -297,6 +297,7 @@ declare namespace CodeceptJS {
     enterMandatoryFields() : void,
     populateCaseWithMandatoryFields(caseId: string, filename?: string): void
     submitCase(caseId: string): void
+    submitNewCaseWithData(filename?: string): Promise<string>
     addAnotherElementToCollection(): void,
     removeElementFromCollection(): void,
     retryUntilExists(action: Function, locator: string) : void,

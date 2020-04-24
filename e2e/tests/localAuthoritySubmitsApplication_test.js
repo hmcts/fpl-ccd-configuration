@@ -14,10 +14,9 @@ Feature('Application draft (populated draft)');
 
 Before(async (I) => {
   if (!caseId) {
-    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-
     // eslint-disable-next-line require-atomic-updates
-    caseId = await I.grabTextFrom('.heading-h1');
+    caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+
     console.log(`Application draft ${caseId} has been created`);
   } else {
     await I.navigateToCaseDetails(caseId);

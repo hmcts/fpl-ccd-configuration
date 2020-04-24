@@ -242,6 +242,18 @@ module.exports = function () {
       await this.completeEvent('Submit');
     },
 
+    async submitNewCaseWithData(filename = 'mandatorySubmissionFields') {
+      const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+      await this.populateCaseWithMandatoryFields(caseId, filename);
+      await this.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+      await this.submitCase(caseId);
+
+      console.log(`Case ${caseId} has been submitted`);
+      this.signOut();
+
+      return caseId;
+    },
+
     /**
      * Retries defined action util element described by the locator is present. If element is not present
      * after 4 tries (run + 3 retries) this step throws an error.
