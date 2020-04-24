@@ -9,6 +9,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Map;
 
@@ -18,7 +21,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { JacksonAutoConfiguration.class, C2UploadedEmailContentProvider.class })
+@ContextConfiguration(classes = { JacksonAutoConfiguration.class, C2UploadedEmailContentProvider.class,
+    EmailNotificationHelper.class, HearingBookingService.class, FixedTimeConfiguration.class})
 @TestPropertySource(properties = {"ccd.ui.base.url=" + BASE_URL})
 class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
