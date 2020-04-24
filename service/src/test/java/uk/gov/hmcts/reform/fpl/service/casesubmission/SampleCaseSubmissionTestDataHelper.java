@@ -62,7 +62,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .build();
     }
 
-    private static List<DocmosisRespondent> expectedDocmosisRespondents() {
+    public static List<DocmosisRespondent> expectedDocmosisRespondents() {
         return of(DocmosisRespondent.builder()
                 .name("Paul Smith")
                 .age("75 years old")
@@ -104,7 +104,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build());
     }
 
-    private static List<DocmosisApplicant> expectedDocmosisApplicants() {
+    public static List<DocmosisApplicant> expectedDocmosisApplicants() {
         return of(DocmosisApplicant.builder()
             .organisationName("London Borough of Southwark")
             .contactName("Jane Smith")
@@ -123,10 +123,11 @@ public class SampleCaseSubmissionTestDataHelper {
             .build());
     }
 
-    private static List<DocmosisChild> expectedDocmosisChildren() {
+    public static List<DocmosisChild> expectedDocmosisChildren() {
         return of(DocmosisChild.builder()
                 .name("Tom Reeves")
                 .age("1 year old")
+                .gender("Boy")
                 .dateOfBirth("15 June 2018")
                 .livingSituation("Living with respondents\nConfidentialDate this began: 8 November 2018")
                 .keyDates("child starting primary school or taking GCSEs")
@@ -166,7 +167,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build());
     }
 
-    private static List<DocmosisOtherParty> expectedDocmosisOtherParty() {
+    public static List<DocmosisOtherParty> expectedDocmosisOtherParty() {
         return of(DocmosisOtherParty.builder()
                 .name("Jason Lavery")
                 .gender("Unknown")
@@ -182,6 +183,7 @@ public class SampleCaseSubmissionTestDataHelper {
             DocmosisOtherParty.builder()
                 .name("Peter Lavery")
                 .gender("Male")
+                .dateOfBirth("2000-02-02")
                 .placeOfBirth("Lisburn")
                 .address("Confidential")
                 .detailsHidden("Yes")
@@ -248,22 +250,34 @@ public class SampleCaseSubmissionTestDataHelper {
             .build();
     }
 
-    private static List<DocmosisProceeding> expectedDocmosisProceeding() {
+    public static List<DocmosisProceeding> expectedDocmosisProceeding() {
         return List.of(DocmosisProceeding.builder()
-            .onGoingProceeding("Yes")
-            .proceedingStatus("Ongoing")
-            .caseNumber("12345")
-            .started("02-02-2002")
-            .ended("02-02-2006")
-            .ordersMade("Supervision order")
-            .judge("William Peters")
-            .children("children subject to proceedings")
-            .guardian("Mark Watson")
-            .sameGuardianDetails("Some guardian not needed")
-            .build());
+                .onGoingProceeding("Yes")
+                .proceedingStatus("Ongoing")
+                .caseNumber("12345")
+                .started("02-02-2002")
+                .ended("02-02-2006")
+                .ordersMade("Supervision order")
+                .judge("William Peters")
+                .children("children subject to proceedings")
+                .guardian("Mark Watson")
+                .sameGuardianDetails("No")
+                .build(),
+            DocmosisProceeding.builder()
+                .onGoingProceeding("Yes")
+                .proceedingStatus("Ongoing")
+                .caseNumber("12345")
+                .started("02-02-2008")
+                .ended("02-02-2009")
+                .ordersMade("Supervision order")
+                .judge("Peters Williams")
+                .children("children subject to proceedings")
+                .guardian("John Watson")
+                .sameGuardianDetails("No")
+                .build());
     }
 
-    private static DocmosisAnnexDocuments expectedDocmosisAnnexDocuments() {
+    public static DocmosisAnnexDocuments expectedDocmosisAnnexDocuments() {
         return DocmosisAnnexDocuments.builder()
             .socialWorkChronology("To follow\nSocial work chronology text")
             .socialWorkStatement("To follow\nSocial work statement and genogram text")
@@ -273,10 +287,11 @@ public class SampleCaseSubmissionTestDataHelper {
             .thresholdDocument("Attached")
             .checklistDocument("Attached")
             .others(of(DocmosisSocialWorkOther.builder()
-                .documentTitle("document one")
-                .build(), DocmosisSocialWorkOther.builder()
-                .documentTitle("document_two")
-                .build()))
+                    .documentTitle("document one")
+                    .build(),
+                DocmosisSocialWorkOther.builder()
+                    .documentTitle("document_two")
+                    .build()))
             .build();
     }
 }
