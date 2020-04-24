@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -78,10 +77,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long CASE_ID = 1L;
-    private static final LocalDateTime TODAY = LocalDateTime.now();
-    private static final List<Element<HearingBooking>> HEARING_DETAILS = createHearingBookingsFromInitialDate(TODAY);
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-        .localizedBy(Locale.UK);
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofLocalizedDate(
+        FormatStyle.MEDIUM).localizedBy(Locale.UK);
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -105,11 +102,11 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() {
         Map<String, Object> data = Map.of(
-            HEARING_DETAILS_KEY, HEARING_DETAILS,
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
             "respondents1", createRespondents(),
             "others", createOthers());
 
-        List<String> expected = List.of(TODAY.plusDays(5).format(FORMATTER), TODAY.plusDays(2).format(FORMATTER));
+        List<String> expected = List.of(now().plusDays(5).format(FORMATTER), now().plusDays(2).format(FORMATTER));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -143,7 +140,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldPopulateCaseManagementOrder() {
-        CaseDetails caseDetails = prepareCaseDetailsForAboutToSubmit();
+        CaseDetails caseDetails = prepareCaseDetailsForAboutToSubmit(createHearingBookingsFromInitialDate(now()));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -151,7 +148,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
         assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
-        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(TODAY.plusDays(5).toString());
+        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(now().plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
         assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo("draft-case-management-order.pdf");
         assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");
@@ -206,7 +203,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
-            .dateOfIssue(formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .dateOfIssue(formatLocalDateToString(dateNow(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())
             .respondents(expectedRespondents())
@@ -312,12 +309,12 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class).getOrderDoc();
     }
 
-    private CaseDetails prepareCaseDetailsForAboutToSubmit() {
-        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(HEARING_DETAILS);
+    private CaseDetails prepareCaseDetailsForAboutToSubmit(List<Element<HearingBooking>> hearingDetails) {
+        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-            .label(TODAY.plusDays(5).toString())
+            .label(now().plusDays(5).toString())
             .build());
 
         Map<String, Object> data = new HashMap<>();

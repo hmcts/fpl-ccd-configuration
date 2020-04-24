@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -48,23 +47,16 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
     JacksonAutoConfiguration.class, CommonDirectionService.class, DraftCMOService.class, FixedTimeConfiguration.class
 })
 class DraftCMOServiceTest {
+
+    @Autowired
+    private ObjectMapper mapper;
+    @Autowired
+    private DraftCMOService draftCMOService;
     @Autowired
     private Time time;
 
-    private final ObjectMapper mapper;
-    private final DraftCMOService draftCMOService;
-
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
-
-    @MockBean
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    DraftCMOServiceTest(ObjectMapper mapper, DraftCMOService draftCMOService) {
-        this.mapper = mapper;
-        this.draftCMOService = draftCMOService;
-    }
 
     @BeforeEach
     void setUp() {
