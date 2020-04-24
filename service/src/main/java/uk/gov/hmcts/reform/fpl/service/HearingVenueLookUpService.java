@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Slf4j
 @Service
@@ -28,20 +27,15 @@ public class HearingVenueLookUpService {
     @Autowired
     public HearingVenueLookUpService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        populateHearingVenueMappings();
+        loadHearingVenueMappings();
     }
 
-    private void populateHearingVenueMappings() {
-        if (isEmpty(hearingVenues)) {
-            try {
-                final String jsonContent = ResourceReader.readString("static_data/hearingVenues.json");
-                hearingVenues = objectMapper.reader()
-                    .forType(new TypeReference<List<HearingVenue>>() {})
-                    .readValue(jsonContent);
-
-            } catch (IOException e) {
-                log.error("Unable to parse hearingVenues.json file.", e);
-            }
+    private void loadHearingVenueMappings() {
+        try {
+            final String jsonContent = ResourceReader.readString("static_data/hearingVenues.json");
+            hearingVenues = objectMapper.readValue(jsonContent, new TypeReference<>() {});
+        } catch (IOException e) {
+            log.error("Unable to parse hearingVenues.json file.", e);
         }
     }
 

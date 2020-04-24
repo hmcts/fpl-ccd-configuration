@@ -48,21 +48,19 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
-//TODO: ensure everything is still working as expected - I don't think BLANK appears everywhere it used to. FPLA-1477
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StandardDirectionOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
-
-    //TODO: when should this be used? see FPLA-1087
-    public static final String DEFAULT = "BLANK - please complete";
-    private static final int SDO_DIRECTION_INDEX_START = 2;
 
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService dataExtractionService;
+
+    public static final String DEFAULT = "";
+    private static final int SDO_DIRECTION_INDEX_START = 2;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder orderBuilder =
@@ -109,7 +107,6 @@ public class StandardDirectionOrderGenerationService extends
             .collect(toList());
     }
 
-    // TODO: see FPLA-1087
     private DocmosisChild buildChild(ChildParty child) {
         return DocmosisChild.builder()
             .name(child.getFullName())
@@ -118,7 +115,6 @@ public class StandardDirectionOrderGenerationService extends
             .build();
     }
 
-    // TODO: see FPLA-1087
     private String getDateOfBirth(ChildParty child) {
         return ofNullable(child.getDateOfBirth())
             .map(dateOfBirth -> formatLocalDateToString(dateOfBirth, LONG))
@@ -132,7 +128,6 @@ public class StandardDirectionOrderGenerationService extends
             .collect(toList());
     }
 
-    // TODO: see FPLA-1087
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
@@ -189,7 +184,6 @@ public class StandardDirectionOrderGenerationService extends
         }
 
         // create direction display title for docmosis in format "index. directionTitle (by / on) date"
-        // TODO: see FPLA-1087
         return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
             ofNullable(direction.getDateToBeCompletedBy())
                 .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
