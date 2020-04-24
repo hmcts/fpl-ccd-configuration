@@ -64,7 +64,7 @@ public class NotifyGatekeeperEventHandlerTest {
         GatekeeperNotificationTemplate firstTemplate = getExpectedTemplate();
         firstTemplate.setGatekeeperRecipients("Cafcass+gatekeeper@gmail.com has also received this notification");
 
-        GatekeeperNotificationTemplate secondTemplate = firstTemplate.duplicate();
+        GatekeeperNotificationTemplate secondTemplate = getExpectedTemplate();
         secondTemplate.setGatekeeperRecipients(
             "FamilyPublicLaw+gatekeeper@gmail.com has also received this notification");
 
