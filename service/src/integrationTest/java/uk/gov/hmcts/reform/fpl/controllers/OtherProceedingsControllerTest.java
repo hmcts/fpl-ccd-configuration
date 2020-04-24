@@ -62,7 +62,7 @@ public class OtherProceedingsControllerTest extends AbstractControllerTest {
 
     private Proceeding createProceeding(String onGoingProceeding) {
         return new Proceeding(onGoingProceeding, "", "", "", "",
-            "", "", "", "", "", "");
+            "", "", "", "", "", "", null);
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(Proceeding proceeding) throws Exception {

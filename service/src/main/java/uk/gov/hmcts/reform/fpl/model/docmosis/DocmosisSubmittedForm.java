@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
+import uk.gov.hmcts.reform.fpl.model.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.model.Proceeding;
 
 import java.util.List;
 
@@ -39,6 +39,6 @@ public class DocmosisSubmittedForm implements DocmosisData {
     private final String thresholdDetails;
     private final DocmosisRisks risks;
     private final DocmosisFactorsParenting factorsParenting;
-    private final Proceeding proceeding;
+    private final List<DocmosisProceeding> proceeding;
     private final DocmosisAnnexDocuments annexDocuments;
 }

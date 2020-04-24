@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
+import uk.gov.hmcts.reform.fpl.model.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.OtherProceeding;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -99,8 +101,8 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents()))
             .applicants(buildDocmosisApplicants(caseData.getAllApplicants(), caseData.getSolicitor()))
             .children(buildDocmosisChildren(caseData.getAllChildren()))
-            .others(buildDocmosisOthers(caseData.getOthers()))
-            .proceeding(caseData.getProceeding())
+            .others(buildDocmosisOthers(caseData.getAllOthers()))
+            .proceeding(buildDocmosisProceedings(caseData.getAllProceedings()))
             .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO()))
             .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
@@ -256,20 +258,36 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .collect(toList());
     }
 
+    private List<DocmosisOtherParty> buildDocmosisOthers(final List<Element<Other>> other) {
+        return other.stream()
+            .map(Element::getValue)
+            .map(this::buildOtherParty)
+            .collect(toList());
+    }
 
-    private List<DocmosisOtherParty> buildDocmosisOthers(final Others others) {
-        List<DocmosisOtherParty> listOfOtherParties = new ArrayList<>();
-        if (isNotEmpty(others)) {
-            listOfOtherParties.add(buildOtherParty(others.getFirstOther()));
-            if (isNotEmpty(others.getAdditionalOthers())) {
-                listOfOtherParties.addAll(
-                    others.getAdditionalOthers().stream()
-                        .map(Element::getValue)
-                        .map(this::buildOtherParty)
-                        .collect(toList()));
-            }
-        }
-        return listOfOtherParties;
+    private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<OtherProceeding>> proceedings) {
+        return proceedings.stream()
+            .map(Element::getValue)
+            .map(this::buildProceeding)
+            .collect(toList());
+    }
+
+    private DocmosisProceeding buildProceeding(final OtherProceeding proceeding) {
+        return DocmosisProceeding.builder()
+            .onGoingProceeding(toYesOrNoOrDefaultValue(proceeding.getOnGoingProceeding()))
+            .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus()))
+            .caseNumber(getDefaultIfNullOrEmpty(proceeding.getCaseNumber()))
+            .started(getDefaultIfNullOrEmpty(proceeding.getStarted()))
+            .ended(getDefaultIfNullOrEmpty(proceeding.getEnded()))
+            .ordersMade(getDefaultIfNullOrEmpty(proceeding.getOrdersMade()))
+            .judge(getDefaultIfNullOrEmpty(proceeding.getJudge()))
+            .children(getDefaultIfNullOrEmpty(proceeding.getChildren()))
+            .guardian(getDefaultIfNullOrEmpty(proceeding.getGuardian()))
+            .sameGuardianDetails(
+                concatenateYesOrNoKeyAndValue(
+                    proceeding.getSameGuardianNeeded(),
+                    proceeding.getSameGuardianDetails()))
+            .build();
     }
 
     private DocmosisOtherParty buildOtherParty(final Other other) {

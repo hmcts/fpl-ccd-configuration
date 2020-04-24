@@ -1,14 +1,21 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
+@AllArgsConstructor
 public class Proceeding {
     private final String onGoingProceeding;
     private final String proceedingStatus;
@@ -21,29 +28,25 @@ public class Proceeding {
     private final String guardian;
     private final String sameGuardianNeeded;
     private final String sameGuardianDetails;
+    private final List<Element<OtherProceeding>> additionalProceedings;
 
-    @JsonCreator
-    public Proceeding(@JsonProperty("onGoingProceeding") final String onGoingProceeding,
-                      @JsonProperty("proceedingStatus") final String proceedingStatus,
-                      @JsonProperty("caseNumber") final String caseNumber,
-                      @JsonProperty("started") final String started,
-                      @JsonProperty("ended") final String ended,
-                      @JsonProperty("ordersMade") final String ordersMade,
-                      @JsonProperty("judge") final String judge,
-                      @JsonProperty("children") final String children,
-                      @JsonProperty("guardian") final String guardian,
-                      @JsonProperty("sameGuardianNeeded") final String sameGuardianNeeded,
-                      @JsonProperty("sameGuardianDetails") final String sameGuardianDetails) {
-        this.onGoingProceeding = onGoingProceeding;
-        this.proceedingStatus = proceedingStatus;
-        this.caseNumber = caseNumber;
-        this.started = started;
-        this.ended = ended;
-        this.ordersMade = ordersMade;
-        this.judge = judge;
-        this.children = children;
-        this.guardian = guardian;
-        this.sameGuardianNeeded = sameGuardianNeeded;
-        this.sameGuardianDetails = sameGuardianDetails;
+    @JsonIgnore
+    public OtherProceeding getFirstProceeding() {
+        if (StringUtils.isNotEmpty(onGoingProceeding)) {
+           return OtherProceeding.builder()
+                .onGoingProceeding(this.getOnGoingProceeding())
+                .proceedingStatus(this.getProceedingStatus())
+                .caseNumber(this.getCaseNumber())
+                .started(this.getStarted())
+                .ended(this.getEnded())
+                .ordersMade(this.getOrdersMade())
+                .judge(this.getJudge())
+                .children(this.getChildren())
+                .guardian(this.getGuardian())
+                .sameGuardianNeeded(this.getSameGuardianNeeded())
+                .sameGuardianDetails(this.getSameGuardianDetails())
+                .build();
+        }
+        return null;
     }
 }
