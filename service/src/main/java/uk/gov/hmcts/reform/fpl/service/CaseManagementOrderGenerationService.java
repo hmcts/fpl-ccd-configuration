@@ -59,7 +59,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
     private final CommonCaseDataExtractionService dataExtractionService;
     private final DraftCMOService cmoService;
-    private final HearingBookingService hearingBookingService;
+    private final HearingBookingService hearingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
@@ -73,11 +73,11 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
         if (needsNextHearingDate(caseManagementOrder)) {
             UUID nextHearingId = caseManagementOrder.getNextHearing().getId();
-            nextHearing = hearingBookingService.getHearingBookingByUUID(hearingDetails, nextHearingId);
+            nextHearing = hearingService.getHearingBookingByUUID(hearingDetails, nextHearingId);
         }
 
-        HearingBooking hearingBooking = hearingBookingService.getHearingBooking(hearingDetails,
-            caseData.getCmoHearingDateList());
+        HearingBooking hearingBooking = hearingService
+            .getHearingBookingByUUID(hearingDetails, caseManagementOrder.getId());
 
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisorData(hearingBooking.getJudgeAndLegalAdvisor()))
@@ -129,7 +129,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
     private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisorData(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return DocmosisJudgeAndLegalAdvisor.builder()
-            .judgeTitleAndName(defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor), DEFAULT))
+            .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
             .legalAdvisorName(getLegalAdvisorName(judgeAndLegalAdvisor))
             .build();
     }

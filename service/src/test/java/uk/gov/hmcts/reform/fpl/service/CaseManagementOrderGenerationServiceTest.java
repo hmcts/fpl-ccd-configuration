@@ -11,9 +11,13 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
@@ -29,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.emptyList;
@@ -47,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationSe
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -60,13 +66,25 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class CaseManagementOrderGenerationServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
     private static final String COMPLETION_DATE_AND_TIME = "by 10:00am, 1 January 2099";
+    private static final UUID HEARING_ID = UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774");
 
     @Autowired
     private CaseManagementOrderGenerationService service;
 
     @Test
-    void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() {
-        DocmosisCaseManagementOrder templateData = service.getTemplateData(baseCaseData().build());
+    void shouldBuildCaseManagementOrderWithMinimumViableDataWhenCaseManagementOrderIdIsPopulated() {
+        DocmosisCaseManagementOrder templateData = service.getTemplateData(baseCaseData()
+            .caseManagementOrder(CaseManagementOrder.builder().id(HEARING_ID).build())
+            .build());
+
+        assertThat(templateData).isEqualToComparingFieldByField(caseManagementOrderWithEmptyFields(templateData));
+    }
+
+    @Test
+    void shouldBuildCaseManagementOrderWithMinimumViableDataWhenCmoHearingListIsPopulated() {
+        DocmosisCaseManagementOrder templateData = service.getTemplateData(baseCaseData()
+            .cmoHearingDateList(dynamicHearingElement())
+            .build());
 
         assertThat(templateData).isEqualToComparingFieldByField(caseManagementOrderWithEmptyFields(templateData));
     }
@@ -94,7 +112,7 @@ class CaseManagementOrderGenerationServiceTest {
         assertThat(templateData.getDirections()).containsExactly(correctlyOrderedDirections());
     }
 
-    //TODO: this test can probably factor in the above two tests, whoever the buildCaseDataForCMODocmosisGeneration
+    //TODO: this test can probably factor in the above two tests, however the buildCaseDataForCMODocmosisGeneration
     // method and the methods it uses internally are heavily intertwined.
     @Test
     void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() {
@@ -102,6 +120,10 @@ class CaseManagementOrderGenerationServiceTest {
 
         //template data needs to be passed in for the draft and court seal image assertions.
         assertThat(templateData).isEqualToComparingFieldByField(expectedCaseManagementOrder(templateData));
+    }
+
+    private DynamicList dynamicHearingElement() {
+        return DynamicList.builder().value(DynamicListElement.builder().code(HEARING_ID).build()).build();
     }
 
     private CaseData.CaseDataBuilder baseCaseData() {
@@ -112,11 +134,13 @@ class CaseManagementOrderGenerationServiceTest {
             .dateSubmitted(NOW.toLocalDate())
             .respondents1(emptyList())
             .applicants(emptyList())
-            .schedule(Schedule.builder().includeSchedule("No").build());
+            .schedule(Schedule.builder().includeSchedule("No").build())
+            .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder().build())));
     }
 
     private CaseData caseDataWithRespondentDirections(List<Element<Direction>> respondentDirections) {
         return baseCaseData()
+            .caseManagementOrder(CaseManagementOrder.builder().id(HEARING_ID).build())
             .respondentDirectionsCustomCMO(respondentDirections)
             .allPartiesCustomCMO(wrapElements(direction()))
             .build();
@@ -135,7 +159,7 @@ class CaseManagementOrderGenerationServiceTest {
             .schedule(Schedule.builder().includeSchedule("No").build())
             .recitals(emptyList())
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
-                .judgeTitleAndName(DEFAULT)
+                .judgeTitleAndName("")
                 .legalAdvisorName("")
                 .build())
             .courtName("Family Court")
@@ -202,6 +226,7 @@ class CaseManagementOrderGenerationServiceTest {
 
     private CaseData caseDataWithDirections() {
         return baseCaseData()
+            .caseManagementOrder(CaseManagementOrder.builder().id(HEARING_ID).build())
             .respondentDirectionsCustomCMO(respondentDirections())
             .otherPartiesDirectionsCustomCMO(otherDirections())
             .allPartiesCustomCMO(wrapElements(direction()))
