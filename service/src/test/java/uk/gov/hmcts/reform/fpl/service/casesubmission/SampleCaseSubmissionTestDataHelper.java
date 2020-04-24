@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -86,6 +87,24 @@ public class SampleCaseSubmissionTestDataHelper {
     static final String SOCIAL_WORK_STATEMENT_KEY = "socialWorkStatement";
     static final String SOCIAL_WORK_CHRONOLOGY_KEY = "socialWorkChronology";
     static final String DRAFT_WATERMARK_KEY = "draftWaterMark";
+    static final String ORGANISATION_NAME = "organisationName";
+    static final String CONTACT_NAME = "contactName";
+    static final String JOB_TITLE = "jobTitle";
+    static final String ADDRESS = "address";
+    static final String EMAIL = "email";
+    static final String MOBILE_NUMBER = "mobileNumber";
+    static final String TELEPHONE_NUMBER = "telephoneNumber";
+    static final String PBA_NUMBER = "pbaNumber";
+    static final String SOLICITOR_NAME = "solicitorName";
+    static final String SOLICITOR_MOBILE = "solicitorMobile";
+    static final String SOLICITOR_TELEPHONE = "solicitorTelephone";
+    static final String SOLICITOR_EMAIL = "solicitorEmail";
+    static final String SOLICITOR_DX = "solicitorDx";
+    static final String SOLICITOR_REFERENCE = "solicitorReference";
+    static final String NAME = "name";
+    static final String AGE = "age";
+    static final String GENDER = "gender";
+    static final String DATE_OF_BIRTH = "dateOfBirth";
 
     private SampleCaseSubmissionTestDataHelper() {
     }
@@ -124,12 +143,28 @@ public class SampleCaseSubmissionTestDataHelper {
         return templateData;
     }
 
-    private static Map<String, String> expectedRespondentsTemplateData() {
-        return null;
+    private static List<Map<String, String>> expectedRespondentsTemplateData() {
+        return List.of(Map.ofEntries(entry(NAME, "Paul Smith"),
+            entry(AGE, "75 years 11 months 22 days old"),
+            entry(GENDER, "75 years 11 months 22 days old"),
+            entry(DATE_OF_BIRTH, "75 years 11 months 22 days old")));
     }
 
-    private static Map<String, String> expectedApplicantsTemplateData() {
-        return null;
+    private static List<Map<String, String>> expectedApplicantsTemplateData() {
+        return List.of(Map.ofEntries(entry(ORGANISATION_NAME, "London Borough of Southwark"),
+            entry(CONTACT_NAME, "Jane Smith"),
+            entry(JOB_TITLE, "Legal adviser"),
+            entry(ADDRESS, "160 Tooley St\nTooley road\nTooley\nLimerick\nGalway\nSE1 2QH\nIreland"),
+            entry(EMAIL, "jane@smith.com"),
+            entry(MOBILE_NUMBER, "2020202020"),
+            entry(TELEPHONE_NUMBER, "02120202020"),
+            entry(PBA_NUMBER, "PBA1234567"),
+            entry(SOLICITOR_NAME, "Brian Banks"),
+            entry(SOLICITOR_MOBILE, "7665545327"),
+            entry(SOLICITOR_TELEPHONE, "020 2772 5772"),
+            entry(SOLICITOR_EMAIL, "brian@banks.com"),
+            entry(SOLICITOR_DX, "106 Southwark &"),
+            entry(SOLICITOR_REFERENCE, "12345")));
     }
 
     private static Map<String, String> expectedChildrenTemplateData() {
