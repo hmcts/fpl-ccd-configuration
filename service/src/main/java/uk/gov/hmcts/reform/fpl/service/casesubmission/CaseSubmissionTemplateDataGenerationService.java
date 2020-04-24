@@ -316,7 +316,7 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
         return DocmosisChild.builder()
             .name(child.getFullName())
-            .age((String) ageFilter.apply(child.getDateOfBirth(), Map.of()))
+            .age((String) ageFilter.apply(child.getDateOfBirth().toString(), Map.of()))
             .gender(formatGenderDisplay(child.getGender(), child.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(child.getDateOfBirth(), DATE))
             .livingSituation(getChildLivingSituation(child, isConfidential))
@@ -343,7 +343,7 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
-            .age((String) ageFilter.apply(respondent.getDateOfBirth(), Map.of()))
+            .age((String) ageFilter.apply(respondent.getDateOfBirth().toString(), Map.of()))
             .gender(formatGenderDisplay(respondent.getGender(), respondent.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
             .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
