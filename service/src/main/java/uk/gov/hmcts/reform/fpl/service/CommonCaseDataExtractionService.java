@@ -1,52 +1,36 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableMap;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
 public class CommonCaseDataExtractionService {
-    private final HearingVenueLookUpService hearingVenueLookUpService;
-    public static final String HEARING_EMPTY_PLACEHOLDER = "Hearing details will be added by the judge";
 
-    @Autowired
-    public CommonCaseDataExtractionService(HearingVenueLookUpService hearingVenueLookUpService) {
-        this.hearingVenueLookUpService = hearingVenueLookUpService;
-    }
-
-    public String getHearingTime(HearingBooking hearingBooking) {
+    String getHearingTime(HearingBooking hearingBooking) {
         String hearingTime;
         final LocalDateTime startDate = hearingBooking.getStartDate();
         final LocalDateTime endDate = hearingBooking.getEndDate();
 
         if (hearingBooking.hasDatesOnSameDay()) {
             // Example 3:30pm - 5:30pm
-            hearingTime = String.format("%s - %s",
-                formatTime(startDate), formatTime(endDate));
+            hearingTime = String.format("%s - %s", formatTime(startDate), formatTime(endDate));
         } else {
             // Example 18 June, 3:40pm - 19 June, 2:30pm
-            hearingTime = String.format("%s - %s", formatDateTime(startDate),
-                formatDateTime(endDate));
+            hearingTime = String.format("%s - %s", formatDateTime(startDate), formatDateTime(endDate));
         }
 
         return hearingTime;
     }
 
-    public Optional<String> getHearingDateIfHearingsOnSameDay(HearingBooking hearingBooking) {
+    Optional<String> getHearingDateIfHearingsOnSameDay(HearingBooking hearingBooking) {
         String hearingDate = null;
 
         // If they aren't on the same date return nothing
@@ -57,35 +41,7 @@ public class CommonCaseDataExtractionService {
         return Optional.ofNullable(hearingDate);
     }
 
-    // NOTE: doesn't get anything to do with judge
-    public Map<String, Object> getHearingBookingData(final HearingBooking hearingBooking) {
-        if (hearingBooking == null) {
-            return ImmutableMap.of(
-                "hearingDate", HEARING_EMPTY_PLACEHOLDER,
-                "hearingVenue", HEARING_EMPTY_PLACEHOLDER,
-                "preHearingAttendance", HEARING_EMPTY_PLACEHOLDER,
-                "hearingTime", HEARING_EMPTY_PLACEHOLDER
-            );
-        }
-
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
-
-        return ImmutableMap.of(
-            "hearingDate", getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""),
-            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", extractPrehearingAttendance(hearingBooking),
-            "hearingTime", getHearingTime(hearingBooking)
-        );
-    }
-
-    public Map<String, Object> getJudgeAndLegalAdvisorData(final JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        return ImmutableMap.of(
-            "judgeTitleAndName", formatJudgeTitleAndName(judgeAndLegalAdvisor),
-            "legalAdvisorName", getLegalAdvisorName(judgeAndLegalAdvisor)
-        );
-    }
-
-    public String extractPrehearingAttendance(HearingBooking booking) {
+    String extractPrehearingAttendance(HearingBooking booking) {
         LocalDateTime time = calculatePrehearingAttendance(booking.getStartDate());
 
         return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTimeWithYear(time);
