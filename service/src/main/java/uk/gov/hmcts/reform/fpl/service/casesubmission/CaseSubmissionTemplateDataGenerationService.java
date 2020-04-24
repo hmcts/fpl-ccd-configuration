@@ -62,9 +62,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
-import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
-import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLICE_POWER_ENDS;
-import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -245,7 +242,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     }
 
     private List<DocmosisApplicant> buildDocmosisApplicants(final List<Element<Applicant>> applicants,
-                                                            Solicitor solicitor) {
+                                                            final Solicitor solicitor) {
         return applicants.stream()
             .map(element -> element.getValue().getParty())
             .map(applicant -> buildApplicant(applicant, solicitor))
@@ -279,7 +276,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         final boolean isConfidential = equalsIgnoreCase(other.getDetailsHidden(), YES.getValue());
         return DocmosisOtherParty.builder()
             .name(other.getName())
-            .gender(displayGender(other.getGender(), other.getGenderIdentification()))
+            .gender(formatGenderDisplay(other.getGender(), other.getGenderIdentification()))
             .dateOfBirth(other.getDOB())
             .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
             .address(
@@ -303,12 +300,12 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .build();
     }
 
-    private DocmosisChildren buildChild(ChildParty child) {
+    private DocmosisChildren buildChild(final ChildParty child) {
         final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
         return DocmosisChildren.builder()
             .name(child.getFullName())
             .age(formatAge(child.getDateOfBirth()))
-            .gender(displayGender(child.getGender(), child.getGenderIdentification()))
+            .gender(formatGenderDisplay(child.getGender(), child.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(child.getDateOfBirth(), DATE))
             .livingSituation(getChildLivingSituation(child, isConfidential))
             .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
@@ -335,7 +332,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
             .age(formatAge(respondent.getDateOfBirth()))
-            .gender(displayGender(respondent.getGender(), respondent.getGenderIdentification()))
+            .gender(formatGenderDisplay(respondent.getGender(), respondent.getGenderIdentification()))
             .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
             .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
             .address(
@@ -360,7 +357,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     }
 
     private DocmosisApplicant buildApplicant(final ApplicantParty applicant, final Solicitor solicitor) {
-        boolean solicitorPresent = (solicitor != null);
+        final boolean solicitorPresent = (solicitor != null);
         return DocmosisApplicant.builder()
             .organisationName(getDefaultIfNullOrEmpty(applicant.getOrganisationName()))
             .contactName(getContactName(applicant.getTelephoneNumber()))
@@ -385,7 +382,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .build();
     }
 
-    private String displayGender(final String gender, final String genderIdentification) {
+    private String formatGenderDisplay(final String gender, final String genderIdentification) {
         if (StringUtils.isNotEmpty(gender)) {
             if ((equalsIgnoreCase(gender, "They identify in another way")
                 && StringUtils.isNotEmpty(genderIdentification))) {
@@ -418,38 +415,43 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
 
     private String getChildLivingSituation(final ChildParty child, final boolean isConfidential) {
         if (StringUtils.isNotEmpty(child.getLivingSituation())) {
-            StringBuilder sb = new StringBuilder(child.getLivingSituation());
+            StringBuilder childLivingSituationBuilder = new StringBuilder(child.getLivingSituation());
+
             if (isConfidential) {
-                sb.append(NEW_LINE).append(CONFIDENTIAL);
+                childLivingSituationBuilder.append(NEW_LINE).append(CONFIDENTIAL);
             } else if (isNotEmpty(child.getAddress())) {
-                sb.append(child.getAddress().getAddressAsString(NEW_LINE));
+                childLivingSituationBuilder.append(child.getAddress().getAddressAsString(NEW_LINE));
             }
 
-            switch (fromString(child.getLivingSituation())) {
-                case HOSPITAL_SOON_TO_BE_DISCHARGED:
-                    if (child.getDischargeDate() != null) {
-                        sb.append("Discharge date: ").append(formatLocalDateToString(child.getDischargeDate(), DATE));
-                    }
-                    break;
-                case REMOVED_BY_POLICE_POWER_ENDS:
-                    if (child.getDatePowersEnd() != null) {
-                        sb.append("Date powers end: ").append(formatLocalDateToString(child.getDatePowersEnd(), DATE));
-                    }
-                    break;
-                case VOLUNTARILY_SECTION_CARE_ORDER:
-                    if (child.getCareStartDate() != null) {
-                        sb.append("Date this began: ").append(formatLocalDateToString(child.getCareStartDate(), DATE));
-                    }
-                    break;
-                default:
-                    if (child.getAddressChangeDate() != null) {
-                        sb.append("Date this began: ")
-                            .append(formatLocalDateToString(child.getAddressChangeDate(), DATE));
-                    }
-            }
-            return sb.toString();
+            formatChildLivingSituationDisplay(child, childLivingSituationBuilder);
+            return childLivingSituationBuilder.toString();
         }
         return DEFAULT_STRING;
+    }
+
+    private void formatChildLivingSituationDisplay(final ChildParty child, final StringBuilder sb) {
+        switch (fromString(child.getLivingSituation())) {
+            case HOSPITAL_SOON_TO_BE_DISCHARGED:
+                if (child.getDischargeDate() != null) {
+                    sb.append("Discharge date: ").append(formatLocalDateToString(child.getDischargeDate(), DATE));
+                }
+                break;
+            case REMOVED_BY_POLICE_POWER_ENDS:
+                if (child.getDatePowersEnd() != null) {
+                    sb.append("Date powers end: ").append(formatLocalDateToString(child.getDatePowersEnd(), DATE));
+                }
+                break;
+            case VOLUNTARILY_SECTION_CARE_ORDER:
+                if (child.getCareStartDate() != null) {
+                    sb.append("Date this began: ").append(formatLocalDateToString(child.getCareStartDate(), DATE));
+                }
+                break;
+            default:
+                if (child.getAddressChangeDate() != null) {
+                    sb.append("Date this began: ")
+                        .append(formatLocalDateToString(child.getAddressChangeDate(), DATE));
+                }
+        }
     }
 
     private DocmosisHearing buildDocmosisHearing(
