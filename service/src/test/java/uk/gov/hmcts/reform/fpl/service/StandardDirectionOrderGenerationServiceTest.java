@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
@@ -38,7 +37,6 @@ import static java.util.Locale.UK;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.emptyList;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -57,11 +55,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
-    LookupTestConfig.class, CaseDataExtractionService.class, HearingBookingService.class, CommonDirectionService.class,
-    CommonCaseDataExtractionService.class, FixedTimeConfiguration.class
+    LookupTestConfig.class, StandardDirectionOrderGenerationService.class, HearingBookingService.class,
+    CommonDirectionService.class, CommonCaseDataExtractionService.class, FixedTimeConfiguration.class
 })
-@TestInstance(PER_CLASS)
-class CaseDataExtractionServiceTest {
+class StandardDirectionOrderGenerationServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Family Court";
     private LocalDate today;
@@ -76,9 +73,9 @@ class CaseDataExtractionServiceTest {
     private CommonDirectionService commonDirectionService;
 
     @Autowired
-    private CaseDataExtractionService caseDataExtractionService;
+    private StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         given(userDetailsService.getUserName()).willReturn("Emma Taylor");
         today = time.now().toLocalDate();
@@ -92,14 +89,14 @@ class CaseDataExtractionServiceTest {
             .dateOfIssue("29 November 2019")
             .build();
 
-        DocmosisStandardDirectionOrder template = caseDataExtractionService
-            .getStandardOrderDirectionData(CaseData.builder()
+        DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
+            .getTemplateData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(today)
                 .standardDirectionOrder(order)
                 .build());
 
-        assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
+        assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("")
                 .legalAdvisorName("")
@@ -120,8 +117,8 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldMapDirectionsForDraftSDOWhenAllAssignees() throws IOException {
-        DocmosisStandardDirectionOrder templateData = caseDataExtractionService
-            .getStandardOrderDirectionData(CaseData.builder()
+        DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService
+            .getTemplateData(CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .dateSubmitted(today)
                 .standardDirectionOrder(Order.builder().directions(getDirections()).build())
@@ -142,10 +139,10 @@ class CaseDataExtractionServiceTest {
             .standardDirectionOrder(createStandardDirectionOrders(today.atStartOfDay(), DRAFT))
             .build();
 
-        DocmosisStandardDirectionOrder template = caseDataExtractionService
-            .getStandardOrderDirectionData(caseData);
+        DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
+            .getTemplateData(caseData);
 
-        assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
+        assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Smith")
                 .legalAdvisorName("Bob Ross")
@@ -177,10 +174,10 @@ class CaseDataExtractionServiceTest {
             .standardDirectionOrder(createStandardDirectionOrders(today.atStartOfDay(), SEALED))
             .build();
 
-        DocmosisStandardDirectionOrder template = caseDataExtractionService
-            .getStandardOrderDirectionData(caseData);
+        DocmosisStandardDirectionOrder template = standardDirectionOrderGenerationService
+            .getTemplateData(caseData);
 
-        assertThat(template).isEqualTo(DocmosisStandardDirectionOrder.builder()
+        assertThat(template).isEqualToComparingFieldByField(DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Smith")
                 .legalAdvisorName("Bob Ross")
@@ -240,19 +237,19 @@ class CaseDataExtractionServiceTest {
             .collect(toList());
     }
 
-    private List<DocmosisChildren> getExpectedChildren() {
+    private List<DocmosisChild> getExpectedChildren() {
         return List.of(
-            DocmosisChildren.builder()
+            DocmosisChild.builder()
                 .name("Bran Stark")
                 .gender("Boy")
                 .dateOfBirth(formatLocalDateToString(today, LONG))
                 .build(),
-            DocmosisChildren.builder()
+            DocmosisChild.builder()
                 .name("Sansa Stark")
                 .gender("Boy")
                 .dateOfBirth(formatLocalDateToString(today, LONG))
                 .build(),
-            DocmosisChildren.builder()
+            DocmosisChild.builder()
                 .name("Jon Snow")
                 .gender("Girl")
                 .dateOfBirth(formatLocalDateToString(today, LONG))

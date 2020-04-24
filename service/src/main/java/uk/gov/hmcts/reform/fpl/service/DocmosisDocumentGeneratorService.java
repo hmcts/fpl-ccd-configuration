@@ -27,7 +27,7 @@ public class DocmosisDocumentGeneratorService {
     private final DocmosisConfiguration configuration;
     private final ObjectMapper mapper;
 
-    public DocmosisDocument generatedDocmosisDocument(DocmosisData templateData, DocmosisTemplates template) {
+    public DocmosisDocument generateDocmosisDocument(DocmosisData templateData, DocmosisTemplates template) {
         return generateDocmosisDocument(templateData.toMap(mapper), template);
     }
 
