@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +69,6 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final UUID ID = randomUUID();
 
-    private final DocumentReference cmoDocument = buildFromDocument(document());
     private CaseDetails populatedCaseDetails;
 
     @Autowired
@@ -140,9 +138,10 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     }
 
     @Test
-    void shouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() throws IOException {
+    void shouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() {
         populatedCaseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder());
         populatedCaseDetails.getData().put(ORDER_ACTION.getKey(), getOrderAction(JUDGE_REQUESTED_CHANGE));
+        populatedCaseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(1));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
@@ -166,7 +165,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
     private CaseManagementOrder expectedCaseManagementOrder() {
         return CaseManagementOrder.builder()
-            .orderDoc(cmoDocument)
+            .orderDoc(buildFromDocument(document()))
             .id(ID)
             .directions(emptyList())
             .action(OrderAction.builder()

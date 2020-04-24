@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
@@ -46,18 +45,6 @@ public class HearingBookingService {
     public Optional<HearingBooking> getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
         return unwrapElements(hearingDetails).stream()
             .min(comparing(HearingBooking::getStartDate));
-    }
-
-    public HearingBooking getHearingBooking(List<Element<HearingBooking>> hearingDetails, DynamicList hearingDateList) {
-        if (hearingDetails == null || hearingDateList == null || hearingDateList.getValue() == null) {
-            return HearingBooking.builder().build();
-        }
-
-        return hearingDetails.stream()
-            .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
-            .findFirst()
-            .map(Element::getValue)
-            .orElse(HearingBooking.builder().build());
     }
 
     public HearingBooking getHearingBookingByUUID(List<Element<HearingBooking>> hearingDetails, UUID elementId) {
