@@ -9,31 +9,24 @@ let caseId;
 
 Feature('Judiciary case administration after submission');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage) => {
-  if (!caseId) {
-    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.enterMandatoryFields({multipleChildren: true});
-    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-    submitApplicationEventPage.giveConsent();
-    await I.completeEvent('Submit');
+BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage) => {
+  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
+  await I.enterMandatoryFields({multipleChildren: true});
+  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  submitApplicationEventPage.giveConsent();
+  await I.completeEvent('Submit');
 
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.grabTextFrom('.heading-h1');
-    console.log(`Case ${caseId} has been submitted`);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
-    I.signOut();
-    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-    await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-    enterFamilyManCaseNumberEventPage.enterCaseID();
-    await I.completeEvent('Save and continue');
-    I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
-    I.signOut();
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  enterFamilyManCaseNumberEventPage.enterCaseID();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 
-    await I.signIn(config.judiciaryEmail, config.judiciaryPassword);
-  }
-  await I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 });
+
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);

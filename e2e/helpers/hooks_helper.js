@@ -6,7 +6,7 @@ module.exports = class HooksHelpers extends Helper {
     test.retries(parseInt(process.env.TEST_RETRIES || '0'));
   }
 
-  _before() {
+  _beforeSuite() {
     recorder.retry({
       retries: 10,
       when: err => err.message.indexOf('Execution context was destroyed') > -1,
