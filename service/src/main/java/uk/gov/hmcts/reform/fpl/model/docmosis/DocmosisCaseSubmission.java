@@ -20,7 +20,7 @@ import java.util.List;
 public class DocmosisCaseSubmission implements DocmosisData {
     private final List<DocmosisRespondent> respondents;
     private final List<DocmosisApplicant> applicants;
-    private final List<DocmosisChildren> children;
+    private final List<DocmosisChild> children;
     private final List<DocmosisOtherParty> others;
     private final String applicantOrganisations;
     private final String respondentNames;

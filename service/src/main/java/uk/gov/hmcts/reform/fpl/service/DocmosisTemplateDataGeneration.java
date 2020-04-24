@@ -22,7 +22,7 @@ public abstract class DocmosisTemplateDataGeneration<T> {
         return draftWatermark;
     }
 
-    protected static String generateCourtSealEncodedString() throws IOException {
+    public static String generateCourtSealEncodedString() throws IOException {
         if (familyCourtSeal == null) {
             InputStream is = DocmosisTemplateDataGeneration.class
                 .getResourceAsStream("/assets/images/family-court-seal.png");

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
@@ -51,7 +50,6 @@ import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.String.format;
@@ -72,16 +70,16 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
-public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
+public class CaseSubmissionTemplateDataGenerationService
+    extends DocmosisTemplateDataGeneration<DocmosisCaseSubmission> {
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
     private static final String CONFIDENTIAL = "Confidential";
     private static final LocalDate TODAY = LocalDate.now();
 
-    private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
 
-    public Map<String, Object> getTemplateData(final CaseData caseData, final boolean draft) throws IOException {
+    public DocmosisCaseSubmission getTemplateData(final CaseData caseData) throws IOException {
         DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
 
         applicationFormBuilder
@@ -106,15 +104,10 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(buildDocmosisAnnexDocuments(caseData))
-            .userFullName(userDetailsService.getUserName());
+            .userFullName(userDetailsService.getUserName())
+            .courtseal(format(BASE_64, generateCourtSealEncodedString()));
 
-        if (draft) {
-            applicationFormBuilder.draftWaterMark(format(BASE_64, generateDraftWatermarkEncodedString()));
-        } else {
-            applicationFormBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
-        }
-
-        return applicationFormBuilder.build().toMap(objectMapper);
+        return applicationFormBuilder.build();
     }
 
     private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
@@ -249,7 +242,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .collect(toList());
     }
 
-    private List<DocmosisChildren> buildDocmosisChildren(final List<Element<Child>> children) {
+    private List<DocmosisChild> buildDocmosisChildren(final List<Element<Child>> children) {
         return children.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
@@ -316,9 +309,9 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
             .build();
     }
 
-    private DocmosisChildren buildChild(final ChildParty child) {
+    private DocmosisChild buildChild(final ChildParty child) {
         final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
-        return DocmosisChildren.builder()
+        return DocmosisChild.builder()
             .name(child.getFullName())
             .age(formatAge(child.getDateOfBirth()))
             .gender(formatGenderDisplay(child.getGender(), child.getGenderIdentification()))
