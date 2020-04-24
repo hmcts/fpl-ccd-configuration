@@ -17,7 +17,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode
 @Builder(builderClassName = "Builder")
-public class DocmosisSubmittedForm implements DocmosisData {
+public class DocmosisCaseSubmission implements DocmosisData {
     private final List<DocmosisRespondent> respondents;
     private final List<DocmosisApplicant> applicants;
     private final List<DocmosisChildren> children;

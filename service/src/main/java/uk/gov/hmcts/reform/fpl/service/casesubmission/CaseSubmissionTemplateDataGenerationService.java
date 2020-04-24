@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.OtherProceeding;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
@@ -42,16 +41,15 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChildren;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisSubmittedForm;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -84,7 +82,7 @@ public class CaseSubmissionTemplateDataGenerationService extends DocmosisTemplat
     private final UserDetailsService userDetailsService;
 
     public Map<String, Object> getTemplateData(final CaseData caseData, final boolean draft) throws IOException {
-        DocmosisSubmittedForm.Builder applicationFormBuilder = DocmosisSubmittedForm.builder();
+        DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
 
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
