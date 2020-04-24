@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
 
@@ -48,7 +49,8 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class, HmctsEmailContentProvider.class,
     JacksonAutoConfiguration.class, LookupTestConfig.class, IssuedOrderAdminNotificationHandler.class,
-    RepresentativeNotificationService.class, HmctsAdminNotificationHandler.class, HearingBookingService.class})
+    RepresentativeNotificationService.class, HmctsAdminNotificationHandler.class, HearingBookingService.class,
+    FixedTimeConfiguration.class})
 class GeneratedOrderEventHandlerTest {
 
     final String mostRecentUploadedDocumentUrl =

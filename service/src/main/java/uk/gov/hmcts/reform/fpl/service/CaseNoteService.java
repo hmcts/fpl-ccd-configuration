@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -19,13 +19,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseNoteService {
     private final IdamClient idamClient;
+    private final Time time;
 
     public CaseNote buildCaseNote(String authorisation, String note) {
         UserInfo userDetails = idamClient.getUserInfo(authorisation);
 
         return CaseNote.builder()
             .createdBy(userDetails.getName())
-            .date(LocalDate.now())
+            .date(time.now().toLocalDate())
             .note(note)
             .build();
     }

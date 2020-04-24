@@ -18,7 +18,10 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.utils.AssertionHelper;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +35,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseManagementOrderEmailContentProvider.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseManagementOrderEmailContentProvider.class,
+    EmailNotificationHelper.class, HearingBookingService.class, FixedTimeConfiguration.class})
 @TestPropertySource(properties = {"ccd.ui.base.url=" + BASE_URL})
 class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
