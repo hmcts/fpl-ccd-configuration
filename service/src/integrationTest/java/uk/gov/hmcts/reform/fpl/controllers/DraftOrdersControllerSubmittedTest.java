@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +143,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
                             "id", "",
                             "value", Respondent.builder()
                                 .party(RespondentParty.builder()
-                                    .dateOfBirth(LocalDate.now().plusDays(1))
+                                    .dateOfBirth(dateNow().plusDays(1))
                                     .lastName("Moley")
                                     .relationshipToChild("Uncle")
                                     .build())
