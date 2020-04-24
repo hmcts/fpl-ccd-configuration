@@ -11,8 +11,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.AssertionHelper;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -31,7 +34,8 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, OrderIssuedEmailContentProvider.class, LookupTestConfig.class
+    JacksonAutoConfiguration.class, OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
+    EmailNotificationHelper.class, HearingBookingService.class, FixedTimeConfiguration.class
 })
 @TestPropertySource(properties = {"ccd.ui.base.url=" + BASE_URL})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {

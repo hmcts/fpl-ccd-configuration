@@ -30,32 +30,34 @@ let baseUrl = process.env.URL || 'http://localhost:3451';
 
 module.exports = function () {
   return actor({
-    async signIn(username, password) {
+    async signIn(user) {
       await this.retryUntilExists(async () => {
         this.amOnPage(process.env.URL || 'http://localhost:3451');
         if (await this.waitForSelector('#global-header') == null) {
           return;
         }
 
-        const user = await this.grabText('#user-name');
-        if (user !== undefined) {
-          if (user.toLowerCase().includes(username)) {
+        const userName = await this.grabText('#user-name');
+        if (userName !== undefined) {
+          if (userName.toLowerCase().includes(user.email)) {
             return;
           }
           this.signOut();
         }
 
-        loginPage.signIn(username, password);
+        loginPage.signIn(user);
       }, '#sign-out');
     },
 
-    async logInAndCreateCase(username, password) {
-      await this.signIn(username, password);
+    async logInAndCreateCase(user) {
+      await this.signIn(user);
       this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
-      return this.grabTextFrom('.heading-h1');
+      const caseId = await this.grabTextFrom('.heading-h1');
+      console.log(`Case created ${caseId}`);
+      return caseId;
     },
 
     async completeEvent(button, changeDetails) {
@@ -136,6 +138,11 @@ module.exports = function () {
           this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
         }, '#sign-out');
       }
+    },
+
+    async navigateToCaseDetailsAs(user, caseId) {
+      await this.signIn(user);
+      await this.navigateToCaseDetails(caseId);
     },
 
     async navigateToCaseList(){
@@ -228,7 +235,7 @@ module.exports = function () {
     },
 
     async populateCaseWithMandatoryFields (caseId, filename = 'mandatorySubmissionFields') {
-      await this.signIn(config.systemUpdateEmail, config.systemUpdatePassword);
+      await this.signIn(config.systemUpdateUser);
       await this.navigateToCaseDetails(caseId);
       await caseViewPage.goToNewActions(config.applicationActions.populateCase);
       populateCaseEventPage.setCaseDataFilename(filename);
@@ -243,9 +250,9 @@ module.exports = function () {
     },
 
     async submitNewCaseWithData(filename = 'mandatorySubmissionFields') {
-      const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+      const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
       await this.populateCaseWithMandatoryFields(caseId, filename);
-      await this.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+      await this.signIn(config.swanseaLocalAuthorityUserOne);
       await this.submitCase(caseId);
 
       console.log(`Case ${caseId} has been submitted`);

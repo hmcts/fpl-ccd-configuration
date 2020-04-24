@@ -8,29 +8,25 @@ let caseId;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, allocatedJudgeEventPage) => {
-  if (!caseId) {
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.submitNewCaseWithData();
+BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, allocatedJudgeEventPage) => {
+  caseId = await I.submitNewCaseWithData();
 
-    //hmcts login, enter case number and send to gatekeeper
-    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-    await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-    enterFamilyManCaseNumberEventPage.enterCaseID();
-    await I.completeEvent('Save and continue');
-    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
-    await I.completeEvent('Save and continue');
-    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-    sendCaseToGatekeeperEventPage.enterEmail();
-    await I.completeEvent('Save and continue');
-    I.signOut();
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
-    await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
-  }
-  await I.navigateToCaseDetails(caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  enterFamilyManCaseNumberEventPage.enterCaseID();
+  await I.completeEvent('Save and continue');
+  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await I.completeEvent('Save and continue');
+  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+  sendCaseToGatekeeperEventPage.enterEmail();
+  await I.completeEvent('Save and continue');
+
+  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });
+
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async (I, caseViewPage, notifyGatekeeperEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.notifyGatekeeper);
@@ -39,14 +35,14 @@ Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async
   I.seeEventSubmissionConfirmation(config.administrationActions.notifyGatekeeper);
 });
 
-Scenario('gatekeeper make allocation decision based on proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+Scenario('Gatekeeper make allocation decision based on proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
-Scenario('gatekeeper enters allocation decision', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+Scenario('Gatekeeper enters allocation decision', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
   enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');

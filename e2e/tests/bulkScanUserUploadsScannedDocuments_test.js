@@ -5,21 +5,15 @@ let caseId;
 
 Feature('Uploading bulk scan document');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage) => {
-  if (!caseId) {
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.submitNewCaseWithData();
-  }
+BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage) => {
+  caseId = await I.submitNewCaseWithData();
 
-  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-  await I.navigateToCaseDetails(caseId);
-
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
   attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
   await I.click('Continue');
   handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
   await I.completeEvent('Submit');
-  I.seeEventSubmissionConfirmation(config.administrationActions.bulkScan);
 });
 
 Scenario('HMCTS admin can see Documents scanned in with Bulk Scan', async (I, caseViewPage) => {

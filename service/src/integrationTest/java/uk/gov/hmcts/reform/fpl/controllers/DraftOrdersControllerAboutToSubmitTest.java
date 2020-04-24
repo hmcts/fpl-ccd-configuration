@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,11 +23,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -61,15 +59,14 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder().build();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final Document DOCUMENT = document();
+    private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2020, 1, 20, 11, 11, 11);
+    private static final LocalDateTime HEARING_END_DATE = LocalDateTime.of(2020, 2, 20, 11, 11, 11);
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @Autowired
-    private Time time;
 
     DraftOrdersControllerAboutToSubmitTest() {
         super("draft-standard-directions");
@@ -79,7 +76,8 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     void setup() {
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
 
-        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
+            .willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME)).willReturn(DOCUMENT);
     }
 
@@ -102,17 +100,17 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(directionWithShowHideValuesRemoved)
-                .put("dateOfIssue", time.now().toLocalDate().toString())
+                .put("dateOfIssue", dateNow())
                 .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                 .put("allocatedJudge", Judge.builder().build())
                 .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                    .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
-                    .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
+                    .startDate(HEARING_START_DATE)
+                    .endDate(HEARING_END_DATE)
                     .venue("EXAMPLE")
                     .build()))
                 .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", time.now().toLocalDate().toString())
+                .put("dateSubmitted", dateNow())
                 .build())
             .build();
 
@@ -195,8 +193,8 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                     HEARING_DETAILS_KEY, List.of(
                         Element.builder()
                             .value(HearingBooking.builder()
-                                .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
-                                .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
+                                .startDate(HEARING_START_DATE)
+                                .endDate(HEARING_END_DATE)
                                 .build())
                             .build()),
                     "respondents1", List.of(
@@ -204,7 +202,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                             "id", "",
                             "value", Respondent.builder()
                                 .party(RespondentParty.builder()
-                                    .dateOfBirth(LocalDate.now().plusDays(1))
+                                    .dateOfBirth(dateNow().plusDays(1))
                                     .lastName("Moley")
                                     .relationshipToChild("Uncle")
                                     .build())

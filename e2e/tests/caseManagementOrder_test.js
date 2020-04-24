@@ -8,57 +8,43 @@ let caseId;
 
 Feature('Case Management Order Journey');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage,
-  allocatedJudgeEventPage) => {
-  if (!caseId) {
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.submitNewCaseWithData();
+BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage, allocatedJudgeEventPage) => {
+  caseId = await I.submitNewCaseWithData();
 
-    //hmcts login, add case number and send to gatekeeper
-    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-    await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-    enterFamilyManCaseNumberEventPage.enterCaseID();
-    await I.completeEvent('Save and continue');
-    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-    sendCaseToGatekeeperEventPage.enterEmail();
-    await I.completeEvent('Save and continue');
-    I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-    I.signOut();
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  enterFamilyManCaseNumberEventPage.enterCaseID();
+  await I.completeEvent('Save and continue');
+  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+  sendCaseToGatekeeperEventPage.enterEmail();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 
-    // gatekeeper add hearing booking detail
-    await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
-    await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-    await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-    await I.addAnotherElementToCollection();
-    await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-    await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
-    I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
-    caseViewPage.selectTab(caseViewPage.tabs.hearings);
+  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
+  await I.addAnotherElementToCollection();
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
+  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+  I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
 
-    //gatekeeper adds allocated judge
-    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
-    await I.completeEvent('Save and continue');
+  //gatekeeper adds allocated judge
+  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await I.completeEvent('Save and continue');
 
-    // gatekeeper login and create sdo
-    await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
-    await draftStandardDirectionsEventPage.skipDateOfIssue();
-    await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-    await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
-    await draftStandardDirectionsEventPage.markAsFinal();
-    await I.completeEvent('Save and continue');
-    I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
-  }
-  // Log back in as LA
-  I.signOut();
-  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-
-  await I.navigateToCaseDetails(caseId);
+  // gatekeeper create sdo
+  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.skipDateOfIssue();
+  await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
+  await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
+  await draftStandardDirectionsEventPage.markAsFinal();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
 });
 
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
   await I.retryUntilExists(() => I.click('Continue'), '#allPartiesLabelCMO');
@@ -76,6 +62,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
 
 // This scenario relies on running after 'local authority creates CMO'
 Scenario('Other parties cannot see the draft CMO document when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   // Ensure the selection is self review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.sendDraftForSelfReview(I, draftCaseManagementOrderEventPage);
@@ -89,6 +76,7 @@ Scenario('Other parties cannot see the draft CMO document when it is marked for 
 
 // This scenario relies on running after 'local authority creates CMO'
 Scenario('Other parties can see the draft CMO document when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   // Ensure the selection is party review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
 
@@ -102,11 +90,7 @@ Scenario('Other parties can see the draft CMO document when it is marked for par
 });
 
 Scenario('Judge sees Action CMO placeholder when CMO is not in Judge Review', async (I, caseViewPage) => {
-  // Login as Judge
-  await cmoHelper.switchUserAndNavigateToCase(I, {
-    email: config.judiciaryEmail,
-    password: config.judiciaryPassword,
-  }, caseId);
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
   await I.see('You cannot edit this order');
@@ -114,6 +98,8 @@ Scenario('Judge sees Action CMO placeholder when CMO is not in Judge Review', as
 });
 
 Scenario('Local Authority sends draft to Judge who requests corrections', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
 
@@ -121,17 +107,12 @@ Scenario('Local Authority sends draft to Judge who requests corrections', async 
   I.see('You can no longer edit this order');
   await I.completeEvent('Submit');
 
-  await cmoHelper.switchUserAndNavigateToCase(I, {
-    email: config.judiciaryEmail,
-    password: config.judiciaryPassword,
-  }, caseId);
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
   await cmoHelper.actionDraft(I, actionCaseManagementOrderEventPage);
-  await cmoHelper.switchUserAndNavigateToCase(I, {
-    email: config.swanseaLocalAuthorityEmailUserOne,
-    password: config.localAuthorityPassword,
-  }, caseId);
+
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 
   const details = {
     status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview,
@@ -159,11 +140,7 @@ xScenario('Local Authority sends draft to Judge who approves CMO', async (I, cas
   await I.completeEvent('Submit');
   I.dontSee('Draft orders', '.tabs .tabs-list');
 
-  // Login as Judge
-  await cmoHelper.switchUserAndNavigateToCase(I, {
-    email: config.judiciaryEmail,
-    password: config.judiciaryPassword,
-  }, caseId);
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge});
 
   // Approve CMO

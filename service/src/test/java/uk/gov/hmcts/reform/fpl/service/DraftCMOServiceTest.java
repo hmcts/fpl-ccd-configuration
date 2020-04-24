@@ -20,8 +20,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,10 +45,11 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, CommonDirectionService.class, DraftCMOService.class
+    JacksonAutoConfiguration.class, CommonDirectionService.class, DraftCMOService.class, FixedTimeConfiguration.class
 })
 class DraftCMOServiceTest {
-    private static final LocalDateTime NOW = LocalDateTime.now();
+    @Autowired
+    private Time time;
 
     private final ObjectMapper mapper;
     private final DraftCMOService draftCMOService;
@@ -66,12 +68,12 @@ class DraftCMOServiceTest {
 
     @BeforeEach
     void setUp() {
-        hearingDetails = createHearingBookingsFromInitialDate(NOW);
+        hearingDetails = createHearingBookingsFromInitialDate(time.now());
     }
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
-        hearingDetails = createHearingBookingsFromInitialDate(NOW.plusDays(5));
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
@@ -97,7 +99,7 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldNotReturnHearingDatesWhenHearingDateIsInThePast() {
-        hearingDetails = createHearingBookingsFromInitialDate(NOW.minusDays(10));
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(10));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
@@ -110,7 +112,7 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnHearingDatesWhenHearingDateIsSameDayButLaterTime() {
-        hearingDetails = createHearingBookingsFromInitialDate(NOW.plusMinutes(5));
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusMinutes(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
@@ -136,7 +138,7 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
-        hearingDetails = createHearingBookingsFromInitialDate(NOW);
+        hearingDetails = createHearingBookingsFromInitialDate(time.now());
         caseManagementOrder = createCaseManagementOrder();
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
@@ -177,7 +179,7 @@ class DraftCMOServiceTest {
     void shouldReturnAMapWithAllIndividualCMOEntriesPopulated() {
         caseManagementOrder = createCaseManagementOrder();
 
-        hearingDetails = createHearingBookingsFromInitialDate(NOW);
+        hearingDetails = createHearingBookingsFromInitialDate(time.now());
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
@@ -230,7 +232,7 @@ class DraftCMOServiceTest {
 
     private DynamicList getDynamicList() {
         DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(
-            createHearingBookingsFromInitialDate(NOW));
+            createHearingBookingsFromInitialDate(time.now()));
 
         DynamicListElement listElement = DynamicListElement.builder()
             .label(formatLocalDateToMediumStyle(5))
@@ -255,7 +257,7 @@ class DraftCMOServiceTest {
     }
 
     private String formatLocalDateToMediumStyle(int i) {
-        return formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+        return formatLocalDateToString(time.now().plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
 
     @Nested

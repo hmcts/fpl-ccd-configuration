@@ -9,7 +9,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -45,6 +43,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -79,9 +78,6 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    @Autowired
-    private Time time;
-
     GeneratedOrderControllerMidEventTest() {
         super("create-order");
     }
@@ -91,7 +87,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         document = document();
         DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
 
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(anyMap(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
     }
 
@@ -162,7 +158,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
             final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
                 caseDetails, "generate-document");
 
-            verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(), eq(templateName));
+            verify(docmosisDocumentGeneratorService).generateDocmosisDocument(anyMap(), eq(templateName));
             verify(uploadDocumentService).uploadPDF(pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -174,7 +170,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         void shouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
             postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), "generate-document");
 
-            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
+            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
             verify(uploadDocumentService, never()).uploadPDF(any(), any());
         }
 
@@ -200,7 +196,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
 
             dataBuilder.order(GeneratedOrder.builder().details("").build())
                 .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
-                .dateOfIssue(time.now().toLocalDate());
+                .dateOfIssue(dateNow());
 
             generateDefaultValues(dataBuilder);
             generateEpoValues(dataBuilder);
@@ -268,7 +264,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                     .type(type)
                     .subtype(subtype)
                     .build())
-                .dateOfIssue(time.now().toLocalDate());
+                .dateOfIssue(dateNow());
 
             generateDefaultValues(builder);
 
@@ -288,7 +284,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 .epoPhrase(EPOPhrase.builder()
                     .includePhrase("Yes")
                     .build())
-                .epoEndDate(time.now())
+                .epoEndDate(now())
                 .epoType(REMOVE_TO_ACCOMMODATION)
                 .epoRemovalAddress(Address.builder()
                     .addressLine1("Unit 1")

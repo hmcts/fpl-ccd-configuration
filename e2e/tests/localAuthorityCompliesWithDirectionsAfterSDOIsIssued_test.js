@@ -7,47 +7,39 @@ let caseId;
 
 Feature('Comply with directions');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, addHearingBookingDetailsEventPage, sendCaseToGatekeeperEventPage, draftStandardDirectionsEventPage,
-  allocatedJudgeEventPage) => {
-  if (!caseId) {
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.submitNewCaseWithData();
+BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, addHearingBookingDetailsEventPage, sendCaseToGatekeeperEventPage, draftStandardDirectionsEventPage, allocatedJudgeEventPage) => {
+  caseId = await I.submitNewCaseWithData();
 
-    //hmcts login, add case number, add hearing details and send to gatekeeper
-    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-    await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-    enterFamilyManCaseNumberEventPage.enterCaseID();
-    await I.completeEvent('Save and continue');
-    await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-    await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-    await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
-    await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-    await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
-    await I.completeEvent('Save and continue');
-    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-    sendCaseToGatekeeperEventPage.enterEmail();
-    await I.completeEvent('Save and continue');
-    I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-    I.signOut();
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
-    //gatekeeper login, draft sdo and select issued
-    await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
-    await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
-    await draftStandardDirectionsEventPage.skipDateOfIssue();
-    await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-    await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
-    draftStandardDirectionsEventPage.markAsFinal();
-    await I.completeEvent('Save and continue');
-    I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
-    I.signOut();
-  }
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  enterFamilyManCaseNumberEventPage.enterCaseID();
+  await I.completeEvent('Save and continue');
+  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
+  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await I.completeEvent('Save and continue');
+  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+  sendCaseToGatekeeperEventPage.enterEmail();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+
+
+  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.skipDateOfIssue();
+  await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
+  await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
+  draftStandardDirectionsEventPage.markAsFinal();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 });
 
 Scenario('local authority complies with directions', async (I, caseViewPage, complyWithDirectionsEventPage) => {
-  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.applicationActions.complyWithDirections);
   await complyWithDirectionsEventPage.canComplyWithDirection('localAuthorityDirections', 0, response, config.testFile);
   await I.completeEvent('Save and continue');

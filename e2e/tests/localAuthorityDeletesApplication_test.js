@@ -4,16 +4,9 @@ let caseId;
 
 Feature('Application draft (empty draft)');
 
-Before(async (I) => {
-  if (!caseId) {
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+BeforeSuite(async I => caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne));
 
-    console.log(`Application draft ${caseId} has been created`);
-  } else {
-    await I.navigateToCaseDetails(caseId);
-  }
-});
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('local authority tries to submit incomplete case', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);

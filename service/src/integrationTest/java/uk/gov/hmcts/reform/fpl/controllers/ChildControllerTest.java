@@ -45,7 +45,7 @@ class ChildControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("children1", wrapElements(createChildWithDateOfBirth(LocalDate.now().plusDays(1)))))
+            .data(Map.of("children1", wrapElements(createChildWithDateOfBirth(dateNow().plusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -57,8 +57,8 @@ class ChildControllerTest extends AbstractControllerTest {
     void shouldReturnDateOfBirthErrorWhenThereIsMultipleChildren() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("children1", wrapElements(
-                createChildWithDateOfBirth(LocalDate.now().plusDays(1)),
-                createChildWithDateOfBirth(LocalDate.now().plusDays(1))
+                createChildWithDateOfBirth(dateNow().plusDays(1)),
+                createChildWithDateOfBirth(dateNow().plusDays(1))
             )))
             .build();
 
@@ -70,7 +70,7 @@ class ChildControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnNoDateOfBirthErrorWhenValidDateOfBirth() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("children1", wrapElements(createChildWithDateOfBirth(LocalDate.now().minusDays(1)))))
+            .data(Map.of("children1", wrapElements(createChildWithDateOfBirth(dateNow().minusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -90,7 +90,7 @@ class ChildControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldAddConfidentialChildrenToCaseDataWhenConfidentialChildrenExist() throws Exception {
+    void aboutToSubmitShouldAddConfidentialChildrenToCaseDataWhenConfidentialChildrenExist() {
         //first child in callbackRequest() has yes value for detailsHidden.
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);

@@ -13,17 +13,14 @@ let submittedAt;
 
 Feature('Case administration after submission');
 
-Before(async (I) => {
+BeforeSuite(async (I) => {
+  caseId = await I.submitNewCaseWithData('mandatoryMultipleChildren');
+  submittedAt = new Date();
 
-  if (!caseId) {
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.submitNewCaseWithData();
-    submittedAt = new Date();
-  }
-  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-
-  await I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
+
+Before(async I => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
 Scenario('HMCTS admin confirms payment', async (I, caseViewPage) => {
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
@@ -127,7 +124,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
   I.seeInTab(['Hearing 1', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
   I.seeInTab(['Hearing 1', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeInTab(['Hearing 1', 'Hearing needs booked'], [hearingDetails[0].type.interpreter, hearingDetails[0].type.welsh,hearingDetails[0].type.somethingElse]);
+  I.seeInTab(['Hearing 1', 'Hearing needs booked'], [hearingDetails[0].type.interpreter, hearingDetails[0].type.welsh, hearingDetails[0].type.somethingElse]);
   I.seeInTab(['Hearing 1', 'Give details'], hearingDetails[0].giveDetails);
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Last name'], hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
@@ -155,7 +152,6 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
 });
 
 Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
-  await I.navigateToCaseDetails(caseId);
   const representative1 = representatives.servedByDigitalService;
   const representative2 = representatives.servedByPost;
 
@@ -183,16 +179,11 @@ Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, 
   I.seeInTab(['Representatives 2', 'How do they want to get case information?'], representative2.servingPreferences);
   I.seeInTab(['Representatives 2', 'Who are they?'], representative2.role);
 
-  I.signOut();
-  await I.signIn(representative1.email, config.localAuthorityPassword);
-  await I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetailsAs({email: representative1.email, password: config.localAuthorityPassword}, caseId);
   I.see(caseId);
-  I.signOut();
-  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
 });
 
 Scenario('HMCTS admin revoke case access from representative', async (I, caseViewPage) => {
-  await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
 
   await I.removeElementFromCollection('Representatives');
@@ -200,13 +191,9 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
 
-  I.signOut();
-  await I.signIn(representatives.servedByDigitalService.email, config.localAuthorityPassword);
-  await I.navigateToCaseDetails(caseId);
-  I.seeInCurrentUrl('error');
+  await I.navigateToCaseDetailsAs({email: representatives.servedByDigitalService.email, password: config.localAuthorityPassword}, caseId);
 
-  I.signOut();
-  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+  I.seeInCurrentUrl('error');
 });
 
 Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {

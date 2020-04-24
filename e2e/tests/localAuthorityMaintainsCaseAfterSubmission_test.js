@@ -7,14 +7,11 @@ let caseId;
 
 Feature('Case maintenance after submission');
 
-Before(async (I) => {
-  if (!caseId) {
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.submitNewCaseWithData();
-  } else {
-    await I.navigateToCaseDetails(caseId);
-  }
+BeforeSuite(async (I) => {
+  caseId = await I.submitNewCaseWithData('mandatoryMultipleChildren');
 });
+
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
@@ -82,8 +79,6 @@ Scenario('local authority provides a statements of service', async (I, caseViewP
 });
 
 Scenario('local authority upload placement application', async (I, caseViewPage, placementEventPage) => {
-  await I.navigateToCaseDetails(caseId);
-
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('Timothy Jones');
   await placementEventPage.addApplication(config.testFile);

@@ -12,7 +12,6 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
 
     private final FailedPBAPaymentContentProvider contentProvider = new FailedPBAPaymentContentProvider(BASE_URL);
 
-
     @Test
     void shouldReturnExpectedMapWithValidCtscNotificationParameters() {
         Map<String, Object> expectedMap = getExpectedCtscNotificationParameters();

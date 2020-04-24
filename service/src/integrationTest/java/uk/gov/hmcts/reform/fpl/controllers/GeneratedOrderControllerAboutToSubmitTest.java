@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +39,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -61,7 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private final byte[] pdf = {1, 2, 3, 4, 5};
+    private static final byte[] PDF = {1, 2, 3, 4, 5};
     private Document document;
 
     @MockBean
@@ -70,9 +69,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    @Autowired
-    private Time time;
-
     GeneratedOrderControllerAboutToSubmitTest() {
         super("create-order");
     }
@@ -80,9 +76,9 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     @BeforeEach
     void setUp() {
         document = document();
-        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
+        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", PDF);
 
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(anyMap(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
     }
 
@@ -177,7 +173,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-        LocalDateTime orderExpiration = time.now().plusMonths(14);
+        LocalDateTime orderExpiration = now().plusMonths(14);
         GeneratedOrder expectedSupervisionOrder = commonExpectedOrderComponents(
             "Final supervision order")
             .expiryDate(
@@ -239,15 +235,15 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
                 .build())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .familyManCaseNumber("12345L")
-            .dateOfIssue(time.now().toLocalDate());
+            .dateOfIssue(dateNow());
     }
 
     private GeneratedOrder.GeneratedOrderBuilder commonExpectedOrderComponents(String fullType) {
         return GeneratedOrder.builder()
             .type(fullType)
-            .dateOfIssue(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
+            .dateOfIssue(formatLocalDateTimeBaseUsingFormat(now(), "d MMMM yyyy"))
             .document(expectedDocument())
-            .date(formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))
+            .date(formatLocalDateTimeBaseUsingFormat(now(), "h:mma, d MMMM yyyy"))
             .judgeAndLegalAdvisor(
                 JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HER_HONOUR_JUDGE)
