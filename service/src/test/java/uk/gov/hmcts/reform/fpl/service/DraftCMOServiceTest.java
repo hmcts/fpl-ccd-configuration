@@ -76,7 +76,7 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
@@ -102,7 +102,7 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(10));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
@@ -115,7 +115,7 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().plusMinutes(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
@@ -141,7 +141,7 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now());
         caseManagementOrder = createCaseManagementOrder();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = mapper.convertValue(data.get(HEARING_DATE_LIST.getKey()), DynamicList.class);
@@ -181,7 +181,7 @@ class DraftCMOServiceTest {
 
         hearingDetails = createHearingBookingsFromInitialDate(time.now());
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         assertThat(data).containsKeys(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
@@ -189,7 +189,7 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnAMapWithEmptyRepopulatedEntriesWhenCaseManagementOrderIsNull() {
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             null, List.of());
 
         DynamicList emptyDynamicList = DynamicList.builder()
