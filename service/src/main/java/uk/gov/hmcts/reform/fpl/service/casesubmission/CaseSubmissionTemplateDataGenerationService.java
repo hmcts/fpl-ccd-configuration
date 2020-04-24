@@ -305,7 +305,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 concatenateYesOrNoKeyAndValue(
                     other.getLitigationIssues(),
                     other.getLitigationIssuesDetails()))
-            .relationshipToChild(getDefaultIfNullOrEmpty(other.getRelationshipToChild()))
+            .relationshipToChild(getDefaultIfNullOrEmpty(other.getChildInformation()))
             .build();
     }
 

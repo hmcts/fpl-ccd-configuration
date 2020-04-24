@@ -17,6 +17,5 @@ public class DocmosisProceeding {
     private final String judge;
     private final String children;
     private final String guardian;
-    private final String sameGuardianNeeded;
     private final String sameGuardianDetails;
 }
