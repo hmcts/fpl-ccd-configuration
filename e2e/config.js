@@ -3,33 +3,45 @@
 const defaultPassword = 'Password12';
 
 module.exports = {
-  // users
   swanseaLocalAuthorityUserOne: {
+    email: 'kurt@swansea.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'kurt@swansea.gov.uk',
     surname: '(local-authority)',
   },
   swanseaLocalAuthorityUserTwo: {
+    email: 'damian@swansea.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'damian@swansea.gov.uk',
     surname: '(local-authority)',
   },
   hillingdonLocalAuthorityUserOne: {
+    email: 'sam@hillingdon.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'sam@hillingdon.gov.uk',
     surname: '(local-authority)',
   },
-  swanseaLocalAuthorityEmailUserOne: 'kurt@swansea.gov.uk',
-  swanseaLocalAuthorityEmailUserTwo: 'damian@swansea.gov.uk',
-  hillingdonLocalAuthorityEmailUserOne: 'sam@hillingdon.gov.uk',
+  hmctsAdminUser: {
+    email: 'hmcts-admin@example.com',
+    password: process.env.CA_USER_PASSWORD || defaultPassword,
+  },
+  cafcassUser: {
+    email: 'cafcass@example.com',
+    password: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
+  },
+  gateKeeperUser: {
+    email: 'gatekeeper@mailnesia.com',
+    password: process.env.GATEKEEPER_USER_PASSWORD || defaultPassword,
+  },
+  judicaryUser: {
+    email: 'judiciary@mailnesia.com',
+    password: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
+  },
+  smokeTestUser: {
+    email: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
+    password: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
+  },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
-  hmctsAdminEmail: 'hmcts-admin@example.com',
-  hmctsAdminPassword: process.env.CA_USER_PASSWORD || defaultPassword,
-  cafcassEmail: 'cafcass@example.com',
-  cafcassPassword: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
-  gateKeeperEmail: 'gatekeeper@mailnesia.com',
-  gateKeeperPassword: process.env.GATEKEEPER_USER_PASSWORD || defaultPassword,
-  judiciaryEmail: 'judiciary@mailnesia.com',
-  judiciaryPassword: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
-  smokeTestLocalAuthorityEmail: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
-  smokeTestLocalAuthorityPassword: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'CARE_SUPERVISION_EPO',
