@@ -9,7 +9,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -79,9 +77,6 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @Autowired
-    private Time time;
 
     GeneratedOrderControllerMidEventTest() {
         super("create-order");
@@ -201,7 +196,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
 
             dataBuilder.order(GeneratedOrder.builder().details("").build())
                 .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
-                .dateOfIssue(time.now().toLocalDate());
+                .dateOfIssue(dateNow());
 
             generateDefaultValues(dataBuilder);
             generateEpoValues(dataBuilder);
@@ -269,7 +264,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                     .type(type)
                     .subtype(subtype)
                     .build())
-                .dateOfIssue(time.now().toLocalDate());
+                .dateOfIssue(dateNow());
 
             generateDefaultValues(builder);
 
@@ -289,7 +284,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 .epoPhrase(EPOPhrase.builder()
                     .includePhrase("Yes")
                     .build())
-                .epoEndDate(time.now())
+                .epoEndDate(now())
                 .epoType(REMOVE_TO_ACCOMMODATION)
                 .epoRemovalAddress(Address.builder()
                     .addressLine1("Unit 1")

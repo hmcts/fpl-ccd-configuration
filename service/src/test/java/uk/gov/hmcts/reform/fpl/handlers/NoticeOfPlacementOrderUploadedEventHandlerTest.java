@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Map;
 
@@ -48,7 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @SpringBootTest(classes = {NoticeOfPlacementOrderUploadedEventHandler.class, InboxLookupService.class,
     JacksonAutoConfiguration.class, LookupTestConfig.class, HmctsEmailContentProvider.class,
     RepresentativeNotificationService.class, IssuedOrderAdminNotificationHandler.class,
-    HmctsAdminNotificationHandler.class, HearingBookingService.class})
+    HmctsAdminNotificationHandler.class, HearingBookingService.class, FixedTimeConfiguration.class})
 public class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
     @MockBean
