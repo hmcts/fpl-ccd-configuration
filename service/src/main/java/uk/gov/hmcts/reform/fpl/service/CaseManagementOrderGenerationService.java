@@ -95,7 +95,8 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
             .recitals(buildRecitals(caseManagementOrder.getRecitals()))
             .recitalsProvided(isNotEmpty(buildRecitals(caseManagementOrder.getRecitals())))
             .schedule(caseManagementOrder.getSchedule())
-            .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)));
+            .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)))
+            .crest(getCrestData());
 
         if (caseManagementOrder.isDraft()) {
             order.draftbackground(getDraftWaterMarkData());
