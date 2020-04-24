@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -87,7 +89,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
             .respondents(getRespondentsNameAndRelationship(caseData))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
             .applicantName(getApplicantName(caseData))
-            .directions(getGroupedCMODirections(caseManagementOrder))
+            .directions(getGroupedCMODirections(caseManagementOrder.getDirections()))
             .hearingBooking(getHearingBookingData(nextHearing))
             .representatives(getRepresentatives(caseData))
             .recitals(buildRecitals(caseManagementOrder.getRecitals()))
@@ -229,43 +231,54 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         return applicantDetails.build();
     }
 
-    private List<DocmosisDirection> getGroupedCMODirections(CaseManagementOrder caseManagementOrder) {
-        return ofNullable(caseManagementOrder.getDirections()).map(directions -> {
-                ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
-
-                int directionNumber = 1;
-                for (Element<Direction> element : directions) {
-                    Direction direction = element.getValue();
-                    if (direction.getParentsAndRespondentsAssignee() != null) {
-                        formattedDirections.add(DocmosisDirection.builder()
-                            .header("For " + direction.getParentsAndRespondentsAssignee().getLabel())
-                            .assignee(direction.getAssignee())
-                            .title(formatTitle(directionNumber++, direction))
-                            .body(direction.getDirectionText())
-                            .build());
-                    }
-
-                    if (direction.getOtherPartiesAssignee() != null) {
-                        formattedDirections.add(DocmosisDirection.builder()
-                            .header("For " + direction.getOtherPartiesAssignee().getLabel())
-                            .assignee(direction.getAssignee())
-                            .title(formatTitle(directionNumber++, direction))
-                            .body(direction.getDirectionText())
-                            .build());
-
-                    } else {
-                        formattedDirections.add(DocmosisDirection.builder()
-                            .assignee(direction.getAssignee())
-                            .title(formatTitle(directionNumber++, direction))
-                            .body(direction.getDirectionText())
-                            .build());
-                    }
-                }
-
-                return formattedDirections.build();
-            }
-        ).orElse(ImmutableList.of());
+    private List<DocmosisDirection> getGroupedCMODirections(List<Element<Direction>> directions) {
+        return ofNullable(directions).map(this::buildDocmosisDirections).orElse(ImmutableList.of());
     }
+
+    private ImmutableList<DocmosisDirection> buildDocmosisDirections(List<Element<Direction>> directions) {
+        ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
+
+        int directionNumber = 2;
+        ParentsAndRespondentsDirectionAssignee respondentHeader = null;
+        OtherPartiesDirectionAssignee otherHeader = null;
+
+        for (Element<Direction> element : directions) {
+            Direction direction = element.getValue();
+            DocmosisDirection.Builder builder = buildBaseDirection(direction, directionNumber++);
+
+            if (hasNewRespondentAssignee(respondentHeader, direction)) {
+                respondentHeader = direction.getParentsAndRespondentsAssignee();
+                builder.header("For " + respondentHeader.getLabel());
+            }
+
+            if (hasNewOtherAssignee(otherHeader, direction)) {
+                otherHeader = direction.getOtherPartiesAssignee();
+                builder.header("For " + otherHeader.getLabel());
+            }
+
+            formattedDirections.add(builder.build());
+        }
+
+        return formattedDirections.build();
+    }
+
+    private DocmosisDirection.Builder buildBaseDirection(Direction direction, int directionNumber) {
+        return DocmosisDirection.builder()
+            .assignee(direction.getAssignee())
+            .title(formatTitle(directionNumber, direction))
+            .body(direction.getDirectionText());
+    }
+
+    private boolean hasNewOtherAssignee(OtherPartiesDirectionAssignee other, Direction direction) {
+        OtherPartiesDirectionAssignee assignee = direction.getOtherPartiesAssignee();
+        return assignee != null && assignee != other;
+    }
+
+    private boolean hasNewRespondentAssignee(ParentsAndRespondentsDirectionAssignee respondent, Direction direction) {
+        ParentsAndRespondentsDirectionAssignee assignee = direction.getParentsAndRespondentsAssignee();
+        return assignee != null && assignee != respondent;
+    }
+
 
     private String formatTitle(int index, Direction direction) {
         return String.format("%d. %s by %s", index, direction.getDirectionType(),

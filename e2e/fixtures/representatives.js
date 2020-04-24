@@ -4,7 +4,7 @@ module.exports = {
     fullName: 'George Wall',
     positionInACase: 'Family Solicitor',
     telephone: '00000 000000',
-    email: config.hillingdonLocalAuthorityEmailUserOne,
+    email: config.hillingdonLocalAuthorityUserOne.email,
     servingPreferences: 'Through the digital service',
     role: 'Representing respondent 1',
   },

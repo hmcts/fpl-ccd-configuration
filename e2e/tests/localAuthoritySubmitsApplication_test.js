@@ -6,23 +6,15 @@ const applicant = require('../fixtures/applicant.js');
 const solicitor = require('../fixtures/solicitor.js');
 const others = require('../fixtures/others.js');
 const otherProceedings = require('../fixtures/otherProceedingData');
-const caseDocs = require('../fragments/caseDocuments');
+const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
 
 let caseId;
 
 Feature('Application draft (populated draft)');
 
-Before(async (I) => {
-  if (!caseId) {
-    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+BeforeSuite(async I => caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne));
 
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.grabTextFrom('.heading-h1');
-    console.log(`Application draft ${caseId} has been created`);
-  } else {
-    await I.navigateToCaseDetails(caseId);
-  }
-});
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('local authority changes case name @create-case-with-mandatory-sections-only', async (I, caseViewPage, changeCaseNameEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
@@ -317,7 +309,7 @@ Scenario('local authority enters grounds for EPO application @create-case-with-m
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
-  I.seeInTab(['How are there grounds for an emergency protection order?',''], [enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfNotMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.urgentAccessRequired]);
+  I.seeInTab(['How are there grounds for an emergency protection order?', ''], [enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfNotMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.urgentAccessRequired]);
 });
 
 Scenario('local authority enters risk and harm to children', async (I, caseViewPage, enterRiskAndHarmToChildrenEventPage) => {
@@ -433,7 +425,14 @@ Scenario('local authority enters attending hearing', async (I, caseViewPage, ent
   I.seeInTab(['Attending the hearing', 'Give details'], 'I need this for this person');
 });
 
-Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', caseDocs.uploadDocuments());
+Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', async (I, caseViewPage, uploadDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  uploadDocumentsHelper.assertCaseDocuments(I);
+});
 
 Scenario('local authority cannot upload court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);

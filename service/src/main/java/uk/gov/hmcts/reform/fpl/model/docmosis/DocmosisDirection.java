@@ -6,7 +6,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 
 @Data
-@Builder
+@Builder(builderClassName = "Builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisDirection {
     public final String header;
