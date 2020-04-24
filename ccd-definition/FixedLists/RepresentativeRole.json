@@ -24,14 +24,14 @@
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "CAFCASS_GUARDIAN",
-    "ListElement": "Cafcass Guardian",
+    "ListElement": "CAFCASS Guardian",
     "DisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
     "ListElementCode": "CAFCASS_SOLICITOR",
-    "ListElement": "Cafcass Solicitor",
+    "ListElement": "CAFCASS Solicitor",
     "DisplayOrder": 5
   },
   {
