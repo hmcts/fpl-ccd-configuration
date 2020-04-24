@@ -34,6 +34,11 @@ public class DateFormatterHelper {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern(format, Locale.UK));
     }
 
+    public static String formatLocalDateFromStringToStringUsingFormat(String date, String format) {
+        LocalDate localDate = LocalDate.parse(date);
+        return formatLocalDateToString(localDate, format);
+    }
+
     public static String getDayOfMonthSuffix(int day) {
         if (day <= 0 || day >= 32) {
             throw new IllegalArgumentException("Illegal day of month: " + day);

@@ -67,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateFromStringToStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -289,7 +290,7 @@ public class CaseSubmissionTemplateDataGenerationService
         return DocmosisOtherParty.builder()
             .name(other.getName())
             .gender(formatGenderDisplay(other.getGender(), other.getGenderIdentification()))
-            .dateOfBirth(other.getDOB())
+            .dateOfBirth(formatLocalDateFromStringToStringUsingFormat(other.getDOB(), DATE))
             .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
             .address(
                 isConfidential

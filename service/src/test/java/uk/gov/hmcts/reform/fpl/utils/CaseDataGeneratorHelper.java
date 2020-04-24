@@ -129,14 +129,14 @@ public class CaseDataGeneratorHelper {
                 .build());
     }
 
-    public static List<Element<Child>> createPopulatedChildren() {
+    public static List<Element<Child>> createPopulatedChildren(LocalDate dateOfBirth) {
         return ElementUtils.wrapElements(
             Child.builder()
                 .party(ChildParty.builder()
                     .firstName("Bran")
                     .lastName("Stark")
                     .gender("Boy")
-                    .dateOfBirth(LocalDate.now())
+                    .dateOfBirth(dateOfBirth)
                     .build())
                 .build(),
             Child.builder()
@@ -144,7 +144,7 @@ public class CaseDataGeneratorHelper {
                     .firstName("Sansa")
                     .lastName("Stark")
                     .gender("Boy")
-                    .dateOfBirth(LocalDate.now())
+                    .dateOfBirth(dateOfBirth)
                     .build())
                 .build(),
             Child.builder()
@@ -152,7 +152,7 @@ public class CaseDataGeneratorHelper {
                     .firstName("Jon")
                     .lastName("Snow")
                     .gender("Girl")
-                    .dateOfBirth(LocalDate.now())
+                    .dateOfBirth(dateOfBirth)
                     .build())
                 .build()
         );
@@ -409,7 +409,7 @@ public class CaseDataGeneratorHelper {
         return CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
-            .children1(createPopulatedChildren())
+            .children1(createPopulatedChildren(dateTime.toLocalDate()))
             .hearingDetails(createHearingBookingsFromInitialDate(dateTime))
             .dateSubmitted(LocalDate.now())
             .respondents1(respondents)

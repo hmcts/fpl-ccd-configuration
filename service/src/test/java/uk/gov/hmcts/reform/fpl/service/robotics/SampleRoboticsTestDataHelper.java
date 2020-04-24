@@ -61,7 +61,7 @@ public class SampleRoboticsTestDataHelper {
                     .postcode("BT22 2345")
                     .country("UK")
                     .build())
-                .relationshipToChild(null)
+                .relationshipToChild("Cousin")
                 .dob("2-APR-1933")
                 .confidential(false)
                 .build(),

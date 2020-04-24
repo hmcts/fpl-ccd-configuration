@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateFromStringToStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
@@ -62,6 +63,13 @@ class DateFormatterHelperTest {
         String formattedDate = formatLocalDateTimeBaseUsingFormat(date, "h:mma, d MMMM yyyy");
         assertThat(formattedDate).isEqualTo("12:00pm, 1 January 2019");
     }
+
+    @Test
+    void shouldFormatLocalDateFromStringToStringInExpectedFormat() {
+        String formattedDate = formatLocalDateFromStringToStringUsingFormat("2019-01-01", "d MMMM yyyy");
+        assertThat(formattedDate).isEqualTo("1 January 2019");
+    }
+
 
     @ParameterizedTest
     @MethodSource(value = "dayOfMonthSuffixSource")
