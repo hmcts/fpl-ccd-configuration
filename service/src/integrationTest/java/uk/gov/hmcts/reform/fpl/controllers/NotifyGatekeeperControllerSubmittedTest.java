@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -10,11 +9,11 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.handlers.PopulateStandardDirectionsHandler;
+import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.service.notify.NotificationClient;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -22,6 +21,8 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
@@ -64,31 +65,32 @@ public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerT
 
         verify(notificationClient).sendEmail(
             GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL,
-            buildExpectedParameters(CAFCASS_EMAIL), "12345");
+            getTemplate(CAFCASS_EMAIL).toMap(mapper), "12345");
 
         verify(notificationClient).sendEmail(
             GATEKEEPER_SUBMISSION_TEMPLATE, CAFCASS_EMAIL,
-            buildExpectedParameters(GATEKEEPER_EMAIL), "12345");
+            getTemplate(GATEKEEPER_EMAIL).toMap(mapper), "12345");
     }
 
-    private Map<String, Object> buildExpectedParameters(String email) {
+    private NotifyGatekeeperTemplate getTemplate(String email) {
+        NotifyGatekeeperTemplate expectedTemplate = new NotifyGatekeeperTemplate();
+
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
 
-        return ImmutableMap.<String, Object>builder()
-            .put("reference", "12345")
-            .put("ordersAndDirections", ordersAndDirections)
-            .put("gatekeeper_recipients", buildRecipientLabel(email))
-            .put("urgentHearing", "Yes")
-            .put("fullStop", "No")
-            .put("timeFrameValue", "same day")
-            .put("localAuthority", "Example Local Authority")
-            .put("timeFramePresent", "Yes")
-            .put("nonUrgentHearing", "No")
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .put("firstRespondentName", "Smith")
-            .put("dataPresent", "Yes")
-            .build();
+        expectedTemplate.setReference("12345");
+        expectedTemplate.setOrdersAndDirections(ordersAndDirections);
+        expectedTemplate.setGatekeeperRecipients(buildRecipientLabel(email));
+        expectedTemplate.setUrgentHearing(YES.getValue());
+        expectedTemplate.setFullStop(NO.getValue());
+        expectedTemplate.setTimeFramePresent(YES.getValue());
+        expectedTemplate.setLocalAuthority("Example Local Authority");
+        expectedTemplate.setTimeFrameValue("same day");
+        expectedTemplate.setNonUrgentHearing(NO.getValue());
+        expectedTemplate.setCaseUrl("http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+        expectedTemplate.setFirstRespondentName("Smith");
+        expectedTemplate.setDataPresent(YES.getValue());
+        return expectedTemplate;
     }
 
     private String buildRecipientLabel(String email) {

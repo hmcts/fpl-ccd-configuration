@@ -12,10 +12,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.model.notify.CafcassSubmissionTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.HmctsSubmissionTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.model.notify.PersonalisedTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -68,7 +68,7 @@ public class SubmittedCaseEventHandlerTest {
 
     @Test
     void shouldSendEmailToHmctsAdminWhenCtscIsDisabled() {
-        final HmctsSubmissionTemplate expectedTemplate = commonExpectedTemplate(new HmctsSubmissionTemplate());
+        final SubmitCaseHmctsTemplate expectedTemplate = commonExpectedTemplate(new SubmitCaseHmctsTemplate());
         expectedTemplate.setCourt(COURT_NAME);
         expectedTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
 
@@ -92,7 +92,7 @@ public class SubmittedCaseEventHandlerTest {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        final HmctsSubmissionTemplate expectedTemplate = commonExpectedTemplate(new HmctsSubmissionTemplate());
+        final SubmitCaseHmctsTemplate expectedTemplate = commonExpectedTemplate(new SubmitCaseHmctsTemplate());
         expectedTemplate.setCourt(COURT_NAME);
         expectedTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
 
@@ -112,7 +112,7 @@ public class SubmittedCaseEventHandlerTest {
 
     @Test
     void shouldSendEmailToCafcass() {
-        final CafcassSubmissionTemplate expectedTemplate = commonExpectedTemplate(new CafcassSubmissionTemplate());
+        final SubmitCaseCafcassTemplate expectedTemplate = commonExpectedTemplate(new SubmitCaseCafcassTemplate());
         expectedTemplate.setCafcass(CAFCASS_NAME);
         expectedTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
 
@@ -131,15 +131,15 @@ public class SubmittedCaseEventHandlerTest {
         assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplate);
     }
 
-    private <T extends PersonalisedTemplate> T commonExpectedTemplate(T template) {
+    private <T extends SharedNotifyTemplate> T commonExpectedTemplate(T template) {
         template.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
-        template.setDataPresent(YES);
+        template.setDataPresent(YES.getValue());
         template.setFirstRespondentName("Jim");
-        template.setFullStop(NO);
+        template.setFullStop(NO.getValue());
         template.setReference("12345");
-        template.setNonUrgentHearing(NO);
-        template.setTimeFramePresent(NO);
-        template.setUrgentHearing(NO);
+        template.setNonUrgentHearing(NO.getValue());
+        template.setTimeFramePresent(NO.getValue());
+        template.setUrgentHearing(NO.getValue());
         template.setOrdersAndDirections(List.of("Some order", "another order"));
 
         return template;

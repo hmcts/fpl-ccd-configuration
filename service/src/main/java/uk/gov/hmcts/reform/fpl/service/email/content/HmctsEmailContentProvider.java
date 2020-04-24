@@ -8,11 +8,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.HmctsSubmissionTemplate;
-import uk.gov.hmcts.reform.fpl.service.email.content.base.PersonalisedCaseContentProvider;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.NotifyTemplateContentProvider;
 
 @Service
-public class HmctsEmailContentProvider extends PersonalisedCaseContentProvider {
+public class HmctsEmailContentProvider extends NotifyTemplateContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
@@ -26,11 +26,11 @@ public class HmctsEmailContentProvider extends PersonalisedCaseContentProvider {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
-    public HmctsSubmissionTemplate buildHmctsSubmissionNotification(CaseDetails caseDetails,
+    public SubmitCaseHmctsTemplate buildHmctsSubmissionNotification(CaseDetails caseDetails,
                                                                     String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        HmctsSubmissionTemplate template = super.addPersonalisedContent(new HmctsSubmissionTemplate(),
+        SubmitCaseHmctsTemplate template = super.buildNotifyTemplate(new SubmitCaseHmctsTemplate(),
             caseDetails.getId(),
             caseData.getOrders(),
             caseData.getHearing(),

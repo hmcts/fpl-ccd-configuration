@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import com.launchdarkly.client.LDClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -11,6 +10,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -74,32 +76,30 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() throws Exception {
-        Map<String, Object> completeHmctsParameters = getCompleteParameters()
-            .put("court", FAMILY_COURT)
-            .build();
+        SubmitCaseHmctsTemplate completeHmctsParameters = getCompleteParameters(new SubmitCaseHmctsTemplate());
+        completeHmctsParameters.setCourt(FAMILY_COURT);
 
-        Map<String, Object> completeCafcassParameters = getCompleteParameters()
-            .put("cafcass", CAFCASS_COURT)
-            .build();
+        SubmitCaseCafcassTemplate completeCafcassParameters = getCompleteParameters(new SubmitCaseCafcassTemplate());
+        completeCafcassParameters.setCafcass(CAFCASS_COURT);
 
         postSubmittedEvent("core-case-data-store-api/callback-request.json");
 
         verify(notificationClient).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             HMCTS_ADMIN_EMAIL,
-            completeHmctsParameters,
+            completeHmctsParameters.toMap(mapper),
             CASE_REFERENCE.toString());
 
         verify(notificationClient).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE,
             CAFCASS_EMAIL,
-            completeCafcassParameters,
+            completeCafcassParameters.toMap(mapper),
             CASE_REFERENCE.toString());
 
         verify(notificationClient, never()).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
-            completeHmctsParameters,
+            completeHmctsParameters.toMap(mapper),
             CASE_REFERENCE.toString());
     }
 
@@ -107,55 +107,52 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() throws Exception {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
 
-        Map<String, Object> expectedHmctsParameters = getInCompleteParameters()
-            .put("court", FAMILY_COURT)
-            .build();
+        SubmitCaseHmctsTemplate expectedHmctsParameters = getInCompleteParameters(new SubmitCaseHmctsTemplate());
+        expectedHmctsParameters.setCourt(FAMILY_COURT);
 
-        Map<String, Object> expectedCafcassParameters = getInCompleteParameters()
-            .put("cafcass", CAFCASS_COURT)
-            .build();
+        SubmitCaseCafcassTemplate expectedCafcassParameters = getInCompleteParameters(new SubmitCaseCafcassTemplate());
+        expectedCafcassParameters.setCafcass(CAFCASS_COURT);
 
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             HMCTS_ADMIN_EMAIL,
-            expectedHmctsParameters,
+            expectedHmctsParameters.toMap(mapper),
             CASE_REFERENCE.toString());
 
         verify(notificationClient).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE,
             CAFCASS_EMAIL,
-            expectedCafcassParameters,
+            expectedCafcassParameters.toMap(mapper),
             CASE_REFERENCE.toString());
 
         verify(notificationClient, never()).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             CTSC_EMAIL,
-            expectedHmctsParameters,
+            expectedHmctsParameters.toMap(mapper),
             CASE_REFERENCE.toString());
     }
 
     @Test
     void shouldSendNotificationToCtscAdminWhenCtscIsEnabledWithinCaseDetails() throws Exception {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        Map<String, Object> expectedHmctsParameters = getInCompleteParameters()
-            .put("court", FAMILY_COURT)
-            .build();
+        SubmitCaseHmctsTemplate expectedHmctsParameters = getInCompleteParameters(new SubmitCaseHmctsTemplate());
+        expectedHmctsParameters.setCourt(FAMILY_COURT);
 
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient, never()).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             HMCTS_ADMIN_EMAIL,
-            expectedHmctsParameters,
+            expectedHmctsParameters.toMap(mapper),
             CASE_REFERENCE.toString()
         );
 
         verify(notificationClient).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             CTSC_EMAIL,
-            expectedHmctsParameters,
+            expectedHmctsParameters.toMap(mapper),
             CASE_REFERENCE.toString()
         );
     }
@@ -273,39 +270,42 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             ))).build();
     }
 
-    private ImmutableMap.Builder<String, Object> getCompleteParameters() {
+    private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
         List<String> ordersAndDirections = List.of("Emergency protection order", "Contact with any named person");
+        T updatedTemplate = setCommonTemplateParameters(template);
 
-        return ImmutableMap.<String, Object>builder()
-            .putAll(getCommonParameters())
-            .put("dataPresent", "Yes")
-            .put("fullStop", "No")
-            .put("ordersAndDirections", ordersAndDirections)
-            .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "same day")
-            .put("urgentHearing", "Yes")
-            .put("nonUrgentHearing", "No")
-            .put("firstRespondentName", "Smith");
+        updatedTemplate.setDataPresent(YES.getValue());
+        updatedTemplate.setFullStop(NO.getValue());
+        updatedTemplate.setOrdersAndDirections(ordersAndDirections);
+        updatedTemplate.setTimeFramePresent(YES.getValue());
+        updatedTemplate.setTimeFrameValue("same day");
+        updatedTemplate.setUrgentHearing(YES.getValue());
+        updatedTemplate.setNonUrgentHearing(NO.getValue());
+        updatedTemplate.setFirstRespondentName("Smith");
+
+        return updatedTemplate;
     }
 
-    private ImmutableMap.Builder<String, Object> getInCompleteParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(getCommonParameters())
-            .put("dataPresent", "No")
-            .put("fullStop", "Yes")
-            .put("ordersAndDirections", "")
-            .put("timeFramePresent", "No")
-            .put("timeFrameValue", "")
-            .put("urgentHearing", "No")
-            .put("nonUrgentHearing", "No")
-            .put("firstRespondentName", "");
+    private <T extends SharedNotifyTemplate> T getInCompleteParameters(T template) {
+        T updatedTemplate = setCommonTemplateParameters(template);
+
+        updatedTemplate.setDataPresent(NO.getValue());
+        updatedTemplate.setFullStop(YES.getValue());
+        updatedTemplate.setOrdersAndDirections(List.of(""));
+        updatedTemplate.setTimeFramePresent(NO.getValue());
+        updatedTemplate.setTimeFrameValue("");
+        updatedTemplate.setUrgentHearing(NO.getValue());
+        updatedTemplate.setNonUrgentHearing(NO.getValue());
+        updatedTemplate.setFirstRespondentName("");
+
+        return updatedTemplate;
     }
 
-    private Map<String, Object> getCommonParameters() {
-        return Map.of(
-            "localAuthority", "Example Local Authority",
-            "reference", CASE_REFERENCE.toString(),
-            "caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_REFERENCE)
-        );
+    private <T extends SharedNotifyTemplate> T setCommonTemplateParameters(T template) {
+        template.setLocalAuthority("Example Local Authority");
+        template.setReference(CASE_REFERENCE.toString());
+        template.setCaseUrl(String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_REFERENCE));
+
+        return template;
     }
 }

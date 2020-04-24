@@ -12,7 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
-import uk.gov.hmcts.reform.fpl.model.notify.GatekeeperNotificationTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @TestPropertySource(properties = {"ccd.ui.base.url=http://fake-url"})
 public class NotifyGatekeeperEventHandlerTest {
     @Captor
-    ArgumentCaptor<GatekeeperNotificationTemplate> captor;
+    ArgumentCaptor<NotifyGatekeeperTemplate> captor;
     @MockBean
     private RequestData requestData;
     @MockBean
@@ -61,10 +61,10 @@ public class NotifyGatekeeperEventHandlerTest {
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq("Cafcass+gatekeeper@gmail.com"),
             captor.capture(), eq("12345"));
 
-        GatekeeperNotificationTemplate firstTemplate = getExpectedTemplate();
+        NotifyGatekeeperTemplate firstTemplate = getExpectedTemplate();
         firstTemplate.setGatekeeperRecipients("Cafcass+gatekeeper@gmail.com has also received this notification");
 
-        GatekeeperNotificationTemplate secondTemplate = getExpectedTemplate();
+        NotifyGatekeeperTemplate secondTemplate = getExpectedTemplate();
         secondTemplate.setGatekeeperRecipients(
             "FamilyPublicLaw+gatekeeper@gmail.com has also received this notification");
 
@@ -72,16 +72,17 @@ public class NotifyGatekeeperEventHandlerTest {
             .containsOnly(firstTemplate, secondTemplate);
     }
 
-    private GatekeeperNotificationTemplate getExpectedTemplate() {
-        GatekeeperNotificationTemplate expectedTemplate = new GatekeeperNotificationTemplate();
+    private NotifyGatekeeperTemplate getExpectedTemplate() {
+        NotifyGatekeeperTemplate expectedTemplate = new NotifyGatekeeperTemplate();
         expectedTemplate.setCaseUrl("http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
-        expectedTemplate.setDataPresent(YES);
+        expectedTemplate.setDataPresent(YES.getValue());
         expectedTemplate.setFirstRespondentName("Smith");
-        expectedTemplate.setFullStop(NO);
+        expectedTemplate.setFullStop(NO.getValue());
         expectedTemplate.setReference("12345");
-        expectedTemplate.setNonUrgentHearing(NO);
-        expectedTemplate.setTimeFramePresent(YES);
-        expectedTemplate.setUrgentHearing(YES);
+        expectedTemplate.setNonUrgentHearing(NO.getValue());
+        expectedTemplate.setTimeFramePresent(YES.getValue());
+        expectedTemplate.setTimeFrameValue("same day");
+        expectedTemplate.setUrgentHearing(YES.getValue());
         expectedTemplate.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
         expectedTemplate.setLocalAuthority("Example Local Authority");
         return expectedTemplate;

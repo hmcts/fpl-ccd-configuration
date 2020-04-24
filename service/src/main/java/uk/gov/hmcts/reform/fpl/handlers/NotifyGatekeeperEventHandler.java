@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
-import uk.gov.hmcts.reform.fpl.model.notify.GatekeeperNotificationTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 
@@ -32,13 +32,13 @@ public class NotifyGatekeeperEventHandler {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        GatekeeperNotificationTemplate commonParameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(
+        NotifyGatekeeperTemplate commonParameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(
             eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
 
         List<String> emailList = getDistinctGatekeeperEmails(caseData.getGatekeeperEmails());
 
         emailList.forEach(recipientEmail -> {
-            GatekeeperNotificationTemplate template = commonParameters.duplicate();
+            NotifyGatekeeperTemplate template = commonParameters.duplicate();
 
             template.setGatekeeperRecipients(gatekeeperEmailContentProvider.buildRecipientsLabel(
                 emailList, recipientEmail));
