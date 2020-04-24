@@ -539,6 +539,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "standardDirectionOrderTabView",
+    "Label": "Standard directions order",
+    "FieldType": "StandardDirectionOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "allPartiesPrecedentLabelCMO",
     "Label": "Add completed directions from the precedent library or your own template.",
     "FieldType": "Label",

@@ -6,9 +6,9 @@
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "standardDirectionOrder",
+    "CaseFieldID": "standardDirectionOrderTabView",
     "TabFieldDisplayOrder": 1,
-    "FieldShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\""
+    "FieldShowCondition": "standardDirectionOrderTabView.orderStatus!=\"SEALED\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -38,7 +38,7 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "caseManagementOrder",
-    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\"",
+    "TabShowCondition": "standardDirectionOrderTabView.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\"",
     "TabFieldDisplayOrder": 2
   }
 ]
