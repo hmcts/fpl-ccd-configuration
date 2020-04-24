@@ -7,9 +7,13 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,7 +28,11 @@ import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {FixedTimeConfiguration.class})
 class SearchServiceTest {
+
+    @Autowired
+    Time time;
 
     @Captor
     private ArgumentCaptor<String> queryCaptor;
@@ -38,7 +46,7 @@ class SearchServiceTest {
     @Test
     void shouldSearchCasesByDateProperty() {
         String property = "a.b";
-        LocalDate date = LocalDate.now();
+        LocalDate date = time.now().toLocalDate();
 
         List<CaseDetails> expectedCases = List.of(CaseDetails.builder().id(nextLong()).build());
 

@@ -21,12 +21,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -43,6 +41,8 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -56,16 +56,12 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 @OverrideAutoConfiguration(enabled = true)
 class SendDocumentControllerTest extends AbstractControllerTest {
 
-    private static final String SERVICE_AUTH_TOKEN = "Service token";
     private static final String FAMILY_MAN_NO = RandomStringUtils.randomAlphabetic(10);
     private static final Document COVERSHEET_DOCUMENT = testDocument();
     private static final Document MAIN_DOCUMENT = testDocument();
     private static final byte[] COVERSHEET_BINARIES = testDocumentBinaries();
     private static final byte[] MAIN_DOCUMENT_BINARIES = testDocumentBinaries();
     private static final UUID LETTER_ID = UUID.randomUUID();
-
-    @MockBean
-    private Time time;
 
     @MockBean
     private LDClient ldClient;
@@ -91,7 +87,6 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(time.now()).willReturn(LocalDateTime.parse("2020-01-05T12:10"));
         given(documentDownloadService.downloadDocument(anyString())).willReturn(MAIN_DOCUMENT_BINARIES);
         given(docmosisCoverDocumentsService.createCoverDocuments(any(), any(), any()))
             .willReturn(testDocmosisDocument(COVERSHEET_BINARIES));
@@ -134,7 +129,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
                 .partyName(representative1.getFullName())
                 .document(mainDocument)
                 .coversheet(coversheet)
-                .sentAt("12:10pm, 5 January 2020")
+                .sentAt(formatLocalDateTimeBaseUsingFormat(now(), TIME_DATE))
                 .letterId(LETTER_ID.toString())
                 .build());
     }

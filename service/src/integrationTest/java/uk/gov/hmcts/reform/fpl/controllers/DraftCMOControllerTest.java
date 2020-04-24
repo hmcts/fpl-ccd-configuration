@@ -15,11 +15,9 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
@@ -27,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -38,7 +35,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -66,12 +62,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @OverrideAutoConfiguration(enabled = true)
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long ID = 1L;
-    private List<Element<HearingBooking>> hearingDetails;
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
-
-    @Autowired
-    private Time time;
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -89,28 +81,22 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         super("draft-cmo");
     }
 
-    @PostConstruct
-    void init() {
-        hearingDetails = createHearingBookingsFromInitialDate(time.now());
-    }
-
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() {
         Map<String, Object> data = ImmutableMap.of(
-            HEARING_DETAILS_KEY, hearingDetails,
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
             "respondents1", createRespondents(),
             "others", createOthers());
 
         List<String> expected = Arrays.asList(
-            time.now().plusDays(5).format(dateTimeFormatter),
-            time.now().plusDays(2).format(dateTimeFormatter));
+            now().plusDays(5).format(DATE_TIME_FORMATTER),
+            now().plusDays(2).format(DATE_TIME_FORMATTER));
 
         CaseDetails caseDetails = buildCaseDetails(data);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
-        assertThat(getHearingDates(callbackResponse)).doesNotContain(time.now().format(dateTimeFormatter));
 
         assertThat(callbackResponse.getData().get("respondents_label")).isEqualTo(
             "Respondent 1 - Timothy Jones\nRespondent 2 - Sarah Simpson\n");
@@ -161,11 +147,12 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldPopulateCaseManagementOrder() {
-        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
+        DynamicList dynamicHearingDates = draftCMOService
+            .buildDynamicListFromHearingDetails(createHearingBookingsFromInitialDate(now()));
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-            .label(time.now().plusDays(5).toString())
+            .label(now().plusDays(5).toString())
             .build());
 
         Map<String, Object> data = new HashMap<>();
@@ -190,7 +177,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
         assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
-        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(time.now().plusDays(5).toString());
+        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(now().plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
         assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo("draft-case-management-order.pdf");
         assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");
