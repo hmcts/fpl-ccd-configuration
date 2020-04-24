@@ -82,7 +82,7 @@ exports.config = {
   },
   plugins: {
     autoDelay: {
-      enabled: true,
+      enabled: false,
       methods: [
         'click',
         'doubleClick',
