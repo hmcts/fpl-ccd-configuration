@@ -80,7 +80,7 @@ class CaseManagementOrderGenerationServiceTest {
     }
 
     @Test
-    void directionShouldRemainGroupedByRespondentWhenMultipleDirectionsForDifferentRespondents() throws IOException {
+    void directionShouldRemainGroupedByRespondentWhenMultipleDirectionsForDifferentRespondents() {
         List<Element<Direction>> respondentDirections = wrapElements(
             direction(RESPONDENT_4, "Direction title 6"),
             direction(RESPONDENT_1, "Direction title 2"),
@@ -98,7 +98,7 @@ class CaseManagementOrderGenerationServiceTest {
     //TODO: this test can probably factor in the above two tests, whoever the buildCaseDataForCMODocmosisGeneration
     // method and the methods it uses internally are heavily intertwined.
     @Test
-    void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
+    void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() {
         DocmosisCaseManagementOrder templateData = service.getTemplateData(buildCaseDataForCMODocmosisGeneration(NOW));
 
         //template data needs to be passed in for the draft and court seal image assertions.
@@ -153,6 +153,7 @@ class CaseManagementOrderGenerationServiceTest {
                 .hearingTime("This will appear on the issued CMO")
                 .build())
             .directions(emptyList())
+            .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
             .build();
     }
@@ -270,6 +271,7 @@ class CaseManagementOrderGenerationServiceTest {
             .recitalsProvided(true)
             .schedule(getExpectedSchedule())
             .scheduleProvided(true)
+            .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
             .courtseal(templateData.getCourtseal())
             .build();

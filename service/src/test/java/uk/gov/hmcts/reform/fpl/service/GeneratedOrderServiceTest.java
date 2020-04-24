@@ -285,7 +285,7 @@ class GeneratedOrderServiceTest {
             caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsEntry("courtseal", "[userImage:family-court-seal.png]");
+        assertThat(templateData).containsEntry("courtseal", "[userImage:familycourtseal.png]");
     }
 
     @ParameterizedTest

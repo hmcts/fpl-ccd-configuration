@@ -215,7 +215,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Samuel Davidson");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("John Bishop");
         assertThat(templateData.get("crest")).isEqualTo("[userImage:crest.png]");
-        assertThat(templateData.get("courtseal")).isEqualTo("[userImage:family-court-seal.png]");
+        assertThat(templateData.get("courtseal")).isEqualTo("[userImage:familycourtseal.png]");
     }
 
     private JudgeAndLegalAdvisor createJudgeAndLegalAdvisor() {
