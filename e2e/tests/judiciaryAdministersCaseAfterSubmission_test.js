@@ -10,7 +10,7 @@ let caseId;
 Feature('Judiciary case administration after submission');
 
 BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage) => {
-  caseId = await I.submitNewCaseWithData('mandatoryMultipleChildren');
+  caseId = await I.submitNewCaseWithData('mandatoryWithMultipleChildren');
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 

@@ -8,7 +8,7 @@ let caseId;
 Feature('Case maintenance after submission');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('mandatoryMultipleChildren');
+  caseId = await I.submitNewCaseWithData('mandatoryWithMultipleChildren');
 });
 
 Before(async I => await I.navigateToCaseDetails(caseId));

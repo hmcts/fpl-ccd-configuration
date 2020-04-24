@@ -14,7 +14,7 @@ let submittedAt;
 Feature('Case administration after submission');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('mandatoryMultipleChildren');
+  caseId = await I.submitNewCaseWithData('mandatoryWithMultipleChildren');
   submittedAt = new Date();
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
