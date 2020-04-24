@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
+
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+
+import java.util.List;
+
 
 @Data
 @Builder
@@ -33,7 +34,7 @@ public class Proceeding {
     @JsonIgnore
     public OtherProceeding getFirstProceeding() {
         if (StringUtils.isNotEmpty(onGoingProceeding)) {
-           return OtherProceeding.builder()
+            return OtherProceeding.builder()
                 .onGoingProceeding(this.getOnGoingProceeding())
                 .proceedingStatus(this.getProceedingStatus())
                 .caseNumber(this.getCaseNumber())
