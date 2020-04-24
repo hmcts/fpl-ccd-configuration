@@ -13,20 +13,17 @@ let submittedAt;
 
 Feature('Case administration after submission');
 
-Before(async (I, caseViewPage, submitApplicationEventPage) => {
+Before(async (I) => {
 
   if (!caseId) {
-    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.enterMandatoryFields({multipleChildren: true});
-    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-    submitApplicationEventPage.giveConsent();
-    await I.completeEvent('Submit');
-
     // eslint-disable-next-line require-atomic-updates
-    caseId = await I.grabTextFrom('.heading-h1');
-    submittedAt = new Date();
-    console.log(`Case ${caseId} has been submitted`);
+    caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.populateCaseWithMandatoryFields(caseId, 'mandatoryMultipleChildren');
+    await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.submitCase(caseId);
 
+    console.log(`Case ${caseId} has been submitted`);
+    submittedAt = new Date();
     I.signOut();
   }
   await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);

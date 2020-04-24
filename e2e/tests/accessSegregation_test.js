@@ -6,10 +6,11 @@ Feature('Access segregation');
 
 Before(async (I) => {
   if (!caseId) {
-    const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    I.populateCaseWithMandatoryFields(caseId);
-    I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    I.submitCase(caseId);
+    // eslint-disable-next-line require-atomic-updates
+    caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.populateCaseWithMandatoryFields(caseId);
+    await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.submitCase(caseId);
 
     console.log(`Case ${caseId} has been submitted`);
     I.signOut();
