@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService.DEFAULT;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -76,7 +74,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
             .respondents(dataExtractionService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
             .applicantName(dataExtractionService.getApplicantName(caseData.getAllApplicants()))
-            .directions(getGroupedCMODirections(caseManagementOrder.getDirections()))
+            .directions(buildDocmosisDirections(caseManagementOrder.getDirections()))
             .hearingBooking(dataExtractionService.getHearingBookingData(nextHearing, HEARING_EMPTY_PLACEHOLDER))
             .representatives(getRepresentatives(caseData))
             .recitals(buildRecitals(caseManagementOrder.getRecitals()))
@@ -189,20 +187,15 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         return applicantDetails.build();
     }
 
-    private List<DocmosisDirection> getGroupedCMODirections(List<Element<Direction>> directions) {
-        return ofNullable(directions).map(this::buildDocmosisDirections).orElse(ImmutableList.of());
-    }
-
-    private ImmutableList<DocmosisDirection> buildDocmosisDirections(List<Element<Direction>> directions) {
-        ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
-
-        int directionNumber = 2;
+    private List<DocmosisDirection> buildDocmosisDirections(List<Element<Direction>> elements) {
+        List<Direction> directions = unwrapElements(elements);
+        List<DocmosisDirection> formattedDirections = new ArrayList<>();
         ParentsAndRespondentsDirectionAssignee respondentHeader = null;
         OtherPartiesDirectionAssignee otherHeader = null;
+        int directionNumber = 2;
 
-        for (Element<Direction> element : directions) {
-            Direction direction = element.getValue();
-            DocmosisDirection.Builder builder = buildBaseDirection(direction, directionNumber++);
+        for (Direction direction : directions) {
+            DocmosisDirection.Builder builder = dataExtractionService.baseDirection(direction, directionNumber++);
 
             if (hasNewRespondentAssignee(respondentHeader, direction)) {
                 respondentHeader = direction.getParentsAndRespondentsAssignee();
@@ -216,15 +209,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
             formattedDirections.add(builder.build());
         }
-
-        return formattedDirections.build();
-    }
-
-    private DocmosisDirection.Builder buildBaseDirection(Direction direction, int directionNumber) {
-        return DocmosisDirection.builder()
-            .assignee(direction.getAssignee())
-            .title(formatTitle(directionNumber, direction))
-            .body(direction.getDirectionText());
+        return formattedDirections;
     }
 
     private boolean hasNewOtherAssignee(OtherPartiesDirectionAssignee other, Direction direction) {
@@ -235,14 +220,6 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
     private boolean hasNewRespondentAssignee(ParentsAndRespondentsDirectionAssignee respondent, Direction direction) {
         ParentsAndRespondentsDirectionAssignee assignee = direction.getParentsAndRespondentsAssignee();
         return assignee != null && assignee != respondent;
-    }
-
-
-    private String formatTitle(int index, Direction direction) {
-        return String.format("%d. %s by %s", index, direction.getDirectionType(),
-            ofNullable(direction.getDateToBeCompletedBy())
-                .map(date -> formatLocalDateTimeBaseUsingFormat(date, "h:mma, d MMMM yyyy"))
-                .orElse("unknown"));
     }
 
     private List<DocmosisRecital> buildRecitals(List<Element<Recital>> recitals) {

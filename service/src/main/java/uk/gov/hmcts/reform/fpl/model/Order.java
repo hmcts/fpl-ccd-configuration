@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -24,10 +25,12 @@ public class Order implements IssuableOrder {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final String dateOfIssue;
 
+    @JsonIgnore
     public boolean isSealed() {
         return SEALED == orderStatus;
     }
 
+    @JsonIgnore
     public boolean isDraft() {
         return !isSealed();
     }

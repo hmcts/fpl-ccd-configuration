@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,13 +9,17 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
+import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
@@ -24,11 +29,16 @@ import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static java.time.format.FormatStyle.LONG;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.lowerCase;
+import static org.apache.commons.lang3.StringUtils.trim;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
@@ -37,8 +47,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CommonCaseDataExtractionService {
-    private static final String DEFAULT = "BLANK - please complete";
-
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
@@ -107,40 +115,84 @@ public class CommonCaseDataExtractionService {
             .build();
     }
 
-    DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking, String error) {
-        return ofNullable(hearingBooking).map(hearing -> {
-                HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
-                DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor =
-                    getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
+    DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking, String value) {
+        return ofNullable(hearingBooking).map(this::buildHearingBooking).orElse(getHearingBookingWithDefault(value));
+    }
 
-                return DocmosisHearingBooking.builder()
-                    .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
-                    .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
-                    .preHearingAttendance(extractPrehearingAttendance(hearing))
-                    .hearingTime(getHearingTime(hearing))
-                    .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
-                    .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
-                    .build();
+    DocmosisDirection.Builder baseDirection(Direction direction, int index) {
+        return baseDirection(direction, index, emptyList());
+    }
+
+    DocmosisDirection.Builder baseDirection(Direction direction, int index, List<DirectionConfiguration> config) {
+        return DocmosisDirection.builder()
+            .assignee(direction.getAssignee())
+            .title(formatTitle(index, direction, config))
+            .body(trim(direction.getDirectionText()));
+    }
+
+    private String formatTitle(int index, Direction direction, List<DirectionConfiguration> directionConfigurations) {
+
+        // default values here cover edge case where direction title is not found in configuration.
+        @NoArgsConstructor
+        class DateFormattingConfig {
+            private String pattern = TIME_DATE;
+            private Display.Due due = BY;
+        }
+
+        final DateFormattingConfig config = new DateFormattingConfig();
+
+        // find the date configuration values for the given direction
+        for (DirectionConfiguration directionConfiguration : directionConfigurations) {
+            if (directionConfiguration.getTitle().equals(direction.getDirectionType())) {
+                Display display = directionConfiguration.getDisplay();
+                config.pattern = display.getTemplateDateFormat();
+                config.due = display.getDue();
+                break;
             }
-        ).orElse(DocmosisHearingBooking.builder()
-            .hearingDate(error)
-            .hearingVenue(error)
-            .preHearingAttendance(error)
-            .hearingTime(error)
-            .build());
+        }
+
+        // create direction display title for docmosis in format "index. directionTitle (by / on) date"
+        return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
+            ofNullable(direction.getDateToBeCompletedBy())
+                .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
+                .orElse("unknown"));
+    }
+
+    private DocmosisHearingBooking buildHearingBooking(HearingBooking hearing) {
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
+        DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor =
+            getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
+
+        return DocmosisHearingBooking.builder()
+            .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
+            .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
+            .preHearingAttendance(extractPrehearingAttendance(hearing))
+            .hearingTime(getHearingTime(hearing))
+            .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
+            .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
+            .build();
+    }
+
+    private DocmosisHearingBooking getHearingBookingWithDefault(String value) {
+        return DocmosisHearingBooking.builder()
+            .hearingDate(value)
+            .hearingVenue(value)
+            .preHearingAttendance(value)
+            .hearingTime(value)
+            .build();
     }
 
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
-            .relationshipToChild(defaultIfNull(respondent.getRelationshipToChild(), DEFAULT))
+            .relationshipToChild(respondent.getRelationshipToChild())
             .build();
     }
 
     private DocmosisChild buildChild(ChildParty child) {
         return DocmosisChild.builder()
             .name(child.getFullName())
-            .gender(defaultIfNull(child.getGender(), DEFAULT))
+            .gender(child.getGender())
             .dateOfBirth(formatLocalDateToString(child.getDateOfBirth(), LONG))
             .build();
     }

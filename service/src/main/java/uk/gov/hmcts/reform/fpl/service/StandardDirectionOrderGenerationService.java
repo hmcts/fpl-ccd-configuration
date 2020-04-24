@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,35 +10,28 @@ import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
-import uk.gov.hmcts.reform.fpl.model.configuration.Display;
-import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.lowerCase;
-import static org.apache.commons.lang3.StringUtils.trim;
-import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StandardDirectionOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
+    private final HearingBookingService hearingBookingService;
+    private final OrdersLookupService ordersLookupService;
+    private final CommonCaseDataExtractionService dataService;
 
     public static final String DEFAULT = "BLANK - please complete";
     private static final int SDO_DIRECTION_INDEX_START = 2;
-
-    private final HearingBookingService hearingBookingService;
-    private final OrdersLookupService ordersLookupService;
-    private final CommonCaseDataExtractionService dataExtractionService;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
@@ -51,16 +42,16 @@ public class StandardDirectionOrderGenerationService extends
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder orderBuilder =
             DocmosisStandardDirectionOrder.builder()
                 .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder.getJudgeAndLegalAdvisor()))
-                .courtName(dataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
+                .courtName(dataService.getCourtName(caseData.getCaseLocalAuthority()))
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
                 .dateOfIssue(standardDirectionOrder.getDateOfIssue())
                 .complianceDeadline(caseData.getComplianceDeadline())
-                .children(dataExtractionService.getChildrenDetails(caseData.getAllChildren()))
-                .respondents(dataExtractionService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
+                .children(dataService.getChildrenDetails(caseData.getAllChildren()))
+                .respondents(dataService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
-                .applicantName(dataExtractionService.getApplicantName(caseData.getAllApplicants()))
-                .directions(getGroupedDirections(standardDirectionOrder))
-                .hearingBooking(dataExtractionService.getHearingBookingData(firstHearing, null));
+                .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
+                .directions(buildDirections(standardDirectionOrder.getDirections()))
+                .hearingBooking(dataService.getHearingBookingData(firstHearing, null));
 
         if (standardDirectionOrder.isDraft()) {
             orderBuilder.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
@@ -73,56 +64,21 @@ public class StandardDirectionOrderGenerationService extends
     }
 
     private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        return dataExtractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
+        return dataService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
     }
 
-    private List<DocmosisDirection> getGroupedDirections(Order order) throws IOException {
-        OrderDefinition configOrder = ordersLookupService.getStandardDirectionOrder();
+    private List<DocmosisDirection> buildDirections(List<Element<Direction>> elements) throws IOException {
+        List<Direction> directions = unwrapElements(elements);
+        List<DirectionConfiguration> config = ordersLookupService.getStandardDirectionOrder().getDirections();
+        List<DocmosisDirection> formattedDirections = new ArrayList<>();
+        int index = SDO_DIRECTION_INDEX_START;
 
-        return ofNullable(order.getDirections()).map(directions -> {
-                ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
-
-                int directionNumber = SDO_DIRECTION_INDEX_START;
-                for (Element<Direction> direction : directions) {
-                    if (!"No".equals(direction.getValue().getDirectionNeeded())) {
-                        formattedDirections.add(DocmosisDirection.builder()
-                            .assignee(direction.getValue().getAssignee())
-                            .title(formatTitle(directionNumber++, direction.getValue(), configOrder.getDirections()))
-                            .body(trim(direction.getValue().getDirectionText()))
-                            .build());
-                    }
-                }
-                return formattedDirections.build();
-            }
-        ).orElse(ImmutableList.of());
-    }
-
-    private String formatTitle(int index, Direction direction, List<DirectionConfiguration> directionConfigurations) {
-
-        // default values here cover edge case where direction title is not found in configuration. Reusable for CMO?
-        @NoArgsConstructor
-        class DateFormattingConfig {
-            private String pattern = TIME_DATE;
-            private Display.Due due = BY;
-        }
-
-        final DateFormattingConfig config = new DateFormattingConfig();
-
-        // find the date configuration values for the given direction
-        for (DirectionConfiguration directionConfiguration : directionConfigurations) {
-            if (directionConfiguration.getTitle().equals(direction.getDirectionType())) {
-                Display display = directionConfiguration.getDisplay();
-                config.pattern = display.getTemplateDateFormat();
-                config.due = display.getDue();
-                break;
+        for (Direction direction : directions) {
+            if (direction.isNeeded()) {
+                DocmosisDirection.Builder builder = dataService.baseDirection(direction, index++, config);
+                formattedDirections.add(builder.build());
             }
         }
-
-        // create direction display title for docmosis in format "index. directionTitle (by / on) date"
-        // TODO: see FPLA-1087
-        return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
-            ofNullable(direction.getDateToBeCompletedBy())
-                .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
-                .orElse("unknown"));
+        return formattedDirections;
     }
 }

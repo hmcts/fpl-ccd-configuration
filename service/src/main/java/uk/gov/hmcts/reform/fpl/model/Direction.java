@@ -64,4 +64,9 @@ public class Direction {
     public boolean isCompliedWith() {
         return this.response != null && this.response.getComplied() != null;
     }
+
+    @JsonIgnore
+    public boolean isNeeded() {
+        return !"No".equals(this.directionNeeded);
+    }
 }
