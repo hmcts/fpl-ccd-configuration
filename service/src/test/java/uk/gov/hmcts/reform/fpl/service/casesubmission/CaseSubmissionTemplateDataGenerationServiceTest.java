@@ -43,7 +43,8 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(
             prepareCaseData());
 
-        assertThat(returnedCaseSubmission).isEqualTo(expectedDCaseSubmissionTemplateData());
+        assertThat(returnedCaseSubmission)
+            .isEqualToComparingFieldByField(expectedDCaseSubmissionTemplateData());
     }
 
     private CaseData prepareCaseData() {
