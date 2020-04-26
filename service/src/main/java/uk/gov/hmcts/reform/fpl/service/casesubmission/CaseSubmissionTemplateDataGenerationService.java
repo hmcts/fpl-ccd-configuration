@@ -139,8 +139,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .collect(joining(NEW_LINE));
     }
 
-    private String 
-    (final Orders orders) {
+    private String getOrdersNeeded(final Orders orders) {
         StringBuilder sb = new StringBuilder();
 
         if (orders != null && isNotEmpty(orders.getOrderType())) {
