@@ -147,7 +147,6 @@ public class CaseSubmissionTemplateDataGenerationService
             appendOtherOrderToOrdersNeeded(orders, sb);
 
             appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(orders, sb);
-
         }
 
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString().trim() : DEFAULT_STRING;
