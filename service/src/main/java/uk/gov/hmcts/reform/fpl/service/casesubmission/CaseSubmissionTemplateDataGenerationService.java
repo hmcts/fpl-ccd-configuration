@@ -144,28 +144,35 @@ public class CaseSubmissionTemplateDataGenerationService
                 .map(OrderType::getLabel)
                 .collect(joining(NEW_LINE)));
 
-            appendOtherOrder(orders, sb);
+            appendOtherOrderToOrdersNeeded(orders, sb);
 
-            if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
-                sb.append(orders.getEmergencyProtectionOrders().stream()
-                    .map(EmergencyProtectionOrdersType::getLabel)
-                    .collect(joining(NEW_LINE)));
-
-                if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDetails())) {
-                    sb.append(orders.getEmergencyProtectionOrderDetails());
-                }
-            }
+            appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(orders, sb);
 
         }
 
-        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
+        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString().trim() : DEFAULT_STRING;
     }
 
-    private void appendOtherOrder(final Orders orders, final StringBuilder sb) {
+    private void appendOtherOrderToOrdersNeeded(final Orders orders, final StringBuilder stringBuilder) {
         if (StringUtils.isNotEmpty(orders.getOtherOrder())) {
-            sb.append(orders.getOrderType().size() == 1 ? NEW_LINE : "");
-            sb.append(orders.getOtherOrder());
-            sb.append(NEW_LINE);
+            stringBuilder.append(orders.getOrderType().size() == 1 ? NEW_LINE : "");
+            stringBuilder.append(orders.getOtherOrder());
+            stringBuilder.append(NEW_LINE);
+        }
+    }
+
+    private void appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(final Orders orders,
+                                                                         final StringBuilder stringBuilder) {
+        if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
+            stringBuilder.append(orders.getOrderType().size() == 1 ? NEW_LINE : "");
+            stringBuilder.append(orders.getEmergencyProtectionOrders().stream()
+                .map(EmergencyProtectionOrdersType::getLabel)
+                .collect(joining(NEW_LINE)));
+
+            if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDetails())) {
+                stringBuilder.append(orders.getEmergencyProtectionOrders().size() == 1 ? NEW_LINE : "");
+                stringBuilder.append(orders.getEmergencyProtectionOrderDetails());
+            }
         }
     }
 
@@ -179,22 +186,33 @@ public class CaseSubmissionTemplateDataGenerationService
                     .collect(joining(NEW_LINE)));
             }
 
-            if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
-                sb.append(orders.getEmergencyProtectionOrderDirectionDetails());
-                sb.append(NEW_LINE);
-            }
+            appendEmergencyProtectionOrderDirectionDetails(orders, sb);
 
-            if (StringUtils.isNotEmpty(orders.getDirections())) {
-                sb.append(orders.getDirections());
-                sb.append(NEW_LINE);
-            }
-
-            if (StringUtils.isNotEmpty(orders.getDirectionDetails())) {
-                sb.append(orders.getDirectionDetails());
-            }
+            appendDirectionsAndDirectionDetails(orders, sb);
         }
 
-        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
+        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString().trim() : DEFAULT_STRING;
+    }
+
+    private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders, final StringBuilder sb) {
+        if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
+            sb.append(orders.getEmergencyProtectionOrderDirections().size() == 1 ? NEW_LINE : "");
+            sb.append(orders.getEmergencyProtectionOrderDirectionDetails());
+            sb.append(NEW_LINE);
+        }
+    }
+
+    private void appendDirectionsAndDirectionDetails(final Orders orders, final StringBuilder stringBuilder) {
+        if (StringUtils.isNotEmpty(orders.getDirections())) {
+            stringBuilder.append(StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())
+                ? NEW_LINE : "");
+            stringBuilder.append(orders.getDirections());
+            stringBuilder.append(NEW_LINE);
+        }
+
+        if (StringUtils.isNotEmpty(orders.getDirectionDetails())) {
+            stringBuilder.append(orders.getDirectionDetails());
+        }
     }
 
     private String getGroundsForEPOReason(final List<OrderType> orderTypes, final GroundsForEPO groundsForEPO) {

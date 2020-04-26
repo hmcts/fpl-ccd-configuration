@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import java.io.IOException;
 import java.time.LocalDate;
 
+import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
@@ -49,7 +51,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     }
 
     @Nested
-    class OrdersNeededTest {
+    class DocmosisCaseSubmission_OrdersNeededTest {
         @Test
         void shouldReturnOrdersNeededWithOtherOrderAppendedWhenOtherOrderGiven() throws IOException {
             CaseData updatedCaseData = givenCaseData.toBuilder()
@@ -60,9 +62,33 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
-            String expectedOrdersNeeded = "Emergency protection order\nexpected other order\n";
+            String expectedOrdersNeeded = "Emergency protection order\nexpected other order";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
+
+        @Test
+        void shouldReturnOrdersNeededWithAppendedEmergencyProtectionOrdersTypesWhenEmergencyProtectionOrdersTypesGiven()
+            throws  IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .emergencyProtectionOrders(of(EmergencyProtectionOrdersType.values()))
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Information on the whereabouts of the child\n"
+                + "Authorisation for entry of premises\n"
+                + "Authorisation to search for another child on the premises\n"
+                + "Other order under section 48 of the Children Act 1989";
+            assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
+        }
+    }
+
+    @Nested
+    class DocmosisCaseSubmission_DirectionsNeededTest {
+
     }
 
 
