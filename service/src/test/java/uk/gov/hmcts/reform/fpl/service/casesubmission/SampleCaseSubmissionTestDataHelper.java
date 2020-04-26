@@ -39,7 +39,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .applicantOrganisations("London Borough of Southwark")
             .respondentNames("Paul Smith\nJames Smith\nAn Other")
             .ordersNeeded("Emergency protection order")
-            .directionsNeeded("Contact with any named personYes\n")
+            .directionsNeeded("Contact with any named personYes")
             .hearing(expectedDocmosisHearing())
             .allocation(expectedAllocation())
             .hearingPreferences(expectedDocmosisHearingPreferences())
@@ -58,6 +58,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .risks(expectedDocmosisRisks())
             .factorsParenting(expectedDocmosisFactorsParenting())
             .proceeding(expectedDocmosisProceeding())
+            .relevantProceedings("Yes")
             .annexDocuments(expectedDocmosisAnnexDocuments())
             .build();
     }
