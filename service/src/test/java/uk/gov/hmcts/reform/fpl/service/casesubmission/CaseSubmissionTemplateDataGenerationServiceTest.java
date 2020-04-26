@@ -18,7 +18,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDCaseSubmissionTemplateData;
+import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
@@ -43,7 +43,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(
             prepareCaseData());
 
-        assertThat(returnedCaseSubmission).isEqualTo(expectedDCaseSubmissionTemplateData());
+        assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(expectedDocmosisCaseSubmission());
     }
 
     private CaseData prepareCaseData() {

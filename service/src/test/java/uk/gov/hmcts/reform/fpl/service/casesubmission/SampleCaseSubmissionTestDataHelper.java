@@ -30,7 +30,7 @@ public class SampleCaseSubmissionTestDataHelper {
     private SampleCaseSubmissionTestDataHelper() {
     }
 
-    public static DocmosisCaseSubmission expectedDCaseSubmissionTemplateData() throws IOException {
+    public static DocmosisCaseSubmission expectedDocmosisCaseSubmission() throws IOException {
         return DocmosisCaseSubmission.builder()
             .respondents(expectedDocmosisRespondents())
             .applicants(expectedDocmosisApplicants())
@@ -99,7 +99,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .contactDetailsHidden("-")
                 .contactDetailsHiddenDetails("-")
                 .telephoneNumber("0987654321")
-                .relationshipToChild("-")
+                .relationshipToChild("Cousin")
                 .litigationIssuesDetails("No")
                 .build());
     }
@@ -171,7 +171,7 @@ public class SampleCaseSubmissionTestDataHelper {
         return of(DocmosisOtherParty.builder()
                 .name("Jason Lavery")
                 .gender("Unknown")
-                .dateOfBirth("1999-02-02")
+                .dateOfBirth("2 February 1999")
                 .placeOfBirth("Armagh")
                 .address("Flat 13\nPortadown street\nPortadown road\nPortadown\nArmagh\nBT43 343\nN.Ire")
                 .detailsHidden("-")
@@ -183,7 +183,7 @@ public class SampleCaseSubmissionTestDataHelper {
             DocmosisOtherParty.builder()
                 .name("Peter Lavery")
                 .gender("Male")
-                .dateOfBirth("2000-02-02")
+                .dateOfBirth("2 February 2000")
                 .placeOfBirth("Lisburn")
                 .address("Confidential")
                 .detailsHidden("Yes")
@@ -287,7 +287,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .thresholdDocument("Attached")
             .checklistDocument("Attached")
             .others(of(DocmosisSocialWorkOther.builder()
-                    .documentTitle("document one")
+                    .documentTitle("document_one")
                     .build(),
                 DocmosisSocialWorkOther.builder()
                     .documentTitle("document_two")
