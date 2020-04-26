@@ -144,10 +144,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 .map(OrderType::getLabel)
                 .collect(joining(NEW_LINE)));
 
-            if (StringUtils.isNotEmpty(orders.getOtherOrder())) {
-                sb.append(orders.getOtherOrder());
-                sb.append(NEW_LINE);
-            }
+            appendOtherOrder(orders, sb);
 
             if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
                 sb.append(orders.getEmergencyProtectionOrders().stream()
@@ -162,6 +159,14 @@ public class CaseSubmissionTemplateDataGenerationService
         }
 
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
+    }
+
+    private void appendOtherOrder(final Orders orders, final StringBuilder sb) {
+        if (StringUtils.isNotEmpty(orders.getOtherOrder())) {
+            sb.append(orders.getOrderType().size() == 1 ? NEW_LINE : "");
+            sb.append(orders.getOtherOrder());
+            sb.append(NEW_LINE);
+        }
     }
 
     private String getDirectionsNeeded(final Orders orders) {

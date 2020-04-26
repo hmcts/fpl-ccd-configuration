@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,18 +34,37 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     @Autowired
     private CaseSubmissionTemplateDataGenerationService templateDataGenerationService;
 
+    private CaseData givenCaseData;
+
     @BeforeEach
     void init() {
+        givenCaseData = prepareCaseData();
         given(userDetailsService.getUserName()).willReturn("Professor");
     }
 
     @Test
     void shouldReturnExpectedTemplateDataWithCourtSealWhenAllDataPresent() throws IOException {
-        DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(
-            prepareCaseData());
-
+        DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
         assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(expectedDocmosisCaseSubmission());
     }
+
+    @Nested
+    class OrdersNeededTest {
+        @Test
+        void shouldReturnOrdersNeededWithOtherOrderAppendedWhenOtherOrderGiven() throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .otherOrder("expected other order")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedOrdersNeeded = "Emergency protection order\nexpected other order\n";
+            assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
+        }
+    }
+
 
     private CaseData prepareCaseData() {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
