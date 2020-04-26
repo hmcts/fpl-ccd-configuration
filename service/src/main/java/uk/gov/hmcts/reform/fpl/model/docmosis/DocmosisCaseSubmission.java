@@ -41,4 +41,5 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final DocmosisFactorsParenting factorsParenting;
     private final List<DocmosisProceeding> proceeding;
     private final DocmosisAnnexDocuments annexDocuments;
+    private final String relevantProceedings;
 }

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsTy
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -64,6 +65,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -103,6 +105,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .children(buildDocmosisChildren(caseData.getAllChildren()))
             .others(buildDocmosisOthers(caseData.getAllOthers()))
             .proceeding(buildDocmosisProceedings(caseData.getAllProceedings()))
+            .relevantProceedings(getDefaultIfNullOrEmpty(caseData.getRelevantProceedings()))
             .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO()))
             .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
@@ -136,7 +139,8 @@ public class CaseSubmissionTemplateDataGenerationService
             .collect(joining(NEW_LINE));
     }
 
-    private String getOrdersNeeded(final Orders orders) {
+    private String 
+    (final Orders orders) {
         StringBuilder sb = new StringBuilder();
 
         if (orders != null && isNotEmpty(orders.getOrderType())) {
@@ -160,6 +164,7 @@ public class CaseSubmissionTemplateDataGenerationService
             stringBuilder.append(NEW_LINE);
         }
     }
+
 
     private void appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(final Orders orders,
                                                                          final StringBuilder stringBuilder) {
@@ -256,7 +261,10 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private List<DocmosisRespondent> buildDocmosisRespondents(final List<Element<Respondent>> respondents) {
         return respondents.stream()
-            .map(element -> element.getValue().getParty())
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .map(Respondent::getParty)
+            .filter(Objects::nonNull)
             .map(this::buildRespondent)
             .collect(toList());
     }
@@ -264,14 +272,20 @@ public class CaseSubmissionTemplateDataGenerationService
     private List<DocmosisApplicant> buildDocmosisApplicants(final List<Element<Applicant>> applicants,
                                                             final Solicitor solicitor) {
         return applicants.stream()
-            .map(element -> element.getValue().getParty())
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .map(Applicant::getParty)
+            .filter(Objects::nonNull)
             .map(applicant -> buildApplicant(applicant, solicitor))
             .collect(toList());
     }
 
     private List<DocmosisChild> buildDocmosisChildren(final List<Element<Child>> children) {
         return children.stream()
-            .map(element -> element.getValue().getParty())
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .map(Child::getParty)
+            .filter(Objects::nonNull)
             .map(this::buildChild)
             .collect(toList());
     }
@@ -279,6 +293,7 @@ public class CaseSubmissionTemplateDataGenerationService
     private List<DocmosisOtherParty> buildDocmosisOthers(final List<Element<Other>> other) {
         return other.stream()
             .map(Element::getValue)
+            .filter(Objects::nonNull)
             .map(this::buildOtherParty)
             .collect(toList());
     }
@@ -286,13 +301,14 @@ public class CaseSubmissionTemplateDataGenerationService
     private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<OtherProceeding>> proceedings) {
         return proceedings.stream()
             .map(Element::getValue)
+            .filter(Objects::nonNull)
             .map(this::buildProceeding)
             .collect(toList());
     }
 
     private DocmosisProceeding buildProceeding(final OtherProceeding proceeding) {
         return DocmosisProceeding.builder()
-            .onGoingProceeding(toYesOrNoOrDefaultValue(proceeding.getOnGoingProceeding()))
+            .onGoingProceeding(getValidAnswerorDefaultValue(proceeding.getOnGoingProceeding()))
             .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus()))
             .caseNumber(getDefaultIfNullOrEmpty(proceeding.getCaseNumber()))
             .started(getDefaultIfNullOrEmpty(proceeding.getStarted()))
@@ -323,7 +339,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 isConfidential
                     ? CONFIDENTIAL
                     : getDefaultIfNullOrEmpty(other.getTelephone()))
-            .detailsHidden(toYesOrNoOrDefaultValue(other.getDetailsHidden()))
+            .detailsHidden(getValidAnswerorDefaultValue(other.getDetailsHidden()))
             .detailsHiddenReason(
                 concatenateYesOrNoKeyAndValue(
                     other.getDetailsHidden(),
@@ -347,8 +363,8 @@ public class CaseSubmissionTemplateDataGenerationService
             .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
             .careAndContactPlan(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
             .adoption(getDefaultIfNullOrEmpty(child.getAdoption()))
-            .placementOrderApplication(child.getPlacementOrderApplication())
-            .placementCourt(child.getPlacementCourt())
+            .placementOrderApplication(getValidAnswerorDefaultValue(child.getPlacementOrderApplication()))
+            .placementCourt(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
             .mothersName(getDefaultIfNullOrEmpty(child.getMothersName()))
             .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
             .fathersResponsibility(getDefaultIfNullOrEmpty(child.getFathersResponsibility()))
@@ -379,7 +395,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 isConfidential
                     ? CONFIDENTIAL
                     : getDefaultIfNullOrEmpty(getTelephoneNumber(respondent.getTelephoneNumber())))
-            .contactDetailsHidden(toYesOrNoOrDefaultValue(respondent.getContactDetailsHidden()))
+            .contactDetailsHidden(getValidAnswerorDefaultValue(respondent.getContactDetailsHidden()))
             .contactDetailsHiddenDetails(
                 concatenateYesOrNoKeyAndValue(
                     respondent.getContactDetailsHidden(),
@@ -671,20 +687,23 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String concatenateYesOrNoKeyAndValue(final String key, final String value) {
         StringBuilder sb = new StringBuilder();
-        sb.append(toYesOrNoOrDefaultValue(key));
+        sb.append(getValidAnswerorDefaultValue(key));
 
         return (equalsIgnoreCase(key, YES.getValue()) && StringUtils.isNotEmpty(value))
             ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
     }
 
-    private String toYesOrNoOrDefaultValue(final String yesOrNo) {
-        if (equalsIgnoreCase(yesOrNo, YES.getValue())) {
-            return YES.getValue();
-        } else if (equalsIgnoreCase(yesOrNo, NO.getValue())) {
-            return NO.getValue();
+    private String getValidAnswerorDefaultValue(final String givenAnswer) {
+        switch (YesNo.fromString(givenAnswer)) {
+            case YES:
+                return YES.getValue();
+            case NO:
+                return NO.getValue();
+            case DONT_KNOW:
+                return DONT_KNOW.getValue();
+            default:
+                return DEFAULT_STRING;
         }
-
-        return DEFAULT_STRING;
     }
 
     private String listToString(final List<String> givenList) {

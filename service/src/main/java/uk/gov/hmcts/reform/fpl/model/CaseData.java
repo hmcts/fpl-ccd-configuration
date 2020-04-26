@@ -293,6 +293,14 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public String getRelevantProceedings() {
+        return ofNullable(this.getProceeding())
+            .map(Proceeding::getFirstProceeding)
+            .map(OtherProceeding::getOnGoingProceeding)
+            .orElse("");
+    }
+
+    @JsonIgnore
     public List<Element<Other>> getAllOthers() {
         List<Element<Other>> othersList = new ArrayList<>();
 

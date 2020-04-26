@@ -58,6 +58,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .risks(expectedDocmosisRisks())
             .factorsParenting(expectedDocmosisFactorsParenting())
             .proceeding(expectedDocmosisProceeding())
+            .relevantProceedings("Yes")
             .annexDocuments(expectedDocmosisAnnexDocuments())
             .build();
     }

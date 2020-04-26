@@ -51,7 +51,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     }
 
     @Nested
-    class DocmosisCaseSubmission_OrdersNeededTest {
+    class DocmosisCaseSubmissionOrdersNeededTest {
         @Test
         void shouldReturnOrdersNeededWithOtherOrderAppendedWhenOtherOrderGiven() throws IOException {
             CaseData updatedCaseData = givenCaseData.toBuilder()
@@ -87,7 +87,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     }
 
     @Nested
-    class DocmosisCaseSubmission_DirectionsNeededTest {
+    class DocmosisCaseSubmissionDirectionsNeededTest {
 
     }
 
