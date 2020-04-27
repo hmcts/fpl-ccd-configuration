@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -50,14 +49,13 @@ public class StandardDirectionOrderGenerationService extends
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
                 .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
                 .directions(buildDirections(standardDirectionOrder.getDirections()))
-                .hearingBooking(dataService.getHearingBookingData(firstHearing, null));
-
-        if (standardDirectionOrder.isDraft()) {
-            orderBuilder.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
-        }
+                .hearingBooking(dataService.getHearingBookingData(firstHearing, null))
+                .crest(getCrestData());
 
         if (standardDirectionOrder.isSealed()) {
-            orderBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
+            orderBuilder.courtseal(getCourtSealData());
+        } else {
+            orderBuilder.draftbackground(getDraftWaterMarkData());
         }
         return orderBuilder.build();
     }

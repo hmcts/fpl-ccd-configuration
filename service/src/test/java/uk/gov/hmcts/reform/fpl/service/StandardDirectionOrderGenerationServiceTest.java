@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,19 +60,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class StandardDirectionOrderGenerationServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Family Court";
-    private LocalDate today;
 
     @Autowired
     private Time time;
 
     @Autowired
     private StandardDirectionOrderGenerationService service;
-    
-    @BeforeEach
-    void setup() {
-        today = time.now().toLocalDate();
-    }
-    
+
     @Test
     void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
         Order order = Order.builder().dateOfIssue("29 November 2019").build();
@@ -92,6 +85,16 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
+    void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() throws IOException {
+        Direction notNeededDirection = Direction.builder().directionNeeded("No").build();
+        Order order = Order.builder().directions(wrapElements(notNeededDirection)).build();
+
+        DocmosisStandardDirectionOrder template = service.getTemplateData(getCaseData(order));
+
+        assertThat(template.getDirections()).isEmpty();
+    }
+
+    @Test
     void shouldMapCaseDataWhenEmptyListValues() throws IOException {
         CaseData caseData = caseDataWithEmptyListValues();
 
@@ -99,7 +102,6 @@ class StandardDirectionOrderGenerationServiceTest {
 
         assertThat(template)
             .isEqualToComparingFieldByField(docmosisOrder(
-                template,
                 "Her Honour Judge Smith",
                 "Bob Ross",
                 "123",
@@ -111,10 +113,12 @@ class StandardDirectionOrderGenerationServiceTest {
     void shouldMapCompleteCaseDataForSDOTemplate() throws IOException {
         DocmosisStandardDirectionOrder template = service.getTemplateData(fullCaseData());
 
-        assertThat(template).isEqualToComparingFieldByField(fullDocmosisOrder(template));
+        assertThat(template).isEqualToComparingFieldByField(fullDocmosisOrder());
     }
 
     private CaseData getCaseData(Order order) {
+        LocalDate today = time.now().toLocalDate();
+
         return CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .dateSubmitted(today)
@@ -130,10 +134,12 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     private DocmosisStandardDirectionOrder emptyDocmosisOrder(Order order, DocmosisStandardDirectionOrder template) {
-        return docmosisOrder(template, "", "", null, order.getDateOfIssue(), emptyList());
+        return docmosisOrder("", "", null, order.getDateOfIssue(), emptyList());
     }
 
     private CaseData caseDataWithEmptyListValues() {
+        LocalDate today = time.now().toLocalDate();
+
         return CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .familyManCaseNumber("123")
@@ -145,12 +151,13 @@ class StandardDirectionOrderGenerationServiceTest {
             .build();
     }
 
-    private DocmosisStandardDirectionOrder docmosisOrder(DocmosisStandardDirectionOrder template,
-                                                         String judgeTitleAndName,
+    private DocmosisStandardDirectionOrder docmosisOrder(String judgeTitleAndName,
                                                          String legalAdvisorName,
                                                          String familyManCaseNumber,
                                                          String dateOfIssue,
                                                          List<DocmosisDirection> expectedDirections) {
+        LocalDate today = time.now().toLocalDate();
+
         return DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName(judgeTitleAndName)
@@ -166,12 +173,14 @@ class StandardDirectionOrderGenerationServiceTest {
             .respondentsProvided(false)
             .directions(expectedDirections)
             .applicantName("")
-            .draftbackground(template.getDraftbackground())
+            .crest("[userImage:crest.png]")
+            .draftbackground("[userImage:draft-watermark.png]")
             .build();
     }
 
+    private DocmosisStandardDirectionOrder fullDocmosisOrder() {
+        LocalDate today = time.now().toLocalDate();
 
-    private DocmosisStandardDirectionOrder fullDocmosisOrder(DocmosisStandardDirectionOrder template) {
         return DocmosisStandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Smith")
@@ -194,11 +203,14 @@ class StandardDirectionOrderGenerationServiceTest {
             .respondentsProvided(true)
             .directions(getExpectedDirections())
             .applicantName("Bran Stark")
-            .courtseal(template.getCourtseal())
+            .crest("[userImage:crest.png]")
+            .courtseal("[userImage:familycourtseal.png]")
             .build();
     }
 
     private CaseData fullCaseData() {
+        LocalDate today = time.now().toLocalDate();
+
         return CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
@@ -212,6 +224,8 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     private List<DocmosisDirection> getExpectedDirections() {
+        LocalDate today = time.now().toLocalDate();
+
         return List.of(
             DocmosisDirection.builder()
                 .assignee(ALL_PARTIES)
@@ -246,6 +260,8 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     private List<DocmosisChild> getExpectedChildren() {
+        LocalDate today = time.now().toLocalDate();
+
         return List.of(
             DocmosisChild.builder()
                 .name("Bran Stark")
@@ -279,6 +295,8 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
+        LocalDate today = time.now().toLocalDate();
+
         return wrapElements(createHearingBooking(today.atStartOfDay(), today.atTime(NOON)));
     }
 }

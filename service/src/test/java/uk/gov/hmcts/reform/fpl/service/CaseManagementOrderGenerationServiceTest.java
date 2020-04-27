@@ -33,7 +33,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -75,7 +74,7 @@ class CaseManagementOrderGenerationServiceTest {
     private CaseManagementOrderGenerationService service;
 
     @Test
-    void shouldBuildCaseManagementOrderWithMinimumViableDataWhenCaseManagementOrderIdIsPopulated() throws IOException {
+    void shouldBuildCaseManagementOrderWithMinimumViableDataWhenCaseManagementOrderIdIsPopulated() {
         DocmosisCaseManagementOrder templateData = service.getTemplateData(baseCaseData()
             .caseManagementOrder(CaseManagementOrder.builder().id(HEARING_ID).build())
             .build());
@@ -84,7 +83,7 @@ class CaseManagementOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldBuildCaseManagementOrderWithMinimumViableDataWhenCmoHearingListIsPopulated() throws IOException {
+    void shouldBuildCaseManagementOrderWithMinimumViableDataWhenCmoHearingListIsPopulated() {
         DocmosisCaseManagementOrder templateData = service.getTemplateData(baseCaseData()
             .cmoHearingDateList(dynamicHearingElement())
             .build());
@@ -93,14 +92,14 @@ class CaseManagementOrderGenerationServiceTest {
     }
 
     @Test
-    void directionsShouldFormatAsExpectedWhenMultipleRespondentsAndOthers() throws IOException {
+    void directionsShouldFormatAsExpectedWhenMultipleRespondentsAndOthers() {
         DocmosisCaseManagementOrder templateData = service.getTemplateData(caseDataWithDirections());
 
         assertThat(templateData.getDirections()).containsExactly(getDocmosisDirections());
     }
 
     @Test
-    void directionShouldRemainGroupedByRespondentWhenMultipleDirectionsForDifferentRespondents() throws IOException {
+    void directionShouldRemainGroupedByRespondentWhenMultipleDirectionsForDifferentRespondents() {
         List<Element<Direction>> respondentDirections = wrapElements(
             direction(RESPONDENT_4, "Direction title 6"),
             direction(RESPONDENT_1, "Direction title 2"),
@@ -118,7 +117,7 @@ class CaseManagementOrderGenerationServiceTest {
     //TODO: this test can probably factor in the above two tests, however the buildCaseDataForCMODocmosisGeneration
     // method and the methods it uses internally are heavily intertwined.
     @Test
-    void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
+    void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() {
         DocmosisCaseManagementOrder templateData = service.getTemplateData(buildCaseDataForCMODocmosisGeneration(NOW));
 
         //template data needs to be passed in for the draft and court seal image assertions.
@@ -184,6 +183,7 @@ class CaseManagementOrderGenerationServiceTest {
                 .hearingTime("This will appear on the issued CMO")
                 .build())
             .directions(emptyList())
+            .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
             .build();
     }
@@ -303,6 +303,7 @@ class CaseManagementOrderGenerationServiceTest {
             .recitalsProvided(true)
             .schedule(getExpectedSchedule())
             .scheduleProvided(true)
+            .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
             .courtseal(templateData.getCourtseal())
             .build();

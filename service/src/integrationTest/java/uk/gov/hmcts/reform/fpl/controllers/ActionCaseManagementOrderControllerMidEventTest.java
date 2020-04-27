@@ -126,6 +126,7 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
             .children(expectedChildren())
             .applicantName("London Borough of Southwark")
             .hearingBooking(expectedHearing())
+            .crest(order.getCrest())
             .draftbackground(order.getDraftbackground())
             .recitals(expectedRecitals())
             .recitalsProvided(true)

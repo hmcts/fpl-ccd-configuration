@@ -16,11 +16,9 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -69,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -133,13 +132,12 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(callbackResponse.getData()).containsKey(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
         assertThat(getDocumentReference(callbackResponse)).isEqualTo(expectedDocument());
-        //need to pass in captor for draft image string
-        assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplateData(captor.getValue()));
+        assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplateData());
     }
 
     @Test
     void aboutToSubmitShouldPopulateCaseManagementOrder() {
-        CaseDetails caseDetails = prepareCaseDetailsForAboutToSubmit(createHearingBookingsFromInitialDate(now()));
+        CaseDetails caseDetails = prepareCaseDetailsForAboutToSubmit();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -194,14 +192,17 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
             CaseManagementOrder.builder().build());
 
+        caseDetails.getData().put("dateOfIssue", dateNow());
+
         return caseDetails;
     }
 
-    private DocmosisCaseManagementOrder expectedTemplateData(DocmosisCaseManagementOrder order) {
+    private DocmosisCaseManagementOrder expectedTemplateData() {
         return DocmosisCaseManagementOrder.builder()
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
+            .dateOfIssue(formatLocalDateToString(dateNow(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())
             .respondents(expectedRespondents())
@@ -209,7 +210,8 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .children(expectedChildren())
             .applicantName("London Borough of Southwark")
             .hearingBooking(expectedHearing())
-            .draftbackground(order.getDraftbackground())
+            .crest("[userImage:crest.png]")
+            .draftbackground("[userImage:draft-watermark.png]")
             .recitals(expectedRecitals())
             .recitalsProvided(true)
             .directions(expectedDirections())
@@ -307,8 +309,9 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class).getOrderDoc();
     }
 
-    private CaseDetails prepareCaseDetailsForAboutToSubmit(List<Element<HearingBooking>> hearingDetails) {
-        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
+    private CaseDetails prepareCaseDetailsForAboutToSubmit() {
+        DynamicList dynamicHearingDates = draftCMOService
+            .buildDynamicListFromHearingDetails(createHearingBookingsFromInitialDate(now()));
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
