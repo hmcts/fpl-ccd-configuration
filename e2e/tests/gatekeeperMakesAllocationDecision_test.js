@@ -8,7 +8,7 @@ BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCa
   caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
   await I.enterAllocationProposal();
   await I.populateCaseWithMandatoryFields(caseId);
-  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  await I.signIn(config.swanseaLocalAuthorityUserOne);
   await I.submitCase(caseId);
 
   console.log(`Case ${caseId} has been submitted`);
