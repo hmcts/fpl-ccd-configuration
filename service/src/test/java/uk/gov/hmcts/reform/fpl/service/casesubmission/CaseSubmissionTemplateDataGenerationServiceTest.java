@@ -20,6 +20,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -40,6 +43,9 @@ import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLICE_POWER_ENDS;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -230,9 +236,9 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getGroundsForEPOReason())
-                .isEqualTo("There’s reasonable cause to believe the child is likely to suffer significant " 
-                    + "harm if they don’t stay in their current accommodation\nYou’re making enquiries and " 
-                    + "need urgent access to the child to find out about their welfare, and access is being " 
+                .isEqualTo("There’s reasonable cause to believe the child is likely to suffer significant "
+                    + "harm if they don’t stay in their current accommodation\nYou’re making enquiries and "
+                    + "need urgent access to the child to find out about their welfare, and access is being "
                     + "unreasonably refused");
         }
     }
@@ -353,12 +359,30 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             String expectedLivingSituation = "Voluntarily in section 20 care order\nDate this began: " + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
         }
+
+        @Test
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsOther()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation("Other")
+                        .addressChangeDate(NOW)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Other\nDate this began: " + FORMATTED_DATE;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
     }
 
     @Nested
     class DocmosisCaseSubmissionBuildRespondentTest {
         @Test
-        void shouldNotReturnRespondentConfidentialDetailsWhenContactDetailsHidden()
+        void shouldNotReturnRespondentConfidentialDetailsWhenContactDetailsHiddenIsSetToYes()
             throws IOException {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .respondents1(wrapElements(Respondent.builder()
@@ -382,7 +406,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnRespondentAddressAndTelephoneDetailsWhenContactDetailsHiddenIsNotSet()
+        void shouldReturnRespondentAddressAndTelephoneDetailsWhenContactDetailsHiddenIsSetToNo()
             throws IOException {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .respondents1(wrapElements(Respondent.builder()
@@ -408,7 +432,148 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     }
 
     @Nested
+    class DocmosisCaseSubmissionBuildOtherPartyTest {
+        @Test
+        void shouldNotReturnOtherPartyConfidentialDetailsWhenDetailsHiddenIsSetToYes()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .others(Others.builder()
+                    .firstOther(Other.builder()
+                        .address(Address.builder()
+                            .addressLine1("Flat 13")
+                            .postcode("SL11GF")
+                            .build())
+                        .detailsHidden("yes")
+                        .telephone("090-0999000")
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getOthers()).hasSize(1);
+            assertThat(caseSubmission.getOthers().get(0).getAddress()).isEqualTo("Confidential");
+            assertThat(caseSubmission.getOthers().get(0).getTelephoneNumber()).isEqualTo("Confidential");
+        }
+
+        @Test
+        void shouldReturnOtherPartyAddressAndTelephoneDetailsWhenDetailsHiddenIsSetToNo()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .others(Others.builder()
+                    .firstOther(Other.builder()
+                        .address(Address.builder()
+                            .addressLine1("Flat 13")
+                            .postcode("SL11GF")
+                            .build())
+                        .detailsHidden("no")
+                        .telephone("090-0999000")
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getOthers()).hasSize(1);
+            assertThat(caseSubmission.getOthers().get(0).getAddress()).isEqualTo("Flat 13\nSL11GF");
+            assertThat(caseSubmission.getOthers().get(0).getTelephoneNumber()).isEqualTo("090-0999000");
+        }
+
+        @Test
+        void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsNull()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .others(Others.builder()
+                    .firstOther(Other.builder()
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getOthers()).hasSize(1);
+            assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnOtherPartyFormattedDOBAsWhenDOBIsGiven()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .others(Others.builder()
+                    .firstOther(Other.builder()
+                        .DOB("1999-02-02")
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getOthers()).hasSize(1);
+            assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("2 February 1999");
+        }
+    }
+
+    @Nested
+    class DocmosisCaseSubmissionGetValidAnswerOrDefaultValueTest {
+
+        @Test
+        void shouldReturnRelevantProceedingAsEmptyWhenGivenProceedingsAreEmpty()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .proceeding(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRelevantProceedings()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnRelevantProceedingAsYesWhenGivenOnGoingProceedingIsYes()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .proceeding(Proceeding.builder()
+                    .onGoingProceeding("yes")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(YES.getValue());
+        }
+
+        @Test
+        void shouldReturnRelevantProceedingAsNoWhenGivenOnGoingProceedingIsYes()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .proceeding(Proceeding.builder()
+                    .onGoingProceeding("no")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(NO.getValue());
+        }
+
+        @Test
+        void shouldReturnRelevantProceedingAsDontKnowWhenGivenOnGoingProceedingIsDontKnow()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .proceeding(Proceeding.builder()
+                    .onGoingProceeding("Don't know")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getRelevantProceedings()).isEqualTo(DONT_KNOW.getValue());
+        }
+    }
+
+    @Nested
     class DocmosisCaseSubmissionFormatAnnexDocumentDisplayTest {
+
         @Test
         void shouldReturnEmptyWhenDocumentIsNotAvailable()
             throws IOException {

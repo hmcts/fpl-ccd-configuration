@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -104,7 +105,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .children(buildDocmosisChildren(caseData.getAllChildren()))
             .others(buildDocmosisOthers(caseData.getAllOthers()))
             .proceeding(buildDocmosisProceedings(caseData.getAllProceedings()))
-            .relevantProceedings(getDefaultIfNullOrEmpty(caseData.getRelevantProceedings()))
+            .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings()))
             .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
                 caseData.getGroundsForEPO()))
             .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
@@ -321,12 +322,13 @@ public class CaseSubmissionTemplateDataGenerationService
         return DocmosisOtherParty.builder()
             .name(other.getName())
             .gender(formatGenderDisplay(other.getGender(), other.getGenderIdentification()))
-            .dateOfBirth(formatLocalDateFromStringToStringUsingFormat(other.getDOB(), DATE))
+            .dateOfBirth(other.getDOB() != null 
+                    ? formatLocalDateFromStringToStringUsingFormat(other.getDOB(), DATE) : DEFAULT_STRING)
             .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
             .address(
                 isConfidential
                     ? CONFIDENTIAL
-                    : getDefaultIfNullOrEmpty(other.getAddress().getAddressAsString(NEW_LINE)))
+                    : formatAddress(other.getAddress()))
             .telephoneNumber(
                 isConfidential
                     ? CONFIDENTIAL
@@ -382,7 +384,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .address(
                 isConfidential
                     ? CONFIDENTIAL
-                    : getDefaultIfNullOrEmpty(respondent.getAddress().getAddressAsString(NEW_LINE)))
+                    : formatAddress(respondent.getAddress()))
             .telephoneNumber(
                 isConfidential
                     ? CONFIDENTIAL
@@ -406,7 +408,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .organisationName(getDefaultIfNullOrEmpty(applicant.getOrganisationName()))
             .contactName(getContactName(applicant.getTelephoneNumber()))
             .jobTitle(getDefaultIfNullOrEmpty(applicant.getJobTitle()))
-            .address(getDefaultIfNullOrEmpty(applicant.getAddress().getAddressAsString(NEW_LINE)))
+            .address(formatAddress(applicant.getAddress()))
             .email(getEmail(applicant.getEmail()))
             .mobileNumber(getTelephoneNumber(applicant.getMobileNumber()))
             .telephoneNumber(getTelephoneNumber(applicant.getTelephoneNumber()))
@@ -704,6 +706,10 @@ public class CaseSubmissionTemplateDataGenerationService
         return ofNullable(givenList)
             .map(list -> join(NEW_LINE, list))
             .orElse(EMPTY);
+    }
+
+    private String formatAddress(Address address) {
+        return isNotEmpty(address) ? getDefaultIfNullOrEmpty(address.getAddressAsString(NEW_LINE)) : DEFAULT_STRING;
     }
 
     private String formatAgeDisplay(final LocalDate dateOfBirth) {
