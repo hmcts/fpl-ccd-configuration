@@ -54,8 +54,8 @@ the service.
 
 ### Run the application (from IntelliiJ)
 
-Ensure the Spring Boot is started with local profile
-(add environment variable spring.profiles.active=local when starting the main class).
+Ensure the Spring Boot is started with local, user-mappings and the feature-toggle profiles
+(add environment variable spring.profiles.active=feature-toggle,local,user-mappings when starting the main class).
 
 Configure the notify.api_key if necessary (you can pass them as environment variables when IntelliJ
 starts the application).
@@ -133,7 +133,7 @@ Custom configuration parameters:
 
 Two notes:
 * When using env variables '.', '-' are replaced with '_', i.e. `idam.s2s-auth.url` is configured as ENV var: IDAM_S2S_AUTH_URL
-* Secrets are stores in Azure Key vault in appropriate FPL vault. Ąs mentioned above name of the secrets to property name can be found in [this file](src/main/resources/bootstrap.yaml)
+* Secrets are stores in Azure Key vault in appropriate FPL vault. As mentioned above name of the secrets to property name can be found in [this file](src/main/resources/bootstrap.yaml)
 
 ## Application Mappings
 
