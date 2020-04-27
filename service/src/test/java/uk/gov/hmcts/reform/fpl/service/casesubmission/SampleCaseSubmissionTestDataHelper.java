@@ -130,7 +130,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .age("1 year old")
                 .gender("Boy")
                 .dateOfBirth("15 June 2018")
-                .livingSituation("Living with respondents\nConfidentialDate this began: 8 November 2018")
+                .livingSituation("Living with respondents\nConfidential\nDate this began: 8 November 2018")
                 .keyDates("child starting primary school or taking GCSEs")
                 .careAndContactPlan("Place baby in local authority foster care")
                 .adoption("Yes")
@@ -151,7 +151,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .gender("Girl")
                 .dateOfBirth("2 February 2002")
                 .livingSituation("Living with respondentsCarnegie House\nCentral Milton Keynes\nMilton Keynes"
-                    + "\nMK\nLondon\nMK10 1SA\nBT66 7RRDate this began: 2 February 2002")
+                    + "\nMK\nLondon\nMK10 1SA\nBT66 7RR\nDate this began: 2 February 2002")
                 .keyDates("test child two key date")
                 .careAndContactPlan("test child two care and contact plan")
                 .adoption("Yes")

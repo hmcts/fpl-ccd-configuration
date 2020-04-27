@@ -22,12 +22,13 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
+import static java.time.LocalDate.now;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType.CHILD_WHEREABOUTS;
+import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -195,11 +196,29 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             assertThat(caseSubmission.getChildren()).hasSize(1);
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo("-");
         }
+
+        @Test
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsInHospitalSoonToBeDischarged()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(HOSPITAL_SOON_TO_BE_DISCHARGED.getValue())
+                        .dischargeDate(now())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "In hospital and soon to be discharged\nDischarge date: 27 April 2020";
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
     }
 
     private CaseData prepareCaseData() {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
-        caseData.setDateSubmitted(LocalDate.now());
+        caseData.setDateSubmitted(now());
 
         return caseData;
     }

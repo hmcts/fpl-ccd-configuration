@@ -62,6 +62,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
@@ -467,6 +468,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 stringBuilder.append(child.getAddress().getAddressAsString(NEW_LINE));
             }
 
+            stringBuilder.append(endsWith(stringBuilder.toString(), NEW_LINE) ? "" : NEW_LINE);
             formatChildLivingSituationDisplay(child, stringBuilder);
             return stringBuilder.toString();
         }
