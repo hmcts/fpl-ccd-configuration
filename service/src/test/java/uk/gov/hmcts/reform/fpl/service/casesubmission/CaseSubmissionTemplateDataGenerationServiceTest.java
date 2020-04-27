@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import static java.time.LocalDate.now;
 import static java.util.List.of;
@@ -29,13 +30,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType.CHILD_WHEREABOUTS;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
+import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLICE_POWER_ENDS;
+import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CaseSubmissionTemplateDataGenerationService.class, JacksonAutoConfiguration.class})
 public class CaseSubmissionTemplateDataGenerationServiceTest {
+    private static final LocalDate NOW = now();
+
+    private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
+
     @MockBean
     private UserDetailsService userDetailsService;
 
@@ -204,14 +213,51 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
                 .children1(wrapElements(Child.builder()
                     .party(ChildParty.builder()
                         .livingSituation(HOSPITAL_SOON_TO_BE_DISCHARGED.getValue())
-                        .dischargeDate(now())
+                        .dischargeDate(NOW)
                         .build())
                     .build()))
                 .build();
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
-            String expectedLivingSituation = "In hospital and soon to be discharged\nDischarge date: 27 April 2020";
+            String expectedLivingSituation = "In hospital and soon to be discharged\nDischarge date: " + FORMATTED_DATE;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsRemovedByPolicePowerEnds()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(REMOVED_BY_POLICE_POWER_ENDS.getValue())
+                        .datePowersEnd(NOW)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Removed by Police, powers ending soon\nDate powers end: "
+                + FORMATTED_DATE;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsVoluntarySectionCareOrder()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(VOLUNTARILY_SECTION_CARE_ORDER.getValue())
+                        .careStartDate(NOW)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Voluntarily in section 20 care order\nDate this began: " + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
         }
     }
