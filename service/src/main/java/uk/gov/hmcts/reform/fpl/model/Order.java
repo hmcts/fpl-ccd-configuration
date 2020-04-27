@@ -29,9 +29,4 @@ public class Order implements IssuableOrder {
     public boolean isSealed() {
         return SEALED == orderStatus;
     }
-
-    @JsonIgnore
-    public boolean isDraft() {
-        return !isSealed();
-    }
 }

@@ -33,13 +33,8 @@ public class CaseManagementOrder implements IssuableOrder {
     private final String dateOfIssue;
 
     @JsonIgnore
-    public boolean isDraft() {
-        return action == null || !SEND_TO_ALL_PARTIES.equals(action.getType());
-    }
-
-    @JsonIgnore
     public boolean isSealed() {
-        return !isDraft();
+        return action != null && SEND_TO_ALL_PARTIES == action.getType();
     }
 
     @JsonIgnore

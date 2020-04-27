@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model.interfaces;
 
-public interface IssuableOrder {
-    boolean isDraft();
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+public interface IssuableOrder {
     boolean isSealed();
+
+    @JsonIgnore
+    default boolean isDraft() {
+        return !isSealed();
+    }
 }
