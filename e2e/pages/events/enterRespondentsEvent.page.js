@@ -47,7 +47,7 @@ module.exports = {
       I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');
     }
     I.fillField(this.fields(elementIndex).respondent.placeOfBirth, respondent.placeOfBirth);
-    await within(this.fields(elementIndex).respondent.address, () => {
+    within(this.fields(elementIndex).respondent.address, () => {
       //XXX postcode lookup
       postcodeLookup.enterAddressManually(respondent.address);
     });

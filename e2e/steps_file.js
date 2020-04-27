@@ -8,20 +8,10 @@ const caseViewPage = require('./pages/caseView.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const ordersAndDirectionsNeededEventPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
-const enterHearingNeededEventPage = require('./pages/events/enterHearingNeededEvent.page');
-const enterChildrenEventPage = require('./pages/events/enterChildrenEvent.page');
-const enterApplicantEventPage  = require('./pages/events/enterApplicantEvent.page');
-const enterGroundsEventPage = require('./pages/events/enterGroundsForApplicationEvent.page');
-const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
 const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
-const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.page');
 const populateCaseEventPage = require('./pages/events/populateCaseEvent.page');
 const submitApplicationEventPage = require('./pages/events/submitApplicationEvent.page');
 
-const applicant = require('./fixtures/applicant');
-const solicitor = require('./fixtures/solicitor');
-const respondent = require('./fixtures/respondents');
 const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
@@ -155,44 +145,6 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
     },
 
-    async enterMandatoryFields (settings) {
-      await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
-      ordersAndDirectionsNeededEventPage.checkCareOrder();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
-      enterHearingNeededEventPage.enterTimeFrame();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-      enterApplicantEventPage.enterApplicantDetails(applicant);
-      enterApplicantEventPage.enterSolicitorDetails(solicitor);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
-      await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
-      if(settings && settings.multipleChildren){
-        await this.addAnotherElementToCollection('Child');
-        await enterChildrenEventPage.enterChildDetails('John', 'Black', '02', '09', '2016');
-      }
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
-      await enterRespondentsEventPage.enterRespondent(respondent[0]);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
-      enterGroundsEventPage.enterThresholdCriteriaDetails();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow();
-      uploadDocumentsEventPage.selectSocialWorkStatementIncludedInSWET();
-      uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
-      uploadDocumentsEventPage.uploadCarePlan(config.testFile);
-      uploadDocumentsEventPage.uploadSWET(config.testFile);
-      uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
-      uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
-      await this.completeEvent('Save and continue');
-    },
-
     async fillDate(date, sectionId = 'form') {
       if (date instanceof Date) {
         date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear()};
@@ -252,8 +204,6 @@ module.exports = function () {
     async submitNewCaseWithData(filename = 'mandatorySubmissionFields') {
       const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
       await this.populateCaseWithMandatoryFields(caseId, filename);
-      await this.signIn(config.swanseaLocalAuthorityUserOne);
-      await this.submitCase(caseId);
 
       console.log(`Case ${caseId} has been submitted`);
 

@@ -45,34 +45,30 @@ public class PopulateCaseController {
         //TODO: add enum with available files -> easy switch for different additional actions (e.g. uploading document)
         String filename = data.get("caseDataFilename").toString();
 
-        List<String> errors = new ArrayList<>();
         try {
             data.putAll(readFileData(filename));
         } catch (Exception e) {
-            errors.add(String.format("Could not read file %s", filename));
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(data)
+                .errors(List.of(String.format("Could not read file %s", filename)))
+                .build();
         }
 
-        var mockFileDocument = Map.of("documentStatus",
-            "Attached",
-            "typeOfDocument",
-            DocumentReference.buildFromDocument(uploadDocumentService.uploadPDF(new byte[] {}, "mockFile.txt")));
-
+        var mockDocument = Map.of("documentStatus", "Attached", "typeOfDocument", uploadMockFile("mockFile.txt"));
         data.putAll(Map.of(
             "dateAndTimeSubmitted", time.now(),
             "dateSubmitted", time.now().toLocalDate(),
-            "submittedForm", uploadSubmittedForm(caseDetails),
-            "documents_checklist_document", mockFileDocument,
-            "documents_threshold_document", mockFileDocument,
-            "documents_socialWorkCarePlan_document", mockFileDocument,
-            "documents_socialWorkAssessment_document", mockFileDocument,
-            "documents_socialWorkEvidenceTemplate_document", mockFileDocument
+            "submittedForm", uploadMockFile("mockSubmittedApplication.pdf"),
+            "documents_checklist_document", mockDocument,
+            "documents_threshold_document", mockDocument,
+            "documents_socialWorkCarePlan_document", mockDocument,
+            "documents_socialWorkAssessment_document", mockDocument,
+            "documents_socialWorkEvidenceTemplate_document", mockDocument,
+            "state", "Submitted"
         ));
-
-        //data.put("state", "Submitted");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(errors)
             .build();
     }
 
@@ -83,12 +79,9 @@ public class PopulateCaseController {
         return mapper.readValue(jsonContent, new TypeReference<>() {});
     }
 
-    private DocumentReference uploadSubmittedForm(CaseDetails caseDetails) {
-        byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
-            Pair.of("userFullName", "kurt@swansea.gov.uk (local-authority)")
-        );
-        Document submittedFormDocument = uploadDocumentService.uploadPDF(pdf, buildFileName(caseDetails));
+    private DocumentReference uploadMockFile(String filename) {
+        Document document = uploadDocumentService.uploadPDF(new byte[]{}, filename);
 
-        return DocumentReference.buildFromDocument(submittedFormDocument);
+        return DocumentReference.buildFromDocument(document);
     }
 }
