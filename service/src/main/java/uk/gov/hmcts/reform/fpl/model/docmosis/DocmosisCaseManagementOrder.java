@@ -28,6 +28,7 @@ public class DocmosisCaseManagementOrder extends DocmosisOrder {
                                        List<DocmosisDirection> directions,
                                        String draftbackground,
                                        String courtseal,
+                                       String crest,
                                        List<DocmosisRepresentative> representatives,
                                        Schedule schedule,
                                        boolean scheduleProvided,
@@ -35,7 +36,8 @@ public class DocmosisCaseManagementOrder extends DocmosisOrder {
                                        boolean recitalsProvided,
                                        int numberOfChildren) {
         super(judgeAndLegalAdvisor, courtName, familyManCaseNumber, dateOfIssue, complianceDeadline, respondents,
-            children, respondentsProvided, applicantName, hearingBooking, directions, draftbackground, courtseal);
+            children, respondentsProvided, applicantName, hearingBooking, directions, draftbackground, courtseal,
+            crest);
         this.representatives = representatives;
         this.schedule = schedule;
         this.scheduleProvided = scheduleProvided;
