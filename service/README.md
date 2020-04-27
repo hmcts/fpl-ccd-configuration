@@ -54,7 +54,7 @@ the service.
 
 ### Run the application (from IntelliiJ)
 
-Ensure the Spring Boot application  is started with local, user-mappings and the feature-toggle profiles
+Ensure that the Spring Boot application is started with local, user-mappings and the feature-toggle profiles
 (add environment variable spring.profiles.active=feature-toggle,local,user-mappings when starting the main class).
 
 Configure the notify.api_key if necessary (you can pass them as environment variables when IntelliJ
