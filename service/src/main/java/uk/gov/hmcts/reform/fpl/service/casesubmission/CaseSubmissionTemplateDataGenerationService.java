@@ -149,9 +149,7 @@ public class CaseSubmissionTemplateDataGenerationService
 
             sb.append(NEW_LINE);
             appendOtherOrderToOrdersNeeded(orders, sb);
-
             appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(orders, sb);
-
         }
 
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString().trim() : DEFAULT_STRING;
@@ -190,7 +188,6 @@ public class CaseSubmissionTemplateDataGenerationService
 
             stringBuilder.append(NEW_LINE);
             appendEmergencyProtectionOrderDirectionDetails(orders, stringBuilder);
-
             appendDirectionsAndDirectionDetails(orders, stringBuilder);
         }
 
@@ -238,21 +235,21 @@ public class CaseSubmissionTemplateDataGenerationService
     }
 
     private String buildGroundsThresholdReason(final Grounds grounds) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         if (isNotEmpty(grounds) && isNotEmpty(grounds.getThresholdReason())) {
             grounds.getThresholdReason().forEach(thresholdReason -> {
                 if (StringUtils.equals(thresholdReason, "noCare")) {
-                    sb.append("Not receiving care that would be reasonably expected from a parent.");
-                    sb.append(NEW_LINE);
+                    stringBuilder.append("Not receiving care that would be reasonably expected from a parent.");
+                    stringBuilder.append(NEW_LINE);
 
                 } else if (StringUtils.equals(thresholdReason, "beyondControl")) {
-                    sb.append("Beyond parental control.");
-                    sb.append(NEW_LINE);
+                    stringBuilder.append("Beyond parental control.");
+                    stringBuilder.append(NEW_LINE);
                 }
             });
         }
 
-        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
+        return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString() : DEFAULT_STRING;
     }
 
     private List<DocmosisRespondent> buildDocmosisRespondents(final List<Element<Respondent>> respondents) {

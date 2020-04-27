@@ -151,6 +151,24 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
                 + "Yes";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
         }
+
+        @Test
+        void shouldReturnDirectionsNeededWithAppendedDirectionsAndDirectionDetailsWhenGiven()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .directions("directions")
+                    .directionDetails("direction  details")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedDirectionsNeeded = "Contact with any named person\n"
+                + "directions\n"
+                + "direction  details";
+            assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
+        }
     }
 
     @Nested
