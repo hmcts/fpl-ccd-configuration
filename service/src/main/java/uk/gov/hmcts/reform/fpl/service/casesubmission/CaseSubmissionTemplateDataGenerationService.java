@@ -62,6 +62,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
@@ -158,7 +159,7 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private void appendOtherOrderToOrdersNeeded(final Orders orders, final StringBuilder stringBuilder) {
         if (StringUtils.isNotEmpty(orders.getOtherOrder())) {
-            stringBuilder.append(orders.getOrderType().size() == 1 ? NEW_LINE : "");
+            stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
             stringBuilder.append(orders.getOtherOrder());
             stringBuilder.append(NEW_LINE);
         }
@@ -168,13 +169,13 @@ public class CaseSubmissionTemplateDataGenerationService
     private void appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(final Orders orders,
                                                                          final StringBuilder stringBuilder) {
         if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
-            stringBuilder.append(orders.getOrderType().size() == 1 ? NEW_LINE : "");
+            stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
             stringBuilder.append(orders.getEmergencyProtectionOrders().stream()
                 .map(EmergencyProtectionOrdersType::getLabel)
                 .collect(joining(NEW_LINE)));
 
             if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDetails())) {
-                stringBuilder.append(orders.getEmergencyProtectionOrders().size() == 1 ? NEW_LINE : "");
+                stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
                 stringBuilder.append(orders.getEmergencyProtectionOrderDetails());
             }
         }
@@ -198,18 +199,18 @@ public class CaseSubmissionTemplateDataGenerationService
         return StringUtils.isNotEmpty(sb.toString()) ? sb.toString().trim() : DEFAULT_STRING;
     }
 
-    private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders, final StringBuilder sb) {
+    private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders,
+                                                                final StringBuilder stringBuilder) {
         if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
-            sb.append(orders.getEmergencyProtectionOrderDirections().size() == 1 ? NEW_LINE : "");
-            sb.append(orders.getEmergencyProtectionOrderDirectionDetails());
-            sb.append(NEW_LINE);
+            stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
+            stringBuilder.append(orders.getEmergencyProtectionOrderDirectionDetails());
+            stringBuilder.append(NEW_LINE);
         }
     }
 
     private void appendDirectionsAndDirectionDetails(final Orders orders, final StringBuilder stringBuilder) {
         if (StringUtils.isNotEmpty(orders.getDirections())) {
-            stringBuilder.append(StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())
-                ? NEW_LINE : "");
+            stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
             stringBuilder.append(orders.getDirections());
             stringBuilder.append(NEW_LINE);
         }
@@ -307,7 +308,7 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private DocmosisProceeding buildProceeding(final OtherProceeding proceeding) {
         return DocmosisProceeding.builder()
-            .onGoingProceeding(getValidAnswerorDefaultValue(proceeding.getOnGoingProceeding()))
+            .onGoingProceeding(getValidAnswerOrDefaultValue(proceeding.getOnGoingProceeding()))
             .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus()))
             .caseNumber(getDefaultIfNullOrEmpty(proceeding.getCaseNumber()))
             .started(getDefaultIfNullOrEmpty(proceeding.getStarted()))
@@ -338,7 +339,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 isConfidential
                     ? CONFIDENTIAL
                     : getDefaultIfNullOrEmpty(other.getTelephone()))
-            .detailsHidden(getValidAnswerorDefaultValue(other.getDetailsHidden()))
+            .detailsHidden(getValidAnswerOrDefaultValue(other.getDetailsHidden()))
             .detailsHiddenReason(
                 concatenateYesOrNoKeyAndValue(
                     other.getDetailsHidden(),
@@ -362,7 +363,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
             .careAndContactPlan(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
             .adoption(getDefaultIfNullOrEmpty(child.getAdoption()))
-            .placementOrderApplication(getValidAnswerorDefaultValue(child.getPlacementOrderApplication()))
+            .placementOrderApplication(getValidAnswerOrDefaultValue(child.getPlacementOrderApplication()))
             .placementCourt(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
             .mothersName(getDefaultIfNullOrEmpty(child.getMothersName()))
             .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
@@ -394,7 +395,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 isConfidential
                     ? CONFIDENTIAL
                     : getDefaultIfNullOrEmpty(getTelephoneNumber(respondent.getTelephoneNumber())))
-            .contactDetailsHidden(getValidAnswerorDefaultValue(respondent.getContactDetailsHidden()))
+            .contactDetailsHidden(getValidAnswerOrDefaultValue(respondent.getContactDetailsHidden()))
             .contactDetailsHiddenDetails(
                 concatenateYesOrNoKeyAndValue(
                     respondent.getContactDetailsHidden(),
@@ -686,13 +687,13 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String concatenateYesOrNoKeyAndValue(final String key, final String value) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getValidAnswerorDefaultValue(key));
+        sb.append(getValidAnswerOrDefaultValue(key));
 
         return (equalsIgnoreCase(key, YES.getValue()) && StringUtils.isNotEmpty(value))
             ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
     }
 
-    private String getValidAnswerorDefaultValue(final String givenAnswer) {
+    private String getValidAnswerOrDefaultValue(final String givenAnswer) {
         switch (YesNo.fromString(givenAnswer)) {
             case YES:
                 return YES.getValue();
