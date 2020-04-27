@@ -226,6 +226,8 @@ class NoticeOfProceedingsServiceTest {
         assertThat(templateData.get("hearingTime")).isEqualTo("9:30am - 11:30am");
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Samuel Davidson");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("John Bishop");
+        assertThat(templateData.get("crest")).isEqualTo("[userImage:crest.png]");
+        assertThat(templateData.get("courtseal")).isEqualTo("[userImage:familycourtseal.png]");
     }
 
     private JudgeAndLegalAdvisor createJudgeAndLegalAdvisor() {

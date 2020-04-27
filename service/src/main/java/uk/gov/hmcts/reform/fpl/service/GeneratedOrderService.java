@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -39,20 +38,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Iterables.getLast;
-import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.BASE_64;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
@@ -146,7 +144,7 @@ public class GeneratedOrderService {
 
     public Map<String, Object> getOrderTemplateData(CaseData caseData,
                                                     OrderStatus orderStatus,
-                                                    JudgeAndLegalAdvisor judgeAndLegalAdvisor) throws IOException {
+                                                    JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
 
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
@@ -223,14 +221,15 @@ public class GeneratedOrderService {
             .put(CHILDREN, childrenDetails)
             .put("childrenCount", childrenCount)
             .put("furtherDirections", caseData.getFurtherDirectionsText())
+            .put("crest", CREST.getValue())
             .build();
 
         if (orderStatus == DRAFT) {
-            orderTemplateBuilder.put("draftbackground", format(BASE_64, generateDraftWatermarkEncodedString()));
+            orderTemplateBuilder.put("draftbackground", DRAFT_WATERMARK.getValue());
         }
 
         if (orderStatus == SEALED) {
-            orderTemplateBuilder.put("courtseal", format(BASE_64, generateCourtSealEncodedString()));
+            orderTemplateBuilder.put("courtseal", COURT_SEAL.getValue());
         }
 
         return orderTemplateBuilder.build();

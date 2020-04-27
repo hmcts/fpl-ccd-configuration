@@ -166,7 +166,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedTemplateParameters(),
-                String.valueOf(CASE_ID));
+                CASE_ID);
         }
 
         @Test

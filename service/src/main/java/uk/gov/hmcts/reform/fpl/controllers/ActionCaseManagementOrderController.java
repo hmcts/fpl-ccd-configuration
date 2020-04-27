@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -91,7 +90,7 @@ public class ActionCaseManagementOrderController {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+        @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -109,7 +108,7 @@ public class ActionCaseManagementOrderController {
     //TODO: refactor. far too much logic in this controller now FPLA-1469
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+        @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -188,7 +187,7 @@ public class ActionCaseManagementOrderController {
             && caseManagementOrderService.isHearingDateInFuture(caseData);
     }
 
-    private Document getDocument(CaseData data, boolean draft) throws IOException {
+    private Document getDocument(CaseData data, boolean draft) {
         DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(data);
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, CMO);
 
