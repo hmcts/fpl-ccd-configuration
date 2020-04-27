@@ -22,7 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/callback/populate-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class TestPopulateCaseController {
+public class PopulateCaseController {
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-submit")
@@ -51,7 +51,7 @@ public class TestPopulateCaseController {
         //        data.put("submittedForm", DocumentReference.buildFromDocument(document));
 
 
-//        data.put("state", "Submitted");
+        //data.put("state", "Submitted");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
