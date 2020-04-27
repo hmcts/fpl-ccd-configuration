@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,13 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,6 +80,32 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
     }
 
     @Test
+    void shouldSetExpectedHearingTimeFramePropertiesWhenTimeFrameNotSameDay() {
+        NotifyGatekeeperTemplate gatekeeperNotificationTemplate = new NotifyGatekeeperTemplate();
+
+        gatekeeperNotificationTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
+        gatekeeperNotificationTemplate.setDataPresent(NO.getValue());
+        gatekeeperNotificationTemplate.setFullStop(YES.getValue());
+        gatekeeperNotificationTemplate.setOrdersAndDirections(List.of(""));
+        gatekeeperNotificationTemplate.setTimeFramePresent(YES.getValue());
+        gatekeeperNotificationTemplate.setTimeFrameValue("two days");
+        gatekeeperNotificationTemplate.setUrgentHearing(NO.getValue());
+        gatekeeperNotificationTemplate.setNonUrgentHearing(YES.getValue());
+        gatekeeperNotificationTemplate.setFirstRespondentName("");
+        gatekeeperNotificationTemplate.setReference("123");
+        gatekeeperNotificationTemplate.setCaseUrl(buildCaseUrl("123"));
+
+        Map<String, Object> caseData = ImmutableMap.of("hearing", Hearing.builder()
+                .timeFrame("Two days")
+                .build());
+
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
+            LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
+    }
+
+    @Test
     void shouldFormatRecipientLabelCorrectlyWhenMultipleGatekeeperEmailsArePresent() {
         List<String> gatekeeperEmails = ImmutableList.of(
             "JohnSmith@gmail.com",
@@ -97,5 +127,12 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
             "JohnSmith@gmail.com");
 
         assertThat(formattedMessage).isEqualTo("");
+    }
+
+    private CaseDetails buildCaseDetails(Map<String, Object> data) {
+        return CaseDetails.builder()
+            .id(123L)
+            .data(data)
+            .build();
     }
 }
