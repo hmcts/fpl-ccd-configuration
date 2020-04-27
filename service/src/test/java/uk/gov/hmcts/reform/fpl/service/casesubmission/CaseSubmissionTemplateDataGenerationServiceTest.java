@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsTy
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
@@ -26,6 +30,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType.CHILD_WHEREABOUTS;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CaseSubmissionTemplateDataGenerationService.class, JacksonAutoConfiguration.class})
@@ -173,7 +178,23 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
     @Nested
     class DocmosisCaseSubmissionLivingSituationTest {
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyForLivingSituationWhenChildLivingSituationIsEmptyOrNull(final String livingSituation)
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(livingSituation)
+                        .build())
+                    .build()))
+                .build();
 
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getChildren()).hasSize(1);
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo("-");
+        }
     }
 
     private CaseData prepareCaseData() {

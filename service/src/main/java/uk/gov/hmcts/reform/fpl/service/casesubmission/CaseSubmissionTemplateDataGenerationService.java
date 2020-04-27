@@ -81,8 +81,6 @@ public class CaseSubmissionTemplateDataGenerationService
     private static final String CONFIDENTIAL = "Confidential";
     private static final LocalDate TODAY = LocalDate.now();
 
-    private final AgeFilter ageFilter = new AgeFilter();
-
     private final UserDetailsService userDetailsService;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) throws IOException {
@@ -91,7 +89,7 @@ public class CaseSubmissionTemplateDataGenerationService
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-            .submittedDate(formatLocalDateToString(TODAY, DATE))
+            .submittedDate(formatDateDisplay(TODAY))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
@@ -349,9 +347,9 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
         return DocmosisChild.builder()
             .name(child.getFullName())
-            .age((String) ageFilter.apply(child.getDateOfBirth().toString(), Map.of()))
+            .age(formatAgeDisplay(child.getDateOfBirth()))
             .gender(formatGenderDisplay(child.getGender(), child.getGenderIdentification()))
-            .dateOfBirth(formatLocalDateToString(child.getDateOfBirth(), DATE))
+            .dateOfBirth(formatDateDisplay(child.getDateOfBirth()))
             .livingSituation(getChildLivingSituation(child, isConfidential))
             .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
             .careAndContactPlan(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
@@ -376,9 +374,9 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
-            .age((String) ageFilter.apply(respondent.getDateOfBirth().toString(), Map.of()))
+            .age(formatAgeDisplay(respondent.getDateOfBirth()))
             .gender(formatGenderDisplay(respondent.getGender(), respondent.getGenderIdentification()))
-            .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
+            .dateOfBirth(formatDateDisplay(respondent.getDateOfBirth()))
             .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
             .address(
                 isConfidential
@@ -459,42 +457,44 @@ public class CaseSubmissionTemplateDataGenerationService
 
 
     private String getChildLivingSituation(final ChildParty child, final boolean isConfidential) {
+        StringBuilder stringBuilder = new StringBuilder();
         if (StringUtils.isNotEmpty(child.getLivingSituation())) {
-            StringBuilder childLivingSituationBuilder = new StringBuilder(child.getLivingSituation());
+            stringBuilder.append(child.getLivingSituation());
 
             if (isConfidential) {
-                childLivingSituationBuilder.append(NEW_LINE).append(CONFIDENTIAL);
+                stringBuilder.append(NEW_LINE).append(CONFIDENTIAL);
             } else if (isNotEmpty(child.getAddress())) {
-                childLivingSituationBuilder.append(child.getAddress().getAddressAsString(NEW_LINE));
+                stringBuilder.append(child.getAddress().getAddressAsString(NEW_LINE));
             }
 
-            formatChildLivingSituationDisplay(child, childLivingSituationBuilder);
-            return childLivingSituationBuilder.toString();
+            formatChildLivingSituationDisplay(child, stringBuilder);
+            return stringBuilder.toString();
         }
-        return DEFAULT_STRING;
+
+        return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
     }
 
     private void formatChildLivingSituationDisplay(final ChildParty child, final StringBuilder sb) {
         switch (fromString(child.getLivingSituation())) {
             case HOSPITAL_SOON_TO_BE_DISCHARGED:
                 if (child.getDischargeDate() != null) {
-                    sb.append("Discharge date: ").append(formatLocalDateToString(child.getDischargeDate(), DATE));
+                    sb.append("Discharge date: ").append(formatDateDisplay(child.getDischargeDate()));
                 }
                 break;
             case REMOVED_BY_POLICE_POWER_ENDS:
                 if (child.getDatePowersEnd() != null) {
-                    sb.append("Date powers end: ").append(formatLocalDateToString(child.getDatePowersEnd(), DATE));
+                    sb.append("Date powers end: ").append(formatDateDisplay(child.getDatePowersEnd()));
                 }
                 break;
             case VOLUNTARILY_SECTION_CARE_ORDER:
                 if (child.getCareStartDate() != null) {
-                    sb.append("Date this began: ").append(formatLocalDateToString(child.getCareStartDate(), DATE));
+                    sb.append("Date this began: ").append(formatDateDisplay(child.getCareStartDate()));
                 }
                 break;
             default:
                 if (child.getAddressChangeDate() != null) {
                     sb.append("Date this began: ")
-                        .append(formatLocalDateToString(child.getAddressChangeDate(), DATE));
+                        .append(formatDateDisplay(child.getAddressChangeDate()));
                 }
         }
     }
@@ -703,5 +703,14 @@ public class CaseSubmissionTemplateDataGenerationService
         return ofNullable(givenList)
             .map(list -> join(NEW_LINE, list))
             .orElse(EMPTY);
+    }
+
+    private String formatAgeDisplay(final LocalDate dateOfBirth) {
+        return dateOfBirth != null
+            ? (String) new AgeFilter().apply(dateOfBirth.toString(), Map.of()) : DEFAULT_STRING;
+    }
+
+    private String formatDateDisplay(final LocalDate dateToFormat) {
+        return dateToFormat != null ? formatLocalDateToString(dateToFormat, DATE) : DEFAULT_STRING;
     }
 }
