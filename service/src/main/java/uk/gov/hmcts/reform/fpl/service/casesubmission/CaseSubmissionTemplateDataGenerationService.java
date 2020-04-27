@@ -470,7 +470,6 @@ public class CaseSubmissionTemplateDataGenerationService
 
             stringBuilder.append(endsWith(stringBuilder.toString(), NEW_LINE) ? "" : NEW_LINE);
             formatChildLivingSituationDisplay(child, stringBuilder);
-            return stringBuilder.toString();
         }
 
         return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
