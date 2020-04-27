@@ -46,15 +46,16 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setup() {
         given(organisationService.findOrganisation()).willReturn(POPULATED_ORGANISATION);
-        given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken)).willReturn(POPULATED_ORGANISATION);
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(organisationApi.findOrganisationById(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
+            .willReturn(POPULATED_ORGANISATION);
     }
 
     @Test
     void shouldPrepopulateApplicantDataWhenNoApplicantExists() {
         CaseDetails caseDetails = buildCaseDetails();
 
-        given(organisationApi.findOrganisationById(userAuthToken, serviceAuthToken))
+        given(organisationApi.findOrganisationById(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
             .willReturn(EMPTY_ORGANISATION);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);

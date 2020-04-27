@@ -18,16 +18,12 @@ public class ChildSelector {
     private List<Integer> selected = new ArrayList<>();
 
     public void generateChildCount(int max) {
-        if (max < 1) {
-            setChildCount("");
-        } else {
-            StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
 
-            for (int i = 1; i <= max; i++) {
-                builder.append(i);
-            }
-
-            setChildCount(builder.toString());
+        for (int i = 1; i <= max; i++) {
+            builder.append(i);
         }
+
+        setChildCount(builder.toString());
     }
 }

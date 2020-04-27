@@ -10,25 +10,26 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-import uk.gov.service.notify.NotificationClientException;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
-import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 @Slf4j
 @Service
 public class CaseManagementOrderEmailContentProvider extends AbstractEmailContentProvider {
 
+    private final EmailNotificationHelper emailNotificationHelper;
+
     @Autowired
     protected CaseManagementOrderEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                                      ObjectMapper mapper) {
+                                                      ObjectMapper mapper,
+                                                      EmailNotificationHelper emailNotificationHelper) {
         super(uiBaseUrl, mapper);
+        this.emailNotificationHelper = emailNotificationHelper;
     }
 
     public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
@@ -63,14 +64,15 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
                                                              byte[] documentContents,
                                                              RepresentativeServingPreferences servingPreference) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        final String subjectLine = buildSubjectLine(caseData);
 
         return ImmutableMap.<String, Object>builder()
-            .put("subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
+            .put("subjectLineWithHearingDate", emailNotificationHelper
+                .buildSubjectLineWithHearingBookingDateSuffix(caseData,
                 caseData.getHearingDetails()))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
-            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? formatCaseUrl(uiBaseUrl, caseDetails.getId()) : "")
+            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? EmailNotificationHelper
+                .formatCaseUrl(uiBaseUrl, caseDetails.getId()) : "")
             .putAll(linkToAttachedDocument(documentContents))
             .build();
     }
@@ -88,25 +90,21 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     private Map<String, Object> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        final String subjectLine = buildSubjectLine(caseData);
 
         return ImmutableMap.of(
-            "subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
+            "subjectLineWithHearingDate", emailNotificationHelper
+                .buildSubjectLineWithHearingBookingDateSuffix(caseData,
                 caseData.getHearingDetails()),
             "reference", String.valueOf(caseDetails.getId()),
-            "caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId())
+            "caseUrl", EmailNotificationHelper.formatCaseUrl(uiBaseUrl, caseDetails.getId())
         );
     }
 
     private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
-
         ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
 
-        try {
-            url.put("link_to_document", prepareUpload(documentContents));
-        } catch (NotificationClientException e) {
-            log.error("Unable to send notification for cafcass due to ", e);
-        }
+        generateAttachedDocumentLink(documentContents).ifPresent(
+            attachedDocumentLink -> url.put("link_to_document", attachedDocumentLink));
 
         return url.build();
     }

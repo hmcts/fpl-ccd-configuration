@@ -28,31 +28,34 @@ let baseUrl = process.env.URL || 'http://localhost:3451';
 
 module.exports = function () {
   return actor({
-    async signIn(username, password) {
+    async signIn(user) {
       await this.retryUntilExists(async () => {
         this.amOnPage(process.env.URL || 'http://localhost:3451');
         if (await this.waitForSelector('#global-header') == null) {
           return;
         }
 
-        const user = await this.grabText('#user-name');
-        if (user !== undefined) {
-          if (user.toLowerCase().includes(username)) {
+        const userName = await this.grabText('#user-name');
+        if (userName !== undefined) {
+          if (userName.toLowerCase().includes(user.email)) {
             return;
           }
           this.signOut();
         }
 
-        loginPage.signIn(username, password);
+        loginPage.signIn(user);
       }, '#sign-out');
     },
 
-    async logInAndCreateCase(username, password) {
-      await this.signIn(username, password);
+    async logInAndCreateCase(user) {
+      await this.signIn(user);
       this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
+      let caseId = await this.grabTextFrom('.heading-h1');
+      console.log(`Case created ${caseId}`);
+      return caseId;
     },
 
     async completeEvent(button, changeDetails) {
@@ -121,7 +124,7 @@ module.exports = function () {
 
     signOut() {
       this.click('Sign Out');
-      this.waitForText('Sign in', 10);
+      this.waitForText('Sign in', 20);
     },
 
     async navigateToCaseDetails(caseId) {
@@ -133,6 +136,11 @@ module.exports = function () {
           this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
         }, '#sign-out');
       }
+    },
+
+    async navigateToCaseDetailsAs(user, caseId) {
+      await this.signIn(user);
+      await this.navigateToCaseDetails(caseId);
     },
 
     async navigateToCaseList(){

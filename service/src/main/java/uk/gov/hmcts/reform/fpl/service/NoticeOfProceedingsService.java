@@ -17,15 +17,17 @@ import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
-import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -35,6 +37,7 @@ public class NoticeOfProceedingsService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
+    private final Time time;
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
                                                                    List<DocmosisTemplates> templateTypes) {
@@ -61,7 +64,7 @@ public class NoticeOfProceedingsService {
         return ImmutableMap.<String, Object>builder()
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
-            .put("todaysDate", formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("todaysDate", formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .put("applicantName", getFirstApplicantName(caseData.getApplicants()))
             .put("orderTypes", getOrderTypes(caseData.getOrders()))
             .put("childrenNames", getAllChildrenNames(caseData.getAllChildren()))
@@ -70,6 +73,8 @@ public class NoticeOfProceedingsService {
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
                 caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
             .putAll(hearingBookingData)
+            .put("crest", CREST.getValue())
+            .put("courtseal", COURT_SEAL.getValue())
             .build();
     }
 

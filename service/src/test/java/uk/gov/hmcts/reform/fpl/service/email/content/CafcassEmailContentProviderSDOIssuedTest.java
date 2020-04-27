@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -20,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, CafcassEmailContentProviderSDOIssued.class, LookupTestConfig.class,
-    HearingBookingService.class
+    HearingBookingService.class, FixedTimeConfiguration.class
 })
 class CafcassEmailContentProviderSDOIssuedTest extends AbstractEmailContentProviderTest {
 

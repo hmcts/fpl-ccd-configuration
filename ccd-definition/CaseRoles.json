@@ -34,5 +34,14 @@
   "Description": "Barrister role",
   "JurisdictionID": "PUBLICLAW",
   "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CAFCASSSOLICITOR]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
   }
 ]

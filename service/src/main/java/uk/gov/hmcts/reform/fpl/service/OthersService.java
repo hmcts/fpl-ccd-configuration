@@ -32,7 +32,7 @@ public class OthersService {
     }
 
     private String getName(Other other) {
-        return defaultIfNull(other.getName(), "BLANK - Please complete");
+        return defaultIfNull(other.getName(), "");
     }
 
     private boolean otherExists(Others others) {

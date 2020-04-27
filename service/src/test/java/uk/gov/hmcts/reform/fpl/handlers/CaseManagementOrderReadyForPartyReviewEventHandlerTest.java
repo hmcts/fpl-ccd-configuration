@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Map;
 
@@ -42,7 +43,8 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderReadyForPartyReviewEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, RepresentativeNotificationService.class, HearingBookingService.class})
+    LookupTestConfig.class, RepresentativeNotificationService.class, HearingBookingService.class,
+    FixedTimeConfiguration.class})
 public class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
 
     @MockBean

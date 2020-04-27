@@ -37,6 +37,8 @@ import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.calendar.BankHolidaysService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -61,7 +63,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingBookingService.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, HearingBookingService.class, FixedTimeConfiguration.class
+})
 class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
     private static final String TOKEN = "1";
@@ -76,6 +80,9 @@ class PopulateStandardDirectionsHandlerTest {
     private static final String TWO_DAYS_BEFORE_HEARING = "-2";
     private static final String THREE_DAYS_BEFORE_HEARING = "-3";
     private static final String SAME_DAY_AS_HEARING = "0";
+
+    @Autowired
+    Time time;
 
     @Mock
     private OrdersLookupService ordersLookupService;
@@ -131,7 +138,7 @@ class PopulateStandardDirectionsHandlerTest {
         given(userDetailsService.getUserName()).willReturn("Emma Taylor");
         given(requestData.userId()).willReturn(USER_ID);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-        given(bankHolidaysService.getBankHolidays()).willReturn(Set.of(LocalDate.now()));
+        given(bankHolidaysService.getBankHolidays()).willReturn(Set.of(time.now().toLocalDate()));
 
         callbackRequest = callbackRequest();
     }
@@ -298,7 +305,8 @@ class PopulateStandardDirectionsHandlerTest {
                 .build()))
             .build();
 
-        return mapper.convertValue(caseData, new TypeReference<>() {});
+        return mapper.convertValue(caseData, new TypeReference<>() {
+        });
     }
 
     private StartEventResponse getStartEventResponse(CallbackRequest callbackRequest) {
@@ -346,6 +354,7 @@ class PopulateStandardDirectionsHandlerTest {
             .assignee(LOCAL_AUTHORITY)
             .readOnly("No")
             .directionRemovable("No")
+            .directionNeeded("Yes")
             .dateToBeCompletedBy(localDateTime)
             .build();
     }

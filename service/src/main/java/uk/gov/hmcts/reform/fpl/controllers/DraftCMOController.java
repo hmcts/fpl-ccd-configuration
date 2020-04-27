@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
@@ -56,7 +55,7 @@ public class DraftCMOController {
 
         draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
-        caseDetails.getData().putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
+        caseDetails.getData().putAll(draftCMOService.extractCaseManagementOrderVariables(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
@@ -68,8 +67,7 @@ public class DraftCMOController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest)
-        throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();

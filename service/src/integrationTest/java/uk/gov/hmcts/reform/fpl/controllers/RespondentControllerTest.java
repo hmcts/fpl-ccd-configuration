@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +45,7 @@ class RespondentControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("respondents1", wrapElements(Respondent.builder()
                 .party(RespondentParty.builder()
-                    .dateOfBirth(LocalDate.now().plusDays(1))
+                    .dateOfBirth(dateNow().plusDays(1))
                     .build())
                 .build())))
             .build();
@@ -61,12 +60,12 @@ class RespondentControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("respondents1", wrapElements(Respondent.builder()
                     .party(RespondentParty.builder()
-                        .dateOfBirth(LocalDate.now().plusDays(1))
+                        .dateOfBirth(dateNow().plusDays(1))
                         .build())
                     .build(),
                 Respondent.builder()
                     .party(RespondentParty.builder()
-                        .dateOfBirth(LocalDate.now().plusDays(1))
+                        .dateOfBirth(dateNow().plusDays(1))
                         .build())
                     .build())))
             .build();
@@ -81,7 +80,7 @@ class RespondentControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("respondents1", wrapElements(Respondent.builder()
                 .party(RespondentParty.builder()
-                    .dateOfBirth(LocalDate.now().minusDays(1))
+                    .dateOfBirth(dateNow().minusDays(1))
                     .build())
                 .build())))
             .build();
@@ -92,7 +91,7 @@ class RespondentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() throws Exception {
+    void aboutToSubmitShouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseData initialData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);

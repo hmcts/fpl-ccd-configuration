@@ -35,7 +35,7 @@ class AddNoteAboutToSubmitControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        when(idamClient.getUserInfo(userAuthToken)).thenReturn(UserInfo.builder().name("John Smith").build());
+        when(idamClient.getUserInfo(USER_AUTH_TOKEN)).thenReturn(UserInfo.builder().name("John Smith").build());
     }
 
     @Test
@@ -53,7 +53,7 @@ class AddNoteAboutToSubmitControllerTest extends AbstractControllerTest {
 
         assertThat(caseData.getCaseNote()).isNull();
         assertThat(unwrapElements(caseData.getCaseNotes()))
-            .containsExactly(caseNote, caseNote(LocalDate.now(), "John Smith", "Example case note"));
+            .containsExactly(caseNote, caseNote(dateNow(), "John Smith", "Example case note"));
     }
 
     private CaseNote caseNote(LocalDate date, String createdBy, String note) {

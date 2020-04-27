@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -28,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.io.IOException;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -59,13 +59,13 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
     private final CommonCaseDataExtractionService dataExtractionService;
     private final DraftCMOService cmoService;
-    private final HearingBookingService hearingBookingService;
+    private final HearingBookingService hearingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final Time time;
 
-    public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) throws IOException {
+    public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
         CaseManagementOrder caseManagementOrder = cmoService.prepareCMO(caseData, caseData.getCaseManagementOrder());
 
@@ -73,11 +73,11 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
         if (needsNextHearingDate(caseManagementOrder)) {
             UUID nextHearingId = caseManagementOrder.getNextHearing().getId();
-            nextHearing = hearingBookingService.getHearingBookingByUUID(hearingDetails, nextHearingId);
+            nextHearing = hearingService.getHearingBookingByUUID(hearingDetails, nextHearingId);
         }
 
-        HearingBooking hearingBooking = hearingBookingService.getHearingBooking(hearingDetails,
-            caseData.getCmoHearingDateList());
+        HearingBooking hearingBooking = hearingService
+            .getHearingBookingByUUID(hearingDetails, caseManagementOrder.getId());
 
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisorData(hearingBooking.getJudgeAndLegalAdvisor()))
@@ -89,20 +89,19 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
             .respondents(getRespondentsNameAndRelationship(caseData))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
             .applicantName(getApplicantName(caseData))
-            .directions(getGroupedCMODirections(caseManagementOrder))
+            .directions(getGroupedCMODirections(caseManagementOrder.getDirections()))
             .hearingBooking(getHearingBookingData(nextHearing))
             .representatives(getRepresentatives(caseData))
             .recitals(buildRecitals(caseManagementOrder.getRecitals()))
             .recitalsProvided(isNotEmpty(buildRecitals(caseManagementOrder.getRecitals())))
             .schedule(caseManagementOrder.getSchedule())
-            .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)));
+            .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)))
+            .crest(getCrestData());
 
         if (caseManagementOrder.isDraft()) {
-            order.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
-        }
-
-        if (!caseManagementOrder.isDraft()) {
-            order.courtseal(format(BASE_64, generateCourtSealEncodedString()));
+            order.draftbackground(getDraftWaterMarkData());
+        } else {
+            order.courtseal(getCourtSealData());
         }
 
         return order.build();
@@ -130,7 +129,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
     private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisorData(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return DocmosisJudgeAndLegalAdvisor.builder()
-            .judgeTitleAndName(defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor), DEFAULT))
+            .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
             .legalAdvisorName(getLegalAdvisorName(judgeAndLegalAdvisor))
             .build();
     }
@@ -233,43 +232,54 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         return applicantDetails.build();
     }
 
-    private List<DocmosisDirection> getGroupedCMODirections(CaseManagementOrder caseManagementOrder) {
-        return ofNullable(caseManagementOrder.getDirections()).map(directions -> {
-                ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
-
-                int directionNumber = 1;
-                for (Element<Direction> element : directions) {
-                    Direction direction = element.getValue();
-                    if (direction.getParentsAndRespondentsAssignee() != null) {
-                        formattedDirections.add(DocmosisDirection.builder()
-                            .header("For " + direction.getParentsAndRespondentsAssignee().getLabel())
-                            .assignee(direction.getAssignee())
-                            .title(formatTitle(directionNumber++, direction))
-                            .body(direction.getDirectionText())
-                            .build());
-                    }
-
-                    if (direction.getOtherPartiesAssignee() != null) {
-                        formattedDirections.add(DocmosisDirection.builder()
-                            .header("For " + direction.getOtherPartiesAssignee().getLabel())
-                            .assignee(direction.getAssignee())
-                            .title(formatTitle(directionNumber++, direction))
-                            .body(direction.getDirectionText())
-                            .build());
-
-                    } else {
-                        formattedDirections.add(DocmosisDirection.builder()
-                            .assignee(direction.getAssignee())
-                            .title(formatTitle(directionNumber++, direction))
-                            .body(direction.getDirectionText())
-                            .build());
-                    }
-                }
-
-                return formattedDirections.build();
-            }
-        ).orElse(ImmutableList.of());
+    private List<DocmosisDirection> getGroupedCMODirections(List<Element<Direction>> directions) {
+        return ofNullable(directions).map(this::buildDocmosisDirections).orElse(ImmutableList.of());
     }
+
+    private ImmutableList<DocmosisDirection> buildDocmosisDirections(List<Element<Direction>> directions) {
+        ImmutableList.Builder<DocmosisDirection> formattedDirections = ImmutableList.builder();
+
+        int directionNumber = 2;
+        ParentsAndRespondentsDirectionAssignee respondentHeader = null;
+        OtherPartiesDirectionAssignee otherHeader = null;
+
+        for (Element<Direction> element : directions) {
+            Direction direction = element.getValue();
+            DocmosisDirection.Builder builder = buildBaseDirection(direction, directionNumber++);
+
+            if (hasNewRespondentAssignee(respondentHeader, direction)) {
+                respondentHeader = direction.getParentsAndRespondentsAssignee();
+                builder.header("For " + respondentHeader.getLabel());
+            }
+
+            if (hasNewOtherAssignee(otherHeader, direction)) {
+                otherHeader = direction.getOtherPartiesAssignee();
+                builder.header("For " + otherHeader.getLabel());
+            }
+
+            formattedDirections.add(builder.build());
+        }
+
+        return formattedDirections.build();
+    }
+
+    private DocmosisDirection.Builder buildBaseDirection(Direction direction, int directionNumber) {
+        return DocmosisDirection.builder()
+            .assignee(direction.getAssignee())
+            .title(formatTitle(directionNumber, direction))
+            .body(direction.getDirectionText());
+    }
+
+    private boolean hasNewOtherAssignee(OtherPartiesDirectionAssignee other, Direction direction) {
+        OtherPartiesDirectionAssignee assignee = direction.getOtherPartiesAssignee();
+        return assignee != null && assignee != other;
+    }
+
+    private boolean hasNewRespondentAssignee(ParentsAndRespondentsDirectionAssignee respondent, Direction direction) {
+        ParentsAndRespondentsDirectionAssignee assignee = direction.getParentsAndRespondentsAssignee();
+        return assignee != null && assignee != respondent;
+    }
+
 
     private String formatTitle(int index, Direction direction) {
         return String.format("%d. %s by %s", index, direction.getDirectionType(),

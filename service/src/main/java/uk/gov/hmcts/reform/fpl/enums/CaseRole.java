@@ -5,7 +5,8 @@ public enum CaseRole {
     LASOLICITOR,
     SOLICITOR,
     LABARRISTER,
-    BARRISTER;
+    BARRISTER,
+    CAFCASSSOLICITOR;
 
     private String formattedName;
 

@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -28,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderRejectedEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, HearingBookingService.class, HmctsEmailContentProvider.class})
+    LookupTestConfig.class, HearingBookingService.class, HmctsEmailContentProvider.class, FixedTimeConfiguration.class})
 public class CaseManagementOrderRejectedEventHandlerTest {
     @MockBean
     private RequestData requestData;
