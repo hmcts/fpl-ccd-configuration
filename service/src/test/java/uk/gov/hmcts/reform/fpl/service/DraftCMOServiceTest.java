@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -48,23 +47,16 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
     JacksonAutoConfiguration.class, CommonDirectionService.class, DraftCMOService.class, FixedTimeConfiguration.class
 })
 class DraftCMOServiceTest {
+
+    @Autowired
+    private ObjectMapper mapper;
+    @Autowired
+    private DraftCMOService draftCMOService;
     @Autowired
     private Time time;
 
-    private final ObjectMapper mapper;
-    private final DraftCMOService draftCMOService;
-
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
-
-    @MockBean
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    DraftCMOServiceTest(ObjectMapper mapper, DraftCMOService draftCMOService) {
-        this.mapper = mapper;
-        this.draftCMOService = draftCMOService;
-    }
 
     @BeforeEach
     void setUp() {
@@ -76,7 +68,7 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
@@ -102,7 +94,7 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(10));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
@@ -115,7 +107,7 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().plusMinutes(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
@@ -141,7 +133,7 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now());
         caseManagementOrder = createCaseManagementOrder();
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = mapper.convertValue(data.get(HEARING_DATE_LIST.getKey()), DynamicList.class);
@@ -181,7 +173,7 @@ class DraftCMOServiceTest {
 
         hearingDetails = createHearingBookingsFromInitialDate(time.now());
 
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             caseManagementOrder, hearingDetails);
 
         assertThat(data).containsKeys(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
@@ -189,7 +181,7 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnAMapWithEmptyRepopulatedEntriesWhenCaseManagementOrderIsNull() {
-        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
             null, List.of());
 
         DynamicList emptyDynamicList = DynamicList.builder()
