@@ -8,7 +8,6 @@
     "dateSubmitted": "2020-03-20",
     "gatekeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
     "caseLocalAuthority": "example",
-    "dateSubmitted":  "2020-01-01",
     "risks": {
       "neglect": "Yes",
       "sexualAbuse": "Yes",
@@ -343,6 +342,7 @@
             "gender": "Male",
             "dateOfBirth": "1933-04-02",
             "placeOfBirth": "Reading",
+            "relationshipToChild": "Cousin",
             "litigationIssues": "NO",
             "address": {
               "AddressLine1": "Flat 90",
@@ -479,8 +479,11 @@
         "endDate": "2020-01-02T14:30:00.000",
         "type": "CASE_MANAGEMENT",
         "venue": "1",
-        "judgeName": "1",
-        "judgeTitle": "1",
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HIS_HONOUR_JUDGE",
+          "judgeLastName": "Walker",
+          "legalAdvisorName": "John Smith"
+        },
         "hearingNeedsBooked": ["INTERMEDIARY"],
         "hearingNeedsDetails": "ok"
       }
