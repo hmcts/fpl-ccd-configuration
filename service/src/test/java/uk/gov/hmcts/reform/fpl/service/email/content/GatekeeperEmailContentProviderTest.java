@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
@@ -19,9 +20,9 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
@@ -60,13 +61,13 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
     }
 
     @Test
-    void shouldReturnSuccessfullyWithEmptyCaseDetails() {
+    void shouldReturnSuccessfullyWithIncompleteCaseDetails() {
         NotifyGatekeeperTemplate gatekeeperNotificationTemplate = new NotifyGatekeeperTemplate();
 
         gatekeeperNotificationTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        gatekeeperNotificationTemplate.setDataPresent(NO.getValue());
-        gatekeeperNotificationTemplate.setFullStop(YES.getValue());
-        gatekeeperNotificationTemplate.setOrdersAndDirections(List.of(""));
+        gatekeeperNotificationTemplate.setDataPresent(YES.getValue());
+        gatekeeperNotificationTemplate.setFullStop(NO.getValue());
+        gatekeeperNotificationTemplate.setOrdersAndDirections(List.of("Care order"));
         gatekeeperNotificationTemplate.setTimeFramePresent(NO.getValue());
         gatekeeperNotificationTemplate.setTimeFrameValue("");
         gatekeeperNotificationTemplate.setUrgentHearing(NO.getValue());
@@ -75,7 +76,13 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setReference("123");
         gatekeeperNotificationTemplate.setCaseUrl(buildCaseUrl("123"));
 
-        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(emptyCaseDetails(),
+        Map<String, Object> caseData = ImmutableMap.of(
+            "orders", Orders.builder().orderType(List.of(CARE_ORDER))
+                .build());
+
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
             LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
     }
 
@@ -84,9 +91,9 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         NotifyGatekeeperTemplate gatekeeperNotificationTemplate = new NotifyGatekeeperTemplate();
 
         gatekeeperNotificationTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        gatekeeperNotificationTemplate.setDataPresent(NO.getValue());
-        gatekeeperNotificationTemplate.setFullStop(YES.getValue());
-        gatekeeperNotificationTemplate.setOrdersAndDirections(List.of(""));
+        gatekeeperNotificationTemplate.setDataPresent(YES.getValue());
+        gatekeeperNotificationTemplate.setFullStop(NO.getValue());
+        gatekeeperNotificationTemplate.setOrdersAndDirections(List.of("Care order"));
         gatekeeperNotificationTemplate.setTimeFramePresent(YES.getValue());
         gatekeeperNotificationTemplate.setTimeFrameValue("two days");
         gatekeeperNotificationTemplate.setUrgentHearing(NO.getValue());
@@ -95,8 +102,10 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setReference("123");
         gatekeeperNotificationTemplate.setCaseUrl(buildCaseUrl("123"));
 
-        Map<String, Object> caseData = ImmutableMap.of("hearing", Hearing.builder()
-                .timeFrame("Two days")
+        Map<String, Object> caseData = ImmutableMap.of(
+            "orders", Orders.builder().orderType(List.of(CARE_ORDER)).build(),
+            "hearing", Hearing.builder()
+                    .timeFrame("Two days")
                 .build());
 
         CaseDetails caseDetails = buildCaseDetails(caseData);

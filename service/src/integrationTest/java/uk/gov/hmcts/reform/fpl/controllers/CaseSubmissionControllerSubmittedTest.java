@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
@@ -37,6 +38,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.CONTACT_WITH_NAMED_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -265,6 +268,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         return CaseDetails.builder()
             .id(CASE_REFERENCE)
             .data(new HashMap<>(Map.of(
+                "orders", Orders.builder()
+                        .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
+                        .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
+                    .build(),
                 "caseLocalAuthority", "example",
                 "sendToCtsc", enableCtsc.getValue()
             ))).build();
@@ -273,9 +280,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
         setSharedTemplateParameters(template);
 
-        template.setDataPresent(YES.getValue());
-        template.setFullStop(NO.getValue());
-        template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
         template.setTimeFramePresent(YES.getValue());
         template.setTimeFrameValue("same day");
         template.setUrgentHearing(YES.getValue());
@@ -288,9 +292,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private <T extends SharedNotifyTemplate> T getIncompleteParameters(T template) {
         setSharedTemplateParameters(template);
 
-        template.setDataPresent(NO.getValue());
-        template.setFullStop(YES.getValue());
-        template.setOrdersAndDirections(List.of(""));
         template.setTimeFramePresent(NO.getValue());
         template.setTimeFrameValue("");
         template.setUrgentHearing(NO.getValue());
@@ -304,5 +305,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         template.setLocalAuthority("Example Local Authority");
         template.setReference(CASE_REFERENCE.toString());
         template.setCaseUrl(String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_REFERENCE));
+        template.setDataPresent(YES.getValue());
+        template.setFullStop(NO.getValue());
+        template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
     }
 }

@@ -39,11 +39,9 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
             .map(Hearing::getTimeFrame)
             .filter(StringUtils::isNotBlank);
 
-        // What if we just add the list no matter if it is empty or not,
-        // surely the parts below determine if it is going to be shown or not
-        template.setOrdersAndDirections(!ordersAndDirections.isEmpty() ? ordersAndDirections : List.of(""));
-        template.setDataPresent(!ordersAndDirections.isEmpty() ? YES.getValue() : NO.getValue());
-        template.setFullStop(!ordersAndDirections.isEmpty() ? NO.getValue() : YES.getValue());
+        template.setOrdersAndDirections(ordersAndDirections);
+        template.setDataPresent(YES.getValue());
+        template.setFullStop(NO.getValue());
         template.setTimeFramePresent(timeFrame.isPresent() ? YES.getValue() : NO.getValue());
         template.setTimeFrameValue(uncapitalize(timeFrame.orElse("")));
         template.setUrgentHearing(

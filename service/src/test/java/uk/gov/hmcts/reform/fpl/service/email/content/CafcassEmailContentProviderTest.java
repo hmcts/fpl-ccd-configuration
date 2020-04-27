@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
@@ -15,9 +18,9 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
@@ -58,13 +61,13 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnSuccessfullyWithEmptyCaseDetails() {
+    void shouldReturnSuccessfullyWithIncompleteCaseDetails() {
         SubmitCaseCafcassTemplate cafcassSubmissionTemplate = new SubmitCaseCafcassTemplate();
         cafcassSubmissionTemplate.setCafcass(CAFCASS_NAME);
         cafcassSubmissionTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        cafcassSubmissionTemplate.setDataPresent(NO.getValue());
-        cafcassSubmissionTemplate.setFullStop(YES.getValue());
-        cafcassSubmissionTemplate.setOrdersAndDirections(List.of(""));
+        cafcassSubmissionTemplate.setDataPresent(YES.getValue());
+        cafcassSubmissionTemplate.setFullStop(NO.getValue());
+        cafcassSubmissionTemplate.setOrdersAndDirections(List.of("Care order"));
         cafcassSubmissionTemplate.setTimeFramePresent(NO.getValue());
         cafcassSubmissionTemplate.setTimeFrameValue("");
         cafcassSubmissionTemplate.setUrgentHearing(NO.getValue());
@@ -73,7 +76,17 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         cafcassSubmissionTemplate.setReference("123");
         cafcassSubmissionTemplate.setCaseUrl(buildCaseUrl("123"));
 
-        assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(emptyCaseDetails(),
+        assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(buildCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(cafcassSubmissionTemplate);
+    }
+
+    private CaseDetails buildCaseDetails() {
+        return CaseDetails.builder()
+            .id(123L)
+            .data(ImmutableMap.of(
+                "orders", Orders.builder()
+                    .orderType(List.of(CARE_ORDER))
+                    .build()))
+            .build();
     }
 }
