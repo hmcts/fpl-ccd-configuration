@@ -69,7 +69,7 @@ the locally running application.
 The FPL Service (as any other HMCTS Reform services) uses three sources of configuration for the placeholders:
 * application.yaml (profile-driven, test and production systems use only default profile)
 * ENV variables (passed in via charts in the cluster or docker-compose for local)
-* Following [library](https://github.com/hmcts/properties-volume-spring-boot-starter) provides secrets as configuration placeholders.
+* The following [library](https://github.com/hmcts/properties-volume-spring-boot-starter) provides secrets as configuration placeholders.
   [This file](src/main/resources/bootstrap.yaml) configures mapping from a secret name to Spring's configuration property.
 
 Custom configuration parameters:
