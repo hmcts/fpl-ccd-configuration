@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,11 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
 @Api
 @RestController
@@ -24,6 +32,9 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PopulateCaseController {
     private final ObjectMapper mapper;
+    private final DocumentGeneratorService documentGeneratorService;
+    private final UploadDocumentService uploadDocumentService;
+    private final Time time;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
@@ -41,15 +52,21 @@ public class PopulateCaseController {
             errors.add(String.format("Could not read file %s", filename));
         }
 
-        //TODO: fill mandatory fields with valid data (UIDs, datetime etc.)
+        var mockFileDocument = Map.of("documentStatus",
+            "Attached",
+            "typeOfDocument",
+            DocumentReference.buildFromDocument(uploadDocumentService.uploadPDF(new byte[] {}, "mockFile.txt")));
 
-        //TODO: upload submittedForm to have valid and working document in the case
-        //        byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
-        //            Pair.of("userFullName", "kurt@swansea.gov.uk (local-authority)")
-        //        );
-        //        var document = uploadDocumentService.uploadPDF(pdf, buildFileName(caseDetails));
-        //        data.put("submittedForm", DocumentReference.buildFromDocument(document));
-
+        data.putAll(Map.of(
+            "dateAndTimeSubmitted", time.now(),
+            "dateSubmitted", time.now().toLocalDate(),
+            "submittedForm", uploadSubmittedForm(caseDetails),
+            "documents_checklist_document", mockFileDocument,
+            "documents_threshold_document", mockFileDocument,
+            "documents_socialWorkCarePlan_document", mockFileDocument,
+            "documents_socialWorkAssessment_document", mockFileDocument,
+            "documents_socialWorkEvidenceTemplate_document", mockFileDocument
+        ));
 
         //data.put("state", "Submitted");
 
@@ -64,5 +81,14 @@ public class PopulateCaseController {
         String jsonContent = ResourceReader.readString(filePath);
 
         return mapper.readValue(jsonContent, new TypeReference<>() {});
+    }
+
+    private DocumentReference uploadSubmittedForm(CaseDetails caseDetails) {
+        byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
+            Pair.of("userFullName", "kurt@swansea.gov.uk (local-authority)")
+        );
+        Document submittedFormDocument = uploadDocumentService.uploadPDF(pdf, buildFileName(caseDetails));
+
+        return DocumentReference.buildFromDocument(submittedFormDocument);
     }
 }
