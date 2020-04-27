@@ -35,7 +35,6 @@ class DocmosisCoverDocumentsServiceTest {
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
-
     @BeforeEach
     void setup() {
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
@@ -59,6 +58,8 @@ class DocmosisCoverDocumentsServiceTest {
         assertThat(coverDocumentData.getCcdCaseNumber()).isEqualTo("1234-1234-1234-1234");
         assertThat(coverDocumentData.getRepresentativeName()).isEqualTo("Mark Jones");
         assertThat(coverDocumentData.getRepresentativeAddress()).isEqualTo("1 Petty France\nSt James's Park\nLondon");
+        assertThat(coverDocumentData.getHmctsLogoLarge()).isEqualTo("[userImage:hmcts-logo-large.png]");
+        assertThat(coverDocumentData.getHmctsLogoSmall()).isEqualTo("[userImage:hmcts-logo-small.png]");
     }
 
     @Test
