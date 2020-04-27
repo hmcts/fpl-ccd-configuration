@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_2;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_4;
-import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -158,11 +158,11 @@ class CaseManagementOrderGenerationServiceTest {
     private DocmosisCaseManagementOrder caseManagementOrderWithEmptyFields(DocmosisCaseManagementOrder templateData) {
         return DocmosisCaseManagementOrder.builder()
             .representatives(List.of(DocmosisRepresentative.builder()
-                .name(DEFAULT)
+                .name(StringUtils.EMPTY)
                 .representedBy(List.of(DocmosisRepresentedBy.builder()
-                    .name(DEFAULT)
-                    .email(DEFAULT)
-                    .phoneNumber(DEFAULT)
+                    .name(StringUtils.EMPTY)
+                    .email(StringUtils.EMPTY)
+                    .phoneNumber(StringUtils.EMPTY)
                     .build()))
                 .build()))
             .schedule(Schedule.builder().includeSchedule("No").build())

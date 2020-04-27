@@ -30,7 +30,6 @@ public class StandardDirectionOrderGenerationService extends
     private final OrdersLookupService ordersLookupService;
     private final CommonCaseDataExtractionService dataService;
 
-    public static final String DEFAULT = "BLANK - please complete";
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
