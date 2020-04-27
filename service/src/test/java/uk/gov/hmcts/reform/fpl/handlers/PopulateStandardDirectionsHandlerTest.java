@@ -230,6 +230,7 @@ class PopulateStandardDirectionsHandlerTest {
                 "directionType", "Direction",
                 "directionRemovable", "No",
                 "readOnly", "No",
+                "directionNeeded", "Yes",
                 "responses", EMPTY_LIST));
 
         verify(coreCaseDataApi).submitEventForCaseWorker(
@@ -284,6 +285,7 @@ class PopulateStandardDirectionsHandlerTest {
                 "directionType", "Direction",
                 "directionRemovable", "No",
                 "readOnly", "No",
+                "directionNeeded", "Yes",
                 "responses", EMPTY_LIST));
 
         verify(coreCaseDataApi).submitEventForCaseWorker(
