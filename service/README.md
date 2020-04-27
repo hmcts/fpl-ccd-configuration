@@ -54,7 +54,7 @@ the service.
 
 ### Run the application (from IntelliiJ)
 
-Ensure the Spring Boot is started with local, user-mappings and the feature-toggle profiles
+Ensure the Spring Boot application  is started with local, user-mappings and the feature-toggle profiles
 (add environment variable spring.profiles.active=feature-toggle,local,user-mappings when starting the main class).
 
 Configure the notify.api_key if necessary (you can pass them as environment variables when IntelliJ
@@ -62,21 +62,21 @@ starts the application).
 
 Ensure the variable CCD_DEF_CASE_SERVICE_BASE_URL bin/configurer/utils/fpl-process-definition.sh is set to
 http://docker.for.mac.localhost:4000 - this will use the host machine for CCD, reaching
-locally running application.
+the locally running application.
 
 ## Config
 
-Services uses three sources of configuration for the placeholders:
+The FPL Service (as any other HMCTS Reform services) uses three sources of configuration for the placeholders:
 * application.yaml (profile-driven, test and production systems use only default profile)
 * ENV variables (passed in via charts in the cluster or docker-compose for local)
-* Secrets from Azure Key vaults and following [library](https://github.com/hmcts/properties-volume-spring-boot-starter).
-  The secret names are map to the properties as specified in [this file](src/main/resources/bootstrap.yaml)
+* Following [library](https://github.com/hmcts/properties-volume-spring-boot-starter) provides secrets as configuration placeholders.
+  [This file](src/main/resources/bootstrap.yaml) configures mapping from a secret name to Spring's configuration property.
 
 Custom configuration parameters:
 
 |Property name|Configuration place|Description|
 |---|---|---|
-|fees-register.api.url|ENV|Address of the Fees Register service, used for obtaining fee of applications|
+|fees-register.api.url|ENV|URL of the Fees Register service, used for obtaining fee of applications|
 |fees-register.parameters|application.yaml|Mapping of FPL's possible Fees to required parameters by Fee Register. Configuration stored in class *FeesConfig*|
 |payment.site_id|application.yaml|Identifier required when communicating with Payment service to determine payments coming from FPL |
 |payment.api.url|ENV|URL of service providing PBA payments functionality|
@@ -84,11 +84,11 @@ Custom configuration parameters:
 |ld.sdk_key|SECRET|Launch Darkly API key for feature toggles|
 |ld.user_key|ENV|Optional parameter which is send to LD to enable per env toggles|
 |SCHEDULER_ENABLED|ENV|(Optional) Determines if Quartz scheduler should be used. Enabled by default (disabled in local profile).|
-|SCHEDULER_DB_HOST|ENV|(Optional) Host for Scheduler DB, default is: localhost|
-|SCHEDULER_DB_PORT|ENV|(Optional) Port for Scheduler DB, default is 5050|
-|SCHEDULER_DB_NAME|ENV|(Optional) Name for Scheduler DB, default is fpl_scheduler|
-|SCHEDULER_DB_USER|ENV|(Optional) Username for Scheduler DB, default is fpl_scheduler|
-|SCHEDULER_DB_PASSWORD|SECRET|(Optional) Password for scheduler db, default (for local) is fpl_scheduler|
+|SCHEDULER_DB_HOST|ENV|(Optional) Host for Scheduler DB, default is `localhost`|
+|SCHEDULER_DB_PORT|ENV|(Optional) Port for Scheduler DB, default is `5050`|
+|SCHEDULER_DB_NAME|ENV|(Optional) Name for Scheduler DB, default is `fpl_scheduler`|
+|SCHEDULER_DB_USER|ENV|(Optional) Username for Scheduler DB, default is `fpl_scheduler`|
+|SCHEDULER_DB_PASSWORD|SECRET|(Optional) Password for scheduler db, default (for local) is `fpl_scheduler`|
 |idam.s2s-auth.microservice|application.yaml|Name of FPL service when communicating with other Reform services.|
 |idam.s2s-auth.url|ENV|URL of Service responsible for Service to Service authentication (s2s token provider)|
 |idam.s2s-auth.totp_secret|SECRET|One time password code secret required when communicating with s2s service|
@@ -98,7 +98,7 @@ Custom configuration parameters:
 |idam.client.secret|SECRET|Secret portion of OAuth 2 flow.|
 |auth.idam.client.baseUrl|ENV|Configuration required by auth-checker-library to communicate with IDAM |
 |auth.provider.service.client.baseUrl|ENV|Configuration required by auth-checker-library to communicate with s2s auth service|
-|spring.mail.host|ENV|Mail server host used for robotics (non Gov notify emails|
+|spring.mail.host|ENV|Mail server host used for robotics (non Gov notify emails)|
 |spring.mail.port|ENV|Port of the mail server|
 |spring.mail.properties.mail.smtp.starttls.enable|ENV|Is mail TLS enabled|
 |spring.mail.properties.mail.smtp.ssl.trust|ENV|TLS mail config|
@@ -120,8 +120,7 @@ Custom configuration parameters:
 |fpl.local_authority_code_to_hmcts_court.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_cafcass.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_shared_inbox.mapping|SECRET|Explained below.|
-|fpl.local_authority_fallback_inbox|SECRET|Fallback notification inbox when system cannot determine where LA notification should be delivered|
-|fpl.local_authority_fallback_inbox|SECRET|Fallback notification inbox when system cannot determine where LA notification should be delivered|
+|fpl.local_authority_fallback_inbox|SECRET|Fallback notification inbox when the system cannot determine where the LA notification should be delivered|
 |fpl.system_update.username|SECRET|System user username, used for automated state transitions and data modifications|
 |fpl.system_update.password|SECRET|System user password, used for automated state transitions and data modifications|
 |fpl.ctsc_inbox|SECRET|CTSC mail inbox|
@@ -131,9 +130,9 @@ Custom configuration parameters:
 |feature.toggle.robotics.support.api.enabled|ENV|Enables API to retrigger robotics notification for particular case|
 |appinsights.instrumentationkey|SECRET|Key used to connect to Azure AppInsights|
 
-Two notes:
+Notes:
 * When using env variables '.', '-' are replaced with '_', i.e. `idam.s2s-auth.url` is configured as ENV var: IDAM_S2S_AUTH_URL
-* Secrets are stores in Azure Key vault in appropriate FPL vault. As mentioned above name of the secrets to property name can be found in [this file](src/main/resources/bootstrap.yaml)
+* Secrets are stored in the appropriate Azure Key vault. As mentioned above name of the secrets to property name can be found in [this file](src/main/resources/bootstrap.yaml)
 
 ## Application Mappings
 
