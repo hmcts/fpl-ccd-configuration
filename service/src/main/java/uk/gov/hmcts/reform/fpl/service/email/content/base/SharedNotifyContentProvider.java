@@ -23,8 +23,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-public abstract class NotifyTemplateContentProvider extends AbstractEmailContentProvider {
-    protected NotifyTemplateContentProvider(String uiBaseUrl, ObjectMapper mapper) {
+public abstract class SharedNotifyContentProvider extends AbstractEmailContentProvider {
+    protected SharedNotifyContentProvider(String uiBaseUrl, ObjectMapper mapper) {
         super(uiBaseUrl, mapper);
     }
 

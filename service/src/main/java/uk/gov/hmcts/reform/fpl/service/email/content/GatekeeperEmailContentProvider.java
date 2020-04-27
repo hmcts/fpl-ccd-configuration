@@ -8,13 +8,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
-import uk.gov.hmcts.reform.fpl.service.email.content.base.NotifyTemplateContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class GatekeeperEmailContentProvider extends NotifyTemplateContentProvider {
+public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration config;
 
     @Autowired

@@ -107,10 +107,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() throws Exception {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
 
-        SubmitCaseHmctsTemplate expectedHmctsParameters = getInCompleteParameters(new SubmitCaseHmctsTemplate());
+        SubmitCaseHmctsTemplate expectedHmctsParameters = getIncompleteParameters(new SubmitCaseHmctsTemplate());
         expectedHmctsParameters.setCourt(FAMILY_COURT);
 
-        SubmitCaseCafcassTemplate expectedCafcassParameters = getInCompleteParameters(new SubmitCaseCafcassTemplate());
+        SubmitCaseCafcassTemplate expectedCafcassParameters = getIncompleteParameters(new SubmitCaseCafcassTemplate());
         expectedCafcassParameters.setCafcass(CAFCASS_COURT);
 
         postSubmittedEvent(caseDetails);
@@ -137,7 +137,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldSendNotificationToCtscAdminWhenCtscIsEnabledWithinCaseDetails() throws Exception {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        SubmitCaseHmctsTemplate expectedHmctsParameters = getInCompleteParameters(new SubmitCaseHmctsTemplate());
+        SubmitCaseHmctsTemplate expectedHmctsParameters = getIncompleteParameters(new SubmitCaseHmctsTemplate());
         expectedHmctsParameters.setCourt(FAMILY_COURT);
 
         postSubmittedEvent(caseDetails);
@@ -271,41 +271,38 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
-        List<String> ordersAndDirections = List.of("Emergency protection order", "Contact with any named person");
-        T updatedTemplate = setCommonTemplateParameters(template);
+        setSharedTemplateParameters(template);
 
-        updatedTemplate.setDataPresent(YES.getValue());
-        updatedTemplate.setFullStop(NO.getValue());
-        updatedTemplate.setOrdersAndDirections(ordersAndDirections);
-        updatedTemplate.setTimeFramePresent(YES.getValue());
-        updatedTemplate.setTimeFrameValue("same day");
-        updatedTemplate.setUrgentHearing(YES.getValue());
-        updatedTemplate.setNonUrgentHearing(NO.getValue());
-        updatedTemplate.setFirstRespondentName("Smith");
+        template.setDataPresent(YES.getValue());
+        template.setFullStop(NO.getValue());
+        template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
+        template.setTimeFramePresent(YES.getValue());
+        template.setTimeFrameValue("same day");
+        template.setUrgentHearing(YES.getValue());
+        template.setNonUrgentHearing(NO.getValue());
+        template.setFirstRespondentName("Smith");
 
-        return updatedTemplate;
+        return template;
     }
 
-    private <T extends SharedNotifyTemplate> T getInCompleteParameters(T template) {
-        T updatedTemplate = setCommonTemplateParameters(template);
+    private <T extends SharedNotifyTemplate> T getIncompleteParameters(T template) {
+        setSharedTemplateParameters(template);
 
-        updatedTemplate.setDataPresent(NO.getValue());
-        updatedTemplate.setFullStop(YES.getValue());
-        updatedTemplate.setOrdersAndDirections(List.of(""));
-        updatedTemplate.setTimeFramePresent(NO.getValue());
-        updatedTemplate.setTimeFrameValue("");
-        updatedTemplate.setUrgentHearing(NO.getValue());
-        updatedTemplate.setNonUrgentHearing(NO.getValue());
-        updatedTemplate.setFirstRespondentName("");
+        template.setDataPresent(NO.getValue());
+        template.setFullStop(YES.getValue());
+        template.setOrdersAndDirections(List.of(""));
+        template.setTimeFramePresent(NO.getValue());
+        template.setTimeFrameValue("");
+        template.setUrgentHearing(NO.getValue());
+        template.setNonUrgentHearing(NO.getValue());
+        template.setFirstRespondentName("");
 
-        return updatedTemplate;
+        return template;
     }
 
-    private <T extends SharedNotifyTemplate> T setCommonTemplateParameters(T template) {
+    private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
         template.setLocalAuthority("Example Local Authority");
         template.setReference(CASE_REFERENCE.toString());
         template.setCaseUrl(String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_REFERENCE));
-
-        return template;
     }
 }
