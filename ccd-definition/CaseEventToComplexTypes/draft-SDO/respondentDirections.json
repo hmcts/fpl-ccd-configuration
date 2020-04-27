@@ -37,7 +37,7 @@
     "ListElementCode": "directionNeeded",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
