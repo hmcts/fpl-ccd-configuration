@@ -62,6 +62,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
@@ -81,8 +82,6 @@ public class CaseSubmissionTemplateDataGenerationService
     private static final String CONFIDENTIAL = "Confidential";
     private static final LocalDate TODAY = LocalDate.now();
 
-    private final AgeFilter ageFilter = new AgeFilter();
-
     private final UserDetailsService userDetailsService;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) throws IOException {
@@ -91,7 +90,7 @@ public class CaseSubmissionTemplateDataGenerationService
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
-            .submittedDate(formatLocalDateToString(TODAY, DATE))
+            .submittedDate(formatDateDisplay(TODAY))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
@@ -147,52 +146,70 @@ public class CaseSubmissionTemplateDataGenerationService
                 .map(OrderType::getLabel)
                 .collect(joining(NEW_LINE)));
 
-            if (StringUtils.isNotEmpty(orders.getOtherOrder())) {
-                sb.append(orders.getOtherOrder());
-                sb.append(NEW_LINE);
-            }
-
-            if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
-                sb.append(orders.getEmergencyProtectionOrders().stream()
-                    .map(EmergencyProtectionOrdersType::getLabel)
-                    .collect(joining(NEW_LINE)));
-
-                if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDetails())) {
-                    sb.append(orders.getEmergencyProtectionOrderDetails());
-                }
-            }
-
+            sb.append(NEW_LINE);
+            appendOtherOrderToOrdersNeeded(orders, sb);
+            appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(orders, sb);
         }
 
-        return StringUtils.isNotEmpty(sb.toString()) ? StringUtils.chomp(sb.toString()) : DEFAULT_STRING;
+        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString().trim() : DEFAULT_STRING;
+    }
+
+    private void appendOtherOrderToOrdersNeeded(final Orders orders, final StringBuilder stringBuilder) {
+        if (StringUtils.isNotEmpty(orders.getOtherOrder())) {
+            stringBuilder.append(orders.getOtherOrder());
+            stringBuilder.append(NEW_LINE);
+        }
+    }
+
+    private void appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(final Orders orders,
+                                                                         final StringBuilder stringBuilder) {
+        if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
+            stringBuilder.append(orders.getEmergencyProtectionOrders().stream()
+                .map(EmergencyProtectionOrdersType::getLabel)
+                .collect(joining(NEW_LINE)));
+
+            stringBuilder.append(NEW_LINE);
+            if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDetails())) {
+                stringBuilder.append(orders.getEmergencyProtectionOrderDetails());
+            }
+        }
     }
 
     private String getDirectionsNeeded(final Orders orders) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         if (orders != null && (isNotEmpty(orders.getOrderType()) || StringUtils.isNotEmpty(orders.getDirections()))) {
 
             if (isNotEmpty(orders.getEmergencyProtectionOrderDirections())) {
-                sb.append(orders.getEmergencyProtectionOrderDirections().stream()
+                stringBuilder.append(orders.getEmergencyProtectionOrderDirections().stream()
                     .map(EmergencyProtectionOrderDirectionsType::getLabel)
                     .collect(joining(NEW_LINE)));
             }
 
-            if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
-                sb.append(orders.getEmergencyProtectionOrderDirectionDetails());
-                sb.append(NEW_LINE);
-            }
-
-            if (StringUtils.isNotEmpty(orders.getDirections())) {
-                sb.append(orders.getDirections());
-                sb.append(NEW_LINE);
-            }
-
-            if (StringUtils.isNotEmpty(orders.getDirectionDetails())) {
-                sb.append(orders.getDirectionDetails());
-            }
+            stringBuilder.append(NEW_LINE);
+            appendEmergencyProtectionOrderDirectionDetails(orders, stringBuilder);
+            appendDirectionsAndDirectionDetails(orders, stringBuilder);
         }
 
-        return StringUtils.isNotEmpty(sb.toString()) ? StringUtils.chomp(sb.toString()) : DEFAULT_STRING;
+        return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
+    }
+
+    private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders,
+                                                                final StringBuilder stringBuilder) {
+        if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
+            stringBuilder.append(orders.getEmergencyProtectionOrderDirectionDetails());
+            stringBuilder.append(NEW_LINE);
+        }
+    }
+
+    private void appendDirectionsAndDirectionDetails(final Orders orders, final StringBuilder stringBuilder) {
+        if (StringUtils.isNotEmpty(orders.getDirections())) {
+            stringBuilder.append(orders.getDirections());
+            stringBuilder.append(NEW_LINE);
+        }
+
+        if (StringUtils.isNotEmpty(orders.getDirectionDetails())) {
+            stringBuilder.append(orders.getDirectionDetails());
+        }
     }
 
     private String getGroundsForEPOReason(final List<OrderType> orderTypes, final GroundsForEPO groundsForEPO) {
@@ -217,21 +234,21 @@ public class CaseSubmissionTemplateDataGenerationService
     }
 
     private String buildGroundsThresholdReason(final Grounds grounds) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         if (isNotEmpty(grounds) && isNotEmpty(grounds.getThresholdReason())) {
             grounds.getThresholdReason().forEach(thresholdReason -> {
                 if (StringUtils.equals(thresholdReason, "noCare")) {
-                    sb.append("Not receiving care that would be reasonably expected from a parent.");
-                    sb.append(NEW_LINE);
+                    stringBuilder.append("Not receiving care that would be reasonably expected from a parent.");
+                    stringBuilder.append(NEW_LINE);
 
                 } else if (StringUtils.equals(thresholdReason, "beyondControl")) {
-                    sb.append("Beyond parental control.");
-                    sb.append(NEW_LINE);
+                    stringBuilder.append("Beyond parental control.");
+                    stringBuilder.append(NEW_LINE);
                 }
             });
         }
 
-        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString() : DEFAULT_STRING;
+        return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString() : DEFAULT_STRING;
     }
 
     private List<DocmosisRespondent> buildDocmosisRespondents(final List<Element<Respondent>> respondents) {
@@ -283,7 +300,7 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private DocmosisProceeding buildProceeding(final OtherProceeding proceeding) {
         return DocmosisProceeding.builder()
-            .onGoingProceeding(getValidAnswerorDefaultValue(proceeding.getOnGoingProceeding()))
+            .onGoingProceeding(getValidAnswerOrDefaultValue(proceeding.getOnGoingProceeding()))
             .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus()))
             .caseNumber(getDefaultIfNullOrEmpty(proceeding.getCaseNumber()))
             .started(getDefaultIfNullOrEmpty(proceeding.getStarted()))
@@ -314,7 +331,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 isConfidential
                     ? CONFIDENTIAL
                     : getDefaultIfNullOrEmpty(other.getTelephone()))
-            .detailsHidden(getValidAnswerorDefaultValue(other.getDetailsHidden()))
+            .detailsHidden(getValidAnswerOrDefaultValue(other.getDetailsHidden()))
             .detailsHiddenReason(
                 concatenateYesOrNoKeyAndValue(
                     other.getDetailsHidden(),
@@ -331,14 +348,14 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
         return DocmosisChild.builder()
             .name(child.getFullName())
-            .age((String) ageFilter.apply(child.getDateOfBirth().toString(), Map.of()))
+            .age(formatAgeDisplay(child.getDateOfBirth()))
             .gender(formatGenderDisplay(child.getGender(), child.getGenderIdentification()))
-            .dateOfBirth(formatLocalDateToString(child.getDateOfBirth(), DATE))
+            .dateOfBirth(formatDateDisplay(child.getDateOfBirth()))
             .livingSituation(getChildLivingSituation(child, isConfidential))
             .keyDates(getDefaultIfNullOrEmpty(child.getKeyDates()))
             .careAndContactPlan(getDefaultIfNullOrEmpty(child.getCareAndContactPlan()))
             .adoption(getDefaultIfNullOrEmpty(child.getAdoption()))
-            .placementOrderApplication(getValidAnswerorDefaultValue(child.getPlacementOrderApplication()))
+            .placementOrderApplication(getValidAnswerOrDefaultValue(child.getPlacementOrderApplication()))
             .placementCourt(getDefaultIfNullOrEmpty(child.getPlacementCourt()))
             .mothersName(getDefaultIfNullOrEmpty(child.getMothersName()))
             .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
@@ -358,9 +375,9 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
-            .age((String) ageFilter.apply(respondent.getDateOfBirth().toString(), Map.of()))
+            .age(formatAgeDisplay(respondent.getDateOfBirth()))
             .gender(formatGenderDisplay(respondent.getGender(), respondent.getGenderIdentification()))
-            .dateOfBirth(formatLocalDateToString(respondent.getDateOfBirth(), DATE))
+            .dateOfBirth(formatDateDisplay(respondent.getDateOfBirth()))
             .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
             .address(
                 isConfidential
@@ -370,7 +387,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 isConfidential
                     ? CONFIDENTIAL
                     : getDefaultIfNullOrEmpty(getTelephoneNumber(respondent.getTelephoneNumber())))
-            .contactDetailsHidden(getValidAnswerorDefaultValue(respondent.getContactDetailsHidden()))
+            .contactDetailsHidden(getValidAnswerOrDefaultValue(respondent.getContactDetailsHidden()))
             .contactDetailsHiddenDetails(
                 concatenateYesOrNoKeyAndValue(
                     respondent.getContactDetailsHidden(),
@@ -441,42 +458,45 @@ public class CaseSubmissionTemplateDataGenerationService
 
 
     private String getChildLivingSituation(final ChildParty child, final boolean isConfidential) {
+        StringBuilder stringBuilder = new StringBuilder();
         if (StringUtils.isNotEmpty(child.getLivingSituation())) {
-            StringBuilder childLivingSituationBuilder = new StringBuilder(child.getLivingSituation());
+            stringBuilder.append(child.getLivingSituation());
 
             if (isConfidential) {
-                childLivingSituationBuilder.append(NEW_LINE).append(CONFIDENTIAL);
+                stringBuilder.append(NEW_LINE).append(CONFIDENTIAL);
             } else if (isNotEmpty(child.getAddress())) {
-                childLivingSituationBuilder.append(child.getAddress().getAddressAsString(NEW_LINE));
+                stringBuilder.append(child.getAddress().getAddressAsString(NEW_LINE));
             }
 
-            formatChildLivingSituationDisplay(child, childLivingSituationBuilder);
-            return childLivingSituationBuilder.toString();
+            stringBuilder.append(endsWith(stringBuilder.toString(), NEW_LINE) ? "" : NEW_LINE);
+            formatChildLivingSituationDisplay(child, stringBuilder);
+            return stringBuilder.toString();
         }
-        return DEFAULT_STRING;
+
+        return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
     }
 
     private void formatChildLivingSituationDisplay(final ChildParty child, final StringBuilder sb) {
         switch (fromString(child.getLivingSituation())) {
             case HOSPITAL_SOON_TO_BE_DISCHARGED:
                 if (child.getDischargeDate() != null) {
-                    sb.append("Discharge date: ").append(formatLocalDateToString(child.getDischargeDate(), DATE));
+                    sb.append("Discharge date: ").append(formatDateDisplay(child.getDischargeDate()));
                 }
                 break;
             case REMOVED_BY_POLICE_POWER_ENDS:
                 if (child.getDatePowersEnd() != null) {
-                    sb.append("Date powers end: ").append(formatLocalDateToString(child.getDatePowersEnd(), DATE));
+                    sb.append("Date powers end: ").append(formatDateDisplay(child.getDatePowersEnd()));
                 }
                 break;
             case VOLUNTARILY_SECTION_CARE_ORDER:
                 if (child.getCareStartDate() != null) {
-                    sb.append("Date this began: ").append(formatLocalDateToString(child.getCareStartDate(), DATE));
+                    sb.append("Date this began: ").append(formatDateDisplay(child.getCareStartDate()));
                 }
                 break;
             default:
                 if (child.getAddressChangeDate() != null) {
                     sb.append("Date this began: ")
-                        .append(formatLocalDateToString(child.getAddressChangeDate(), DATE));
+                        .append(formatDateDisplay(child.getAddressChangeDate()));
                 }
         }
     }
@@ -512,18 +532,18 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private DocmosisAnnexDocuments buildDocmosisAnnexDocuments(final CaseData caseData) {
         return DocmosisAnnexDocuments.builder()
-            .socialWorkChronology(getDisplayData(caseData.getSocialWorkChronologyDocument()))
-            .socialWorkStatement(getDisplayData(caseData.getSocialWorkStatementDocument()))
-            .socialWorkAssessment(getDisplayData(caseData.getSocialWorkAssessmentDocument()))
-            .socialWorkCarePlan(getDisplayData(caseData.getSocialWorkCarePlanDocument()))
-            .socialWorkEvidenceTemplate(getDisplayData(caseData.getSocialWorkEvidenceTemplateDocument()))
-            .thresholdDocument(getDisplayData(caseData.getThresholdDocument()))
-            .checklistDocument(getDisplayData(caseData.getChecklistDocument()))
-            .others(getDisplayData(caseData.getOtherSocialWorkDocuments()))
+            .socialWorkChronology(formatAnnexDocumentDisplay(caseData.getSocialWorkChronologyDocument()))
+            .socialWorkStatement(formatAnnexDocumentDisplay(caseData.getSocialWorkStatementDocument()))
+            .socialWorkAssessment(formatAnnexDocumentDisplay(caseData.getSocialWorkAssessmentDocument()))
+            .socialWorkCarePlan(formatAnnexDocumentDisplay(caseData.getSocialWorkCarePlanDocument()))
+            .socialWorkEvidenceTemplate(formatAnnexDocumentDisplay(caseData.getSocialWorkEvidenceTemplateDocument()))
+            .thresholdDocument(formatAnnexDocumentDisplay(caseData.getThresholdDocument()))
+            .checklistDocument(formatAnnexDocumentDisplay(caseData.getChecklistDocument()))
+            .others(formatAnnexDocumentDisplay(caseData.getOtherSocialWorkDocuments()))
             .build();
     }
 
-    private String getDisplayData(final Document document) {
+    private String formatAnnexDocumentDisplay(final Document document) {
         if (isNotEmpty(document) && StringUtils.isNotEmpty(document.getDocumentStatus())) {
             StringBuilder sb = new StringBuilder(document.getDocumentStatus());
             if (!equalsIgnoreCase(document.getDocumentStatus(), ATTACHED.getLabel())
@@ -536,7 +556,7 @@ public class CaseSubmissionTemplateDataGenerationService
         return DEFAULT_STRING;
     }
 
-    private List<DocmosisSocialWorkOther> getDisplayData(
+    private List<DocmosisSocialWorkOther> formatAnnexDocumentDisplay(
         final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
         return otherSocialWorkDocuments.stream()
             .map(Element::getValue)
@@ -662,13 +682,13 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String concatenateYesOrNoKeyAndValue(final String key, final String value) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getValidAnswerorDefaultValue(key));
+        sb.append(getValidAnswerOrDefaultValue(key));
 
         return (equalsIgnoreCase(key, YES.getValue()) && StringUtils.isNotEmpty(value))
             ? sb.append(NEW_LINE).append(value).toString() : sb.toString();
     }
 
-    private String getValidAnswerorDefaultValue(final String givenAnswer) {
+    private String getValidAnswerOrDefaultValue(final String givenAnswer) {
         switch (YesNo.fromString(givenAnswer)) {
             case YES:
                 return YES.getValue();
@@ -685,5 +705,14 @@ public class CaseSubmissionTemplateDataGenerationService
         return ofNullable(givenList)
             .map(list -> join(NEW_LINE, list))
             .orElse(EMPTY);
+    }
+
+    private String formatAgeDisplay(final LocalDate dateOfBirth) {
+        return dateOfBirth != null
+            ? (String) new AgeFilter().apply(dateOfBirth.toString(), Map.of()) : DEFAULT_STRING;
+    }
+
+    private String formatDateDisplay(final LocalDate dateToFormat) {
+        return dateToFormat != null ? formatLocalDateToString(dateToFormat, DATE) : DEFAULT_STRING;
     }
 }
