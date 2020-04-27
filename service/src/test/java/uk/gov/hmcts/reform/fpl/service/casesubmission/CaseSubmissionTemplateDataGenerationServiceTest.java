@@ -153,6 +153,11 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
     }
 
+    @Nested
+    class DocmosisCaseSubmissionLivingSituationTest {
+
+    }
+
     private CaseData prepareCaseData() {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
         caseData.setDateSubmitted(LocalDate.now());

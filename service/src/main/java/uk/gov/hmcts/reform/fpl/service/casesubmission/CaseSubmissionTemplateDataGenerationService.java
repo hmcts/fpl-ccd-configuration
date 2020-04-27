@@ -533,18 +533,18 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private DocmosisAnnexDocuments buildDocmosisAnnexDocuments(final CaseData caseData) {
         return DocmosisAnnexDocuments.builder()
-            .socialWorkChronology(getDisplayData(caseData.getSocialWorkChronologyDocument()))
-            .socialWorkStatement(getDisplayData(caseData.getSocialWorkStatementDocument()))
-            .socialWorkAssessment(getDisplayData(caseData.getSocialWorkAssessmentDocument()))
-            .socialWorkCarePlan(getDisplayData(caseData.getSocialWorkCarePlanDocument()))
-            .socialWorkEvidenceTemplate(getDisplayData(caseData.getSocialWorkEvidenceTemplateDocument()))
-            .thresholdDocument(getDisplayData(caseData.getThresholdDocument()))
-            .checklistDocument(getDisplayData(caseData.getChecklistDocument()))
-            .others(getDisplayData(caseData.getOtherSocialWorkDocuments()))
+            .socialWorkChronology(formatAnnexDocumentDisplay(caseData.getSocialWorkChronologyDocument()))
+            .socialWorkStatement(formatAnnexDocumentDisplay(caseData.getSocialWorkStatementDocument()))
+            .socialWorkAssessment(formatAnnexDocumentDisplay(caseData.getSocialWorkAssessmentDocument()))
+            .socialWorkCarePlan(formatAnnexDocumentDisplay(caseData.getSocialWorkCarePlanDocument()))
+            .socialWorkEvidenceTemplate(formatAnnexDocumentDisplay(caseData.getSocialWorkEvidenceTemplateDocument()))
+            .thresholdDocument(formatAnnexDocumentDisplay(caseData.getThresholdDocument()))
+            .checklistDocument(formatAnnexDocumentDisplay(caseData.getChecklistDocument()))
+            .others(formatAnnexDocumentDisplay(caseData.getOtherSocialWorkDocuments()))
             .build();
     }
 
-    private String getDisplayData(final Document document) {
+    private String formatAnnexDocumentDisplay(final Document document) {
         if (isNotEmpty(document) && StringUtils.isNotEmpty(document.getDocumentStatus())) {
             StringBuilder sb = new StringBuilder(document.getDocumentStatus());
             if (!equalsIgnoreCase(document.getDocumentStatus(), ATTACHED.getLabel())
@@ -557,7 +557,7 @@ public class CaseSubmissionTemplateDataGenerationService
         return DEFAULT_STRING;
     }
 
-    private List<DocmosisSocialWorkOther> getDisplayData(
+    private List<DocmosisSocialWorkOther> formatAnnexDocumentDisplay(
         final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
         return otherSocialWorkDocuments.stream()
             .map(Element::getValue)
