@@ -16,11 +16,9 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -77,8 +75,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long CASE_ID = 1L;
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofLocalizedDate(
-        FormatStyle.MEDIUM).localizedBy(Locale.UK);
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+        .localizedBy(Locale.UK);
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -140,7 +138,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToSubmitShouldPopulateCaseManagementOrder() {
-        CaseDetails caseDetails = prepareCaseDetailsForAboutToSubmit(createHearingBookingsFromInitialDate(now()));
+        CaseDetails caseDetails = prepareCaseDetailsForAboutToSubmit();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -211,6 +209,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .children(expectedChildren())
             .applicantName("London Borough of Southwark")
             .hearingBooking(expectedHearing())
+            .crest(order.getCrest())
             .draftbackground(order.getDraftbackground())
             .recitals(expectedRecitals())
             .recitalsProvided(true)
@@ -309,8 +308,9 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class).getOrderDoc();
     }
 
-    private CaseDetails prepareCaseDetailsForAboutToSubmit(List<Element<HearingBooking>> hearingDetails) {
-        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
+    private CaseDetails prepareCaseDetailsForAboutToSubmit() {
+        DynamicList dynamicHearingDates = draftCMOService
+            .buildDynamicListFromHearingDetails(createHearingBookingsFromInitialDate(now()));
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
             .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
