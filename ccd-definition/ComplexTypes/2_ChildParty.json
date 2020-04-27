@@ -169,7 +169,7 @@
     "ListElementCode": "placementCourt",
     "FieldType": "TextArea",
     "ElementLabel": "Which court are you applying to?",
-    "FieldShowCondition": "placementOrderApplication=\"Yes\"",
+    "FieldShowCondition": "placementOrderApplication=\"Yes\" AND adoption=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
