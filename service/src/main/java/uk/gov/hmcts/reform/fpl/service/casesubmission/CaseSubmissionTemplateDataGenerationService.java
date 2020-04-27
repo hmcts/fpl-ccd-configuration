@@ -62,7 +62,6 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
@@ -148,6 +147,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 .map(OrderType::getLabel)
                 .collect(joining(NEW_LINE)));
 
+            sb.append(NEW_LINE);
             appendOtherOrderToOrdersNeeded(orders, sb);
 
             appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(orders, sb);
@@ -159,50 +159,47 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private void appendOtherOrderToOrdersNeeded(final Orders orders, final StringBuilder stringBuilder) {
         if (StringUtils.isNotEmpty(orders.getOtherOrder())) {
-            stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
             stringBuilder.append(orders.getOtherOrder());
             stringBuilder.append(NEW_LINE);
         }
     }
 
-
     private void appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(final Orders orders,
                                                                          final StringBuilder stringBuilder) {
         if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
-            stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
             stringBuilder.append(orders.getEmergencyProtectionOrders().stream()
                 .map(EmergencyProtectionOrdersType::getLabel)
                 .collect(joining(NEW_LINE)));
 
+            stringBuilder.append(NEW_LINE);
             if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDetails())) {
-                stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
                 stringBuilder.append(orders.getEmergencyProtectionOrderDetails());
             }
         }
     }
 
     private String getDirectionsNeeded(final Orders orders) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         if (orders != null && (isNotEmpty(orders.getOrderType()) || StringUtils.isNotEmpty(orders.getDirections()))) {
 
             if (isNotEmpty(orders.getEmergencyProtectionOrderDirections())) {
-                sb.append(orders.getEmergencyProtectionOrderDirections().stream()
+                stringBuilder.append(orders.getEmergencyProtectionOrderDirections().stream()
                     .map(EmergencyProtectionOrderDirectionsType::getLabel)
                     .collect(joining(NEW_LINE)));
             }
 
-            appendEmergencyProtectionOrderDirectionDetails(orders, sb);
+            stringBuilder.append(NEW_LINE);
+            appendEmergencyProtectionOrderDirectionDetails(orders, stringBuilder);
 
-            appendDirectionsAndDirectionDetails(orders, sb);
+            appendDirectionsAndDirectionDetails(orders, stringBuilder);
         }
 
-        return StringUtils.isNotEmpty(sb.toString()) ? sb.toString().trim() : DEFAULT_STRING;
+        return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
     }
 
     private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders,
                                                                 final StringBuilder stringBuilder) {
         if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
-            stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
             stringBuilder.append(orders.getEmergencyProtectionOrderDirectionDetails());
             stringBuilder.append(NEW_LINE);
         }
@@ -210,7 +207,6 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private void appendDirectionsAndDirectionDetails(final Orders orders, final StringBuilder stringBuilder) {
         if (StringUtils.isNotEmpty(orders.getDirections())) {
-            stringBuilder.append(endsWith(stringBuilder.toString(), "\n") ? "" : NEW_LINE);
             stringBuilder.append(orders.getDirections());
             stringBuilder.append(NEW_LINE);
         }
