@@ -27,6 +27,7 @@ public class DocmosisOrder implements DocmosisData {
     private final List<DocmosisDirection> directions;
     private final String draftbackground;
     private final String courtseal;
+    private final String crest;
 
     @Override
     public Map<String, Object> toMap(ObjectMapper mapper) {

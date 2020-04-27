@@ -79,15 +79,15 @@ public class StandardDirectionOrderGenerationService extends
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
             .applicantName(getApplicantName(caseData.findApplicant(0).orElse(Applicant.builder().build())))
             .directions(getGroupedDirections(standardDirectionOrder))
-            .hearingBooking(getHearingBookingData(caseData.getHearingDetails()));
-
-        if (SEALED != standardDirectionOrder.getOrderStatus()) {
-            orderBuilder.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
-        }
+            .hearingBooking(getHearingBookingData(caseData.getHearingDetails()))
+            .crest(getCrestData());
 
         if (SEALED == standardDirectionOrder.getOrderStatus()) {
-            orderBuilder.courtseal(format(BASE_64, generateCourtSealEncodedString()));
+            orderBuilder.courtseal(getCourtSealData());
+        } else {
+            orderBuilder.draftbackground(getDraftWaterMarkData());
         }
+
         return orderBuilder.build();
     }
 
