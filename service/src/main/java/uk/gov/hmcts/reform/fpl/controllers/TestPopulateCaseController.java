@@ -50,6 +50,9 @@ public class TestPopulateCaseController {
         //        var document = uploadDocumentService.uploadPDF(pdf, buildFileName(caseDetails));
         //        data.put("submittedForm", DocumentReference.buildFromDocument(document));
 
+
+//        data.put("state", "Submitted");
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .errors(errors)

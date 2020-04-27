@@ -5,7 +5,7 @@ let caseId;
 Feature('Gatekeeper makes allocation decision');
 
 BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
   await I.enterAllocationProposal();
   await I.populateCaseWithMandatoryFields(caseId);
   await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

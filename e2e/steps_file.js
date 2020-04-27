@@ -256,7 +256,6 @@ module.exports = function () {
       await this.submitCase(caseId);
 
       console.log(`Case ${caseId} has been submitted`);
-      this.signOut();
 
       return caseId;
     },
