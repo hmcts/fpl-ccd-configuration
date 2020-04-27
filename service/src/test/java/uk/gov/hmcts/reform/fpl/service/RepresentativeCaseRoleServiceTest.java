@@ -17,6 +17,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CAFCASSSOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_GUARDIAN;
@@ -241,7 +242,7 @@ class RepresentativeCaseRoleServiceTest {
             assertCaseRoleUpdates(
                 List.of(updatedRepresentative),
                 List.of(originalRepresentative),
-                Map.of(originalRepresentative.getEmail(), emptySet()));
+                Map.of(originalRepresentative.getEmail(), Set.of(CAFCASSSOLICITOR)));
         }
 
         @Test

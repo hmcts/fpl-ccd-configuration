@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,8 +35,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {OrderValidationService.class, LocalValidatorFactoryBean.class})
+@ContextConfiguration(classes = {OrderValidationService.class, LocalValidatorFactoryBean.class,
+    FixedTimeConfiguration.class})
 public class OrderValidationServiceTest {
+
+    @Autowired
+    private Time time;
 
     @Autowired
     private OrderValidationService validationService;
@@ -76,10 +82,10 @@ public class OrderValidationServiceTest {
         );
     }
 
-    private static CaseData buildCaseDataWithMandatoryFields(final OrderStatus orderStatus) {
+    private CaseData buildCaseDataWithMandatoryFields(final OrderStatus orderStatus) {
         return buildCaseData(orderStatus).toBuilder()
             .respondents1(buildRespondent("Uncle"))
-            .children1(buildChild("Boy", LocalDate.now().minusYears(1)))
+            .children1(buildChild("Boy", time.now().toLocalDate().minusYears(1)))
             .hearingDetails(createHearingBookingsFromInitialDate(LocalDateTime.now()))
             .allocatedJudge(Judge.builder().build())
             .build();

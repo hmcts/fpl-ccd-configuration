@@ -80,14 +80,14 @@ class RepresentativeAboutToSubmitControllerTest extends AbstractControllerTest {
             .build();
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representative.getEmail()))
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representative.getEmail()))
             .willReturn(new OrganisationUser(userId));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
-        verify(organisationApi).findUserByEmail(userAuthToken, serviceAuthToken, representative.getEmail());
+        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representative.getEmail());
 
-        verify(caseUserApi).updateCaseRolesForUser(userAuthToken, serviceAuthToken,
+        verify(caseUserApi).updateCaseRolesForUser(USER_AUTH_TOKEN, serviceAuthToken,
             caseDetails.getId().toString(), userId, new CaseUser(userId, Set.of(SOLICITOR.formattedName())));
 
         CaseData outgoingCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);

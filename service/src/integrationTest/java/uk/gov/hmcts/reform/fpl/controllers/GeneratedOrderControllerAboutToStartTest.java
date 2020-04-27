@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Map;
 
@@ -25,10 +23,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 public class GeneratedOrderControllerAboutToStartTest extends AbstractControllerTest {
 
     private static final String CASE_ID = "12345";
-    private final byte[] pdf = {1, 2, 3, 4, 5};
-
-    @Autowired
-    private Time time;
 
     GeneratedOrderControllerAboutToStartTest() {
         super("create-order");
@@ -56,7 +50,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
-        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(time.now().toLocalDate().toString());
+        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(dateNow().toString());
     }
 
     @Test

@@ -37,7 +37,7 @@ class OthersServiceTest {
 
         String result = service.buildOthersLabel(others);
 
-        assertThat(result).isEqualTo("Person 1 - BLANK - Please complete\n");
+        assertThat(result).isEqualTo("Person 1 - \n");
     }
 
     @Test
@@ -61,7 +61,7 @@ class OthersServiceTest {
 
         String result = service.buildOthersLabel(others);
 
-        assertThat(result).isEqualTo("Person 1 - BLANK - Please complete\nOther person 1 - BLANK - Please complete\n");
+        assertThat(result).isEqualTo("Person 1 - \nOther person 1 - \n");
     }
 
     @Test

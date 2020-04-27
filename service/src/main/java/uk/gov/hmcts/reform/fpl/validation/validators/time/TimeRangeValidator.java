@@ -31,6 +31,6 @@ public class TimeRangeValidator implements ConstraintValidator<TimeRange, LocalD
         LocalDateTime now = time.now();
         LocalDateTime rangeEnd = now.plus(maxDate.amount(), maxDate.unit());
 
-        return !value.isAfter(rangeEnd) || value.isEqual(now);
+        return !value.isAfter(rangeEnd);
     }
 }

@@ -17,9 +17,9 @@ import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
-import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +35,7 @@ public class NoticeOfProceedingsService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
+    private final Time time;
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
                                                                    List<DocmosisTemplates> templateTypes) {
@@ -61,7 +62,7 @@ public class NoticeOfProceedingsService {
         return ImmutableMap.<String, Object>builder()
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
-            .put("todaysDate", formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("todaysDate", formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .put("applicantName", getFirstApplicantName(caseData.getApplicants()))
             .put("orderTypes", getOrderTypes(caseData.getOrders()))
             .put("childrenNames", getAllChildrenNames(caseData.getAllChildren()))

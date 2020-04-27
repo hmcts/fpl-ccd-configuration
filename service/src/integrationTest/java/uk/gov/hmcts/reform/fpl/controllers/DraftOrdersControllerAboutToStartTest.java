@@ -66,7 +66,7 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
         assertThat(extractDirections(caseData.getCafcassDirections())).containsOnly(directions.get(3));
         assertThat(extractDirections(caseData.getOtherPartiesDirections())).containsOnly(directions.get(4));
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5)).hasSize(1);
-        assertThat(caseData.getDateOfIssue()).isEqualTo(time.now().toLocalDate());
+        assertThat(caseData.getDateOfIssue()).isEqualTo(dateNow());
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
@@ -75,10 +75,10 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartCallbackShouldPopulateCorrectHearingDate() {
-        LocalDateTime date = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
+        LocalDateTime hearingDate = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("hearingDetails", wrapElements(createHearingBooking(date, date.plusDays(1)))))
+            .data(Map.of("hearingDetails", wrapElements(createHearingBooking(hearingDate, hearingDate.plusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);

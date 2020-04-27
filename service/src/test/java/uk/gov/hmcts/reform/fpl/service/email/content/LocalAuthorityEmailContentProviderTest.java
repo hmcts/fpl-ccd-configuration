@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -26,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, LocalAuthorityEmailContentProvider.class, LookupTestConfig.class,
-    HearingBookingService.class
+    HearingBookingService.class, FixedTimeConfiguration.class
 })
 class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProviderTest {
 

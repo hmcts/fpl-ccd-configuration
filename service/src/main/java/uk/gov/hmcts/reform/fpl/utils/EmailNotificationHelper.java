@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -19,13 +22,13 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
+@Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailNotificationHelper {
-    private static final HearingBookingService hearingBookingService = new HearingBookingService();
 
-    private EmailNotificationHelper() {
-    }
+    private final HearingBookingService hearingBookingService;
 
-    public static String buildSubjectLine(final CaseData caseData) {
+    public String buildSubjectLine(final CaseData caseData) {
         final String respondentlastName = getFirstRespondentLastName(caseData.getRespondents1());
         final String familyManCaseNumber = defaultIfNull(caseData.getFamilyManCaseNumber(), "");
 
@@ -34,9 +37,10 @@ public class EmailNotificationHelper {
             .collect(joining(", "));
     }
 
-    public static String buildSubjectLineWithHearingBookingDateSuffix(final String subjectLine,
+    public String buildSubjectLineWithHearingBookingDateSuffix(final CaseData caseData,
                                                                       final List<Element<HearingBooking>>
                                                                           hearingBookings) {
+        String subjectLine = buildSubjectLine(caseData);
         String hearingDateText = "";
         if (isNotEmpty(hearingBookings)) {
             hearingDateText = buildHearingDateText(hearingBookings);
@@ -56,7 +60,7 @@ public class EmailNotificationHelper {
         return isBlank(tab) ? caseUrl : String.format("%s#%s", caseUrl, tab);
     }
 
-    private static String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {
+    private String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {
         return " hearing " + formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(hearingBookings)
             .getStartDate().toLocalDate(), FormatStyle.MEDIUM);
     }

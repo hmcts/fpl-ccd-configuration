@@ -33,9 +33,18 @@ module.exports = class PuppeteerHelpers extends Helper {
     const waitTimeout = sec ? sec * 1000 : this.helpers['Puppeteer'].options.waitForTimeout;
     const context = await this.helpers['Puppeteer']._getContext();
     try {
-      return await context.waitForSelector(locator, { timeout: waitTimeout });
+      return await context.waitForSelector(locator, {timeout: waitTimeout});
     } catch (error) {
       return undefined;
+    }
+  }
+
+  async canSee(selector){
+    try {
+      const numVisible = await this.helpers['Puppeteer'].grabNumberOfVisibleElements(selector);
+      return !!numVisible;
+    } catch (err) {
+      return false;
     }
   }
 

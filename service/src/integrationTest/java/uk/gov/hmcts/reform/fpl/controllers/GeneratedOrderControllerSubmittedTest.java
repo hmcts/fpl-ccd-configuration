@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
@@ -33,15 +32,11 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATI
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedOrderNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByEmail;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
@@ -51,17 +46,22 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
+    private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
+    private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
+    private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
+    private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String CASE_ID = "12345";
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
 
-    private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
     private final DocumentReference lastOrderDocumentReference = DocumentReference.builder()
         .filename("C21 3.pdf")
         .url("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
         .binaryUrl("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
         .build();
+
+    private LocalDateTime dateIn3Months;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -78,6 +78,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
     @BeforeEach
     void init() {
+        dateIn3Months = now().plusMonths(3);
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
     }
 
@@ -87,104 +88,9 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedShouldNotifyHmctsAdminAndLAWhenNoRepresentativesNeedServing() throws Exception {
-        CaseDetails caseDetails = buildCaseDetails(getCommonCaseData().build());
-        postSubmittedEvent(caseDetails);
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eqJson(getExpectedOrderNotificationParameters()),
-            eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
-            eqJson(getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true)),
-            eq(CASE_ID));
-
-        verifyZeroInteractions(notificationClient);
-        verifySendDocumentEventTriggered();
-    }
-
-    @Test
-    void submittedShouldNotifyCtscAdminAWhenNoRepresentativesNeedServingAndCtscIsEnabled() throws Exception {
-        Map<String, Object> caseData = getCommonCaseData().put("sendToCtsc", "Yes").build();
-        CaseDetails caseDetails = buildCaseDetails(caseData);
-
-        postSubmittedEvent(caseDetails);
-
-        verify(notificationClient).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-            "FamilyPublicLaw+ctsc@gmail.com",
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
-            CASE_ID);
-
-        verify(notificationClient, never()).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-            "admin@family-court.com",
-            getExpectedParametersForAdminWhenNoRepresentativesServedByPost(true),
-            CASE_ID);
-
-        verifySendDocumentEventTriggered();
-    }
-
-    @Test
-    void submittedShouldNotifyHmctsAdminAndLAWhenRepresentativesNeedServingByPost() throws Exception {
+    void shouldNotifyRelevantPartiesWhenOrderIssued() throws Exception {
         Map<String, Object> caseData = getCommonCaseData()
-            .put("representatives", buildRepresentativesServedByPost())
-            .build();
-
-        CaseDetails caseDetails = buildCaseDetails(caseData);
-
-        postSubmittedEvent(caseDetails);
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eqJson(getExpectedOrderNotificationParameters()),
-            eq(CASE_ID));
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
-            eqJson(getExpectedParametersForAdminWhenRepresentativesServedByPost(true)),
-            eq(CASE_ID));
-
-        verifyZeroInteractions(notificationClient);
-        verifySendDocumentEventTriggered();
-    }
-
-    @Test
-    void submittedShouldNotifyCtscAdminAndLAWhenRepresentativesNeedServingByPostAndCtscIsEnabled() throws Exception {
-        Map<String, Object> caseData = getCommonCaseData()
-            .put("representatives", buildRepresentativesServedByPost())
-            .put("sendToCtsc", "Yes")
-            .build();
-
-        CaseDetails caseDetails = buildCaseDetails(caseData);
-
-        postSubmittedEvent(caseDetails);
-
-        verify(notificationClient).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("FamilyPublicLaw+ctsc@gmail.com"),
-            any(),
-            eq(CASE_ID));
-
-        verify(notificationClient, never()).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq("admin@family-court.com"),
-            any(),
-            eq(CASE_ID));
-
-        verifySendDocumentEventTriggered();
-    }
-
-    @Test
-    void submittedShouldNotifyRepresentativesServedByEmail() throws Exception {
-        Map<String, Object> caseData = getCommonCaseData()
-            .put("representatives", buildRepresentativesServedByEmail())
+            .put("representatives", buildRepresentatives())
             .build();
 
         CaseDetails caseDetails = buildCaseDetails(caseData);
@@ -193,9 +99,50 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
-            eq("bill@example.com"),
+            eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
             eqJson(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true)),
             eq(CASE_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
+            eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
+            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
+            eq(CASE_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
+            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
+            eq(CASE_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(ADMIN_EMAIL_ADDRESS),
+            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
+            eq(CASE_ID));
+
+        verifyZeroInteractions(notificationClient);
+        verifySendDocumentEventTriggered();
+    }
+
+    @Test
+    void shouldNotifyCtscAdminWhenOrderIssuedAndCtscEnabled() throws Exception {
+        Map<String, Object> caseData = getCommonCaseData().put("sendToCtsc", "Yes").build();
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        postSubmittedEvent(caseDetails);
+
+        verify(notificationClient).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(CTSC_EMAIL_ADDRESS),
+            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
+            eq(CASE_ID));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(ADMIN_EMAIL_ADDRESS),
+            any(),
+            any());
 
         verifySendDocumentEventTriggered();
     }
@@ -219,20 +166,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         );
 
         return ImmutableMap.<String, Object>builder().putAll(caseData);
-    }
-
-    private Map<String, Object> commonNotificationParameters() {
-        final String documentUrl = "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
-        final String subjectLine = "Jones, " + FAMILY_MAN_CASE_NUMBER;
-
-        return ImmutableMap.<String, Object>builder()
-            .put("subjectLine", subjectLine)
-            .put("linkToDocument", documentUrl)
-            .put("hearingDetailsCallout", subjectLine + ", hearing " + formatLocalDateToString(
-                dateIn3Months.toLocalDate(), FormatStyle.MEDIUM))
-            .put("reference", CASE_ID)
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + CASE_ID)
-            .build();
     }
 
     private void verifySendDocumentEventTriggered() {
