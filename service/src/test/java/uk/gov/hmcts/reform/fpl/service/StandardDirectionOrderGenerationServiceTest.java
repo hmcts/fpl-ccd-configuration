@@ -111,7 +111,8 @@ class StandardDirectionOrderGenerationServiceTest {
             .respondentsProvided(false)
             .directions(emptyList())
             .applicantName("")
-            .draftbackground(template.getDraftbackground())
+            .crest("[userImage:crest.png]")
+            .draftbackground("[userImage:draft-watermark.png]")
             .build());
     }
 
@@ -157,7 +158,8 @@ class StandardDirectionOrderGenerationServiceTest {
             .respondentsProvided(false)
             .directions(getExpectedDirections())
             .applicantName("")
-            .draftbackground(template.getDraftbackground())
+            .crest("[userImage:crest.png]")
+            .draftbackground("[userImage:draft-watermark.png]")
             .build());
     }
 
@@ -199,7 +201,8 @@ class StandardDirectionOrderGenerationServiceTest {
             .respondentsProvided(true)
             .directions(getExpectedDirections())
             .applicantName("Bran Stark")
-            .courtseal(template.getCourtseal())
+            .crest("[userImage:crest.png]")
+            .courtseal("[userImage:familycourtseal.png]")
             .build());
     }
 

@@ -18,14 +18,12 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import java.io.IOException;
 import java.util.List;
 
-import static java.lang.String.format;
 import static java.time.LocalDate.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.List.of;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 
 public class SampleCaseSubmissionTestDataHelper {
-    static final String BASE_64 = "image:base64:%1$s";
 
     private SampleCaseSubmissionTestDataHelper() {
     }
@@ -44,7 +42,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .allocation(expectedAllocation())
             .hearingPreferences(expectedDocmosisHearingPreferences())
             .internationalElement(expectedDocmosisInternationalElement())
-            .courtseal(format(BASE_64, generateCourtSealEncodedString()))
+            .courtseal(COURT_SEAL.getValue())
             .draftWaterMark(null)
             .userFullName("Professor")
             .submittedDate(now().format(ofPattern("d MMMM yyyy")))

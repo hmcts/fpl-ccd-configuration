@@ -56,7 +56,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
@@ -66,6 +65,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -112,7 +112,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(buildDocmosisAnnexDocuments(caseData))
             .userFullName(userDetailsService.getUserName())
-            .courtseal(format(BASE_64, generateCourtSealEncodedString()));
+            .courtseal(COURT_SEAL.getValue());
 
         return applicationFormBuilder.build();
     }
@@ -322,7 +322,7 @@ public class CaseSubmissionTemplateDataGenerationService
         return DocmosisOtherParty.builder()
             .name(other.getName())
             .gender(formatGenderDisplay(other.getGender(), other.getGenderIdentification()))
-            .dateOfBirth(other.getDOB() != null 
+            .dateOfBirth(other.getDOB() != null
                     ? formatLocalDateFromStringToStringUsingFormat(other.getDOB(), DATE) : DEFAULT_STRING)
             .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
             .address(

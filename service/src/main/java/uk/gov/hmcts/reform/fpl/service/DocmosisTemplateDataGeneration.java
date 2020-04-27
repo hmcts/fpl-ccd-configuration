@@ -3,33 +3,33 @@ package uk.gov.hmcts.reform.fpl.service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
+
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HMCTS_LOGO_LARGE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.HMCTS_LOGO_SMALL;
 
 public abstract class DocmosisTemplateDataGeneration<T> {
-    protected static final String BASE_64 = "image:base64:%1$s";
-    private static String familyCourtSeal = null;
-    private static String draftWatermark = null;
 
-    // REFACTOR: 05/12/2019 make not static when all document generation uses this abstract class
-    protected static String generateDraftWatermarkEncodedString() throws IOException {
-        if (draftWatermark == null) {
-            InputStream is = DocmosisTemplateDataGeneration.class
-                .getResourceAsStream("/assets/images/draft-watermark.png");
-            byte[] fileContent = is.readAllBytes();
-            draftWatermark = Base64.getEncoder().encodeToString(fileContent);
-        }
-        return draftWatermark;
+    protected String getDraftWaterMarkData() {
+        return DRAFT_WATERMARK.getValue();
     }
 
-    public static String generateCourtSealEncodedString() throws IOException {
-        if (familyCourtSeal == null) {
-            InputStream is = DocmosisTemplateDataGeneration.class
-                .getResourceAsStream("/assets/images/family-court-seal.png");
-            byte[] fileContent = is.readAllBytes();
-            familyCourtSeal = Base64.getEncoder().encodeToString(fileContent);
-        }
-        return familyCourtSeal;
+    protected String getCourtSealData() {
+        return COURT_SEAL.getValue();
+    }
+
+    protected String getCrestData() {
+        return CREST.getValue();
+    }
+
+    protected static String getHmctsLogoSmall() {
+        return HMCTS_LOGO_SMALL.getValue();
+    }
+
+    protected static String getHmctsLogoLarge() {
+        return HMCTS_LOGO_LARGE.getValue();
     }
 
     public abstract T getTemplateData(CaseData caseData) throws IOException;
