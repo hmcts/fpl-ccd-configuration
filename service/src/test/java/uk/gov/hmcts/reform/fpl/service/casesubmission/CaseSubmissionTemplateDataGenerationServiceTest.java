@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -148,6 +149,91 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
                 + "Information on the whereabouts of the child\n"
                 + "emergency protection order details";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
+        }
+    }
+
+    @Nested
+    class DocmosisCaseSubmissionGroundsForEPOReasonTest {
+
+        @Test
+        void shouldReturnEmptyWhenOrderTypesAreEmpty() throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("");
+        }
+
+        @Test
+        void shouldReturnEmptyWhenEPOIsNotInOrderType() throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CARE_ORDER,
+                        OrderType.EDUCATION_SUPERVISION_ORDER))
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("");
+        }
+
+        @Test
+        void shouldReturnEmptyWhenOrderTypeEPOAndGroundsForEPOIsEmpty() throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CARE_ORDER,
+                        OrderType.EMERGENCY_PROTECTION_ORDER))
+                    .build())
+                .groundsForEPO(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnEmptyWhenOrderTypeEPOAndGroundsForEPOReasonIsEmpty() throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CARE_ORDER,
+                        OrderType.EMERGENCY_PROTECTION_ORDER))
+                    .build())
+                .groundsForEPO(GroundsForEPO.builder()
+                    .reason(of())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnGroundsForEPOReasonWhenOrderTypeEPOAndGroundsForEPOReasonIsNotEmpty() throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of(OrderType.CARE_ORDER,
+                        OrderType.EMERGENCY_PROTECTION_ORDER))
+                    .build())
+                .groundsForEPO(GroundsForEPO.builder()
+                    .reason(of("HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION",
+                        "URGENT_ACCESS_TO_CHILD_IS_OBSTRUCTED"))
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getGroundsForEPOReason())
+                .isEqualTo("There’s reasonable cause to believe the child is likely to suffer significant " 
+                    + "harm if they don’t stay in their current accommodation\nYou’re making enquiries and " 
+                    + "need urgent access to the child to find out about their welfare, and access is being " 
+                    + "unreasonably refused");
         }
     }
 
