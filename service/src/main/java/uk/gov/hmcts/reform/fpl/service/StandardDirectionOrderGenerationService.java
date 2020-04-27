@@ -100,7 +100,7 @@ public class StandardDirectionOrderGenerationService extends
             .build();
     }
 
-    List<DocmosisChild> getChildrenDetails(List<Element<Child>> children) {
+    public List<DocmosisChild> getChildrenDetails(List<Element<Child>> children) {
         return children.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
@@ -121,7 +121,7 @@ public class StandardDirectionOrderGenerationService extends
             .orElse(DEFAULT);
     }
 
-    List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
+    public List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
         return respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
@@ -156,7 +156,7 @@ public class StandardDirectionOrderGenerationService extends
         ).orElse(ImmutableList.of());
     }
 
-    String getApplicantName(Applicant applicant) {
+    public String getApplicantName(Applicant applicant) {
         return ofNullable(applicant.getParty())
             .map(ApplicantParty::getOrganisationName)
             .orElse("");
