@@ -21,6 +21,12 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+<<<<<<< Updated upstream
+=======
+import uk.gov.hmcts.reform.fpl.model.common.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
+>>>>>>> Stashed changes
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -274,9 +280,6 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .respondents1(wrapElements(Respondent.builder()
                     .party(RespondentParty.builder()
-                        .firstName("First Name")
-                        .lastName("Last Name")
-                        .relationshipToChild("Father")
                         .address(Address.builder()
                             .postcode("SL11GF")
                             .build())
@@ -301,9 +304,6 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .respondents1(wrapElements(Respondent.builder()
                     .party(RespondentParty.builder()
-                        .firstName("First Name")
-                        .lastName("Last Name")
-                        .relationshipToChild("Father")
                         .address(Address.builder()
                             .addressLine1("Flat 13")
                             .postcode("SL11GF")
@@ -321,6 +321,100 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             assertThat(caseSubmission.getRespondents()).hasSize(1);
             assertThat(caseSubmission.getRespondents().get(0).getAddress()).isEqualTo("Flat 13\nSL11GF");
             assertThat(caseSubmission.getRespondents().get(0).getTelephoneNumber()).isEqualTo("080-90909090");
+        }
+    }
+
+    @Nested
+    class DocmosisCaseSubmissionFormatAnnexDocumentDisplayTest {
+        @Test
+        void shouldReturnEmptyWhenDocumentIsNotAvailable()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .socialWorkChronologyDocument(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnEmptyWhenDocumentStatusIsEmpty()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .socialWorkChronologyDocument(Document.builder()
+                    .documentStatus("")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnStatusWhenDocumentStatusIsAvailable()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .socialWorkChronologyDocument(Document.builder()
+                    .documentStatus("Attached")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology()).isEqualTo("Attached");
+        }
+
+        @Test
+        void shouldReturnStatusAndReasonWhenDocumentStatusIsOtherThanAttached()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .socialWorkChronologyDocument(Document.builder()
+                    .documentStatus("To follow")
+                    .statusReason("Documents not uploaded")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology())
+                .isEqualTo("To follow\nDocuments not uploaded");
+        }
+
+        @Test
+        void shouldReturnDocumentTitleOrDefaultValueForAdditionalAnnexDocuments()
+            throws IOException {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
+                        .documentTitle("Additional Doc 1")
+                        .typeOfDocument(DocumentReference.builder()
+                            .url("/test.doc")
+                            .build())
+                        .build(),
+                    DocumentSocialWorkOther.builder()
+                        .documentTitle("Additional Doc 2")
+                        .typeOfDocument(DocumentReference.builder()
+                            .url("/test.doc")
+                            .build())
+                        .build(),
+                    DocumentSocialWorkOther.builder()
+                        .documentTitle("")
+                        .typeOfDocument(DocumentReference.builder()
+                            .url("/test.doc")
+                            .build())
+                        .build()
+                ))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getAnnexDocuments().getOthers()).hasSize(3);
+            assertThat(caseSubmission.getAnnexDocuments().getOthers().get(0).getDocumentTitle())
+                .isEqualTo("Additional Doc 1");
+            assertThat(caseSubmission.getAnnexDocuments().getOthers().get(1).getDocumentTitle())
+                .isEqualTo("Additional Doc 2");
+            assertThat(caseSubmission.getAnnexDocuments().getOthers().get(2).getDocumentTitle()).isEqualTo("-");
         }
     }
 
