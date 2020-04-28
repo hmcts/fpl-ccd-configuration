@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.utils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +12,7 @@ import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisp
  * AgeDisplayFormatHelper calculates age based on provided date and returns it in string format.
  */
 class AgeDisplayFormatHelperTest {
-    private static final LocalDate NOW = LocalDate.now(Clock.systemDefaultZone());
+    private static final LocalDate NOW = FixedTimeConfiguration.NOW.toLocalDate();
 
     @Test
     void shouldThrowExceptionWhenInputIsNotProvided() {
