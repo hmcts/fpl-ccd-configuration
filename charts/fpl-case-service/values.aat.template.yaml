@@ -1,10 +1,6 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
-  lifecycle:
-    postStart:
-      exec:
-        command: ["/bin/sh", "-c", "echo Test from the postStart handler > /usr/share/message"]
   environment:
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
