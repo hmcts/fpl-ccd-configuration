@@ -1,17 +1,30 @@
 #!groovy
 
 properties([
-  pipelineTriggers([cron('20 21 * * *')])
+  pipelineTriggers([cron('20 21 * * *')]),
+  parameters([
+    string(name: 'URL_TO_TEST', defaultValue: 'https://www-ccd.aat.platform.hmcts.net',
+      description: 'The URL you want to run these tests against'),
+    string(name: 'PROXY_SERVER', defaultValue: 'proxyout.reform.hmcts.net:8080',
+      description: 'The proxy derver to use'),
+    string(name: 'SecurityRules',
+      defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/2366efe631a60672ff8d0698bd9cb07f0e878faa/conf/security-rules.conf',
+      description: 'The security rules to use'),
+  ])
 ])
 
 @Library('Infrastructure')
 
 def type = 'java'
-
 def product = 'fpl'
 def component = 'case-service'
 
 withNightlyPipeline(type, product, component) {
+  env.URL = params.URL_TO_TEST
+  env.PROXY_SERVER = params.PROXY_SERVER
+  env.Rules = params.SecurityRules
+
+  enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest()
 
@@ -22,8 +35,8 @@ withNightlyPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest') {
-    env.URL = 'https://www-ccd.aat.platform.hmcts.net'
-    env.PROXY_SERVER = 'proxyout.reform.hmcts.net:8080'
+//    env.URL = params.URL_TO_TEST
+//    env.PROXY_SERVER = params.PROXY_SERVER
 
     try {
       sh('./gradlew --no-daemon --info --rerun-tasks functional')
