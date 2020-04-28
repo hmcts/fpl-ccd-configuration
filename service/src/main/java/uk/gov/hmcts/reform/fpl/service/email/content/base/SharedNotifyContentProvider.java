@@ -40,8 +40,6 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
             .filter(StringUtils::isNotBlank);
 
         template.setOrdersAndDirections(ordersAndDirections);
-        template.setDataPresent(YES.getValue());
-        template.setFullStop(NO.getValue());
         template.setTimeFramePresent(timeFrame.isPresent() ? YES.getValue() : NO.getValue());
         template.setTimeFrameValue(uncapitalize(timeFrame.orElse("")));
         template.setUrgentHearing(
