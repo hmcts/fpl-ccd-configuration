@@ -50,11 +50,9 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.pebble.AgeFilter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.String.join;
@@ -71,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisplay;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateFromStringToStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -713,11 +712,6 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String formatAddress(Address address) {
         return isNotEmpty(address) ? getDefaultIfNullOrEmpty(address.getAddressAsString(NEW_LINE)) : DEFAULT_STRING;
-    }
-
-    private String formatAgeDisplay(final LocalDate dateOfBirth) {
-        return dateOfBirth != null
-            ? (String) new AgeFilter().apply(dateOfBirth.toString(), Map.of()) : DEFAULT_STRING;
     }
 
     private String formatDateDisplay(final LocalDate dateToFormat) {
