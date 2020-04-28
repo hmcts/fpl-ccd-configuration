@@ -21,10 +21,10 @@ public class CaseSubmissionService  {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseSubmissionTemplateDataGenerationService documentGenerationService;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper mapper;
 
     public Document generateSubmittedFormPDF(final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
         DocmosisCaseSubmission submittedCaseWithCaseNumber =

@@ -43,7 +43,7 @@ public class CaseSubmissionServiceTest {
     private CaseDetails givenCaseDetails;
 
     @BeforeEach
-    void init() {
+    void setup() {
         DocmosisDocument docmosisDocument = new DocmosisDocument("case_submission_c110a.pdf", PDF);
 
         DocmosisCaseSubmission expectedCaseSubmission = expectedDocmosisCaseSubmission();

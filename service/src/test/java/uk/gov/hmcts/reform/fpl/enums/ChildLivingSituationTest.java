@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLI
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
 
 class ChildLivingSituationTest {
+
     @Test
     void shouldReturnCorrectChildLivingSituationWhenStringValueGiven() {
         assertThat(ChildLivingSituation.fromString("In hospital and soon to be discharged"))
