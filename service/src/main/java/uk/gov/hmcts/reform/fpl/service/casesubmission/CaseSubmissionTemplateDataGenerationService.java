@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.lang.String.join;
+import static java.time.LocalDate.parse;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -71,7 +72,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisplay;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateFromStringToStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -324,8 +324,7 @@ public class CaseSubmissionTemplateDataGenerationService
         return DocmosisOtherParty.builder()
             .name(other.getName())
             .gender(formatGenderDisplay(other.getGender(), other.getGenderIdentification()))
-            .dateOfBirth(other.getDOB() != null
-                    ? formatLocalDateFromStringToStringUsingFormat(other.getDOB(), DATE) : DEFAULT_STRING)
+            .dateOfBirth(other.getDOB() != null ? formatLocalDateToString(parse(other.getDOB()), DATE) : DEFAULT_STRING)
             .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
             .address(
                 isConfidential
