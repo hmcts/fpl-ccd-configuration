@@ -49,6 +49,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.pebble.AgeFilter;
 
 import java.time.LocalDate;
@@ -81,8 +82,8 @@ public class CaseSubmissionTemplateDataGenerationService
     private static final String NEW_LINE = "\n";
     private static final String DEFAULT_STRING = "-";
     private static final String CONFIDENTIAL = "Confidential";
-    private static final LocalDate TODAY = LocalDate.now();
 
+    private final Time time;
     private final UserDetailsService userDetailsService;
     private final HmctsCourtLookupConfiguration courtLookupConfiguration;
 
@@ -93,7 +94,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
             .courtName(courtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .submittedDate(formatDateDisplay(TODAY))
+            .submittedDate(formatDateDisplay(time.now().toLocalDate()))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))
             .allocation(caseData.getAllocationProposal())
