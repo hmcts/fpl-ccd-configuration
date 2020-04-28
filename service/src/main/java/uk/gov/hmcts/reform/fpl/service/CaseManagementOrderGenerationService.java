@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.io.IOException;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -67,7 +65,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final Time time;
 
-    public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) throws IOException {
+    public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
         CaseManagementOrder caseManagementOrder = cmoService.prepareCMO(caseData, caseData.getCaseManagementOrder());
 
@@ -97,14 +95,13 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
             .recitals(buildRecitals(caseManagementOrder.getRecitals()))
             .recitalsProvided(isNotEmpty(buildRecitals(caseManagementOrder.getRecitals())))
             .schedule(caseManagementOrder.getSchedule())
-            .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)));
+            .scheduleProvided("Yes".equals(getScheduleProvided(caseManagementOrder)))
+            .crest(getCrestData());
 
         if (caseManagementOrder.isDraft()) {
-            order.draftbackground(format(BASE_64, generateDraftWatermarkEncodedString()));
-        }
-
-        if (!caseManagementOrder.isDraft()) {
-            order.courtseal(format(BASE_64, generateCourtSealEncodedString()));
+            order.draftbackground(getDraftWaterMarkData());
+        } else {
+            order.courtseal(getCourtSealData());
         }
 
         return order.build();

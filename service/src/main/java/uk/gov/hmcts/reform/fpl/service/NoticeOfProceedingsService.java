@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -71,6 +73,8 @@ public class NoticeOfProceedingsService {
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
                 caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
             .putAll(hearingBookingData)
+            .put("crest", CREST.getValue())
+            .put("courtseal", COURT_SEAL.getValue())
             .build();
     }
 

@@ -18,14 +18,12 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import java.io.IOException;
 import java.util.List;
 
-import static java.lang.String.format;
 import static java.time.LocalDate.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.List.of;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateCourtSealEncodedString;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 
 public class SampleCaseSubmissionTestDataHelper {
-    static final String BASE_64 = "image:base64:%1$s";
 
     private SampleCaseSubmissionTestDataHelper() {
     }
@@ -39,12 +37,12 @@ public class SampleCaseSubmissionTestDataHelper {
             .applicantOrganisations("London Borough of Southwark")
             .respondentNames("Paul Smith\nJames Smith\nAn Other")
             .ordersNeeded("Emergency protection order")
-            .directionsNeeded("Contact with any named personYes")
+            .directionsNeeded("Contact with any named person\nYes")
             .hearing(expectedDocmosisHearing())
             .allocation(expectedAllocation())
             .hearingPreferences(expectedDocmosisHearingPreferences())
             .internationalElement(expectedDocmosisInternationalElement())
-            .courtseal(format(BASE_64, generateCourtSealEncodedString()))
+            .courtseal(COURT_SEAL.getValue())
             .draftWaterMark(null)
             .userFullName("Professor")
             .submittedDate(now().format(ofPattern("d MMMM yyyy")))
@@ -58,6 +56,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .risks(expectedDocmosisRisks())
             .factorsParenting(expectedDocmosisFactorsParenting())
             .proceeding(expectedDocmosisProceeding())
+            .relevantProceedings("Yes")
             .annexDocuments(expectedDocmosisAnnexDocuments())
             .build();
     }
@@ -129,7 +128,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .age("1 year old")
                 .gender("Boy")
                 .dateOfBirth("15 June 2018")
-                .livingSituation("Living with respondents\nConfidentialDate this began: 8 November 2018")
+                .livingSituation("Living with respondents\nConfidential\nDate this began: 8 November 2018")
                 .keyDates("child starting primary school or taking GCSEs")
                 .careAndContactPlan("Place baby in local authority foster care")
                 .adoption("Yes")
@@ -150,7 +149,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .gender("Girl")
                 .dateOfBirth("2 February 2002")
                 .livingSituation("Living with respondentsCarnegie House\nCentral Milton Keynes\nMilton Keynes"
-                    + "\nMK\nLondon\nMK10 1SA\nBT66 7RRDate this began: 2 February 2002")
+                    + "\nMK\nLondon\nMK10 1SA\nBT66 7RR\nDate this began: 2 February 2002")
                 .keyDates("test child two key date")
                 .careAndContactPlan("test child two care and contact plan")
                 .adoption("Yes")

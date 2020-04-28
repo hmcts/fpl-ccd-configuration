@@ -50,7 +50,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
     }
 
     @Test
-    void shouldGenerateC6NoticeOfProceedingsDocument() throws Exception {
+    void shouldGenerateC6NoticeOfProceedingsDocument() {
         Document document = document();
         DocmosisDocument docmosisDocument = DocmosisDocument.builder()
             .bytes(PDF)
