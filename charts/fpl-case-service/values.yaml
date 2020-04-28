@@ -5,7 +5,7 @@ tags:
 java:
   aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest
-  command: ["/bin/sh", "-c", "echo Test from the postStart handler > /usr/share/message"]
+  command: ["/bin/bash", "-c", "echo Test from the postStart handler > /usr/share/message"]
   environment:
     IDAM_CLIENT_ID: fpl_case_service
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback
