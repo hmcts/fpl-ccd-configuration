@@ -9,7 +9,7 @@ java:
   lifecycle:
     postStart:
       exec:
-        command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+        command: ["/bin/bash", "-c", "echo Hello from the postStart handler > /usr/share/message"]
   environment:
     IDAM_CLIENT_ID: fpl_case_service
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback
