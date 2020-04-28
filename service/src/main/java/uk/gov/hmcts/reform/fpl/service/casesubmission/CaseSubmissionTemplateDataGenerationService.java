@@ -352,7 +352,7 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(child.getDetailsHidden(), YES.getValue());
         return DocmosisChild.builder()
             .name(child.getFullName())
-            .age(formatAgeDisplay(child.getDateOfBirth()))
+            .age(formatAge(child.getDateOfBirth()))
             .gender(formatGenderDisplay(child.getGender(), child.getGenderIdentification()))
             .dateOfBirth(formatDateDisplay(child.getDateOfBirth()))
             .livingSituation(getChildLivingSituation(child, isConfidential))
@@ -365,7 +365,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .fathersName(getDefaultIfNullOrEmpty(child.getFathersName()))
             .fathersResponsibility(getDefaultIfNullOrEmpty(child.getFathersResponsibility()))
             .socialWorkerName(getDefaultIfNullOrEmpty(child.getSocialWorkerName()))
-            .socialWorkerTelephoneNumber(getTelephoneNumber(child.getTelephoneNumber()))
+            .socialWorkerTelephoneNumber(getTelephoneNumber(child.getSocialWorkerTelephoneNumber()))
             .additionalNeeds(
                 concatenateKeyAndValue(child.getAdditionalNeeds(), child.getAdditionalNeedsDetails()))
             .litigationIssues(
@@ -379,7 +379,7 @@ public class CaseSubmissionTemplateDataGenerationService
         final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
         return DocmosisRespondent.builder()
             .name(respondent.getFullName())
-            .age(formatAgeDisplay(respondent.getDateOfBirth()))
+            .age(formatAge(respondent.getDateOfBirth()))
             .gender(formatGenderDisplay(respondent.getGender(), respondent.getGenderIdentification()))
             .dateOfBirth(formatDateDisplay(respondent.getDateOfBirth()))
             .placeOfBirth(getDefaultIfNullOrEmpty(respondent.getPlaceOfBirth()))
@@ -716,5 +716,9 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String formatDateDisplay(final LocalDate dateToFormat) {
         return dateToFormat != null ? formatLocalDateToString(dateToFormat, DATE) : DEFAULT_STRING;
+    }
+
+    private String formatAge(final LocalDate dateOfBirth) {
+        return dateOfBirth != null ? formatAgeDisplay(dateOfBirth) : DEFAULT_STRING;
     }
 }
