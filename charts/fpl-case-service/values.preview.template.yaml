@@ -6,6 +6,10 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   livenessDelay: 50
+  lifecycle:
+    postStart:
+      exec:
+        command: ["/bin/sh", "-c", "echo Test from the postStart handler > /usr/share/message"]
   environment:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
