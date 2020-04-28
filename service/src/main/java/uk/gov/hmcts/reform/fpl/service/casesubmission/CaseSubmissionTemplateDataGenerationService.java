@@ -50,7 +50,6 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.pebble.AgeFilter;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +84,7 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private final UserDetailsService userDetailsService;
 
-    public DocmosisCaseSubmission getTemplateData(final CaseData caseData) throws IOException {
+    public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
         DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
 
         applicationFormBuilder
