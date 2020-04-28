@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.Map;
@@ -49,9 +47,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @MockBean
     private CaseSubmissionService caseSubmissionService;
-
-    @Autowired
-    private Time time;
 
     private final Document document = document();
 
@@ -114,7 +109,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)
             .data(Map.of(
-                "dateSubmitted", time.now(),
+                "dateSubmitted", dateNow(),
                 "orders", Orders.builder().orderType(List.of(CARE_ORDER)).build(),
                 "caseLocalAuthority", "example",
                 "amountToPay", "233300",

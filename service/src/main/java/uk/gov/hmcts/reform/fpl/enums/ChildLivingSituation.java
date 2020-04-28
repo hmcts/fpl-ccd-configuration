@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.stream.Stream;
 
+@Getter
 @RequiredArgsConstructor
 public enum ChildLivingSituation {
     HOSPITAL_SOON_TO_BE_DISCHARGED("In hospital and soon to be discharged"),
