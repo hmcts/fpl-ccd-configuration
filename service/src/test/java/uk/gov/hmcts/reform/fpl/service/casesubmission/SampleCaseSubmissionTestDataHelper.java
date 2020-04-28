@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 
-import java.io.IOException;
 import java.util.List;
 
 import static java.time.LocalDate.now;
@@ -28,7 +27,7 @@ public class SampleCaseSubmissionTestDataHelper {
     private SampleCaseSubmissionTestDataHelper() {
     }
 
-    public static DocmosisCaseSubmission expectedDocmosisCaseSubmission() throws IOException {
+    public static DocmosisCaseSubmission expectedDocmosisCaseSubmission() {
         return DocmosisCaseSubmission.builder()
             .respondents(expectedDocmosisRespondents())
             .applicants(expectedDocmosisApplicants())
@@ -61,7 +60,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .build();
     }
 
-    public static List<DocmosisRespondent> expectedDocmosisRespondents() {
+    private static List<DocmosisRespondent> expectedDocmosisRespondents() {
         return of(DocmosisRespondent.builder()
                 .name("Paul Smith")
                 .age("75 years old")
@@ -103,7 +102,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build());
     }
 
-    public static List<DocmosisApplicant> expectedDocmosisApplicants() {
+    private static List<DocmosisApplicant> expectedDocmosisApplicants() {
         return of(DocmosisApplicant.builder()
             .organisationName("London Borough of Southwark")
             .contactName("Jane Smith")
@@ -122,7 +121,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .build());
     }
 
-    public static List<DocmosisChild> expectedDocmosisChildren() {
+    private static List<DocmosisChild> expectedDocmosisChildren() {
         return of(DocmosisChild.builder()
                 .name("Tom Reeves")
                 .age("1 year old")
@@ -166,7 +165,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build());
     }
 
-    public static List<DocmosisOtherParty> expectedDocmosisOtherParty() {
+    private static List<DocmosisOtherParty> expectedDocmosisOtherParty() {
         return of(DocmosisOtherParty.builder()
                 .name("Jason Lavery")
                 .gender("Unknown")
@@ -193,7 +192,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build());
     }
 
-    public static DocmosisHearing expectedDocmosisHearing() {
+    private static DocmosisHearing expectedDocmosisHearing() {
         return DocmosisHearing.builder()
             .typeAndReason("Contested interim care order\nStandard case management hearing")
             .timeFrame("Same day\nBaby will be discharged from hospital on 21 June 2018")
@@ -204,14 +203,14 @@ public class SampleCaseSubmissionTestDataHelper {
             .build();
     }
 
-    public static Allocation expectedAllocation() {
+    private static Allocation expectedAllocation() {
         return Allocation.builder()
             .proposal("Section 9 circuit judge")
             .proposalReason("allocation proposal reason")
             .build();
     }
 
-    public static DocmosisHearingPreferences expectedDocmosisHearingPreferences() {
+    private static DocmosisHearingPreferences expectedDocmosisHearingPreferences() {
         return DocmosisHearingPreferences.builder()
             .interpreter("Yes\ninterpreter required")
             .welshDetails("Yes\nwelsh proceedings")
@@ -222,7 +221,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .build();
     }
 
-    public static DocmosisInternationalElement expectedDocmosisInternationalElement() {
+    private static DocmosisInternationalElement expectedDocmosisInternationalElement() {
         return DocmosisInternationalElement.builder()
             .possibleCarer("Yes\nAunt outside UK")
             .significantEvents("Yes\nSomething happened in France")
@@ -232,7 +231,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .build();
     }
 
-    public static DocmosisRisks expectedDocmosisRisks() {
+    private static DocmosisRisks expectedDocmosisRisks() {
         return DocmosisRisks.builder()
             .neglectDetails("Yes\nPast harm\nFuture risk of harm")
             .sexualAbuseDetails("Yes\nPast harm\nFuture risk of harm")
@@ -249,7 +248,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .build();
     }
 
-    public static List<DocmosisProceeding> expectedDocmosisProceeding() {
+    private static List<DocmosisProceeding> expectedDocmosisProceeding() {
         return List.of(DocmosisProceeding.builder()
                 .onGoingProceeding("Yes")
                 .proceedingStatus("Ongoing")
@@ -276,7 +275,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build());
     }
 
-    public static DocmosisAnnexDocuments expectedDocmosisAnnexDocuments() {
+    private static DocmosisAnnexDocuments expectedDocmosisAnnexDocuments() {
         return DocmosisAnnexDocuments.builder()
             .socialWorkChronology("To follow\nSocial work chronology text")
             .socialWorkStatement("To follow\nSocial work statement and genogram text")
