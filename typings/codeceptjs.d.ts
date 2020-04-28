@@ -291,7 +291,7 @@ declare namespace CodeceptJS {
     seeInTab(path: string | string[], answer: string | string[]): void,
     seeCaseInSearchResult(caseId: string | number): void
     dontSeeCaseInSearchResult(caseId: string | number): void
-    signIn(username: string, password: string) : void,
+    signIn(user: {email: string, password: string}) : void,
     signOut() : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,

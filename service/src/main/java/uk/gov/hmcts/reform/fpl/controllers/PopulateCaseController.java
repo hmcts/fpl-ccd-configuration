@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -27,6 +27,8 @@ import java.util.Map;
 @RequestMapping("/callback/populate-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PopulateCaseController {
+    private static final String FIXTURE_FILE_TEMPLATE = "e2e/fixtures/%s.json";
+
     private final ObjectMapper mapper;
     private final UploadDocumentService uploadDocumentService;
     private final Time time;
@@ -34,12 +36,9 @@ public class PopulateCaseController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
 
-        //TODO: add enum with available files -> easy switch for different additional actions (e.g. uploading document)
         String filename = data.get("caseDataFilename").toString();
-
         try {
             data.putAll(readFileData(filename));
         } catch (Exception e) {
@@ -59,7 +58,7 @@ public class PopulateCaseController {
             "documents_socialWorkCarePlan_document", mockDocument,
             "documents_socialWorkAssessment_document", mockDocument,
             "documents_socialWorkEvidenceTemplate_document", mockDocument,
-            "state", "Submitted"
+            "state", getNewState(filename).getValue()
         ));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -68,7 +67,7 @@ public class PopulateCaseController {
     }
 
     private Map<String, Object> readFileData(String filename) throws Exception {
-        String filePath = String.format("e2e/fixtures/%s.json", filename);
+        String filePath = String.format(FIXTURE_FILE_TEMPLATE, filename);
         String jsonContent = ResourceReader.readString(filePath);
 
         return mapper.readValue(jsonContent, new TypeReference<>() {});
@@ -78,5 +77,12 @@ public class PopulateCaseController {
         Document document = uploadDocumentService.uploadPDF(new byte[]{}, filename);
 
         return DocumentReference.buildFromDocument(document);
+    }
+
+    private State getNewState(String filename) {
+        if (filename.equals("gatekeeping")) {
+            return State.GATEKEEPING;
+        }
+        return State.SUBMITTED;
     }
 }

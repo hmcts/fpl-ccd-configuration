@@ -5,18 +5,9 @@ let caseId;
 
 Feature('Case maintenance after gatekeeping');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage) => {
-  caseId = await I.submitNewCaseWithData();
+BeforeSuite(async (I) => {
+  caseId = await I.submitNewCaseWithData("gatekeeping");
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID();
-  await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  sendCaseToGatekeeperEventPage.enterEmail();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 });
 

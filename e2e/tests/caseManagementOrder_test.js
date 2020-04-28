@@ -9,16 +9,7 @@ let caseId;
 Feature('Case Management Order Journey');
 
 BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage, allocatedJudgeEventPage) => {
-  caseId = await I.submitNewCaseWithData();
-
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID();
-  await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  sendCaseToGatekeeperEventPage.enterEmail();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+  caseId = await I.submitNewCaseWithData("gatekeeping");
 
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
