@@ -16,10 +16,6 @@ public class AgeDisplayFormatHelper {
 
         LocalDate today = LocalDate.now(Clock.systemDefaultZone());
 
-        if (dateOfBirth.isAfter(today)) {
-            throw new IllegalArgumentException("Date of birth cannot be in the future");
-        }
-
         Period period = Period.between(dateOfBirth, today);
         int years = period.getYears();
         int months = period.getMonths();

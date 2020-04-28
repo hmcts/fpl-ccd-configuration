@@ -23,15 +23,6 @@ class AgeDisplayFormatHelperTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenBornInTheFuture() {
-        LocalDate futureDate = LocalDate.now().plusDays(1);
-
-        Assertions.assertThatThrownBy(() -> formatAgeDisplay(futureDate))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Date of birth cannot be in the future");
-    }
-
-    @Test
     void shouldReturn0DaysWhenBornToday() {
         String age = formatAgeDisplay(NOW);
         assertThat(age).isEqualTo("0 days old");
