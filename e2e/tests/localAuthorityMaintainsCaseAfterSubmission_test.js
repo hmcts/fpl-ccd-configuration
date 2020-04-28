@@ -11,7 +11,7 @@ BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData('mandatoryWithMultipleChildren');
 });
 
-Before(async I => await I.navigateToCaseDetails(caseId));
+Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 
 Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);

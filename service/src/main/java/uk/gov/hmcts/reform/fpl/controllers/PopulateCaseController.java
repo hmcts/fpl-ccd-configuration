@@ -26,6 +26,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/callback/populate-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@SuppressWarnings("unchecked")
 public class PopulateCaseController {
     private static final String FIXTURE_FILE_TEMPLATE = "e2e/fixtures/%s.json";
 
@@ -61,6 +62,12 @@ public class PopulateCaseController {
             "state", getNewState(filename).getValue()
         ));
 
+
+        if (filename.equals("sdo")) {
+            Map<String, Object> sdo = (Map<String, Object>) data.get("standardDirectionOrder");
+            sdo.put("orderDoc", uploadMockFile("mockSDO.pdf"));
+        }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
@@ -83,6 +90,10 @@ public class PopulateCaseController {
         if (filename.equals("gatekeeping")) {
             return State.GATEKEEPING;
         }
+        if (filename.equals("sdo")) {
+            return State.PREPARE_FOR_HEARING;
+        }
+
         return State.SUBMITTED;
     }
 }

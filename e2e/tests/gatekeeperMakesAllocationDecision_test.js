@@ -5,11 +5,10 @@ let caseId;
 Feature('Gatekeeper makes allocation decision');
 
 BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage) => {
+  //TODO: prepopulate with edited gatekeeping file
   caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
   await I.enterAllocationProposal();
   await I.populateCaseWithMandatoryFields(caseId);
-  await I.signIn(config.swanseaLocalAuthorityUserOne);
-  await I.submitCase(caseId);
 
   console.log(`Case ${caseId} has been submitted`);
   I.signOut();
@@ -24,7 +23,7 @@ BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCa
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+  await I.signIn(config.gateKeeperUser);
 });
 
 Before(async I => await I.navigateToCaseDetails(caseId));

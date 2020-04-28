@@ -41,18 +41,3 @@ Scenario('local authority tries to submit after filling mandatory data manually'
   enterAllocationProposalEventPage.selectAllocationProposal('District judge');
   await I.completeEvent('Save and continue');
 });
-
-
-Scenario('gatekeeping', async (I) => {
-  // await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  // await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  // enterFamilyManCaseNumberEventPage.enterCaseID();
-  // await I.completeEvent('Save and continue');
-  // await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  // await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
-  // await I.completeEvent('Save and continue');
-  // await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  // sendCaseToGatekeeperEventPage.enterEmail();
-  // await I.completeEvent('Save and continue');
-  // I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-});
