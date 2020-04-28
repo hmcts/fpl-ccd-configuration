@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import java.io.IOException;
 import java.time.LocalDate;
 
 import static java.time.LocalDate.now;
@@ -77,7 +76,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedTemplateDataWithCourtSealWhenAllDataPresent() throws IOException {
+    void shouldReturnExpectedTemplateDataWithCourtSealWhenAllDataPresent() {
         DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
         assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(expectedDocmosisCaseSubmission());
     }
@@ -85,7 +84,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     @Nested
     class DocmosisCaseSubmissionOrdersNeededTest {
         @Test
-        void shouldReturnOrdersNeededWithOtherOrderAppendedWhenOtherOrderGiven() throws IOException {
+        void shouldReturnOrdersNeededWithOtherOrderAppendedWhenOtherOrderGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .otherOrder("expected other order")
@@ -99,7 +98,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnOrdersNeededWithOtherOrderAppendedWhenOtherOrderAndWithOrderTypesGiven() throws IOException {
+        void shouldReturnOrdersNeededWithOtherOrderAppendedWhenOtherOrderAndWithOrderTypesGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .otherOrder("expected other order")
@@ -122,7 +121,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
         @Test
         void shouldReturnOrdersNeededWithAppendedEmergencyProtectionOrdersTypesWhenEmergencyProtectionOrdersTypesGiven()
-            throws IOException {
+             {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(EmergencyProtectionOrdersType.values()))
@@ -141,7 +140,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
         @Test
         void shouldReturnOrdersNeededAppendedEmergencyProtectionOrderDetailsWhenEmergencyProtectionOrderDetailsGiven()
-            throws IOException {
+             {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(CHILD_WHEREABOUTS))
@@ -162,7 +161,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     class DocmosisCaseSubmissionGroundsForEPOReasonTest {
 
         @Test
-        void shouldReturnEmptyWhenOrderTypesAreEmpty() throws IOException {
+        void shouldReturnEmptyWhenOrderTypesAreEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .orderType(of())
@@ -175,7 +174,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyWhenEPOIsNotInOrderType() throws IOException {
+        void shouldReturnEmptyWhenEPOIsNotInOrderType() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .orderType(of(OrderType.CARE_ORDER,
@@ -189,7 +188,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyWhenOrderTypeEPOAndGroundsForEPOIsEmpty() throws IOException {
+        void shouldReturnEmptyWhenOrderTypeEPOAndGroundsForEPOIsEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .orderType(of(OrderType.CARE_ORDER,
@@ -204,7 +203,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyWhenOrderTypeEPOAndGroundsForEPOReasonIsEmpty() throws IOException {
+        void shouldReturnEmptyWhenOrderTypeEPOAndGroundsForEPOReasonIsEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .orderType(of(OrderType.CARE_ORDER,
@@ -221,7 +220,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnGroundsForEPOReasonWhenOrderTypeEPOAndGroundsForEPOReasonIsNotEmpty() throws IOException {
+        void shouldReturnGroundsForEPOReasonWhenOrderTypeEPOAndGroundsForEPOReasonIsNotEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .orderType(of(OrderType.CARE_ORDER,
@@ -246,7 +245,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     @Nested
     class DocmosisCaseSubmissionDirectionsNeededTest {
         @Test
-        void shouldReturnDirectionsNeededWithAppendedEmergencyProtectionOrderDirectionDetails() throws IOException {
+        void shouldReturnDirectionsNeededWithAppendedEmergencyProtectionOrderDirectionDetails() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrderDirectionDetails("direction details")
@@ -267,8 +266,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnDirectionsNeededWithAppendedDirectionsAndDirectionDetailsWhenGiven()
-            throws IOException {
+        void shouldReturnDirectionsNeededWithAppendedDirectionsAndDirectionDetailsWhenGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .directions("directions")
@@ -289,8 +287,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     class DocmosisCaseSubmissionLivingSituationTest {
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnEmptyForLivingSituationWhenChildLivingSituationIsEmptyOrNull(final String livingSituation)
-            throws IOException {
+        void shouldReturnEmptyForLivingSituationWhenChildLivingSituationIsEmptyOrNull(final String livingSituation) {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
                     .party(ChildParty.builder()
@@ -306,8 +303,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsInHospitalSoonToBeDischarged()
-            throws IOException {
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsInHospitalSoonToBeDischarged() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
                     .party(ChildParty.builder()
@@ -324,8 +320,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsRemovedByPolicePowerEnds()
-            throws IOException {
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsRemovedByPolicePowerEnds() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
                     .party(ChildParty.builder()
@@ -343,8 +338,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsVoluntarySectionCareOrder()
-            throws IOException {
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsVoluntarySectionCareOrder() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
                     .party(ChildParty.builder()
@@ -361,8 +355,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsOther()
-            throws IOException {
+        void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsOther() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
                     .party(ChildParty.builder()
@@ -382,8 +375,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     @Nested
     class DocmosisCaseSubmissionBuildRespondentTest {
         @Test
-        void shouldNotReturnRespondentConfidentialDetailsWhenContactDetailsHiddenIsSetToYes()
-            throws IOException {
+        void shouldNotReturnRespondentConfidentialDetailsWhenContactDetailsHiddenIsSetToYes() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .respondents1(wrapElements(Respondent.builder()
                     .party(RespondentParty.builder()
@@ -406,8 +398,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnRespondentAddressAndTelephoneDetailsWhenContactDetailsHiddenIsSetToNo()
-            throws IOException {
+        void shouldReturnRespondentAddressAndTelephoneDetailsWhenContactDetailsHiddenIsSetToNo() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .respondents1(wrapElements(Respondent.builder()
                     .party(RespondentParty.builder()
@@ -434,8 +425,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     @Nested
     class DocmosisCaseSubmissionBuildOtherPartyTest {
         @Test
-        void shouldNotReturnOtherPartyConfidentialDetailsWhenDetailsHiddenIsSetToYes()
-            throws IOException {
+        void shouldNotReturnOtherPartyConfidentialDetailsWhenDetailsHiddenIsSetToYes() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
@@ -457,8 +447,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnOtherPartyAddressAndTelephoneDetailsWhenDetailsHiddenIsSetToNo()
-            throws IOException {
+        void shouldReturnOtherPartyAddressAndTelephoneDetailsWhenDetailsHiddenIsSetToNo() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
@@ -480,8 +469,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsNull()
-            throws IOException {
+        void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsNull() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
@@ -496,8 +484,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnOtherPartyFormattedDOBAsWhenDOBIsGiven()
-            throws IOException {
+        void shouldReturnOtherPartyFormattedDOBAsWhenDOBIsGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
@@ -517,8 +504,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     class DocmosisCaseSubmissionGetValidAnswerOrDefaultValueTest {
 
         @Test
-        void shouldReturnRelevantProceedingAsEmptyWhenGivenProceedingsAreEmpty()
-            throws IOException {
+        void shouldReturnRelevantProceedingAsEmptyWhenGivenProceedingsAreEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .proceeding(null)
                 .build();
@@ -529,8 +515,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnRelevantProceedingAsYesWhenGivenOnGoingProceedingIsYes()
-            throws IOException {
+        void shouldReturnRelevantProceedingAsYesWhenGivenOnGoingProceedingIsYes() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .proceeding(Proceeding.builder()
                     .onGoingProceeding("yes")
@@ -543,8 +528,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnRelevantProceedingAsNoWhenGivenOnGoingProceedingIsYes()
-            throws IOException {
+        void shouldReturnRelevantProceedingAsNoWhenGivenOnGoingProceedingIsYes() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .proceeding(Proceeding.builder()
                     .onGoingProceeding("no")
@@ -557,8 +541,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnRelevantProceedingAsDontKnowWhenGivenOnGoingProceedingIsDontKnow()
-            throws IOException {
+        void shouldReturnRelevantProceedingAsDontKnowWhenGivenOnGoingProceedingIsDontKnow() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .proceeding(Proceeding.builder()
                     .onGoingProceeding("Don't know")
@@ -573,10 +556,8 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
     @Nested
     class DocmosisCaseSubmissionFormatAnnexDocumentDisplayTest {
-
         @Test
-        void shouldReturnEmptyWhenDocumentIsNotAvailable()
-            throws IOException {
+        void shouldReturnEmptyWhenDocumentIsNotAvailable() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .socialWorkChronologyDocument(null)
                 .build();
@@ -587,8 +568,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyWhenDocumentStatusIsEmpty()
-            throws IOException {
+        void shouldReturnEmptyWhenDocumentStatusIsEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .socialWorkChronologyDocument(Document.builder()
                     .documentStatus("")
@@ -601,8 +581,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnStatusWhenDocumentStatusIsAvailable()
-            throws IOException {
+        void shouldReturnStatusWhenDocumentStatusIsAvailable() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .socialWorkChronologyDocument(Document.builder()
                     .documentStatus("Attached")
@@ -615,8 +594,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnStatusAndReasonWhenDocumentStatusIsOtherThanAttached()
-            throws IOException {
+        void shouldReturnStatusAndReasonWhenDocumentStatusIsOtherThanAttached() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .socialWorkChronologyDocument(Document.builder()
                     .documentStatus("To follow")
@@ -631,8 +609,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnDocumentTitleOrDefaultValueForAdditionalAnnexDocuments()
-            throws IOException {
+        void shouldReturnDocumentTitleOrDefaultValueForAdditionalAnnexDocuments() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
                         .documentTitle("Additional Doc 1")
@@ -669,7 +646,6 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     private CaseData prepareCaseData() {
         CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
         caseData.setDateSubmitted(now());
-
         return caseData;
     }
 }
