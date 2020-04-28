@@ -9,7 +9,7 @@ properties([
       description: 'The URL you want to run these security scan against'),
     string(name: 'PROXY_SERVER', defaultValue: 'proxyout.reform.hmcts.net:8080',
       description: 'The proxy server to use'),
-    string(name: 'SecurityRules',
+    string(name: 'SECURITY_RULES',
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/2366efe631a60672ff8d0698bd9cb07f0e878faa/conf/security-rules.conf',
       description: 'The security rules to use'),
   ])
@@ -25,7 +25,7 @@ withNightlyPipeline(type, product, component) {
   env.URL = params.URL_FOR_FULL_FUNCTIONAL_TEST
   env.URL_FOR_SECURITY_SCAN = params.URL_FOR_SECURITY_SCAN
   env.PROXY_SERVER = params.PROXY_SERVER
-  env.SECURITY_RULES = params.SecurityRules
+  env.SECURITY_RULES = params.SECURITY_RULES
 
   enableSecurityScan()
   enableMutationTest()
@@ -38,9 +38,6 @@ withNightlyPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest') {
-//    env.URL = params.URL_TO_TEST
-//    env.PROXY_SERVER = params.PROXY_SERVER
-
     try {
       sh('./gradlew --no-daemon --info --rerun-tasks functional')
     } finally {
