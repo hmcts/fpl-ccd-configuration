@@ -43,7 +43,6 @@ ccd:
   consulIP: ${CONSUL_LB_IP}
   cpuRequests: 250m
   imagePullPolicy: Always
-  command: ["/bin/sh", "-c", "echo Test from the postStart handler > /usr/share/message"]
 
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
