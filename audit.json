@@ -1,3 +1,17 @@
 {
-  "100001_Unexpected Content-Type was returned_http://fpl-case-service-aat.service.core-compute-aat.internal/v2_TRACE" : "ignore"
+  "100001_Unexpected Content-Type was returned_http://fpl-case-service-aat.service.core-compute-aat.internal/v2_TRACE": "ignore",
+  "100001_Unexpected Content-Type was returned_http://fpl-case-service-aat.service.core-compute-aat.internal_TRACE": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal_TRACE": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/v2_TRACE": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docs_TRACE": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/v2_OPTIONS": "ignore",
+  "10038_Content Security Policy (CSP) Header Not Set_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/528915940251296329_GET": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docs_OPTIONS": "ignore,",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/07PQX_TRACK": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/_GET": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/elmah.axd_GET": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docsD2F52_TRACK": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal_TRACE": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/9146974087684331175_GET": "ignore"
 }
