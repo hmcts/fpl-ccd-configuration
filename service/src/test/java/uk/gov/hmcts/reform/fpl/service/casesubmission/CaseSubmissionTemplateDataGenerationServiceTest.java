@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.time.LocalDate;
 
@@ -52,7 +54,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CaseSubmissionTemplateDataGenerationService.class, JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {CaseSubmissionTemplateDataGenerationService.class, JacksonAutoConfiguration.class,
+    LookupTestConfig.class})
 public class CaseSubmissionTemplateDataGenerationServiceTest {
     private static final LocalDate NOW = now();
 
@@ -60,6 +63,9 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
     @MockBean
     private UserDetailsService userDetailsService;
+
+    @MockBean
+    private HmctsCourtLookupConfiguration courtLookupConfiguration;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -73,6 +79,9 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     void init() {
         givenCaseData = prepareCaseData();
         given(userDetailsService.getUserName()).willReturn("Professor");
+        given(courtLookupConfiguration.getCourt("example"))
+            .willReturn(new HmctsCourtLookupConfiguration.Court("Family Court", "admin@family-court.com",
+                "11"));
     }
 
     @Test
@@ -120,8 +129,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnOrdersNeededWithAppendedEmergencyProtectionOrdersTypesWhenEmergencyProtectionOrdersTypesGiven()
-             {
+        void shouldHaveOrdersNeededWithAppendedEmergencyProtectionOrdersTypesWhenEmergencyProtectionOrdersTypesGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(EmergencyProtectionOrdersType.values()))
@@ -139,8 +147,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnOrdersNeededAppendedEmergencyProtectionOrderDetailsWhenEmergencyProtectionOrderDetailsGiven()
-             {
+        void shouldReturnOrdersNeededAppendedEmergencyProtectionOrderDetailsWhenEmergencyProtectionOrderDetailsGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(CHILD_WHEREABOUTS))

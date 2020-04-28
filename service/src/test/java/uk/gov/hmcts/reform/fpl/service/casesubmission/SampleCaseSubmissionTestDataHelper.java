@@ -33,6 +33,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .applicants(expectedDocmosisApplicants())
             .children(expectedDocmosisChildren())
             .others(expectedDocmosisOtherParty())
+            .courtName("Family Court")
             .applicantOrganisations("London Borough of Southwark")
             .respondentNames("Paul Smith\nJames Smith\nAn Other")
             .ordersNeeded("Emergency protection order")

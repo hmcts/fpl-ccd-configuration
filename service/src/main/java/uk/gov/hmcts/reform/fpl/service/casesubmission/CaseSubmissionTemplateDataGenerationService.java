@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
@@ -83,6 +84,7 @@ public class CaseSubmissionTemplateDataGenerationService
     private static final LocalDate TODAY = LocalDate.now();
 
     private final UserDetailsService userDetailsService;
+    private final HmctsCourtLookupConfiguration courtLookupConfiguration;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
         DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
@@ -90,6 +92,7 @@ public class CaseSubmissionTemplateDataGenerationService
         applicationFormBuilder
             .applicantOrganisations(getApplicantsOrganisations(caseData.getAllApplicants()))
             .respondentNames(getRespondentsNames(caseData.getAllRespondents()))
+            .courtName(courtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .submittedDate(formatDateDisplay(TODAY))
             .ordersNeeded(getOrdersNeeded(caseData.getOrders()))
             .directionsNeeded(getDirectionsNeeded(caseData.getOrders()))

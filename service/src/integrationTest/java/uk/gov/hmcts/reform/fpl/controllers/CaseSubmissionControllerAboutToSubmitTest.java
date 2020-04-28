@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -61,12 +60,12 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @BeforeEach
-    void mocking() throws IOException {
+    void mocking() {
         byte[] pdf = {1, 2, 3, 4, 5};
 
         given(userDetailsService.getUserName())
             .willReturn("Emma Taylor");
-        given(caseSubmissionService.generateSubmittedFormPDF(any(), any()))
+        given(caseSubmissionService.generateSubmittedFormPDF(any()))
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(pdf, "2313.pdf"))
             .willReturn(document);

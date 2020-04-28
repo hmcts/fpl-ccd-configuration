@@ -16,12 +16,14 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode
-@Builder(builderClassName = "Builder")
+@Builder(builderClassName = "Builder", toBuilder = true)
 public class DocmosisCaseSubmission implements DocmosisData {
     private final List<DocmosisRespondent> respondents;
     private final List<DocmosisApplicant> applicants;
     private final List<DocmosisChild> children;
     private final List<DocmosisOtherParty> others;
+    private final String caseNumber;
+    private final String courtName;
     private final String applicantOrganisations;
     private final String respondentNames;
     private final String ordersNeeded;
