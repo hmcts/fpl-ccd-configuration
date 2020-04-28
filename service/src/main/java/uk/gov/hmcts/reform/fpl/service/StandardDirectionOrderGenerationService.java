@@ -27,7 +27,7 @@ public class StandardDirectionOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
     private final HearingBookingService hearingBookingService;
     private final OrdersLookupService ordersLookupService;
-    private final CommonCaseDataExtractionService dataService;
+    private final CaseDataExtractionService dataService;
 
     private static final int SDO_DIRECTION_INDEX_START = 2;
 

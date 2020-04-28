@@ -55,7 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
     LookupTestConfig.class, StandardDirectionOrderGenerationService.class, HearingBookingService.class,
-    CommonCaseDataExtractionService.class, FixedTimeConfiguration.class
+    CaseDataExtractionService.class, FixedTimeConfiguration.class
 })
 class StandardDirectionOrderGenerationServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";

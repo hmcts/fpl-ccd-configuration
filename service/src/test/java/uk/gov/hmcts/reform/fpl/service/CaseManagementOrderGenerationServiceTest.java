@@ -60,7 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderGenerationService.class})
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, DraftCMOService.class, CommonCaseDataExtractionService.class,
+    JacksonAutoConfiguration.class, DraftCMOService.class, CaseDataExtractionService.class,
     CommonDirectionService.class, HearingVenueLookUpService.class, HearingBookingService.class,
     JsonOrdersLookupService.class, StandardDirectionOrderGenerationService.class, LookupTestConfig.class,
     FixedTimeConfiguration.class

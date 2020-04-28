@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @SpringBootTest(classes = {NoticeOfProceedingsService.class})
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, LookupTestConfig.class, HearingBookingService.class,
-    HearingVenueLookUpService.class, CommonCaseDataExtractionService.class, FixedTimeConfiguration.class
+    HearingVenueLookUpService.class, CaseDataExtractionService.class, FixedTimeConfiguration.class
 })
 class NoticeOfProceedingsServiceTest {
     private LocalDate futureDate;

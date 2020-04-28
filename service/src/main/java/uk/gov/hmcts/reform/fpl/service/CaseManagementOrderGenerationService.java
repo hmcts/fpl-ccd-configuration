@@ -45,7 +45,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
     private static final String DEFAULT = EMPTY;
 
     private final HearingBookingService hearingService;
-    private final CommonCaseDataExtractionService dataExtractionService;
+    private final CaseDataExtractionService dataExtractionService;
     private final DraftCMOService cmoService;
 
     public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) {

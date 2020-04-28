@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CommonCaseDataExtractionService {
+public class CaseDataExtractionService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
@@ -133,7 +132,6 @@ public class CommonCaseDataExtractionService {
     private String formatTitle(int index, Direction direction, List<DirectionConfiguration> directionConfigurations) {
 
         // default values here cover edge case where direction title is not found in configuration.
-        @NoArgsConstructor
         class DateFormattingConfig {
             private String pattern = TIME_DATE;
             private Display.Due due = BY;
