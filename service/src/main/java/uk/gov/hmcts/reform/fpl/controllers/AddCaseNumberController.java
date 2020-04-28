@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ import static org.apache.commons.lang3.StringUtils.isAlphanumeric;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/add-case-number")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -45,7 +47,11 @@ public class AddCaseNumberController {
         CaseData previousData = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
 
         if (isEmpty(previousData.getFamilyManCaseNumber())) {
-            applicationEventPublisher.publishEvent(new CaseNumberAdded(callbackRequest.getCaseDetails()));
+            try {
+                applicationEventPublisher.publishEvent(new CaseNumberAdded(callbackRequest.getCaseDetails()));
+            } catch (Exception exc) {
+                log.error("Robotics notification failed", exc);
+            }
         }
     }
 
