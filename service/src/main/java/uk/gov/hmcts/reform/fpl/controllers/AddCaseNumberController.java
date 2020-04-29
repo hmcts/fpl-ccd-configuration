@@ -47,11 +47,9 @@ public class AddCaseNumberController {
         CaseData previousData = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
 
         if (isEmpty(previousData.getFamilyManCaseNumber())) {
-            try {
-                applicationEventPublisher.publishEvent(new CaseNumberAdded(callbackRequest.getCaseDetails()));
-            } catch (Exception exc) {
-                log.error("Robotics notification failed", exc);
-            }
+            applicationEventPublisher.publishEvent(new CaseNumberAdded(callbackRequest.getCaseDetails()));
+        } else {
+            log.error("Robotics notification not sent as no value for familyManCaseNumber in caseDetailsBefore");
         }
     }
 
