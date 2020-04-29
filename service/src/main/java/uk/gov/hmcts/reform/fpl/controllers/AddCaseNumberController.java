@@ -49,7 +49,7 @@ public class AddCaseNumberController {
         if (isEmpty(previousData.getFamilyManCaseNumber())) {
             applicationEventPublisher.publishEvent(new CaseNumberAdded(callbackRequest.getCaseDetails()));
         } else {
-            log.error("Robotics notification not sent as no value for familyManCaseNumber in caseDetailsBefore");
+            log.info("Robotics notification not sent as no value for familyManCaseNumber in caseDetailsBefore");
         }
     }
 
