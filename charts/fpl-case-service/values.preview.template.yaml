@@ -16,6 +16,7 @@ java:
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
     LD_USER_KEY: FPLA_PREVIEW
     SCHEDULER_ENABLED: false
+    DOCMOSIS_TORNADO_URL: http://docmosis-development-mock
   keyVaults:
     fpl:
       secrets:
