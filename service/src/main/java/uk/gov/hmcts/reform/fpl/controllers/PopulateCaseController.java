@@ -51,8 +51,8 @@ public class PopulateCaseController {
 
         var mockDocument = Map.of("documentStatus", "Attached", "typeOfDocument", uploadMockFile("mockFile.txt"));
         data.putAll(Map.of(
-            "dateAndTimeSubmitted", time.now(),
-            "dateSubmitted", time.now().toLocalDate(),
+            "dateAndTimeSubmitted", time.now().toString(),
+            "dateSubmitted", time.now().toLocalDate().toString(),
             "submittedForm", uploadMockFile("mockSubmittedApplication.pdf"),
             "documents_checklist_document", mockDocument,
             "documents_threshold_document", mockDocument,

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.util.Map;
@@ -31,7 +30,6 @@ class PopulateCaseAboutToSubmitControllerTest extends AbstractControllerTest {
     private UploadDocumentService uploadDocumentService;
 
     private Document document = document();
-    private DocumentReference documentReference = DocumentReference.buildFromDocument(document);
 
     PopulateCaseAboutToSubmitControllerTest() {
         super("populate-case");
