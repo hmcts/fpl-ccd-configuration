@@ -52,7 +52,6 @@ def archiveCoreCaseDataDefinitions(env) {
  *
  * @param env target environment
  */
-
 def uploadCoreCaseDataDefinitions(env) {
   sh """
     eval \$(./bin/variables/load-${env}-environment-variables.sh)
