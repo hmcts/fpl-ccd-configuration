@@ -55,6 +55,14 @@ ccd:
   cpuRequests: 250m
   imagePullPolicy: Always
 
+  global:
+    idamApiUrl: https://idam-api.aat.platform.hmcts.net
+    idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
+    s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
+    ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
+    ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
+
   ccd-api-gateway-web:
     global:
       s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
