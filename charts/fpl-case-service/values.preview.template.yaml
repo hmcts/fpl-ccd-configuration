@@ -89,3 +89,6 @@ ccd:
       s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
     java:
       keyVaults:
+  ccd-user-profile-api:
+    java:
+      keyVaults:
