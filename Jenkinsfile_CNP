@@ -1,6 +1,7 @@
 #!groovy
+
 @Library("Infrastructure")
-import java.lang.Object
+import uk.gov.hmcts.contino.ProjectBranch
 
 def type = "java"
 
