@@ -156,8 +156,8 @@ class DraftCMOServiceTest {
 
         caseData.put(HEARING_DATE_LIST.getKey(), getDynamicList());
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(
-            mapper.convertValue(caseData, CaseData.class), null);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCaseManagementOrder(
+            mapper.convertValue(caseData, CaseData.class));
 
         assertThat(caseManagementOrder).isNotNull()
             .extracting("id", "hearingDate").containsExactly(

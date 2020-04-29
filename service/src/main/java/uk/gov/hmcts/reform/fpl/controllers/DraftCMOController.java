@@ -100,7 +100,7 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseManagementOrder populatedCMO = draftCMOService.prepareCMO(caseData, caseData.getCaseManagementOrder());
+        CaseManagementOrder populatedCMO = draftCMOService.prepareCaseManagementOrder(caseData);
 
         draftCMOService.removeTransientObjectsFromCaseData(caseDetails.getData());
 

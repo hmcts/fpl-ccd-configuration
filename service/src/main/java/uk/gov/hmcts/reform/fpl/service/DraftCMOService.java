@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement.getHearingDynamicElement;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -63,14 +64,14 @@ public class DraftCMOService {
         return data;
     }
 
-    public CaseManagementOrder prepareCMO(CaseData caseData, CaseManagementOrder order) {
-        Optional<CaseManagementOrder> oldCMO = ofNullable(order);
+    public CaseManagementOrder prepareCaseManagementOrder(CaseData caseData) {
+        Optional<CaseManagementOrder> oldCMO = ofNullable(caseData.getCaseManagementOrder());
         Optional<DynamicList> cmoHearingDateList = ofNullable(caseData.getCmoHearingDateList());
         Optional<LocalDate> dateOfIssue = ofNullable(caseData.getDateOfIssue());
 
         UUID idFromDynamicList = cmoHearingDateList.map(DynamicList::getValueCode).orElse(null);
 
-        return CaseManagementOrder.builder()
+        CaseManagementOrder example = CaseManagementOrder.builder()
             .hearingDate(cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null))
             .id(oldCMO.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
             .directions(combineAllDirectionsForCmo(caseData))
@@ -82,6 +83,14 @@ public class DraftCMOService {
             .nextHearing(oldCMO.map(CaseManagementOrder::getNextHearing).orElse(null))
             .dateOfIssue(dateOfIssue.map(date -> formatLocalDateToString(date, DATE)).orElse(null))
             .build();
+
+        example.setActionWithNullDocument(caseData.getOrderAction());
+
+        if (!example.isDraft() && caseData.getNextHearingDateList() != null) {
+            example.setNextHearingFromDynamicElement(getHearingDynamicElement(caseData.getNextHearingDateList()));
+        }
+
+        return example;
     }
 
     public void removeTransientObjectsFromCaseData(Map<String, Object> caseData) {

@@ -10,4 +10,8 @@ import lombok.Data;
 public class DocmosisDocument {
     private final String documentTitle;
     private final byte[] bytes;
+
+    public String addDraftToTitle() {
+        return "draft-" + documentTitle;
+    }
 }

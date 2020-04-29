@@ -1,72 +1,38 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.TimeConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.NextHearingType;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static java.util.Collections.emptyList;
-import static java.util.UUID.fromString;
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {TimeConfiguration.class, CaseManagementOrderService.class,
-    HearingBookingService.class})
+@ContextConfiguration(classes = {
+    TimeConfiguration.class, CaseManagementOrderService.class, HearingBookingService.class
+})
 class CaseManagementOrderServiceTest {
-    private static final LocalDateTime NOW = LocalDateTime.now();
 
     @Autowired
     private Time time;
 
     @Autowired
     private CaseManagementOrderService service;
-
-    @Test
-    void shouldAddDocumentToOrderWhenDocumentExists() {
-        CaseManagementOrder orderWithDoc = service.addDocument(CaseManagementOrder.builder().build(), document());
-
-        assertThat(orderWithDoc.getOrderDoc()).isEqualTo(buildFromDocument(document()));
-    }
-
-    @Test
-    void shouldAddActionToOrderWhenActionExists() {
-        CaseManagementOrder orderWithDoc = service.addAction(CaseManagementOrder.builder().build(),
-            OrderAction.builder().type(SELF_REVIEW).build());
-
-        assertThat(orderWithDoc.getAction()).isEqualTo(OrderAction.builder().type(SELF_REVIEW).build());
-    }
 
     @Test
     void shouldExtractExpectedMapFieldsWhenAllDataIsPresent() {
@@ -96,54 +62,6 @@ class CaseManagementOrderServiceTest {
     }
 
     @Test
-    void shouldReturnTrueWhenHearingDateIsInFuture() {
-        UUID id = randomUUID();
-        CaseData caseData = caseDataWithCmo(id)
-            .hearingDetails(hearingBookingWithStartDatePlus(id, 1))
-            .build();
-
-        assertTrue(service.isHearingDateInFuture(caseData));
-    }
-
-    @Test
-    void shouldReturnFalseWhenHearingDateIsInPast() {
-        UUID id = randomUUID();
-        CaseData caseData = caseDataWithCmo(id)
-            .hearingDetails(hearingBookingWithStartDatePlus(id, -1))
-            .build();
-
-        assertFalse(service.isHearingDateInFuture(caseData));
-    }
-
-    @Test
-    void shouldSetOrderActionNextHearingDateWhenProvidedNextHearingDateList() {
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-            .action(OrderAction.builder()
-                .type(SEND_TO_ALL_PARTIES)
-                .build())
-            .build();
-
-        CaseManagementOrder updatedCaseManagementOrder =
-            service.addNextHearingToCMO(createHearingBookingDynamicList(), caseManagementOrder);
-
-        NextHearing nextHearing = updatedCaseManagementOrder.getNextHearing();
-
-        assertThat(nextHearing.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
-        assertThat(nextHearing.getDate()).isEqualTo("15th Dec 2019");
-    }
-
-    @Test
-    void shouldPreserveCMOWhenNextHearingDateListIsNotProvided() {
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-            .hearingDate("Test date")
-            .build();
-
-        CaseManagementOrder updatedCaseManagementOrder = service.addNextHearingToCMO(null, caseManagementOrder);
-
-        assertThat(updatedCaseManagementOrder.getHearingDate()).isEqualTo("Test date");
-    }
-
-    @Test
     void shouldGetCMOIssueDate() {
         LocalDate expectedIssueDate = LocalDate.now().minusDays(1);
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
@@ -169,32 +87,5 @@ class CaseManagementOrderServiceTest {
         LocalDate issueDate = service.getIssuedDate(null);
 
         assertThat(issueDate).isEqualTo(time.now().toLocalDate());
-    }
-
-    @Test
-    void shouldRemoveDocumentFromOrderAction() {
-        OrderAction originalOrderAction = OrderAction.builder()
-            .document(testDocumentReference())
-            .type(SELF_REVIEW)
-            .nextHearingType(NextHearingType.FINAL_HEARING)
-            .changeRequestedByJudge("child dob")
-            .build();
-
-        OrderAction updatedOrderAction = service.removeDocumentFromOrderAction(originalOrderAction);
-
-        assertThat(updatedOrderAction).isEqualToIgnoringGivenFields(originalOrderAction, "document");
-    }
-
-    private CaseData.CaseDataBuilder caseDataWithCmo(UUID id) {
-        return CaseData.builder().caseManagementOrder(CaseManagementOrder.builder().id(id).build());
-    }
-
-    private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(UUID id, int days) {
-        return ImmutableList.of(Element.<HearingBooking>builder()
-            .id(id)
-            .value(HearingBooking.builder()
-                .startDate(NOW.plusDays(days))
-                .build())
-            .build());
     }
 }

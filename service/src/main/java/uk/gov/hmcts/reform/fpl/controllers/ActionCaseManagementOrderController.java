@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +28,15 @@ import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.DATE_OF_ISSUE;
@@ -60,6 +61,7 @@ public class ActionCaseManagementOrderController {
     private final CoreCaseDataService coreCaseDataService;
     private final DocumentDownloadService documentDownloadService;
     private final RequestData requestData;
+    private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -89,13 +91,11 @@ public class ActionCaseManagementOrderController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackRequest) {
-
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document document = getDocument(caseData, true);
+        Document document = getDocument(caseData);
 
         caseDetails.getData()
             .put(ORDER_ACTION.getKey(), OrderAction.builder().document(buildFromDocument(document)).build());
@@ -105,16 +105,16 @@ public class ActionCaseManagementOrderController {
             .build();
     }
 
-    //TODO: refactor. far too much logic in this controller now FPLA-1469
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) {
-
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getCaseManagementOrder() == null || !caseData.getCaseManagementOrder().isInJudgeReview()) {
-            // CMO created via placeholder state
+        CaseManagementOrder order = caseData.getCaseManagementOrder();
+        OrderAction orderAction = caseData.getOrderAction();
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+
+        if (!order.isInJudgeReview()) {
             caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
@@ -122,35 +122,19 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        if (sendToAllPartiesBeforeHearingDate(caseData)) {
+        if (issuingOrderBeforeHearingDateHasPassed(orderAction, order.getId(), hearingDetails)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(ImmutableList.of(HEARING_NOT_COMPLETED.getValue()))
+                .errors(List.of(HEARING_NOT_COMPLETED.getValue()))
                 .build();
         }
 
-        CaseManagementOrder order = caseData.getCaseManagementOrder();
+        CaseManagementOrder preparedOrder = draftCMOService.prepareCaseManagementOrder(caseData);
+        Document document = getDocument(caseData.toBuilder().caseManagementOrder(preparedOrder).build());
 
-        order = draftCMOService.prepareCMO(caseData, order).toBuilder()
-            .id(order.getId())
-            .hearingDate(order.getHearingDate())
-            .build();
-
-        OrderAction orderAction = caseManagementOrderService.removeDocumentFromOrderAction(caseData.getOrderAction());
-
-        order = caseManagementOrderService.addAction(order, orderAction);
-
-        if (!order.isDraft()) {
-            order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
-        }
-
-        Document document = getDocument(caseData.toBuilder().caseManagementOrder(order).build(), order.isDraft());
-
-        order = caseManagementOrderService.addDocument(order, document);
+        preparedOrder.setOrderDocReferenceFromDocument(document);
 
         caseDetails.getData().remove(DATE_OF_ISSUE.getKey());
-
-        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
-
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), preparedOrder);
         caseDetails.getData().put("cmoEventId", ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -182,18 +166,34 @@ public class ActionCaseManagementOrderController {
         }
     }
 
-    private boolean sendToAllPartiesBeforeHearingDate(CaseData caseData) {
-        return caseData.getOrderAction().getType() == SEND_TO_ALL_PARTIES
-            && caseManagementOrderService.isHearingDateInFuture(caseData);
+    private boolean issuingOrderBeforeHearingDateHasPassed(OrderAction action,
+                                                           UUID id,
+                                                           List<Element<HearingBooking>> hearings) {
+        LocalDateTime hearingStartDate = getHearingStartDateForOrderWithId(hearings, id);
+
+        return action.hasActionTypeSendToAllParties() && hearingStartDate.isAfter(LocalDateTime.now());
     }
 
-    private Document getDocument(CaseData data, boolean draft) {
+    private LocalDateTime getHearingStartDateForOrderWithId(List<Element<HearingBooking>> hearings, UUID id) {
+        return hearingBookingService.getHearingBookingByUUID(hearings, id).getStartDate();
+    }
+
+    private Document getDocument(CaseData data) {
         DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(data);
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, CMO);
 
-        String documentTitle = draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle();
+        return uploadDocumentService.uploadPDF(document.getBytes(), getDocumentTitle(data, document));
+    }
 
-        return uploadDocumentService.uploadPDF(document.getBytes(), documentTitle);
+    private String getDocumentTitle(CaseData data, DocmosisDocument document) {
+        String documentTitle;
+
+        if (data.getCaseManagementOrder().isDraft()) {
+            documentTitle = document.addDraftToTitle();
+        } else {
+            documentTitle = document.getDocumentTitle();
+        }
+        return documentTitle;
     }
 
     private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
