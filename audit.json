@@ -58,5 +58,15 @@
   "40025_Proxy Disclosure_https://fpl-case-service-aat.service.core-compute-aat.internal_GET": "ignore",
   "40025_Proxy Disclosure_https://fpl-case-service-aat.service.core-compute-aat.internal/v2_GET": "ignore",
   "10035_Strict-Transport-Security Header Not Set_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
-  "10036_Server Leaks Version Information via \"Server\" HTTP Response Header Field_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore"
+  "10036_Server Leaks Version Information via \"Server\" HTTP Response Header Field_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docsITES2_TRACK": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/6730373108932239938_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/4998171120468406043_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/v2T0K74_TRACK": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docs?-d+allow_url_include%3d1+-d+auto_prepend_file%3dphp://input_POST": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/v2T0K74_TRACK": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/6730373108932239938_GET": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/4998171120468406043_GET": "igonre",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/YQE6O_TRACK": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/crossdomain.xml_GET": "ignore"
 }
