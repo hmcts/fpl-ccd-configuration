@@ -45,8 +45,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @SpringBootTest(classes = {CaseManagementOrderReadyForPartyReviewEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, RepresentativeNotificationService.class, HearingBookingService.class,
     FixedTimeConfiguration.class})
-public class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
-
+class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
     @MockBean
     private RequestData requestData;
 
