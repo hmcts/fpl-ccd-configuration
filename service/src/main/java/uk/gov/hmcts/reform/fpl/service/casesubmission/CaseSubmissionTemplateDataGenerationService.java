@@ -319,7 +319,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .children(getDefaultIfNullOrEmpty(proceeding.getChildren()))
             .guardian(getDefaultIfNullOrEmpty(proceeding.getGuardian()))
             .sameGuardianDetails(
-                concatenateYesOrNoKeyAndValue(
+                concatenateKeyAndValue(
                     proceeding.getSameGuardianNeeded(),
                     proceeding.getSameGuardianDetails()))
             .build();
@@ -516,30 +516,22 @@ public class CaseSubmissionTemplateDataGenerationService
             .timeFrame(hearingPresent
                 ? concatenateKeyAndValue(
                     hearing.getTimeFrame(),
-                    join(SPACE_DELIMITER,
-                        "Reason:",
-                        getDefaultIfNullOrEmpty(hearing.getReason())))
+                    addPrefixReason(hearing.getReason()))
                 : DEFAULT_STRING)
             .typeAndReason(hearingPresent
                 ? concatenateKeyAndValue(
                     hearing.getType(),
-                    join(SPACE_DELIMITER,
-                        "Reason:",
-                        getDefaultIfNullOrEmpty(hearing.getType_GiveReason())))
+                    addPrefixReason(hearing.getType_GiveReason()))
                 : DEFAULT_STRING)
             .withoutNoticeDetails(hearingPresent
                 ? concatenateKeyAndValue(
                     hearing.getWithoutNotice(),
-                    join(SPACE_DELIMITER,
-                        "Reason:",
-                        getDefaultIfNullOrEmpty(hearing.getWithoutNoticeReason())))
+                    addPrefixReason(hearing.getWithoutNoticeReason()))
                 : DEFAULT_STRING)
             .reducedNoticeDetails(hearingPresent
                 ? concatenateKeyAndValue(
                     hearing.getReducedNotice(),
-                    join(SPACE_DELIMITER,
-                        "Reason:",
-                        getDefaultIfNullOrEmpty(hearing.getReducedNoticeReason())))
+                    addPrefixReason(hearing.getReducedNoticeReason()))
                 : DEFAULT_STRING)
             .respondentsAware(
                 hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
@@ -737,5 +729,11 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String formatAge(final LocalDate dateOfBirth) {
         return dateOfBirth != null ? formatAgeDisplay(dateOfBirth) : DEFAULT_STRING;
+    }
+
+    private String addPrefixReason(String givenReason) {
+        return isNotEmpty(givenReason)
+            ? join(SPACE_DELIMITER, "Reason:", getDefaultIfNullOrEmpty(givenReason))
+            : EMPTY;
     }
 }
