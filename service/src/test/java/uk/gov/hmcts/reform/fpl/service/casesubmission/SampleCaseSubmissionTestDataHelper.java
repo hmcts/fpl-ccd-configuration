@@ -148,7 +148,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .age("18 years old")
                 .gender("Girl")
                 .dateOfBirth("2 February 2002")
-                .livingSituation("Living with respondentsCarnegie House\nCentral Milton Keynes\nMilton Keynes"
+                .livingSituation("Living with respondents\nCarnegie House\nCentral Milton Keynes\nMilton Keynes"
                     + "\nMK\nLondon\nMK10 1SA\nBT66 7RR\nDate this began: 2 February 2002")
                 .keyDates("test child two key date")
                 .careAndContactPlan("test child two care and contact plan")

@@ -474,7 +474,7 @@ public class CaseSubmissionTemplateDataGenerationService
             if (isConfidential) {
                 stringBuilder.append(NEW_LINE).append(CONFIDENTIAL);
             } else if (isNotEmpty(child.getAddress())) {
-                stringBuilder.append(child.getAddress().getAddressAsString(NEW_LINE));
+                stringBuilder.append(NEW_LINE).append(child.getAddress().getAddressAsString(NEW_LINE));
             }
 
             stringBuilder.append(endsWith(stringBuilder.toString(), NEW_LINE) ? "" : NEW_LINE);
