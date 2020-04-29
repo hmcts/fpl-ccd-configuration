@@ -1,4 +1,5 @@
 #!groovy
+
 @Library("Infrastructure")
 import java.lang.Object
 
@@ -61,7 +62,7 @@ def uploadCoreCaseDataDefinitions(env) {
 
 withPipeline(type, product, component) {
   onMaster {
-    loadVaultSecrets(serviceSecrets)
+    loadVaultSecrets(serviceSecrets + otherSecrets)
   }
   onDemo {
     loadVaultSecrets(serviceSecrets + otherSecrets)
