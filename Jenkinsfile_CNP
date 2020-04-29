@@ -108,11 +108,6 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('aat')
   }
 
-  before('smoketest:demo-staging') {
-    env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
-    importCoreCaseDataDefinitions('demo')
-  }
-
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
