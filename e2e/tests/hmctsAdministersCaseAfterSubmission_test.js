@@ -20,7 +20,7 @@ BeforeSuite(async (I) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
 
-Before(async I => await I.navigateToCaseDetails(caseId));
+Before(async I => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
 Scenario('HMCTS admin confirms payment', async (I, caseViewPage) => {
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
