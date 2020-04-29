@@ -45,4 +45,8 @@ public class PbaNumberHelper {
     public static boolean isInvalidPbaNumber(String pbaNumber) {
         return !PBA_NUMBER_PATTERN.matcher(pbaNumber).matches();
     }
+
+    public static String hidePbaNumber(String pbaNumber) {
+        return isInvalidPbaNumber(pbaNumber) ? pbaNumber : "PBA" + "*".repeat(pbaNumber.length() - 3);
+    }
 }
