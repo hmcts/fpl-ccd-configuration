@@ -38,14 +38,15 @@ class ChildSelectorDeserializerTest extends DeserializerTest {
     }
 
     @Test
-    void shouldCreateChildSelectorWithTrueValuesWhenArraysArePopulated() throws JsonProcessingException {
+    void shouldCreateChildSelectorWithTrueValuesWhenArraysAreOnlyPopulatedWithSelected()
+        throws JsonProcessingException {
         String jsonString = "{"
             + "\"childCount\":\"\","
             + "\"child1\":[\"SELECTED\"],\"child2\":[],"
             + "\"child3\":[],\"child4\":[],"
             + "\"child5\":[],\"child6\":[],"
             + "\"child7\":[\"SELECTED\"],\"child8\":[],"
-            + "\"child9\":[],\"child10\":[]"
+            + "\"child9\":[\"P1\"],\"child10\":[\"P1\", \"SELECTED\"]"
             + "}";
         ChildSelector actual = mapper.readValue(jsonString, ChildSelector.class);
         ChildSelector expected = ChildSelector.builder().selected(List.of(1, 7)).build();

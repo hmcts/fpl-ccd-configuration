@@ -143,6 +143,25 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
         postAboutToSubmitEvent(caseDetails);
 
+        verifyNoDocumentSent();
+    }
+
+    @Test
+    void shouldNotSendDocumentWhenNoRepresentativesServedByPost() {
+        givenPrintingEnabled(true);
+
+        DocumentReference documentToBeSend = testDocumentReference();
+        CaseDetails caseDetails = buildCaseData(
+            documentToBeSend,
+            testRepresentative(EMAIL),
+            testRepresentative(DIGITAL_SERVICE));
+
+        postAboutToSubmitEvent(caseDetails);
+
+        verifyNoDocumentSent();
+    }
+
+    private void verifyNoDocumentSent() {
         verify(docmosisCoverDocumentsService, never()).createCoverDocuments(any(), any(), any());
         verify(documentDownloadService, never()).downloadDocument(any());
         verify(uploadDocumentService, never()).uploadPDF(any(), any());
