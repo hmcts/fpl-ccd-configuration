@@ -102,11 +102,14 @@ ccd:
       s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
     java:
       keyVaults:
+      ingressHost: ${SERVICE_NAME}-ccd-definition-store
   ccd-data-store-api:
     global:
       s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
     java:
       keyVaults:
+      ingressHost: ${SERVICE_NAME}-ccd-data-store-api
   ccd-user-profile-api:
     java:
       keyVaults:
+      ingressHost: ${SERVICE_NAME}-ccd-user-profile-api
