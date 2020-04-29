@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.OtherProceeding;
+import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
@@ -299,7 +299,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .collect(toList());
     }
 
-    private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<OtherProceeding>> proceedings) {
+    private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<Proceeding>> proceedings) {
         return proceedings.stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
@@ -307,7 +307,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .collect(toList());
     }
 
-    private DocmosisProceeding buildProceeding(final OtherProceeding proceeding) {
+    private DocmosisProceeding buildProceeding(final Proceeding proceeding) {
         return DocmosisProceeding.builder()
             .onGoingProceeding(getValidAnswerOrDefaultValue(proceeding.getOnGoingProceeding()))
             .proceedingStatus(getDefaultIfNullOrEmpty(proceeding.getProceedingStatus()))
