@@ -102,14 +102,6 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('saat')
   }
 
-  before('smoketest:aat') {
-    env.URL = "https://www-ccd.aat.platform.hmcts.net"
-    archiveCoreCaseDataDefinitions('aat')
-
-    env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
-    importCoreCaseDataDefinitions('aat')
-  }
-
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
@@ -161,5 +153,13 @@ withPipeline(type, product, component) {
   after('buildinfra:demo') {
     env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
     importCoreCaseDataDefinitions('demo')
+  }
+
+  before('smoketest:aat') {
+    env.URL = "https://www-ccd.aat.platform.hmcts.net"
+    archiveCoreCaseDataDefinitions('aat')
+
+    env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
+    importCoreCaseDataDefinitions('aat')
   }
 }
