@@ -30,11 +30,11 @@ public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
         List<Integer> selected = new ArrayList<>();
         Iterator<String> fieldNames = treeNode.fieldNames();
 
-        fieldNames.forEachRemaining(s -> {
-            if ("childCount".equals(s)) {
+        fieldNames.forEachRemaining(fieldName -> {
+            if ("childCount".equals(fieldName)) {
                 builder.childCount(getChildCountContainer(treeNode));
-            } else if (isChildNode(s) && isSelected(treeNode.get(s))) {
-                int i = Integer.parseInt(s.replace("child", ""));
+            } else if (isChildNode(fieldName) && isSelected(treeNode.get(fieldName))) {
+                int i = Integer.parseInt(fieldName.replace("child", ""));
                 selected.add(i);
             }
         });

@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -20,9 +18,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {ApplicantService.class, ObjectMapper.class})
+@ContextConfiguration(classes = {ApplicantService.class})
 class ApplicantServiceTest {
 
     private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
@@ -40,34 +39,33 @@ class ApplicantServiceTest {
 
     @Test
     void shouldNotExpandApplicantCollectionWhenApplicantsAlreadyExists() {
-        String uuid = UUID.randomUUID().toString();
+        String applicantPartyId = UUID.randomUUID().toString();
 
         Organisation organisation = EMPTY_ORGANISATION;
 
-        CaseData caseData = CaseData.builder().applicants(ImmutableList.of(
-            Element.<Applicant>builder()
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .partyId(uuid)
-                        .build())
+        CaseData caseData = CaseData.builder().applicants(wrapElements(
+            Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .partyId(applicantPartyId)
                     .build())
                 .build()))
             .build();
 
         assertThat(service.expandApplicantCollection(caseData, organisation)).hasSize(1);
         assertThat(unwrapElements(service.expandApplicantCollection(caseData, organisation))
-            .get(0).getParty().getPartyId()).isEqualTo(uuid);
+            .get(0).getParty().getPartyId()).isEqualTo(applicantPartyId);
+    }
+
+    @Test
+    void shouldPassThroughWhenNoApplicants() {
+        assertThat(service.addHiddenValues(CaseData.builder().build())).isEmpty();
     }
 
     @Test
     void shouldAddPartyIdAndPartyTypeValuesToApplicant() {
-        List<Element<Applicant>> applicants = ImmutableList.of(
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder().build())
-                    .build())
-                .build());
+        List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
+            .party(ApplicantParty.builder().build())
+            .build());
 
         CaseData caseData = CaseData.builder()
             .applicants(applicants)
@@ -81,24 +79,16 @@ class ApplicantServiceTest {
 
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToManyApplicants() {
-        List<Element<Applicant>> applicants = ImmutableList.of(
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .organisationName("Organisation 1")
-                        .build())
+        List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .organisationName("Organisation 1")
                     .build())
                 .build(),
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .organisationName("Organisation 2")
-                        .build())
+            Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .organisationName("Organisation 2")
                     .build())
-                .build()
-        );
+                .build());
 
         CaseData caseData = CaseData.builder()
             .applicants(applicants)
@@ -118,17 +108,13 @@ class ApplicantServiceTest {
 
     @Test
     void shouldNotAddNewPartyIdWhenApplicantsAlreadyHasPartyIdValue() {
-        String uuid = UUID.randomUUID().toString();
+        String applicantPartyId = UUID.randomUUID().toString();
 
-        List<Element<Applicant>> applicants = ImmutableList.of(
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .partyId(uuid)
-                        .build())
-                    .build())
-                .build());
+        List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
+            .party(ApplicantParty.builder()
+                .partyId(applicantPartyId)
+                .build())
+            .build());
 
         CaseData caseData = CaseData.builder()
             .applicants(applicants)
@@ -136,7 +122,7 @@ class ApplicantServiceTest {
 
         Applicant applicant = service.addHiddenValues(caseData).get(0).getValue();
 
-        assertThat(applicant.getParty().getPartyId()).isEqualTo(uuid);
+        assertThat(applicant.getParty().getPartyId()).isEqualTo(applicantPartyId);
     }
 
     @Test
