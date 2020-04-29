@@ -21,5 +21,7 @@
   "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/crossdomain.xml_GET": "ignore",
   "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/?-d+allow_url_include%3d1+-d+auto_prepend_file%3dphp://input_POST": "ignore",
   "40025_Proxy Disclosure_https://fpl-case-service-aat.service.core-compute-aat.internal_GET": "ignore",
-  "10038_Content Security Policy (CSP) Header Not Set_https://fpl-case-service-aat.service.core-compute-aat.internal_GET": "ignore"
+  "10038_Content Security Policy (CSP) Header Not Set_https://fpl-case-service-aat.service.core-compute-aat.internal_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal_GET": "ignore",
+  "10035_Strict-Transport-Security Header Not Set_https://fpl-case-service-aat.service.core-compute-aat.internal_GET": "ignore"
 }
