@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
@@ -103,6 +104,29 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
     @Nested
     class DocmosisCaseSubmissionOrdersNeededTest {
+        @Test
+        void shouldReturnDefaultValueForOrdersNeededWhenOrderTypeEmpty() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .orderType(of())
+                    .otherOrder("expected other order")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getOrdersNeeded()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnDefaultValueForOrdersNeededWhenOrderIsNull() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(Orders.builder().build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getOrdersNeeded()).isEqualTo("-");
+        }
+
         @Test
         void shouldReturnOrdersNeededWithOtherOrderAppendedWhenOtherOrderGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
