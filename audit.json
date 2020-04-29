@@ -69,5 +69,6 @@
   "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/4998171120468406043_GET": "igonre",
   "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/YQE6O_TRACK": "ignore",
   "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/crossdomain.xml_GET": "ignore",
-  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/M6LHX_TRACK": "ignore"
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/M6LHX_TRACK": "ignore",
+  "100001_Unexpected Content-Type was returned_https://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docsXS200_TRACK": "ignore"
 }
