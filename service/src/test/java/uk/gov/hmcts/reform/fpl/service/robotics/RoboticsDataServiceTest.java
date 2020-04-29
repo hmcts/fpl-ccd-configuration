@@ -12,11 +12,14 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -31,7 +34,9 @@ import java.util.Map;
 
 import static java.time.Month.APRIL;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONAssert.assertNotEquals;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -58,21 +63,83 @@ public class RoboticsDataServiceTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Nested
+    class Solicitor {
+
+        @Test
+        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNull() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .solicitor(null)
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNameIsEmpty() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .solicitor(uk.gov.hmcts.reform.fpl.model.Solicitor.builder().build())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNameIsNotFull() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .solicitor(uk.gov.hmcts.reform.fpl.model.Solicitor.builder()
+                    .name("Smith")
+                    .build())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+    }
+
     @Test
-    void shouldReturnRoboticsJsonDataWithoutSolicitorNodeWhenSolicitorNull() throws IOException {
-        CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER).toBuilder()
-            .solicitor(null)
+    void shouldReturnRoboticsDataWithoutRespondentNodeWhenNoRespondents() {
+        CaseData caseData = prepareCaseData().toBuilder()
+            .respondents1(emptyList())
             .build();
 
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-        String returnedRoboticsDataJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-        Map<String, Object> roboticsDataMap = objectMapper.reader()
-            .forType(new TypeReference<Map<String, Object>>() {
-            })
-            .readValue(returnedRoboticsDataJson);
+        assertThat(roboticsData.getRespondents()).isEmpty();
+    }
 
-        assertThat(roboticsDataMap).doesNotContainKey("solicitor");
+    @Nested
+    class Children {
+
+        @Test
+        void shouldReturnRoboticsDataWithoutChildrenNodeWhenNoChildren() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .children1(emptyList())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+            assertThat(roboticsData.getChildren()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithEmptyChildWhenChildDoesNotHaveData() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .children1(wrapElements(Child.builder().party(
+                    ChildParty.builder().build())
+                    .build()))
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+            assertThat(roboticsData.getChildren()).contains(uk.gov.hmcts.reform.fpl.model.robotics.Child.builder()
+                .build());
+        }
     }
 
     @Test
@@ -84,6 +151,17 @@ public class RoboticsDataServiceTest {
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
 
         assertThat(roboticsData.getApplicant()).isNull();
+    }
+
+    @Test
+    void shouldReturnRoboticsDataWithoutDateOfIssueWhenNotPresent() {
+        CaseData caseData = prepareCaseData().toBuilder()
+            .dateSubmitted(null)
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+
+        assertThat(roboticsData.getIssueDate()).isNull();
     }
 
     @Test
@@ -270,6 +348,16 @@ public class RoboticsDataServiceTest {
 
     @Nested
     class RoboticsApplicationTypeTests {
+
+        @Test
+        void shouldThrowExceptionWhenOrderTypeIsMissing() {
+            CaseData caseData = prepareCaseDataWithOrderType();
+
+            RoboticsDataException exception = assertThrows(RoboticsDataException.class,
+                () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
+
+            assertThat(exception.getMessage()).isEqualTo("no order type(s) to derive Application Type from.");
+        }
 
         @Test
         void shouldReturnCareOrderLabelAsApplicationTypeWhenInterimCareOrderSelected() {
