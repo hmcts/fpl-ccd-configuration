@@ -17,6 +17,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.hidePbaNumber;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @HasTelephoneOrMobile
@@ -75,5 +77,13 @@ public class ApplicantParty extends Party implements TelephoneContacts {
         this.pbaNumber = pbaNumber;
         this.clientCode = clientCode;
         this.customerReference = customerReference;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "ApplicantParty(super=%s, mobileNumber=%s, jobTitle=%s, pbaNumber=%s, clientCode=%s, customerReference=%s)",
+            super.toString(), this.getMobileNumber(), this.getJobTitle(), hidePbaNumber(this.pbaNumber),
+            this.getClientCode(), this.getCustomerReference());
     }
 }

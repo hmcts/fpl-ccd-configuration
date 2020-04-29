@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.fnp.model.payment.enums.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.hidePbaNumber;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -36,4 +38,15 @@ public class CreditAccountPaymentRequest {
     private String siteId;
     @JsonProperty("fees")
     private List<FeeDto> fees;
+
+    @Override
+    public String toString() {
+        return String.format(
+            "CreditAccountPaymentRequest(accountNumber=%s, amount=%s, caseReference=%s, ccdCaseNumber=%s, "
+                + "currency=%s, customerReference=%s, description=%s, organisationName=%s, service=%s, siteId=%s, "
+                + "fees=%s)",
+            hidePbaNumber(this.getAccountNumber()), this.getAmount(), this.getCaseReference(), this.getCcdCaseNumber(),
+            this.getCurrency(), this.getCustomerReference(), this.getDescription(), this.getOrganisationName(),
+            this.getService(), this.getSiteId(), this.getFees());
+    }
 }
