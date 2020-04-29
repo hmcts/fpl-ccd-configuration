@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Api
 @RestController
 @RequestMapping("callback/enter-other-proceedings")
@@ -28,7 +30,7 @@ public class OtherProceedingsController {
         List<String> validationErrors = new ArrayList<>();
         String onGoingProceeding = (String) proceedingData.get("onGoingProceeding");
 
-        if (onGoingProceeding == null || "".equals(onGoingProceeding)) {
+        if (isBlank(onGoingProceeding)) {
             validationErrors.add(ERROR_MESSAGE);
         }
 
