@@ -39,6 +39,8 @@ java:
 
 ccd:
   ccd:
+    adminWeb:
+      enabled: false
     apiGatewayWeb:
       enabled: true
     managementWeb:
@@ -59,6 +61,7 @@ ccd:
       environment:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
+      keyVaults:
   ccd-case-management-web:
     idam-pr:
       enabled: true
@@ -79,6 +82,10 @@ ccd:
   ccd-definition-store-api:
     global:
       s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
+    java:
+      keyVaults:
   ccd-data-store-api:
     global:
       s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
+    java:
+      keyVaults:
