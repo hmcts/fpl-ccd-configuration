@@ -91,6 +91,16 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(expectedDocmosisCaseSubmission());
     }
 
+    @Test
+    void shouldReturnExpectedCaseNumberInDocmosisCaseSubmissionWhenCaseNumberGiven() {
+        String expectedCaseNumber = "12345";
+        DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
+        DocmosisCaseSubmission returnedCaseSubmissionWithCaseNumber =
+            templateDataGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(returnedCaseSubmission, 12345L);
+
+        assertThat(returnedCaseSubmissionWithCaseNumber.getCaseNumber()).isEqualTo(expectedCaseNumber);
+    }
+
     @Nested
     class DocmosisCaseSubmissionOrdersNeededTest {
         @Test

@@ -119,6 +119,11 @@ public class CaseSubmissionTemplateDataGenerationService
         return applicationFormBuilder.build();
     }
 
+    public DocmosisCaseSubmission populateDocmosisCaseSubmissionWithCaseNumber(
+        final DocmosisCaseSubmission submittedCase, final long caseNumber) {
+        return submittedCase.toBuilder().caseNumber(String.valueOf(caseNumber)).build();
+    }
+
     private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
         return applicants.stream()
             .map(Element::getValue)

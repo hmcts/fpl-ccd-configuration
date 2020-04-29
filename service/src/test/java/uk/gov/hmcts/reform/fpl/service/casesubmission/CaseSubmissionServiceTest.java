@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.casesubmission;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,10 +17,12 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -37,20 +41,26 @@ public class CaseSubmissionServiceTest {
     @MockBean
     private CaseSubmissionTemplateDataGenerationService templateDataGenerationService;
 
+    @Captor
+    private ArgumentCaptor<DocmosisCaseSubmission> caseSubmissionDataCaptor;
+
     @Autowired
     private CaseSubmissionService caseSubmissionService;
 
     private CaseDetails givenCaseDetails;
+    private DocmosisCaseSubmission expectedCaseSubmissionWithCaseNumber;
 
     @BeforeEach
     void setup() {
-        DocmosisDocument docmosisDocument = new DocmosisDocument("case_submission_c110a.pdf", PDF);
-
         DocmosisCaseSubmission expectedCaseSubmission = expectedDocmosisCaseSubmission();
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
 
+        expectedCaseSubmissionWithCaseNumber = expectedCaseSubmission.toBuilder().caseNumber("12345").build();
+        given(templateDataGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(
+            expectedCaseSubmission, 12345L)).willReturn(expectedCaseSubmissionWithCaseNumber);
+
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(docmosisDocument);
+            .willReturn(new DocmosisDocument("case_submission_c110a.pdf", PDF));
 
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document());
 
@@ -60,6 +70,10 @@ public class CaseSubmissionServiceTest {
     @Test
     void shouldGenerateCaseSubmissionDocumentSuccessfully() {
         caseSubmissionService.generateSubmittedFormPDF(givenCaseDetails);
+
+        verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionDataCaptor.capture(), eq(C110A));
+        DocmosisCaseSubmission caseSubmission = caseSubmissionDataCaptor.getValue();
+        assertThat(caseSubmission).isEqualTo(expectedCaseSubmissionWithCaseNumber);
 
         verify(uploadDocumentService).uploadPDF(eq(PDF), any());
     }
