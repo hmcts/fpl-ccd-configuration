@@ -17,7 +17,7 @@ BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData('mandatoryWithMultipleChildren');
   submittedAt = new Date();
 
-  await I.signIn(config.hmctsAdminUser);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
 
 Before(async I => await I.navigateToCaseDetails(caseId));

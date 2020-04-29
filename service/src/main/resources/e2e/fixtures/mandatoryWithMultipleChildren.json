@@ -108,12 +108,8 @@
       }
     }
   ],
-  "dateSubmitted": "2020-04-24",
-  "submittedForm": {
-    "document_url": "http://dm-store:8080/documents/83337667-1d03-4ac5-b73a-d082499766ee",
-    "document_filename": "Barnet_Council_v_Smith.pdf",
-    "document_binary_url": "http://dm-store:8080/documents/83337667-1d03-4ac5-b73a-d082499766ee/binary"
-  },
+  "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+  "submittedForm": "TO BE FILLED WITH VALID DATA",
   "submissionConsent": [
     "agree"
   ],
@@ -121,43 +117,27 @@
     "proposal": "District judge"
   },
   "displayAmountToPay": "Yes",
-  "dateAndTimeSubmitted": "2020-04-24T12:07:19.711816+01:00",
+  "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
   "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
   "documents_socialWorkOther": [],
   "documents_checklist_document": {
     "documentStatus": "Attached",
-    "typeOfDocument": {
-      "document_url": "http://dm-store:8080/documents/c1f5c58d-259e-45e6-8f8b-55213e1811da",
-      "document_filename": "mockFile.txt",
-      "document_binary_url": "http://dm-store:8080/documents/c1f5c58d-259e-45e6-8f8b-55213e1811da/binary"
-    }
+    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
   },
   "documents_threshold_document": {
     "documentStatus": "Attached",
-    "typeOfDocument": {
-      "document_url": "http://dm-store:8080/documents/c35bae13-f350-4a58-9829-1de4d44b765c",
-      "document_filename": "mockFile.txt",
-      "document_binary_url": "http://dm-store:8080/documents/c35bae13-f350-4a58-9829-1de4d44b765c/binary"
-    }
+    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
   },
   "documents_socialWorkCarePlan_document": {
     "documentStatus": "Attached",
-    "typeOfDocument": {
-      "document_url": "http://dm-store:8080/documents/5f93cea2-e30f-4c63-a91b-1a8da790dd46",
-      "document_filename": "mockFile.txt",
-      "document_binary_url": "http://dm-store:8080/documents/5f93cea2-e30f-4c63-a91b-1a8da790dd46/binary"
-    }
+    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
   },
   "documents_socialWorkStatement_document": {
     "documentStatus": "Included in social work evidence template (SWET)"
   },
   "documents_socialWorkAssessment_document": {
     "documentStatus": "Attached",
-    "typeOfDocument": {
-      "document_url": "http://dm-store:8080/documents/9deae7bf-19b5-4d79-adf2-c06bfed2c65d",
-      "document_filename": "mockFile.txt",
-      "document_binary_url": "http://dm-store:8080/documents/9deae7bf-19b5-4d79-adf2-c06bfed2c65d/binary"
-    }
+    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
   },
   "documents_socialWorkChronology_document": {
     "statusReason": "mock reason",
@@ -165,10 +145,6 @@
   },
   "documents_socialWorkEvidenceTemplate_document": {
     "documentStatus": "Attached",
-    "typeOfDocument": {
-      "document_url": "http://dm-store:8080/documents/e346c29a-a888-43b3-a5ea-84934dea0887",
-      "document_filename": "mockFile.txt",
-      "document_binary_url": "http://dm-store:8080/documents/e346c29a-a888-43b3-a5ea-84934dea0887/binary"
-    }
+    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
   }
 }

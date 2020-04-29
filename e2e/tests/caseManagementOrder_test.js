@@ -9,6 +9,7 @@ Feature('Case Management Order Journey');
 
 BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData('sdo');
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 });
 
 Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));

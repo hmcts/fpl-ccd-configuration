@@ -19,7 +19,7 @@ BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCa
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 
-  await I.signIn(config.judicaryUser);
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 });
 
 Before(async I => await I.navigateToCaseDetails(caseId));
