@@ -66,6 +66,7 @@ ccd:
     ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
     ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
     ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
+    devMode: true
 
   ccd-api-gateway-web:
     global:
@@ -76,6 +77,7 @@ ccd:
       environment:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
+      ingressHost: gateway-${SERVICE_FQDN}
       keyVaults:
   ccd-case-management-web:
     idam-pr:
@@ -94,6 +96,7 @@ ccd:
         DM_URL: https://gateway-${SERVICE_FQDN}/documents
         DM_URL_REMOTE: https?://(gateway-${SERVICE_FQDN}:443|dm-store-aat.service.core-compute-aat.internal)/documents
         CCD_ACTIVITY_URL: null
+      ingressHost: case-management-web-${SERVICE_FQDN}
   ccd-definition-store-api:
     global:
       s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
