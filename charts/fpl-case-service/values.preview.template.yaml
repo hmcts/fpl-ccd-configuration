@@ -48,6 +48,8 @@ ccd:
       enabled: true
     managementWeb:
       enabled: true
+    s2s:
+      enabled: false
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
@@ -59,6 +61,8 @@ ccd:
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
+    ccdCaseManagementWebIngress: case-management-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
     ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
     ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
