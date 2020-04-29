@@ -1,6 +1,9 @@
 tags:
   fpl-ccd-stack: false
-  idam-pr: false
+  ccd-idam-pr: false
+
+idam-pr:
+  enabled: false
 
 java:
   aadIdentityName: family-public-law
@@ -50,3 +53,6 @@ java:
         - AppInsightsInstrumentationKey
         - scheduler-db-password
   applicationPort: 4000
+
+ccd:
+  enabled: false
