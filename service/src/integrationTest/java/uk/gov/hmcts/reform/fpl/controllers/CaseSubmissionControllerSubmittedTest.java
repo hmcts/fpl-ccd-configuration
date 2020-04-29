@@ -79,83 +79,77 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() throws Exception {
-        SubmitCaseHmctsTemplate completeHmctsParameters = getCompleteParameters(new SubmitCaseHmctsTemplate());
-        completeHmctsParameters.setCourt(FAMILY_COURT);
+        SubmitCaseHmctsTemplate submitCaseHmctsTemplate = getCompleteParameters(new SubmitCaseHmctsTemplate());
+        submitCaseHmctsTemplate.setCourt(FAMILY_COURT);
 
-        SubmitCaseCafcassTemplate completeCafcassParameters = getCompleteParameters(new SubmitCaseCafcassTemplate());
-        completeCafcassParameters.setCafcass(CAFCASS_COURT);
+        Map<String, Object> expectedHmctsParameters = submitCaseHmctsTemplate.toMap(mapper);
+
+        SubmitCaseCafcassTemplate submitCaseCafcassTemplate = getCompleteParameters(new SubmitCaseCafcassTemplate());
+        submitCaseCafcassTemplate.setCafcass(CAFCASS_COURT);
+
+        Map<String, Object> completeCafcassParameters = submitCaseCafcassTemplate.toMap(mapper);
 
         postSubmittedEvent("core-case-data-store-api/callback-request.json");
 
         verify(notificationClient).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             HMCTS_ADMIN_EMAIL,
-            completeHmctsParameters.toMap(mapper),
+            expectedHmctsParameters,
             CASE_REFERENCE.toString());
 
         verify(notificationClient).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE,
             CAFCASS_EMAIL,
-            completeCafcassParameters.toMap(mapper),
+            completeCafcassParameters,
             CASE_REFERENCE.toString());
 
         verify(notificationClient, never()).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
-            completeHmctsParameters.toMap(mapper),
+            expectedHmctsParameters,
             CASE_REFERENCE.toString());
     }
 
     @Test
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() throws Exception {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
-
-        SubmitCaseHmctsTemplate expectedHmctsParameters = getIncompleteParameters(new SubmitCaseHmctsTemplate());
-        expectedHmctsParameters.setCourt(FAMILY_COURT);
-
-        SubmitCaseCafcassTemplate expectedCafcassParameters = getIncompleteParameters(new SubmitCaseCafcassTemplate());
-        expectedCafcassParameters.setCafcass(CAFCASS_COURT);
-
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             HMCTS_ADMIN_EMAIL,
-            expectedHmctsParameters.toMap(mapper),
+            getExpectedIncompleteHmctsParameters(),
             CASE_REFERENCE.toString());
 
         verify(notificationClient).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE,
             CAFCASS_EMAIL,
-            expectedCafcassParameters.toMap(mapper),
+            getExpectedIncompleteCafcassParameters(),
             CASE_REFERENCE.toString());
 
         verify(notificationClient, never()).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             CTSC_EMAIL,
-            expectedHmctsParameters.toMap(mapper),
+            getExpectedIncompleteHmctsParameters(),
             CASE_REFERENCE.toString());
     }
 
     @Test
     void shouldSendNotificationToCtscAdminWhenCtscIsEnabledWithinCaseDetails() throws Exception {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        SubmitCaseHmctsTemplate expectedHmctsParameters = getIncompleteParameters(new SubmitCaseHmctsTemplate());
-        expectedHmctsParameters.setCourt(FAMILY_COURT);
-
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient, never()).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             HMCTS_ADMIN_EMAIL,
-            expectedHmctsParameters.toMap(mapper),
+            getExpectedIncompleteHmctsParameters(),
             CASE_REFERENCE.toString()
         );
 
         verify(notificationClient).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             CTSC_EMAIL,
-            expectedHmctsParameters.toMap(mapper),
+            getExpectedIncompleteHmctsParameters(),
             CASE_REFERENCE.toString()
         );
     }
@@ -275,6 +269,20 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 "caseLocalAuthority", "example",
                 "sendToCtsc", enableCtsc.getValue()
             ))).build();
+    }
+
+    private Map<String, Object> getExpectedIncompleteHmctsParameters() {
+        SubmitCaseHmctsTemplate submitCaseHmctsTemplate = getIncompleteParameters(new SubmitCaseHmctsTemplate());
+        submitCaseHmctsTemplate.setCourt(FAMILY_COURT);
+
+        return submitCaseHmctsTemplate.toMap(mapper);
+    }
+
+    private Map<String, Object> getExpectedIncompleteCafcassParameters() {
+        SubmitCaseCafcassTemplate submitCaseCafcassTemplate = getIncompleteParameters(new SubmitCaseCafcassTemplate());
+        submitCaseCafcassTemplate.setCafcass(CAFCASS_COURT);
+
+        return submitCaseCafcassTemplate.toMap(mapper);
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
