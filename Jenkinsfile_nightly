@@ -3,7 +3,7 @@
 properties([
   pipelineTriggers([cron('20 21 * * *')]),
   parameters([
-    string(name: 'URL_FOR_FULL_FUNCTIONAL_TEST', defaultValue: 'https://www-ccd.aat.platform.hmcts.net',
+    string(name: 'URL_FOR_FULL_FUNCTIONAL_TEST', defaultValue: 'http://www-ccd.aat.platform.hmcts.net',
       description: 'The URL you want to run the full functional tests against'),
     string(name: 'URL_FOR_SECURITY_SCAN', defaultValue: 'https://fpl-case-service-aat.service.core-compute-aat.internal',
       description: 'The URL you want to run these security scan against'),
