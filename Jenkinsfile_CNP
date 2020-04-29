@@ -150,16 +150,12 @@ withPipeline(type, product, component) {
   }
 
   after('buildinfra:demo') {
-    env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
     archiveCoreCaseDataDefinitions('demo')
     uploadCoreCaseDataDefinitions('demo')
   }
 
   before('smoketest:aat') {
-    env.URL = "https://www-ccd.aat.platform.hmcts.net"
     archiveCoreCaseDataDefinitions('aat')
-
-    env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
     uploadCoreCaseDataDefinitions('aat')
   }
 }
