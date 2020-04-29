@@ -3,35 +3,22 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, GatekeeperEmailContentProvider.class, LookupTestConfig.class
-})
+@ContextConfiguration(classes = {GatekeeperEmailContentProvider.class, LookupTestConfig.class})
 class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
-
-    @PostConstruct
-    void setField() {
-        ReflectionTestUtils.setField(gatekeeperEmailContentProvider, "uiBaseUrl", BASE_URL);
-    }
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() {
@@ -92,10 +79,10 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
 
     @Test
     void shouldReturnEmptyStringIfOnlyOneRecipient() {
-        List<String> gatekeeperEmails = ImmutableList.of("JohnSmith@gmail.com");
+        List<String> gatekeeperEmails = List.of("JohnSmith@gmail.com");
         String formattedMessage = gatekeeperEmailContentProvider.buildRecipientsLabel(gatekeeperEmails,
             "JohnSmith@gmail.com");
 
-        assertThat(formattedMessage).isEqualTo("");
+        assertThat(formattedMessage).isEmpty();
     }
 }
