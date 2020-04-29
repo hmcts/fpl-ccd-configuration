@@ -1,6 +1,7 @@
 #!groovy
+
 @Library("Infrastructure")
-import java.lang.Object
+import uk.gov.hmcts.contino.ProjectBranch
 
 def type = "java"
 
@@ -105,11 +106,6 @@ withPipeline(type, product, component) {
   before('smoketest:aat') {
     env.URL = "https://www-ccd.aat.platform.hmcts.net"
     archiveCoreCaseDataDefinitions('aat')
-  }
-
-  before('smoketest:demo-staging') {
-    env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
-    importCoreCaseDataDefinitions('demo')
   }
 
   before('smoketest:preview') {
