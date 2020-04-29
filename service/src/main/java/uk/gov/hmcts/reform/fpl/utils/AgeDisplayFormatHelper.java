@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -14,9 +13,7 @@ public class AgeDisplayFormatHelper {
     public static String formatAgeDisplay(final LocalDate dateOfBirth) {
         checkNotNull(dateOfBirth, "Date of birth value is required");
 
-        LocalDate today = LocalDate.now(Clock.systemDefaultZone());
-
-        Period period = Period.between(dateOfBirth, today);
+        Period period = Period.between(dateOfBirth, LocalDate.now());
         int years = period.getYears();
         int months = period.getMonths();
         int days = period.getDays();
