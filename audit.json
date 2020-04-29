@@ -1,2 +1,13 @@
 {
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal_TRACE":  "ignore",
+  "100001_Unexpected Content-Type was returned_http://fpl-case-service-aat.service.core-compute-aat.internal_TRACE": "ignore",
+  "10036_Server Leaks Version Information via \"Server\" HTTP Response Header Field_https://fpl-case-service-aat.service.core-compute-aat.internal_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/crossdomain.xml_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/Y9FYX_TRACK": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal_TRACE": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/clientaccesspolicy.xml_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/elmah.axd_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal_OPTIONS": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/?-d+allow_url_include%3d1+-d+auto_prepend_file%3dphp://input_POST": "ignore",
+  "100000_A Client Error response code was returned by the server_https://fpl-case-service-aat.service.core-compute-aat.internal/_GET": "ignore"
 }
