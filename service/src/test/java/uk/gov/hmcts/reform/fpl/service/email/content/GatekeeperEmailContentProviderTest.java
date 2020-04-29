@@ -3,12 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -17,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -25,19 +20,11 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, GatekeeperEmailContentProvider.class, LookupTestConfig.class
-})
+@ContextConfiguration(classes = {GatekeeperEmailContentProvider.class, LookupTestConfig.class})
 class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
-
-    @PostConstruct
-    void setField() {
-        ReflectionTestUtils.setField(gatekeeperEmailContentProvider, "uiBaseUrl", BASE_URL);
-    }
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() {

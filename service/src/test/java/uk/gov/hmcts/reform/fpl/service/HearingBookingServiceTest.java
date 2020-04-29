@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { HearingBookingService.class, FixedTimeConfiguration.class})
+@ContextConfiguration(classes = {HearingBookingService.class, FixedTimeConfiguration.class})
 class HearingBookingServiceTest {
     private static final UUID[] HEARING_IDS = {randomUUID(), randomUUID(), randomUUID(), randomUUID()};
 
