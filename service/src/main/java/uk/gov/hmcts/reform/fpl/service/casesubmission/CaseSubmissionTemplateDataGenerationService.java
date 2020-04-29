@@ -79,6 +79,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseSubmissionTemplateDataGenerationService
     extends DocmosisTemplateDataGeneration<DocmosisCaseSubmission> {
     private static final String NEW_LINE = "\n";
+    private static final String SPACE_DELIMITER = " ";
     private static final String DEFAULT_STRING = "-";
     private static final String CONFIDENTIAL = "Confidential";
 
@@ -318,7 +319,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .children(getDefaultIfNullOrEmpty(proceeding.getChildren()))
             .guardian(getDefaultIfNullOrEmpty(proceeding.getGuardian()))
             .sameGuardianDetails(
-                concatenateYesOrNoKeyAndValue(
+                concatenateKeyAndValue(
                     proceeding.getSameGuardianNeeded(),
                     proceeding.getSameGuardianDetails()))
             .build();
@@ -514,20 +515,24 @@ public class CaseSubmissionTemplateDataGenerationService
         return DocmosisHearing.builder()
             .timeFrame(hearingPresent
                 ? concatenateKeyAndValue(
-                hearing.getTimeFrame(),
-                hearing.getReason()) : DEFAULT_STRING)
+                    hearing.getTimeFrame(),
+                    addPrefixReason(hearing.getReason()))
+                : DEFAULT_STRING)
             .typeAndReason(hearingPresent
                 ? concatenateKeyAndValue(
-                hearing.getType(),
-                hearing.getType_GiveReason()) : DEFAULT_STRING)
+                    hearing.getType(),
+                    addPrefixReason(hearing.getType_GiveReason()))
+                : DEFAULT_STRING)
             .withoutNoticeDetails(hearingPresent
                 ? concatenateKeyAndValue(
-                hearing.getWithoutNotice(),
-                hearing.getWithoutNoticeReason()) : DEFAULT_STRING)
+                    hearing.getWithoutNotice(),
+                    addPrefixReason(hearing.getWithoutNoticeReason()))
+                : DEFAULT_STRING)
             .reducedNoticeDetails(hearingPresent
                 ? concatenateKeyAndValue(
-                hearing.getReducedNotice(),
-                hearing.getReducedNoticeReason()) : DEFAULT_STRING)
+                    hearing.getReducedNotice(),
+                    addPrefixReason(hearing.getReducedNoticeReason()))
+                : DEFAULT_STRING)
             .respondentsAware(
                 hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
                     ? hearing.getRespondentsAware() : DEFAULT_STRING)
@@ -724,5 +729,11 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String formatAge(final LocalDate dateOfBirth) {
         return dateOfBirth != null ? formatAgeDisplay(dateOfBirth) : DEFAULT_STRING;
+    }
+
+    private String addPrefixReason(String givenReason) {
+        return isNotEmpty(givenReason)
+            ? join(SPACE_DELIMITER, "Reason:", getDefaultIfNullOrEmpty(givenReason))
+            : EMPTY;
     }
 }
