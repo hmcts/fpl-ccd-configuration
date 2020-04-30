@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumber;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumbers;
-import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.hidePbaNumber;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.setPrefix;
 
 class PbaNumberHelperTest {
@@ -57,20 +56,6 @@ class PbaNumberHelperTest {
         assertThat(getNonEmptyPbaNumber(documentWithNonEmptyPbaNumber)).isEqualTo(Optional.of("123"));
         assertThat(getNonEmptyPbaNumber(documentWithEmptyPbaNumber)).isEqualTo(Optional.empty());
         assertThat(getNonEmptyPbaNumber(documentWithNullPbaNumber)).isEqualTo(Optional.empty());
-    }
-
-    @Test
-    void shouldReturnAStarredPBANumberWhenPBANumberIsValid() {
-        assertThat(hidePbaNumber("PBA1234567")).isEqualTo("PBA*******");
-    }
-
-    @Test
-    void shouldReturnPassedStringWhenNotValidPBANumber() {
-        assertThat(hidePbaNumber("PBA")).isEqualTo("PBA");
-        assertThat(hidePbaNumber("PBA123")).isEqualTo("PBA123");
-        assertThat(hidePbaNumber("not a PBA number")).isEqualTo("not a PBA number");
-        assertThat(hidePbaNumber("")).isEmpty();
-        assertThat(hidePbaNumber(null)).isNull();
     }
 
     private Element<Applicant> buildApplicantElementWithPbaNumber(String pbaNumber) {
