@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +36,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.util.Lists.newArrayList;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -184,6 +184,25 @@ class CommonDirectionServiceTest {
             buildDirections(COURT, "Yes"))
             .flatMap(Collection::stream)
             .collect(toList()));
+
+        assertThat(directions).isEqualTo(expectedDirections);
+    }
+
+    @Test
+    void changeSdoTabStatus_shouldApplyStatusToListOfDirectionsWhenParametersProvided() {
+        Direction direction = Direction.builder()
+            .directionType("direction")
+            .directionText("example direction text")
+            .directionNeeded("Yes")
+            .assignee(LOCAL_AUTHORITY)
+            .sdoTabStatus(null)
+            .build();
+
+        List<Direction> directions = unwrapElements(
+            service.changeSdoTabStatus(newArrayList(element(direction)), "Yes"));
+
+        List<Direction> expectedDirections = unwrapElements(
+            newArrayList(element(direction.toBuilder().sdoTabStatus("Yes").build())));
 
         assertThat(directions).isEqualTo(expectedDirections);
     }
@@ -467,7 +486,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee) {
-        return Lists.newArrayList(element(Direction.builder()
+        return newArrayList(element(Direction.builder()
             .directionType("direction")
             .directionText("example direction text")
             .assignee(assignee)
@@ -475,7 +494,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee, String directionNeeded) {
-        return Lists.newArrayList(element(Direction.builder()
+        return newArrayList(element(Direction.builder()
             .directionType("direction")
             .directionText("example direction text")
             .directionNeeded(directionNeeded)
@@ -484,7 +503,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee, UUID directionId) {
-        return Lists.newArrayList(element(directionId, Direction.builder()
+        return newArrayList(element(directionId, Direction.builder()
             .directionType("direction")
             .directionText("example direction text")
             .assignee(assignee)
@@ -492,7 +511,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildCustomDirections() {
-        return Lists.newArrayList(element(
+        return newArrayList(element(
             Direction.builder()
                 .directionType("direction")
                 .directionText("example direction text")
