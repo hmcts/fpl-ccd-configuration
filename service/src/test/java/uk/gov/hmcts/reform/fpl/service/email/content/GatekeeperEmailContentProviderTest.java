@@ -122,7 +122,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         String formattedMessage = gatekeeperEmailContentProvider.buildRecipientsLabel(gatekeeperEmails,
             "JohnSmith@gmail.com");
 
-        assertThat(formattedMessage).isEqualTo("");
+        assertThat(formattedMessage).isEmpty();
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {
