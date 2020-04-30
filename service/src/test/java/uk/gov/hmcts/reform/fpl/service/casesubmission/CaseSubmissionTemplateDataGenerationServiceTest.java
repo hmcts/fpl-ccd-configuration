@@ -231,7 +231,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyWhenOrderTypeEPOAndGroundsForEPOIsEmpty() {
+        void shouldReturnDefaultValueWhenOrderTypeEPOAndGroundsForEPOIsNull() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .orderType(of(OrderType.CARE_ORDER,
@@ -246,7 +246,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyWhenOrderTypeEPOAndGroundsForEPOReasonIsEmpty() {
+        void shouldReturnDefaultValueWhenOrderTypeEPOAndGroundsForEPOReasonIsEmpty() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .orderType(of(OrderType.CARE_ORDER,
@@ -286,6 +286,34 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     }
 
     @Nested
+    class DocmosisCaseSubmissionGroundsThresholdDetailsTest {
+
+        @Test
+        void shouldReturnBeyondParentalControlForGroundsThresholdReasonWhenThresholdReasonIsBeyondControl() {
+            CaseData updatedCasData = givenCaseData.toBuilder()
+                .grounds(Grounds.builder()
+                    .thresholdReason(of("beyondControl"))
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
+
+            assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("Beyond parental control.\n");
+        }
+
+        @Test
+        void shouldReturnDefaultValueForGroundsThresholdReasonWhenTGroundsIsNull() {
+            CaseData updatedCasData = givenCaseData.toBuilder()
+                .grounds(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
+
+            assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("-");
+        }
+    }
+
+    @Nested
     class DocmosisCaseSubmissionDirectionsNeededTest {
 
         @Test
@@ -300,7 +328,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyWhenOrderTypeAndDirectionsAreNotAvailable() {
+        void shouldReturnDefaultValueWhenOrderTypeAndDirectionsIsNull() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(Orders.builder()
                     .orderType(null)
