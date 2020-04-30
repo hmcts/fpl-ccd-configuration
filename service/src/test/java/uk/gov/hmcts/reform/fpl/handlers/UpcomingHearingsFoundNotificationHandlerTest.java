@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,7 +80,7 @@ public class UpcomingHearingsFoundNotificationHandlerTest {
 
         upcomingHearingsFoundNotificationHandler.sendEmailWithUpcomingHearings(upcomingHearings);
 
-        verify(notificationService, never()).sendEmail(any(), any(), any(), any());
+        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }
 
     @Test
@@ -91,6 +92,6 @@ public class UpcomingHearingsFoundNotificationHandlerTest {
 
         upcomingHearingsFoundNotificationHandler.sendEmailWithUpcomingHearings(upcomingHearings);
 
-        verify(notificationService, never()).sendEmail(any(), any(), any(), any());
+        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }
 }
