@@ -139,5 +139,15 @@
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/about-to-submit_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-submission/about-to-start_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/comply-with-directions/about-to-start_POST": "ignore",
-  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-others/about-to-submit_POST": "ignore"
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-others/about-to-submit_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/generate-document/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/about-to-start_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/notice-of-proceedings/about-to-start_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/sendRPAEmailByID/caseId_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/notice-of-proceedings/about-to-submit_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-cmo/submitted_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-respondents/about-to-start_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/comply-on-behalf/about-to-start_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-hearing-bookings/about-to-start_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/orders-needed/about-to-submit_POST": "ignore"
 }
