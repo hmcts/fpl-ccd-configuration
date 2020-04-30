@@ -307,7 +307,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
 
-            assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("Beyond parental control.\n");
+            assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("Beyond parental control.");
         }
 
         @Test
