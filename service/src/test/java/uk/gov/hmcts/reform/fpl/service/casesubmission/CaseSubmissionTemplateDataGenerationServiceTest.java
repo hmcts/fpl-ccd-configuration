@@ -311,9 +311,36 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
+        void shouldNotHaveBeyondParentalControlAppendedForGroundsThresholdReasonWhenThresholdReasonIsNotBeyondControl() {
+            CaseData updatedCasData = givenCaseData.toBuilder()
+                .grounds(Grounds.builder()
+                    .thresholdReason(of("test", "noCare"))
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
+
+            assertThat(caseSubmission.getGroundsThresholdReason())
+                .isEqualTo("Not receiving care that would be reasonably expected from a parent.");
+        }
+
+        @Test
         void shouldReturnDefaultValueForGroundsThresholdReasonWhenTGroundsIsNull() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
+
+            assertThat(caseSubmission.getGroundsThresholdReason()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnDefaultValueForGroundsThresholdReasonWhenTGroundsIsNotNullAndThresholdReasonEmpty() {
+            CaseData updatedCasData = givenCaseData.toBuilder()
+                .grounds(Grounds.builder()
+                    .thresholdReason(of())
+                    .build())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCasData);
