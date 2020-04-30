@@ -4,13 +4,21 @@ tags:
 
 idam-pr:
   enabled: true
+  releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
+  redirect_uris:
+    CCD:
+      - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
+  cpuRequests: 25m
+  memoryRequests: 8Mi
+  cpuLimits: 50m
+  memoryLimits: 16Mi
 
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   livenessDelay: 50
   environment:
-    CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
+    CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
@@ -80,16 +88,6 @@ ccd:
       ingressHost: gateway-${SERVICE_FQDN}
       keyVaults:
   ccd-case-management-web:
-    idam-pr:
-      enabled: true
-      releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
-      redirect_uris:
-        CCD:
-          - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
-      cpuRequests: 25m
-      memoryRequests: 8Mi
-      cpuLimits: 50m
-      memoryLimits: 16Mi
     nodejs:
       environment:
         NODE_TLS_REJECT_UNAUTHORIZED: 0
