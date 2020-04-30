@@ -172,5 +172,6 @@
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-respondents/about-to-start_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/action-cmo/mid-event_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/validate-order/interim-end-date/mid-event_POST": "ignore",
-  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/validate-order/date-of-issue/mid-event_POST": "ignore"
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/validate-order/date-of-issue/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/about-to-start_POST": "ignore"
 }
