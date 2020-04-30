@@ -27,11 +27,10 @@ public class CaseSubmissionService  {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
-        DocmosisCaseSubmission submittedCaseWithCaseNumber =
-            documentGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(submittedCase, caseDetails.getId());
+        submittedCase = documentGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(submittedCase,
+            caseDetails.getId());
 
-        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            submittedCaseWithCaseNumber, C110A);
+        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(submittedCase, C110A);
 
         return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseDetails));
     }
