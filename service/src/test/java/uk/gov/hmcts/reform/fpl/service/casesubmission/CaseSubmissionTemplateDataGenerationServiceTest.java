@@ -106,10 +106,10 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     void shouldReturnExpectedCaseNumberInDocmosisCaseSubmissionWhenCaseNumberGiven() {
         String expectedCaseNumber = "12345";
         DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
-        DocmosisCaseSubmission returnedCaseSubmissionWithCaseNumber =
-            templateDataGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(returnedCaseSubmission, 12345L);
 
-        assertThat(returnedCaseSubmissionWithCaseNumber.getCaseNumber()).isEqualTo(expectedCaseNumber);
+        templateDataGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(returnedCaseSubmission, 12345L);
+
+        assertThat(returnedCaseSubmission.getCaseNumber()).isEqualTo(expectedCaseNumber);
     }
 
     @Nested

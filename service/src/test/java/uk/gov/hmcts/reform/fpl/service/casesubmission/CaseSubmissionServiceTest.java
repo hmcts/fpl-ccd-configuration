@@ -48,16 +48,15 @@ public class CaseSubmissionServiceTest {
     private CaseSubmissionService caseSubmissionService;
 
     private CaseDetails givenCaseDetails;
-    private DocmosisCaseSubmission expectedCaseSubmissionWithCaseNumber;
+    private DocmosisCaseSubmission expectedCaseSubmission;
 
     @BeforeEach
     void setup() {
-        DocmosisCaseSubmission expectedCaseSubmission = expectedDocmosisCaseSubmission();
+        expectedCaseSubmission = expectedDocmosisCaseSubmission();
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
 
-        expectedCaseSubmissionWithCaseNumber = expectedCaseSubmission.toBuilder().caseNumber("12345").build();
-        given(templateDataGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(
-            expectedCaseSubmission, 12345L)).willReturn(expectedCaseSubmissionWithCaseNumber);
+        templateDataGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(
+            expectedCaseSubmission, 12345L);
 
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(new DocmosisDocument("case_submission_c110a.pdf", PDF));
@@ -73,7 +72,7 @@ public class CaseSubmissionServiceTest {
 
         verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionDataCaptor.capture(), eq(C110A));
         DocmosisCaseSubmission caseSubmission = caseSubmissionDataCaptor.getValue();
-        assertThat(caseSubmission).isEqualTo(expectedCaseSubmissionWithCaseNumber);
+        assertThat(caseSubmission).isEqualTo(expectedCaseSubmission);
 
         verify(uploadDocumentService).uploadPDF(eq(PDF), any());
     }

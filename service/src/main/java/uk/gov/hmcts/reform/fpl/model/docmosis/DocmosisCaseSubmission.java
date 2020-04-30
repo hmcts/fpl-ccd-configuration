@@ -17,7 +17,6 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final List<DocmosisApplicant> applicants;
     private final List<DocmosisChild> children;
     private final List<DocmosisOtherParty> others;
-    private final String caseNumber;
     private final String courtName;
     private final String applicantOrganisations;
     private final String respondentNames;
@@ -39,4 +38,6 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final List<DocmosisProceeding> proceeding;
     private final DocmosisAnnexDocuments annexDocuments;
     private final String relevantProceedings;
+
+    private String caseNumber;
 }

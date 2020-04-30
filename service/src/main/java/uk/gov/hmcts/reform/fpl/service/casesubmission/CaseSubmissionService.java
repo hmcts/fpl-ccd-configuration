@@ -27,8 +27,7 @@ public class CaseSubmissionService  {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
-        submittedCase = documentGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(submittedCase,
-            caseDetails.getId());
+        documentGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(submittedCase, caseDetails.getId());
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(submittedCase, C110A);
 

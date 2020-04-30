@@ -122,9 +122,9 @@ public class CaseSubmissionTemplateDataGenerationService
         return applicationFormBuilder.build();
     }
 
-    public DocmosisCaseSubmission populateDocmosisCaseSubmissionWithCaseNumber(
+    public void populateDocmosisCaseSubmissionWithCaseNumber(
         final DocmosisCaseSubmission submittedCase, final long caseNumber) {
-        return submittedCase.toBuilder().caseNumber(String.valueOf(caseNumber)).build();
+        submittedCase.setCaseNumber(String.valueOf(caseNumber));
     }
 
     private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
