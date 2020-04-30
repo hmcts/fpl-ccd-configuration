@@ -228,7 +228,7 @@ public class CaseSubmissionTemplateDataGenerationService
                 return groundsForEPO.getReason()
                     .stream()
                     .map(reason -> EmergencyProtectionOrderReasonsType.valueOf(reason).getLabel())
-                    .collect(joining(NEW_LINE));
+                    .collect(joining(NEW_LINE + NEW_LINE));
             }
 
             return DEFAULT_STRING;

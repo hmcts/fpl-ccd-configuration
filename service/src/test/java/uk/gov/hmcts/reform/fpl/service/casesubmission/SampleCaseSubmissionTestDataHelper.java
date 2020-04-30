@@ -47,7 +47,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .userFullName("Professor")
             .submittedDate(now().format(ofPattern("d MMMM yyyy")))
             .groundsForEPOReason("There’s reasonable cause to believe the child is likely to suffer"
-                + " significant harm if they’re not moved to accommodation provided by you, or on your behalf\n"
+                + " significant harm if they’re not moved to accommodation provided by you, or on your behalf\n\n"
                 + "There’s reasonable cause to believe the child is likely to suffer significant harm if they don’t "
                 + "stay in their current accommodation")
             .groundsThresholdReason("Not receiving care that would be reasonably expected "
