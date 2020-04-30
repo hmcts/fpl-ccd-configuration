@@ -193,6 +193,23 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(coreCaseDataService).triggerEvent(any(), any(), any(), any(), any());
     }
 
+    @Test
+    void shouldNotProceedIfCMONotInJudgeReview() {
+        CaseManagementOrder caseManagementOrder = getCaseManagementOrder();
+
+        Map<String, Object> data = Map.of(
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), caseManagementOrder.toBuilder()
+                .status(CMOStatus.SELF_REVIEW)
+                .build());
+
+        CaseDetails caseDetails = buildCaseDetails(data);
+
+        postSubmittedEvent(caseDetails);
+
+        verifyZeroInteractions(notificationClient);
+        verifyZeroInteractions(coreCaseDataService);
+    }
+
     private CaseDetails buildCaseDetails(Map<String, Object> data) {
         return CaseDetails.builder()
             .id(12345L)

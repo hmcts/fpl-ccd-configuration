@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -148,5 +149,13 @@ public class TestDataHelper {
 
     public static EmailAddress testEmail() {
         return EmailAddress.builder().email("test@test.com").build();
+    }
+
+    public static Other testOther() {
+        return Other.builder()
+            .name(randomAlphanumeric(20))
+            .birthPlace(randomAlphanumeric(10))
+            .address(testAddress())
+            .build();
     }
 }
