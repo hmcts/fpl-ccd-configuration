@@ -40,117 +40,59 @@
     {
       "id": "749f29dc-c200-4377-9e12-a5b4bad631bc",
       "value": {
-        "status": null,
         "assignee": "ALL_PARTIES",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Request permission for expert evidence",
         "directionNeeded": "Yes",
         "directionRemovable": "Yes",
-        "dateToBeCompletedBy": "2050-01-01T12:00:00.000",
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
       }
     },
     {
       "id": "c8f60fdf-d5fb-43cf-ad07-a38f86b6b96e",
       "value": {
-        "status": null,
         "assignee": "ALL_PARTIES",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Request help to take part in proceedings",
         "directionNeeded": "Yes",
-        "directionRemovable": "Yes",
-        "dateToBeCompletedBy": null,
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "directionRemovable": "Yes"
       }
     },
     {
       "id": "f9f9653b-545e-406d-8fc0-e5ea55186b73",
       "value": {
-        "status": null,
         "assignee": "ALL_PARTIES",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Ask for disclosure",
         "directionNeeded": "Yes",
-        "directionRemovable": "Yes",
-        "dateToBeCompletedBy": null,
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "directionRemovable": "Yes"
       }
     },
     {
       "id": "5e03c2e5-a1b3-44b7-b34a-0060be2edb7f",
       "value": {
-        "status": null,
         "assignee": "ALL_PARTIES",
         "readOnly": "No",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
         "directionType": "Attend the pre-hearing and hearing",
         "directionNeeded": "Yes",
         "directionRemovable": "Yes",
-        "dateToBeCompletedBy": "2050-01-01T15:15:00",
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "dateToBeCompletedBy": "2050-01-01T15:15:00"
       }
     },
     {
       "id": "27978766-f6bc-4f7f-83f9-fa3dd61ad8ee",
       "value": {
-        "status": null,
         "assignee": "ALL_PARTIES",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Contact alternative carers",
         "directionNeeded": "Yes",
-        "directionRemovable": "Yes",
-        "dateToBeCompletedBy": null,
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "directionRemovable": "Yes"
       }
     }
   ],
@@ -220,9 +162,7 @@
   "submittedForm":  "TO BE FILLED WITH VALID DATA",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
-    "judgeLastName": "Moley",
-    "legalAdvisorName": null,
-    "allocatedJudgeLabel": null
+    "judgeLastName": "Moley"
   },
   "hearingDetails": [
     {
@@ -232,7 +172,6 @@
         "venue": "96",
         "endDate": "2050-01-02T16:30:00",
         "startDate": "2050-01-01T15:15:00",
-        "typeDetails": null,
         "hearingNeedsBooked": [
           "INTERPRETER",
           "SPOKEN_OR_WRITTEN_WELSH",
@@ -242,12 +181,8 @@
         "hearingNeedsDetails": "Some details",
         "judgeAndLegalAdvisor": {
           "judgeTitle": "HER_HONOUR_JUDGE",
-          "otherTitle": null,
-          "judgeFullName": null,
           "judgeLastName": "Reed",
-          "legalAdvisorName": "Rupert Robert",
-          "useAllocatedJudge": null,
-          "allocatedJudgeLabel": null
+          "legalAdvisorName": "Rupert Robert"
         }
       }
     }
@@ -256,25 +191,14 @@
     {
       "id": "b4d1e2e7-40ba-46fc-a853-482197ac1a87",
       "value": {
-        "status": null,
         "assignee": "COURT",
         "readOnly": "No",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionText": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
         "directionType": "Arrange interpreters",
         "directionNeeded": "Yes",
         "directionRemovable": "Yes",
-        "dateToBeCompletedBy": "2050-01-01T12:00:00.000",
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
       }
     }
   ],
@@ -292,71 +216,35 @@
     {
       "id": "3cdc4c84-e65a-48ea-908d-f85a22c08eae",
       "value": {
-        "status": null,
         "assignee": "CAFCASS",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Arrange an advocates' meeting",
         "directionNeeded": "Yes",
         "directionRemovable": "Yes",
-        "dateToBeCompletedBy": "2050-01-01T12:00:00.000",
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
       }
     },
     {
       "id": "45c730d6-97eb-46ee-9064-cf085d3bd3e7",
       "value": {
-        "status": null,
         "assignee": "CAFCASS",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Send the guardian's analysis to all parties",
         "directionNeeded": "Yes",
-        "directionRemovable": "Yes",
-        "dateToBeCompletedBy": null,
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "directionRemovable": "Yes"
       }
     },
     {
       "id": "1ab9622b-7dbc-4b68-a75d-3d799a4ea98b",
       "value": {
-        "status": null,
         "assignee": "CAFCASS",
         "readOnly": "No",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
-        "directionText": null,
         "directionType": "Appoint a children's guardian",
         "directionNeeded": "Yes",
-        "directionRemovable": "Yes",
-        "dateToBeCompletedBy": null,
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "directionRemovable": "Yes"
       }
     }
   ],
@@ -374,24 +262,13 @@
     {
       "id": "048052fc-e26a-4511-8be5-84b9c474118c",
       "value": {
-        "status": null,
         "assignee": "PARENTS_AND_RESPONDENTS",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Send response to threshold statement to all parties",
         "directionNeeded": "Yes",
         "directionRemovable": "Yes",
-        "dateToBeCompletedBy": "2050-01-01T12:00:00.000",
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
       }
     }
   ],
@@ -401,24 +278,13 @@
     {
       "id": "dec3b79d-f13c-4632-8b47-94b3acc3a3fe",
       "value": {
-        "status": null,
         "assignee": "OTHERS",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Object to a request for disclosure",
         "directionNeeded": "Yes",
         "directionRemovable": "Yes",
-        "dateToBeCompletedBy": "2050-01-01T12:00:00.000",
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
       }
     }
   ],
@@ -434,20 +300,6 @@
         "value": {
           "assignee": "ALL_PARTIES",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts. ",
           "directionType": "Request permission for expert evidence",
@@ -461,20 +313,6 @@
         "value": {
           "assignee": "ALL_PARTIES",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Make an application to the court if you believe any party or witness needs help with:\n\n- understanding proceedings and their role in them in court\n- putting their views to the court\n- instructing their representatives before, during and after the hearing\n- attending the hearing without significant distress\n\nIf possible, include in your application:\n\n- why the party or witness would benefit from help\n- the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n- written confirmation from any relevant witnesses of their view\n",
           "directionType": "Request help to take part in proceedings",
@@ -487,20 +325,6 @@
         "value": {
           "assignee": "ALL_PARTIES",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.  \n",
           "directionType": "Ask for disclosure",
@@ -513,20 +337,6 @@
         "value": {
           "assignee": "ALL_PARTIES",
           "readOnly": "No",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
           "directionType": "Attend the pre-hearing and hearing",
@@ -540,20 +350,6 @@
         "value": {
           "assignee": "ALL_PARTIES",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Contact anyone who might want to be a carer if your preferred plan proves to be impossible. Give their contact details to the Local Authority.",
           "directionType": "Contact alternative carers",
@@ -566,20 +362,6 @@
         "value": {
           "assignee": "LOCAL_AUTHORITY",
           "readOnly": "No",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on",
           "directionType": "Send documents to all parties",
@@ -593,20 +375,6 @@
         "value": {
           "assignee": "LOCAL_AUTHORITY",
           "readOnly": "No",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents",
           "directionType": "Send missing annex documents to the court and all parties",
@@ -619,20 +387,6 @@
         "value": {
           "assignee": "LOCAL_AUTHORITY",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
           "directionType": "Identify alternative carers",
@@ -646,20 +400,6 @@
         "value": {
           "assignee": "LOCAL_AUTHORITY",
           "readOnly": "No",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.",
           "directionType": "Send translated case documents to respondents",
@@ -672,20 +412,6 @@
         "value": {
           "assignee": "LOCAL_AUTHORITY",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
           "directionType": "Lodge a bundle",
@@ -699,20 +425,6 @@
         "value": {
           "assignee": "LOCAL_AUTHORITY",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Send to the court and all parties.",
           "directionType": "Send case summary to all parties",
@@ -725,20 +437,6 @@
         "value": {
           "assignee": "LOCAL_AUTHORITY",
           "readOnly": "No",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.",
           "directionType": "Urgently consider jurisdiction and invite any representations",
@@ -751,20 +449,6 @@
         "value": {
           "assignee": "PARENTS_AND_RESPONDENTS",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Send a written statement to the court and all parties, showing:\n\n- the parents' response to the local authority's threshold statement\n- the parents' proposals for placing the children, immediately and long-term\n- whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
           "directionType": "Send response to threshold statement to all parties",
@@ -778,20 +462,6 @@
         "value": {
           "assignee": "CAFCASS",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "All of the advocates who will appear at the related hearing must attend. ",
           "directionType": "Arrange an advocates' meeting",
@@ -805,20 +475,6 @@
         "value": {
           "assignee": "CAFCASS",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "Send to the court and all parties.",
           "directionType": "Send the guardian's analysis to all parties",
@@ -831,20 +487,6 @@
         "value": {
           "assignee": "CAFCASS",
           "readOnly": "No",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionType": "Appoint a children's guardian",
           "directionNeeded": "Yes",
@@ -856,20 +498,6 @@
         "value": {
           "assignee": "OTHERS",
           "readOnly": "Yes",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.\n",
           "directionType": "Object to a request for disclosure",
@@ -883,20 +511,6 @@
         "value": {
           "assignee": "COURT",
           "readOnly": "No",
-          "response": {
-            "file": null,
-            "assignee": null,
-            "complied": null,
-            "responder": null,
-            "c2Uploaded": null,
-            "directionId": null,
-            "documentDetails": null,
-            "cannotComplyFile": null,
-            "cannotComplyReason": null,
-            "respondingOnBehalfOfOthers": null,
-            "respondingOnBehalfOfCafcass": null,
-            "respondingOnBehalfOfRespondent": null
-          },
           "responses": [],
           "directionText": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
           "directionType": "Arrange interpreters",
@@ -910,12 +524,8 @@
     "orderStatus": "SEALED",
     "judgeAndLegalAdvisor": {
       "judgeTitle": "HER_HONOUR_JUDGE",
-      "otherTitle": null,
-      "judgeFullName": null,
       "judgeLastName": "Moley",
-      "legalAdvisorName": "Bob Ross",
-      "useAllocatedJudge": null,
-      "allocatedJudgeLabel": null
+      "legalAdvisorName": "Bob Ross"
     }
   },
   "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
@@ -924,166 +534,85 @@
     {
       "id": "7baf0573-a2bc-49cf-8a26-b311d0dfee98",
       "value": {
-        "status": null,
         "assignee": "LOCAL_AUTHORITY",
         "readOnly": "No",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionText": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on",
         "directionType": "Send documents to all parties",
         "directionNeeded": "Yes",
         "directionRemovable": "Yes",
-        "dateToBeCompletedBy": "2050-01-01T12:00:00.000",
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
       }
     },
     {
       "id": "4faec1c9-7011-4a8a-94d2-fbee2128fcc4",
       "value": {
-        "status": null,
         "assignee": "LOCAL_AUTHORITY",
         "readOnly": "No",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionText": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents",
         "directionType": "Send missing annex documents to the court and all parties",
         "directionNeeded": "Yes",
-        "directionRemovable": "Yes",
-        "dateToBeCompletedBy": null,
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "directionRemovable": "Yes"
       }
     },
     {
       "id": "6c60b9e4-57f7-4bf4-b67c-358204298c22",
       "value": {
-        "status": null,
         "assignee": "LOCAL_AUTHORITY",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Identify alternative carers",
         "directionNeeded": "Yes",
         "directionRemovable": "Yes",
-        "dateToBeCompletedBy": "2050-01-01T15:15:00",
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "dateToBeCompletedBy": "2050-01-01T15:15:00"
       }
     },
     {
       "id": "e123ae1d-a7d2-4f49-910c-5789a61ac8e6",
       "value": {
-        "status": null,
         "assignee": "LOCAL_AUTHORITY",
         "readOnly": "No",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionText": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.",
         "directionType": "Send translated case documents to respondents",
         "directionNeeded": "Yes",
-        "directionRemovable": "Yes",
-        "dateToBeCompletedBy": null,
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "directionRemovable": "Yes"
       }
     },
     {
       "id": "a8dd9a97-290c-40ee-8a29-3b13fc2510b0",
       "value": {
-        "status": null,
         "assignee": "LOCAL_AUTHORITY",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Lodge a bundle",
         "directionNeeded": "Yes",
         "directionRemovable": "Yes",
-        "dateToBeCompletedBy": "2049-12-30T15:15:00",
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "dateToBeCompletedBy": "2049-12-30T15:15:00"
       }
     },
     {
       "id": "b3be9152-99df-4e75-8ac0-a32c3a04cfd1",
       "value": {
-        "status": null,
         "assignee": "LOCAL_AUTHORITY",
         "readOnly": "Yes",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionType": "Send case summary to all parties",
         "directionNeeded": "Yes",
-        "directionRemovable": "Yes",
-        "dateToBeCompletedBy": null,
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "directionRemovable": "Yes"
       }
     },
     {
       "id": "b544f6dc-9f0d-41c1-86fa-47e4344590ba",
       "value": {
-        "status": null,
         "assignee": "LOCAL_AUTHORITY",
         "readOnly": "No",
-        "response": {
-          "assignee": null,
-          "complied": null,
-          "responder": null,
-          "respondingOnBehalfOfOthers": null,
-          "respondingOnBehalfOfCafcass": null,
-          "respondingOnBehalfOfRespondent": null
-        },
         "responses": [],
         "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.",
         "directionType": "Urgently consider jurisdiction and invite any representations",
         "directionNeeded": "Yes",
-        "directionRemovable": "Yes",
-        "dateToBeCompletedBy": null,
-        "otherPartiesAssignee": null,
-        "parentsAndRespondentsAssignee": null
+        "directionRemovable": "Yes"
       }
     }
   ],
