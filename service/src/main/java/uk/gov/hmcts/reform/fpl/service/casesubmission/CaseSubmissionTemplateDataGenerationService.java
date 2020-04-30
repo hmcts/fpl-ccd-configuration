@@ -260,7 +260,7 @@ public class CaseSubmissionTemplateDataGenerationService
             });
         }
 
-        return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString() : DEFAULT_STRING;
+        return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
     }
 
     private List<DocmosisRespondent> buildDocmosisRespondents(final List<Element<Respondent>> respondents) {

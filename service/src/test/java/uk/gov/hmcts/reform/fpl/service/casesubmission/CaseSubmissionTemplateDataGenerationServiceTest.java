@@ -17,9 +17,16 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsTy
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
+import uk.gov.hmcts.reform.fpl.model.DocmosisHearingPreferences;
+import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
+import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -31,7 +38,9 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -320,6 +329,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrderDirectionDetails("direction details")
                     .emergencyProtectionOrderDirections(of(EmergencyProtectionOrderDirectionsType.values()))
+                    .directions(null)
                     .build())
                 .build();
 
@@ -330,8 +340,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
                 + "To be accompanied by a registered medical practitioner, nurse or midwife\n"
                 + "An exclusion requirement\n"
                 + "Other direction relating to an emergency protection order\n"
-                + "direction details\n"
-                + "Yes";
+                + "direction details";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
         }
 
@@ -370,12 +379,15 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
                     .thresholdDetails("")
+                    .thresholdReason(of("noCare"))
                     .build())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             assertThat(caseSubmission.getThresholdDetails()).isEqualTo("-");
+            assertThat(caseSubmission.getGroundsThresholdReason())
+                .isEqualTo("Not receiving care that would be reasonably expected from a parent.");
         }
     }
 
@@ -416,6 +428,25 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
+        void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsInHospitalSoonToBeDischarged() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .address(Address.builder()
+                            .postcode("SL11GF")
+                            .build())
+                        .livingSituation(HOSPITAL_SOON_TO_BE_DISCHARGED.getValue())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "In hospital and soon to be discharged\nSL11GF";
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
         void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsRemovedByPolicePowerEnds() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
@@ -430,6 +461,22 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
             String expectedLivingSituation = "Removed by Police, powers ending soon\nDate powers end: "
                 + FORMATTED_DATE;
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
+        void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsRemovedByPolicePowerEnds() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(REMOVED_BY_POLICE_POWER_ENDS.getValue())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Removed by Police, powers ending soon";
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
         }
 
@@ -451,6 +498,22 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
+        void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsVoluntarySectionCareOrder() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation(VOLUNTARILY_SECTION_CARE_ORDER.getValue())
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Voluntarily in section 20 care order";
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+
+        @Test
         void shouldReturnCorrectlyFormattedLivingSituationWhenSituationIsOther() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .children1(wrapElements(Child.builder()
@@ -466,6 +529,168 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             String expectedLivingSituation = "Other\nDate this began: " + FORMATTED_DATE;
             assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
         }
+
+        @Test
+        void shouldReturnFormattedLivingSituationBasedOnDateWhenSituationIsOther() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .children1(wrapElements(Child.builder()
+                    .party(ChildParty.builder()
+                        .livingSituation("Other")
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedLivingSituation = "Other";
+            assertThat(caseSubmission.getChildren().get(0).getLivingSituation()).isEqualTo(expectedLivingSituation);
+        }
+    }
+
+    @Nested
+    class DocmosisCaseDefaultSectionsTest {
+
+        @Test
+        void shouldNotReturnDefaultHearingDatailsWhenInfoNotGiven() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .hearing(null)
+                .build();
+
+            DocmosisHearing expectedDefaultHearing = DocmosisHearing.builder()
+                .timeFrame("-")
+                .respondentsAwareReason("-")
+                .reducedNoticeDetails("-")
+                .withoutNoticeDetails("-")
+                .respondentsAware("-")
+                .typeAndReason("-")
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getHearing()).isEqualToComparingFieldByField(expectedDefaultHearing);
+        }
+
+        @Test
+        void shouldReturnDefaultHearingPreferencesWhenInfoNotGiven() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .hearingPreferences(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            DocmosisHearingPreferences expectedDefaultHearingPreference = DocmosisHearingPreferences.builder()
+                .disabilityAssistance("-")
+                .extraSecurityMeasures("-")
+                .intermediary("-")
+                .interpreter("-")
+                .somethingElse("-")
+                .welshDetails("-")
+                .build();
+
+            assertThat(caseSubmission.getHearingPreferences())
+                .isEqualToComparingFieldByField(expectedDefaultHearingPreference);
+        }
+
+        @Test
+        void shouldReturnDefaultRisksWhenInfoNotGiven() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .risks(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            DocmosisRisks expectedDefaultRisk = DocmosisRisks.builder()
+                .emotionalHarmDetails("-")
+                .neglectDetails("-")
+                .physicalHarmDetails("-")
+                .sexualAbuseDetails("-")
+                .build();
+
+            assertThat(caseSubmission.getRisks()).isEqualToComparingFieldByField(expectedDefaultRisk);
+        }
+
+        @Test
+        void shouldReturnDefaultFactorsAffectingParentingWhenInfoNotGiven() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .factorsParenting(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            DocmosisFactorsParenting expectedFactorsParenting = DocmosisFactorsParenting.builder()
+                .alcoholDrugAbuseDetails("-")
+                .anythingElse("-")
+                .domesticViolenceDetails("-")
+                .build();
+
+            assertThat(caseSubmission.getFactorsParenting()).isEqualToComparingFieldByField(expectedFactorsParenting);
+        }
+
+        @Test
+        void shouldReturnDefaultInternationalElementWhenInfoNotGiven() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .internationalElement(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            DocmosisInternationalElement expectedInternationalElement = DocmosisInternationalElement.builder()
+                .internationalAuthorityInvolvement("-")
+                .issues("-")
+                .possibleCarer("-")
+                .proceedings("-")
+                .significantEvents("-")
+                .build();
+
+            assertThat(caseSubmission.getInternationalElement())
+                .isEqualToComparingFieldByField(expectedInternationalElement);
+        }
+    }
+
+    @Nested
+    class DocmosisCaseSubmissionBuildApplicantTest {
+
+        @Test
+        void shouldReturnDefaultApplicantDetailsWhenInfoNotGiven() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .solicitor(null)
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .email(EmailAddress.builder()
+                            .email("applicantemail@gmail.com")
+                            .build())
+                        .telephoneNumber(Telephone.builder()
+                            .telephoneNumber("080-90909090")
+                            .contactDirection("Contact name")
+                            .build())
+                        .dateOfBirth(NOW.minusYears(34))
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            DocmosisApplicant expectedDocmosisApplicant = DocmosisApplicant.builder()
+                .organisationName("-")
+                .jobTitle("-")
+                .mobileNumber("-")
+                .pbaNumber("-")
+                .address("-")
+                .email("applicantemail@gmail.com")
+                .telephoneNumber("080-90909090")
+                .contactName("Contact name")
+                .solicitorDx("-")
+                .solicitorEmail("-")
+                .solicitorMobile("-")
+                .solicitorName("-")
+                .solicitorReference("-")
+                .solicitorTelephone("-")
+                .build();
+
+            assertThat(caseSubmission.getApplicants()).hasSize(1);
+            assertThat(caseSubmission.getApplicants().get(0))
+                .isEqualToComparingFieldByField(expectedDocmosisApplicant);
+        }
     }
 
     @Nested
@@ -475,6 +700,8 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .respondents1(wrapElements(Respondent.builder()
                     .party(RespondentParty.builder()
+                        .gender("They identify in another way")
+                        .genderIdentification("Other gender")
                         .dateOfBirth(NOW.minusYears(34))
                         .address(Address.builder()
                             .postcode("SL11GF")
@@ -492,6 +719,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             assertThat(caseSubmission.getRespondents()).hasSize(1);
             assertThat(caseSubmission.getRespondents().get(0).getAddress()).isEqualTo("Confidential");
             assertThat(caseSubmission.getRespondents().get(0).getTelephoneNumber()).isEqualTo("Confidential");
+            assertThat(caseSubmission.getRespondents().get(0).getGender()).isEqualTo("Other gender");
         }
 
         @Test
