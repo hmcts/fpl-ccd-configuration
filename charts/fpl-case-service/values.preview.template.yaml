@@ -95,19 +95,22 @@ ccd:
         DM_URL_REMOTE: https?://(gateway-${SERVICE_FQDN}:443|dm-store-aat.service.core-compute-aat.internal)/documents
         CCD_ACTIVITY_URL: null
       ingressHost: case-management-web-${SERVICE_FQDN}
-  ccd-definition-store-api:
-    global:
-      s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
-    java:
-      keyVaults:
-      ingressHost: ${SERVICE_NAME}-ccd-definition-store
   ccd-data-store-api:
     global:
       s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
     java:
       keyVaults:
-      ingressHost: ${SERVICE_NAME}-ccd-data-store-api
+      ingressHost: ccd-data-store-api-${SERVICE_FQDN}
+  ccd-definition-store-api:
+    global:
+      s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
+    java:
+      environment:
+        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+        DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
+      keyVaults:
+      ingressHost: ccd-definition-store-${SERVICE_FQDN}
   ccd-user-profile-api:
     java:
       keyVaults:
-      ingressHost: ${SERVICE_NAME}-ccd-user-profile-api
+      ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
