@@ -311,7 +311,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldNotHaveBeyondParentalControlAppendedForGroundsThresholdReasonWhenThresholdReasonIsNotBeyondControl() {
+        void shouldNotAppendBeyondParentalControlToGroundsThresholdReasonWhenThresholdReasonIsNotBeyondControl() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
                     .thresholdReason(of("test", "noCare"))
