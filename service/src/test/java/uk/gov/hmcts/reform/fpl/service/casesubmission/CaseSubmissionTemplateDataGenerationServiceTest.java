@@ -878,6 +878,22 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             assertThat(caseSubmission.getOthers()).hasSize(1);
             assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("2 February 1999");
         }
+
+        @Test
+        void shouldReturnOtherPartyGenderAsMaleWhenNoGenderIdentificationGiven() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .others(Others.builder()
+                    .firstOther(Other.builder()
+                        .gender("male")
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getOthers()).hasSize(1);
+            assertThat(caseSubmission.getOthers().get(0).getGender()).isEqualTo("male");
+        }
     }
 
     @Nested
