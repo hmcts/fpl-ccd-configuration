@@ -70,6 +70,7 @@ class PbaNumberHelperTest {
         assertThat(hidePbaNumber("PBA123")).isEqualTo("PBA123");
         assertThat(hidePbaNumber("not a PBA number")).isEqualTo("not a PBA number");
         assertThat(hidePbaNumber("")).isEmpty();
+        assertThat(hidePbaNumber(null)).isNull();
     }
 
     private Element<Applicant> buildApplicantElementWithPbaNumber(String pbaNumber) {
