@@ -51,7 +51,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 + "There’s reasonable cause to believe the child is likely to suffer significant harm if they don’t "
                 + "stay in their current accommodation")
             .groundsThresholdReason("Not receiving care that would be reasonably expected "
-                + "from a parent.\nBeyond parental control.\n")
+                + "from a parent.\nBeyond parental control.")
             .thresholdDetails("grounds for application criteria")
             .risks(expectedDocmosisRisks())
             .factorsParenting(expectedDocmosisFactorsParenting())

@@ -8,12 +8,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.email.content.base.CasePersonalisedContentProvider;
-
-import java.util.Map;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
-public class CafcassEmailContentProvider extends CasePersonalisedContentProvider {
+public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
 
@@ -27,12 +26,17 @@ public class CafcassEmailContentProvider extends CasePersonalisedContentProvider
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
     }
 
-    public Map<String, Object> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
+    public SubmitCaseCafcassTemplate buildCafcassSubmissionNotification(CaseDetails caseDetails,
+                                                                        String localAuthorityCode) {
+
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
-            .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
-            .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .build();
+        SubmitCaseCafcassTemplate template = buildNotifyTemplate(new SubmitCaseCafcassTemplate(),
+            caseDetails.getId(), caseData.getOrders(), caseData.getHearing(), caseData.getRespondents1());
+
+        template.setCafcass(cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName());
+        template.setLocalAuthority(localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode));
+
+        return template;
     }
 }
