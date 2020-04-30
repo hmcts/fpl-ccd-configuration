@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.docmosis;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +11,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode
 @Builder(builderClassName = "Builder", toBuilder = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisCaseSubmission implements DocmosisData {
     private final List<DocmosisRespondent> respondents;
     private final List<DocmosisApplicant> applicants;
