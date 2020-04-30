@@ -31,7 +31,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtDirections",
+    "ID": "AllPartiesDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "allParties",
     "ListElementCode": "directionNeeded",

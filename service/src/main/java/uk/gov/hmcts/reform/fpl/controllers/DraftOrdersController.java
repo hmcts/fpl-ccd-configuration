@@ -129,7 +129,10 @@ public class DraftOrdersController {
         List<Element<Direction>> nonCustomDirections = commonDirectionService
             .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
 
-        return commonDirectionService.sortDirectionsByAssignee(nonCustomDirections);
+        List<Element<Direction>> directionsInEvent = commonDirectionService
+            .changeSdoTabStatus(nonCustomDirections, "No");
+
+        return commonDirectionService.sortDirectionsByAssignee(directionsInEvent);
     }
 
     @PostMapping("/mid-event")
@@ -191,16 +194,17 @@ public class DraftOrdersController {
 
         removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
+        List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(commonDirectionService.removeUnneededDirections(commonDirectionService.combineAllDirections(caseData)))
+                .directions(commonDirectionService.changeSdoTabStatus(
+                    commonDirectionService.removeUnnecessaryDirections(combinedDirections), "Yes"))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
 
-        System.out.println(updated.getStandardDirectionOrder().getDirections().size());
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
@@ -215,9 +219,6 @@ public class DraftOrdersController {
                 .filename(updated.getStandardDirectionOrder().getOrderStatus().getDocumentTitle())
                 .build())
             .build();
-
-        Order orderTabView = order.toBuilder().directions(
-            commonDirectionService.removeUnneededDirections(order.getDirections())).build();
 
         caseDetails.getData().put("standardDirectionOrder", order);
         caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);

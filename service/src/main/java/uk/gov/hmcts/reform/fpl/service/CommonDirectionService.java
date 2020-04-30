@@ -236,11 +236,30 @@ public class CommonDirectionService {
             .collect(toList());
     }
 
-    public List<Element<Direction>> removeUnneededDirections(List<Element<Direction>> directions) {
-        System.out.println(directions.size());
-        return directions
-            .stream()
-            .filter(element -> !"No".equals(element.getValue().getDirectionNeeded()))
+    /**
+     * Sets a boolean to be yes/no to hide/reveal fields that should be hidden in tab view.
+     *
+     * @param directions any list of directions.
+     * @return a list of directions that have hidden tab values modified.
+     */
+    public List<Element<Direction>> changeSdoTabStatus(List<Element<Direction>> directions, String status) {
+        return directions.stream()
+            .map(element -> element(element.getId(), element.getValue().toBuilder()
+                .sdoTabStatus(status)
+                .build()))
+            .collect(toList());
+    }
+
+    /**
+     * Removes directions where directionNeeded is set to No. Does not remove custom directions.
+     *
+     * @param directions any list of directions.
+     * @return a list of directions that are marked as needed.
+     */
+    public List<Element<Direction>> removeUnnecessaryDirections(List<Element<Direction>> directions) {
+        return directions.stream()
+            .filter(element -> "Yes".equals(element.getValue().getDirectionNeeded()) || "Yes".equals(
+                element.getValue().getCustom()))
             .collect(toList());
     }
 

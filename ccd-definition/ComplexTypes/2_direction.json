@@ -38,11 +38,20 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
+    "ListElementCode": "sdoTabStatus",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is the SDO currently in tab view?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionType CONTAINS \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
     "ListElementCode": "directionNeeded",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this direction needed?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "directionRemovable=\"Yes\""
+    "FieldShowCondition": "directionRemovable=\"Yes\" AND sdoTabStatus!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

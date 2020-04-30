@@ -175,6 +175,19 @@ class CommonDirectionServiceTest {
         assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionTypes);
     }
 
+    @Test
+    void removeUnnecessaryDirections_shouldRemoveDirectionsWhenDirectionsAreMarkedAsNotNeeded() {
+        List<Direction> directions = unwrapElements(service.removeUnnecessaryDirections(directionsMarkedAsRemoved()));
+
+        List<Direction> expectedDirections = unwrapElements(Stream.of(buildDirections(ALL_PARTIES, "Yes"),
+            buildDirections(CAFCASS, "Yes"),
+            buildDirections(COURT, "Yes"))
+            .flatMap(Collection::stream)
+            .collect(toList()));
+
+        assertThat(directions).isEqualTo(expectedDirections);
+    }
+
     private DirectionConfiguration getDirectionConfig() {
         return DirectionConfiguration.builder()
             .assignee(LOCAL_AUTHORITY)

@@ -94,6 +94,8 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                     + " members who could be alternative carers.")
                 .assignee(LOCAL_AUTHORITY)
                 .directionRemovable("Yes")
+                .sdoTabStatus("Yes")
+                .directionNeeded("Yes")
                 .readOnly("Yes")
                 .build()));
 
@@ -169,6 +171,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
             .assignee(LOCAL_AUTHORITY)
             .readOnly("Yes")
             .directionRemovable("Yes")
+            .directionNeeded("Yes")
             .build()));
     }
 

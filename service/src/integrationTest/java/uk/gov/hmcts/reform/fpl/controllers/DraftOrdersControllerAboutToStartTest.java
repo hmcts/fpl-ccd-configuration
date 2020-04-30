@@ -157,13 +157,13 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
         String title = "example direction";
 
         return List.of(
-            Direction.builder().directionType(title).assignee(ALL_PARTIES).build(),
-            Direction.builder().directionType(title).assignee(LOCAL_AUTHORITY).build(),
-            Direction.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).build(),
-            Direction.builder().directionType(title).assignee(CAFCASS).build(),
-            Direction.builder().directionType(title).assignee(OTHERS).build(),
-            Direction.builder().directionType(title).assignee(COURT).build(),
-            Direction.builder().directionType(title).custom("Yes").assignee(COURT).build()
+            Direction.builder().directionType(title).assignee(ALL_PARTIES).sdoTabStatus("No").build(),
+            Direction.builder().directionType(title).assignee(LOCAL_AUTHORITY).sdoTabStatus("No").build(),
+            Direction.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).sdoTabStatus("No").build(),
+            Direction.builder().directionType(title).assignee(CAFCASS).sdoTabStatus("No").build(),
+            Direction.builder().directionType(title).assignee(OTHERS).sdoTabStatus("No").build(),
+            Direction.builder().directionType(title).assignee(COURT).sdoTabStatus("No").build(),
+            Direction.builder().directionType(title).custom("Yes").assignee(COURT).sdoTabStatus("No").build()
         );
     }
 

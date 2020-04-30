@@ -16,9 +16,9 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "standardDirectionOrderTabView",
+    "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 2,
-    "FieldShowCondition": "standardDirectionOrderTabView.orderStatus=\"SEALED\""
+    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"SEALED\""
   },
   {
     "LiveFrom": "01/01/2017",
