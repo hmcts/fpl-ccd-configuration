@@ -350,7 +350,6 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo("-");
         }
 
-
         @Test
         void shouldReturnDirectionsNeededWithAppendedEmergencyProtectionOrderDirectionDetails() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
