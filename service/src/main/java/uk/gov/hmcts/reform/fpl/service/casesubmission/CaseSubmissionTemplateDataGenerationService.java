@@ -109,8 +109,10 @@ public class CaseSubmissionTemplateDataGenerationService
             .others(buildDocmosisOthers(caseData.getAllOthers()))
             .proceeding(buildDocmosisProceedings(caseData.getAllProceedings()))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings()))
-            .groundsForEPOReason(getGroundsForEPOReason(caseData.getOrders().getOrderType(),
-                caseData.getGroundsForEPO()))
+            .groundsForEPOReason(isNotEmpty(caseData.getOrders())
+                ? getGroundsForEPOReason(caseData.getOrders().getOrderType(),
+                    caseData.getGroundsForEPO())
+                : DEFAULT_STRING)
             .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(buildDocmosisAnnexDocuments(caseData))
@@ -186,7 +188,8 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String getDirectionsNeeded(final Orders orders) {
         StringBuilder stringBuilder = new StringBuilder();
-        if (orders != null && (isNotEmpty(orders.getOrderType()) || StringUtils.isNotEmpty(orders.getDirections()))) {
+        if (isNotEmpty(orders)
+            && (isNotEmpty(orders.getOrderType()) || StringUtils.isNotEmpty(orders.getDirections()))) {
 
             if (isNotEmpty(orders.getEmergencyProtectionOrderDirections())) {
                 stringBuilder.append(orders.getEmergencyProtectionOrderDirections().stream()

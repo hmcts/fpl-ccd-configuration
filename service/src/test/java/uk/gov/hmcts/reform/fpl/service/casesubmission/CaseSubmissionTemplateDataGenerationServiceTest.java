@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -286,6 +287,33 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
     @Nested
     class DocmosisCaseSubmissionDirectionsNeededTest {
+
+        @Test
+        void shouldReturnEmptyWhenOrdersAreNotAvailable() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnEmptyWhenOrderTypeAndDirectionsAreNotAvailable() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(Orders.builder()
+                    .orderType(null)
+                    .directions(null)
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo("-");
+        }
+
+
         @Test
         void shouldReturnDirectionsNeededWithAppendedEmergencyProtectionOrderDirectionDetails() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
@@ -310,7 +338,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         @Test
         void shouldReturnDirectionsNeededWithAppendedDirectionsAndDirectionDetailsWhenGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
-                .orders(givenCaseData.getOrders().toBuilder()
+                .orders(Orders.builder()
                     .directions("directions")
                     .directionDetails("direction  details")
                     .build())
@@ -318,10 +346,36 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
-            String expectedDirectionsNeeded = "Contact with any named person\n"
-                + "directions\n"
-                + "direction  details";
+            String expectedDirectionsNeeded = "directions\ndirection  details";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
+        }
+    }
+
+    @Nested
+    class DocmosisGetThresholdDetailsTest {
+
+        @Test
+        void shouldReturnEmptyWhenGroundsNotAvailable() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .grounds(null)
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getThresholdDetails()).isEqualTo("-");
+        }
+
+        @Test
+        void shouldReturnEmptyWhenThresholdDetailsNotAvailable() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .grounds(Grounds.builder()
+                    .thresholdDetails("")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getThresholdDetails()).isEqualTo("-");
         }
     }
 
@@ -600,6 +654,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
 
     @Nested
     class DocmosisCaseSubmissionFormatAnnexDocumentDisplayTest {
+
         @Test
         void shouldReturnEmptyWhenDocumentIsNotAvailable() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
