@@ -5,7 +5,7 @@ let caseId;
 Feature('Comply with directions');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('sdo');
+  caseId = await I.submitNewCaseWithData('standardDirectionOrder');
 });
 
 Scenario('HMCTS admin complies with directions on behalf of other parties', async (I, caseViewPage, complyOnBehalfOfOthersEventPage) => {

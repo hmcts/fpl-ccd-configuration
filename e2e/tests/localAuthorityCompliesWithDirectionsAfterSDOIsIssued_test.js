@@ -6,7 +6,7 @@ let caseId;
 Feature('Comply with directions');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('sdo');
+  caseId = await I.submitNewCaseWithData('standardDirectionOrder');
 });
 
 Scenario('local authority complies with directions', async (I, caseViewPage, complyWithDirectionsEventPage) => {

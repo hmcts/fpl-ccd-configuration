@@ -86,11 +86,13 @@ public class PopulateCaseController {
         return DocumentReference.buildFromDocument(document);
     }
 
+
+
     private State getNewState(String filename) {
         if (filename.equals("gatekeeping")) {
             return State.GATEKEEPING;
         }
-        if (filename.equals("sdo")) {
+        if (filename.equals("standardDirectionOrder")) {
             return State.PREPARE_FOR_HEARING;
         }
 

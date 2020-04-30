@@ -8,9 +8,7 @@ const caseViewPage = require('./pages/caseView.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
 const populateCaseEventPage = require('./pages/events/populateCaseEvent.page');
-const submitApplicationEventPage = require('./pages/events/submitApplicationEvent.page');
 
 const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
@@ -139,12 +137,6 @@ module.exports = function () {
       await caseListPage.navigate();
     },
 
-    async enterAllocationProposal () {
-      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
-      await this.completeEvent('Save and continue');
-    },
-
     async fillDate(date, sectionId = 'form') {
       if (date instanceof Date) {
         date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear()};
@@ -186,25 +178,13 @@ module.exports = function () {
         .withText('Remove'));
     },
 
-    async populateCaseWithMandatoryFields (caseId, filename = 'mandatorySubmissionFields') {
+    async submitNewCaseWithData(filename = 'mandatorySubmissionFields') {
+      const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
       await this.signIn(config.systemUpdateUser);
       await this.navigateToCaseDetails(caseId);
       await caseViewPage.goToNewActions(config.applicationActions.populateCase);
       populateCaseEventPage.setCaseDataFilename(filename);
       await this.completeEvent('Submit');
-    },
-
-    async submitCase (caseId) {
-      await this.navigateToCaseDetails(caseId);
-      await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-      submitApplicationEventPage.giveConsent();
-      await this.completeEvent('Submit');
-    },
-
-    async submitNewCaseWithData(filename = 'mandatorySubmissionFields') {
-      const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-      await this.populateCaseWithMandatoryFields(caseId, filename);
-
       console.log(`Case ${caseId} has been submitted`);
 
       return caseId;

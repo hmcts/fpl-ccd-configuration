@@ -8,7 +8,7 @@ let caseId;
 Feature('Case Management Order Journey');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('sdo');
+  caseId = await I.submitNewCaseWithData('standardDirectionOrder');
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 });
 

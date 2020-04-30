@@ -295,8 +295,6 @@ declare namespace CodeceptJS {
     signOut() : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
-    populateCaseWithMandatoryFields(caseId: string, filename?: string): void
-    submitCase(caseId: string): void
     submitNewCaseWithData(filename?: string): Promise<string>
     addAnotherElementToCollection(): void,
     removeElementFromCollection(): void,

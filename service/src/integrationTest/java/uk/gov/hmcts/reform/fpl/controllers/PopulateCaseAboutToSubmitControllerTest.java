@@ -89,6 +89,19 @@ class PopulateCaseAboutToSubmitControllerTest extends AbstractControllerTest {
         //TODO: assertions for json data
     }
 
+    @Test
+    void shouldPopulateWithStandardDirectionOrderFields() {
+        Map<String, Object> caseData = Map.of("caseDataFilename", "standardDirectionOrder");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(buildCallbackRequest(caseData));
+
+        var responseData = callbackResponse.getData();
+        assertThat(callbackResponse.getErrors()).isNull();
+        assertCommonData(responseData);
+        assertThat(responseData.get("state")).isEqualTo(State.PREPARE_FOR_HEARING.getValue());
+        //TODO: assertions for json data
+    }
+
     private CallbackRequest buildCallbackRequest(Map<String, Object> caseData) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()

@@ -4,26 +4,10 @@ let caseId;
 
 Feature('Gatekeeper makes allocation decision');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage) => {
-  //TODO: prepopulate with edited gatekeeping file
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterAllocationProposal();
-  await I.populateCaseWithMandatoryFields(caseId);
+BeforeSuite(async (I) => {
+  caseId = await I.submitNewCaseWithData('gatekeeping');
 
-  console.log(`Case ${caseId} has been submitted`);
-  I.signOut();
-
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID();
-  await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  sendCaseToGatekeeperEventPage.enterEmail();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-
-  await I.signIn(config.gateKeeperUser);
+  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });
 
 Before(async I => await I.navigateToCaseDetails(caseId));
