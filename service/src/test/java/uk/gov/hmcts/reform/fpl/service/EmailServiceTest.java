@@ -56,6 +56,15 @@ public class EmailServiceTest {
     }
 
     @Test
+    void shouldSendEmailSuccessfullyWhenEmailWithoutAttachment() {
+        EmailData emailData = TestEmailData.withoutAttachment();
+        willDoNothing().given(javaMailSender).send(any(MimeMessage.class));
+
+        emailService.sendEmail(EMAIL_FROM, emailData);
+        verify(javaMailSender).send(mimeMessage);
+    }
+
+    @Test
     void shouldThrowEmailFailedSendExceptionWhenMailExceptionOnSendEmail() {
         EmailData emailData = TestEmailData.getDefault();
         willThrow(mock(MailException.class)).given(javaMailSender).send(any(MimeMessage.class));
@@ -115,6 +124,14 @@ public class EmailServiceTest {
                 .recipient(EMAIL_TO)
                 .message(null)
                 .attachments(of(json(EMAIL_ATTACHMENT_CONTENT, join(".", EMAIL_SUBJECT, "json"))))
+                .build();
+        }
+
+        static EmailData withoutAttachment() {
+            return EmailData.builder()
+                .recipient(EMAIL_TO)
+                .subject(EMAIL_SUBJECT)
+                .message("")
                 .build();
         }
     }

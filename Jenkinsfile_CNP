@@ -54,18 +54,16 @@ def archiveCoreCaseDataDefinitions(env) {
  *
  * @param env target environment
  */
-def importCoreCaseDataDefinitions(env) {
+def uploadCoreCaseDataDefinitions(env) {
   sh """
     eval \$(./bin/variables/load-${env}-environment-variables.sh)
-
-    ./bin/configurer/import-ccd-definition.sh
+    ./bin/configurer/utils/ccd-import-definition.sh build/ccd-release-config/ccd-fpl-${env}.xlsx
   """
-  steps.archiveArtifacts artifacts: "build/ccd-development-config/ccd-fpl-dev.xlsx"
 }
 
 withPipeline(type, product, component) {
   onMaster {
-    loadVaultSecrets(serviceSecrets)
+    loadVaultSecrets(serviceSecrets + otherSecrets)
   }
   onDemo {
     loadVaultSecrets(serviceSecrets + otherSecrets)
@@ -103,16 +101,6 @@ withPipeline(type, product, component) {
   before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
-  }
-
-  before('smoketest:aat') {
-    env.URL = "https://www-ccd.aat.platform.hmcts.net"
-    archiveCoreCaseDataDefinitions('aat')
-  }
-
-  before('smoketest:demo-staging') {
-    env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
-    importCoreCaseDataDefinitions('demo')
   }
 
   before('smoketest:preview') {
@@ -161,5 +149,16 @@ withPipeline(type, product, component) {
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     publishToCosmosDb(this, params, 'dbs/jenkins/colls/fpl-test-metrics', "${WORKSPACE}/output", 'metrics')
+  }
+
+  after('buildinfra:demo') {
+    archiveCoreCaseDataDefinitions('demo')
+    uploadCoreCaseDataDefinitions('demo')
+  }
+
+  before('smoketest:aat') {
+    env.URL = "https://www-ccd.aat.platform.hmcts.net"
+    archiveCoreCaseDataDefinitions('aat')
+    uploadCoreCaseDataDefinitions('aat')
   }
 }
