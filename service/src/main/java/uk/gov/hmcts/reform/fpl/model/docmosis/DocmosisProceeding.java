@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model;
+package uk.gov.hmcts.reform.fpl.model.docmosis;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;

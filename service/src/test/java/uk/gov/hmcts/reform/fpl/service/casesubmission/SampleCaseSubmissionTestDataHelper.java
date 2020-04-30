@@ -1,19 +1,19 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
 import uk.gov.hmcts.reform.fpl.model.Allocation;
-import uk.gov.hmcts.reform.fpl.model.DocmosisAnnexDocuments;
-import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
-import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
-import uk.gov.hmcts.reform.fpl.model.DocmosisHearingPreferences;
-import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
-import uk.gov.hmcts.reform.fpl.model.DocmosisProceeding;
-import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisSocialWorkOther;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 
 import java.util.List;
 

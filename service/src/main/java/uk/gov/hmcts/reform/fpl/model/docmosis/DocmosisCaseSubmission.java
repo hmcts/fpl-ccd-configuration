@@ -4,13 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
-import uk.gov.hmcts.reform.fpl.model.DocmosisAnnexDocuments;
-import uk.gov.hmcts.reform.fpl.model.DocmosisFactorsParenting;
-import uk.gov.hmcts.reform.fpl.model.DocmosisHearing;
-import uk.gov.hmcts.reform.fpl.model.DocmosisHearingPreferences;
-import uk.gov.hmcts.reform.fpl.model.DocmosisInternationalElement;
-import uk.gov.hmcts.reform.fpl.model.DocmosisProceeding;
-import uk.gov.hmcts.reform.fpl.model.DocmosisRisks;
 
 import java.util.List;
 
