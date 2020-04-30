@@ -249,11 +249,11 @@ public class CaseSubmissionTemplateDataGenerationService
         StringBuilder stringBuilder = new StringBuilder();
         if (grounds != null && isNotEmpty(grounds.getThresholdReason())) {
             grounds.getThresholdReason().forEach(thresholdReason -> {
-                if (StringUtils.equals(thresholdReason, "noCare")) {
+                if ("noCare".equals(thresholdReason)) {
                     stringBuilder.append("Not receiving care that would be reasonably expected from a parent.");
                     stringBuilder.append(NEW_LINE);
 
-                } else if ("beyondControl".equalsIgnoreCase(thresholdReason)) {
+                } else if ("beyondControl".equals(thresholdReason)) {
                     stringBuilder.append("Beyond parental control.");
                     stringBuilder.append(NEW_LINE);
                 }
