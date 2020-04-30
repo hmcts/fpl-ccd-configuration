@@ -1,3 +1,25 @@
 {
-
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/comply-with-directions/about-to-submit_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/comply-on-behalf/about-to-start_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/notice-of-proceedings/about-to-submit_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-c2/about-to-submit_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/statement-of-service/about-to-start_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-cmo/mid-event_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/about-to-submit_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/allocation-decision/about-to-submit_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/mid-event_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-submission/about-to-start_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-applicant/mid-event_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-c2/submitted_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-hearing-bookings/about-to-submit_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/comply-on-behalf/about-to-submit_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/submitted_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-other-proceedings/mid-event_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/submitted_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/mid-event_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-cmo/submitted_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-c2/get-fee/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-applicant/about-to-start_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-c2/get-fee/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/comply-on-behalf/about-to-submit_POST": "ignore"
 }
