@@ -61,9 +61,6 @@ ccd:
     s2s:
       enabled: false
 
-  ingressHost: ${SERVICE_FQDN}
-  ingressIP: ${INGRESS_IP}
-  consulIP: ${CONSUL_LB_IP}
   cpuRequests: 250m
   imagePullPolicy: Always
 
@@ -79,6 +76,7 @@ ccd:
     devMode: true
 
   ccd-api-gateway-web:
+    consulIP: ${CONSUL_LB_IP}
     global:
       s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
       idamClientSecret:
@@ -88,8 +86,14 @@ ccd:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
       ingressHost: gateway-${SERVICE_FQDN}
+      ingressIP: ${INGRESS_IP}
       keyVaults:
+      registerAdditionalDns:
+        enabled: true
+        prefix: ccd-api-gateway-web
+        primaryIngressHost: ${SERVICE_FQDN}
   ccd-case-management-web:
+    consulIP: ${CONSUL_LB_IP}
     nodejs:
       environment:
         NODE_TLS_REJECT_UNAUTHORIZED: 0
@@ -97,22 +101,45 @@ ccd:
         DM_URL_REMOTE: https?://(gateway-${SERVICE_FQDN}:443|dm-store-aat.service.core-compute-aat.internal)/documents
         CCD_ACTIVITY_URL: null
       ingressHost: case-management-web-${SERVICE_FQDN}
+      ingressIP: ${INGRESS_IP}
+      registerAdditionalDns:
+        enabled: true
+        prefix: ccd-case-management-web
+        primaryIngressHost: ${SERVICE_FQDN}
   ccd-data-store-api:
+    consulIP: ${CONSUL_LB_IP}
     global:
       s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
     java:
-      keyVaults:
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
+      ingressIP: ${INGRESS_IP}
+      keyVaults:
+      registerAdditionalDns:
+        enabled: true
+        prefix: ccd-data-store-api
+        primaryIngressHost: ${SERVICE_FQDN}
   ccd-definition-store-api:
     global:
       s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
     java:
+      consulIP: ${CONSUL_LB_IP}
       environment:
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
-      keyVaults:
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
+      ingressIP: ${INGRESS_IP}
+      keyVaults:
+      registerAdditionalDns:
+        enabled: true
+        prefix: ccd-definition-store-api
+        primaryIngressHost: ${SERVICE_FQDN}
   ccd-user-profile-api:
     java:
-      keyVaults:
+      consulIP: ${CONSUL_LB_IP}
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
+      ingressIP: ${INGRESS_IP}
+      keyVaults:
+      registerAdditionalDns:
+        enabled: true
+        prefix: ccd-user-profile-api
+        primaryIngressHost: ${SERVICE_FQDN}
