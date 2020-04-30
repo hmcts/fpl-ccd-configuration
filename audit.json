@@ -174,5 +174,6 @@
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/validate-order/interim-end-date/mid-event_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/validate-order/date-of-issue/mid-event_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/about-to-start_POST": "ignore",
-  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-c2/about-to-submit_POST": "ignore"
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-c2/about-to-submit_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore"
 }
