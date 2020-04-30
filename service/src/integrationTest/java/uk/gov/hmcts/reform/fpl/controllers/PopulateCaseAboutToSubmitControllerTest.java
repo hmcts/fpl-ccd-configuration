@@ -19,6 +19,8 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -51,32 +53,6 @@ class PopulateCaseAboutToSubmitControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldPopulateWithMandatorySubmissionFields() {
-        Map<String, Object> caseData = Map.of("caseDataFilename", "mandatorySubmissionFields");
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(buildCallbackRequest(caseData));
-
-        var responseData = callbackResponse.getData();
-        assertThat(callbackResponse.getErrors()).isNull();
-        assertCommonData(responseData);
-        assertThat(responseData.get("state")).isEqualTo(State.SUBMITTED.getValue());
-        //TODO: assertions for json data
-    }
-
-    @Test
-    void shouldPopulateWithMandatoryWithMultipleChildrenFields() {
-        Map<String, Object> caseData = Map.of("caseDataFilename", "mandatoryWithMultipleChildren");
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(buildCallbackRequest(caseData));
-
-        var responseData = callbackResponse.getData();
-        assertThat(callbackResponse.getErrors()).isNull();
-        assertCommonData(responseData);
-        assertThat(responseData.get("state")).isEqualTo(State.SUBMITTED.getValue());
-        //TODO: assertions for json data
-    }
-
-    @Test
     void shouldPopulateWithGatekeepingFields() {
         Map<String, Object> caseData = Map.of("caseDataFilename", "gatekeeping");
 
@@ -86,7 +62,7 @@ class PopulateCaseAboutToSubmitControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).isNull();
         assertCommonData(responseData);
         assertThat(responseData.get("state")).isEqualTo(State.GATEKEEPING.getValue());
-        //TODO: assertions for json data
+        verify(uploadDocumentService, times(2)).uploadPDF(any(), any());
     }
 
     @Test
@@ -99,7 +75,9 @@ class PopulateCaseAboutToSubmitControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).isNull();
         assertCommonData(responseData);
         assertThat(responseData.get("state")).isEqualTo(State.PREPARE_FOR_HEARING.getValue());
-        //TODO: assertions for json data
+        assertThat(responseData.get("standardDirectionOrder")).extracting("orderDoc").extracting("document_filename")
+            .isNotNull();
+        verify(uploadDocumentService, times(3)).uploadPDF(any(), any());
     }
 
     private CallbackRequest buildCallbackRequest(Map<String, Object> caseData) {

@@ -289,11 +289,7 @@
     }
   ],
   "standardDirectionOrder": {
-    "orderDoc": {
-      "document_url": "http://dm-store:8080/documents/19b974fd-164c-45a0-8f8a-ad55eb293020",
-      "document_filename": "standard-directions-order.pdf",
-      "document_binary_url": "http://dm-store:8080/documents/19b974fd-164c-45a0-8f8a-ad55eb293020/binary"
-    },
+    "orderDoc": "TO BE FILLED WITH VALID DATA",
     "directions": [
       {
         "id": "749f29dc-c200-4377-9e12-a5b4bad631bc",

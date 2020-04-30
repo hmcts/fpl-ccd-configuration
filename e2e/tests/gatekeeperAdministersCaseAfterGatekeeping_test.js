@@ -9,7 +9,7 @@ let caseId;
 Feature('Gatekeeper Case administration after gatekeeping');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('gatekeeping');
+  caseId = await I.submitNewCaseWithData('gatekeepingNoHearingDetails');
 
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });
