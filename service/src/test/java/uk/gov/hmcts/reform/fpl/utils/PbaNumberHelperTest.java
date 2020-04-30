@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumber;
-import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumbers;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.setPrefix;
 
 class PbaNumberHelperTest {
@@ -42,7 +41,7 @@ class PbaNumberHelperTest {
             buildApplicantElementWithPbaNumber("test")
         );
 
-        Stream<String> result = getNonEmptyPbaNumbers(applicantElementsList);
+        Stream<String> result = PbaNumberHelper.getNonEmptyPbaNumbers(applicantElementsList);
 
         assertThat(result).containsExactly("PBA123", "test");
     }

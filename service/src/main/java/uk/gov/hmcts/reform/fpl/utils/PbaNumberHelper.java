@@ -13,11 +13,11 @@ import java.util.stream.Stream;
 
 public class PbaNumberHelper {
 
-    private static final String PBA_NUMBER_REGEX = "PBA\\d{7}";
-    private static final Pattern PBA_NUMBER_PATTERN = Pattern.compile(PBA_NUMBER_REGEX);
-
     private PbaNumberHelper() {
     }
+
+    private static final String PBA_NUMBER_REGEX = "PBA\\d{7}";
+    private static final Pattern PBA_NUMBER_PATTERN = Pattern.compile(PBA_NUMBER_REGEX);
 
     public static String setPrefix(String pbaNumber) {
         if (pbaNumber.startsWith("PBA")) {
