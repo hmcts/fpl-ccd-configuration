@@ -117,7 +117,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(buildDocmosisAnnexDocuments(caseData))
             .userFullName(userDetailsService.getUserName())
-            .courtseal(COURT_SEAL.getValue());
+            .courtseal(getCourtSealData());
 
         return applicationFormBuilder.build();
     }
