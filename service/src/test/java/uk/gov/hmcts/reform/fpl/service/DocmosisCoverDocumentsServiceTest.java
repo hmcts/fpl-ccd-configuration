@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDocument;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,10 +35,10 @@ class DocmosisCoverDocumentsServiceTest {
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
-
     @BeforeEach
     void setup() {
-        given(documentGeneratorService.generatedDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
+            .willReturn(docmosisDocument);
     }
 
     @Test
@@ -57,6 +58,8 @@ class DocmosisCoverDocumentsServiceTest {
         assertThat(coverDocumentData.getCcdCaseNumber()).isEqualTo("1234-1234-1234-1234");
         assertThat(coverDocumentData.getRepresentativeName()).isEqualTo("Mark Jones");
         assertThat(coverDocumentData.getRepresentativeAddress()).isEqualTo("1 Petty France\nSt James's Park\nLondon");
+        assertThat(coverDocumentData.getHmctsLogoLarge()).isEqualTo("[userImage:hmcts-logo-large.png]");
+        assertThat(coverDocumentData.getHmctsLogoSmall()).isEqualTo("[userImage:hmcts-logo-small.png]");
     }
 
     @Test
@@ -78,4 +81,3 @@ class DocmosisCoverDocumentsServiceTest {
             .build();
     }
 }
-

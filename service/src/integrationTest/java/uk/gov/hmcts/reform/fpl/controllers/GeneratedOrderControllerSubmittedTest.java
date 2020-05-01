@@ -55,12 +55,13 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
 
-    private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
     private final DocumentReference lastOrderDocumentReference = DocumentReference.builder()
         .filename("C21 3.pdf")
         .url("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
         .binaryUrl("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
         .build();
+
+    private LocalDateTime dateIn3Months;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -77,6 +78,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
     @BeforeEach
     void init() {
+        dateIn3Months = now().plusMonths(3);
         given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
     }
 

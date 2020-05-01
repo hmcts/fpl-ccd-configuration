@@ -12,14 +12,12 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -27,13 +25,16 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @Service
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration config;
+    private final EmailNotificationHelper emailNotificationHelper;
 
     @Autowired
     protected OrderIssuedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                              ObjectMapper mapper,
-                                              HmctsCourtLookupConfiguration config) {
+        ObjectMapper mapper,
+        HmctsCourtLookupConfiguration config,
+        EmailNotificationHelper emailNotificationHelper) {
         super(uiBaseUrl, mapper);
         this.config = config;
+        this.emailNotificationHelper = emailNotificationHelper;
     }
 
     public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
@@ -58,12 +59,13 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return ImmutableMap.<String, Object>builder()
             .putAll(buildParametersWithoutCaseUrl(caseDetails, localAuthorityCode, documentContents,
                 issuedOrderType))
-            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()))
+            .put("caseUrl", EmailNotificationHelper.formatCaseUrl(uiBaseUrl, caseDetails.getId()))
             .build();
     }
 
     private String buildCallout(CaseData caseData) {
-        return "^" + buildSubjectLineWithHearingBookingDateSuffix(buildSubjectLine(caseData),
+        return "^" + emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(
+            caseData,
             caseData.getHearingDetails());
     }
 

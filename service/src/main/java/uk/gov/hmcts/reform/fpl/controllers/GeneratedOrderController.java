@@ -40,7 +40,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -122,7 +121,7 @@ public class GeneratedOrderController {
 
     @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+        @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
@@ -147,7 +146,7 @@ public class GeneratedOrderController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+        @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -207,7 +206,7 @@ public class GeneratedOrderController {
 
     private Document getDocument(CaseData caseData,
                                  OrderStatus orderStatus,
-                                 JudgeAndLegalAdvisor judgeAndLegalAdvisor) throws IOException {
+                                 JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 

@@ -8,10 +8,10 @@ module.exports = {
   },
   submitButton: 'input[value="Sign in"]',
 
-  signIn(username, password) {
+  signIn(user) {
     I.waitForElement(this.submitButton);
-    I.fillField(this.fields.username, username);
-    I.fillField(this.fields.password, password);
+    I.fillField(this.fields.username, user.email);
+    I.fillField(this.fields.password, user.password);
     I.click(this.submitButton);
   },
 };

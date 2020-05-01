@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.UpcomingHearingsContentProvider;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,7 +30,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPCOMING_HEARINGS_TEMPLATE
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {UpcomingHearingsFoundNotificationHandler.class, LookupTestConfig.class})
+@SpringBootTest(classes = {UpcomingHearingsFoundNotificationHandler.class, LookupTestConfig.class,
+    FixedTimeConfiguration.class})
 public class UpcomingHearingsFoundNotificationHandlerTest {
     @MockBean
     private NotificationService notificationService;
@@ -38,9 +43,17 @@ public class UpcomingHearingsFoundNotificationHandlerTest {
     private UpcomingHearingsContentProvider upcomingHearingsEmailContentProvider;
 
     @Autowired
+    private Time time;
+
+    @Autowired
     private UpcomingHearingsFoundNotificationHandler upcomingHearingsFoundNotificationHandler;
 
-    LocalDate hearingDate = LocalDate.now();
+    private LocalDate hearingDate;
+
+    @BeforeEach
+    void setUp() {
+        hearingDate = time.now().toLocalDate();
+    }
 
     @Test
     void shouldSendEmailWithUpcomingHearings() {
@@ -67,7 +80,7 @@ public class UpcomingHearingsFoundNotificationHandlerTest {
 
         upcomingHearingsFoundNotificationHandler.sendEmailWithUpcomingHearings(upcomingHearings);
 
-        verify(notificationService, never()).sendEmail(any(), any(), any(), any());
+        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }
 
     @Test
@@ -79,6 +92,6 @@ public class UpcomingHearingsFoundNotificationHandlerTest {
 
         upcomingHearingsFoundNotificationHandler.sendEmailWithUpcomingHearings(upcomingHearings);
 
-        verify(notificationService, never()).sendEmail(any(), any(), any(), any());
+        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }
 }

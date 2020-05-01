@@ -1,9 +1,7 @@
 const config = require('../config.js');
 
 const assertCafcassCannotSeePlacementOrder = async (I, caseViewPage, caseId) => {
-  I.signOut();
-  await I.signIn(config.cafcassEmail, config.cafcassPassword);
-  await I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetailsAs(config.cafcassUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.placement);
   I.dontSee('Placement order');
 };

@@ -6,20 +6,7 @@ const ids = [
   '#schedule_schedule', '#caseManagementOrder_status',
 ];
 
-const allOtherPartyDetails = [
-  {
-    email: config.hmctsAdminEmail,
-    password: config.hmctsAdminPassword,
-  },
-  {
-    email: config.cafcassEmail,
-    password: config.cafcassPassword,
-  },
-  {
-    email: config.judiciaryEmail,
-    password: config.judiciaryPassword,
-  }];
-
+const allOtherPartyDetails = [ config.hmctsAdminUser, config.cafcassUser, config.judicaryUser ];
 
 const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   caseViewPage.selectTab(caseViewPage.tabs.orders);
@@ -130,20 +117,14 @@ const assertCanSeeDraftCMODocument = (I, caseViewPage) => {
   I.see('draft-case_management_order.pdf');
 };
 
-const assertUserCannotSeeDraftOrdersTab = async (I, userDetails, caseId) => {
-  await switchUserAndNavigateToCase(I, userDetails, caseId);
+const assertUserCannotSeeDraftOrdersTab = async (I, user, caseId) => {
+  await I.navigateToCaseDetailsAs(user, caseId);
   I.dontSee('Draft orders', '.tabs .tabs-list');
 };
 
-const assertUserCanSeeDraftCMODocument = async (I, userDetails, caseViewPage, caseId) => {
-  await switchUserAndNavigateToCase(I, userDetails, caseId);
+const assertUserCanSeeDraftCMODocument = async (I, user, caseViewPage, caseId) => {
+  await I.navigateToCaseDetailsAs(user, caseId);
   assertCanSeeDraftCMODocument(I, caseViewPage);
-};
-
-const switchUserAndNavigateToCase = async (I, userDetails, caseId) => {
-  I.signOut();
-  await I.signIn(userDetails.email, userDetails.password);
-  await I.navigateToCaseDetails(caseId);
 };
 
 const skipToReview = async (I) => {
@@ -187,6 +168,5 @@ const actionDraft = async (I, actionCaseManagementOrderEventPage) => {
 module.exports = {
   allOtherPartyDetails, skipToSchedule, skipToReview, assertCanSeeActionCMO, assertCanSeeDraftCMO,
   assertCanSeeDraftCMODocument, assertUserCannotSeeDraftOrdersTab, assertUserCanSeeDraftCMODocument,
-  switchUserAndNavigateToCase, sendDraftForJudgeReview, sendDraftForSelfReview, sendDraftForPartyReview,
-  actionDraft,
+  sendDraftForJudgeReview, sendDraftForSelfReview, sendDraftForPartyReview, actionDraft,
 };

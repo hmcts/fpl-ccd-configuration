@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 public class ChildController {
     private final ObjectMapper mapper;
     private final ConfidentialDetailsService confidentialDetailsService;
+    private final Time time;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -78,7 +79,7 @@ public class ChildController {
                 .map(Child::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
-                .filter(dateOfBirth -> dateOfBirth.isAfter(LocalDate.now()))
+                .filter(dateOfBirth -> dateOfBirth.isAfter(time.now().toLocalDate()))
                 .findAny()
                 .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
         }

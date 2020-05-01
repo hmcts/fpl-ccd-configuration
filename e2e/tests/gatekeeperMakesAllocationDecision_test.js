@@ -4,37 +4,28 @@ let caseId;
 
 Feature('Gatekeeper makes allocation decision');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage) => {
-  if (!caseId) {
-    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.enterAllocationProposal();
-    await I.enterMandatoryFields();
-    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-    submitApplicationEventPage.giveConsent();
-    await I.completeEvent('Submit');
+BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage) => {
+  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
+  await I.enterAllocationProposal();
+  await I.enterMandatoryFields();
+  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  submitApplicationEventPage.giveConsent();
+  await I.completeEvent('Submit');
 
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.grabTextFrom('.heading-h1');
-    console.log(`Case ${caseId} has been submitted`);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
-    I.signOut();
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  enterFamilyManCaseNumberEventPage.enterCaseID();
+  await I.completeEvent('Save and continue');
+  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+  sendCaseToGatekeeperEventPage.enterEmail();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 
-    //hmcts login, enter case number and send to gatekeeper
-    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-    await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-    enterFamilyManCaseNumberEventPage.enterCaseID();
-    await I.completeEvent('Save and continue');
-    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-    sendCaseToGatekeeperEventPage.enterEmail();
-    await I.completeEvent('Save and continue');
-    I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-    I.signOut();
-
-    await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
-  }
-  await I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });
+
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('gatekeeper enters allocation decision with incorrect allocation proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);

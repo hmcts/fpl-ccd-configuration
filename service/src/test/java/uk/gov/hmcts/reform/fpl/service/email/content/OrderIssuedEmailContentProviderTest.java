@@ -1,18 +1,17 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.AssertionHelper;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -22,25 +21,21 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProviderTest.BASE_URL;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, OrderIssuedEmailContentProvider.class, LookupTestConfig.class
+@ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
+    EmailNotificationHelper.class, HearingBookingService.class, FixedTimeConfiguration.class
 })
-@TestPropertySource(properties = {"ccd.ui.base.url=" + BASE_URL})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
+
+    private static final byte[] documentContents = {1, 2, 3, 4, 5};
 
     @Autowired
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
-
-    private static final Long CASE_ID = 12345L;
-    private static final byte[] documentContents = {1, 2, 3, 4, 5};
 
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
@@ -91,7 +86,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
         return CaseDetails.builder()
             .data(data)
-            .id(CASE_ID)
+            .id(Long.valueOf(CASE_REFERENCE))
             .build();
     }
 }
