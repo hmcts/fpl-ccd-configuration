@@ -36,7 +36,7 @@ public class ChildSelectorSerializer extends JsonSerializer<ChildSelector> {
         generator.writeObjectField("child" + i, toArray(value));
     }
 
-    public String[] toArray(Boolean selected) {
-        return selected != null && selected ? new String[] {SELECTED.name()} : new String[] {};
+    private String[] toArray(boolean selected) {
+        return selected ? new String[]{SELECTED.name()} : new String[]{};
     }
 }

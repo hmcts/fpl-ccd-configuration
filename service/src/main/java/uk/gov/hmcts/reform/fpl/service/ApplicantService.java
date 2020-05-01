@@ -26,13 +26,13 @@ public class ApplicantService {
     public List<Element<Applicant>> expandApplicantCollection(CaseData caseData, Organisation organisation) {
         if (isEmpty(caseData.getApplicants())) {
             return ImmutableList.of(element(Applicant.builder()
-                        .party(ApplicantParty.builder()
-                            // A value within applicant party needs to be set in order to expand UI view.
-                            .partyId(randomUUID().toString())
-                            .organisationName(organisation.getName())
-                            .address(getOrganisationAddress(organisation))
-                        .build())
-                    .build()));
+                .party(ApplicantParty.builder()
+                    // A value within applicant party needs to be set in order to expand UI view.
+                    .partyId(randomUUID().toString())
+                    .organisationName(organisation.getName())
+                    .address(getOrganisationAddress(organisation))
+                    .build())
+                .build()));
         } else {
             return caseData.getApplicants();
         }
@@ -52,19 +52,19 @@ public class ApplicantService {
 
         if (!isEmpty(caseData.getApplicants())) {
             applicants = caseData.getApplicants().stream()
-                .map(element -> {
+                .map(applicantElement -> {
                     Applicant.ApplicantBuilder applicantBuilder = Applicant.builder();
 
-                    if (isEmpty(element.getValue().getParty().getPartyId())) {
-                        applicantBuilder.party(element.getValue().getParty().toBuilder()
+                    if (isEmpty(applicantElement.getValue().getParty().getPartyId())) {
+                        applicantBuilder.party(applicantElement.getValue().getParty().toBuilder()
                             .partyId(randomUUID().toString())
                             .partyType(PartyType.ORGANISATION).build());
                     } else {
-                        applicantBuilder.party(element.getValue().getParty().toBuilder().build());
+                        applicantBuilder.party(applicantElement.getValue().getParty().toBuilder().build());
                     }
 
                     return Element.<Applicant>builder()
-                        .id(element.getId())
+                        .id(applicantElement.getId())
                         .value(applicantBuilder.leadApplicantIndicator("Yes").build())
                         .build();
                 })
