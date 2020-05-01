@@ -65,7 +65,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
