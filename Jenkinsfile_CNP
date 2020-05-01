@@ -151,11 +151,6 @@ withPipeline(type, product, component) {
     publishToCosmosDb(this, params, 'dbs/jenkins/colls/fpl-test-metrics', "${WORKSPACE}/output", 'metrics')
   }
 
-  after('buildinfra:demo') {
-    archiveCoreCaseDataDefinitions('demo')
-    uploadCoreCaseDataDefinitions('demo')
-  }
-
   before('smoketest:aat') {
     env.URL = "https://www-ccd.aat.platform.hmcts.net"
     archiveCoreCaseDataDefinitions('aat')
