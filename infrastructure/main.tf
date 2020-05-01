@@ -62,19 +62,19 @@ data "azurerm_key_vault_secret" "fpla_support_email_secret" {
 module "fpla-action-group" {
   source                 = "git@github.com:hmcts/cnp-module-action-group"
   location               = "global"
-  env                    = "aat"
-  resourcegroup_name     = "fpl-case-service-aat"
+  env                    = "${var.env}"
+  resourcegroup_name     = "fpl-case-service-${var.env}"
   action_group_name      = "fpla-support"
   short_name             = "fpla-support"
   email_receiver_name    = "FPLA Support Mailing List"
-  email_receiver_address = "${data.azurerm_key_vault_secret.fpla_support_email_secret.value"
+  email_receiver_address = "${data.azurerm_key_vault_secret.fpla_support_email_secret.value}"
 }
 
 module "fpla-performance-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = "${var.appinsights_location}"
 
-  app_insights_name          = "fpl-case-service-appinsights-aat"
+  app_insights_name          = "fpl-case-service-appinsights-${var.env}"
 
   alert_name                 = "fpla-bad-requests"
   alert_desc                 = "Web pages took longer than 1 seconds to load"
@@ -86,7 +86,7 @@ module "fpla-performance-alert" {
   action_group_name          = "fpla-support"
   trigger_threshold_operator = "GreaterThan"
   trigger_threshold          = 5
-  resourcegroup_name         = "fpl-case-service-aat"
+  resourcegroup_name         = "fpl-case-service-${var.env}"
 }
 
 resource "azurerm_key_vault_secret" "scheduler-db-password" {
