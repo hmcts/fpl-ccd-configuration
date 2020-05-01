@@ -16,13 +16,15 @@ import uk.gov.hmcts.reform.fpl.service.robotics.RoboticsNotificationService;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static java.util.List.of;
 
 @Api
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @ConditionalOnProperty(prefix = "feature.toggle", name = "robotics.support.api.enabled", havingValue = "true")
 public class RoboticsController {
+    private static final List<String> doNotSendStates = of("Open", "Deleted");
+
     private final CoreCaseDataService coreCaseDataService;
     private final RoboticsNotificationService roboticsNotificationService;
 
@@ -41,8 +43,7 @@ public class RoboticsController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No case found with id %s", caseId));
         }
 
-        List<String> donNotSendStates = asList("Open", "Deleted");
-        if (donNotSendStates.contains(caseDetails.getState())) {
+        if (doNotSendStates.contains(caseDetails.getState())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 String.format("Unable to proceed as case  with id %s is the the wrong state", caseId));
         }
