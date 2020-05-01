@@ -885,6 +885,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
                 .others(Others.builder()
                     .firstOther(Other.builder()
                         .gender("male")
+                        .genderIdentification("")
                         .build())
                     .build())
                 .build();
