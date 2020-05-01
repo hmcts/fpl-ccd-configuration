@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
@@ -76,9 +75,6 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     @MockBean
     private UserDetailsService userDetailsService;
 
-    @MockBean
-    private HmctsCourtLookupConfiguration courtLookupConfiguration;
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -91,9 +87,6 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     void init() {
         givenCaseData = prepareCaseData();
         given(userDetailsService.getUserName()).willReturn("Professor");
-        given(courtLookupConfiguration.getCourt("example"))
-            .willReturn(new HmctsCourtLookupConfiguration.Court("Family Court", "admin@family-court.com",
-                "11"));
     }
 
     @Test
@@ -107,7 +100,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         String expectedCaseNumber = "12345";
         DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
 
-        templateDataGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(returnedCaseSubmission, 12345L);
+        templateDataGenerationService.populateCaseNumber(returnedCaseSubmission, 12345L);
 
         assertThat(returnedCaseSubmission.getCaseNumber()).isEqualTo(expectedCaseNumber);
     }
@@ -364,10 +357,10 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         }
 
         @Test
-        void shouldReturnDefaultValueWhenOrderTypeAndDirectionsIsNull() {
+        void shouldReturnDefaultValueWhenEmergencyProtectionOrderDirectionsOrDirectionsIsNull() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(Orders.builder()
-                    .orderType(null)
+                    .emergencyProtectionOrderDirections(null)
                     .directions(null)
                     .build())
                 .build();

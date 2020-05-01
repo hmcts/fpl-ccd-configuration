@@ -55,7 +55,7 @@ public class CaseSubmissionServiceTest {
         expectedCaseSubmission = expectedDocmosisCaseSubmission();
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
 
-        templateDataGenerationService.populateDocmosisCaseSubmissionWithCaseNumber(
+        templateDataGenerationService.populateCaseNumber(
             expectedCaseSubmission, 12345L);
 
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))

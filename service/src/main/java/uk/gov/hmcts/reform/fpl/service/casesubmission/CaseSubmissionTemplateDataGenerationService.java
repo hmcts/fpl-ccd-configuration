@@ -110,10 +110,10 @@ public class CaseSubmissionTemplateDataGenerationService
             .proceeding(buildDocmosisProceedings(caseData.getAllProceedings()))
             .relevantProceedings(getValidAnswerOrDefaultValue(caseData.getRelevantProceedings()))
             .groundsForEPOReason(isNotEmpty(caseData.getOrders())
-                ? getGroundsForEPOReason(caseData.getOrders().getOrderType(),
-                    caseData.getGroundsForEPO())
+                ? getGroundsForEPOReason(caseData.getOrders().getOrderType(), caseData.getGroundsForEPO())
                 : DEFAULT_STRING)
-            .groundsThresholdReason(buildGroundsThresholdReason(caseData.getGrounds()))
+            .groundsThresholdReason(caseData.getGrounds() != null
+                ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(buildDocmosisAnnexDocuments(caseData))
             .userFullName(userDetailsService.getUserName())
@@ -122,8 +122,7 @@ public class CaseSubmissionTemplateDataGenerationService
         return applicationFormBuilder.build();
     }
 
-    public void populateDocmosisCaseSubmissionWithCaseNumber(
-        final DocmosisCaseSubmission submittedCase, final long caseNumber) {
+    public void populateCaseNumber(final DocmosisCaseSubmission submittedCase, final long caseNumber) {
         submittedCase.setCaseNumber(String.valueOf(caseNumber));
     }
 
@@ -188,9 +187,7 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String getDirectionsNeeded(final Orders orders) {
         StringBuilder stringBuilder = new StringBuilder();
-        if (isNotEmpty(orders)
-            && (isNotEmpty(orders.getOrderType()) || StringUtils.isNotEmpty(orders.getDirections()))) {
-
+        if (hasDirections(orders)) {
             if (isNotEmpty(orders.getEmergencyProtectionOrderDirections())) {
                 stringBuilder.append(orders.getEmergencyProtectionOrderDirections().stream()
                     .map(EmergencyProtectionOrderDirectionsType::getLabel)
@@ -203,6 +200,11 @@ public class CaseSubmissionTemplateDataGenerationService
         }
 
         return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
+    }
+
+    private boolean hasDirections(final Orders orders) {
+        return isNotEmpty(orders) && (isNotEmpty(orders.getEmergencyProtectionOrderDirections())
+            || StringUtils.isNotEmpty(orders.getDirections()));
     }
 
     private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders,
@@ -245,10 +247,10 @@ public class CaseSubmissionTemplateDataGenerationService
             ? grounds.getThresholdDetails() : DEFAULT_STRING;
     }
 
-    private String buildGroundsThresholdReason(final Grounds grounds) {
+    private String buildGroundsThresholdReason(final List<String> thresholdReasons) {
         StringBuilder stringBuilder = new StringBuilder();
-        if (grounds != null && isNotEmpty(grounds.getThresholdReason())) {
-            grounds.getThresholdReason().forEach(thresholdReason -> {
+        if (isNotEmpty(thresholdReasons)) {
+            thresholdReasons.forEach(thresholdReason -> {
                 if ("noCare".equals(thresholdReason)) {
                     stringBuilder.append("Not receiving care that would be reasonably expected from a parent.");
                     stringBuilder.append(NEW_LINE);
@@ -511,9 +513,9 @@ public class CaseSubmissionTemplateDataGenerationService
         }
     }
 
-    private DocmosisHearing buildDocmosisHearing(
-        final Hearing hearing) {
-        final boolean hearingPresent = (hearing != null);
+    private DocmosisHearing buildDocmosisHearing(final Hearing hearing) {
+        final boolean hearingPresent = hearing != null;
+
         return DocmosisHearing.builder()
             .timeFrame(hearingPresent
                 ? concatenateKeyAndValue(
@@ -586,9 +588,9 @@ public class CaseSubmissionTemplateDataGenerationService
             .build();
     }
 
-    private DocmosisHearingPreferences buildDocmosisHearingPreferences(
-        final HearingPreferences hearingPreferences) {
-        final boolean hearingPreferencesPresent = (hearingPreferences != null);
+    private DocmosisHearingPreferences buildDocmosisHearingPreferences(final HearingPreferences hearingPreferences) {
+        final boolean hearingPreferencesPresent = hearingPreferences != null;
+
         return DocmosisHearingPreferences.builder()
             .interpreter(hearingPreferencesPresent
                 ? concatenateKeyAndValue(
@@ -661,7 +663,8 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private DocmosisInternationalElement buildDocmosisInternationalElement(
         final InternationalElement internationalElement) {
-        final boolean internationalElementPresent = (internationalElement != null);
+        final boolean internationalElementPresent = internationalElement != null;
+
         return DocmosisInternationalElement.builder()
             .possibleCarer(internationalElementPresent
                 ? concatenateYesOrNoKeyAndValue(
