@@ -154,7 +154,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     @Test
     void shouldRemoveOrderWhenOrderActionIsNotJudgeReview() {
         populatedCaseDetails.getData()
-            .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder().id(ID).build());
+            .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder().build());
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 

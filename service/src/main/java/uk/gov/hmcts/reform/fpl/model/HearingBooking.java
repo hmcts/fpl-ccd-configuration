@@ -34,4 +34,8 @@ public class HearingBooking {
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
     }
+
+    public boolean startsAfterToday() {
+        return startDate.isAfter(LocalDateTime.now());
+    }
 }

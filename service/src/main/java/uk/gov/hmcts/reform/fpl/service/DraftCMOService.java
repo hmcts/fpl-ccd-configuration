@@ -65,32 +65,32 @@ public class DraftCMOService {
     }
 
     public CaseManagementOrder prepareCaseManagementOrder(CaseData caseData) {
-        Optional<CaseManagementOrder> oldCMO = ofNullable(caseData.getCaseManagementOrder());
+        Optional<CaseManagementOrder> caseManagementOrder = ofNullable(caseData.getCaseManagementOrder());
         Optional<DynamicList> cmoHearingDateList = ofNullable(caseData.getCmoHearingDateList());
         Optional<LocalDate> dateOfIssue = ofNullable(caseData.getDateOfIssue());
 
         UUID idFromDynamicList = cmoHearingDateList.map(DynamicList::getValueCode).orElse(null);
 
-        CaseManagementOrder example = CaseManagementOrder.builder()
+        CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
             .hearingDate(cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null))
-            .id(oldCMO.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
+            .id(caseManagementOrder.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
             .directions(combineAllDirectionsForCmo(caseData))
             .schedule(caseData.getSchedule())
             .recitals(caseData.getRecitals())
-            .status(oldCMO.map(CaseManagementOrder::getStatus).orElse(null))
-            .orderDoc(oldCMO.map(CaseManagementOrder::getOrderDoc).orElse(null))
-            .action(oldCMO.map(CaseManagementOrder::getAction).orElse(null))
-            .nextHearing(oldCMO.map(CaseManagementOrder::getNextHearing).orElse(null))
+            .status(caseManagementOrder.map(CaseManagementOrder::getStatus).orElse(null))
+            .orderDoc(caseManagementOrder.map(CaseManagementOrder::getOrderDoc).orElse(null))
+            .action(caseManagementOrder.map(CaseManagementOrder::getAction).orElse(null))
+            .nextHearing(caseManagementOrder.map(CaseManagementOrder::getNextHearing).orElse(null))
             .dateOfIssue(dateOfIssue.map(date -> formatLocalDateToString(date, DATE)).orElse(null))
             .build();
 
-        example.setActionWithNullDocument(caseData.getOrderAction());
+        preparedOrder.setActionWithNullDocument(caseData.getOrderAction());
 
-        if (!example.isDraft() && caseData.getNextHearingDateList() != null) {
-            example.setNextHearingFromDynamicElement(getHearingDynamicElement(caseData.getNextHearingDateList()));
+        if (!preparedOrder.isDraft() && caseData.getNextHearingDateList() != null) {
+            preparedOrder.setNextHearingFromDynamicElement(getHearingDynamicElement(caseData.getNextHearingDateList()));
         }
 
-        return example;
+        return preparedOrder;
     }
 
     public void removeTransientObjectsFromCaseData(Map<String, Object> caseData) {

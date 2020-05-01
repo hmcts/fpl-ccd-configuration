@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,8 @@ public class OrderAction {
     private final NextHearingType nextHearingType;
     private final String changeRequestedByJudge;
 
-    public boolean hasActionTypeSendToAllParties() {
+    @JsonIgnore
+    public boolean isSendToAllPartiesType() {
         return SEND_TO_ALL_PARTIES == this.type;
     }
 }

@@ -3,12 +3,20 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.config.TimeConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
@@ -22,11 +30,23 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 
+//TODO: this will be slightly improved when 1480 is merged to master
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    TimeConfiguration.class, CaseManagementOrderService.class, HearingBookingService.class
+    TimeConfiguration.class, CaseManagementOrderService.class, HearingBookingService.class,
+    DocumentService.class, DraftCMOService.class, CommonDirectionService.class, CommonCaseDataExtractionService.class,
+    LookupTestConfig.class, StandardDirectionOrderGenerationService.class, CaseManagementOrderGenerationService.class,
+    JsonOrdersLookupService.class, JacksonAutoConfiguration.class, HearingVenueLookUpService.class,
+    DocmosisDocumentGeneratorService.class, RestTemplate.class, DocmosisConfiguration.class, UploadDocumentService.class
 })
 class CaseManagementOrderServiceTest {
+
+    @MockBean
+    private AuthTokenGenerator authTokenGenerator;
+    @MockBean
+    private DocumentUploadClientApi documentUploadClient;
+    @MockBean
+    private RequestData requestData;
 
     @Autowired
     private Time time;
