@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ActionCaseManagementOrderControllerMidEventTest extends AbstractControllerTest {
+class ActionCaseManagementOrderControllerMidEventTest extends AbstractControllerTest {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
 
     @MockBean
@@ -92,6 +92,8 @@ public class ActionCaseManagementOrderControllerMidEventTest extends AbstractCon
     private CaseDetails getCaseDetails() {
         CaseDetails caseDetails = populatedCaseDetails();
 
+        caseDetails.getData().put("dateOfIssue", now());
+
         caseDetails.getData().put("recitals", wrapElements(Recital.builder()
             .title("example recital")
             .description("description")
@@ -104,8 +106,8 @@ public class ActionCaseManagementOrderControllerMidEventTest extends AbstractCon
             .build()));
 
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder()
-                .id(UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774"))
-                .build());
+            .id(UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774"))
+            .build());
 
         return caseDetails;
     }

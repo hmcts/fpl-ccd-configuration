@@ -36,7 +36,7 @@ public class NoticeOfProceedingsService {
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
-    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
+    private final CaseDataExtractionService caseDataExtractionService;
     private final Time time;
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
@@ -87,13 +87,13 @@ public class NoticeOfProceedingsService {
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
 
         return ImmutableMap.of(
-            "hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
+            "hearingDate", caseDataExtractionService.getHearingDateIfHearingsOnSameDay(
                 prioritisedHearingBooking)
                 .orElse(""),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
+            "preHearingAttendance", caseDataExtractionService.extractPrehearingAttendance(
                 prioritisedHearingBooking),
-            "hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking)
+            "hearingTime", caseDataExtractionService.getHearingTime(prioritisedHearingBooking)
         );
     }
 
