@@ -54,6 +54,11 @@ module "fpl-scheduler-db" {
   subscription       = "${var.subscription}"
 }
 
+data "azurerm_key_vault_secret" "fpla_support_email_secret" {
+  name      = "fpla-support-email"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
 module "fpla-action-group" {
   source                 = "git@github.com:hmcts/cnp-module-action-group"
   location               = "global"
@@ -62,7 +67,7 @@ module "fpla-action-group" {
   action_group_name      = "fpla-support"
   short_name             = "fpla-support"
   email_receiver_name    = "FPLA Support Mailing List"
-  email_receiver_address = "h7i9d6f3u2n1a9y6@hmcts-reform.slack.com"
+  email_receiver_address = "${data.azurerm_key_vault_secret.fpla_support_email_secret.value"
 }
 
 module "fpla-performance-alert" {
