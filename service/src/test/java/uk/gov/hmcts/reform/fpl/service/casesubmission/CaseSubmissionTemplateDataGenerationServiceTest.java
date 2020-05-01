@@ -879,13 +879,15 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("2 February 1999");
         }
 
-        @Test
-        void shouldReturnOtherPartyGenderAsMaleWhenNoGenderIdentificationGiven() {
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnOtherPartyGenderAsMaleWhenNoGenderIdentificationIsullOrEmpty(
+            final String genderIdentification) {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
                         .gender("male")
-                        .genderIdentification("")
+                        .genderIdentification(genderIdentification)
                         .build())
                     .build())
                 .build();
