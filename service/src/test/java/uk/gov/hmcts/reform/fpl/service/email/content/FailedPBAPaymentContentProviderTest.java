@@ -14,18 +14,20 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
 
     @Test
     void shouldReturnExpectedMapWithValidCtscNotificationParameters() {
-        Map<String, Object> expectedMap = getExpectedCtscNotificationParameters();
+        Map<String, Object> expectedParameters = getExpectedCtscNotificationParameters();
+        Map<String, Object> actualParameters = contentProvider.buildCtscNotificationParameters(populatedCaseDetails(),
+            ApplicationType.C2_APPLICATION);
 
-        assertThat(contentProvider.buildCtscNotificationParameters(populatedCaseDetails(),
-            ApplicationType.C2_APPLICATION)).isEqualTo(expectedMap);
+        assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
     @Test
     void shouldReturnExpectedMapWithValidLANotificationParameters() {
-        Map<String, Object> expectedMap = Map.of("applicationType", "C110a");
+        Map<String, Object> expectedParameters = Map.of("applicationType", "C110a");
+        Map<String, Object> actualParameters = contentProvider.buildLANotificationParameters(
+            ApplicationType.C110A_APPLICATION);
 
-        assertThat(contentProvider.buildLANotificationParameters(
-            ApplicationType.C110A_APPLICATION)).isEqualTo(expectedMap);
+        assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
     private Map<String, Object> getExpectedCtscNotificationParameters() {
