@@ -416,6 +416,7 @@ public class CaseDataGeneratorHelper {
             .children1(createPopulatedChildren(dateTime.toLocalDate()))
             .hearingDetails(createHearingBookingsFromInitialDate(dateTime))
             .dateSubmitted(LocalDate.now())
+            .dateOfIssue(LocalDate.now())
             .respondents1(respondents)
             .others(others)
             .solicitor(createSolicitor())
