@@ -79,16 +79,13 @@ ccd:
     devMode: true
 
   ccd-api-gateway-web:
-    global:
-      s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
-      idamClientSecret:
-        value: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
     nodejs:
       consulIP: ${CONSUL_LB_IP}
       environment:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
         IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
+        IDAM_OAUTH2_AW_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
       keyVaults:
@@ -96,11 +93,6 @@ ccd:
         enabled: true
         prefix: gateway
         primaryIngressHost: ${SERVICE_FQDN}
-      secrets:
-        IDAM_OAUTH2_AW_CLIENT_SECRET:
-          disabled: false
-          key: key
-          secretRef: ccd-api-gateway-oauth2-client-secret
   ccd-case-management-web:
     nodejs:
       consulIP: ${CONSUL_LB_IP}
@@ -116,14 +108,10 @@ ccd:
         prefix: case-management-web
         primaryIngressHost: ${SERVICE_FQDN}
   ccd-data-store-api:
-    global:
-      s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
     java:
       keyVaults:
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-definition-store-api:
-    global:
-      s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
     java:
       environment:
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
