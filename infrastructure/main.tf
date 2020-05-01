@@ -54,6 +54,36 @@ module "fpl-scheduler-db" {
   subscription       = "${var.subscription}"
 }
 
+module "fpla-action-group" {
+  source                 = "git@github.com:hmcts/cnp-module-action-group"
+  location               = "global"
+  env                    = "demo"
+  resourcegroup_name     = "fpl-case-service-demo"
+  action_group_name      = "fpla-support"
+  short_name             = "fpla-support"
+  email_receiver_name    = "FPLA Support Mailing List"
+  email_receiver_address = "h7i9d6f3u2n1a9y6@hmcts-reform.slack.com"
+}
+
+module "fpla-performance-alert" {
+  source                     = "git@github.com:hmcts/cnp-module-metric-alert"
+  location                   = "${var.appinsights_location}"
+
+  app_insights_name          = "fpl-case-service-appinsights-demo"
+
+  alert_name                 = "fpla-bad-requests"
+  alert_desc                 = "Web pages took longer than 1 seconds to load"
+  app_insights_query         = "requests | where url !contains '/health' | where success == 'True' | where duration > 1000"
+  custom_email_subject       = "Alert: performance errors"
+  frequency_in_minutes       = 5
+  time_window_in_minutes     = 5
+  severity_level             = "2"
+  action_group_name          = "fpla-support"
+  trigger_threshold_operator = "GreaterThan"
+  trigger_threshold          = 5
+  resourcegroup_name         = "fpl-case-service-demo"
+}
+
 resource "azurerm_key_vault_secret" "scheduler-db-password" {
   name      = "scheduler-db-password"
   value     = "${module.fpl-scheduler-db.postgresql_password}"
