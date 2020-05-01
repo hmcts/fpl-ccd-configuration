@@ -190,25 +190,6 @@ class CommonDirectionServiceTest {
         assertThat(directions).isEqualTo(expectedDirections);
     }
 
-    @Test
-    void changeSdoTabView_shouldApplyTabViewStatusToListOfDirectionsWhenParametersProvided() {
-        Direction direction = Direction.builder()
-            .directionType("direction")
-            .directionText("example direction text")
-            .directionNeeded("Yes")
-            .assignee(LOCAL_AUTHORITY)
-            .tabView(null)
-            .build();
-
-        List<Direction> directions = unwrapElements(
-            service.changeSdoTabView(newArrayList(element(direction)), "Yes"));
-
-        List<Direction> expectedDirections = unwrapElements(
-            newArrayList(element(direction.toBuilder().tabView("Yes").build())));
-
-        assertThat(directions).isEqualTo(expectedDirections);
-    }
-
     private DirectionConfiguration getDirectionConfig() {
         return DirectionConfiguration.builder()
             .assignee(LOCAL_AUTHORITY)

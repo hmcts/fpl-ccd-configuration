@@ -38,20 +38,12 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
-    "ListElementCode": "tabView",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Is the SDO currently in tab view?",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "directionType CONTAINS \"DO NOT SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Direction",
     "ListElementCode": "directionNeeded",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this direction needed?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "directionRemovable=\"Yes\" AND tabView!=\"Yes\""
+    "FieldShowCondition": "directionRemovable CONTAINS \"DO NOT SHOW\"",
+    "Comment": "Field will only be shown in the event and not in the tab (FieldShowCondition overwritten in CaseEventToComplexType)"
   },
   {
     "LiveFrom": "01/01/2017",

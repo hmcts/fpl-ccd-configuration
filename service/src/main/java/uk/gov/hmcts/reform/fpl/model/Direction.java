@@ -27,7 +27,6 @@ public class Direction {
     private OtherPartiesDirectionAssignee otherPartiesAssignee;
     private String readOnly;
     private String directionRemovable;
-    private String tabView;
     private String directionNeeded;
     private String custom;
     private LocalDateTime dateToBeCompletedBy;

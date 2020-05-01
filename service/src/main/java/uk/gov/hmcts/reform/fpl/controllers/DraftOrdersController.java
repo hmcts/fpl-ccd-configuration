@@ -129,10 +129,7 @@ public class DraftOrdersController {
         List<Element<Direction>> nonCustomDirections = commonDirectionService
             .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
 
-        List<Element<Direction>> directionsInEvent = commonDirectionService
-            .changeSdoTabView(nonCustomDirections, "No");
-
-        return commonDirectionService.sortDirectionsByAssignee(directionsInEvent);
+        return commonDirectionService.sortDirectionsByAssignee(nonCustomDirections);
     }
 
     @PostMapping("/mid-event")
@@ -192,11 +189,10 @@ public class DraftOrdersController {
 
         removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
-        List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(commonDirectionService.changeSdoTabView(
-                    commonDirectionService.removeUnnecessaryDirections(combinedDirections), "Yes"))
+                .directions(commonDirectionService.removeUnnecessaryDirections(
+                    commonDirectionService.combineAllDirections(caseData)))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
