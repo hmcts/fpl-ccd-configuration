@@ -84,11 +84,17 @@ ccd:
       idamClientSecret:
         value: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
     nodejs:
+      consulIP: ${CONSUL_LB_IP}
       environment:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
       ingressHost: gateway-${SERVICE_FQDN}
+      ingressIP: ${INGRESS_IP}
       keyVaults:
+      registerAdditionalDns:
+        enabled: true
+        prefix: ccd-api-gateway-web
+        primaryIngressHost: ${SERVICE_FQDN}
   ccd-case-management-web:
     nodejs:
       consulIP: ${CONSUL_LB_IP}
