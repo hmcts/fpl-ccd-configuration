@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +37,6 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.util.Lists.newArrayList;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -469,7 +469,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee) {
-        return newArrayList(element(Direction.builder()
+        return Lists.newArrayList(element(Direction.builder()
             .directionType("direction")
             .directionText("example direction text")
             .assignee(assignee)
@@ -477,7 +477,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee, String directionNeeded) {
-        return newArrayList(element(Direction.builder()
+        return Lists.newArrayList(element(Direction.builder()
             .directionType("direction")
             .directionText("example direction text")
             .directionNeeded(directionNeeded)
@@ -486,7 +486,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildDirections(DirectionAssignee assignee, UUID directionId) {
-        return newArrayList(element(directionId, Direction.builder()
+        return Lists.newArrayList(element(directionId, Direction.builder()
             .directionType("direction")
             .directionText("example direction text")
             .assignee(assignee)
@@ -494,7 +494,7 @@ class CommonDirectionServiceTest {
     }
 
     private List<Element<Direction>> buildCustomDirections() {
-        return newArrayList(element(
+        return Lists.newArrayList(element(
             Direction.builder()
                 .directionType("direction")
                 .directionText("example direction text")
