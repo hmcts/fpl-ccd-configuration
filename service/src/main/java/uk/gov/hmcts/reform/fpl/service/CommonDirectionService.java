@@ -244,10 +244,10 @@ public class CommonDirectionService {
      * @param directions any list of directions.
      * @return a list of directions that have hidden tab values modified.
      */
-    public List<Element<Direction>> changeSdoTabStatus(List<Element<Direction>> directions, String status) {
+    public List<Element<Direction>> changeSdoTabView(List<Element<Direction>> directions, String status) {
         return directions.stream()
             .map(element -> element(element.getId(), element.getValue().toBuilder()
-                .sdoTabStatus(status)
+                .tabView(status)
                 .build()))
             .collect(toList());
     }

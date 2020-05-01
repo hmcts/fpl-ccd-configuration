@@ -130,7 +130,7 @@ public class DraftOrdersController {
             .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
 
         List<Element<Direction>> directionsInEvent = commonDirectionService
-            .changeSdoTabStatus(nonCustomDirections, "No");
+            .changeSdoTabView(nonCustomDirections, "No");
 
         return commonDirectionService.sortDirectionsByAssignee(directionsInEvent);
     }
@@ -195,7 +195,7 @@ public class DraftOrdersController {
         List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(commonDirectionService.changeSdoTabStatus(
+                .directions(commonDirectionService.changeSdoTabView(
                     commonDirectionService.removeUnnecessaryDirections(combinedDirections), "Yes"))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
