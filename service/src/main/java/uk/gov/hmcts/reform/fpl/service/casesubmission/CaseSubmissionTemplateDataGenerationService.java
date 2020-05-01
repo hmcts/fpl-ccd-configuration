@@ -449,21 +449,21 @@ public class CaseSubmissionTemplateDataGenerationService
     }
 
     private String getEmail(final EmailAddress email) {
-        return email != null && !email.getEmail().isBlank() ? email.getEmail() : DEFAULT_STRING;
+        return email != null && StringUtils.isNotEmpty(email.getEmail()) ? email.getEmail() : DEFAULT_STRING;
     }
 
     private String getTelephoneNumber(final Telephone telephone) {
-        return telephone != null && !telephone.getTelephoneNumber().isBlank()
+        return telephone != null && StringUtils.isNotEmpty(telephone.getTelephoneNumber())
             ? telephone.getTelephoneNumber() : DEFAULT_STRING;
     }
 
     private String getContactName(final Telephone telephone) {
-        return telephone != null && !telephone.getContactDirection().isBlank()
+        return telephone != null && StringUtils.isNotEmpty(telephone.getContactDirection())
             ? telephone.getContactDirection() : DEFAULT_STRING;
     }
 
     private String getDefaultIfNullOrEmpty(final String value) {
-        return !value.isBlank() ? DEFAULT_STRING : value;
+        return StringUtils.isEmpty(value) ? DEFAULT_STRING : value;
     }
 
 
