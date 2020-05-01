@@ -45,7 +45,6 @@ public class SecurityConfiguration {
 
     @Order(2)
     @Configuration
-    @ConditionalOnProperty(value = "spring.security.enabled", havingValue = "true")
     static class RoboticsSecurityConfiguration extends WebSecurityConfigurerAdapter {
         private AuthCheckerUserOnlyFilter<User> authCheckerUserOnlyFilter;
 
