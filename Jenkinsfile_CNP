@@ -1,7 +1,6 @@
 #!groovy
-
 @Library("Infrastructure")
-import uk.gov.hmcts.contino.ProjectBranch
+import java.lang.Object
 
 def type = "java"
 
@@ -147,11 +146,6 @@ withPipeline(type, product, component) {
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     publishToCosmosDb(this, params, 'dbs/jenkins/colls/fpl-test-metrics', "${WORKSPACE}/output", 'metrics')
-  }
-
-  after('buildinfra:demo') {
-    archiveCoreCaseDataDefinitions('demo')
-    uploadCoreCaseDataDefinitions('demo')
   }
 
   before('smoketest:aat') {
