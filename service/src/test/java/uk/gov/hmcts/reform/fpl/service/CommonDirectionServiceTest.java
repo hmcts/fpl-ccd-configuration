@@ -190,6 +190,15 @@ class CommonDirectionServiceTest {
         assertThat(directions).isEqualTo(expectedDirections);
     }
 
+    @Test
+    void removeUnnecessaryDirections_shouldNotRemoveCustomDirectionsWhenCustomDirectionsPresent() {
+        List<Direction> directions = unwrapElements(service.removeUnnecessaryDirections(buildCustomDirections()));
+
+        List<Direction> expectedDirections = unwrapElements(buildCustomDirections());
+
+        assertThat(directions).isEqualTo(expectedDirections);
+    }
+
     private DirectionConfiguration getDirectionConfig() {
         return DirectionConfiguration.builder()
             .assignee(LOCAL_AUTHORITY)

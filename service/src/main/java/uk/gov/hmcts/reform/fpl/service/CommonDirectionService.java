@@ -246,9 +246,12 @@ public class CommonDirectionService {
      */
     public List<Element<Direction>> removeUnnecessaryDirections(List<Element<Direction>> directions) {
         return directions.stream()
-            .filter(element -> "Yes".equals(element.getValue().getDirectionNeeded()) || "Yes".equals(
-                element.getValue().getCustom()))
+            .filter(this::removeDirection)
             .collect(toList());
+    }
+
+    private boolean removeDirection(Element<Direction> element) {
+        return "Yes".equals(element.getValue().getDirectionNeeded()) || "Yes".equals(element.getValue().getCustom());
     }
 
     private String booleanToYesOrNo(boolean value) {
