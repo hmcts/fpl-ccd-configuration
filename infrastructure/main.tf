@@ -54,6 +54,41 @@ module "fpl-scheduler-db" {
   subscription       = "${var.subscription}"
 }
 
+data "azurerm_key_vault_secret" "fpla_support_email_secret" {
+  name      = "fpla-support-email"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+module "fpla-action-group" {
+  source                 = "git@github.com:hmcts/cnp-module-action-group"
+  location               = "global"
+  env                    = "${var.env}"
+  resourcegroup_name     = "fpl-case-service-${var.env}"
+  action_group_name      = "fpla-support"
+  short_name             = "fpla-support"
+  email_receiver_name    = "FPLA Support Mailing List"
+  email_receiver_address = "${data.azurerm_key_vault_secret.fpla_support_email_secret.value}"
+}
+
+module "fpla-performance-alert" {
+  source                     = "git@github.com:hmcts/cnp-module-metric-alert"
+  location                   = "${var.appinsights_location}"
+
+  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+
+  alert_name                 = "fpla-bad-requests"
+  alert_desc                 = "Web pages took longer than 1 seconds to load"
+  app_insights_query         = "requests | where url !contains '/health' | where success == 'True' | where duration > 1000"
+  custom_email_subject       = "Alert: performance errors"
+  frequency_in_minutes       = 5
+  time_window_in_minutes     = 5
+  severity_level             = "2"
+  action_group_name          = "fpla-support"
+  trigger_threshold_operator = "GreaterThan"
+  trigger_threshold          = 5
+  resourcegroup_name         = "fpl-case-service-${var.env}"
+}
+
 resource "azurerm_key_vault_secret" "scheduler-db-password" {
   name      = "scheduler-db-password"
   value     = "${module.fpl-scheduler-db.postgresql_password}"
