@@ -47,7 +47,7 @@ public class RoboticsController {
 
         if (EXCLUDED_STATES.contains(caseDetails.getState())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                String.format("Unable to proceed as case  with id %s is the the wrong state", caseId));
+                String.format("Unable to proceed as case  with id %s is in the wrong state", caseId));
         }
     }
 }
