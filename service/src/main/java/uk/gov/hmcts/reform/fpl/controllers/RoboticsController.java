@@ -14,11 +14,19 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.robotics.RoboticsNotificationService;
 
+import java.util.List;
+
+import static java.util.List.of;
+import static uk.gov.hmcts.reform.fpl.enums.State.DELETED;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+
 @Api
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @ConditionalOnProperty(prefix = "feature.toggle", name = "robotics.support.api.enabled", havingValue = "true")
 public class RoboticsController {
+    private static final List<String> EXCLUDED_STATES = of(OPEN.getValue(), DELETED.getValue());
+
     private final CoreCaseDataService coreCaseDataService;
     private final RoboticsNotificationService roboticsNotificationService;
 
@@ -37,9 +45,10 @@ public class RoboticsController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No case found with id %s", caseId));
         }
 
-        if (!caseDetails.getState().equals("Submitted")) {
+        if (EXCLUDED_STATES.contains(caseDetails.getState())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                String.format("Unable to proceed as case  with id %s has not been submitted", caseId));
+                String.format("Unable to proceed as case  with id %s is in the wrong state", caseId));
         }
     }
 }
+
