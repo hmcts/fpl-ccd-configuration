@@ -41,6 +41,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.deleteWhitespace;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.math.NumberUtils.toDouble;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.robotics.Gender.convertStringToGender;
@@ -56,7 +57,7 @@ public class RoboticsDataService {
         return RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
-            .feePaid(2055.00)
+            .feePaid(isNotEmpty(caseData.getAmountToPay()) ? toDouble(caseData.getAmountToPay()) : 2055.00)
             .children(populateChildren(caseData.getAllChildren()))
             .respondents(populateRespondents(caseData.getRespondents1()))
             .solicitor(populateSolicitor(caseData.getSolicitor()))

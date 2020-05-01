@@ -117,7 +117,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
             .build());
 
         assertThat(callbackResponse.getData())
-            .doesNotContainKey("amountToPay")
+            .containsEntry("amountToPay", "233300")
             .containsEntry("displayAmountToPay", YES.getValue());
     }
 }
