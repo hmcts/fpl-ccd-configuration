@@ -7,9 +7,7 @@ let caseId;
 
 Feature('Case maintenance after submission');
 
-BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('mandatoryWithMultipleChildren');
-});
+BeforeSuite(async I => caseId = await I.submitNewCaseWithData('mandatoryWithMultipleChildren'));
 
 Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 

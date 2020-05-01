@@ -5,9 +5,7 @@ let caseId;
 
 Feature('Case maintenance after gatekeeping');
 
-BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('gatekeeping');
-});
+BeforeSuite(async I => caseId = await I.submitNewCaseWithData('gatekeeping'));
 
 Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 

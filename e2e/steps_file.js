@@ -180,8 +180,7 @@ module.exports = function () {
 
     async submitNewCaseWithData(filename = 'mandatorySubmissionFields') {
       const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-      await this.signIn(config.systemUpdateUser);
-      await this.navigateToCaseDetails(caseId);
+      await this.navigateToCaseDetailsAs(config.systemUpdateUser, caseId);
       await caseViewPage.goToNewActions(config.applicationActions.populateCase);
       populateCaseEventPage.setCaseDataFilename(filename);
       await this.completeEvent('Submit');

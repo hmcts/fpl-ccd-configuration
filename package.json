@@ -24,7 +24,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn lint && gradle checkstyleMain checkstyleTest checkstyleIntegration"
+      "pre-commit": "yarn lint"
     }
   },
   "license": "MIT"

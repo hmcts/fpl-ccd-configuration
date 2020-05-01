@@ -9,12 +9,12 @@ Feature('Case Management Order Journey');
 
 BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData('standardDirectionOrder');
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 });
 
 Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
   await I.retryUntilExists(() => I.click('Continue'), '#allPartiesLabelCMO');
@@ -32,6 +32,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
 
 // This scenario relies on running after 'local authority creates CMO'
 Scenario('Other parties cannot see the draft CMO document when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   // Ensure the selection is self review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.sendDraftForSelfReview(I, draftCaseManagementOrderEventPage);
@@ -45,6 +46,7 @@ Scenario('Other parties cannot see the draft CMO document when it is marked for 
 
 // This scenario relies on running after 'local authority creates CMO'
 Scenario('Other parties can see the draft CMO document when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   // Ensure the selection is party review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
 
@@ -66,6 +68,7 @@ Scenario('Judge sees Action CMO placeholder when CMO is not in Judge Review', as
 });
 
 Scenario('Local Authority sends draft to Judge who requests corrections', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
 

@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -26,7 +26,8 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {FixedTimeConfiguration.class, JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {FixedTimeConfiguration.class, JacksonAutoConfiguration.class,
+    PopulateCaseService.class})
 class PopulateCaseServiceTest {
 
     private static final Document MOCK_DOCUMENT = document();
@@ -39,9 +40,10 @@ class PopulateCaseServiceTest {
     @Autowired
     private Time time;
 
-    @Mock
+    @MockBean
     private UploadDocumentService uploadDocumentService;
 
+    @Autowired
     private PopulateCaseService service;
 
     @BeforeAll()
@@ -57,7 +59,6 @@ class PopulateCaseServiceTest {
         given(uploadDocumentService.uploadPDF(new byte[] {}, "mockSDO.pdf")).willReturn(MOCK_SDO_DOCUMENT);
         given(uploadDocumentService.uploadPDF(new byte[] {}, "mockSubmittedApplication.pdf"))
             .willReturn(MOCK_APPLICATION_DOCUMENT);
-        service = new PopulateCaseService(mapper, time, uploadDocumentService);
     }
 
     @Test
