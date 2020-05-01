@@ -440,8 +440,7 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String formatGenderDisplay(final String gender, final String genderIdentification) {
         if (StringUtils.isNotEmpty(gender)) {
-            if ((equalsIgnoreCase(gender, "They identify in another way")
-                && StringUtils.isNotEmpty(genderIdentification))) {
+            if ("They identify in another way".equalsIgnoreCase(gender) && !genderIdentification.isBlank()) {
                 return genderIdentification;
             }
             return gender;
@@ -450,22 +449,21 @@ public class CaseSubmissionTemplateDataGenerationService
     }
 
     private String getEmail(final EmailAddress email) {
-        return isNotEmpty(email) && StringUtils.isNotEmpty(email.getEmail())
-            ? email.getEmail() : DEFAULT_STRING;
+        return email != null && !email.getEmail().isBlank() ? email.getEmail() : DEFAULT_STRING;
     }
 
     private String getTelephoneNumber(final Telephone telephone) {
-        return isNotEmpty(telephone) && StringUtils.isNotEmpty(telephone.getTelephoneNumber())
+        return telephone != null && !telephone.getTelephoneNumber().isBlank()
             ? telephone.getTelephoneNumber() : DEFAULT_STRING;
     }
 
     private String getContactName(final Telephone telephone) {
-        return isNotEmpty(telephone) && StringUtils.isNotEmpty(telephone.getContactDirection())
+        return telephone != null && !telephone.getContactDirection().isBlank()
             ? telephone.getContactDirection() : DEFAULT_STRING;
     }
 
     private String getDefaultIfNullOrEmpty(final String value) {
-        return StringUtils.isEmpty(value) ? DEFAULT_STRING : value;
+        return !value.isBlank() ? DEFAULT_STRING : value;
     }
 
 
