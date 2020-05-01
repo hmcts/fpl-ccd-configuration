@@ -57,8 +57,8 @@ module "fpl-scheduler-db" {
 module "fpla-action-group" {
   source                 = "git@github.com:hmcts/cnp-module-action-group"
   location               = "global"
-  env                    = "demo"
-  resourcegroup_name     = "fpl-case-service-demo"
+  env                    = "aat"
+  resourcegroup_name     = "fpl-case-service-aat"
   action_group_name      = "fpla-support"
   short_name             = "fpla-support"
   email_receiver_name    = "FPLA Support Mailing List"
@@ -69,7 +69,7 @@ module "fpla-performance-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = "${var.appinsights_location}"
 
-  app_insights_name          = "fpl-case-service-appinsights-demo"
+  app_insights_name          = "fpl-case-service-appinsights-aat"
 
   alert_name                 = "fpla-bad-requests"
   alert_desc                 = "Web pages took longer than 1 seconds to load"
@@ -81,7 +81,7 @@ module "fpla-performance-alert" {
   action_group_name          = "fpla-support"
   trigger_threshold_operator = "GreaterThan"
   trigger_threshold          = 5
-  resourcegroup_name         = "fpl-case-service-demo"
+  resourcegroup_name         = "fpl-case-service-aat"
 }
 
 resource "azurerm_key_vault_secret" "scheduler-db-password" {
