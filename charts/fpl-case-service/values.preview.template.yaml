@@ -93,7 +93,7 @@ ccd:
       keyVaults:
       registerAdditionalDns:
         enabled: true
-        prefix: ccd-api-gateway-web
+        prefix: gateway
         primaryIngressHost: ${SERVICE_FQDN}
   ccd-case-management-web:
     nodejs:
@@ -107,7 +107,7 @@ ccd:
       ingressIP: ${INGRESS_IP}
       registerAdditionalDns:
         enabled: true
-        prefix: ccd-case-management-web
+        prefix: case-management-web
         primaryIngressHost: ${SERVICE_FQDN}
   ccd-data-store-api:
     global:
