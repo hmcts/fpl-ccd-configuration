@@ -440,7 +440,8 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private String formatGenderDisplay(final String gender, final String genderIdentification) {
         if (StringUtils.isNotEmpty(gender)) {
-            if ("They identify in another way".equalsIgnoreCase(gender) && !genderIdentification.isBlank()) {
+            if ("They identify in another way".equalsIgnoreCase(gender)
+                && StringUtils.isNotEmpty(genderIdentification)) {
                 return genderIdentification;
             }
             return gender;
