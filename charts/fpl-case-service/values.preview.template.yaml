@@ -96,6 +96,9 @@ ccd:
         enabled: true
         prefix: gateway
         primaryIngressHost: ${SERVICE_FQDN}
+      secrets:
+        IDAM_OAUTH2_AW_CLIENT_SECRET:
+          disabled: false
   ccd-case-management-web:
     nodejs:
       consulIP: ${CONSUL_LB_IP}
