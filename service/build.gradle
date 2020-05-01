@@ -176,14 +176,17 @@ repositories {
 def versions = [
   reformLogging: '5.1.0',
   springBoot: springBoot.class.package.implementationVersion,
-  springfoxSwagger: '2.9.2'
+  springfoxSwagger: '2.9.2',
+  log4j: '2.13.2'
 ]
 
 dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
-  compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot)
+  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
+  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: versions.springBoot
 
