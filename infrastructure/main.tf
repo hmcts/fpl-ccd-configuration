@@ -74,7 +74,7 @@ module "fpla-performance-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = "${var.appinsights_location}"
 
-  app_insights_name          = "fpl-case-service-appinsights-${var.env}"
+  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
 
   alert_name                 = "fpla-bad-requests"
   alert_desc                 = "Web pages took longer than 1 seconds to load"
