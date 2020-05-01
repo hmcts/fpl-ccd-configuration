@@ -14,6 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.robotics.RoboticsNotificationService;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 @Api
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -37,9 +41,11 @@ public class RoboticsController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No case found with id %s", caseId));
         }
 
-        if (!caseDetails.getState().equals("Submitted")) {
+        List<String> donNotSendStates = asList("Open", "Deleted");
+        if (donNotSendStates.contains(caseDetails.getState())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                String.format("Unable to proceed as case  with id %s has not been submitted", caseId));
+                String.format("Unable to proceed as case  with id %s is the the wrong state", caseId));
         }
     }
 }
+
