@@ -279,7 +279,6 @@ public class CaseData {
     @Valid
     private final Address epoRemovalAddress;
 
-
     @JsonIgnore
     public List<Element<Proceeding>> getAllProceedings() {
         List<Element<Proceeding>> proceedings = new ArrayList<>();
