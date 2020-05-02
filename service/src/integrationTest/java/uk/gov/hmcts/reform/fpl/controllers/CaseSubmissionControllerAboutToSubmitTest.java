@@ -103,7 +103,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldRemoveTemporaryFieldsWhenPresent() {
+    void shouldAddAmountToPayAndDisplayAmountToCase() {
         given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
