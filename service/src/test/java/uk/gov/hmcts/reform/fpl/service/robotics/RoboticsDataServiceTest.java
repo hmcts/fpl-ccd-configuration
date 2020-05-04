@@ -508,10 +508,8 @@ public class RoboticsDataServiceTest {
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build(), CASE_ID);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-            Map<String, Object> returnedRoboticsDataMap = objectMapper.reader()
-                .forType(new TypeReference<Map<String, Object>>() {
-                })
-                .readValue(returnedRoboticsJson);
+            Map<String, Object> returnedRoboticsDataMap = objectMapper
+                .readValue(returnedRoboticsJson, new TypeReference<>(){});
 
             assertThat(returnedRoboticsDataMap).containsEntry("feePaid",1000.00);
         }
@@ -523,10 +521,8 @@ public class RoboticsDataServiceTest {
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build(), CASE_ID);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-            Map<String, Object> returnedRoboticsDataMap = objectMapper.reader()
-                .forType(new TypeReference<Map<String, Object>>() {
-                })
-                .readValue(returnedRoboticsJson);
+            Map<String, Object> returnedRoboticsDataMap = objectMapper
+                .readValue(returnedRoboticsJson, new TypeReference<>(){});
 
             assertThat(returnedRoboticsDataMap).containsEntry("feePaid",2055.00);
         }
