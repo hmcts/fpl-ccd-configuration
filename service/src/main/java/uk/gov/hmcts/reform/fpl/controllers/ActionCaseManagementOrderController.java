@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.DATE_OF_ISSUE;
@@ -112,7 +113,7 @@ public class ActionCaseManagementOrderController {
 
         if (issuingOrderBeforeHearingDate(orderAction, order.getId(), hearingDetails)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(List.of(HEARING_NOT_COMPLETED.getValue()))
+                .errors(singletonList(HEARING_NOT_COMPLETED.getValue()))
                 .build();
         }
 

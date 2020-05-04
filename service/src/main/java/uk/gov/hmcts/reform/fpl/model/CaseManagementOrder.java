@@ -23,16 +23,17 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseManagementOrder implements IssuableOrder {
-    private DocumentReference orderDoc;
     private final String hearingDate;
     private final UUID id;
     private final List<Element<Direction>> directions;
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;
     private final CMOStatus status;
+    private final String dateOfIssue;
+
     private OrderAction action;
     private NextHearing nextHearing;
-    private final String dateOfIssue;
+    private DocumentReference orderDoc;
 
     @JsonIgnore
     public boolean isSealed() {
