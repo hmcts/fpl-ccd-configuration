@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.util.List;
 import java.util.UUID;
@@ -101,9 +102,9 @@ class CaseManagementOrderTest {
         UUID id = UUID.randomUUID();
         String date = "22/01/01";
 
-        HearingDateDynamicElement element = HearingDateDynamicElement.builder()
-            .id(id)
-            .date(date)
+        DynamicListElement element = DynamicListElement.builder()
+            .code(id)
+            .label(date)
             .build();
 
         order.setNextHearingFromDynamicElement(element);

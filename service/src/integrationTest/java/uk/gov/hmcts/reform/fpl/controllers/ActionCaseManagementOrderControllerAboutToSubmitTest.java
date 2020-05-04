@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,10 +27,10 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -60,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecita
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -70,9 +70,6 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     private static final UUID ID = randomUUID();
 
     private CaseDetails populatedCaseDetails;
-
-    @Autowired
-    private DraftCMOService draftCMOService;
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
@@ -109,7 +106,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(-1),
                 CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
                 ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
-                NEXT_HEARING_DATE_LIST.getKey(), hearingDateList()));
+                NEXT_HEARING_DATE_LIST.getKey(), getDynamicList()));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
@@ -183,7 +180,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 .build())
             .nextHearing(NextHearing.builder()
                 .id(ID)
-                .date(now().toString())
+                .date(formatLocalDateToMediumStyle(0))
                 .build())
             .status(SEND_TO_JUDGE)
             .build();
@@ -218,15 +215,20 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
             .build());
     }
 
-    private DynamicList hearingDateList() {
-        DynamicList dynamicHearingDates = draftCMOService
-            .buildDynamicListFromHearingDetails(hearingBookingWithStartDatePlus(0));
-
-        dynamicHearingDates.setValue(DynamicListElement.builder()
+    private DynamicList getDynamicList() {
+        DynamicListElement listElement = DynamicListElement.builder()
+            .label(formatLocalDateToMediumStyle(0))
             .code(ID)
-            .label(now().toString())
-            .build());
-        return dynamicHearingDates;
+            .build();
+
+        return DynamicList.builder()
+            .listItems(List.of(listElement))
+            .value(listElement)
+            .build();
+    }
+
+    private String formatLocalDateToMediumStyle(int i) {
+        return formatLocalDateToString(dateNow().plusDays(i), FormatStyle.MEDIUM);
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {

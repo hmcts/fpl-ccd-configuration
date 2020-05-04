@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -18,7 +17,6 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -27,7 +25,6 @@ import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
@@ -37,7 +34,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement.getHearingDynamicElement;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -70,7 +66,7 @@ public class DraftCMOService {
         preparedOrder.setActionWithNullDocument(caseData.getOrderAction());
 
         if (!preparedOrder.isDraft() && caseData.getNextHearingDateList() != null) {
-            preparedOrder.setNextHearingFromDynamicElement(getHearingDynamicElement(caseData.getNextHearingDateList()));
+            preparedOrder.setNextHearingFromDynamicElement(caseData.getNextHearingDateList().getValue());
         }
 
         return preparedOrder;
@@ -82,30 +78,6 @@ public class DraftCMOService {
         keysToRemove.forEach(caseData::remove);
     }
 
-    public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
-        List<HearingDateDynamicElement> hearingDates = hearingDetails
-            .stream()
-            .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
-            .map(element -> HearingDateDynamicElement.builder()
-                .id(element.getId())
-                .date(formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
-                .build())
-            .collect(toList());
-
-        return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
-    }
-
-    public DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
-                                                 CaseManagementOrder caseManagementOrder) {
-        DynamicList hearingDatesDynamic = buildDynamicListFromHearingDetails(hearingDetails);
-
-        if (isNotEmpty(caseManagementOrder)) {
-            prePopulateHearingDateSelection(hearingDetails, hearingDatesDynamic, caseManagementOrder);
-        }
-
-        return hearingDatesDynamic;
-    }
-
     public void prepareCustomDirections(CaseDetails caseDetails, CaseManagementOrder order) {
         if (!isNull(order)) {
             commonDirectionService.sortDirectionsByAssignee(order.getDirections())
@@ -115,6 +87,40 @@ public class DraftCMOService {
         }
     }
 
+    public DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearings, CaseManagementOrder order) {
+        List<DynamicListElement> values = getDateElements(hearings);
+
+        DynamicListElement selectedValue = ofNullable(order)
+            .map(x -> getPreselectedDate(values, x.getId()))
+            .orElse(null);
+
+        return DynamicList.builder()
+            .listItems(values)
+            .value(selectedValue)
+            .build();
+    }
+
+    private List<DynamicListElement> getDateElements(List<Element<HearingBooking>> hearings) {
+        return hearings.stream()
+            .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
+            .map(this::buildDynamicListElement)
+            .collect(toList());
+    }
+
+    private DynamicListElement buildDynamicListElement(Element<HearingBooking> element) {
+        return DynamicListElement.builder()
+            .label(formatLocalDateToString(element.getValue().getStartDate().toLocalDate(), FormatStyle.MEDIUM))
+            .code(element.getId())
+            .build();
+    }
+
+    private DynamicListElement getPreselectedDate(List<DynamicListElement> list, UUID id) {
+        return list.stream()
+            .filter(item -> item.getCode().equals(id))
+            .findFirst()
+            .orElse(DynamicListElement.builder().build());
+    }
+
     private void removeExistingCustomDirections(CaseDetails caseDetails) {
         caseDetails.getData().remove("allPartiesCustomCMO");
         caseDetails.getData().remove("localAuthorityDirectionsCustomCMO");
@@ -122,26 +128,6 @@ public class DraftCMOService {
         caseDetails.getData().remove("courtDirectionsCustomCMO");
         caseDetails.getData().remove("respondentDirectionsCustomCMO");
         caseDetails.getData().remove("otherPartiesDirectionsCustomCMO");
-    }
-
-    private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
-                                                 DynamicList hearingDatesDynamic,
-                                                 CaseManagementOrder caseManagementOrder) {
-        UUID hearingDateId = caseManagementOrder.getId();
-        // There was a previous hearing date therefore we need to remap it
-        String date = hearingDetails.stream()
-            .filter(Objects::nonNull)
-            .filter(element -> element.getId().equals(caseManagementOrder.getId()))
-            .findFirst()
-            .map(element -> formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
-            .orElse("");
-
-        DynamicListElement listElement = DynamicListElement.builder()
-            .label(date)
-            .code(hearingDateId)
-            .build();
-
-        hearingDatesDynamic.setValue(listElement);
     }
 
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
@@ -181,9 +167,5 @@ public class DraftCMOService {
             .ordinal()));
 
         return directions;
-    }
-
-    private String formatLocalDateToMediumStyle(LocalDate date) {
-        return formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }

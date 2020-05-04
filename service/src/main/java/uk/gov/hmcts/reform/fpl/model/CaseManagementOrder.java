@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 
 import java.util.HashMap;
@@ -65,11 +66,11 @@ public class CaseManagementOrder implements IssuableOrder {
     }
 
     @JsonIgnore
-    public void setNextHearingFromDynamicElement(HearingDateDynamicElement nextHearing) {
+    public void setNextHearingFromDynamicElement(DynamicListElement nextHearing) {
         if (nextHearing != null) {
             this.nextHearing = NextHearing.builder()
-                .id(nextHearing.getId())
-                .date(nextHearing.getDate())
+                .id(nextHearing.getCode())
+                .date(nextHearing.getLabel())
                 .build();
         }
     }
