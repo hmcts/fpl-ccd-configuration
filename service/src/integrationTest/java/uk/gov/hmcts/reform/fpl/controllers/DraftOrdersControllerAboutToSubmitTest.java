@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -112,6 +114,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                     .build()))
                 .put("caseLocalAuthority", "example")
                 .put("dateSubmitted", dateNow())
+                .put("applicants", getApplicant())
                 .build())
             .build();
 
@@ -224,4 +227,11 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         return wrapElements(direction.toBuilder().directionType("Direction").build());
     }
 
+    private List<Element<Applicant>> getApplicant() {
+        return wrapElements(Applicant.builder()
+            .party(ApplicantParty.builder()
+                .organisationName("")
+                .build())
+            .build());
+    }
 }
