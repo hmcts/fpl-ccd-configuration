@@ -52,7 +52,7 @@ public class CaseManagementOrderService {
         return parseLocalDateFromStringUsingFormat(caseManagementOrder.getDateOfIssue(), DATE);
     }
 
-    public CaseManagementOrder getCaseManagementOrder(CaseData caseData) {
+    public CaseManagementOrder getOrder(CaseData caseData) {
         CaseManagementOrder preparedOrder = draftCMOService.prepareCaseManagementOrder(caseData);
         CaseData updatedCaseData = caseData.toBuilder().caseManagementOrder(preparedOrder).build();
         Document document = getDocument(updatedCaseData);

@@ -116,7 +116,7 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        CaseManagementOrder preparedOrder = caseManagementOrderService.getCaseManagementOrder(caseData);
+        CaseManagementOrder preparedOrder = caseManagementOrderService.getOrder(caseData);
 
         caseDetails.getData().remove(DATE_OF_ISSUE.getKey());
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), preparedOrder);
