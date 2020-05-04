@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
     private final CommonDirectionService commonDirectionService;
+    private final Time time;
 
     public CaseManagementOrder prepareCaseManagementOrder(CaseData caseData) {
         Optional<CaseManagementOrder> caseManagementOrder = ofNullable(caseData.getCaseManagementOrder());
@@ -85,7 +87,7 @@ public class DraftCMOService {
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
-            .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
+            .filter(hearingBooking -> hearingBooking.getValue().getStartDate().isAfter(time.now()))
             .map(element -> HearingDateDynamicElement.builder()
                 .id(element.getId())
                 .date(formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
