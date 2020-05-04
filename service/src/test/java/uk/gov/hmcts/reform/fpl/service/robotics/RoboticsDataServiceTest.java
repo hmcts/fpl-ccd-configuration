@@ -493,7 +493,7 @@ public class RoboticsDataServiceTest {
     }
 
     @Nested
-    class GetFees {
+    class FeePaid {
         private CaseData.CaseDataBuilder caseDataBuilder;
 
         @BeforeEach
@@ -503,7 +503,7 @@ public class RoboticsDataServiceTest {
 
         @Test
         void shouldGetFeePaidFromCaseData() throws JsonProcessingException {
-            caseDataBuilder.amountToPay("1000.00");
+            caseDataBuilder.amountToPay("100000");
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build(), CASE_ID);
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
