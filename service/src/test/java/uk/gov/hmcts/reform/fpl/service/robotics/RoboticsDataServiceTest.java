@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.robotics;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
@@ -502,29 +501,21 @@ public class RoboticsDataServiceTest {
         }
 
         @Test
-        void shouldGetFeePaidFromCaseData() throws JsonProcessingException {
+        void shouldGetFeePaidFromCaseData() {
             caseDataBuilder.amountToPay("100000");
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build(), CASE_ID);
-            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-            Map<String, Object> returnedRoboticsDataMap = objectMapper
-                .readValue(returnedRoboticsJson, new TypeReference<>(){});
-
-            assertThat(returnedRoboticsDataMap).containsEntry("feePaid",1000.00);
+            assertThat(roboticsData.getFeePaid()).isEqualTo(1000.00);
         }
 
         @Test
-        void shouldGetDefaultFeePaidWhenThereIsNoFeePaidInClaimData() throws JsonProcessingException {
+        void shouldGetDefaultFeePaidWhenThereIsNoFeePaidInClaimData() {
             caseDataBuilder.amountToPay("");
 
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build(), CASE_ID);
-            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-            Map<String, Object> returnedRoboticsDataMap = objectMapper
-                .readValue(returnedRoboticsJson, new TypeReference<>(){});
-
-            assertThat(returnedRoboticsDataMap).containsEntry("feePaid",2055.00);
+            assertThat(roboticsData.getFeePaid()).isEqualTo(2055.00);
         }
     }
 
