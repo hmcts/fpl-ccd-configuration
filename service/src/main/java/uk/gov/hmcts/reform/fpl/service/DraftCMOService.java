@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
     private final CommonDirectionService commonDirectionService;
+    private final Time time;
 
     public CaseManagementOrder prepareCaseManagementOrder(CaseData caseData) {
         Optional<CaseManagementOrder> caseManagementOrder = ofNullable(caseData.getCaseManagementOrder());
@@ -100,9 +102,11 @@ public class DraftCMOService {
             .build();
     }
 
+    //TODO: isAfter method in hearing booking does not filter out todays date as Time is set before LocalDate.now()
+    // is evaluated
     private List<DynamicListElement> getDateElements(List<Element<HearingBooking>> hearings) {
         return hearings.stream()
-            .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
+            .filter(hearingBooking -> hearingBooking.getValue().getStartDate().isAfter(time.now()))
             .map(this::buildDynamicListElement)
             .collect(toList());
     }
