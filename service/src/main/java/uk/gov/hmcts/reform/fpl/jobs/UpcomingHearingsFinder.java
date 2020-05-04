@@ -24,9 +24,6 @@ public class UpcomingHearingsFinder implements Job {
     @Value("${UPCOMING_HEARINGS_DAYS:2}")
     private int noticeDaysBeforeHearing = 2;
 
-    @Value("${UPCOMING_HEARINGS_RUN_ON_WORKING_DAYS_ONLY:true}")
-    private boolean runOnWorkingDaysOnly = true;
-
     @Autowired
     private CalendarService calendarService;
 
@@ -43,7 +40,7 @@ public class UpcomingHearingsFinder implements Job {
 
         LocalDate baseDate = jobExecutionContext.getScheduledFireTime().toInstant().atZone(UTC).toLocalDate();
 
-        if (runOnWorkingDaysOnly && !calendarService.isWorkingDay(baseDate)) {
+        if (!calendarService.isWorkingDay(baseDate)) {
             log.info("Job '{}' skipped on non working day", jobName);
         } else {
             LocalDate hearingDate = calendarService.getWorkingDayFrom(baseDate, noticeDaysBeforeHearing);

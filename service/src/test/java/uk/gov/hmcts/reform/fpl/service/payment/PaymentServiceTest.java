@@ -14,8 +14,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {PaymentService.class})
+@TestPropertySource(properties = {"payment.site_id=TEST_SITE_ID"})
 class PaymentServiceTest {
 
     private static final String SERVICE_AUTH_TOKEN = "servicetoken";
@@ -78,7 +79,6 @@ class PaymentServiceTest {
 
     @BeforeEach
     void setup() {
-        ReflectionTestUtils.setField(paymentService, "siteId", "TEST_SITE_ID", String.class);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
         when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
         when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any())).thenReturn("Example Local Authority");
@@ -203,7 +203,7 @@ class PaymentServiceTest {
             String responseBodyContent = "Response message";
             when(paymentApi.createCreditAccountPayment(any(), any(), any())).thenThrow(
                 new FeignException.UnprocessableEntity("",
-                    Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8),
+                    Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8),
                     responseBodyContent.getBytes()));
             CaseData caseData = CaseData.builder()
                 .caseLocalAuthority("LA")

@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.email.content.base.CasePersonalisedContentProvider;
+import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class GatekeeperEmailContentProvider extends CasePersonalisedContentProvider {
+public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration config;
 
     @Autowired
@@ -25,12 +25,20 @@ public class GatekeeperEmailContentProvider extends CasePersonalisedContentProvi
         this.config = config;
     }
 
-    public Map<String, Object> buildGatekeeperNotification(CaseDetails caseDetails, String localAuthorityCode) {
+    public NotifyGatekeeperTemplate buildGatekeeperNotification(CaseDetails caseDetails,
+                                                                String localAuthorityCode) {
+
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
-            .put("localAuthority", config.getLocalAuthorityName(localAuthorityCode))
-            .build();
+        NotifyGatekeeperTemplate template = super.buildNotifyTemplate(new NotifyGatekeeperTemplate(),
+            caseDetails.getId(),
+            caseData.getOrders(),
+            caseData.getHearing(),
+            caseData.getRespondents1());
+
+        template.setLocalAuthority(config.getLocalAuthorityName(localAuthorityCode));
+
+        return template;
     }
 
     public String buildRecipientsLabel(List<String> emailList, String recipientEmail) {

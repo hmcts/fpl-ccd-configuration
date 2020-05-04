@@ -8,12 +8,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.email.content.base.CasePersonalisedContentProvider;
-
-import java.util.Map;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
-public class HmctsEmailContentProvider extends CasePersonalisedContentProvider {
+public class HmctsEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
@@ -27,12 +26,19 @@ public class HmctsEmailContentProvider extends CasePersonalisedContentProvider {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
-    public Map<String, Object> buildHmctsSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
+    public SubmitCaseHmctsTemplate buildHmctsSubmissionNotification(CaseDetails caseDetails,
+                                                                    String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
-            .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
-            .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .build();
+        SubmitCaseHmctsTemplate template = super.buildNotifyTemplate(new SubmitCaseHmctsTemplate(),
+            caseDetails.getId(),
+            caseData.getOrders(),
+            caseData.getHearing(),
+            caseData.getRespondents1());
+
+        template.setCourt(hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName());
+        template.setLocalAuthority(localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode));
+
+        return template;
     }
 }
