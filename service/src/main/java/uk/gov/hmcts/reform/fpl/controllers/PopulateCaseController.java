@@ -1,51 +1,43 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.service.PopulateCaseService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.State.PREPARE_FOR_HEARING;
 
 
 @Api
 @RestController
-@RequestMapping("/callback/populate-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PopulateCaseController {
+    private static final String POPULATE_EVENT_ID_TEMPLATE = "populateCase-%s";
+    private final CoreCaseDataService coreCaseDataService;
     private final PopulateCaseService populateCaseService;
 
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) {
-        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
-        String filename = data.get("caseDataFilename").toString();
-
-        try {
-            data.putAll(populateCaseService.getFileData(filename));
-        } catch (IllegalArgumentException | JsonProcessingException e) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .errors(List.of(String.format("Could not read file %s", filename)))
-                .build();
-        }
-
+    @PostMapping("/populateCase/{caseId}/{newState}")
+    public void populateCase(@PathVariable("caseId") Long caseId, @PathVariable("newState") State newState,
+                             @RequestBody Map<String, Object> data) {
         data.putAll(populateCaseService.getTimeBasedAndDocumentData());
-        data.put("state", populateCaseService.getNewState(filename).getValue());
-        if (filename.equals("standardDirectionOrder")) {
+        if (PREPARE_FOR_HEARING.equals(newState)) {
             data.put("standardDirectionOrder", populateCaseService.getUpdatedSDOData(data));
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        coreCaseDataService.triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            caseId,
+            String.format(POPULATE_EVENT_ID_TEMPLATE, newState.getValue()),
+            data);
     }
 }
