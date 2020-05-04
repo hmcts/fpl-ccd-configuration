@@ -1,9 +1,6 @@
 tags:
   fpl-ccd-stack: false
 
-idam-pr:
-  enabled: false
-
 java:
   aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest
