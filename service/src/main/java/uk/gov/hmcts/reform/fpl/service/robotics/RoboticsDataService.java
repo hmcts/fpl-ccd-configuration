@@ -58,7 +58,7 @@ public class RoboticsDataService {
         return RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
-            .feePaid(fromCCDMoneyGBP(caseData.getAmountToPay()).map(BigDecimal::doubleValue).orElse(2055.00))
+            .feePaid(fromCCDMoneyGBP(caseData.getAmountToPay()).orElse(BigDecimal.valueOf(2055.00)))
             .children(populateChildren(caseData.getAllChildren()))
             .respondents(populateRespondents(caseData.getRespondents1()))
             .solicitor(populateSolicitor(caseData.getSolicitor()))
