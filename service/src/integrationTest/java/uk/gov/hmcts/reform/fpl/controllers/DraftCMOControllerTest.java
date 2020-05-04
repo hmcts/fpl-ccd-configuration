@@ -47,6 +47,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.time.format.DateTimeFormatter.ofLocalizedDate;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -75,8 +76,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long CASE_ID = 1L;
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-        .localizedBy(Locale.UK);
+    private static final DateTimeFormatter FORMATTER = ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK);
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -132,8 +132,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(callbackResponse.getData()).containsKey(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
         assertThat(getDocumentReference(callbackResponse)).isEqualTo(expectedDocument());
-        //need to pass in captor for draft image string
-        assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplateData(captor.getValue()));
+        assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplateData());
     }
 
     @Test
@@ -193,10 +192,12 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
             CaseManagementOrder.builder().build());
 
+        caseDetails.getData().put("dateOfIssue", dateNow());
+
         return caseDetails;
     }
 
-    private DocmosisCaseManagementOrder expectedTemplateData(DocmosisCaseManagementOrder order) {
+    private DocmosisCaseManagementOrder expectedTemplateData() {
         return DocmosisCaseManagementOrder.builder()
             .familyManCaseNumber("12345")
             .courtName("Family Court")
@@ -209,8 +210,8 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .children(expectedChildren())
             .applicantName("London Borough of Southwark")
             .hearingBooking(expectedHearing())
-            .crest(order.getCrest())
-            .draftbackground(order.getDraftbackground())
+            .crest("[userImage:crest.png]")
+            .draftbackground("[userImage:draft-watermark.png]")
             .recitals(expectedRecitals())
             .recitalsProvided(true)
             .directions(expectedDirections())
