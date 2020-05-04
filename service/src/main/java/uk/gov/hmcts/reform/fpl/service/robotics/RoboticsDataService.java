@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Respondent;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.model.robotics.Solicitor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -57,8 +58,7 @@ public class RoboticsDataService {
         return RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
-            .feePaid(fromCCDMoneyGBP(caseData.getAmountToPay()).isPresent()
-                ? fromCCDMoneyGBP(caseData.getAmountToPay()).get().doubleValue() : 2055.00)
+            .feePaid(fromCCDMoneyGBP(caseData.getAmountToPay()).map(BigDecimal::doubleValue).orElse(2055.00))
             .children(populateChildren(caseData.getAllChildren()))
             .respondents(populateRespondents(caseData.getRespondents1()))
             .solicitor(populateSolicitor(caseData.getSolicitor()))
