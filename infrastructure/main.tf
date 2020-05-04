@@ -2,6 +2,10 @@ provider "azurerm" {
   version = "=1.44.0"
 }
 
+locals {
+  alert_resource_group_name = ${var.product}-${var.component}-${var.env}
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
   location = "${var.location}"
@@ -54,39 +58,39 @@ module "fpl-scheduler-db" {
   subscription       = "${var.subscription}"
 }
 
-data "azurerm_key_vault_secret" "fpla_support_email_secret" {
-  name      = "fpla-support-email"
+data "azurerm_key_vault_secret" "${var.product}_support_email_secret" {
+  name      = "${var.product}-support-email"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
-module "fpla-action-group" {
+module "${var.product}-action-group" {
   source                 = "git@github.com:hmcts/cnp-module-action-group"
   location               = "global"
   env                    = "${var.env}"
-  resourcegroup_name     = "fpl-case-service-${var.env}"
-  action_group_name      = "fpla-support"
-  short_name             = "fpla-support"
-  email_receiver_name    = "FPLA Support Mailing List"
-  email_receiver_address = "${data.azurerm_key_vault_secret.fpla_support_email_secret.value}"
+  resourcegroup_name     = "${local.alert_resource_group_name}"
+  action_group_name      = "${var.product}-support"
+  short_name             = "${var.product}-support"
+  email_receiver_name    = "FPL Support Mailing List"
+  email_receiver_address = "${data.azurerm_key_vault_secret.fpl_support_email_secret.value}"
 }
 
-module "fpla-performance-alert" {
+module "${var.product}-performance-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = "${var.appinsights_location}"
 
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
 
-  alert_name                 = "fpla-bad-requests"
-  alert_desc                 = "Web pages took longer than 1 seconds to load"
-  app_insights_query         = "requests | where url !contains '/health' | where success == 'True' | where duration > 1000"
+  alert_name                 = "${var.product}-performance-alert"
+  alert_desc                 = "Requests that took longer than 1 seconds to complete"
+  app_insights_query         = "requests | where url !contains '/health' and success == 'True' and duration > 1000 | project timestamp, name, url, duration | sort by duration nulls last"
   custom_email_subject       = "Alert: performance errors"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
   severity_level             = "2"
-  action_group_name          = "fpla-support"
+  action_group_name          = "${var.product}-support"
   trigger_threshold_operator = "GreaterThan"
   trigger_threshold          = 5
-  resourcegroup_name         = "fpl-case-service-${var.env}"
+  resourcegroup_name         = "${local.alert_resource_group_name}"
 }
 
 resource "azurerm_key_vault_secret" "scheduler-db-password" {
