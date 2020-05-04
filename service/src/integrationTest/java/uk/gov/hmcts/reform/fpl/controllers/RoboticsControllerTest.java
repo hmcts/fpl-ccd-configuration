@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -82,14 +84,16 @@ public class RoboticsControllerTest {
         verify(emailService, never()).sendEmail(any(), any());
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"Open", "Deleted"})
     @WithMockUser(authorities = "caseworker-publiclaw-systemupdate")
-    void resendCaseDataNotificationShouldNotResendNotificationWhenCaseFoundInOpenState() throws Exception {
+    void resendCaseDataNotificationShouldNotResendNotificationWhenCaseFoundInExcludedState(final String state)
+        throws Exception {
         given(authTokenGenerator.generate())
             .willReturn(SERVICE_AUTH_TOKEN);
 
         given(coreCaseDataApi.getCase(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID))
-            .willReturn(expectedCaseDetailsWithState("Open"));
+            .willReturn(expectedCaseDetailsWithState(state));
 
         assertThat(postToUrl(CASE_ID).getResponse().getStatus())
             .isEqualTo(BAD_REQUEST.value());

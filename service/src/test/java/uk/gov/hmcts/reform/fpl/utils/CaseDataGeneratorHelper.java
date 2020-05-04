@@ -61,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -161,7 +162,7 @@ public class CaseDataGeneratorHelper {
     public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
         return Order.builder()
             .dateOfIssue("29 November 2019")
-            .directions(ElementUtils.wrapElements(Direction.builder()
+            .directions(wrapElements(Direction.builder()
                     .directionType("Test SDO type 1")
                     .directionText("Test body 1")
                     .directionNeeded(YES.getValue())
@@ -174,6 +175,9 @@ public class CaseDataGeneratorHelper {
                     .directionNeeded(YES.getValue())
                     .dateToBeCompletedBy(today)
                     .assignee(ALL_PARTIES)
+                    .build(),
+                Direction.builder()
+                    .directionNeeded(NO.getValue())
                     .build()
             ))
             .orderStatus(status)
@@ -412,6 +416,7 @@ public class CaseDataGeneratorHelper {
             .children1(createPopulatedChildren(dateTime.toLocalDate()))
             .hearingDetails(createHearingBookingsFromInitialDate(dateTime))
             .dateSubmitted(LocalDate.now())
+            .dateOfIssue(LocalDate.now())
             .respondents1(respondents)
             .others(others)
             .solicitor(createSolicitor())

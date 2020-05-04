@@ -1,26 +1,30 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Service
 public class CourtLevelAllocationService {
     public Allocation createDecision(CaseData caseData) {
         Allocation.AllocationBuilder decisionBuilder =
             populateDecision(caseData.getAllocationDecision());
-        decisionBuilder.allocationProposalPresent(checkIfAllocationIsPresent(caseData.getAllocationProposal()));
+        decisionBuilder.allocationProposalPresent(
+            YesNo.from(hasAllocationPresent(caseData.getAllocationProposal())).getValue());
 
-        if (checkIfAllocationIsPresent(caseData.getAllocationProposal()).equals("Yes")) {
-            if (checkIfAllocationIsPresent(caseData.getAllocationDecision()).equals("Yes")) {
+        if (hasAllocationPresent(caseData.getAllocationProposal())) {
+            if (hasAllocationPresent(caseData.getAllocationDecision())) {
                 if (caseData.getAllocationProposal().getProposal()
                     .equals(caseData.getAllocationDecision().getProposal())) {
-                    decisionBuilder.judgeLevelRadio("Yes");
+                    decisionBuilder.judgeLevelRadio(YES.getValue());
                 } else {
-                    decisionBuilder.judgeLevelRadio("No");
+                    decisionBuilder.judgeLevelRadio(NO.getValue());
                 }
             } else {
                 decisionBuilder.judgeLevelRadio(null);
@@ -36,8 +40,8 @@ public class CourtLevelAllocationService {
             .orElse(Allocation.builder());
     }
 
-    private String checkIfAllocationIsPresent(Allocation data) {
-        return data != null && isNotEmpty(data.getProposal()) ? "Yes" : "No";
+    private boolean hasAllocationPresent(Allocation data) {
+        return data != null && isNotEmpty(data.getProposal());
     }
 
     public Allocation setAllocationDecisionIfNull(CaseData caseData) {
