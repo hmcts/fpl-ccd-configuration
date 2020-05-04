@@ -92,7 +92,7 @@ public class DraftCMOService {
 
         DynamicListElement selectedValue = ofNullable(order)
             .map(x -> getPreselectedDate(values, x.getId()))
-            .orElse(null);
+            .orElse(DynamicListElement.EMPTY);
 
         return DynamicList.builder()
             .listItems(values)
@@ -118,7 +118,7 @@ public class DraftCMOService {
         return list.stream()
             .filter(item -> item.getCode().equals(id))
             .findFirst()
-            .orElse(DynamicListElement.builder().build());
+            .orElse(DynamicListElement.EMPTY);
     }
 
     private void removeExistingCustomDirections(CaseDetails caseDetails) {
