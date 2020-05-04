@@ -163,6 +163,15 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
         assertThat(caseData.getCaseManagementOrder()).isNull();
     }
 
+    @Test
+    void shouldAllowJudiciaryToCompleteActionEventWhenNoCaseManagementOrder() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
+
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getCaseManagementOrder()).isNull();
+    }
+
     private CaseManagementOrder expectedCaseManagementOrder() {
         return CaseManagementOrder.builder()
             .orderDoc(buildFromDocument(document()))

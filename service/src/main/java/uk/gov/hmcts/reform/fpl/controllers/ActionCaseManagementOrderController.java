@@ -100,7 +100,7 @@ public class ActionCaseManagementOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseManagementOrder order = caseData.getCaseManagementOrder();
 
-        if (!order.isInJudgeReview()) {
+        if (order == null || !order.isInJudgeReview()) {
             caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
