@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
-import uk.gov.hmcts.reform.fpl.enums.NextHearingType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.UUID;

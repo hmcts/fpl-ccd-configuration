@@ -11,13 +11,13 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
-import uk.gov.hmcts.reform.fpl.config.TimeConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -33,8 +33,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 //TODO: this will be slightly improved when 1480 is merged to master
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    TimeConfiguration.class, CaseManagementOrderService.class, HearingBookingService.class,
-    DocumentService.class, DraftCMOService.class, CommonDirectionService.class, CommonCaseDataExtractionService.class,
+    FixedTimeConfiguration.class, CaseManagementOrderService.class, HearingBookingService.class,
+    DocumentService.class, DraftCMOService.class, CommonDirectionService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, StandardDirectionOrderGenerationService.class, CaseManagementOrderGenerationService.class,
     JsonOrdersLookupService.class, JacksonAutoConfiguration.class, HearingVenueLookUpService.class,
     DocmosisDocumentGeneratorService.class, RestTemplate.class, DocmosisConfiguration.class, UploadDocumentService.class
