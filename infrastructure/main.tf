@@ -2,6 +2,10 @@ provider "azurerm" {
   version = "=1.44.0"
 }
 
+locals {
+  alert_resource_group_name = ${var.product}-${var.component}-${var.env}
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
   location = "${var.location}"
@@ -57,10 +61,6 @@ module "fpl-scheduler-db" {
 data "azurerm_key_vault_secret" "${var.product}_support_email_secret" {
   name      = "${var.product}-support-email"
   vault_uri = "${module.key-vault.key_vault_uri}"
-}
-
-locals {
-  alert_resource_group_name = ${var.product}-${var.component}-${var.env}
 }
 
 module "${var.product}-action-group" {
