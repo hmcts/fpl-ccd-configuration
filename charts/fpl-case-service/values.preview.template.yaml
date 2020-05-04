@@ -1,17 +1,5 @@
 tags:
   fpl-ccd-stack: true
-  ccd-idam-pr: true
-
-idam-pr:
-  enabled: true
-  releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
-  redirect_uris:
-    CCD:
-      - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
-  cpuRequests: 25m
-  memoryRequests: 8Mi
-  cpuLimits: 50m
-  memoryLimits: 16Mi
 
 java:
   image: ${IMAGE_NAME}
@@ -61,28 +49,21 @@ ccd:
     s2s:
       enabled: false
 
-  ingressHost: ${SERVICE_FQDN}
-  ingressIP: ${INGRESS_IP}
-  consulIP: ${CONSUL_LB_IP}
-  cpuRequests: 250m
-  imagePullPolicy: Always
-
   global:
-    idamApiUrl: https://idam-api.aat.platform.hmcts.net
-    idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
-    s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
     ccdCaseManagementWebIngress: case-management-web-${SERVICE_FQDN}
     ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
     ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
     ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
-    devMode: true
+    dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
+    idamApiUrl: https://idam-api.aat.platform.hmcts.net
+    idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
+    s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
   ccd-api-gateway-web:
     nodejs:
       consulIP: ${CONSUL_LB_IP}
       environment:
-        PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
         IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
         IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
@@ -94,13 +75,19 @@ ccd:
         prefix: gateway
         primaryIngressHost: ${SERVICE_FQDN}
   ccd-case-management-web:
+    idam-pr:
+      cpuLimits: 50m
+      cpuRequests: 25m
+      enabled: true
+      memoryLimits: 16Mi
+      memoryRequests: 8Mi
+      releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     nodejs:
       consulIP: ${CONSUL_LB_IP}
       environment:
-        NODE_TLS_REJECT_UNAUTHORIZED: 0
-        DM_URL: https://gateway-${SERVICE_FQDN}/documents
-        DM_URL_REMOTE: https?://(gateway-${SERVICE_FQDN}:443|dm-store-aat.service.core-compute-aat.internal)/documents
         CCD_ACTIVITY_URL: null
+        DM_URL_REMOTE: https?://(gateway-${SERVICE_FQDN}:443|dm-store-aat.service.core-compute-aat.internal)/documents
+        NODE_TLS_REJECT_UNAUTHORIZED: 0
       ingressHost: case-management-web-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
       registerAdditionalDns:
@@ -109,16 +96,21 @@ ccd:
         primaryIngressHost: ${SERVICE_FQDN}
   ccd-data-store-api:
     java:
+      environment:
+        DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
       keyVaults:
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-definition-store-api:
     java:
       environment:
-        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+        DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
       keyVaults:
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
   ccd-user-profile-api:
     java:
+      enviroment:
+        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults:
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}

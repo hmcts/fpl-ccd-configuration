@@ -7,8 +7,3 @@ dependencies:
     repository: '@hmctspublic'
     tags:
       - fpl-ccd-stack
-  - name: idam-pr
-    version: ~2.2.5
-    repository: '@hmctspublic'
-    tags:
-      - ccd-idam-pr
