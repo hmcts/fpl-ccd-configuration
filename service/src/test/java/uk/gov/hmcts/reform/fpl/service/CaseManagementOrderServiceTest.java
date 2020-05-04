@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -34,7 +33,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
@@ -45,9 +43,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -97,33 +92,6 @@ class CaseManagementOrderServiceTest {
 
     @Autowired
     private CaseManagementOrderService service;
-
-    @Test
-    void shouldExtractExpectedMapFieldsWhenAllDataIsPresent() {
-        Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(CaseManagementOrder.builder()
-            .schedule(Schedule.builder().build())
-            .recitals(emptyList())
-            .action(OrderAction.builder().build())
-            .build());
-
-        assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
-    }
-
-    @Test
-    void shouldExtractMapFieldsWhenPartialDataIsPresent() {
-        Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(CaseManagementOrder.builder()
-            .schedule(Schedule.builder().build())
-            .build());
-
-        assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
-    }
-
-    @Test
-    void shouldExtractMapFieldsWhenCaseManagementOrderIsNull() {
-        Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(null);
-
-        assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
-    }
 
     @Test
     void shouldGetCMOIssueDate() {

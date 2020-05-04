@@ -12,11 +12,16 @@ import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Data
@@ -67,5 +72,24 @@ public class CaseManagementOrder implements IssuableOrder {
                 .date(nextHearing.getDate())
                 .build();
         }
+    }
+
+    @JsonIgnore
+    public Map<String, Object> getCCDFields() {
+        Map<String, Object> data = new HashMap<>();
+
+        if (schedule != null) {
+            data.put(SCHEDULE.getKey(), schedule);
+        }
+
+        if (recitals != null) {
+            data.put(RECITALS.getKey(), recitals);
+        }
+
+        if (action != null) {
+            data.put(ORDER_ACTION.getKey(), action);
+        }
+
+        return data;
     }
 }

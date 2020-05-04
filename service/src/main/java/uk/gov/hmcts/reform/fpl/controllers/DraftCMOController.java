@@ -28,6 +28,7 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
@@ -49,10 +50,15 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+        draftCMOService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
-        caseDetails.getData().putAll(draftCMOService.extractCaseManagementOrderVariables(
-            caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
+        if (caseManagementOrder != null) {
+            caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
+        }
+
+        caseDetails.getData().put(HEARING_DATE_LIST.getKey(), draftCMOService
+            .getHearingDateDynamicList(caseData.getHearingDetails(), caseManagementOrder));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
