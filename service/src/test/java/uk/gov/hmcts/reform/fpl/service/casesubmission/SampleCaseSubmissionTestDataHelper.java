@@ -18,9 +18,11 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import java.util.List;
 
 import static java.time.LocalDate.now;
+import static java.time.LocalDate.parse;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.List.of;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisplay;
 
 public class SampleCaseSubmissionTestDataHelper {
 
@@ -64,7 +66,7 @@ public class SampleCaseSubmissionTestDataHelper {
     private static List<DocmosisRespondent> expectedDocmosisRespondents() {
         return of(DocmosisRespondent.builder()
                 .name("Paul Smith")
-                .age("75 years old")
+                .age(formatAgeDisplay(parse("1944-05-02")))
                 .gender("Male")
                 .dateOfBirth("2 May 1944")
                 .placeOfBirth("Crewe")
@@ -77,7 +79,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build(),
             DocmosisRespondent.builder()
                 .name("James Smith")
-                .age("87 years old")
+                .age(formatAgeDisplay(parse("1933-04-02")))
                 .gender("Unknown")
                 .dateOfBirth("2 April 1933")
                 .placeOfBirth("Newry")
@@ -90,7 +92,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build(),
             DocmosisRespondent.builder()
                 .name("An Other")
-                .age("87 years old")
+                .age(formatAgeDisplay(parse("1933-04-02")))
                 .gender("Male")
                 .dateOfBirth("2 April 1933")
                 .placeOfBirth("Reading")
@@ -125,7 +127,7 @@ public class SampleCaseSubmissionTestDataHelper {
     private static List<DocmosisChild> expectedDocmosisChildren() {
         return of(DocmosisChild.builder()
                 .name("Tom Reeves")
-                .age("1 year old")
+                .age(formatAgeDisplay(parse("2018-06-15")))
                 .gender("Boy")
                 .dateOfBirth("15 June 2018")
                 .livingSituation("Living with respondents\nConfidential\nDate this began: 8 November 2018")
@@ -145,7 +147,7 @@ public class SampleCaseSubmissionTestDataHelper {
                 .build(),
             DocmosisChild.builder()
                 .name("Sarah Reeves")
-                .age("18 years old")
+                .age(formatAgeDisplay(parse("2002-02-02")))
                 .gender("Girl")
                 .dateOfBirth("2 February 2002")
                 .livingSituation("Living with respondents\nCarnegie House\nCentral Milton Keynes\nMilton Keynes"
