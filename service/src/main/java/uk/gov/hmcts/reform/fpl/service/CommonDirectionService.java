@@ -238,6 +238,22 @@ public class CommonDirectionService {
             .collect(toList());
     }
 
+    /**
+     * Removes directions where directionNeeded is set to No. Does not remove custom directions.
+     *
+     * @param directions any list of directions.
+     * @return a list of directions that are marked as needed.
+     */
+    public List<Element<Direction>> removeUnnecessaryDirections(List<Element<Direction>> directions) {
+        return directions.stream()
+            .filter(this::removeDirection)
+            .collect(toList());
+    }
+
+    private boolean removeDirection(Element<Direction> element) {
+        return "Yes".equals(element.getValue().getDirectionNeeded()) || "Yes".equals(element.getValue().getCustom());
+    }
+
     private String booleanToYesOrNo(boolean value) {
         return value ? "Yes" : "No";
     }

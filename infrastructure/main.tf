@@ -58,12 +58,12 @@ module "fpl-scheduler-db" {
   subscription       = "${var.subscription}"
 }
 
-data "azurerm_key_vault_secret" "${var.product}_support_email_secret" {
+data "azurerm_key_vault_secret" "fpl_support_email_secret" {
   name      = "${var.product}-support-email"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
-module "${var.product}-action-group" {
+module "fpl-action-group" {
   source                 = "git@github.com:hmcts/cnp-module-action-group"
   location               = "global"
   env                    = "${var.env}"
@@ -74,7 +74,7 @@ module "${var.product}-action-group" {
   email_receiver_address = "${data.azurerm_key_vault_secret.fpl_support_email_secret.value}"
 }
 
-module "${var.product}-performance-alert" {
+module "fpl-performance-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = "${var.appinsights_location}"
 
