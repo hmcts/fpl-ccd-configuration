@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,6 +62,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Data
 @Builder(toBuilder = true)
@@ -82,8 +84,7 @@ public class CaseData {
     private final GroundsForEPO groundsForEPO;
     @NotNull(message = "You need to add details to applicant")
     @Valid
-    private final List<@NotNull(message = "You need to add details to applicant")
-        Element<Applicant>> applicants;
+    private final List<@NotNull(message = "You need to add details to applicant") Element<Applicant>> applicants;
 
     @Valid
     @NotNull(message = "You need to add details to respondents")
@@ -339,4 +340,9 @@ public class CaseData {
     private final String caseNote;
     private final List<Element<CaseNote>> caseNotes;
     private final List<Element<EmailAddress>> gatekeeperEmails;
+
+    @JsonIgnore
+    public String getComplianceDeadline() {
+        return formatLocalDateToString(dateSubmitted.plusWeeks(26), FormatStyle.LONG);
+    }
 }
