@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 locals {
-  alert_resource_group_name = ${var.product}-${var.component}-${var.env}
+  alert_resource_group_name = "${var.product}-${var.component}-${var.env}"
 }
 
 resource "azurerm_resource_group" "rg" {
