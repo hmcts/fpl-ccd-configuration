@@ -10,9 +10,12 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NextHearing;
+import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
@@ -33,14 +36,18 @@ import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -145,16 +152,22 @@ class DraftCMOServiceTest {
         );
 
         caseData.put(HEARING_DATE_LIST.getKey(), getDynamicList());
+        caseData.put(NEXT_HEARING_DATE_LIST.getKey(), getDynamicList());
+        caseData.put(ORDER_ACTION.getKey(), baseOrderActionWithType().document(buildFromDocument(document())).build());
 
         CaseManagementOrder caseManagementOrder = service.prepareCaseManagementOrder(
             mapper.convertValue(caseData, CaseData.class));
 
-        assertThat(caseManagementOrder).isNotNull()
-            .extracting("id", "hearingDate").containsExactly(
-            fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
-            formatLocalDateToMediumStyle(5));
-
-        assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
+        assertThat(caseManagementOrder).isEqualToComparingFieldByField(CaseManagementOrder.builder()
+            .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+            .hearingDate(formatLocalDateToMediumStyle(5))
+            .directions(createCmoDirections())
+            .action(baseOrderActionWithType().build())
+            .nextHearing(NextHearing.builder()
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                .date(formatLocalDateToMediumStyle(5))
+                .build())
+            .build());
     }
 
     @Test
@@ -213,6 +226,10 @@ class DraftCMOServiceTest {
 
     private String formatLocalDateToMediumStyle(int i) {
         return formatLocalDateToString(time.now().plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+    }
+
+    private OrderAction.OrderActionBuilder baseOrderActionWithType() {
+        return OrderAction.builder().type(ActionType.SEND_TO_ALL_PARTIES);
     }
 
     @Nested

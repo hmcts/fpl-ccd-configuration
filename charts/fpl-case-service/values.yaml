@@ -1,6 +1,5 @@
 tags:
   fpl-ccd-stack: false
-  ccd-idam-pr: false
 
 java:
   aadIdentityName: family-public-law

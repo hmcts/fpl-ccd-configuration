@@ -70,8 +70,7 @@ public class ActionCaseManagementOrderController {
 
         caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
         caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
-        caseDetails.getData().put(DATE_OF_ISSUE.getKey(),
-            caseManagementOrderService.getIssuedDate(caseManagementOrder));
+        caseDetails.getData().put(DATE_OF_ISSUE.getKey(), caseManagementOrder.getDateOfIssueAsDate());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

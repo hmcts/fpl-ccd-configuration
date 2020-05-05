@@ -189,7 +189,8 @@ public class DraftOrdersController {
 
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(commonDirectionService.combineAllDirections(caseData))
+                .directions(commonDirectionService.removeUnnecessaryDirections(
+                    commonDirectionService.combineAllDirections(caseData)))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
