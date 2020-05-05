@@ -8,12 +8,14 @@ def type = "java"
 def product = "fpl"
 def component = "case-service"
 AppPipelineConfig pipelineConf;
+
 def serviceSecrets = [
   'fpl-${env}': [
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD')
   ]
 ]
+
 def otherSecrets = [
   // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flex volume for secrets
   's2s-${env}': [
@@ -30,6 +32,7 @@ def otherSecrets = [
     secret('ccd-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
   ]
 ]
+
 static Map<String, Object> secret(String secretName, String envVariable) {
   [ $class: 'AzureKeyVaultSecret',
     secretType: 'Secret',
@@ -64,6 +67,7 @@ def uploadCoreCaseDataDefinitions(env) {
   """
   }
 }
+
 withPipeline(type, product, component) {
   pipelineConf = config;
   onMaster {
@@ -76,28 +80,37 @@ withPipeline(type, product, component) {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
   disableLegacyDeployment()
+  
   enableAksStagingDeployment()
   installCharts()
+  enableSlackNotifications('#fpla-tech')
+  
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
+  
   after('checkout') {
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
         try {
           sh '''
             set -e
+            
             git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
+            
             git fetch origin demo:demo
             git push --force origin HEAD:demo
           '''
         } catch (err) {
+          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update demo branch'
         }
       }
     }
   }
+  
   before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
   }
+  
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
@@ -106,34 +119,44 @@ withPipeline(type, product, component) {
     """
     env.URL="https://case-management-web-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
   }
+  
   after('smoketest:saat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
+  
   after('smoketest:aat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
+  
   after('smoketest:demo-staging') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
+  
   after('smoketest:demo') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
+  
   before('functionalTest:saat') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
+  
   before('functionalTest:aat') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
+  
   before('functionalTest:demo') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
+  
   after('functionalTest:aat') {
     archiveCoreCaseDataDefinitions('prod')
   }
+  
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     publishToCosmosDb(this, params, 'dbs/jenkins/colls/fpl-test-metrics', "${WORKSPACE}/output", 'metrics')
   }
+  
   before('buildinfra:demo') {
     def subscription = 'nonprod'
     withSubscription(subscription) {
@@ -143,6 +166,7 @@ withPipeline(type, product, component) {
       }
     }
   }
+  
   before('smoketest:aat') {
     env.URL = "https://www-ccd.aat.platform.hmcts.net"
     archiveCoreCaseDataDefinitions('aat')
