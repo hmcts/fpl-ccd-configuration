@@ -24,9 +24,6 @@ public class DocumentService {
     }
 
     private String getDocumentTitle(String draftBackground, DocmosisDocument document) {
-        if (draftBackground == null) {
-            return document.getDocumentTitle();
-        }
-        return document.getDraftDocumentTile();
+        return draftBackground == null ? document.getDocumentTitle() : document.getDraftDocumentTile();
     }
 }

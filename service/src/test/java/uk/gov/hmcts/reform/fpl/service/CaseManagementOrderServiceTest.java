@@ -3,29 +3,20 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -35,9 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -60,32 +49,22 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedu
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-//TODO: this will be slightly improved when 1480 is merged to master
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    FixedTimeConfiguration.class, CaseManagementOrderService.class, HearingBookingService.class,
-    DocumentService.class, DraftCMOService.class, CommonDirectionService.class, CaseDataExtractionService.class,
-    LookupTestConfig.class, StandardDirectionOrderGenerationService.class, CaseManagementOrderGenerationService.class,
-    JsonOrdersLookupService.class, JacksonAutoConfiguration.class, HearingVenueLookUpService.class,
-    DocmosisDocumentGeneratorService.class, RestTemplate.class, DocmosisConfiguration.class, UploadDocumentService.class
-})
+@ContextConfiguration(classes = {FixedTimeConfiguration.class, CaseManagementOrderService.class})
 class CaseManagementOrderServiceTest {
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
-    @MockBean
-    private DocumentUploadClientApi documentUploadClient;
-    @MockBean
-    private RequestData requestData;
+    private static final Document DOCUMENT = document();
+    private static final UUID ID = fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
 
     @MockBean
     private DocumentService documentService;
 
     @MockBean
     private CaseManagementOrderGenerationService templateDataService;
+
+    @MockBean
+    private DraftCMOService draftCMOService;
 
     @Autowired
     private Time time;
@@ -122,63 +101,43 @@ class CaseManagementOrderServiceTest {
     }
 
     @Test
-    void shouldGetCaseManagementOrderWhenMinimumViableData() {
-        Document document = document();
-        initMocks(document);
-
-        UUID id = randomUUID();
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(element(id, HearingBooking.builder().build())))
-            .caseManagementOrder(CaseManagementOrder.builder().id(id).build())
-            .build();
-
-        CaseManagementOrder order = service.getOrder(caseData);
-
-        assertThat(order).isEqualTo(CaseManagementOrder.builder()
-            .id(id)
-            .directions(emptyList())
-            .orderDoc(buildFromDocument(document))
-            .build());
-    }
-
-    @Test
-    void shouldGetCaseManagementOrderWhenFullData() {
-        Document document = document();
-        initMocks(document);
+    void shouldGetCaseManagementOrderWithDocumentReference() {
+        initMocks();
 
         LocalDateTime dateTime = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
-        UUID id = fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
         CaseManagementOrder order = service.getOrder(buildCaseDataForCMODocmosisGeneration(dateTime));
 
-        assertThat(order).isEqualToComparingFieldByField(expectedCaseManagementOrder(document, id));
+        assertThat(order).isEqualToComparingFieldByField(expectedCaseManagementOrder());
     }
 
     @Test
     void shouldGetDocumentObjectWhenCalled() {
-        Document document = document();
-        initMocks(document);
+        initMocks();
 
-        assertThat(service.getDocument(buildCaseDataForCMODocmosisGeneration(time.now()))).isEqualTo(document);
+        assertThat(service.getDocument(buildCaseDataForCMODocmosisGeneration(time.now()))).isEqualTo(DOCUMENT);
     }
 
-    private void initMocks(Document document) {
+    private void initMocks() {
         DocmosisOrder order = any(DocmosisOrder.class);
-        given(documentService.getDocumentFromDocmosisOrderTemplate(order, eq(CMO))).willReturn(document);
+        given(documentService.getDocumentFromDocmosisOrderTemplate(order, eq(CMO))).willReturn(DOCUMENT);
         given(templateDataService.getTemplateData(any())).willReturn(DocmosisCaseManagementOrder.builder().build());
+        given(draftCMOService.prepareCaseManagementOrder(any())).willReturn(baseOrder().build());
     }
 
-    private CaseManagementOrder expectedCaseManagementOrder(Document document, UUID id) {
+    private CaseManagementOrder expectedCaseManagementOrder() {
+        return baseOrder().orderDoc(buildFromDocument(DOCUMENT)).build();
+    }
+
+    private CaseManagementOrder.CaseManagementOrderBuilder baseOrder() {
         return CaseManagementOrder.builder()
-            .id(id)
+            .id(ID)
             .hearingDate("6 Jan 2099")
             .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
             .directions(expectedDirections())
             .schedule(createSchedule(true))
             .recitals(createRecitals())
-            .orderDoc(buildFromDocument(document))
             .action(OrderAction.builder().type(SEND_TO_ALL_PARTIES).build())
-            .nextHearing(NextHearing.builder().id(id).build())
-            .build();
+            .nextHearing(NextHearing.builder().id(CaseManagementOrderServiceTest.ID).build());
     }
 
     private List<Element<Direction>> expectedDirections() {
