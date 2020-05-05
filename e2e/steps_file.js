@@ -190,6 +190,7 @@ module.exports = function () {
     },
 
     async populateCaseWithData(caseId, data, state) {
+      console.log('service url: ' + config.fplServiceUrl);
       const authToken = await this.grabCookie('accessToken');
       await axios.post(`${config.fplServiceUrl}/populateCase/${normalizeCaseId(caseId)}/${state}`, data,
         {

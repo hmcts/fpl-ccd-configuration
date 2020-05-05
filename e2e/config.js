@@ -45,8 +45,8 @@ module.exports = {
     email: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
     password: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
   },
-  localAuthorityPassword: process.env.CCD_DEF_CASE_SERVICE_BASE_URL || defaultPassword,
-  fplServiceUrl: 'http://localhost:4000',
+  localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
+  fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'CARE_SUPERVISION_EPO',
