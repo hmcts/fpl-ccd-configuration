@@ -1,14 +1,14 @@
 /* global process */
 const output = require('codeceptjs').output;
 
+const axios = require('axios');
 const config = require('./config');
 
 const loginPage = require('./pages/login.page');
-const caseViewPage = require('./pages/caseView.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const populateCaseEventPage = require('./pages/events/populateCaseEvent.page');
+const mandatorySubmissionFields = require('./fixtures/mandatorySubmissionFields.json');
 
 const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
@@ -178,15 +178,25 @@ module.exports = function () {
         .withText('Remove'));
     },
 
-    async submitNewCaseWithData(filename = 'mandatorySubmissionFields') {
+    async submitNewCaseWithData(data, state = 'SUBMITTED') {
+      if (!data) {
+        data = mandatorySubmissionFields;
+      }
       const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-      await this.navigateToCaseDetailsAs(config.systemUpdateUser, caseId);
-      await caseViewPage.goToNewActions(config.applicationActions.populateCase);
-      populateCaseEventPage.setCaseDataFilename(filename);
-      await this.completeEvent('Submit');
+      await this.populateCaseWithData(caseId, data, state);
       console.log(`Case ${caseId} has been submitted`);
 
       return caseId;
+    },
+
+    async populateCaseWithData(caseId, data, state) {
+      const authToken = await this.grabCookie('accessToken');
+      await axios.post(`${config.fplServiceUrl}/populateCase/${normalizeCaseId(caseId)}/${state}`, data,
+        {
+          headers: {
+            'Authorization': `Bearer ${authToken.value}`,
+          },
+        });
     },
 
     /**

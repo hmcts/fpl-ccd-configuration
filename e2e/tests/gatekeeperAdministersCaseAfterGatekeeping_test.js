@@ -3,13 +3,14 @@ const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const directions = require('../fixtures/directions.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
+const gatekeepingNoHearingDetails = require('./fixtures/gatekeepingNoHearingDetails.json');
 
 let caseId;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('gatekeepingNoHearingDetails');
+  caseId = await I.submitNewCaseWithData(gatekeepingNoHearingDetails, 'GATEKEEPING');
 
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });

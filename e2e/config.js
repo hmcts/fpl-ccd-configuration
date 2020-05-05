@@ -46,6 +46,7 @@ module.exports = {
     password: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
   },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
+  fplServiceUrl: 'http://localhost:4000',
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'CARE_SUPERVISION_EPO',

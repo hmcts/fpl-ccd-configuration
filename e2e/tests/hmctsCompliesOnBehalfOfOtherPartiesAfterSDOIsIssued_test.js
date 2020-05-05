@@ -1,10 +1,11 @@
 const config = require('../config.js');
+const standardDirectionOrder = require('./fixtures/standardDirectionOrder.json');
 
 let caseId;
 
 Feature('Comply with directions');
 
-BeforeSuite(async I => caseId = await I.submitNewCaseWithData('standardDirectionOrder'));
+BeforeSuite(async I => caseId = await I.submitNewCaseWithData(standardDirectionOrder, 'PREPARE_FOR_HEARING'));
 
 Scenario('HMCTS admin complies with directions on behalf of other parties', async (I, caseViewPage, complyOnBehalfOfOthersEventPage) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);

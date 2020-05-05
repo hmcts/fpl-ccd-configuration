@@ -2,12 +2,13 @@ const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
 const placementHelper = require('../helpers/placement_helper.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
+const mandatoryWithMultipleChildren = require('./fixtures/mandatoryWithMultipleChildren.json');
 
 let caseId;
 
 Feature('Case maintenance after submission');
 
-BeforeSuite(async I => caseId = await I.submitNewCaseWithData('mandatoryWithMultipleChildren'));
+BeforeSuite(async I => caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren));
 
 Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 

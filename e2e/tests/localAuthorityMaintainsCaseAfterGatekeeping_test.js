@@ -1,11 +1,12 @@
 const config = require('../config.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
+const gatekeeping = require('./fixtures/gatekeeping.json');
 
 let caseId;
 
 Feature('Case maintenance after gatekeeping');
 
-BeforeSuite(async I => caseId = await I.submitNewCaseWithData('gatekeeping'));
+BeforeSuite(async I => caseId = await I.submitNewCaseWithData(gatekeeping, 'GATEKEEPING'));
 
 Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 

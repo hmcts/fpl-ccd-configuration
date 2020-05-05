@@ -4,13 +4,14 @@ const orders = require('../fixtures/orders.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
+const mandatoryWithMultipleChildren = require('./fixtures/mandatoryWithMultipleChildren.json');
 
 let caseId;
 
 Feature('Judiciary case administration after submission');
 
 BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage) => {
-  caseId = await I.submitNewCaseWithData('mandatoryWithMultipleChildren');
+  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 

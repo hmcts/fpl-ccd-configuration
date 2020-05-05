@@ -2,13 +2,14 @@ const config = require('../config.js');
 const directions = require('../fixtures/directions.js');
 const schedule = require('../fixtures/schedule.js');
 const cmoHelper = require('../helpers/case_management_order_helper.js');
+const standardDirectionOrder = require('./fixtures/standardDirectionOrder.json');
 
 let caseId;
 
 Feature('Case Management Order Journey');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData('standardDirectionOrder');
+  caseId = await I.submitNewCaseWithData(standardDirectionOrder, 'PREPARE_FOR_HEARING');
 });
 
 Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
