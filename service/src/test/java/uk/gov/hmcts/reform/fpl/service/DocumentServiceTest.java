@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 
 @ExtendWith(SpringExtension.class)
 class DocumentServiceTest {
-    private static final Document DOCUMENT = document();
 
     @Mock
     private DocmosisDocumentGeneratorService documentGeneratorService;
@@ -39,27 +38,29 @@ class DocumentServiceTest {
             .draftbackground("Present")
             .build();
 
-        initMocks(template);
+        Document document = document();
+        initMocks(template, document);
 
-        assertThat(service.getDocumentFromDocmosisOrderTemplate(template, CMO)).isEqualTo(DOCUMENT);
+        assertThat(service.getDocumentFromDocmosisOrderTemplate(template, CMO)).isEqualTo(document);
         assertThat(captor.getValue()).isEqualTo("draft-case-management-order.pdf");
     }
 
     @Test
     void shouldReturnDocumentWithIssuedTitleWhenDraftBackgroundIsNull() {
         DocmosisCaseManagementOrder template = DocmosisCaseManagementOrder.builder().build();
-        initMocks(template);
+        Document document = document();
+        initMocks(template, document);
 
-        assertThat(service.getDocumentFromDocmosisOrderTemplate(template, CMO)).isEqualTo(DOCUMENT);
+        assertThat(service.getDocumentFromDocmosisOrderTemplate(template, CMO)).isEqualTo(document);
         assertThat(captor.getValue()).isEqualTo("case-management-order.pdf");
     }
 
-    private void initMocks(DocmosisCaseManagementOrder template) {
+    private void initMocks(DocmosisCaseManagementOrder template, Document document) {
         byte[] bytes = new byte[]{1, 2, 3};
 
         when(documentGeneratorService.generateDocmosisDocument(template, CMO))
             .thenReturn(DocmosisDocument.builder().bytes(bytes).documentTitle("case-management-order.pdf").build());
 
-        when(uploadDocumentService.uploadPDF(eq(bytes), captor.capture())).thenReturn(DOCUMENT);
+        when(uploadDocumentService.uploadPDF(eq(bytes), captor.capture())).thenReturn(document);
     }
 }

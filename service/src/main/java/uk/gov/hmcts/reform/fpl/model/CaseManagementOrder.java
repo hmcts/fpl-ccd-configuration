@@ -90,8 +90,6 @@ public class CaseManagementOrder implements IssuableOrder {
             data.put(ORDER_ACTION.getKey(), action);
         }
 
-        data.compute(ORDER_ACTION.getKey(),(k, v) -> action);
-
         return data;
     }
 }
