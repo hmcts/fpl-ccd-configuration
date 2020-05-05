@@ -67,7 +67,7 @@ public class DraftCMOService {
 
         preparedOrder.setActionWithNullDocument(caseData.getOrderAction());
 
-        if (!preparedOrder.isDraft() && caseData.getNextHearingDateList() != null) {
+        if (preparedOrder.isSealed() && caseData.getNextHearingDateList() != null) {
             preparedOrder.setNextHearingFromDynamicElement(caseData.getNextHearingDateList().getValue());
         }
 

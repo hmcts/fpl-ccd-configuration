@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -118,6 +119,20 @@ class CaseManagementOrderTest {
         order.setNextHearingFromDynamicElement(null);
 
         assertThat(order).hasAllNullFieldsOrProperties();
+    }
+
+    @Test
+    void shouldGetIssueDateWhenPresent() {
+        CaseManagementOrder order = CaseManagementOrder.builder().dateOfIssue("10 May 2099").build();
+
+        assertThat(order.getDateOfIssueAsDate()).isEqualTo(LocalDate.of(2099, 5, 10));
+    }
+
+    @Test
+    void shouldDefaultIssueDateWhenNull() {
+        CaseManagementOrder order = CaseManagementOrder.builder().build();
+
+        assertThat(order.getDateOfIssueAsDate()).isEqualTo(LocalDate.now());
     }
 
     @Test
