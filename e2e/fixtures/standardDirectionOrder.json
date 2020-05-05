@@ -14,7 +14,6 @@
     "reason": "test reason",
     "timeFrame": "Same day"
   },
-  "caseName": "Barnet Council v Smith",
   "children1": [
     {
       "id": "a8caaf05-e52b-4315-9474-c247ae266164",
@@ -203,7 +202,6 @@
     }
   ],
   "allPartiesCustom": [],
-  "caseDataFilename": "mandatorySubmissionFields",
   "gatekeeperEmails": [
     {
       "id": "a76f6d78-6f42-46e7-988c-571ca6abfc68",
@@ -254,7 +252,6 @@
   "allocationProposal": {
     "proposal": "District judge"
   },
-  "caseLocalAuthority": "SA",
   "displayAmountToPay": "Yes",
   "familyManCaseNumber": "mockcaseID",
   "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
