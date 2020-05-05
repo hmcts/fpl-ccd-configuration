@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -20,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -33,9 +29,6 @@ class PopulateCaseServiceTest {
     private static final Document MOCK_DOCUMENT = document();
     private static final Document MOCK_SDO_DOCUMENT = document();
     private static final Document MOCK_APPLICATION_DOCUMENT = document();
-
-    @Autowired
-    private ObjectMapper mapper;
 
     @Autowired
     private Time time;
@@ -62,23 +55,6 @@ class PopulateCaseServiceTest {
     }
 
     @Test
-    void shouldReturnFileData() throws Exception {
-        var fileData = service.getFileData("testFile");
-
-        assertThat(fileData).extracting("testProperty").isEqualTo("testValue");
-    }
-
-    @Test
-    void shouldThrowIllegalArgumentExceptionForNonExistentFile() {
-        assertThrows(IllegalArgumentException.class, () -> service.getFileData("randomFilename"));
-    }
-
-    @Test
-    void shouldThrowJsonProcessingExceptionForInvalidJsonFile() {
-        assertThrows(JsonProcessingException.class, () -> service.getFileData("invalidJson"));
-    }
-
-    @Test
     void shouldReturnTimeBasedAndDocumentData() {
         var expectedMockDocument = Map.of("documentStatus",
             "Attached",
@@ -99,22 +75,6 @@ class PopulateCaseServiceTest {
 
         verify(uploadDocumentService).uploadPDF(new byte[]{}, "mockFile.txt");
         verify(uploadDocumentService).uploadPDF(new byte[]{}, "mockSubmittedApplication.pdf");
-    }
-
-    @Test
-    void shouldReturnCorrectStatusBasedOnFilename() {
-        assertThat(service.getNewState("gatekeeping")).isEqualByComparingTo(State.GATEKEEPING);
-        assertThat(service.getNewState("gatekeepingNoHearingDetails")).isEqualByComparingTo(State.GATEKEEPING);
-        assertThat(service.getNewState("mandatorySubmissionFields")).isEqualByComparingTo(State.SUBMITTED);
-        assertThat(service.getNewState("mandatoryWithMultipleChildren")).isEqualByComparingTo(State.SUBMITTED);
-        assertThat(service.getNewState("standardDirectionOrder")).isEqualByComparingTo(State.PREPARE_FOR_HEARING);
-    }
-
-    @Test
-    void shouldThrowExceptionForUnsupportedFile() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> service.getNewState("randomFilename"));
-        assertThat(exception.getMessage()).isEqualTo("Provided filename is not supported");
     }
 
     @Test
