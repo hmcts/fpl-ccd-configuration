@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,5 +113,19 @@ class CaseManagementOrderTest {
         order.setNextHearingFromDynamicElement(null);
 
         assertThat(order).hasAllNullFieldsOrProperties();
+    }
+
+    @Test
+    void shouldGetIssueDateWhenPresent() {
+        CaseManagementOrder order = CaseManagementOrder.builder().dateOfIssue("10 May 2099").build();
+
+        assertThat(order.getDateOfIssueAsDate()).isEqualTo(LocalDate.of(2099, 5, 10));
+    }
+
+    @Test
+    void shouldDefaultIssueDateWhenNull() {
+        CaseManagementOrder order = CaseManagementOrder.builder().build();
+
+        assertThat(order.getDateOfIssueAsDate()).isEqualTo(LocalDate.now());
     }
 }

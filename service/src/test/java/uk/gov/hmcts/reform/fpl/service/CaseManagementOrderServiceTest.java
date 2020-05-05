@@ -21,9 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,7 +50,6 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -103,34 +100,6 @@ class CaseManagementOrderServiceTest {
         Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(null);
 
         assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
-    }
-
-    @Test
-    void shouldGetCMOIssueDate() {
-        LocalDate expectedIssueDate = LocalDate.now().minusDays(1);
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-            .dateOfIssue(expectedIssueDate.format(DateTimeFormatter.ofPattern(DATE)))
-            .build();
-
-        LocalDate issueDate = service.getIssuedDate(caseManagementOrder);
-
-        assertThat(issueDate).isEqualTo(expectedIssueDate);
-    }
-
-    @Test
-    void shouldGetDefaultCMOIssueDate() {
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
-
-        LocalDate issueDate = service.getIssuedDate(caseManagementOrder);
-
-        assertThat(issueDate).isEqualTo(time.now().toLocalDate());
-    }
-
-    @Test
-    void shouldGetDefaultCMOIssueDateWhenCMODoesNotExists() {
-        LocalDate issueDate = service.getIssuedDate(null);
-
-        assertThat(issueDate).isEqualTo(time.now().toLocalDate());
     }
 
     @Test
