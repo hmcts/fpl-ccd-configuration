@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
     "ListElementCode": "Circuit judge",
-    "ListElement": "Circuit judge",
+    "ListElement": "Circuit Judge",
     "DisplayOrder": 1
   },
   {
@@ -17,7 +17,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
     "ListElementCode": "District judge",
-    "ListElement": "District judge",
+    "ListElement": "District Judge",
     "DisplayOrder": 3
   },
   {
@@ -31,7 +31,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
     "ListElementCode": "High Court judge",
-    "ListElement": "High Court judge",
+    "ListElement": "High Court Judge",
     "DisplayOrder": 5
   }
 ]
