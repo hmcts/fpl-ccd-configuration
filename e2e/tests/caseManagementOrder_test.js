@@ -2,7 +2,7 @@ const config = require('../config.js');
 const directions = require('../fixtures/directions.js');
 const schedule = require('../fixtures/schedule.js');
 const cmoHelper = require('../helpers/case_management_order_helper.js');
-const standardDirectionOrder = require('./fixtures/standardDirectionOrder.json');
+const standardDirectionOrder = require('../fixtures/standardDirectionOrder.json');
 
 let caseId;
 

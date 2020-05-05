@@ -3,7 +3,7 @@ const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const directions = require('../fixtures/directions.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
-const gatekeepingNoHearingDetails = require('./fixtures/gatekeepingNoHearingDetails.json');
+const gatekeepingNoHearingDetails = require('../fixtures/gatekeepingNoHearingDetails.json');
 
 let caseId;
 

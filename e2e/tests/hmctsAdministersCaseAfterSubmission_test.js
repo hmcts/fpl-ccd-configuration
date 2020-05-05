@@ -7,7 +7,7 @@ const c2Payment = require('../fixtures/c2Payment.js');
 const expertReportLog = require('../fixtures/expertReportLog.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
-const mandatoryWithMultipleChildren = require('./fixtures/mandatoryWithMultipleChildren.json');
+const mandatoryWithMultipleChildren = require('../fixtures/mandatoryWithMultipleChildren.json');
 
 let caseId;
 let submittedAt;

@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const standardDirectionOrder = require('./fixtures/standardDirectionOrder.json');
+const standardDirectionOrder = require('../fixtures/standardDirectionOrder.json');
 
 let caseId;
 

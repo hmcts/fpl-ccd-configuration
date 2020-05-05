@@ -4,7 +4,7 @@ const orders = require('../fixtures/orders.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
-const mandatoryWithMultipleChildren = require('./fixtures/mandatoryWithMultipleChildren.json');
+const mandatoryWithMultipleChildren = require('../fixtures/mandatoryWithMultipleChildren.json');
 
 let caseId;
 

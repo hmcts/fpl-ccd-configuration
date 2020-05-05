@@ -1,6 +1,6 @@
 const config = require('../config.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
-const gatekeeping = require('./fixtures/gatekeeping.json');
+const gatekeeping = require('../fixtures/gatekeeping.json');
 
 let caseId;
 
