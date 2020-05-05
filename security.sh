@@ -7,7 +7,6 @@ cat zap.out
 echo "ZAP has successfully started"
 zap-cli --zap-url http://0.0.0.0 -p 1001 report -o /zap/api-report.html -f html
 curl --fail http://0.0.0.0:100/a1/OTHER/core/other/jsonreport/?formMethod=GET --output report.json
-cp /zap/report.json functional-output/report.json
-cat /zap/report.json
+cp report.json functional-output/report.json
 cp /zap/api-report.html functional-output/zap-security-report.html
 zap-cli --zap-url http://0.0.0.0 -p 1001 alerts -l High --exit-code False
