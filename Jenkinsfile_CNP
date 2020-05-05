@@ -5,6 +5,7 @@ import uk.gov.hmcts.contino.ProjectBranch
 import uk.gov.hmcts.contino.AppPipelineConfig
 
 def type = "java"
+
 def product = "fpl"
 def component = "case-service"
 AppPipelineConfig pipelineConf;
@@ -57,7 +58,6 @@ def archiveCoreCaseDataDefinitions(env) {
  *
  * @param env target environment
  */
-
 def uploadCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin"){
     ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
@@ -80,22 +80,22 @@ withPipeline(type, product, component) {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
   disableLegacyDeployment()
-  
+
   enableAksStagingDeployment()
   installCharts()
   enableSlackNotifications('#fpla-tech')
-  
+
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
-  
+
   after('checkout') {
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
         try {
           sh '''
             set -e
-            
+
             git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
-            
+
             git fetch origin demo:demo
             git push --force origin HEAD:demo
           '''
@@ -105,12 +105,12 @@ withPipeline(type, product, component) {
       }
     }
   }
-  
+
   before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
   }
-  
+
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
@@ -123,40 +123,40 @@ withPipeline(type, product, component) {
   after('smoketest:saat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
-  
+
   after('smoketest:aat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
-  
+
   after('smoketest:demo-staging') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
-  
+
   after('smoketest:demo') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
-  
+
   before('functionalTest:saat') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
-  
+
   before('functionalTest:aat') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
-  
+
   before('functionalTest:demo') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
-  
+
   after('functionalTest:aat') {
     archiveCoreCaseDataDefinitions('prod')
   }
-  
+
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     publishToCosmosDb(this, params, 'dbs/jenkins/colls/fpl-test-metrics', "${WORKSPACE}/output", 'metrics')
   }
-  
+
   before('buildinfra:demo') {
     def subscription = 'nonprod'
     withSubscription(subscription) {
@@ -166,7 +166,7 @@ withPipeline(type, product, component) {
       }
     }
   }
-  
+ 
   before('smoketest:aat') {
     env.URL = "https://www-ccd.aat.platform.hmcts.net"
     archiveCoreCaseDataDefinitions('aat')
