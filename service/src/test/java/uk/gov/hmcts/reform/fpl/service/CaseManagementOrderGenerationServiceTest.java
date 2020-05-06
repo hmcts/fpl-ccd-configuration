@@ -281,7 +281,6 @@ class CaseManagementOrderGenerationServiceTest {
             .dateOfIssue(formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG))
             .children(getExpectedChildren())
-            .numberOfChildren(getExpectedChildren().size())
             .applicantName("Bran Stark")
             .respondents(getExpectedRespondents())
             .respondentsProvided(true)

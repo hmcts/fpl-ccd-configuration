@@ -17,5 +17,4 @@ public class DocmosisCaseManagementOrder extends DocmosisOrder {
     private final List<DocmosisRecital> recitals;
     private final boolean recitalsProvided;
     private final DocmosisJudgeAndLegalAdvisor allocatedJudgeAndLegalAdvisor;
-    private final int numberOfChildren;
 }

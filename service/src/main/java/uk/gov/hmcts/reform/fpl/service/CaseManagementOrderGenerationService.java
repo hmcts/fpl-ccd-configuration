@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
@@ -63,16 +62,13 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         HearingBooking hearingBooking = hearingService
             .getHearingBookingByUUID(hearingDetails, caseManagementOrder.getId());
 
-        List<DocmosisChild> children = dataExtractionService.getChildrenDetails(caseData.getAllChildren());
-
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
             .courtName(dataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(caseManagementOrder.getDateOfIssue())
             .complianceDeadline(caseData.getComplianceDeadline())
-            .children(children)
-            .numberOfChildren(children.size())
+            .children(dataExtractionService.getChildrenDetails(caseData.getAllChildren()))
             .respondents(dataExtractionService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
             .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
             .applicantName(dataExtractionService.getApplicantName(caseData.getAllApplicants()))
