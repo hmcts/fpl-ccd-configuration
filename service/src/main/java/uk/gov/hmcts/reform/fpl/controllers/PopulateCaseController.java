@@ -31,7 +31,7 @@ public class PopulateCaseController {
     @PostMapping("/populateCase/{caseId}/{newState}")
     public void populateCase(@PathVariable("caseId") Long caseId, @PathVariable("newState") State newState,
                              @RequestBody Map<String, Object> data) {
-        if (Boolean.TRUE.toString().equals(data.get("updateTimeBasedAndDocumentData"))) {
+        if (Boolean.TRUE.equals(data.get("updateTimeBasedAndDocumentData"))) {
             data.putAll(populateCaseService.getTimeBasedAndDocumentData());
             if (PREPARE_FOR_HEARING.equals(newState)) {
                 data.put("standardDirectionOrder", populateCaseService.getUpdatedSDOData(data));

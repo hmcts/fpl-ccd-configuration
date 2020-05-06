@@ -68,7 +68,7 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldAddTimeBasedAndDocumentData() throws Exception {
-        Map<String, Object> caseData = Map.of("updateTimeBasedAndDocumentData", "true", "property", "value");
+        Map<String, Object> caseData = Map.of("updateTimeBasedAndDocumentData", true, "property", "value");
         Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
         expectedCaseDataForUpdate.putAll(getExpectedTimeBasedAndDocumentData());
         expectedCaseDataForUpdate.remove("updateTimeBasedAndDocumentData");
@@ -86,7 +86,7 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldAddSDODataForPrepareForHearingState() throws Exception {
-        Map<String, Object> caseData = Map.of("updateTimeBasedAndDocumentData", "true",
+        Map<String, Object> caseData = Map.of("updateTimeBasedAndDocumentData", true,
             "standardDirectionOrder", Map.of());
         Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
         expectedCaseDataForUpdate.putAll(getExpectedTimeBasedAndDocumentData());
