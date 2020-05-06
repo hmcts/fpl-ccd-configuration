@@ -190,14 +190,24 @@ module.exports = function () {
     },
 
     async populateCaseWithData(caseId, data, state) {
-      console.log('service url: ' + config.fplServiceUrl);
-      const authToken = await this.grabCookie('accessToken');
+      const authToken = await this.getAuthToken();
       await axios.post(`${config.fplServiceUrl}/populateCase/${normalizeCaseId(caseId)}/${state}`, data,
         {
           headers: {
-            'Authorization': `Bearer ${authToken.value}`,
+            'Authorization': `Bearer ${authToken}`,
           },
         });
+    },
+
+    async getAuthToken() {
+      const response = await axios.post(`${config.idamApiUrl}/loginUser?username=${config.systemUpdateUser.email}&password=${config.systemUpdateUser.password}`, {},
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+
+      return response.data.access_token;
     },
 
     /**

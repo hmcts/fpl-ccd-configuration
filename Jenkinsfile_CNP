@@ -121,6 +121,7 @@ withPipeline(type, product, component) {
       ./bin/configurer/import-ccd-definition.sh
     """
 
+    env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.URL="https://case-management-web-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
   }
@@ -171,8 +172,9 @@ withPipeline(type, product, component) {
       }
     }
   }
- 
+
   before('smoketest:aat') {
+    env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal"
     env.URL = "https://www-ccd.aat.platform.hmcts.net"
     archiveCoreCaseDataDefinitions('aat')
