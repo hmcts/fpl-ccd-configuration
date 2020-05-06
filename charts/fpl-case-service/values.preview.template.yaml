@@ -36,6 +36,16 @@ java:
         - ld-sdk-key
         - ctsc-inbox
 
+xui-webapp:
+  nodejs:
+    environment:
+      HEALTH_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}/health
+      HEALTH_CCD_DATA_API: http://ccd-data-store-api-${SERVICE_FQDN}.service.core-compute-preview.internal/health
+      HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
+      SERVICES_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}
+      SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api-${SERVICE_FQDN}.service.core-compute-preview.internal
+      SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
+
 ccd:
   ccd:
     adminWeb:
@@ -45,7 +55,7 @@ ccd:
     definitionImporter:
       enabled: false
     managementWeb:
-      enabled: true
+      enabled: false
     s2s:
       enabled: false
 
