@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -11,22 +10,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(PopulateCaseController.class)
@@ -35,11 +29,9 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
 
     private static final String URL_TEMPLATE = "/populateCase/%s/%s";
     private static final long CASE_ID = 1L;
-
-    @MockBean
-    private UploadDocumentService uploadDocumentService;
-
-    private Document document = document();
+    private static final DocumentReference.DocumentReferenceBuilder MOCK_DOCUMENT_BUILDER = DocumentReference.builder()
+        .url("http://fakeUrl")
+        .binaryUrl("http://fakeBinaryUrl");
 
     @Autowired
     ObjectMapper mapper;
@@ -52,11 +44,6 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
 
     PopulateCaseControllerTest() {
         super("populate-case");
-    }
-
-    @BeforeEach
-    void setup() {
-        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
     }
 
     @Test
@@ -119,16 +106,11 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
     }
 
     private Map<String, Object> getExpectedTimeBasedAndDocumentData() {
-        var expectedSubmittedForm = DocumentReference.builder()
-            .filename("mockSubmittedApplication.pdf")
-            .url("fakeUrl")
-            .binaryUrl("fakeBinaryUrl")
-            .build();
-        var expectedDocument = Map.of(
-            "documentStatus",
+        var expectedSubmittedForm = MOCK_DOCUMENT_BUILDER.filename("mockSubmittedApplication.pdf").build();
+        var expectedDocument = Map.of("documentStatus",
             "Attached",
             "typeOfDocument",
-            DocumentReference.builder().filename("mockFile.txt").url("fakeUrl").binaryUrl("fakeBinaryUrl").build());
+            MOCK_DOCUMENT_BUILDER.filename("mockFile.txt").build());
 
         return Map.of(
         "dateAndTimeSubmitted", now().toString(),
@@ -143,14 +125,7 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
     }
 
     private Map<String, Object> getExpectedSDOData() {
-        return Map.of(
-            "orderDoc", DocumentReference.builder()
-                .filename("mockSDO.pdf")
-                .url("fakeUrl")
-                .binaryUrl("fakeBinaryUrl")
-                .build()
-        );
-
+        return Map.of("orderDoc", MOCK_DOCUMENT_BUILDER.filename("mockSDO.pdf").build());
     }
 
     private MvcResult makePostRequest(String state, Map<String, Object> body) throws Exception {

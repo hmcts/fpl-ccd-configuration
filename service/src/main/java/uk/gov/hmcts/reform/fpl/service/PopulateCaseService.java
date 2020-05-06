@@ -39,8 +39,10 @@ public class PopulateCaseService {
     }
 
     private DocumentReference uploadMockFile(String filename) {
-        //Document document = uploadDocumentService.uploadPDF(new byte[]{}, filename);
-
-        return DocumentReference.builder().filename(filename).url("fakeUrl").binaryUrl("fakeBinaryUrl").build();
+        return DocumentReference.builder()
+            .filename(filename)
+            .url("http://fakeUrl")
+            .binaryUrl("http://fakeBinaryUrl")
+            .build();
     }
 }

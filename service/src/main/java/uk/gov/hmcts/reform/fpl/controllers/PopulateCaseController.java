@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import feign.FeignException;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.PREPARE_FOR_HEARING;
 
 
 @Api
+@Slf4j
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @ConditionalOnProperty(prefix = "populate_case", name = "enabled", havingValue = "true")
@@ -39,10 +42,14 @@ public class PopulateCaseController {
             data.remove("updateTimeBasedAndDocumentData");
         }
 
-        coreCaseDataService.triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            caseId,
-            String.format(POPULATE_EVENT_ID_TEMPLATE, newState.getValue()),
-            data);
+        try {
+            coreCaseDataService.triggerEvent(JURISDICTION,
+                CASE_TYPE,
+                caseId,
+                String.format(POPULATE_EVENT_ID_TEMPLATE, newState.getValue()),
+                data);
+        } catch (FeignException e) {
+            log.error(String.format("Populate case event failed: %s", e.contentUTF8()));
+        }
     }
 }
