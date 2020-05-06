@@ -77,7 +77,6 @@ module.exports = {
     complyWithDirections: 'Comply with directions',
     complyOnBehalfOf: 'Comply on behalf of others',
     allocatedJudge: 'Allocated Judge',
-    populateCase: 'Populate case',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',

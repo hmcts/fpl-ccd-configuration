@@ -12,8 +12,6 @@ BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(standardDirectionOrder, 'PREPARE_FOR_HEARING');
 });
 
-Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
-
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
