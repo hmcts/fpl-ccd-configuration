@@ -37,13 +37,14 @@ java:
         - ctsc-inbox
 
 xui-webapp:
+  enabled: true
   nodejs:
     environment:
       HEALTH_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}/health
-      HEALTH_CCD_DATA_API: http://ccd-data-store-api-${SERVICE_FQDN}.service.core-compute-preview.internal/health
+      HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
       HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
       SERVICES_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}
-      SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api-${SERVICE_FQDN}.service.core-compute-preview.internal
+      SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
 
 ccd:

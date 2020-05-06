@@ -1,7 +1,7 @@
 tags:
   fpl-ccd-stack: false
 
-xui:
+xui-webapp:
   enabled: false
 
 java:

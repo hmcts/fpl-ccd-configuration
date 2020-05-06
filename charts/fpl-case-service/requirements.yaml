@@ -10,4 +10,4 @@ dependencies:
   - name: xui-webapp
     version: ~0.2.1
     repository: '@hmctspublic'
-    condition: xui.enabled
+    condition: xui-webapp.enabled
