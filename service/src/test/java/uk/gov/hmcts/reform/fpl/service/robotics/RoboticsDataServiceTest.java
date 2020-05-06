@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.robotics;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -488,6 +491,34 @@ public class RoboticsDataServiceTest {
                 .readValue(returnedRoboticsJson);
 
             assertThat(returnedRoboticsDataMap).doesNotContainKey("caseId");
+        }
+    }
+
+    @Nested
+    class FeePaid {
+        private CaseData.CaseDataBuilder caseDataBuilder;
+
+        @BeforeEach
+        void setup() {
+            caseDataBuilder = prepareCaseData().toBuilder();
+        }
+
+        @Test
+        void shouldGetFeePaidFromCaseData() {
+            caseDataBuilder.amountToPay("100000");
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build(), CASE_ID);
+
+            MatcherAssert.assertThat(roboticsData.getFeePaid(), Matchers.comparesEqualTo(BigDecimal.valueOf(1000.00)));
+        }
+
+        @Test
+        void shouldGetDefaultFeePaidWhenThereIsNoFeePaidInClaimData() {
+            caseDataBuilder.amountToPay("");
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build(), CASE_ID);
+
+            MatcherAssert.assertThat(roboticsData.getFeePaid(), Matchers.comparesEqualTo(BigDecimal.valueOf(2055.00)));
         }
     }
 
