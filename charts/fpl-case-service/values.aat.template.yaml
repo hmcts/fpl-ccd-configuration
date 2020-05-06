@@ -9,4 +9,5 @@ java:
     GATEWAY_URL: http://gateway-ccd.aat.platform.hmcts.net
     FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
+    POPULATE_CASE_ENDPOINT_ENABLED: true
   aadIdentityName: family-public-law

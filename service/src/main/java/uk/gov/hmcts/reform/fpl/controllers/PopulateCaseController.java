@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.PREPARE_FOR_HEARING;
 @Api
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@ConditionalOnProperty(prefix = "populate_case", name = "enabled", havingValue = "true")
 public class PopulateCaseController {
     private static final String POPULATE_EVENT_ID_TEMPLATE = "populateCase-%s";
     private final CoreCaseDataService coreCaseDataService;
