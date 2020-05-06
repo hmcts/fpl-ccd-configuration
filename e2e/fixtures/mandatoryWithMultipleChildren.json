@@ -1,4 +1,5 @@
 {
+  "updateTimeBasedAndDocumentData": true,
   "orders": {
     "orderType": [
       "CARE_ORDER"

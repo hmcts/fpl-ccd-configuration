@@ -61,18 +61,19 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnErrorForInvalidState() throws Exception {
-        var result = makePostRequest(CASE_ID, "NOT_A_REAL_STATE", Map.of());
+        var result = makePostRequest("NOT_A_REAL_STATE", Map.of());
 
         assertThat(result.getResponse().getStatus()).isEqualTo(400);
     }
 
     @Test
     void shouldAddTimeBasedAndDocumentData() throws Exception {
-        Map<String, Object> caseData = Map.of("property", "value");
+        Map<String, Object> caseData = Map.of("updateTimeBasedAndDocumentData", "true", "property", "value");
         Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
         expectedCaseDataForUpdate.putAll(getExpectedTimeBasedAndDocumentData());
+        expectedCaseDataForUpdate.remove("updateTimeBasedAndDocumentData");
 
-        var result = makePostRequest(CASE_ID, "SUBMITTED", caseData);
+        var result = makePostRequest("SUBMITTED", caseData);
 
         assertThat(result.getResponse().getStatus()).isEqualTo(200);
         verify(coreCaseDataService).triggerEvent(
@@ -85,12 +86,14 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldAddSDODataForPrepareForHearingState() throws Exception {
-        Map<String, Object> caseData = Map.of("standardDirectionOrder", Map.of());
+        Map<String, Object> caseData = Map.of("updateTimeBasedAndDocumentData", "true",
+            "standardDirectionOrder", Map.of());
         Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
         expectedCaseDataForUpdate.putAll(getExpectedTimeBasedAndDocumentData());
         expectedCaseDataForUpdate.put("standardDirectionOrder", getExpectedSDOData());
+        expectedCaseDataForUpdate.remove("updateTimeBasedAndDocumentData");
 
-        var result = makePostRequest(CASE_ID, "PREPARE_FOR_HEARING", caseData);
+        var result = makePostRequest("PREPARE_FOR_HEARING", caseData);
 
         assertThat(result.getResponse().getStatus()).isEqualTo(200);
         verify(coreCaseDataService).triggerEvent(
@@ -102,8 +105,9 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldTriggerCorrectEventForGatekeeping() throws Exception {
-        var result = makePostRequest(CASE_ID, "GATEKEEPING", Map.of());
+    void shouldNotAddAnyDataWhenUpdateTimeBasedAndDocumentDataIsNotSet() throws Exception {
+        Map<String, Object> caseData = Map.of("property", "value");
+        var result = makePostRequest("GATEKEEPING", caseData);
 
         assertThat(result.getResponse().getStatus()).isEqualTo(200);
         verify(coreCaseDataService).triggerEvent(
@@ -111,7 +115,7 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
             CASE_TYPE,
             CASE_ID,
             "populateCase-Gatekeeping",
-            getExpectedTimeBasedAndDocumentData());
+            caseData);
     }
 
     private Map<String, Object> getExpectedTimeBasedAndDocumentData() {
@@ -139,9 +143,9 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
 
     }
 
-    private MvcResult makePostRequest(Long caseId, String state, Map<String, Object> body) throws Exception {
+    private MvcResult makePostRequest(String state, Map<String, Object> body) throws Exception {
         return mockMvc
-            .perform(post(String.format(URL_TEMPLATE, caseId, state))
+            .perform(post(String.format(URL_TEMPLATE, CASE_ID, state))
                 .header("authorization", USER_AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(body))
