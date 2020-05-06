@@ -69,8 +69,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final UUID ID = randomUUID();
-    public static final String ALLOCATED_JUDGE = "allocatedJudge";
-    public static final String ALLOCATED_JUDGE_KEY = ALLOCATED_JUDGE;
+    public static final String ALLOCATED_JUDGE_KEY = "allocatedJudge";
 
     private CaseDetails populatedCaseDetails;
 
