@@ -149,7 +149,7 @@ module.exports = function () {
 
     async enterAllocationProposal () {
       await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
+      enterAllocationProposalEventPage.selectAllocationProposal('District Judge');
       await this.completeEvent('Save and continue');
     },
 
@@ -187,7 +187,7 @@ module.exports = function () {
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
+      enterAllocationProposalEventPage.selectAllocationProposal('District Judge');
       await this.completeEvent('Save and continue');
     },
 
