@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_2;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
@@ -137,7 +139,12 @@ class CaseManagementOrderGenerationServiceTest {
             .respondents1(emptyList())
             .applicants(getApplicants())
             .schedule(Schedule.builder().includeSchedule("No").build())
-            .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder().build())));
+            .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder().build())))
+            .allocatedJudge(Judge.builder()
+                .judgeTitle(MAGISTRATES)
+                .judgeLastName("Stark")
+                .judgeFullName("Brandon Stark")
+                .build());
     }
 
     private List<Element<Applicant>> getApplicants() {
@@ -185,6 +192,9 @@ class CaseManagementOrderGenerationServiceTest {
             .directions(emptyList())
             .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
+            .allocatedJudgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
+                .judgeTitleAndName("Brandon Stark (JP)")
+                .build())
             .build();
     }
 
@@ -306,6 +316,9 @@ class CaseManagementOrderGenerationServiceTest {
             .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
             .courtseal(templateData.getCourtseal())
+            .allocatedJudgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
+                .judgeTitleAndName("Brandon Stark (JP)")
+                .build())
             .build();
     }
 

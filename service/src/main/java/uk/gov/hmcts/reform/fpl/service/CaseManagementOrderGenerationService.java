@@ -9,9 +9,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
@@ -64,6 +66,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
+            .allocatedJudgeAndLegalAdvisor(getAllocatedJudgeAndLegalAdvisor(caseData.getAllocatedJudge()))
             .courtName(dataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(caseManagementOrder.getDateOfIssue())
@@ -92,6 +95,10 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
     private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(HearingBooking hearingBooking) {
         return dataExtractionService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor());
+    }
+
+    private DocmosisJudgeAndLegalAdvisor getAllocatedJudgeAndLegalAdvisor(Judge allocatedJudge) {
+        return dataExtractionService.getAllocatedJudgeAndLegalAdvisor(JudgeAndLegalAdvisor.from(allocatedJudge));
     }
 
     private boolean needsNextHearingDate(CaseManagementOrder caseManagementOrder) {

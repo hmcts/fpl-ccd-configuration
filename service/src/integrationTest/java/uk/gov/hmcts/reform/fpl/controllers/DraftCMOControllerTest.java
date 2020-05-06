@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -59,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
@@ -77,6 +79,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long CASE_ID = 1L;
     private static final DateTimeFormatter FORMATTER = ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK);
+    public static final String DRAFT_CMO_FILE_NAME = "draft-case-management-order.pdf";
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -128,7 +131,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(getCaseDetails());
 
-        verify(uploadService).uploadPDF(pdf, "draft-case-management-order.pdf");
+        verify(uploadService).uploadPDF(pdf, DRAFT_CMO_FILE_NAME);
 
         assertThat(callbackResponse.getData()).containsKey(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
         assertThat(getDocumentReference(callbackResponse)).isEqualTo(expectedDocument());
@@ -147,7 +150,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
         assertThat(caseManagementOrder.getHearingDate()).isEqualTo(now().plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
-        assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo("draft-case-management-order.pdf");
+        assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo(DRAFT_CMO_FILE_NAME);
         assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");
     }
 
@@ -189,6 +192,12 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .dateToBeCompletedBy(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
             .build()));
 
+        caseDetails.getData().put("allocatedJudge", Judge.builder()
+            .judgeTitle(MAGISTRATES)
+            .judgeLastName("Stark")
+            .judgeFullName("Brandon Stark")
+            .build());
+
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
             CaseManagementOrder.builder().build());
 
@@ -202,6 +211,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
+            .allocatedJudgeAndLegalAdvisor(expectedAllocatedJudgeAndLegalAdvisor())
             .dateOfIssue(formatLocalDateToString(dateNow(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())
@@ -309,6 +319,12 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class).getOrderDoc();
     }
 
+    private DocmosisJudgeAndLegalAdvisor expectedAllocatedJudgeAndLegalAdvisor() {
+        return DocmosisJudgeAndLegalAdvisor.builder()
+            .judgeTitleAndName("Brandon Stark (JP)")
+            .build();
+    }
+
     private CaseDetails prepareCaseDetailsForAboutToSubmit() {
         DynamicList dynamicHearingDates = draftCMOService
             .buildDynamicListFromHearingDetails(createHearingBookingsFromInitialDate(now()));
@@ -327,7 +343,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         data.put(HEARING_DATE_LIST.getKey(), dynamicHearingDates);
         data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder()
-            .orderDoc(DocumentReference.builder().filename("draft-case-management-order.pdf").build())
+            .orderDoc(DocumentReference.builder().filename(DRAFT_CMO_FILE_NAME).build())
             .status(SELF_REVIEW)
             .action(OrderAction.builder().changeRequestedByJudge("Changes").build())
             .build());

@@ -114,6 +114,12 @@ public class CaseDataExtractionService {
             .build();
     }
 
+    DocmosisJudgeAndLegalAdvisor getAllocatedJudgeAndLegalAdvisor(JudgeAndLegalAdvisor allocatedJudge) {
+        return DocmosisJudgeAndLegalAdvisor.builder()
+            .judgeTitleAndName(formatJudgeTitleAndName(allocatedJudge))
+            .build();
+    }
+
     DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking, String value) {
         return ofNullable(hearingBooking).map(this::buildHearingBooking).orElse(getHearingBookingWithDefault(value));
     }

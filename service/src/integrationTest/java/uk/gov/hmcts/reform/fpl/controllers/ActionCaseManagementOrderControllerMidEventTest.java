@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -109,6 +111,12 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
             .id(UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774"))
             .build());
 
+        caseDetails.getData().put("allocatedJudge", Judge.builder()
+            .judgeTitle(MAGISTRATES)
+            .judgeLastName("Stark")
+            .judgeFullName("Brandon Stark")
+            .build());
+
         return caseDetails;
     }
 
@@ -118,6 +126,7 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
+            .allocatedJudgeAndLegalAdvisor(expectedAllocatedJudgeAndLegalAdvisor())
             .dateOfIssue(formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())
@@ -207,6 +216,12 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
                 .phoneNumber("020 2772 5772")
                 .build()))
             .build());
+    }
+
+    private DocmosisJudgeAndLegalAdvisor expectedAllocatedJudgeAndLegalAdvisor() {
+        return DocmosisJudgeAndLegalAdvisor.builder()
+            .judgeTitleAndName("Brandon Stark (JP)")
+            .build();
     }
 
     private DocumentReference getDocumentReference(AboutToStartOrSubmitCallbackResponse callbackResponse) {

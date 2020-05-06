@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -17,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEA
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
@@ -68,6 +69,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final UUID ID = randomUUID();
+    public static final String ALLOCATED_JUDGE = "allocatedJudge";
+    public static final String ALLOCATED_JUDGE_KEY = ALLOCATED_JUDGE;
 
     private CaseDetails populatedCaseDetails;
 
@@ -79,9 +82,6 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @SpyBean
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     @Captor
     private ArgumentCaptor<DocmosisCaseManagementOrder> capturedData;
@@ -109,7 +109,8 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(-1),
                 CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
                 ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
-                NEXT_HEARING_DATE_LIST.getKey(), hearingDateList()));
+                NEXT_HEARING_DATE_LIST.getKey(), hearingDateList(),
+                ALLOCATED_JUDGE_KEY, buildAllocatedJudge()));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
@@ -142,6 +143,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
         populatedCaseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder());
         populatedCaseDetails.getData().put(ORDER_ACTION.getKey(), getOrderAction(JUDGE_REQUESTED_CHANGE));
         populatedCaseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(1));
+        populatedCaseDetails.getData().put(ALLOCATED_JUDGE_KEY, buildAllocatedJudge());
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
@@ -239,5 +241,13 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
     private String getStringDate(LocalDateTime now) {
         return formatLocalDateTimeBaseUsingFormat(now, "h:mma");
+    }
+
+    private Judge buildAllocatedJudge() {
+        return Judge.builder()
+            .judgeTitle(MAGISTRATES)
+            .judgeLastName("Stark")
+            .judgeFullName("Brandon Stark")
+            .build();
     }
 }
