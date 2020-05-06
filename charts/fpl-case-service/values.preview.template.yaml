@@ -39,6 +39,7 @@ java:
 xui-webapp:
   enabled: true
   nodejs:
+    releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     environment:
       HEALTH_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
