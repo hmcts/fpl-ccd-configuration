@@ -31,8 +31,7 @@ public class JudgeAndLegalAdvisor {
                 .judgeTitle(allocatedJudge.getJudgeTitle())
                 .otherTitle(allocatedJudge.getOtherTitle())
                 .judgeLastName(allocatedJudge.getJudgeLastName())
-                .judgeFullName(allocatedJudge.getJudgeFullName())
-                .build();
+                .judgeFullName(allocatedJudge.getJudgeFullName());
         }
         return judgeAndLegalAdvisorBuilder.build();
     }
