@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ExtendWith(SpringExtension.class)
@@ -272,11 +273,9 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedDocmosisJudgeAndLegalAdvisorWhenJudgeAndLegalAdvisorGiven() {
-        assertThat(service.getAllocatedJudgeAndLegalAdvisor(JudgeAndLegalAdvisor.from(testJudge())))
-            .isEqualToComparingFieldByField(DocmosisJudgeAndLegalAdvisor.builder()
-                .judgeTitleAndName("Brandon Stark (JP)")
-                .build());
+    void shouldReturnExpectedDocmosisJudgeWhenJudgeAndLegalAdvisorGiven() {
+        assertThat(service.getAllocatedJudge(JudgeAndLegalAdvisor.from(testJudge())))
+            .isEqualToComparingFieldByField(testDocmosisJudge());
     }
 
     private DocmosisDirection.Builder expectedDirection(String title) {

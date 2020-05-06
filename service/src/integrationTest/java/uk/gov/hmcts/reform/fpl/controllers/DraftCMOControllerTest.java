@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
@@ -61,7 +59,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
@@ -73,6 +70,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
@@ -193,11 +192,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .dateToBeCompletedBy(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
             .build()));
 
-        caseDetails.getData().put("allocatedJudge", Judge.builder()
-            .judgeTitle(MAGISTRATES)
-            .judgeLastName("Stark")
-            .judgeFullName("Brandon Stark")
-            .build());
+        caseDetails.getData().put("allocatedJudge", testJudge());
 
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
             CaseManagementOrder.builder().build());
@@ -212,7 +207,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
-            .allocatedJudgeAndLegalAdvisor(expectedAllocatedJudge())
+            .allocatedJudgeAndLegalAdvisor(testDocmosisJudge())
             .dateOfIssue(formatLocalDateToString(dateNow(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())
@@ -318,12 +313,6 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         return mapper.convertValue(responseCaseData.get(
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class).getOrderDoc();
-    }
-
-    private DocmosisJudge expectedAllocatedJudge() {
-        return DocmosisJudge.builder()
-            .judgeTitleAndName("Brandon Stark (JP)")
-            .build();
     }
 
     private CaseDetails prepareCaseDetailsForAboutToSubmit() {

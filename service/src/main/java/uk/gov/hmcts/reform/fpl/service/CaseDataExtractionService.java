@@ -115,7 +115,7 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    DocmosisJudge getAllocatedJudgeAndLegalAdvisor(JudgeAndLegalAdvisor allocatedJudge) {
+    DocmosisJudge getAllocatedJudge(JudgeAndLegalAdvisor allocatedJudge) {
         return DocmosisJudge.builder()
             .judgeTitleAndName(formatJudgeTitleAndName(allocatedJudge))
             .build();

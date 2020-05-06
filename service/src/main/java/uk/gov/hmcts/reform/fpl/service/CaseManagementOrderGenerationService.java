@@ -67,7 +67,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
-            .allocatedJudgeAndLegalAdvisor(getAllocatedJudgeAndLegalAdvisor(caseData.getAllocatedJudge()))
+            .allocatedJudgeAndLegalAdvisor(getAllocatedJudge(caseData.getAllocatedJudge()))
             .courtName(dataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(caseManagementOrder.getDateOfIssue())
@@ -98,8 +98,8 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         return dataExtractionService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor());
     }
 
-    private DocmosisJudge getAllocatedJudgeAndLegalAdvisor(Judge allocatedJudge) {
-        return dataExtractionService.getAllocatedJudgeAndLegalAdvisor(JudgeAndLegalAdvisor.from(allocatedJudge));
+    private DocmosisJudge getAllocatedJudge(Judge allocatedJudge) {
+        return dataExtractionService.getAllocatedJudge(JudgeAndLegalAdvisor.from(allocatedJudge));
     }
 
     private boolean needsNextHearingDate(CaseManagementOrder caseManagementOrder) {
