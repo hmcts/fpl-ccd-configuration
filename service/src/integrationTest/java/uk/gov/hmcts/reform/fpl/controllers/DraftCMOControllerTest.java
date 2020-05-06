@@ -198,6 +198,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     }
 
     private DocmosisCaseManagementOrder expectedTemplateData() {
+        List<DocmosisChild> children = expectedChildren();
         return DocmosisCaseManagementOrder.builder()
             .familyManCaseNumber("12345")
             .courtName("Family Court")
@@ -207,7 +208,8 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .representatives(expectedRepresentatives())
             .respondents(expectedRespondents())
             .respondentsProvided(true)
-            .children(expectedChildren())
+            .children(children)
+            .numberOfChildren(children.size())
             .applicantName("London Borough of Southwark")
             .hearingBooking(expectedHearing())
             .crest("[userImage:crest.png]")

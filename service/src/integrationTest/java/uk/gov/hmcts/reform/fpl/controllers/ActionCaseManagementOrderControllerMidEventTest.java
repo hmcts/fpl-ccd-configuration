@@ -113,7 +113,7 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
     }
 
     private DocmosisCaseManagementOrder expectedTemplateData(DocmosisCaseManagementOrder order) {
-
+        List<DocmosisChild> children = expectedChildren();
         return DocmosisCaseManagementOrder.builder()
             .familyManCaseNumber("12345")
             .courtName("Family Court")
@@ -123,7 +123,8 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
             .representatives(expectedRepresentatives())
             .respondents(expectedRespondents())
             .respondentsProvided(true)
-            .children(expectedChildren())
+            .children(children)
+            .numberOfChildren(children.size())
             .applicantName("London Borough of Southwark")
             .hearingBooking(expectedHearing())
             .crest(order.getCrest())
