@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -16,7 +15,6 @@ import java.util.Map;
 public class PopulateCaseService {
 
     private final Time time;
-    private final UploadDocumentService uploadDocumentService;
 
     public Map<String, Object> getTimeBasedAndDocumentData() {
         var mockDocument = Map.of("documentStatus", "Attached", "typeOfDocument", uploadMockFile("mockFile.txt"));
@@ -41,8 +39,8 @@ public class PopulateCaseService {
     }
 
     private DocumentReference uploadMockFile(String filename) {
-        Document document = uploadDocumentService.uploadPDF(new byte[]{}, filename);
+        //Document document = uploadDocumentService.uploadPDF(new byte[]{}, filename);
 
-        return DocumentReference.buildFromDocument(document);
+        return DocumentReference.builder().filename(filename).url("fakeUrl").binaryUrl("fakeBinaryUrl").build();
     }
 }

@@ -119,15 +119,21 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
     }
 
     private Map<String, Object> getExpectedTimeBasedAndDocumentData() {
-        var expectedDocumentReference = DocumentReference.buildFromDocument(document);
+        var expectedSubmittedForm = DocumentReference.builder()
+            .filename("mockSubmittedApplication.pdf")
+            .url("fakeUrl")
+            .binaryUrl("fakeBinaryUrl")
+            .build();
         var expectedDocument = Map.of(
-            "documentStatus", "Attached",
-            "typeOfDocument", expectedDocumentReference);
+            "documentStatus",
+            "Attached",
+            "typeOfDocument",
+            DocumentReference.builder().filename("mockFile.txt").url("fakeUrl").binaryUrl("fakeBinaryUrl").build());
 
         return Map.of(
         "dateAndTimeSubmitted", now().toString(),
         "dateSubmitted", dateNow().toString(),
-        "submittedForm", expectedDocumentReference,
+        "submittedForm", expectedSubmittedForm,
         "documents_checklist_document", expectedDocument,
         "documents_threshold_document", expectedDocument,
         "documents_socialWorkCarePlan_document", expectedDocument,
@@ -138,7 +144,11 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
 
     private Map<String, Object> getExpectedSDOData() {
         return Map.of(
-            "orderDoc", DocumentReference.buildFromDocument(document)
+            "orderDoc", DocumentReference.builder()
+                .filename("mockSDO.pdf")
+                .url("fakeUrl")
+                .binaryUrl("fakeBinaryUrl")
+                .build()
         );
 
     }

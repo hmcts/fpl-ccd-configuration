@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
@@ -59,8 +58,16 @@ class PopulateCaseServiceTest {
         var expectedMockDocument = Map.of("documentStatus",
             "Attached",
             "typeOfDocument",
-            DocumentReference.buildFromDocument(MOCK_DOCUMENT));
-        var expectedSubmittedForm = DocumentReference.buildFromDocument(MOCK_APPLICATION_DOCUMENT);
+            DocumentReference.builder()
+                .filename(MOCK_DOCUMENT.originalDocumentName)
+                .url("fakeUrl")
+                .binaryUrl("fakeBinaryUrl")
+                .build());
+        var expectedSubmittedForm = DocumentReference.builder()
+            .filename(MOCK_APPLICATION_DOCUMENT.originalDocumentName)
+            .url("fakeUrl")
+            .binaryUrl("fakeBinaryUrl")
+            .build();
 
         Map<String, Object> data = service.getTimeBasedAndDocumentData();
 
@@ -73,8 +80,8 @@ class PopulateCaseServiceTest {
         assertThat(data).extracting("documents_socialWorkAssessment_document").isEqualTo(expectedMockDocument);
         assertThat(data).extracting("documents_socialWorkEvidenceTemplate_document").isEqualTo(expectedMockDocument);
 
-        verify(uploadDocumentService).uploadPDF(new byte[]{}, "mockFile.txt");
-        verify(uploadDocumentService).uploadPDF(new byte[]{}, "mockSubmittedApplication.pdf");
+        //verify(uploadDocumentService).uploadPDF(new byte[]{}, "mockFile.txt");
+        //verify(uploadDocumentService).uploadPDF(new byte[]{}, "mockSubmittedApplication.pdf");
     }
 
     @Test
@@ -84,8 +91,12 @@ class PopulateCaseServiceTest {
         var updatedSDOData = service.getUpdatedSDOData(originalMap);
 
         assertThat(updatedSDOData).extracting("orderDoc")
-            .isEqualTo(DocumentReference.buildFromDocument(MOCK_SDO_DOCUMENT));
+            .isEqualTo(DocumentReference.builder()
+                .filename(MOCK_SDO_DOCUMENT.originalDocumentName)
+                .url("fakeUrl")
+                .binaryUrl("fakeBinaryUrl")
+                .build());
         assertThat(originalMap).extracting("standardDirectionOrder").extracting("orderDoc").isEqualTo("initialValue");
-        verify(uploadDocumentService).uploadPDF(new byte[]{}, "mockSDO.pdf");
+        //verify(uploadDocumentService).uploadPDF(new byte[]{}, "mockSDO.pdf");
     }
 }

@@ -196,7 +196,11 @@ module.exports = function () {
           headers: {
             'Authorization': `Bearer ${authToken}`,
           },
-        });
+        }).catch(e => {
+        console.log('Populate case request failed:');
+        console.log(e.response.data);
+        throw e;
+      });
     },
 
     async getAuthToken() {
@@ -205,7 +209,11 @@ module.exports = function () {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-        });
+        }).catch(e => {
+        console.log('IDAM call for auth token failed:');
+        console.log(e.response.data);
+        throw e;
+      });
 
       return response.data.access_token;
     },
