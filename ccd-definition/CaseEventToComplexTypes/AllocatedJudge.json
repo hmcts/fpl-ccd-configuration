@@ -38,5 +38,15 @@
     "EventElementLabel": "Full name",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocatedJudge",
+    "CaseEventID": "allocatedJudge",
+    "CaseFieldID": "allocatedJudge",
+    "ListElementCode": "judgeEmailAddress",
+    "EventElementLabel": "Email Address",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
   }
 ]

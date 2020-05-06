@@ -14,6 +14,7 @@ public class JudgeAndLegalAdvisor {
     private final String otherTitle;
     private final String judgeLastName;
     private final String judgeFullName;
+    private final String judgeEmailAddress;
     private final String legalAdvisorName;
     private String allocatedJudgeLabel;
     private String useAllocatedJudge;

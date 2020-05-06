@@ -125,6 +125,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
         callbackRequest.getCaseDetails().getData().put("allocatedJudge", Judge.builder()
             .judgeTitle(HER_HONOUR_JUDGE)
             .judgeFullName("Davidson")
+            .judgeEmailAddress("davidson@example.com")
             .build());
 
         return callbackRequest;

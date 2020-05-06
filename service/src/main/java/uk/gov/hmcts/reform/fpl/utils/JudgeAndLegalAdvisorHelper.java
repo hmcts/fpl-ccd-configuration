@@ -42,6 +42,7 @@ public class JudgeAndLegalAdvisorHelper {
             .otherTitle(allocatedJudge.getOtherTitle())
             .judgeLastName(allocatedJudge.getJudgeLastName())
             .judgeFullName(allocatedJudge.getJudgeFullName())
+            .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress())
             .legalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
             .allocatedJudgeLabel(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
             .useAllocatedJudge(judgeAndLegalAdvisor.getUseAllocatedJudge())
