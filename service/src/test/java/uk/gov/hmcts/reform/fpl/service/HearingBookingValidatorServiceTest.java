@@ -7,7 +7,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import static java.util.Collections.emptyList;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HearingBookingValidatorService.class, ValidateGroupService.class,
@@ -23,6 +26,8 @@ import static org.mockito.Mockito.when;
 class HearingBookingValidatorServiceTest {
 
     private static final String VALIDATION_ERROR = "Error 1";
+    private static final String ALLOCATED_JUDGE_VALIDATION_ERROR
+        = "You need to enter a judge before you can add hearing details";
 
     @MockBean
     private ValidateGroupService validateGroupService;
@@ -71,4 +76,29 @@ class HearingBookingValidatorServiceTest {
         assertThat(validationErrors).containsExactly(String.format("%s for hearing 2", VALIDATION_ERROR));
     }
 
+    @Test
+    void shouldReturnValidationErrorsWhenAJudgeIsNotAllocatedToTheCase() {
+        final CaseData caseData = CaseData.builder().build();
+
+        when(validateGroupService.validateGroup(caseData, HearingBookingDetailsGroup.class))
+            .thenReturn(List.of(ALLOCATED_JUDGE_VALIDATION_ERROR));
+
+        final List<String> validationErrors = service.validateHasAllocatedJudge(caseData);
+
+        assertThat(validationErrors).containsExactly(ALLOCATED_JUDGE_VALIDATION_ERROR);
+    }
+
+    @Test
+    void shouldReturnEmptyValidationErrorsWhenJudgeAllocatedToTheCase() {
+        final CaseData caseData = CaseData.builder()
+            .allocatedJudge(Judge.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Davidson")
+                .build())
+            .build();
+
+        final List<String> validationErrors = service.validateHasAllocatedJudge(caseData);
+
+        assertThat(validationErrors).isEmpty();
+    }
 }

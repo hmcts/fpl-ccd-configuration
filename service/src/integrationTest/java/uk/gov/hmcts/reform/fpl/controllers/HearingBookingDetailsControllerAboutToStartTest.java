@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -8,15 +9,16 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -25,18 +27,29 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @WebMvcTest(HearingBookingDetailsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class HearingBookingDetailsControllerAboutToStartTest extends AbstractControllerTest {
+    private static final String ERROR_MESSAGE = "You need to enter a judge before you can add hearing details";
 
     HearingBookingDetailsControllerAboutToStartTest() {
         super("add-hearing-bookings");
     }
 
     @Test
-    void shouldReturnPopulatedHearingWhenNoOtherHearingsExist() {
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails(new HashMap<>()));
+    void shouldReturnValidationErrorsWhenAJudgeIsNotAllocatedToTheCase() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails(ImmutableMap.of()));
+        assertThat(response.getErrors()).containsExactly(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnPopulatedHearingWhenNoOtherHearingsExistAndCaseHasAllocatedJudge() {
+        Map<String, Object> data = Map.of("allocatedJudge", buildAllocatedJudge());
+        CaseDetails caseDetails = caseDetails(data);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(unwrapElements(caseData.getHearingDetails())).containsExactly(HearingBooking.builder().build());
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
@@ -46,8 +59,14 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
 
         List<Element<HearingBooking>> hearingDetails = newArrayList(hearingDetail, hearingDetailPast);
 
-        AboutToStartOrSubmitCallbackResponse response =
-            postAboutToStartEvent(caseDetails(Map.of(HEARING_DETAILS_KEY, hearingDetails)));
+        Map<String, Object> data = Map.of(
+            HEARING_DETAILS_KEY, hearingDetails,
+            "allocatedJudge", buildAllocatedJudge()
+        );
+
+        CaseDetails caseDetails = caseDetails(data);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -57,6 +76,13 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
     private CaseDetails caseDetails(Map<String, Object> data) {
         return CaseDetails.builder()
             .data(data)
+            .build();
+    }
+
+    private Judge buildAllocatedJudge() {
+        return Judge.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Davidson")
             .build();
     }
 

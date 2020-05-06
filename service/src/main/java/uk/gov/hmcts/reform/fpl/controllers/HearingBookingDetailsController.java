@@ -36,16 +36,21 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
+        List<String> errors = validationService.validateHasAllocatedJudge(caseData);
 
-        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetails);
+        if (errors.isEmpty()) {
+            List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
 
-        hearingDetails.removeAll(pastHearings);
+            List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetails);
 
-        caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
+            hearingDetails.removeAll(pastHearings);
+
+            caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .errors(errors)
             .build();
     }
 
