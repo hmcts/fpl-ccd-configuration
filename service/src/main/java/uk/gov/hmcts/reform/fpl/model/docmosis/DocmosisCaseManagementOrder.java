@@ -13,7 +13,7 @@ public class DocmosisCaseManagementOrder extends DocmosisOrder {
     private final Schedule schedule;
     private final List<DocmosisRecital> recitals;
     private final boolean recitalsProvided;
-    private final DocmosisJudgeAndLegalAdvisor allocatedJudgeAndLegalAdvisor;
+    private final DocmosisJudge allocatedJudgeAndLegalAdvisor;
 
     @Builder
     public DocmosisCaseManagementOrder(DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor,
@@ -35,7 +35,7 @@ public class DocmosisCaseManagementOrder extends DocmosisOrder {
                                        boolean scheduleProvided,
                                        List<DocmosisRecital> recitals,
                                        boolean recitalsProvided,
-                                       DocmosisJudgeAndLegalAdvisor allocatedJudgeAndLegalAdvisor,
+                                       DocmosisJudge allocatedJudgeAndLegalAdvisor,
                                        int numberOfChildren) {
         super(judgeAndLegalAdvisor, courtName, familyManCaseNumber, dateOfIssue,
             complianceDeadline, respondents, children, respondentsProvided, applicantName, hearingBooking, directions,

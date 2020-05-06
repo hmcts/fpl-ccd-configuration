@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
@@ -48,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.ALLOCATED_JUDGE_KEY;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -111,7 +113,7 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
             .id(UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774"))
             .build());
 
-        caseDetails.getData().put("allocatedJudge", Judge.builder()
+        caseDetails.getData().put(ALLOCATED_JUDGE_KEY, Judge.builder()
             .judgeTitle(MAGISTRATES)
             .judgeLastName("Stark")
             .judgeFullName("Brandon Stark")
@@ -126,7 +128,7 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
-            .allocatedJudgeAndLegalAdvisor(expectedAllocatedJudgeAndLegalAdvisor())
+            .allocatedJudgeAndLegalAdvisor(expectedAllocatedJudge())
             .dateOfIssue(formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())
@@ -218,8 +220,8 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
             .build());
     }
 
-    private DocmosisJudgeAndLegalAdvisor expectedAllocatedJudgeAndLegalAdvisor() {
-        return DocmosisJudgeAndLegalAdvisor.builder()
+    private DocmosisJudge expectedAllocatedJudge() {
+        return DocmosisJudge.builder()
             .judgeTitleAndName("Brandon Stark (JP)")
             .build();
     }

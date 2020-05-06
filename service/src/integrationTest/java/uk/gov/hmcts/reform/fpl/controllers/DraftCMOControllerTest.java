@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
@@ -79,7 +80,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long CASE_ID = 1L;
     private static final DateTimeFormatter FORMATTER = ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK);
-    public static final String DRAFT_CMO_FILE_NAME = "draft-case-management-order.pdf";
+    private static final String DRAFT_CMO_FILE_NAME = "draft-case-management-order.pdf";
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -211,7 +212,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
-            .allocatedJudgeAndLegalAdvisor(expectedAllocatedJudgeAndLegalAdvisor())
+            .allocatedJudgeAndLegalAdvisor(expectedAllocatedJudge())
             .dateOfIssue(formatLocalDateToString(dateNow(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())
@@ -319,8 +320,8 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class).getOrderDoc();
     }
 
-    private DocmosisJudgeAndLegalAdvisor expectedAllocatedJudgeAndLegalAdvisor() {
-        return DocmosisJudgeAndLegalAdvisor.builder()
+    private DocmosisJudge expectedAllocatedJudge() {
+        return DocmosisJudge.builder()
             .judgeTitleAndName("Brandon Stark (JP)")
             .build();
     }

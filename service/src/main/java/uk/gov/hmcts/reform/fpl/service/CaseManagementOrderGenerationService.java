@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
@@ -97,7 +98,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         return dataExtractionService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor());
     }
 
-    private DocmosisJudgeAndLegalAdvisor getAllocatedJudgeAndLegalAdvisor(Judge allocatedJudge) {
+    private DocmosisJudge getAllocatedJudgeAndLegalAdvisor(Judge allocatedJudge) {
         return dataExtractionService.getAllocatedJudgeAndLegalAdvisor(JudgeAndLegalAdvisor.from(allocatedJudge));
     }
 
