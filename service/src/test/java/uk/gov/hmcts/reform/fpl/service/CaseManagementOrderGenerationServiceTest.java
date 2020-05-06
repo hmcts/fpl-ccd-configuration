@@ -188,7 +188,7 @@ class CaseManagementOrderGenerationServiceTest {
             .directions(emptyList())
             .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
-            .allocatedJudgeAndLegalAdvisor(testDocmosisJudge())
+            .allocatedJudge(testDocmosisJudge())
             .build();
     }
 
@@ -310,7 +310,7 @@ class CaseManagementOrderGenerationServiceTest {
             .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
             .courtseal(templateData.getCourtseal())
-            .allocatedJudgeAndLegalAdvisor(testDocmosisJudge())
+            .allocatedJudge(testDocmosisJudge())
             .build();
     }
 

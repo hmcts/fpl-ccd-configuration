@@ -67,7 +67,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
-            .allocatedJudgeAndLegalAdvisor(getAllocatedJudge(caseData.getAllocatedJudge()))
+            .allocatedJudge(getAllocatedJudge(caseData.getAllocatedJudge()))
             .courtName(dataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(caseManagementOrder.getDateOfIssue())

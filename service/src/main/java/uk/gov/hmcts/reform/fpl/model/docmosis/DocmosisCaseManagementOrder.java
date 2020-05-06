@@ -13,7 +13,7 @@ public class DocmosisCaseManagementOrder extends DocmosisOrder {
     private final Schedule schedule;
     private final List<DocmosisRecital> recitals;
     private final boolean recitalsProvided;
-    private final DocmosisJudge allocatedJudgeAndLegalAdvisor;
+    private final DocmosisJudge allocatedJudge;
 
     @Builder
     public DocmosisCaseManagementOrder(DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor,
@@ -35,7 +35,7 @@ public class DocmosisCaseManagementOrder extends DocmosisOrder {
                                        boolean scheduleProvided,
                                        List<DocmosisRecital> recitals,
                                        boolean recitalsProvided,
-                                       DocmosisJudge allocatedJudgeAndLegalAdvisor,
+                                       DocmosisJudge allocatedJudge,
                                        int numberOfChildren) {
         super(judgeAndLegalAdvisor, courtName, familyManCaseNumber, dateOfIssue,
             complianceDeadline, respondents, children, respondentsProvided, applicantName, hearingBooking, directions,
@@ -45,6 +45,6 @@ public class DocmosisCaseManagementOrder extends DocmosisOrder {
         this.scheduleProvided = scheduleProvided;
         this.recitals = recitals;
         this.recitalsProvided = recitalsProvided;
-        this.allocatedJudgeAndLegalAdvisor = allocatedJudgeAndLegalAdvisor;
+        this.allocatedJudge = allocatedJudge;
     }
 }

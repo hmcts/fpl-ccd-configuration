@@ -207,7 +207,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
-            .allocatedJudgeAndLegalAdvisor(testDocmosisJudge())
+            .allocatedJudge(testDocmosisJudge())
             .dateOfIssue(formatLocalDateToString(dateNow(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())
