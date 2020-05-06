@@ -15,7 +15,7 @@ java:
     FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
     LD_USER_KEY: FPLA_PREVIEW
     SCHEDULER_ENABLED: false
-    POPULATE_CASE_ENDPOINT_ENABLED: true
+    POPULATE_CASE_ENABLED: true
   keyVaults:
     fpl:
       secrets:

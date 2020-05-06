@@ -134,8 +134,8 @@ scheduler:
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
       cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
 
-  populate_case:
-    enabled: ${POPULATE_CASE_ENDPOINT_ENABLED:false}
+populate_case:
+  enabled: ${POPULATE_CASE_ENABLED:false}
 ---
 
 spring:
