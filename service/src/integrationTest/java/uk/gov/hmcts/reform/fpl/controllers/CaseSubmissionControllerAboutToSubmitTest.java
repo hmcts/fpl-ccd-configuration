@@ -11,10 +11,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
 import java.util.List;
 import java.util.Map;
@@ -40,15 +40,15 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     private UserDetailsService userDetailsService;
 
     @MockBean
-    private DocumentGeneratorService documentGeneratorService;
-
-    @MockBean
     private UploadDocumentService uploadDocumentService;
 
     @MockBean
     private FeatureToggleService featureToggleService;
 
-    private Document document = document();
+    @MockBean
+    private CaseSubmissionService caseSubmissionService;
+
+    private final Document document = document();
 
     CaseSubmissionControllerAboutToSubmitTest() {
         super("case-submission");
@@ -60,8 +60,8 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
         given(userDetailsService.getUserName())
             .willReturn("Emma Taylor");
-        given(documentGeneratorService.generateSubmittedFormPDF(any(), any()))
-            .willReturn(pdf);
+        given(caseSubmissionService.generateSubmittedFormPDF(any()))
+            .willReturn(document);
         given(uploadDocumentService.uploadPDF(pdf, "2313.pdf"))
             .willReturn(document);
     }
@@ -109,6 +109,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)
             .data(Map.of(
+                "dateSubmitted", dateNow(),
                 "orders", Orders.builder().orderType(List.of(CARE_ORDER)).build(),
                 "caseLocalAuthority", "example",
                 "amountToPay", "233300",
