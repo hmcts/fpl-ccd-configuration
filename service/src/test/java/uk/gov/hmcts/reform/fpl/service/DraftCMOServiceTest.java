@@ -11,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -32,9 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
@@ -178,6 +181,21 @@ class DraftCMOServiceTest {
                 .date(formatLocalDateToMediumStyle(5))
                 .build())
             .build());
+    }
+
+    @Test
+    void shouldNotOverwriteHearingDateWithNullWhenHearingDateListIsEmptyAndValueAlreadyExistsInCmo() {
+        CaseManagementOrder orderWithHearingDate = CaseManagementOrder.builder()
+            .status(CMOStatus.SEND_TO_JUDGE)
+            .hearingDate("1 May 2020")
+            .directions(emptyList())
+            .build();
+
+        CaseData caseData = CaseData.builder().caseManagementOrder(orderWithHearingDate).build();
+
+        CaseManagementOrder updatedOrder = draftCMOService.prepareCaseManagementOrder(caseData);
+
+        assertThat(updatedOrder).isEqualToComparingFieldByField(orderWithHearingDate);
     }
 
     @Test
