@@ -107,7 +107,7 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:saat') {
-    env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
+    env.URL = "https://ccd-xui-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
   }
 
@@ -119,7 +119,7 @@ withPipeline(type, product, component) {
       ./bin/configurer/import-ccd-definition.sh
     """
 
-    env.URL="https://case-management-web-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.URL="https://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
   }
 
   after('smoketest:saat') {
