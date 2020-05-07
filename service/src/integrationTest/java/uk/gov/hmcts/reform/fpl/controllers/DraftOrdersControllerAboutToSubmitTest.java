@@ -154,6 +154,41 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
+    void shouldRemoveAllocatedJudgePropertiesWhenOrderSealed() {
+        UUID directionId = UUID.randomUUID();
+
+        List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(
+            directionId);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(createCaseDataMap(directionWithShowHideValuesRemoved)
+                .put("dateOfIssue", dateNow())
+                .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
+                .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
+                    .allocatedJudgeLabel("Judge Label")
+                    .useAllocatedJudge("Yes")
+                    .build())
+                .put("allocatedJudge", Judge.builder().build())
+                .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
+                    .startDate(HEARING_START_DATE)
+                    .endDate(HEARING_END_DATE)
+                    .venue("EXAMPLE")
+                    .build()))
+                .put("caseLocalAuthority", "example")
+                .put("dateSubmitted", dateNow())
+                .put("applicants", getApplicant())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getAllocatedJudgeLabel()).isNull();
+        assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getUseAllocatedJudge()).isNull();
+    }
+
+    @Test
     void shouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
         CallbackRequest request = buildCallbackRequest();
 

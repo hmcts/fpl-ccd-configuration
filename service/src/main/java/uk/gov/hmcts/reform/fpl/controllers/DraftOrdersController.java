@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -53,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepopulateUseAllocatedJudgeField;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Api
@@ -93,8 +95,14 @@ public class DraftOrdersController {
 
             directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY,
-                caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
+            Judge allocatedJudge = caseData.getAllocatedJudge();
+
+            if (isNotEmpty(allocatedJudge)) {
+                prepopulateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
+            }
+
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, judgeAndLegalAdvisor);
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {

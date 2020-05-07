@@ -53,6 +53,16 @@ public class JudgeAndLegalAdvisorHelper {
         judgeAndLegalAdvisor.setUseAllocatedJudge(null);
     }
 
+    public static JudgeAndLegalAdvisor prepopulateUseAllocatedJudgeField(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                                         Judge allocatedJudge) {
+        if (judgeAndLegalAdvisor.isEqualToAllocatedJudge(allocatedJudge)) {
+            judgeAndLegalAdvisor.setUseAllocatedJudge("Yes");
+        } else {
+            judgeAndLegalAdvisor.setUseAllocatedJudge("No");
+        }
+        return judgeAndLegalAdvisor;
+    }
+
     public static String buildAllocatedJudgeLabel(Judge judge) {
         return String.format("Case assigned to: %s %s", judge.getJudgeOrMagistrateTitle(), judge.getJudgeName());
     }
