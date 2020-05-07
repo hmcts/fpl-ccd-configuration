@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PopulateCaseServiceTest {
 
     private static final DocumentReference.DocumentReferenceBuilder MOCK_DOCUMENT_BUILDER = DocumentReference.builder()
-        .url("http://fakeUrl")
-        .binaryUrl("http://fakeBinaryUrl");
+        .url("http://dm-store:8080/documents/fakeUrl")
+        .binaryUrl("http://dm-store:8080/documents/fakeUrl/binary");
 
     @Autowired
     private Time time;
 
-    @Autowired
     private PopulateCaseService service;
+
+    @BeforeEach()
+    void setup() {
+        this.service = new PopulateCaseService(time, "http://localhost:3453");
+    }
 
     @Test
     void shouldReturnTimeBasedAndDocumentData() {
@@ -60,5 +65,20 @@ class PopulateCaseServiceTest {
         assertThat(updatedSDOData).extracting("orderDoc")
             .isEqualTo(MOCK_DOCUMENT_BUILDER.filename("mockSDO.pdf").build());
         assertThat(originalMap).extracting("standardDirectionOrder").extracting("orderDoc").isEqualTo("initialValue");
+    }
+
+    @Test
+    void shouldNotChangeDmStoreUrlWhenNotOnLocalEnvironment() {
+        service = new PopulateCaseService(time, "http://dm-store-url");
+        Map<String, Object> data = Map.of("standardDirectionOrder", Map.of("orderDoc", "initialValue"));
+
+        var updatedSDOData = service.getUpdatedSDOData(data);
+
+        assertThat(updatedSDOData).extracting("orderDoc").isEqualTo(
+            DocumentReference.builder()
+            .filename("mockSDO.pdf")
+            .url("http://dm-store-url/documents/fakeUrl")
+            .binaryUrl("http://dm-store-url/documents/fakeUrl/binary")
+            .build());
     }
 }

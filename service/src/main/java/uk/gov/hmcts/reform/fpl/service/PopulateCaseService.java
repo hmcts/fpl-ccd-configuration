@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -10,11 +10,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @SuppressWarnings("unchecked")
 public class PopulateCaseService {
 
     private final Time time;
+    private final String dmStoreUri;
+
+    @Autowired
+    public PopulateCaseService(Time time, @Value("${document_management.url}") String dmStoreUri) {
+        this.time = time;
+        if (dmStoreUri.equals("http://localhost:3453")) {
+            dmStoreUri = "http://dm-store:8080";
+        }
+        this.dmStoreUri = dmStoreUri;
+    }
 
     public Map<String, Object> getTimeBasedAndDocumentData() {
         var mockDocument = Map.of("documentStatus", "Attached", "typeOfDocument", uploadMockFile("mockFile.txt"));
@@ -41,8 +50,8 @@ public class PopulateCaseService {
     private DocumentReference uploadMockFile(String filename) {
         return DocumentReference.builder()
             .filename(filename)
-            .url("http://fakeUrl")
-            .binaryUrl("http://fakeBinaryUrl")
+            .url(dmStoreUri + "/documents/fakeUrl")
+            .binaryUrl(dmStoreUri + "/documents/fakeUrl/binary")
             .build();
     }
 }

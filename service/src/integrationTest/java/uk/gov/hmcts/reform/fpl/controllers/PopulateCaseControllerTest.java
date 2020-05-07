@@ -30,8 +30,8 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
     private static final String URL_TEMPLATE = "/populateCase/%s/%s";
     private static final long CASE_ID = 1L;
     private static final DocumentReference.DocumentReferenceBuilder MOCK_DOCUMENT_BUILDER = DocumentReference.builder()
-        .url("http://fakeUrl")
-        .binaryUrl("http://fakeBinaryUrl");
+        .url("http://fake-document-management-store-api/documents/fakeUrl")
+        .binaryUrl("http://fake-document-management-store-api/documents/fakeUrl/binary");
 
     @Autowired
     ObjectMapper mapper;
