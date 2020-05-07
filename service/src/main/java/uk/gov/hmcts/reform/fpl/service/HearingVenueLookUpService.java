@@ -40,7 +40,7 @@ public class HearingVenueLookUpService {
     }
 
     public HearingVenue getHearingVenue(final HearingBooking hearingBooking) {
-        if (Objects.isNull(hearingBooking.getVenueCustomAddress())) {
+        if (!"OTHER".equals(hearingBooking.getVenue())) {
             return getHearingVenue(hearingBooking.getVenue());
         } else {
             return HearingVenue.builder()

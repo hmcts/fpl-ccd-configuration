@@ -68,6 +68,18 @@ public class HearingVenueLookUpServiceTest {
         }
 
         @Test
+        void shouldReturnHearingVenueByVenueIdWhenCustomHearingVenueIsSelected() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .venue("Venue")
+                .venueCustomAddress(Address.builder().build())
+                .build();
+
+            HearingVenue actualHearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
+
+            assertThat(actualHearingVenue).isEqualTo(predefinedHearingVenue);
+        }
+
+        @Test
         void shouldReturnHearingVenueByVenueIdWithCaseInsensitiveMatching() {
             HearingBooking hearingBooking = HearingBooking.builder().venue("venue").build();
 
