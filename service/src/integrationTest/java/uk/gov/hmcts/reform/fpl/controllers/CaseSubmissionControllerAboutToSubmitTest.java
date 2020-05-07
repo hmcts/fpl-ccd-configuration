@@ -103,7 +103,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldRemoveTemporaryFieldsWhenPresent() {
+    void shouldRetainPaymentInformationInCase() {
         given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
@@ -118,7 +118,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
             .build());
 
         assertThat(callbackResponse.getData())
-            .doesNotContainKey("amountToPay")
+            .containsEntry("amountToPay", "233300")
             .containsEntry("displayAmountToPay", YES.getValue());
     }
 }

@@ -363,4 +363,6 @@ public class CaseData {
     public String getComplianceDeadline() {
         return formatLocalDateToString(dateSubmitted.plusWeeks(26), FormatStyle.LONG);
     }
+
+    private final String amountToPay;
 }

@@ -143,7 +143,6 @@ public class CaseSubmissionController {
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", document.originalDocumentName)
             .build());
-        data.remove("amountToPay");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
