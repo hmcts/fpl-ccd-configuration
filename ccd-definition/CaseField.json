@@ -1309,5 +1309,13 @@
     "Label": " ",
     "FieldType": "Extend26WeekTimeline",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "comments",
+    "Label": "Add comments",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
   }
 ]

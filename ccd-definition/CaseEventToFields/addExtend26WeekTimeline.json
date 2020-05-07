@@ -10,5 +10,17 @@
     "PageLabel": "",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "No"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "comments",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "No"
   }
 ]
