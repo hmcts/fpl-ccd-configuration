@@ -1,20 +1,13 @@
-package uk.gov.hmcts.reform.fpl.model;
+package uk.gov.hmcts.reform.fpl.model.docmosis;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-
-import java.util.List;
-
 @Data
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
-@AllArgsConstructor
-public class Proceeding {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class DocmosisProceeding {
     private final String onGoingProceeding;
     private final String proceedingStatus;
     private final String caseNumber;
@@ -24,7 +17,5 @@ public class Proceeding {
     private final String judge;
     private final String children;
     private final String guardian;
-    private final String sameGuardianNeeded;
     private final String sameGuardianDetails;
-    private final List<Element<Proceeding>> additionalProceedings;
 }
