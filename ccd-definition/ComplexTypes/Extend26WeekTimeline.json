@@ -31,7 +31,16 @@
     "FieldType": "Date",
     "ElementLabel": "New end date",
     "HintText": "For example, 31 3 1980",
-    "FieldShowCondition": "caseExtensionTimeList=\"Other Extension\"",
+    "FieldShowCondition": "caseExtensionTimeList=\"OtherExtension\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Extend26WeekTimeline",
+    "ListElementCode": "caseExtensionReasonList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionReasonList",
+    "ElementLabel": "Why is this case being extended?",
     "SecurityClassification": "Public"
   }
 ]
