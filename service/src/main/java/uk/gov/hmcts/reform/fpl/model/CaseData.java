@@ -281,6 +281,24 @@ public class CaseData {
     private final Address epoRemovalAddress;
 
     @JsonIgnore
+    public List<Element<Proceeding>> getAllProceedings() {
+        List<Element<Proceeding>> proceedings = new ArrayList<>();
+
+        ofNullable(this.getProceeding()).map(ElementUtils::element).ifPresent(proceedings::add);
+        ofNullable(this.getProceeding())
+            .map(Proceeding::getAdditionalProceedings).ifPresent(proceedings::addAll);
+
+        return Collections.unmodifiableList(proceedings);
+    }
+
+    @JsonIgnore
+    public String getRelevantProceedings() {
+        return ofNullable(this.getProceeding())
+            .map(Proceeding::getOnGoingProceeding)
+            .orElse("");
+    }
+
+    @JsonIgnore
     public List<Element<Other>> getAllOthers() {
         List<Element<Other>> othersList = new ArrayList<>();
 
