@@ -37,6 +37,6 @@ Scenario('local submits case', async (I, caseViewPage, enterOrdersAndDirectionsN
   uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
   await I.completeEvent('Save and continue');
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-  enterAllocationProposalEventPage.selectAllocationProposal('District judge');
+  enterAllocationProposalEventPage.selectAllocationProposal('District Judge');
   await I.completeEvent('Save and continue');
 });
