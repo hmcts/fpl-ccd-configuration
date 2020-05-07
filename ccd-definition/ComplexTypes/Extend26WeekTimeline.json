@@ -20,8 +20,8 @@
     "ID": "Extend26WeekTimeline",
     "ListElementCode": "proposal",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "AllocationProposalList",
-    "ElementLabel": "Which level of judge do you recommend for this case?",
+    "FieldTypeParameter": "CaseExtensionTimeList",
+    "ElementLabel": "You can extend this date again, but you will not be able to revert back to the original date.",
     "SecurityClassification": "Public"
   }
 ]
