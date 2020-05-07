@@ -1306,17 +1306,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseSubmissionDateLabel",
-    "Label": "This case should be completed by",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseExtensionLabel",
-    "Label": "You can either extend this case by 8 weeks, or enter a different end date.",
-    "FieldType": "Label",
+    "ID": "extend26WeekTimeline",
+    "Label": " ",
+    "FieldType": "Extend26WeekTimeline",
     "SecurityClassification": "Public"
   }
 ]
