@@ -377,7 +377,8 @@
     "ID": "dateAndTimeSubmitted",
     "Label": "Date submitted",
     "FieldType": "DateTime",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "ResultsOrdering": "1:ASC"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1301,5 +1302,21 @@
     "FieldTypeParameter": "CaseNote",
     "SecurityClassification": "Public",
     "Comment": "The note fields to be displayed in the tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSubmissionDateLabel",
+    "Label": "This case should be completed by",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseExtensionLabel",
+    "Label": "You can either extend this case by 8 weeks, or enter a different end date.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
   }
 ]
