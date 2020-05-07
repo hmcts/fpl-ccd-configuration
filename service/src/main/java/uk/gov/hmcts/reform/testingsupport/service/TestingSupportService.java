@@ -25,12 +25,17 @@ public class TestingSupportService {
         this.dmStoreUri = dmStoreUri;
     }
 
-    public Map<String, Object> getTimeBasedAndDocumentData() {
+    public Map<String, Object> getAuditData() {
+        return Map.of(
+            "dateAndTimeSubmitted", time.now().toString(),
+            "dateSubmitted", time.now().toLocalDate().toString()
+        );
+    }
+
+    public Map<String, Object> getDocumentData() {
         var mockDocument = Map.of("documentStatus", "Attached", "typeOfDocument", uploadMockFile("mockFile.txt"));
 
         return Map.of(
-            "dateAndTimeSubmitted", time.now().toString(),
-            "dateSubmitted", time.now().toLocalDate().toString(),
             "submittedForm", uploadMockFile("mockSubmittedApplication.pdf"),
             "documents_checklist_document", mockDocument,
             "documents_threshold_document", mockDocument,

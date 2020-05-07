@@ -35,7 +35,15 @@ class TestingSupportServiceTest {
     }
 
     @Test
-    void shouldReturnTimeBasedAndDocumentData() {
+    void shouldReturnAuditData() {
+        Map<String, Object> data = service.getAuditData();
+
+        assertThat(data).extracting("dateAndTimeSubmitted").isEqualTo(time.now().toString());
+        assertThat(data).extracting("dateSubmitted").isEqualTo(time.now().toLocalDate().toString());
+    }
+
+    @Test
+    void shouldReturnDocumentData() {
         var expectedMockDocument = Map.of("documentStatus",
             "Attached",
             "typeOfDocument",
@@ -44,10 +52,8 @@ class TestingSupportServiceTest {
             .filename("mockSubmittedApplication.pdf")
             .build();
 
-        Map<String, Object> data = service.getTimeBasedAndDocumentData();
+        Map<String, Object> data = service.getDocumentData();
 
-        assertThat(data).extracting("dateAndTimeSubmitted").isEqualTo(time.now().toString());
-        assertThat(data).extracting("dateSubmitted").isEqualTo(time.now().toLocalDate().toString());
         assertThat(data).extracting("submittedForm").isEqualTo(expectedSubmittedForm);
         assertThat(data).extracting("documents_checklist_document").isEqualTo(expectedMockDocument);
         assertThat(data).extracting("documents_threshold_document").isEqualTo(expectedMockDocument);

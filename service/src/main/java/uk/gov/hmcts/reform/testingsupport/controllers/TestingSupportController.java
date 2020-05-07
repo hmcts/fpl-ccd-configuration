@@ -36,7 +36,8 @@ public class TestingSupportController {
         State state = State.valueOf(requestBody.get("state").toString());
         Map<String, Object> data = (Map<String, Object>) requestBody.get("data");
         if (Boolean.TRUE.equals(requestBody.get("updateTimeBasedAndDocumentData"))) {
-            data.putAll(testingSupportService.getTimeBasedAndDocumentData());
+            data.putAll(testingSupportService.getAuditData());
+            data.putAll(testingSupportService.getDocumentData());
             if (PREPARE_FOR_HEARING.equals(state)) {
                 data.put("standardDirectionOrder", testingSupportService.getUpdatedSDOData(data));
             }
