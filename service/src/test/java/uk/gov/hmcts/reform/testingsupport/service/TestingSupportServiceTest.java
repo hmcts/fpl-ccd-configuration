@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.testingsupport.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {FixedTimeConfiguration.class, JacksonAutoConfiguration.class,
-    PopulateCaseService.class})
-class PopulateCaseServiceTest {
+    TestingSupportService.class})
+class TestingSupportServiceTest {
 
     private static final DocumentReference.DocumentReferenceBuilder MOCK_DOCUMENT_BUILDER = DocumentReference.builder()
         .url("http://dm-store:8080/documents/fakeUrl")
@@ -27,11 +27,11 @@ class PopulateCaseServiceTest {
     @Autowired
     private Time time;
 
-    private PopulateCaseService service;
+    private TestingSupportService service;
 
     @BeforeEach()
     void setup() {
-        this.service = new PopulateCaseService(time, "http://localhost:3453");
+        this.service = new TestingSupportService(time, "http://localhost:3453");
     }
 
     @Test
@@ -69,7 +69,7 @@ class PopulateCaseServiceTest {
 
     @Test
     void shouldNotChangeDmStoreUrlWhenNotOnLocalEnvironment() {
-        service = new PopulateCaseService(time, "http://dm-store-url");
+        service = new TestingSupportService(time, "http://dm-store-url");
         Map<String, Object> data = Map.of("standardDirectionOrder", Map.of("orderDoc", "initialValue"));
 
         var updatedSDOData = service.getUpdatedSDOData(data);

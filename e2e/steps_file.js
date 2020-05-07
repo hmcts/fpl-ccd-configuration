@@ -1,8 +1,8 @@
 /* global process */
 const output = require('codeceptjs').output;
 
-const axios = require('axios');
 const config = require('./config');
+const caseHelper = require('./helpers/case_helper.js');
 
 const loginPage = require('./pages/login.page');
 const caseListPage = require('./pages/caseList.page');
@@ -178,44 +178,12 @@ module.exports = function () {
         .withText('Remove'));
     },
 
-    async submitNewCaseWithData(data, state = 'SUBMITTED') {
-      if (!data) {
-        data = mandatorySubmissionFields;
-      }
+    async submitNewCaseWithData(data = mandatorySubmissionFields) {
       const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-      await this.populateCaseWithData(caseId, data, state);
-      console.log(`Case ${caseId} has been submitted`);
+      await caseHelper.populateWithData(caseId, data);
+      console.log(`Case ${caseId} has been populated with data`);
 
       return caseId;
-    },
-
-    async populateCaseWithData(caseId, data, state) {
-      const authToken = await this.getAuthToken();
-      await axios.post(`${config.fplServiceUrl}/populateCase/${normalizeCaseId(caseId)}/${state}`, data,
-        {
-          headers: {
-            'Authorization': `Bearer ${authToken}`,
-          },
-        }).catch(e => {
-        console.log('Populate case request failed:');
-        console.log(e.response.data);
-        throw e;
-      });
-    },
-
-    async getAuthToken() {
-      const response = await axios.post(`${config.idamApiUrl}/loginUser?username=${config.systemUpdateUser.email}&password=${config.systemUpdateUser.password}`, {},
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }).catch(e => {
-        console.log('IDAM call for auth token failed:');
-        console.log(e.response.data);
-        throw e;
-      });
-
-      return response.data.access_token;
     },
 
     /**

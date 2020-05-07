@@ -10,24 +10,27 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.NestedServletException;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.testingsupport.controllers.TestingSupportController;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(PopulateCaseController.class)
+@WebMvcTest(TestingSupportController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PopulateCaseControllerTest extends AbstractControllerTest {
+class TestingSupportControllerTest extends AbstractControllerTest {
 
-    private static final String URL_TEMPLATE = "/populateCase/%s/%s";
+    private static final String URL_TEMPLATE = "/testingSupport/populateCase/%s";
     private static final long CASE_ID = 1L;
     private static final DocumentReference.DocumentReferenceBuilder MOCK_DOCUMENT_BUILDER = DocumentReference.builder()
         .url("http://fake-document-management-store-api/documents/fakeUrl")
@@ -42,25 +45,29 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
-    PopulateCaseControllerTest() {
+    TestingSupportControllerTest() {
         super("populate-case");
     }
 
     @Test
-    void shouldReturnErrorForInvalidState() throws Exception {
-        var result = makePostRequest("NOT_A_REAL_STATE", Map.of());
+    void shouldThrowExceptionForInvalidState() {
+        NestedServletException thrownException = assertThrows(NestedServletException.class,
+            () -> makePostRequest(Map.of("state", "NOT_A_REAL_STATE")));
 
-        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        assertThat(thrownException.getMessage()).contains("No enum constant");
     }
 
     @Test
     void shouldAddTimeBasedAndDocumentData() throws Exception {
-        Map<String, Object> caseData = Map.of("updateTimeBasedAndDocumentData", true, "property", "value");
+        Map<String, Object> caseData = Map.of("property", "value");
+        Map<String, Object> requestBody = Map.of(
+            "state", "SUBMITTED",
+            "updateTimeBasedAndDocumentData", true,
+            "data", caseData);
         Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
         expectedCaseDataForUpdate.putAll(getExpectedTimeBasedAndDocumentData());
-        expectedCaseDataForUpdate.remove("updateTimeBasedAndDocumentData");
 
-        var result = makePostRequest("SUBMITTED", caseData);
+        var result = makePostRequest(requestBody);
 
         assertThat(result.getResponse().getStatus()).isEqualTo(200);
         verify(coreCaseDataService).triggerEvent(
@@ -73,14 +80,16 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldAddSDODataForPrepareForHearingState() throws Exception {
-        Map<String, Object> caseData = Map.of("updateTimeBasedAndDocumentData", true,
-            "standardDirectionOrder", Map.of());
+        Map<String, Object> caseData = Map.of("standardDirectionOrder", Map.of());
+        Map<String, Object> requestBody = Map.of(
+            "state", "PREPARE_FOR_HEARING",
+            "updateTimeBasedAndDocumentData", true,
+            "data", caseData);
         Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
         expectedCaseDataForUpdate.putAll(getExpectedTimeBasedAndDocumentData());
         expectedCaseDataForUpdate.put("standardDirectionOrder", getExpectedSDOData());
-        expectedCaseDataForUpdate.remove("updateTimeBasedAndDocumentData");
 
-        var result = makePostRequest("PREPARE_FOR_HEARING", caseData);
+        var result = makePostRequest(requestBody);
 
         assertThat(result.getResponse().getStatus()).isEqualTo(200);
         verify(coreCaseDataService).triggerEvent(
@@ -94,7 +103,12 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
     @Test
     void shouldNotAddAnyDataWhenUpdateTimeBasedAndDocumentDataIsNotSet() throws Exception {
         Map<String, Object> caseData = Map.of("property", "value");
-        var result = makePostRequest("GATEKEEPING", caseData);
+        Map<String, Object> requestBody = Map.of(
+            "state", "GATEKEEPING",
+            "data", caseData);
+        Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
+
+        var result = makePostRequest(requestBody);
 
         assertThat(result.getResponse().getStatus()).isEqualTo(200);
         verify(coreCaseDataService).triggerEvent(
@@ -102,7 +116,7 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
             CASE_TYPE,
             CASE_ID,
             "populateCase-Gatekeeping",
-            caseData);
+            expectedCaseDataForUpdate);
     }
 
     private Map<String, Object> getExpectedTimeBasedAndDocumentData() {
@@ -128,9 +142,9 @@ class PopulateCaseControllerTest extends AbstractControllerTest {
         return Map.of("orderDoc", MOCK_DOCUMENT_BUILDER.filename("mockSDO.pdf").build());
     }
 
-    private MvcResult makePostRequest(String state, Map<String, Object> body) throws Exception {
+    private MvcResult makePostRequest(Map<String, Object> body) throws Exception {
         return mockMvc
-            .perform(post(String.format(URL_TEMPLATE, CASE_ID, state))
+            .perform(post(String.format(URL_TEMPLATE, CASE_ID))
                 .header("authorization", USER_AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(body))

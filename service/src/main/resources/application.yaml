@@ -134,8 +134,8 @@ scheduler:
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
       cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
 
-populate_case:
-  enabled: ${POPULATE_CASE_ENABLED:false}
+testing_support:
+  enabled: ${TESTING_SUPPORT_ENABLED:false}
 ---
 
 spring:
@@ -254,7 +254,7 @@ feature:
 scheduler:
   enabled: false
 
-populate_case:
+testing_support:
   enabled: true
 
 ---
@@ -379,5 +379,5 @@ feature:
 scheduler:
   enabled: false
 
-populate_case:
+testing_support:
   enabled: true

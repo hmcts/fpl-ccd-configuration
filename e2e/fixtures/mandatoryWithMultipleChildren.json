@@ -1,151 +1,155 @@
 {
+  "state": "SUBMITTED",
   "updateTimeBasedAndDocumentData": true,
-  "orders": {
-    "orderType": [
-      "CARE_ORDER"
-    ]
-  },
-  "grounds": {
-    "thresholdReason": [
-      "noCare"
-    ],
-    "thresholdDetails": "mock threshold details"
-  },
-  "hearing": {
-    "reason": "test reason",
-    "timeFrame": "Same day"
-  },
-  "children1": [
-    {
-      "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
-      "value": {
-        "party": {
-          "gender": "Boy",
-          "lastName": "Jones",
-          "firstName": "Timothy",
-          "dateOfBirth": "2015-08-01"
-        }
-      }
+  "data": {
+    "caseName": "e2e test case",
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
     },
-    {
-      "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
-      "value": {
-        "party": {
-          "gender": "Boy",
-          "lastName": "Black",
-          "firstName": "John",
-          "dateOfBirth": "2016-09-02"
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "reason": "test reason",
+      "timeFrame": "Same day"
+    },
+    "children1": [
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      },
+      {
+        "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Black",
+            "firstName": "John",
+            "dateOfBirth": "2016-09-02"
+          }
         }
       }
-    }
-  ],
-  "solicitor": {
-    "dx": "160010 Kingsway 7",
-    "name": "John Smith",
-    "email": "solicitor@email.com",
-    "mobile": "07000000000",
-    "reference": "reference",
-    "telephone": "00000000000"
-  },
-  "applicants": [
-    {
-      "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
-      "value": {
-        "party": {
-          "email": {
-            "email": "applicant@email.com"
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "applicants": [
+      {
+        "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
+        "value": {
+          "party": {
+            "email": {
+              "email": "applicant@email.com"
+            },
+            "address": {
+              "County": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "London",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "AddressLine2": "Saffron Central Square 11"
+            },
+            "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
+            "jobTitle": "Legal adviser",
+            "partyType": "ORGANISATION",
+            "pbaNumber": "PBA1234567",
+            "clientCode": "8888",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "00000000000",
+              "contactDirection": "Jonathon Walker"
+            },
+            "organisationName": "John Smith",
+            "customerReference": "Example reference"
           },
-          "address": {
-            "County": "United Kingdom",
-            "PostCode": "CR0 2GE",
-            "PostTown": "London",
-            "AddressLine1": "Flat 12, Pinnacle Apartments",
-            "AddressLine2": "Saffron Central Square 11"
-          },
-          "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
-          "jobTitle": "Legal adviser",
-          "partyType": "ORGANISATION",
-          "pbaNumber": "PBA1234567",
-          "clientCode": "8888",
-          "mobileNumber": {
-            "telephoneNumber": "07000000000"
-          },
-          "telephoneNumber": {
-            "telephoneNumber": "00000000000",
-            "contactDirection": "Jonathon Walker"
-          },
-          "organisationName": "John Smith",
-          "customerReference": "Example reference"
-        },
-        "leadApplicantIndicator": "Yes"
-      }
-    }
-  ],
-  "sendToCtsc": "Yes",
-  "respondents1": [
-    {
-      "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
-      "value": {
-        "party": {
-          "gender": "Male",
-          "address": {
-            "County": "",
-            "Country": "United Kingdom",
-            "PostCode": "RG4 7AA",
-            "PostTown": "Reading",
-            "AddressLine1": "Flat 2",
-            "AddressLine2": "Caversham House 15-17",
-            "AddressLine3": "Church Road"
-          },
-          "lastName": "Bloggs",
-          "firstName": "Joe",
-          "dateOfBirth": "1980-01-01",
-          "placeOfBirth": "London",
-          "telephoneNumber": {
-            "telephoneNumber": "00000 000000"
-          },
-          "relationshipToChild": "Uncle"
+          "leadApplicantIndicator": "Yes"
         }
       }
+    ],
+    "sendToCtsc": "Yes",
+    "respondents1": [
+      {
+        "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          }
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "displayAmountToPay": "Yes",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+    "documents_socialWorkOther": [],
+    "documents_checklist_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_threshold_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_socialWorkCarePlan_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_socialWorkStatement_document": {
+      "documentStatus": "Included in social work evidence template (SWET)"
+    },
+    "documents_socialWorkAssessment_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_socialWorkChronology_document": {
+      "statusReason": "mock reason",
+      "documentStatus": "To follow"
+    },
+    "documents_socialWorkEvidenceTemplate_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
     }
-  ],
-  "dateSubmitted": "TO BE FILLED WITH VALID DATA",
-  "submittedForm": "TO BE FILLED WITH VALID DATA",
-  "submissionConsent": [
-    "agree"
-  ],
-  "allocationProposal": {
-    "proposal": "District judge"
-  },
-  "displayAmountToPay": "Yes",
-  "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
-  "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
-  "documents_socialWorkOther": [],
-  "documents_checklist_document": {
-    "documentStatus": "Attached",
-    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-  },
-  "documents_threshold_document": {
-    "documentStatus": "Attached",
-    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-  },
-  "documents_socialWorkCarePlan_document": {
-    "documentStatus": "Attached",
-    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-  },
-  "documents_socialWorkStatement_document": {
-    "documentStatus": "Included in social work evidence template (SWET)"
-  },
-  "documents_socialWorkAssessment_document": {
-    "documentStatus": "Attached",
-    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-  },
-  "documents_socialWorkChronology_document": {
-    "statusReason": "mock reason",
-    "documentStatus": "To follow"
-  },
-  "documents_socialWorkEvidenceTemplate_document": {
-    "documentStatus": "Attached",
-    "typeOfDocument": "TO BE FILLED WITH VALID DATA"
   }
 }

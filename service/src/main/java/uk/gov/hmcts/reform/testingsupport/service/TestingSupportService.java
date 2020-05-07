@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.testingsupport.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,13 +11,13 @@ import java.util.Map;
 
 @Service
 @SuppressWarnings("unchecked")
-public class PopulateCaseService {
+public class TestingSupportService {
 
     private final Time time;
     private final String dmStoreUri;
 
     @Autowired
-    public PopulateCaseService(Time time, @Value("${document_management.url}") String dmStoreUri) {
+    public TestingSupportService(Time time, @Value("${document_management.url}") String dmStoreUri) {
         this.time = time;
         if (dmStoreUri.equals("http://localhost:3453")) {
             dmStoreUri = "http://dm-store:8080";

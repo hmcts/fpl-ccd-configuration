@@ -6,7 +6,7 @@ let caseId;
 Feature('Gatekeeper makes allocation decision');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData(gatekeeping, 'GATEKEEPING');
+  caseId = await I.submitNewCaseWithData(gatekeeping);
 
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });

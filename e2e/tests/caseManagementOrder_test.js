@@ -9,7 +9,7 @@ let caseId;
 Feature('Case Management Order Journey');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData(standardDirectionOrder, 'PREPARE_FOR_HEARING');
+  caseId = await I.submitNewCaseWithData(standardDirectionOrder);
 });
 
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {

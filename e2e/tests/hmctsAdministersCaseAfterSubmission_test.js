@@ -281,21 +281,3 @@ Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage
   I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
 });
-
-Scenario('admin sends case to gatekeeper', async (I, caseViewPage, enterFamilyManCaseNumberEventPage, allocatedJudgeEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage) => {
-  const caseId = await I.submitNewCaseWithData();
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID();
-  await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
-  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
-  await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  await sendCaseToGatekeeperEventPage.enterEmail();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-});

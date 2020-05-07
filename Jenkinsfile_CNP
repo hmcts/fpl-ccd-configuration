@@ -174,8 +174,6 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:aat') {
-    env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
-    env.CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal"
     env.URL = "https://www-ccd.aat.platform.hmcts.net"
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
