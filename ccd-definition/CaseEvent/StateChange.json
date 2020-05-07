@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submitApplication",
     "Name": "Submit application",
-    "Description": "Submit application",
+    "Description": "Check and send application",
     "DisplayOrder": 17,
     "PreConditionState(s)": "Open",
     "PostConditionState": "Submitted",

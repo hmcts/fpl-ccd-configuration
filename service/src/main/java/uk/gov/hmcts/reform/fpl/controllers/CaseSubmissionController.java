@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -74,6 +75,9 @@ public class CaseSubmissionController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.remove(DISPLAY_AMOUNT_TO_PAY);
+
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails);
+
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
@@ -88,6 +92,11 @@ public class CaseSubmissionController {
             }
             String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName());
             data.put("submissionConsentLabel", label);
+            data.put("applicationDocumentToReview", DocumentReference.builder()
+                .url(document.links.self.href)
+                .binaryUrl(document.links.binary.href)
+                .filename(document.originalDocumentName)
+                .build());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

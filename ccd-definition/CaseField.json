@@ -324,8 +324,32 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submissionConsentLabel",
-    "Label": " ",
+    "Label": "Declaration",
     "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "downloadApplicationForReviewLabel",
+    "Label": "Download application",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "downloadApplicationForReviewHintText",
+    "Label": "Use this link to download and check the application before sending:",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicationDocumentToReview",
+    "FieldType": "Document",
+    "Label": " ",
     "SecurityClassification": "Public"
   },
   {
