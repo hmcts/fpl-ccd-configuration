@@ -362,10 +362,10 @@ public class CaseDataGeneratorHelper {
         return wrapElements(
             createCustomDirection(ALL_PARTIES),
             createCustomDirection(LOCAL_AUTHORITY),
-            createCustomDirection(CAFCASS),
-            createCustomDirection(COURT),
             createCustomDirection(PARENTS_AND_RESPONDENTS),
-            createCustomDirection(OTHERS)
+            createCustomDirection(CAFCASS),
+            createCustomDirection(OTHERS),
+            createCustomDirection(COURT)
         );
     }
 
