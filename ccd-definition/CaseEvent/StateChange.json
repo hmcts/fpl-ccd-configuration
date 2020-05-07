@@ -54,5 +54,19 @@
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "closeCase",
+    "Name": "Close the case",
+    "Description": "Close the case",
+    "DisplayOrder": 18,
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING",
+    "PostConditionState": "CLOSED",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "Y",
+    "EndButtonLabel": "Submit"
   }
 ]
