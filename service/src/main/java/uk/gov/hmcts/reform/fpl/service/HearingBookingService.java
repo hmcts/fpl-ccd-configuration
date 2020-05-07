@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
@@ -16,8 +18,11 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -74,10 +79,60 @@ public class HearingBookingService {
         return combinedHearingDetails;
     }
 
+    public List<Element<HearingBooking>> setHearingJudge(List<Element<HearingBooking>> hearingBookings,
+                                                         Judge allocatedJudge) {
+        return hearingBookings.stream()
+            .map(element -> {
+                HearingBooking hearingBooking = element.getValue();
+
+                JudgeAndLegalAdvisor selectedJudge =
+                    getSelectedJudge(hearingBooking.getJudgeAndLegalAdvisor(), allocatedJudge);
+
+                hearingBooking.setJudgeAndLegalAdvisor(selectedJudge);
+
+                return buildHearingBookingElement(element.getId(), hearingBooking);
+            }).collect(toList());
+    }
+
+    public List<Element<HearingBooking>> resetHearingJudge(List<Element<HearingBooking>> hearingBookings) {
+        return hearingBookings.stream()
+            .map(element -> {
+                HearingBooking hearingBooking = element.getValue();
+                JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
+
+                if (hasAllocatedJudge(judgeAndLegalAdvisor)) {
+                    return buildHearingBookingElement(element.getId(), resetJudgeDetails(hearingBooking));
+                }
+
+                return element;
+            }).collect(toList());
+    }
+
     private boolean isPastHearing(Element<HearingBooking> element) {
         return ofNullable(element.getValue())
             .map(HearingBooking::getStartDate)
             .filter(hearingDate -> hearingDate.isBefore(time.now()))
             .isPresent();
+    }
+
+    private HearingBooking resetJudgeDetails(HearingBooking hearingBooking) {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .useAllocatedJudge(YES.getValue())
+            .legalAdvisorName(hearingBooking.getJudgeAndLegalAdvisor().getLegalAdvisorName())
+            .build();
+
+        hearingBooking.setJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
+        return hearingBooking;
+    }
+
+    private boolean hasAllocatedJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        return isNotEmpty(judgeAndLegalAdvisor) && judgeAndLegalAdvisor.isUsingAllocatedJudge();
+    }
+
+    private Element<HearingBooking> buildHearingBookingElement(UUID id, HearingBooking hearingBooking) {
+        return Element.<HearingBooking>builder()
+            .id(id)
+            .value(hearingBooking)
+            .build();
     }
 }

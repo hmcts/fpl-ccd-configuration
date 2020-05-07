@@ -25,17 +25,22 @@ BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCa
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  await I.addAnotherElementToCollection();
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
-  I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
 
   //gatekeeper adds allocated judge
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
   await I.completeEvent('Save and continue');
+
+  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
+  await addHearingBookingDetailsEventPage.useAllocatedJudge();
+  await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.addAnotherElementToCollection();
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
+  await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
+  await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+  I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
 
   // gatekeeper create sdo
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);

@@ -9,9 +9,12 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -24,6 +27,10 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -169,6 +176,89 @@ class HearingBookingServiceTest {
     @NullAndEmptySource
     void shouldReturnEmptyWhenEmptyListOfHearings(List<Element<HearingBooking>> hearings) {
         assertThat(service.getFirstHearing(hearings)).isEmpty();
+    }
+
+    @Test
+    void shouldUpdateHearingBookingJudgeWhenHearingIsToUseAllocatedJudge() {
+        Judge allocatedJudge = buildAllocatedJudge();
+
+        List<Element<HearingBooking>> hearingBookings = wrapElements(
+            buildHearingBooking(YES),
+            buildHearingBooking(YES));
+
+        List<Element<HearingBooking>> updatedHearingBookings = service.setHearingJudge(hearingBookings, allocatedJudge);
+
+        JudgeAndLegalAdvisor hearingJudgeAndLegalAdvisor
+            = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
+
+        assertThat(hearingJudgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HER_HONOUR_JUDGE);
+        assertThat(hearingJudgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Jones");
+    }
+
+    @Test
+    void shouldNotUpdateHearingBookingJudgeWhenHearingIsUsingAlternateJudge() {
+        Judge allocatedJudge = buildAllocatedJudge();
+
+        List<Element<HearingBooking>> hearingBookings = wrapElements(buildHearingBooking(NO));
+
+        List<Element<HearingBooking>> updatedHearingBookings =
+            service.setHearingJudge(hearingBookings, allocatedJudge);
+
+        JudgeAndLegalAdvisor hearingJudgeAndLegalAdvisor
+            = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
+
+        assertThat(hearingJudgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
+        assertThat(hearingJudgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Richards");
+    }
+
+    @Test
+    void shouldReturnEmptyHearingBookingsWhenHearingBookingsAreEmpty() {
+        List<Element<HearingBooking>> emptyHearingBookings = wrapElements(HearingBooking.builder().build());
+        List<Element<HearingBooking>> hearingBookings = service.resetHearingJudge(emptyHearingBookings);
+
+        assertThat(hearingBookings).isEqualTo(emptyHearingBookings);
+    }
+
+    @Test
+    void shouldResetJudgeWhenHearingIsUsingAllocatedJudge() {
+        List<Element<HearingBooking>> hearingBookings = wrapElements(buildHearingBooking(YES));
+        List<Element<HearingBooking>> updatedHearingBookings = service.resetHearingJudge(hearingBookings);
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(null);
+        assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo(null);
+        assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
+    }
+
+    @Test
+    void shouldPersistJudgeWhenHearingIsUsingAlternateJudge() {
+        List<Element<HearingBooking>> hearingBookings = wrapElements(buildHearingBooking(NO));
+        List<Element<HearingBooking>> updatedHearingBookings = service.resetHearingJudge(hearingBookings);
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
+        assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Richards");
+        assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
+    }
+
+    private Judge buildAllocatedJudge() {
+        return Judge.builder()
+            .judgeTitle(HER_HONOUR_JUDGE)
+            .judgeLastName("Jones")
+            .build();
+    }
+
+    private HearingBooking buildHearingBooking(YesNo useAllocatedJudge) {
+        return HearingBooking.builder()
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .useAllocatedJudge(useAllocatedJudge.getValue())
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Richards")
+                .legalAdvisorName("Joe Bloggs")
+                .build())
+            .build();
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

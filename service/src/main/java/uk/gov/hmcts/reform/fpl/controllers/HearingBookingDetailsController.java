@@ -21,6 +21,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
 @RestController
@@ -41,11 +42,14 @@ public class HearingBookingDetailsController {
         if (errors.isEmpty()) {
             List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
 
+            hearingDetails = service.resetHearingJudge(hearingDetails);
+
             List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetails);
 
             hearingDetails.removeAll(pastHearings);
 
             caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
+            caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -75,8 +79,11 @@ public class HearingBookingDetailsController {
         List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
         List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
 
+        List<Element<HearingBooking>> updatedHearings =
+            service.setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
+
         List<Element<HearingBooking>> combinedHearingDetails =
-            service.combineHearingDetails(caseData.getHearingDetails(), pastHearings);
+            service.combineHearingDetails(updatedHearings, pastHearings);
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
 
