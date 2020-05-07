@@ -69,14 +69,22 @@ public class HearingVenueLookUpServiceTest {
 
         @Test
         void shouldReturnHearingVenueByVenueIdWhenCustomHearingVenueIsSelected() {
+
+            HearingVenue otherHearingVenue = HearingVenue.builder()
+                .venue("Other")
+                .hearingVenueId("OTHER")
+                .address(Address.builder()
+                    .build())
+                .build();
+
             HearingBooking hearingBooking = HearingBooking.builder()
-                .venue("Venue")
+                .venue("OTHER")
                 .venueCustomAddress(Address.builder().build())
                 .build();
 
             HearingVenue actualHearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
 
-            assertThat(actualHearingVenue).isEqualTo(predefinedHearingVenue);
+            assertThat(actualHearingVenue).isEqualTo(otherHearingVenue);
         }
 
         @Test
