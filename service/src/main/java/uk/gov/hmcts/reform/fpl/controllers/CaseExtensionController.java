@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.time.LocalDate;
 
+import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -26,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseExtensionController {
     private static final String CASE_COMPLETION_DATE = "completionDate";
+    private static final String CASE_EXTENSION_DATE = "extensionDate";
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
@@ -35,6 +37,21 @@ public class CaseExtensionController {
 
         LocalDate dateSubmitted = caseData.getDateSubmitted();
         caseDetails.getData().put(CASE_COMPLETION_DATE, formatLocalDateToString(dateSubmitted, DATE));
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
+    }
+
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if(isEmpty(caseData.getExtensionDate())){
+            String extensionDate = formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(8), DATE);
+            caseDetails.getData().put(CASE_EXTENSION_DATE, extensionDate);
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
