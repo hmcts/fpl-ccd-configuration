@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -136,9 +137,9 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         Other other2 = otherWithName("Sam");
         CaseData caseData = CaseData.builder().others(Others.builder()
-                .firstOther(other1)
-                .additionalOthers(wrapElements(other2))
-                .build())
+            .firstOther(other1)
+            .additionalOthers(wrapElements(other2))
+            .build())
             .build();
 
         assertThat(caseData.findOther(1)).isEqualTo(Optional.of(other2));
@@ -245,6 +246,26 @@ class CaseDataTest {
         void shouldReturnNullIfC2DocumentBundleIsNotPopulated() {
             caseData = CaseData.builder().c2DocumentBundle(null).build();
             assertThat(caseData.getLastC2DocumentBundle()).isEqualTo(null);
+        }
+    }
+
+    @Nested
+    class DirectionsObject {
+
+        @Test
+        void test() {
+            CaseData caseData = CaseData.builder()
+                .directionsForCaseManagementOrder(Directions.builder()
+                    .allPartiesCustomCMO(wrapElements(Direction.builder().build()))
+                    .build())
+                .build();
+
+            assertThat(caseData.getDirectionsForCaseManagementOrder().getAllDirections())
+                .isEqualTo(wrapElements(Direction.builder()
+                    .assignee(ALL_PARTIES)
+                    .custom("Yes")
+                    .readOnly("No")
+                    .build()));
         }
     }
 }

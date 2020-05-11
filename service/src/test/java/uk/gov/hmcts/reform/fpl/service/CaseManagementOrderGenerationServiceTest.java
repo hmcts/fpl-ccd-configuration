@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.Directions;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -153,8 +154,10 @@ class CaseManagementOrderGenerationServiceTest {
     private CaseData caseDataWithRespondentDirections(List<Element<Direction>> respondentDirections) {
         return baseCaseData()
             .caseManagementOrder(CaseManagementOrder.builder().id(HEARING_ID).build())
-            .respondentDirectionsCustomCMO(respondentDirections)
-            .allPartiesCustomCMO(wrapElements(direction()))
+            .directionsForCaseManagementOrder(Directions.builder()
+                .respondentDirectionsCustomCMO(respondentDirections())
+                .allPartiesCustomCMO(wrapElements(direction()))
+                .build())
             .build();
     }
 
@@ -238,9 +241,11 @@ class CaseManagementOrderGenerationServiceTest {
     private CaseData caseDataWithDirections() {
         return baseCaseData()
             .caseManagementOrder(CaseManagementOrder.builder().id(HEARING_ID).build())
-            .respondentDirectionsCustomCMO(respondentDirections())
-            .otherPartiesDirectionsCustomCMO(otherDirections())
-            .allPartiesCustomCMO(wrapElements(direction()))
+            .directionsForCaseManagementOrder(Directions.builder()
+                .respondentDirectionsCustomCMO(respondentDirections())
+                .otherPartiesDirectionsCustomCMO(otherDirections())
+                .allPartiesCustomCMO(wrapElements(direction()))
+                .build())
             .build();
     }
 

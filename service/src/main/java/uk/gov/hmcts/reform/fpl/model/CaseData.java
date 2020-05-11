@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -57,19 +58,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.service.CommonDirectionService.assignCustomDirections;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -113,22 +108,16 @@ public class CaseData {
     private final Allocation allocationDecision;
     private final List<Element<Direction>> allParties;
     private final List<Element<Direction>> allPartiesCustom;
-    private final List<Element<Direction>> allPartiesCustomCMO;
     private final List<Element<Direction>> localAuthorityDirections;
     private final List<Element<Direction>> localAuthorityDirectionsCustom;
-    private final List<Element<Direction>> localAuthorityDirectionsCustomCMO;
     private final List<Element<Direction>> courtDirections;
     private final List<Element<Direction>> courtDirectionsCustom;
-    private final List<Element<Direction>> courtDirectionsCustomCMO;
     private final List<Element<Direction>> cafcassDirections;
     private final List<Element<Direction>> cafcassDirectionsCustom;
-    private final List<Element<Direction>> cafcassDirectionsCustomCMO;
     private final List<Element<Direction>> otherPartiesDirections;
     private final List<Element<Direction>> otherPartiesDirectionsCustom;
-    private final List<Element<Direction>> otherPartiesDirectionsCustomCMO;
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
-    private final List<Element<Direction>> respondentDirectionsCustomCMO;
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
 
@@ -368,11 +357,12 @@ public class CaseData {
         String dateOfIssue = date.map(x -> formatLocalDateToString(x, DATE)).orElse(null);
         Schedule scheduleFromOrder = order.map(CaseManagementOrder::getSchedule).orElse(null);
         List<Element<Recital>> recitalsFromOrder = order.map(CaseManagementOrder::getRecitals).orElse(null);
+        Optional<Directions> directions = ofNullable(directionsForCaseManagementOrder);
 
         CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
             .hearingDate(order.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
             .id(order.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
-            .directions(combineAllDirectionsForCmo())
+            .directions(directions.map(Directions::getAllDirections).orElse(emptyList()))
             .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
             .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
             .status(order.map(CaseManagementOrder::getStatus).orElse(null))
@@ -391,16 +381,13 @@ public class CaseData {
         return preparedOrder;
     }
 
-    private List<Element<Direction>> combineAllDirectionsForCmo() {
-        List<Element<Direction>> directions = new ArrayList<>();
+    @JsonUnwrapped
+    private Directions directionsForCaseManagementOrder;
 
-        directions.addAll(assignCustomDirections(allPartiesCustomCMO, ALL_PARTIES));
-        directions.addAll(assignCustomDirections(localAuthorityDirectionsCustomCMO, LOCAL_AUTHORITY));
-        directions.addAll(assignCustomDirections(respondentDirectionsCustomCMO, PARENTS_AND_RESPONDENTS));
-        directions.addAll(assignCustomDirections(cafcassDirectionsCustomCMO, CAFCASS));
-        directions.addAll(assignCustomDirections(otherPartiesDirectionsCustomCMO, OTHERS));
-        directions.addAll(assignCustomDirections(courtDirectionsCustomCMO, COURT));
-
-        return directions;
+    @JsonSetter
+    public void setDirectionsForCaseManagementOrder(Directions directions) {
+        if (!directions.getAllDirections().isEmpty()) {
+            directionsForCaseManagementOrder = directions;
+        }
     }
 }

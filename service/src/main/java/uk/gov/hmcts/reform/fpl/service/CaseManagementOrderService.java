@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -16,27 +15,18 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
-import static uk.gov.hmcts.reform.fpl.service.CommonDirectionService.assignCustomDirections;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -110,44 +100,5 @@ public class CaseManagementOrderService {
         caseDetails.getData().remove("courtDirectionsCustomCMO");
         caseDetails.getData().remove("respondentDirectionsCustomCMO");
         caseDetails.getData().remove("otherPartiesDirectionsCustomCMO");
-    }
-
-    private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
-        List<Element<Direction>> directions = new ArrayList<>();
-
-        directions.addAll(assignCustomDirections(caseData.getAllPartiesCustomCMO(),
-            ALL_PARTIES));
-
-        directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustomCMO(),
-            LOCAL_AUTHORITY));
-
-        directions.addAll(orderByParentsAndRespondentAssignee(assignCustomDirections(
-            caseData.getRespondentDirectionsCustomCMO(), PARENTS_AND_RESPONDENTS)));
-
-        directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustomCMO(),
-            CAFCASS));
-
-        directions.addAll(orderByOtherPartiesAssignee(assignCustomDirections(
-            caseData.getOtherPartiesDirectionsCustomCMO(), OTHERS)));
-
-        directions.addAll(assignCustomDirections(caseData.getCourtDirectionsCustomCMO(), COURT));
-
-        return directions;
-    }
-
-    private List<Element<Direction>> orderByParentsAndRespondentAssignee(List<Element<Direction>> directions) {
-        directions.sort(comparingInt(direction -> direction.getValue()
-            .getParentsAndRespondentsAssignee()
-            .ordinal()));
-
-        return directions;
-    }
-
-    private List<Element<Direction>> orderByOtherPartiesAssignee(List<Element<Direction>> directions) {
-        directions.sort(comparingInt(direction -> direction.getValue()
-            .getOtherPartiesAssignee()
-            .ordinal()));
-
-        return directions;
     }
 }

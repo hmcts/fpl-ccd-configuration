@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,17 +46,17 @@ public class CommonDirectionService {
     public List<Element<Direction>> combineAllDirections(CaseData caseData) {
         return
             Stream.of(caseData.getAllParties(),
-                getElements(caseData.getAllPartiesCustom(), ALL_PARTIES),
+                assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES),
                 caseData.getLocalAuthorityDirections(),
-                getElements(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY),
+                assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY),
                 caseData.getRespondentDirections(),
-                getElements(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS),
+                assignCustomDirections(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS),
                 caseData.getCafcassDirections(),
-                getElements(caseData.getCafcassDirectionsCustom(), CAFCASS),
+                assignCustomDirections(caseData.getCafcassDirectionsCustom(), CAFCASS),
                 caseData.getOtherPartiesDirections(),
-                getElements(caseData.getOtherPartiesDirectionsCustom(), OTHERS),
+                assignCustomDirections(caseData.getOtherPartiesDirectionsCustom(), OTHERS),
                 caseData.getCourtDirections(),
-                getElements(caseData.getCourtDirectionsCustom(), COURT))
+                assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT))
                 .flatMap(Collection::stream)
                 .collect(toList());
     }
@@ -71,20 +70,17 @@ public class CommonDirectionService {
      */
     public static List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
                                                                   DirectionAssignee assignee) {
-        return getElements(directions, assignee);
+        return ofNullable(directions).map(values -> addAssignee(values, assignee)).orElse(emptyList());
     }
 
-    private static List<Element<Direction>> getElements(List<Element<Direction>> directions,
-                                                        DirectionAssignee assignee) {
-        return ofNullable(directions)
-            .map(values -> values.stream()
-                .map(element -> element(element.getId(), element.getValue().toBuilder()
-                    .assignee(assignee)
-                    .custom("Yes")
-                    .readOnly("No")
-                    .build()))
-                .collect(toList()))
-            .orElseGet(Collections::emptyList);
+    private static List<Element<Direction>> addAssignee(List<Element<Direction>> values, DirectionAssignee assignee) {
+        return values.stream()
+            .map(element -> element(element.getId(), element.getValue().toBuilder()
+                .assignee(assignee)
+                .custom("Yes")
+                .readOnly("No")
+                .build()))
+            .collect(toList());
     }
 
     /**
