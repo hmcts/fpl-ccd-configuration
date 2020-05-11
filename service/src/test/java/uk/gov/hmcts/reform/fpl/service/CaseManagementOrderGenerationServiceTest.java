@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +67,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     JacksonAutoConfiguration.class, CaseDataExtractionService.class, HearingVenueLookUpService.class,
     LookupTestConfig.class, HearingBookingService.class, FixedTimeConfiguration.class
 })
-
-//TODO: disabled due to removing prepareCaseManagementOrder method from template generation code.
-@Disabled
 class CaseManagementOrderGenerationServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
     private static final String COMPLETION_DATE_AND_TIME = "by 10:00am, 1 January 2099";
@@ -155,7 +151,7 @@ class CaseManagementOrderGenerationServiceTest {
         return baseCaseData()
             .caseManagementOrder(CaseManagementOrder.builder().id(HEARING_ID).build())
             .directionsForCaseManagementOrder(Directions.builder()
-                .respondentDirectionsCustomCMO(respondentDirections())
+                .respondentDirectionsCustomCMO(respondentDirections)
                 .allPartiesCustomCMO(wrapElements(direction()))
                 .build())
             .build();
@@ -313,7 +309,6 @@ class CaseManagementOrderGenerationServiceTest {
             .schedule(getExpectedSchedule())
             .scheduleProvided(true)
             .crest(CREST.getValue())
-            .draftbackground(DRAFT_WATERMARK.getValue())
             .courtseal(COURT_SEAL.getValue())
             .build();
     }
