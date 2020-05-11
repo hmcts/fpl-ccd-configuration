@@ -68,13 +68,13 @@ module.exports = {
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
   },
 
-  async enterJudgeAndLegalAdvisor(judgeAndLegalAdvisor) {
+  async enterJudge(judge) {
     const elementIndex = await this.getActiveElementIndex();
     const complexTypeAppender = `hearingDetails_${elementIndex}_`;
 
     judgeAndLegalAdvisor.useAlternateJudge(complexTypeAppender);
-    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, judgeAndLegalAdvisor.judgeTitle, judgeAndLegalAdvisor.otherTitle);
-    judgeAndLegalAdvisor.enterJudgeLastName(judgeAndLegalAdvisor.judgeLastName, complexTypeAppender);
+    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, judge.judgeTitle, judge.otherTitle);
+    judgeAndLegalAdvisor.enterJudgeLastName(judge.judgeLastName, complexTypeAppender);
   },
 
   async useAllocatedJudge() {
