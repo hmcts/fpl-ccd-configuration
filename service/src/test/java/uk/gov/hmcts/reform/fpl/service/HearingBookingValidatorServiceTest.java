@@ -89,7 +89,7 @@ class HearingBookingValidatorServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyValidationErrorsWhenJudgeAllocatedToTheCase() {
+    void shouldReturnNOEmptyValidationErrorsWhenAJudgeHasBeenAllocatedToTheCase() {
         final CaseData caseData = CaseData.builder()
             .allocatedJudge(Judge.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
