@@ -36,24 +36,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "CLOSED",
     "Name": "Closed",
-    "Description": "State indicating that SDO is ready to send - triggered when SDO is issued",
+    "Description": "State indicating that the case has been closed, limited interaction in here",
     "DisplayOrder": 5
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "CLOSED_APPEAL",
-    "Name": "Closed pending appeal",
-    "Description": "Sub state of Closed",
-    "DisplayOrder": 6
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "CLOSED_FINAL",
-    "Name": "Closed final",
-    "Description": "Sub state of Closed",
-    "DisplayOrder": 7
   },
   {
     "LiveFrom": "01/01/2017",
@@ -61,6 +45,6 @@
     "ID": "Deleted",
     "Name": "Deleted",
     "Description": "Deleted case state - all data is removed",
-    "DisplayOrder": 8
+    "DisplayOrder": 6
   }
 ]
