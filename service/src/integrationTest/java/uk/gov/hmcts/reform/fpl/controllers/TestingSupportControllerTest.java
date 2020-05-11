@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.testingsupport.controllers.TestingSupportController;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,13 +30,13 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @ActiveProfiles("integration-test")
 @WebMvcTest(TestingSupportController.class)
 @OverrideAutoConfiguration(enabled = true)
-class TestingSupportControllerTest extends AbstractControllerTest {
+class TestingSupportControllerTest {
 
     private static final String URL_TEMPLATE = "/testing-support/case/populate/%s";
     private static final long CASE_ID = 1L;
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,13 +44,9 @@ class TestingSupportControllerTest extends AbstractControllerTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
-    TestingSupportControllerTest() {
-        super("populate-case");
-    }
-
     @Test
     void shouldThrowExceptionForInvalidState() {
-        NestedServletException thrownException = assertThrows(NestedServletException.class,
+        Exception thrownException = assertThrows(NestedServletException.class,
             () -> makePostRequest(Map.of("state", "NOT_A_REAL_STATE")));
 
         assertThat(thrownException.getMessage()).contains("No enum constant");
@@ -68,10 +68,11 @@ class TestingSupportControllerTest extends AbstractControllerTest {
             caseData);
     }
 
-    @Test
-    void shouldTriggerGatekeepingEvent() throws Exception {
+    @ParameterizedTest
+    @MethodSource("stateToEventNameSource")
+    void shouldTriggerCorrectEvent(String state, String eventName) throws Exception {
         Map<String, Object> caseData = Map.of("property", "value");
-        Map<String, Object> requestBody = Map.of("state", "GATEKEEPING", "caseData", caseData);
+        Map<String, Object> requestBody = Map.of("state", state, "caseData", caseData);
 
         var result = makePostRequest(requestBody);
 
@@ -80,16 +81,24 @@ class TestingSupportControllerTest extends AbstractControllerTest {
             JURISDICTION,
             CASE_TYPE,
             CASE_ID,
-            "populateCase-Gatekeeping",
+            eventName,
             caseData);
     }
 
     private MvcResult makePostRequest(Map<String, Object> body) throws Exception {
         return mockMvc
             .perform(post(String.format(URL_TEMPLATE, CASE_ID))
-                .header("authorization", USER_AUTH_TOKEN)
+                .header("authorization", "Bearer token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(body))
             ).andReturn();
+    }
+
+    private static Stream<Arguments> stateToEventNameSource() {
+        return Stream.of(
+            Arguments.of("GATEKEEPING", "populateCase-Gatekeeping"),
+            Arguments.of("SUBMITTED", "populateCase-Submitted"),
+            Arguments.of("PREPARE_FOR_HEARING", "populateCase-PREPARE_FOR_HEARING")
+        );
     }
 }

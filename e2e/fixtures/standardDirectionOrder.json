@@ -1,6 +1,5 @@
 {
   "state": "PREPARE_FOR_HEARING",
-  "updateTimeBasedAndDocumentData": true,
   "caseData": {
     "caseName": "e2e test case",
     "orders": {
