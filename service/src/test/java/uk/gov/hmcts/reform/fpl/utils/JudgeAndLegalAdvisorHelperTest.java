@@ -168,7 +168,7 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    void shouldPrepopulateWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
+    void shouldPopulateWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(OTHER)
             .otherTitle("Mr")
@@ -186,7 +186,7 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    void shouldPrepopulateWithNoWhenJudgeAndAllocatedJudgeAreNotEqual() {
+    void shouldPopulateWithNoWhenJudgeAndAllocatedJudgeAreNotEqual() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Hastings")
