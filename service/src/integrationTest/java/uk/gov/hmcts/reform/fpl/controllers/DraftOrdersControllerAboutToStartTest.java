@@ -133,6 +133,30 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
+    void aboutToStartCallbackShouldPopulateUseAllocatedJudgeWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
+        List<Direction> directions = createDirections();
+        Judge judge = buildAllocatedJudge();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "allocatedJudge", judge,
+                "standardDirectionOrder", Order.builder()
+                    .directions(buildDirections(directions))
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeTitle(judge.getJudgeTitle())
+                        .judgeLastName(judge.getJudgeLastName())
+                        .build())
+                    .build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        AssertionsForClassTypes.assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+    }
+
+    @Test
     void aboutToStartCallbackShouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(

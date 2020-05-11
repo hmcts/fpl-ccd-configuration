@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -94,19 +93,10 @@ public class DraftOrdersController {
             Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
 
             directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
-
-            JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
-            Judge allocatedJudge = caseData.getAllocatedJudge();
-
-            if (isNotEmpty(allocatedJudge)) {
-                prepopulateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
-            }
-
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, judgeAndLegalAdvisor);
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, setAllocatedJudgeLabel(caseData));
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, setAllocatedJudgeFields(caseData));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -114,12 +104,13 @@ public class DraftOrdersController {
             .build();
     }
 
-    private JudgeAndLegalAdvisor setAllocatedJudgeLabel(CaseData caseData) {
+    private JudgeAndLegalAdvisor setAllocatedJudgeFields(CaseData caseData) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
 
         if (isNotEmpty(caseData.getStandardDirectionOrder())
             && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
             judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
+            prepopulateUseAllocatedJudgeField(judgeAndLegalAdvisor, caseData.getAllocatedJudge());
         }
 
         judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
