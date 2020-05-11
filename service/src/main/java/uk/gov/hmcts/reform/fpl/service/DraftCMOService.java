@@ -55,9 +55,10 @@ public class DraftCMOService {
         Optional<LocalDate> dateOfIssue = ofNullable(caseData.getDateOfIssue());
 
         UUID idFromDynamicList = cmoHearingDateList.map(DynamicList::getValueCode).orElse(null);
+        String hearingDate = cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null);
 
         CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
-            .hearingDate(cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null))
+            .hearingDate(caseManagementOrder.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
             .id(caseManagementOrder.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
             .directions(combineAllDirectionsForCmo(caseData))
             .schedule(caseData.getSchedule())

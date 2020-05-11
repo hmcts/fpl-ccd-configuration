@@ -56,6 +56,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderGenerationService.class})
@@ -137,7 +139,8 @@ class CaseManagementOrderGenerationServiceTest {
             .respondents1(emptyList())
             .applicants(getApplicants())
             .schedule(Schedule.builder().includeSchedule("No").build())
-            .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder().build())));
+            .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder().build())))
+            .allocatedJudge(testJudge());
     }
 
     private List<Element<Applicant>> getApplicants() {
@@ -185,6 +188,7 @@ class CaseManagementOrderGenerationServiceTest {
             .directions(emptyList())
             .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
+            .allocatedJudge(testDocmosisJudge())
             .build();
     }
 
@@ -306,6 +310,7 @@ class CaseManagementOrderGenerationServiceTest {
             .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
             .courtseal(templateData.getCourtseal())
+            .allocatedJudge(testDocmosisJudge())
             .build();
     }
 
