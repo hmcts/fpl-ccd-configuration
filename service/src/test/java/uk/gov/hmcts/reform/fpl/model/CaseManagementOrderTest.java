@@ -8,8 +8,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class CaseManagementOrderTest {
@@ -127,5 +132,27 @@ class CaseManagementOrderTest {
         CaseManagementOrder order = CaseManagementOrder.builder().build();
 
         assertThat(order.getDateOfIssueAsDate()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
+    void shouldAddFieldsToMapWhenNotNull() {
+        Schedule schedule = Schedule.builder().includeSchedule("Yes").build();
+        List<Element<Recital>> recitals = wrapElements(Recital.builder().title("example").build());
+        OrderAction action = OrderAction.builder().changeRequestedByJudge("Changes").build();
+
+        CaseManagementOrder order = CaseManagementOrder.builder()
+            .schedule(schedule)
+            .recitals(recitals)
+            .action(action)
+            .build();
+
+        assertThat(order.getCCDFields()).containsValues(schedule, recitals, action);
+    }
+
+    @Test
+    void shouldNotAddFieldsToMapWhenNull() {
+        CaseManagementOrder order = CaseManagementOrder.builder().build();
+
+        assertThat(order.getCCDFields()).isEmpty();
     }
 }
