@@ -109,8 +109,8 @@ public class DraftOrdersController {
 
         if (isNotEmpty(caseData.getStandardDirectionOrder())
             && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
-            judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
-            prepareJudgeFields(judgeAndLegalAdvisor, caseData.getAllocatedJudge());
+            judgeAndLegalAdvisor = prepareJudgeFields(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor(),
+                caseData.getAllocatedJudge());
         }
 
         judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));

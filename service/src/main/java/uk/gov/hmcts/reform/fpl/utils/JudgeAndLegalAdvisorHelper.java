@@ -56,11 +56,11 @@ public class JudgeAndLegalAdvisorHelper {
     public static JudgeAndLegalAdvisor prepareJudgeFields(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                           Judge allocatedJudge) {
         if (allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)) {
-            judgeAndLegalAdvisor = resetJudgeFields(judgeAndLegalAdvisor.getLegalAdvisorName());
+            return resetJudgeFields(judgeAndLegalAdvisor.getLegalAdvisorName());
         } else {
             judgeAndLegalAdvisor.setUseAllocatedJudge("No");
+            return judgeAndLegalAdvisor;
         }
-        return judgeAndLegalAdvisor;
     }
 
     private static JudgeAndLegalAdvisor resetJudgeFields(String legalAdvisorName) {
