@@ -365,4 +365,6 @@ public class CaseData {
     }
 
     private final String amountToPay;
+
+    private final CloseCase closeCaseComp;
 }
