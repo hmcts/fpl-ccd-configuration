@@ -164,7 +164,8 @@
     "submittedForm": "TO BE FILLED WITH VALID DATA",
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
-      "judgeLastName": "Moley"
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
     },
     "hearingDetails": [
       {
@@ -521,6 +522,7 @@
       "judgeAndLegalAdvisor": {
         "judgeTitle": "HER_HONOUR_JUDGE",
         "judgeLastName": "Moley",
+        "judgeEmailAddress": "moley@example.com",
         "legalAdvisorName": "Bob Ross"
       }
     },

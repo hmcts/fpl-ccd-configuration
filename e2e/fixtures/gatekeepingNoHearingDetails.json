@@ -167,6 +167,7 @@
     "allocatedJudge": {
       "judgeTitle": "HER_HONOUR_JUDGE",
       "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com",
       "legalAdvisorName": null,
       "allocatedJudgeLabel": null
     },
