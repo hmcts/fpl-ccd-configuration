@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+
+import java.util.Objects;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
@@ -32,5 +36,12 @@ public class Judge {
             return judgeFullName;
         }
         return judgeLastName;
+    }
+
+    public boolean hasEqualJudgeFields(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        return Objects.equals(getJudgeTitle(), judgeAndLegalAdvisor.getJudgeTitle())
+            && StringUtils.equals(getOtherTitle(), judgeAndLegalAdvisor.getOtherTitle())
+            && StringUtils.equals(getJudgeLastName(), judgeAndLegalAdvisor.getJudgeLastName())
+            && StringUtils.equals(getJudgeFullName(), judgeAndLegalAdvisor.getJudgeFullName());
     }
 }

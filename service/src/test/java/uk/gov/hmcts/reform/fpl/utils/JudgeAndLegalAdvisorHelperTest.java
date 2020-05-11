@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.populateUseAllocatedJudgeField;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 class JudgeAndLegalAdvisorHelperTest {
@@ -168,7 +168,7 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    void shouldPopulateWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
+    void shouldPopulateWithYesAndResetJudgeFieldsWhenJudgeAndAllocatedJudgeAreEqual() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(OTHER)
             .otherTitle("Mr")
@@ -181,8 +181,11 @@ class JudgeAndLegalAdvisorHelperTest {
             .judgeLastName("Watson")
             .build();
 
-        populateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
+        judgeAndLegalAdvisor = prepareJudgeFields(judgeAndLegalAdvisor, allocatedJudge);
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+        assertThat(judgeAndLegalAdvisor.getJudgeFullName()).isNull();
+        assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isNull();
+        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isNull();
     }
 
     @Test
@@ -198,7 +201,7 @@ class JudgeAndLegalAdvisorHelperTest {
             .judgeLastName("Watson")
             .build();
 
-        populateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
+        judgeAndLegalAdvisor = prepareJudgeFields(judgeAndLegalAdvisor, allocatedJudge);
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("No");
     }
 

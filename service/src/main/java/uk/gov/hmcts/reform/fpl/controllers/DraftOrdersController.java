@@ -51,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.populateUseAllocatedJudgeField;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Api
@@ -96,7 +96,7 @@ public class DraftOrdersController {
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, setAllocatedJudgeFields(caseData));
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, prepareJudgePage(caseData));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -104,13 +104,13 @@ public class DraftOrdersController {
             .build();
     }
 
-    private JudgeAndLegalAdvisor setAllocatedJudgeFields(CaseData caseData) {
+    private JudgeAndLegalAdvisor prepareJudgePage(CaseData caseData) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
 
         if (isNotEmpty(caseData.getStandardDirectionOrder())
             && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
             judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
-            populateUseAllocatedJudgeField(judgeAndLegalAdvisor, caseData.getAllocatedJudge());
+            prepareJudgeFields(judgeAndLegalAdvisor, caseData.getAllocatedJudge());
         }
 
         judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));

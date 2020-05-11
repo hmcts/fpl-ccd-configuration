@@ -53,22 +53,21 @@ public class JudgeAndLegalAdvisorHelper {
         judgeAndLegalAdvisor.setUseAllocatedJudge(null);
     }
 
-    public static JudgeAndLegalAdvisor populateUseAllocatedJudgeField(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
-                                                                      Judge allocatedJudge) {
-        if (checkJudgeEqualToAllocatedJudge(judgeAndLegalAdvisor, allocatedJudge)) {
-            judgeAndLegalAdvisor.setUseAllocatedJudge("Yes");
+    public static JudgeAndLegalAdvisor prepareJudgeFields(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                          Judge allocatedJudge) {
+        if (allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)) {
+            judgeAndLegalAdvisor = resetJudgeFields(judgeAndLegalAdvisor.getLegalAdvisorName());
         } else {
             judgeAndLegalAdvisor.setUseAllocatedJudge("No");
         }
         return judgeAndLegalAdvisor;
     }
 
-    private static boolean checkJudgeEqualToAllocatedJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
-                                                           Judge allocatedJudge) {
-        Judge judge = new Judge(judgeAndLegalAdvisor.getJudgeTitle(), judgeAndLegalAdvisor.getOtherTitle(),
-            judgeAndLegalAdvisor.getJudgeLastName(), judgeAndLegalAdvisor.getJudgeFullName());
-
-        return judge.equals(allocatedJudge);
+    private static JudgeAndLegalAdvisor resetJudgeFields(String legalAdvisorName) {
+        return JudgeAndLegalAdvisor.builder()
+            .useAllocatedJudge("Yes")
+            .legalAdvisorName(legalAdvisorName)
+            .build();
     }
 
     public static String buildAllocatedJudgeLabel(Judge judge) {
