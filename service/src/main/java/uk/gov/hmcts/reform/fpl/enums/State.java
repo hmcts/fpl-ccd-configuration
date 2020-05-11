@@ -11,8 +11,6 @@ public enum State {
     GATEKEEPING("Gatekeeping"),
     PREPARE_FOR_HEARING("PREPARE_FOR_HEARING"),
     CLOSED("CLOSED"),
-    CLOSED_APPEAL("CLOSED_APPEAL"),
-    CLOSED_FINAL("CLOSED_FINAL"),
     DELETED("Deleted");
 
     private final String value;
