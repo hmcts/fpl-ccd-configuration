@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.CloseCaseGroup;
 
 import java.util.List;
 import java.util.Map;
@@ -46,9 +47,8 @@ public class CloseCaseController {
 
         data.put(LABEL_FIELD, LABEL);
 
+        // TODO: 11/05/2020 Determine YES or NO based on if all children have a final order
         YesNo maybe = new Random().nextBoolean() ? YesNo.YES : YesNo.NO;
-
-        System.out.println(maybe);
 
         data.put("closeCase", CloseCase.builder().showFullReason(maybe).build());
 
@@ -62,8 +62,7 @@ public class CloseCaseController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        System.out.println("CaseClose = " + caseData.getCloseCase());
-        List<String> errors = validatorService.validateGroup(caseData.getCloseCase());
+        List<String> errors = validatorService.validateGroup(caseData.getCloseCase(), CloseCaseGroup.class);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
