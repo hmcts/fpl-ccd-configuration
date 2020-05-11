@@ -46,6 +46,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.ALLOCATED_JUDGE_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -109,6 +112,8 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
             .id(UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774"))
             .build());
 
+        caseDetails.getData().put(ALLOCATED_JUDGE_KEY, testJudge());
+
         return caseDetails;
     }
 
@@ -118,6 +123,7 @@ class ActionCaseManagementOrderControllerMidEventTest extends AbstractController
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
+            .allocatedJudge(testDocmosisJudge())
             .dateOfIssue(formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())

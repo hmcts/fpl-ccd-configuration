@@ -30,7 +30,7 @@ Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
