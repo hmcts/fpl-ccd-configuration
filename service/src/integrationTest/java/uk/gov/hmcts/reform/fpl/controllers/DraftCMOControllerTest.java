@@ -129,13 +129,16 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldAddCCDFieldsWhenCaseManagementOrderIsNotNull() {
         Schedule schedule = Schedule.builder().includeSchedule("Yes").build();
-        List<Element<Recital>> rectials = wrapElements(Recital.builder().title("title").build());
+        List<Element<Recital>> recitals = wrapElements(Recital.builder().title("title").build());
         OrderAction action = OrderAction.builder().type(ActionType.SELF_REVIEW).build();
+        Direction direction = Direction.builder().assignee(ALL_PARTIES).directionType("title").build();
+        List<Element<Direction>> directions = wrapElements(direction);
 
         CaseManagementOrder order = CaseManagementOrder.builder()
             .schedule(schedule)
-            .recitals(rectials)
+            .recitals(recitals)
             .action(action)
+            .directions(directions)
             .build();
 
         Map<String, Object> data = Map.of(
@@ -148,8 +151,9 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getSchedule()).isEqualTo(schedule);
-        assertThat(caseData.getRecitals()).isEqualTo(rectials);
+        assertThat(caseData.getRecitals()).isEqualTo(recitals);
         assertThat(caseData.getOrderAction()).isEqualTo(action);
+        assertThat(caseData.getAllParties()).isEqualTo(directions);
     }
 
     @Test
