@@ -5,7 +5,7 @@ let caseId;
 
 Feature('Uploading bulk scan document');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage) => {
+BeforeSuite(async (I, caseViewPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage) => {
   caseId = await I.submitNewCaseWithData();
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);

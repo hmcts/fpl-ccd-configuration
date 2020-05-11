@@ -52,22 +52,6 @@ class TestingSupportControllerTest {
         assertThat(thrownException.getMessage()).contains("No enum constant");
     }
 
-    @Test
-    void shouldTriggerSubmittedEvent() throws Exception {
-        Map<String, Object> caseData = Map.of("property", "value");
-        Map<String, Object> requestBody = Map.of("state", "SUBMITTED", "caseData", caseData);
-
-        var result = makePostRequest(requestBody);
-
-        assertThat(result.getResponse().getStatus()).isEqualTo(200);
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            "populateCase-Submitted",
-            caseData);
-    }
-
     @ParameterizedTest
     @MethodSource("stateToEventNameSource")
     void shouldTriggerCorrectEvent(String state, String eventName) throws Exception {
