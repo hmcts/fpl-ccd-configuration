@@ -53,7 +53,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
     public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-        CaseManagementOrder caseManagementOrder = cmoService.prepareCMO(caseData, caseData.getCaseManagementOrder());
+        CaseManagementOrder caseManagementOrder = cmoService.prepareCaseManagementOrder(caseData);
 
         HearingBooking nextHearing = null;
 
