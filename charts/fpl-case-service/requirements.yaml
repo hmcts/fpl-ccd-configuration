@@ -11,3 +11,7 @@ dependencies:
     version: ~0.2.1
     repository: '@hmctspublic'
     condition: xui-webapp.enabled
+  - name: idam-pr
+    version: ~2.2.3
+    repository: '@hmctspublic'
+    condition: idam-pr.enabled
