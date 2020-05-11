@@ -153,7 +153,7 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
-        AssertionsForClassTypes.assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
     }
 
     @Test
