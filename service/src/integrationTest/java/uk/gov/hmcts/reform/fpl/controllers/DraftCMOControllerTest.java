@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -19,7 +20,9 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
@@ -101,7 +104,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToStartCallbackShouldPrepareCaseForCMO() {
+    void aboutToStartCallbackShouldPrepareCaseForCMOWhenNoCaseManagementOrder() {
         Map<String, Object> data = Map.of(
             HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
             "respondents1", createRespondents(),
@@ -119,6 +122,34 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(callbackResponse.getData().get("others_label"))
             .isEqualTo("Person 1 - Kyle Stafford\nOther person 1 - Sarah Simpson\n");
+
+        assertThat(callbackResponse.getData()).doesNotContainKeys("schedule", "recitals", "orderAction");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldAddCCDFieldsWhenCaseManagementOrderIsNotNull() {
+        Schedule schedule = Schedule.builder().includeSchedule("Yes").build();
+        List<Element<Recital>> rectials = wrapElements(Recital.builder().title("title").build());
+        OrderAction action = OrderAction.builder().type(ActionType.SELF_REVIEW).build();
+
+        CaseManagementOrder order = CaseManagementOrder.builder()
+            .schedule(schedule)
+            .recitals(rectials)
+            .action(action)
+            .build();
+
+        Map<String, Object> data = Map.of(
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
+            "respondents1", createRespondents(),
+            "others", createOthers(),
+            CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), order);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails(data));
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getSchedule()).isEqualTo(schedule);
+        assertThat(caseData.getRecitals()).isEqualTo(rectials);
+        assertThat(caseData.getOrderAction()).isEqualTo(action);
     }
 
     @Test
