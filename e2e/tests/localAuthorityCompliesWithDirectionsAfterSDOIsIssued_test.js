@@ -20,7 +20,7 @@ BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCa
   enterFamilyManCaseNumberEventPage.enterCaseID();
   await I.completeEvent('Save and continue');
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);

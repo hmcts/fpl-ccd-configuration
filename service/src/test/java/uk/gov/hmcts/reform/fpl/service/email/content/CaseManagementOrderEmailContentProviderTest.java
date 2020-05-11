@@ -145,6 +145,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         data.put("allocatedJudge", Judge.builder()
             .judgeTitle(JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE)
             .judgeLastName("JudgeLastName")
+            .judgeEmailAddress("JudgeEmailAddress")
             .build());
 
         return CaseDetails.builder()

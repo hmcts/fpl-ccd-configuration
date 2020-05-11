@@ -146,6 +146,7 @@ class JudgeAndLegalAdvisorHelperTest {
             .judgeTitle(OTHER)
             .otherTitle("Mr")
             .judgeLastName("Watson")
+            .judgeEmailAddress("watson@example.com")
             .build();
 
         String label = buildAllocatedJudgeLabel(allocatedJudge);
@@ -180,6 +181,7 @@ class JudgeAndLegalAdvisorHelperTest {
         return Judge.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Dread")
+            .judgeEmailAddress("dread@example.com")
             .build();
     }
 }
