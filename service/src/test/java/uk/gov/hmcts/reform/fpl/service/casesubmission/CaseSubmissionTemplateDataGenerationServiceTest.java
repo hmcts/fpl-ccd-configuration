@@ -55,6 +55,8 @@ import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLICE_POWER_ENDS;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -1033,6 +1035,30 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             assertThat(caseSubmission.getAnnexDocuments().getOthers().get(1).getDocumentTitle())
                 .isEqualTo("Additional Doc 2");
             assertThat(caseSubmission.getAnnexDocuments().getOthers().get(2).getDocumentTitle()).isEqualTo("-");
+        }
+    }
+
+    @Nested
+    class DocmosisCaseSubmissionDraftWaterMarkOrCourtSeal {
+        private DocmosisCaseSubmission caseSubmission;
+
+        @BeforeEach
+        void mocked() {
+            caseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
+        }
+
+        @Test
+        void shouldHaveDocmosisCaseSubmissionWithDraftWatermarkWhenApplicationIsDraft() {
+            templateDataGenerationService.populateDraftWaterOrCourtSeal(caseSubmission, true);
+
+            assertThat(caseSubmission.getDraftWaterMark()).isEqualTo(DRAFT_WATERMARK.getValue());
+        }
+
+        @Test
+        void shouldHaveDocmosisCaseSubmissionWithCourtSealWhenApplicationIsNotDraft() {
+            templateDataGenerationService.populateDraftWaterOrCourtSeal(caseSubmission, false);
+
+            assertThat(caseSubmission.getCourtSeal()).isEqualTo(COURT_SEAL.getValue());
         }
     }
 

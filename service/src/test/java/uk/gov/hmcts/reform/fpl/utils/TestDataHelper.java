@@ -23,6 +23,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 public class TestDataHelper {
+    public static final byte[] DOCUMENT_CONTENTS = {1, 2, 3, 4, 5};
 
     private TestDataHelper() {
     }
