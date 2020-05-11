@@ -22,7 +22,7 @@ BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCa
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  sendCaseToGatekeeperEventPage.enterEmail();
+  await sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 
