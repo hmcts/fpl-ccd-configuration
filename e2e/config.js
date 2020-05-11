@@ -48,6 +48,7 @@ module.exports = {
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
   fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
   idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',
+  dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'CARE_SUPERVISION_EPO',

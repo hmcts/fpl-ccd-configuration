@@ -11,11 +11,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.util.NestedServletException;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.testingsupport.controllers.TestingSupportController;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,9 +30,6 @@ class TestingSupportControllerTest extends AbstractControllerTest {
 
     private static final String URL_TEMPLATE = "/testingSupport/populateCase/%s";
     private static final long CASE_ID = 1L;
-    private static final DocumentReference.DocumentReferenceBuilder MOCK_DOCUMENT_BUILDER = DocumentReference.builder()
-        .url("http://fake-document-management-store-api/documents/fakeUrl")
-        .binaryUrl("http://fake-document-management-store-api/documents/fakeUrl/binary");
 
     @Autowired
     ObjectMapper mapper;
@@ -58,14 +53,9 @@ class TestingSupportControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddTimeBasedAndDocumentData() throws Exception {
+    void shouldTriggerSubmittedEvent() throws Exception {
         Map<String, Object> caseData = Map.of("property", "value");
-        Map<String, Object> requestBody = Map.of(
-            "state", "SUBMITTED",
-            "updateTimeBasedAndDocumentData", true,
-            "data", caseData);
-        Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
-        expectedCaseDataForUpdate.putAll(getExpectedTimeBasedAndDocumentData());
+        Map<String, Object> requestBody = Map.of("state", "SUBMITTED", "caseData", caseData);
 
         var result = makePostRequest(requestBody);
 
@@ -75,38 +65,13 @@ class TestingSupportControllerTest extends AbstractControllerTest {
             CASE_TYPE,
             CASE_ID,
             "populateCase-Submitted",
-            expectedCaseDataForUpdate);
+            caseData);
     }
 
     @Test
-    void shouldAddSDODataForPrepareForHearingState() throws Exception {
-        Map<String, Object> caseData = Map.of("standardDirectionOrder", Map.of());
-        Map<String, Object> requestBody = Map.of(
-            "state", "PREPARE_FOR_HEARING",
-            "updateTimeBasedAndDocumentData", true,
-            "data", caseData);
-        Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
-        expectedCaseDataForUpdate.putAll(getExpectedTimeBasedAndDocumentData());
-        expectedCaseDataForUpdate.put("standardDirectionOrder", getExpectedSDOData());
-
-        var result = makePostRequest(requestBody);
-
-        assertThat(result.getResponse().getStatus()).isEqualTo(200);
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            "populateCase-PREPARE_FOR_HEARING",
-            expectedCaseDataForUpdate);
-    }
-
-    @Test
-    void shouldNotAddAnyDataWhenUpdateTimeBasedAndDocumentDataIsNotSet() throws Exception {
+    void shouldTriggerGatekeepingEvent() throws Exception {
         Map<String, Object> caseData = Map.of("property", "value");
-        Map<String, Object> requestBody = Map.of(
-            "state", "GATEKEEPING",
-            "data", caseData);
-        Map<String, Object> expectedCaseDataForUpdate = new HashMap<>(caseData);
+        Map<String, Object> requestBody = Map.of("state", "GATEKEEPING", "caseData", caseData);
 
         var result = makePostRequest(requestBody);
 
@@ -116,30 +81,7 @@ class TestingSupportControllerTest extends AbstractControllerTest {
             CASE_TYPE,
             CASE_ID,
             "populateCase-Gatekeeping",
-            expectedCaseDataForUpdate);
-    }
-
-    private Map<String, Object> getExpectedTimeBasedAndDocumentData() {
-        var expectedSubmittedForm = MOCK_DOCUMENT_BUILDER.filename("mockSubmittedApplication.pdf").build();
-        var expectedDocument = Map.of("documentStatus",
-            "Attached",
-            "typeOfDocument",
-            MOCK_DOCUMENT_BUILDER.filename("mockFile.txt").build());
-
-        return Map.of(
-        "dateAndTimeSubmitted", now().toString(),
-        "dateSubmitted", dateNow().toString(),
-        "submittedForm", expectedSubmittedForm,
-        "documents_checklist_document", expectedDocument,
-        "documents_threshold_document", expectedDocument,
-        "documents_socialWorkCarePlan_document", expectedDocument,
-        "documents_socialWorkAssessment_document", expectedDocument,
-        "documents_socialWorkEvidenceTemplate_document", expectedDocument
-        );
-    }
-
-    private Map<String, Object> getExpectedSDOData() {
-        return Map.of("orderDoc", MOCK_DOCUMENT_BUILDER.filename("mockSDO.pdf").build());
+            caseData);
     }
 
     private MvcResult makePostRequest(Map<String, Object> body) throws Exception {
@@ -150,5 +92,4 @@ class TestingSupportControllerTest extends AbstractControllerTest {
                 .content(mapper.writeValueAsString(body))
             ).andReturn();
     }
-
 }

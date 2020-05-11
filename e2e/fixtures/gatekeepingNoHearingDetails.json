@@ -1,7 +1,7 @@
 {
   "state": "GATEKEEPING",
   "updateTimeBasedAndDocumentData": true,
-  "data": {
+  "caseData": {
     "caseName": "e2e test case",
     "orders": {
       "orderType": [
