@@ -1330,7 +1330,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseShouldBeCompletedByConfirmationLabel",
-    "Label": "You've select to extend the case by 8 weeks. The case should now be completed by ${extensionDate}",
+    "Label": "You've select to extend the case by 8 weeks. The case should now be completed by ${extensionDate}.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
