@@ -45,6 +45,7 @@ import javax.validation.groups.Default;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
 @RestController
@@ -75,12 +76,8 @@ public class CaseSubmissionController {
 
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails);
-        data.put("applicationDocumentToReview", ImmutableMap.<String, String>builder()
-            .put("document_url", document.links.self.href)
-            .put("document_binary_url", document.links.binary.href)
-            .put("document_filename", document.originalDocumentName)
-            .build());
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails, true);
+        data.put("applicationDocumentToReview", buildFromDocument(document));
 
         List<String> errors = validate(caseData);
 
@@ -138,7 +135,7 @@ public class CaseSubmissionController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails);
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails, false);
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
