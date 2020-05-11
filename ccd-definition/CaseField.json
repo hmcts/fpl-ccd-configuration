@@ -331,17 +331,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "downloadApplicationForReviewLabel",
-    "Label": "Download application",
-    "FieldType": "Text",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "downloadApplicationForReviewHintText",
-    "Label": "Use this link to download and check the application before sending:",
-    "FieldType": "Text",
+    "ID": "downloadApplicationForReviewHintLabel",
+    "Label": "**Download application** <br>Use this link to download and check the application before <br>sending:",
+    "FieldType": "Label",
     "SecurityClassification": "Public"
   },
   {
