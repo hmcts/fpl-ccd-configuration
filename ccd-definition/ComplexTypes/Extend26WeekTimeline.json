@@ -2,14 +2,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Extend26WeekTimeline",
-    "ListElementCode": "caseExtensionLabel",
-    "FieldType": "Label",
-    "ElementLabel": "You can either extend this date by 8 weeks, or enter a different end date.",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Extend26WeekTimeline",
     "ListElementCode": "caseExtensionTimeList",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CaseExtensionTimeList",
