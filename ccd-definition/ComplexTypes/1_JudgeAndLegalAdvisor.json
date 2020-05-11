@@ -70,5 +70,14 @@
     "ElementLabel": "Justices' Legal Adviser's full name",
     "FieldType": "Text",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
+    "ListElementCode": "judgeEmailAddress",
+    "FieldType": "Email",
+    "ElementLabel": "Email Address",
+    "FieldShowCondition": "judgeTitle!=\"\"",
+    "SecurityClassification": "Public"
   }
 ]

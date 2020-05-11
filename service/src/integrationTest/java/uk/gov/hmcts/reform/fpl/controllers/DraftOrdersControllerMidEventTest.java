@@ -154,6 +154,7 @@ class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
         return Judge.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Davidson")
+            .judgeEmailAddress("davidson@example.com")
             .build();
     }
 }
