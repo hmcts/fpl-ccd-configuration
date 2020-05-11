@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.NextHearingType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 
 @Data
 @Builder(toBuilder = true)
@@ -16,4 +19,9 @@ public class OrderAction {
     private final ActionType type;
     private final NextHearingType nextHearingType;
     private final String changeRequestedByJudge;
+
+    @JsonIgnore
+    public boolean isSendToAllPartiesType() {
+        return SEND_TO_ALL_PARTIES == this.type;
+    }
 }

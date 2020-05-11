@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement.getHearingDynamicElement;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -63,25 +64,34 @@ public class DraftCMOService {
         return data;
     }
 
-    public CaseManagementOrder prepareCMO(CaseData caseData, CaseManagementOrder order) {
-        Optional<CaseManagementOrder> oldCMO = ofNullable(order);
+    public CaseManagementOrder prepareCaseManagementOrder(CaseData caseData) {
+        Optional<CaseManagementOrder> caseManagementOrder = ofNullable(caseData.getCaseManagementOrder());
         Optional<DynamicList> cmoHearingDateList = ofNullable(caseData.getCmoHearingDateList());
         Optional<LocalDate> dateOfIssue = ofNullable(caseData.getDateOfIssue());
 
         UUID idFromDynamicList = cmoHearingDateList.map(DynamicList::getValueCode).orElse(null);
+        String hearingDate = cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null);
 
-        return CaseManagementOrder.builder()
-            .hearingDate(cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null))
-            .id(oldCMO.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
+        CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
+            .hearingDate(caseManagementOrder.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
+            .id(caseManagementOrder.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
             .directions(combineAllDirectionsForCmo(caseData))
             .schedule(caseData.getSchedule())
             .recitals(caseData.getRecitals())
-            .status(oldCMO.map(CaseManagementOrder::getStatus).orElse(null))
-            .orderDoc(oldCMO.map(CaseManagementOrder::getOrderDoc).orElse(null))
-            .action(oldCMO.map(CaseManagementOrder::getAction).orElse(null))
-            .nextHearing(oldCMO.map(CaseManagementOrder::getNextHearing).orElse(null))
+            .status(caseManagementOrder.map(CaseManagementOrder::getStatus).orElse(null))
+            .orderDoc(caseManagementOrder.map(CaseManagementOrder::getOrderDoc).orElse(null))
+            .action(caseManagementOrder.map(CaseManagementOrder::getAction).orElse(null))
+            .nextHearing(caseManagementOrder.map(CaseManagementOrder::getNextHearing).orElse(null))
             .dateOfIssue(dateOfIssue.map(date -> formatLocalDateToString(date, DATE)).orElse(null))
             .build();
+
+        preparedOrder.setActionWithNullDocument(caseData.getOrderAction());
+
+        if (preparedOrder.isSealed() && caseData.getNextHearingDateList() != null) {
+            preparedOrder.setNextHearingFromDynamicElement(getHearingDynamicElement(caseData.getNextHearingDateList()));
+        }
+
+        return preparedOrder;
     }
 
     public void removeTransientObjectsFromCaseData(Map<String, Object> caseData) {
