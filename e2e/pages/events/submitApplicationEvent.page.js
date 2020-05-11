@@ -1,4 +1,5 @@
 const { I } = inject();
+const dateFormat = require('dateformat');
 
 module.exports = {
 
@@ -8,5 +9,9 @@ module.exports = {
 
   giveConsent() {
     I.checkOption(this.fields.consentCheckbox);
+  },
+
+  seeDraftApplicationFile() {
+    I.see(('draft_c110a_application_' + dateFormat(new Date(), 'ddmmm') + '.pdf').toLowerCase());
   },
 };
