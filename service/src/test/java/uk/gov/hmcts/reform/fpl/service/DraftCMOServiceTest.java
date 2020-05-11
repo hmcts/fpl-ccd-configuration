@@ -59,8 +59,10 @@ class DraftCMOServiceTest {
 
     @Autowired
     private ObjectMapper mapper;
+
     @Autowired
-    private DraftCMOService draftCMOService;
+    private DraftCMOService service;
+
     @Autowired
     private Time time;
 
@@ -77,12 +79,9 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
-            caseManagementOrder, hearingDetails);
+        DynamicList data = service.getHearingDateDynamicList(hearingDetails, caseManagementOrder);
 
-        DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
-
-        assertThat(hearingList.getListItems())
+        assertThat(data.getListItems())
             .containsAll(Arrays.asList(
                 DynamicListElement.builder()
                     .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
@@ -103,12 +102,9 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(10));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
-            caseManagementOrder, hearingDetails);
+        DynamicList data = service.getHearingDateDynamicList(hearingDetails, caseManagementOrder);
 
-        DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
-
-        assertThat(hearingList.getListItems()).isEmpty();
+        assertThat(data.getListItems()).isEmpty();
     }
 
     @Test
@@ -116,12 +112,9 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().plusMinutes(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
-            caseManagementOrder, hearingDetails);
+        DynamicList data = service.getHearingDateDynamicList(hearingDetails, caseManagementOrder);
 
-        DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
-
-        assertThat(hearingList.getListItems())
+        assertThat(data.getListItems())
             .containsAll(Arrays.asList(
                 DynamicListElement.builder()
                     .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
@@ -142,12 +135,9 @@ class DraftCMOServiceTest {
         hearingDetails = createHearingBookingsFromInitialDate(time.now());
         caseManagementOrder = createCaseManagementOrder();
 
-        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
-            caseManagementOrder, hearingDetails);
+        DynamicList data = service.getHearingDateDynamicList(hearingDetails, caseManagementOrder);
 
-        DynamicList hearingList = mapper.convertValue(data.get(HEARING_DATE_LIST.getKey()), DynamicList.class);
-
-        assertThat(hearingList.getValue())
+        assertThat(data.getValue())
             .isEqualTo(DynamicListElement.builder()
                 .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
                 .label(formatLocalDateToMediumStyle(2))
@@ -167,7 +157,7 @@ class DraftCMOServiceTest {
         caseData.put(NEXT_HEARING_DATE_LIST.getKey(), getDynamicList());
         caseData.put(ORDER_ACTION.getKey(), baseOrderActionWithType().document(buildFromDocument(document())).build());
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCaseManagementOrder(
+        CaseManagementOrder caseManagementOrder = service.prepareCaseManagementOrder(
             mapper.convertValue(caseData, CaseData.class));
 
         assertThat(caseManagementOrder).isEqualToComparingFieldByField(CaseManagementOrder.builder()
@@ -192,43 +182,16 @@ class DraftCMOServiceTest {
 
         CaseData caseData = CaseData.builder().caseManagementOrder(orderWithHearingDate).build();
 
-        CaseManagementOrder updatedOrder = draftCMOService.prepareCaseManagementOrder(caseData);
+        CaseManagementOrder updatedOrder = service.prepareCaseManagementOrder(caseData);
 
         assertThat(updatedOrder).isEqualToComparingFieldByField(orderWithHearingDate);
-    }
-
-    @Test
-    void shouldReturnAMapWithAllIndividualCMOEntriesPopulated() {
-        caseManagementOrder = createCaseManagementOrder();
-
-        hearingDetails = createHearingBookingsFromInitialDate(time.now());
-
-        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
-            caseManagementOrder, hearingDetails);
-
-        assertThat(data).containsKeys(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
-    }
-
-    @Test
-    void shouldReturnAMapWithEmptyRepopulatedEntriesWhenCaseManagementOrderIsNull() {
-        Map<String, Object> data = draftCMOService.extractCaseManagementOrderVariables(
-            null, List.of());
-
-        DynamicList emptyDynamicList = DynamicList.builder()
-            .value(DynamicListElement.builder().label("").build())
-            .listItems(List.of())
-            .build();
-
-        assertThat(data.get(HEARING_DATE_LIST.getKey())).isEqualTo(emptyDynamicList);
-        assertThat(data.get(SCHEDULE.getKey())).isNull();
-        assertThat(data.get(RECITALS.getKey())).isNull();
     }
 
     @Test
     void shouldMoveDirectionsToCaseDetailsWhenCMOExistsWithDirections() {
         Map<String, Object> caseData = new HashMap<>();
 
-        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build(),
+        service.prepareCustomDirections(CaseDetails.builder().data(caseData).build(),
             CaseManagementOrder.builder()
                 .directions(createCmoDirections())
                 .build());
@@ -246,14 +209,14 @@ class DraftCMOServiceTest {
                 createElementCollection(createUnassignedDirection()))
         );
 
-        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build(), null);
+        service.prepareCustomDirections(CaseDetails.builder().data(caseData).build(), null);
 
         assertThat(caseData).doesNotContainKeys("allPartiesCustomCMO", "localAuthorityDirectionsCustomCMO",
             "cafcassDirectionsCustomCMO", "courtDirectionsCustomCMO", "otherPartiesDirections", "respondentDirections");
     }
 
     private DynamicList getDynamicList() {
-        DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(
+        DynamicList dynamicList = service.buildDynamicListFromHearingDetails(
             createHearingBookingsFromInitialDate(time.now()));
 
         DynamicListElement listElement = DynamicListElement.builder()
@@ -301,7 +264,7 @@ class DraftCMOServiceTest {
 
             Arrays.stream(keys).forEach(key -> data.put(key, ""));
 
-            draftCMOService.removeTransientObjectsFromCaseData(data);
+            service.removeTransientObjectsFromCaseData(data);
 
             assertThat(data).doesNotContainKeys(keys);
         }
