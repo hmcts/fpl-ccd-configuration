@@ -19,12 +19,14 @@ BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCa
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();
   await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
   await I.completeEvent('Save and continue');
+  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
+  await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
+  await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   await sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');
