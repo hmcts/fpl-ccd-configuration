@@ -59,5 +59,17 @@
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "ShowSummaryChangeOption": "No"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "caseExtensionConfirmationDate",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": "extend26WeekTimelineConfirmation",
+    "PageDisplayOrder": 2,
+    "ShowSummaryChangeOption": "No",
+    "FieldShowCondition": "caseExtensionTimeConfirmationList=\"OtherExtension\""
   }
 ]
