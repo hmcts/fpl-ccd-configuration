@@ -176,7 +176,6 @@
     "ListElementCode": "judgeAndLegalAdvisor.otherTitle",
     "EventElementLabel": "Title",
     "FieldDisplayOrder": 12,
-    "FieldShowCondition": "hearingDetails.judgeAndLegalAdvisor.useAllocatedJudge=\"No\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -187,7 +186,6 @@
     "ListElementCode": "judgeAndLegalAdvisor.judgeLastName",
     "EventElementLabel": "Last name",
     "FieldDisplayOrder": 13,
-    "FieldShowCondition": "hearingDetails.judgeAndLegalAdvisor.useAllocatedJudge=\"No\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -198,7 +196,6 @@
     "ListElementCode": "judgeAndLegalAdvisor.judgeFullName",
     "EventElementLabel": "Full name",
     "FieldDisplayOrder": 14,
-    "FieldShowCondition": "hearingDetails.judgeAndLegalAdvisor.useAllocatedJudge=\"No\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"",
     "DisplayContext": "OPTIONAL"
   },
   {
