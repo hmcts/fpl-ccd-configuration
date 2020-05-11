@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -88,19 +89,23 @@ public class HearingBookingService {
                 JudgeAndLegalAdvisor selectedJudge =
                     getSelectedJudge(hearingBooking.getJudgeAndLegalAdvisor(), allocatedJudge);
 
+                removeAllocatedJudgeProperties(selectedJudge);
+
                 hearingBooking.setJudgeAndLegalAdvisor(selectedJudge);
 
                 return buildHearingBookingElement(element.getId(), hearingBooking);
             }).collect(toList());
     }
 
-    public List<Element<HearingBooking>> resetHearingJudge(List<Element<HearingBooking>> hearingBookings) {
+    public List<Element<HearingBooking>> resetHearingJudge(List<Element<HearingBooking>> hearingBookings,
+                                                           Judge allocatedJudge) {
         return hearingBookings.stream()
             .map(element -> {
                 HearingBooking hearingBooking = element.getValue();
                 JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
 
-                if (hasAllocatedJudge(judgeAndLegalAdvisor)) {
+                if (isNotEmpty(judgeAndLegalAdvisor)
+                    && allocatedJudge.equalsJudgeAndLegalAdvisor(judgeAndLegalAdvisor)) {
                     return buildHearingBookingElement(element.getId(), resetJudgeDetails(hearingBooking));
                 }
 
@@ -123,10 +128,6 @@ public class HearingBookingService {
 
         hearingBooking.setJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
         return hearingBooking;
-    }
-
-    private boolean hasAllocatedJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        return isNotEmpty(judgeAndLegalAdvisor) && judgeAndLegalAdvisor.isUsingAllocatedJudge();
     }
 
     private Element<HearingBooking> buildHearingBookingElement(UUID id, HearingBooking hearingBooking) {

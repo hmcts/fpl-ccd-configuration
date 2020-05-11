@@ -214,7 +214,9 @@ class HearingBookingServiceTest {
     @Test
     void shouldReturnEmptyHearingBookingsWhenHearingBookingsAreEmpty() {
         List<Element<HearingBooking>> emptyHearingBookings = wrapElements(HearingBooking.builder().build());
-        List<Element<HearingBooking>> hearingBookings = service.resetHearingJudge(emptyHearingBookings);
+        Judge allocatedJudge = buildAllocatedJudge();
+        List<Element<HearingBooking>> hearingBookings
+            = service.resetHearingJudge(emptyHearingBookings, allocatedJudge);
 
         assertThat(hearingBookings).isEqualTo(emptyHearingBookings);
     }
@@ -222,7 +224,13 @@ class HearingBookingServiceTest {
     @Test
     void shouldResetJudgeWhenHearingIsUsingAllocatedJudge() {
         List<Element<HearingBooking>> hearingBookings = wrapElements(buildHearingBooking(YES));
-        List<Element<HearingBooking>> updatedHearingBookings = service.resetHearingJudge(hearingBookings);
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Richards")
+            .build();
+
+        List<Element<HearingBooking>> updatedHearingBookings
+            = service.resetHearingJudge(hearingBookings, allocatedJudge);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
 
@@ -234,7 +242,10 @@ class HearingBookingServiceTest {
     @Test
     void shouldPersistJudgeWhenHearingIsUsingAlternateJudge() {
         List<Element<HearingBooking>> hearingBookings = wrapElements(buildHearingBooking(NO));
-        List<Element<HearingBooking>> updatedHearingBookings = service.resetHearingJudge(hearingBookings);
+        Judge allocatedJudge = buildAllocatedJudge();
+
+        List<Element<HearingBooking>> updatedHearingBookings
+            = service.resetHearingJudge(hearingBookings, allocatedJudge);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
 

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingValidatorService;
@@ -39,10 +40,12 @@ public class HearingBookingDetailsController {
 
         List<String> errors = validationService.validateHasAllocatedJudge(caseData);
 
+        Judge allocatedJudge = caseData.getAllocatedJudge();
+
         if (errors.isEmpty()) {
             List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
 
-            hearingDetails = service.resetHearingJudge(hearingDetails);
+            hearingDetails = service.resetHearingJudge(hearingDetails, allocatedJudge);
 
             List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetails);
 

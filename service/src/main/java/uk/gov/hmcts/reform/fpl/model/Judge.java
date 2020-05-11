@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
@@ -32,5 +33,13 @@ public class Judge {
             return judgeFullName;
         }
         return judgeLastName;
+    }
+
+    @JsonIgnore
+    public boolean equalsJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        Judge judge = new Judge(judgeAndLegalAdvisor.getJudgeTitle(), judgeAndLegalAdvisor.getOtherTitle(),
+            judgeAndLegalAdvisor.getJudgeLastName(), judgeAndLegalAdvisor.getJudgeFullName());
+
+        return judge.equals(this);
     }
 }

@@ -88,9 +88,14 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
 
     @Test
     void shouldResetHearingJudgeDetailsWhenHearingIsUsingAllocatedJudge() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(HER_HONOUR_JUDGE)
+            .judgeLastName("Watson")
+            .build();
+
         Map<String, Object> data = Map.of(
             HEARING_DETAILS_KEY, wrapElements(buildHearingBooking()),
-            "allocatedJudge", buildAllocatedJudge()
+            "allocatedJudge", allocatedJudge
         );
 
         CaseDetails caseDetails = caseDetails(data);
