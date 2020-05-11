@@ -93,6 +93,9 @@ public class DraftOrdersController {
             Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
 
             directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
+
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY,
+                caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
