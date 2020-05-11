@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -61,6 +60,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedu
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.ALLOCATED_JUDGE_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -79,9 +80,6 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @SpyBean
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     @Captor
     private ArgumentCaptor<DocmosisCaseManagementOrder> capturedData;
@@ -109,7 +107,8 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(-1),
                 CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
                 ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
-                NEXT_HEARING_DATE_LIST.getKey(), hearingDateList()));
+                NEXT_HEARING_DATE_LIST.getKey(), hearingDateList(),
+                ALLOCATED_JUDGE_KEY, testJudge()));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
@@ -142,6 +141,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
         populatedCaseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder());
         populatedCaseDetails.getData().put(ORDER_ACTION.getKey(), getOrderAction(JUDGE_REQUESTED_CHANGE));
         populatedCaseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(1));
+        populatedCaseDetails.getData().put(ALLOCATED_JUDGE_KEY, testJudge());
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
