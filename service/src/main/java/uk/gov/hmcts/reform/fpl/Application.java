@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
     "uk.gov.hmcts.reform.fnp.client",
     "uk.gov.hmcts.reform.calendar.client"
 })
-@ComponentScan(basePackages = {"uk.gov.hmcts.reform.fpl", "uk.gov.hmcts.reform.testingsupport"})
+@ComponentScan
 @EnableAsync
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {

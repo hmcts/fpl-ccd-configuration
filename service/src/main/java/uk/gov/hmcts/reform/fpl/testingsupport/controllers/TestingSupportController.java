@@ -1,11 +1,11 @@
-package uk.gov.hmcts.reform.testingsupport.controllers;
+package uk.gov.hmcts.reform.fpl.testingsupport.controllers;
 
 import feign.FeignException;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,13 +22,13 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @Slf4j
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@ConditionalOnProperty(prefix = "testing_support", name = "enabled", havingValue = "true")
+@ConditionalOnExpression("${testing.support.enabled:false}")
 @SuppressWarnings("unchecked")
 public class TestingSupportController {
     private static final String POPULATE_EVENT_ID_TEMPLATE = "populateCase-%s";
     private final CoreCaseDataService coreCaseDataService;
 
-    @PostMapping("/testingSupport/populateCase/{caseId}")
+    @PostMapping("/testing-support/case/populate/{caseId}")
     public void populateCase(@PathVariable("caseId") Long caseId, @RequestBody Map<String, Object> requestBody) {
         State state = State.valueOf(requestBody.get("state").toString());
         Map<String, Object> caseData = (Map<String, Object>) requestBody.get("caseData");

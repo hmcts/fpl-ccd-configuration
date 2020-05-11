@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.util.NestedServletException;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.testingsupport.controllers.TestingSupportController;
+import uk.gov.hmcts.reform.fpl.testingsupport.controllers.TestingSupportController;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @OverrideAutoConfiguration(enabled = true)
 class TestingSupportControllerTest extends AbstractControllerTest {
 
-    private static final String URL_TEMPLATE = "/testingSupport/populateCase/%s";
+    private static final String URL_TEMPLATE = "/testing-support/case/populate/%s";
     private static final long CASE_ID = 1L;
 
     @Autowired

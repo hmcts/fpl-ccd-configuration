@@ -15,7 +15,7 @@ const populateWithData = async (caseId, data) => {
   updateCaseDataWithDocuments(data.caseData);
 
   const authToken = await getAuthToken();
-  await axios.post(`${config.fplServiceUrl}/testingSupport/populateCase/${normalizeCaseId(caseId)}`, data,
+  await axios.post(`${config.fplServiceUrl}/testing-support/case/populate/${normalizeCaseId(caseId)}`, data,
     {
       headers: {
         'Authorization': `Bearer ${authToken}`,
