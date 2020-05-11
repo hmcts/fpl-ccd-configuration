@@ -15,8 +15,7 @@ import javax.validation.constraints.PastOrPresent;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CloseCase {
     private final YesNo showFullReason;
-    // TODO: 11/05/2020 error message
-    @PastOrPresent(groups = CloseCaseGroup.class)
+    @PastOrPresent(message = "The close case date must be in the past", groups = CloseCaseGroup.class)
     private final LocalDate date;
     // TODO: 11/05/2020 Merge these two?
     private final CloseCaseReason fullReason;
