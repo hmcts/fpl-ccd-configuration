@@ -97,8 +97,7 @@ public class PrepareDirectionsForDataStoreService {
      *
      * @param caseData caseData containing custom role collections and standard directions order.
      */
-    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData,
-                                                              ComplyOnBehalfEvent eventId) {
+    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData, ComplyOnBehalfEvent eventId) {
         Map<DirectionAssignee, List<Element<Direction>>> customDirectionsMap =
             directionService.collectCustomDirectionsToMap(caseData);
 

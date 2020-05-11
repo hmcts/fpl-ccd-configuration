@@ -119,7 +119,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
         assertThat(hearingBooking.getHearingTime()).isEqualTo(expectedHearingTime());
         assertThat(hearingBooking.getPreHearingAttendance()).isEqualTo(expectedPreHearing());
-        assertThat(caseData.getCaseManagementOrder()).isEqualTo(expectedCaseManagementOrder());
+        assertThat(caseData.getCaseManagementOrder()).isEqualToComparingFieldByField(expectedCaseManagementOrder());
     }
 
     @Test
@@ -155,18 +155,14 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-
-        assertThat(caseData.getCaseManagementOrder()).isNull();
+        assertThat(response.getData()).doesNotContainKey(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
     }
 
     @Test
     void shouldAllowJudiciaryToCompleteActionEventWhenNoCaseManagementOrder() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-
-        assertThat(caseData.getCaseManagementOrder()).isNull();
+        assertThat(response.getData()).doesNotContainKey(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
     }
 
     private CaseManagementOrder expectedCaseManagementOrder() {
@@ -183,6 +179,8 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 .date(formatLocalDateToMediumStyle(0))
                 .build())
             .status(SEND_TO_JUDGE)
+            .schedule(createSchedule(true))
+            .recitals(createRecitals())
             .build();
     }
 

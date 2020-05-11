@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
@@ -62,6 +63,14 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.service.CommonDirectionService.assignCustomDirections;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Data
@@ -218,11 +227,21 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
+    private final OrderAction orderAction;
+    private final DynamicList cmoHearingDateList;
+    private final Schedule schedule;
+    private final List<Element<Recital>> recitals;
+    private final DocumentReference sharedDraftCMODocument;
+
     @JsonIgnore
     private CaseManagementOrder caseManagementOrder;
 
+    public CaseManagementOrder getCaseManagementOrder() {
+        return prepareCaseManagementOrder();
+    }
+
     @JsonGetter("caseManagementOrder")
-    private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
+    private CaseManagementOrder getCaseManagementOrderForLocalAuthority() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
             return caseManagementOrder;
         }
@@ -250,12 +269,6 @@ public class CaseData {
             caseManagementOrder = order;
         }
     }
-
-    private final OrderAction orderAction;
-    private final DynamicList cmoHearingDateList;
-    private final Schedule schedule;
-    private final List<Element<Recital>> recitals;
-    private final DocumentReference sharedDraftCMODocument;
 
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
 
@@ -344,5 +357,50 @@ public class CaseData {
     @JsonIgnore
     public String getComplianceDeadline() {
         return formatLocalDateToString(dateSubmitted.plusWeeks(26), FormatStyle.LONG);
+    }
+
+    private CaseManagementOrder prepareCaseManagementOrder() {
+        Optional<CaseManagementOrder> order = ofNullable(caseManagementOrder);
+        Optional<LocalDate> date = ofNullable(dateOfIssue);
+        Optional<DynamicList> dateList = ofNullable(cmoHearingDateList);
+        UUID idFromDynamicList = dateList.map(DynamicList::getValueCode).orElse(null);
+        String hearingDate = dateList.map(DynamicList::getValueLabel).orElse(null);
+        String dateOfIssue = date.map(x -> formatLocalDateToString(x, DATE)).orElse(null);
+        Schedule scheduleFromOrder = order.map(CaseManagementOrder::getSchedule).orElse(null);
+        List<Element<Recital>> recitalsFromOrder = order.map(CaseManagementOrder::getRecitals).orElse(null);
+
+        CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
+            .hearingDate(order.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
+            .id(order.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
+            .directions(combineAllDirectionsForCmo())
+            .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
+            .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
+            .status(order.map(CaseManagementOrder::getStatus).orElse(null))
+            .orderDoc(order.map(CaseManagementOrder::getOrderDoc).orElse(null))
+            .action(order.map(CaseManagementOrder::getAction).orElse(null))
+            .nextHearing(order.map(CaseManagementOrder::getNextHearing).orElse(null))
+            .dateOfIssue(order.map(CaseManagementOrder::getDateOfIssue).orElse(dateOfIssue))
+            .build();
+
+        preparedOrder.setActionWithNullDocument(orderAction);
+
+        if (preparedOrder.isSealed() && nextHearingDateList != null) {
+            preparedOrder.setNextHearingFromDynamicElement(nextHearingDateList.getValue());
+        }
+
+        return preparedOrder;
+    }
+
+    private List<Element<Direction>> combineAllDirectionsForCmo() {
+        List<Element<Direction>> directions = new ArrayList<>();
+
+        directions.addAll(assignCustomDirections(allPartiesCustomCMO, ALL_PARTIES));
+        directions.addAll(assignCustomDirections(localAuthorityDirectionsCustomCMO, LOCAL_AUTHORITY));
+        directions.addAll(assignCustomDirections(respondentDirectionsCustomCMO, PARENTS_AND_RESPONDENTS));
+        directions.addAll(assignCustomDirections(cafcassDirectionsCustomCMO, CAFCASS));
+        directions.addAll(assignCustomDirections(otherPartiesDirectionsCustomCMO, OTHERS));
+        directions.addAll(assignCustomDirections(courtDirectionsCustomCMO, COURT));
+
+        return directions;
     }
 }

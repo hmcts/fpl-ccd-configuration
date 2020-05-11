@@ -180,9 +180,6 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .dateToBeCompletedBy(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
             .build()));
 
-        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
-            CaseManagementOrder.builder().build());
-
         caseDetails.getData().put("dateOfIssue", dateNow());
 
         return caseDetails;

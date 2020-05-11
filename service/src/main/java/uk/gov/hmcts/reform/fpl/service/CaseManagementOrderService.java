@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderEnvelope;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -16,12 +15,10 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.service.CommonDirectionService.assignCustomDirections;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -50,44 +47,9 @@ public class CaseManagementOrderService {
     private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final DocumentService documentService;
 
-    public CaseManagementOrderEnvelope getOrder(CaseData caseData) {
-        CaseManagementOrder preparedOrder = prepareCaseManagementOrder(caseData);
-        CaseData updatedCaseData = caseData.toBuilder().caseManagementOrder(preparedOrder).build();
-        DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(updatedCaseData);
-        Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
-
-        preparedOrder.setOrderDocReferenceFromDocument(document);
-
-        return new CaseManagementOrderEnvelope(preparedOrder, document);
-    }
-
-    public CaseManagementOrder prepareCaseManagementOrder(CaseData caseData) {
-        Optional<CaseManagementOrder> caseManagementOrder = ofNullable(caseData.getCaseManagementOrder());
-        Optional<DynamicList> cmoHearingDateList = ofNullable(caseData.getCmoHearingDateList());
-        Optional<LocalDate> dateOfIssue = ofNullable(caseData.getDateOfIssue());
-
-        UUID idFromDynamicList = cmoHearingDateList.map(DynamicList::getValueCode).orElse(null);
-
-        CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
-            .hearingDate(cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null))
-            .id(caseManagementOrder.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
-            .directions(combineAllDirectionsForCmo(caseData))
-            .schedule(caseData.getSchedule())
-            .recitals(caseData.getRecitals())
-            .status(caseManagementOrder.map(CaseManagementOrder::getStatus).orElse(null))
-            .orderDoc(caseManagementOrder.map(CaseManagementOrder::getOrderDoc).orElse(null))
-            .action(caseManagementOrder.map(CaseManagementOrder::getAction).orElse(null))
-            .nextHearing(caseManagementOrder.map(CaseManagementOrder::getNextHearing).orElse(null))
-            .dateOfIssue(dateOfIssue.map(date -> formatLocalDateToString(date, DATE)).orElse(null))
-            .build();
-
-        preparedOrder.setActionWithNullDocument(caseData.getOrderAction());
-
-        if (preparedOrder.isSealed() && caseData.getNextHearingDateList() != null) {
-            preparedOrder.setNextHearingFromDynamicElement(caseData.getNextHearingDateList().getValue());
-        }
-
-        return preparedOrder;
+    public Document getOrder(CaseData caseData) {
+        DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(caseData);
+        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
     }
 
     public void removeTransientObjectsFromCaseData(Map<String, Object> caseData) {
@@ -153,22 +115,22 @@ public class CaseManagementOrderService {
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
-        directions.addAll(directionService.assignCustomDirections(caseData.getAllPartiesCustomCMO(),
+        directions.addAll(assignCustomDirections(caseData.getAllPartiesCustomCMO(),
             ALL_PARTIES));
 
-        directions.addAll(directionService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustomCMO(),
+        directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustomCMO(),
             LOCAL_AUTHORITY));
 
-        directions.addAll(orderByParentsAndRespondentAssignee(directionService.assignCustomDirections(
+        directions.addAll(orderByParentsAndRespondentAssignee(assignCustomDirections(
             caseData.getRespondentDirectionsCustomCMO(), PARENTS_AND_RESPONDENTS)));
 
-        directions.addAll(directionService.assignCustomDirections(caseData.getCafcassDirectionsCustomCMO(),
+        directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustomCMO(),
             CAFCASS));
 
-        directions.addAll(orderByOtherPartiesAssignee(directionService.assignCustomDirections(
+        directions.addAll(orderByOtherPartiesAssignee(assignCustomDirections(
             caseData.getOtherPartiesDirectionsCustomCMO(), OTHERS)));
 
-        directions.addAll(directionService.assignCustomDirections(caseData.getCourtDirectionsCustomCMO(), COURT));
+        directions.addAll(assignCustomDirections(caseData.getCourtDirectionsCustomCMO(), COURT));
 
         return directions;
     }

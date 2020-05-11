@@ -69,12 +69,13 @@ public class CommonDirectionService {
      * @param assignee   the assignee of the directions to be returned.
      * @return A list of custom directions.
      */
-    List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
-                                                    DirectionAssignee assignee) {
+    public static List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
+                                                                  DirectionAssignee assignee) {
         return getElements(directions, assignee);
     }
 
-    private List<Element<Direction>> getElements(List<Element<Direction>> directions, DirectionAssignee assignee) {
+    private static List<Element<Direction>> getElements(List<Element<Direction>> directions,
+                                                        DirectionAssignee assignee) {
         return ofNullable(directions)
             .map(values -> values.stream()
                 .map(element -> element(element.getId(), element.getValue().toBuilder()

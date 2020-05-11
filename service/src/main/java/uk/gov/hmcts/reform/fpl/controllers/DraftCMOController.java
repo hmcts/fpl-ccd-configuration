@@ -66,12 +66,9 @@ public class DraftCMOController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        Document document = caseManagementOrderService.getOrder(caseData).getDocument();
-
-        CaseManagementOrder caseManagementOrder = defaultIfNull(
-            caseData.getCaseManagementOrder(), CaseManagementOrder.builder().build());
-
+        Document document = caseManagementOrderService.getOrder(caseData);
         caseManagementOrder.setOrderDocReferenceFromDocument(document);
 
         data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), caseManagementOrder);
@@ -86,11 +83,9 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseManagementOrder populatedCMO = caseManagementOrderService.prepareCaseManagementOrder(caseData);
-
         caseManagementOrderService.removeTransientObjectsFromCaseData(caseDetails.getData());
 
-        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), populatedCMO);
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), caseData.getCaseManagementOrder());
         caseDetails.getData().put("cmoEventId", DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()

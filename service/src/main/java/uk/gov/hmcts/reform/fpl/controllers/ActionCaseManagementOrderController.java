@@ -79,7 +79,10 @@ public class ActionCaseManagementOrderController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        Document document = caseManagementOrderService.getOrder(caseData).getDocument();
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+
+        Document document = caseManagementOrderService.getOrder(caseData);
+        caseManagementOrder.setOrderDocReferenceFromDocument(document);
 
         data.put(ORDER_ACTION.getKey(), OrderAction.builder().document(buildFromDocument(document)).build());
 
@@ -111,10 +114,11 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        CaseManagementOrder preparedOrder = caseManagementOrderService.getOrder(caseData).getOrder();
+        Document document = caseManagementOrderService.getOrder(caseData);
+        order.setOrderDocReferenceFromDocument(document);
 
         caseDetails.getData().remove(DATE_OF_ISSUE.getKey());
-        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), preparedOrder);
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
         caseDetails.getData().put("cmoEventId", ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
