@@ -1314,7 +1314,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "closeCaseComp",
+    "ID": "closeCase",
     "FieldType": "CloseCase",
     "Label": " ",
     "SecurityClassification": "Public"

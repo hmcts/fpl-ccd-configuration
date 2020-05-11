@@ -366,5 +366,6 @@ public class CaseData {
 
     private final String amountToPay;
 
-    private final CloseCase closeCaseComp;
+    // TODO: 11/05/2020 Better name
+    private final CloseCase closeCase;
 }

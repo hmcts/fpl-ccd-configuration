@@ -14,7 +14,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "closeCase",
-    "CaseFieldID": "closeCaseComp",
+    "CaseFieldID": "closeCase",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "PageID": "1",

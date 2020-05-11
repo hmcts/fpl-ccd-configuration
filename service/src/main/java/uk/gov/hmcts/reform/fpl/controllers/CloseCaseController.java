@@ -25,8 +25,10 @@ import java.util.Random;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CloseCaseController {
 
-    private final ValidateGroupService validatorService;
-    private final ObjectMapper mapper;
+    // TODO: 11/05/2020 give access to current events in new state
+    //  • probably won't use ";" for the generated order stuff, it will be simpler
+    //  • Others could probably use ";" separation on their base version though, will need to change post state
+    //    condition to "*" though
 
     private static final String LABEL = "The case will remain open for 21 days to allow for appeal.\n\n"
         + "In a closed case, you can still:\n"
@@ -35,6 +37,8 @@ public class CloseCaseController {
         + "   •  issue a C21 (blank order)\n"
         + "   •  submit a C2 application\n";
     private static final String LABEL_FIELD = "close_case_label";
+    private final ValidateGroupService validatorService;
+    private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -46,7 +50,7 @@ public class CloseCaseController {
 
         System.out.println(maybe);
 
-        data.put("closeCaseComp", CloseCase.builder().showFullReason(maybe).build());
+        data.put("closeCase", CloseCase.builder().showFullReason(maybe).build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -58,8 +62,8 @@ public class CloseCaseController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        System.out.println("CaseClose = " + caseData.getCloseCaseComp());
-        List<String> errors = validatorService.validateGroup(caseData.getCloseCaseComp());
+        System.out.println("CaseClose = " + caseData.getCloseCase());
+        List<String> errors = validatorService.validateGroup(caseData.getCloseCase());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
