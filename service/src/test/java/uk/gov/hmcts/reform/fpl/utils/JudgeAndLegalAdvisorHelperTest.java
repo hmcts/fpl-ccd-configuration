@@ -15,6 +15,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepopulateUseAllocatedJudgeField;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 class JudgeAndLegalAdvisorHelperTest {
@@ -164,6 +165,41 @@ class JudgeAndLegalAdvisorHelperTest {
 
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isNull();
+    }
+
+    @Test
+    void shouldPrepopulateWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(OTHER)
+            .otherTitle("Mr")
+            .judgeLastName("Watson")
+            .build();
+
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(OTHER)
+            .otherTitle("Mr")
+            .judgeLastName("Watson")
+            .build();
+
+        prepopulateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+    }
+
+    @Test
+    void shouldPrepopulateWithNoWhenJudgeAndAllocatedJudgeAreNotEqual() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Hastings")
+            .build();
+
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(OTHER)
+            .otherTitle("Mr")
+            .judgeLastName("Watson")
+            .build();
+
+        prepopulateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("No");
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {

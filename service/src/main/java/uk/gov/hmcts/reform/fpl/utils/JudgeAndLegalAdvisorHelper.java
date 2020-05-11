@@ -55,12 +55,20 @@ public class JudgeAndLegalAdvisorHelper {
 
     public static JudgeAndLegalAdvisor prepopulateUseAllocatedJudgeField(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                                          Judge allocatedJudge) {
-        if (judgeAndLegalAdvisor.isEqualToAllocatedJudge(allocatedJudge)) {
+        if (checkJudgeEqualToAllocatedJudge(judgeAndLegalAdvisor, allocatedJudge)) {
             judgeAndLegalAdvisor.setUseAllocatedJudge("Yes");
         } else {
             judgeAndLegalAdvisor.setUseAllocatedJudge("No");
         }
         return judgeAndLegalAdvisor;
+    }
+
+    private static boolean checkJudgeEqualToAllocatedJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                           Judge allocatedJudge) {
+        Judge judge = new Judge(judgeAndLegalAdvisor.getJudgeTitle(), judgeAndLegalAdvisor.getOtherTitle(),
+            judgeAndLegalAdvisor.getJudgeLastName(), judgeAndLegalAdvisor.getJudgeFullName());
+
+        return judge.equals(allocatedJudge);
     }
 
     public static String buildAllocatedJudgeLabel(Judge judge) {
