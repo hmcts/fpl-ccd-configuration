@@ -70,7 +70,7 @@ task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.
 }
 
 task awaitApplicationReadiness(type: Exec, description: 'Awaits until application is ready.') {
-  commandLine '../bin/configurer/utils/wait-for.sh', System.env.URL
+  commandLine '../bin/wait-for.sh', System.env.URL
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
