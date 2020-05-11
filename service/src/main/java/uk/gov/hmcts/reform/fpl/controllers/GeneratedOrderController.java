@@ -76,6 +76,8 @@ public class GeneratedOrderController {
     private final RequestData requestData;
     private final Time time;
 
+    // TODO: 11/05/2020 sort out what happens when called from CLOSED state
+    //  Could just set the order type here and then skip the first page
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
