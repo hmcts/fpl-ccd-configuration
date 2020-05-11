@@ -16,7 +16,7 @@
     "CaseEventID": "submitApplication",
     "CaseFieldID": "applicationDocumentToReview",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
