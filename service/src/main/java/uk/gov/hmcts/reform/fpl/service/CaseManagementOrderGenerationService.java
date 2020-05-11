@@ -9,13 +9,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
@@ -64,6 +67,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
         DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder order = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
+            .allocatedJudge(getAllocatedJudge(caseData.getAllocatedJudge()))
             .courtName(dataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateOfIssue(caseManagementOrder.getDateOfIssue())
@@ -92,6 +96,10 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
     private DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(HearingBooking hearingBooking) {
         return dataExtractionService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor());
+    }
+
+    private DocmosisJudge getAllocatedJudge(Judge allocatedJudge) {
+        return dataExtractionService.getAllocatedJudge(JudgeAndLegalAdvisor.from(allocatedJudge));
     }
 
     private boolean needsNextHearingDate(CaseManagementOrder caseManagementOrder) {
