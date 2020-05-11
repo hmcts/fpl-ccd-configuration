@@ -30,8 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(HearingBookingDetailsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class HearingBookingDetailsControllerAboutToStartTest extends AbstractControllerTest {
-    private static final String ERROR_MESSAGE = "You need to enter a judge before you can add hearing details";
-
+    
     HearingBookingDetailsControllerAboutToStartTest() {
         super("add-hearing-bookings");
     }
@@ -39,7 +38,7 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
     @Test
     void shouldReturnValidationErrorsWhenAJudgeIsNotAllocatedToTheCase() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails(ImmutableMap.of()));
-        assertThat(response.getErrors()).containsExactly(ERROR_MESSAGE);
+        assertThat(response.getErrors()).containsExactly("You need to enter the allocated judge.");
     }
 
     @Test

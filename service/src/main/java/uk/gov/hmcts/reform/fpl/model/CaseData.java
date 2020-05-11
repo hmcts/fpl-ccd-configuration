@@ -124,9 +124,8 @@ public class CaseData {
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
 
-    @NotNull(message = "You need to enter the allocated judge.", groups = SealedSDOGroup.class)
-    @NotNull(message = "You need to enter a judge before you can add hearing details", groups =
-        HearingBookingDetailsGroup.class)
+    @NotNull(message = "You need to enter the allocated judge.",
+             groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
     private final Judge allocatedJudge;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
