@@ -141,7 +141,7 @@
     "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "judgeAndLegalAdvisor.useAllocatedJudge",
-    "EventElementLabel": "Is the allocated judge or magistrate taking this hearing?",
+    "EventElementLabel": "Is the allocated judge or magistrate sitting this hearing?",
     "FieldShowCondition": "hearingDetails.startDate!=\"ALWAYS_SHOW\"",
     "FieldDisplayOrder": 9,
     "DisplayContext": "MANDATORY"
