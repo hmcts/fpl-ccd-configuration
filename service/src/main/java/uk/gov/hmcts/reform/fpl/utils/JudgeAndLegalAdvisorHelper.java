@@ -53,8 +53,8 @@ public class JudgeAndLegalAdvisorHelper {
         judgeAndLegalAdvisor.setUseAllocatedJudge(null);
     }
 
-    public static JudgeAndLegalAdvisor prepopulateUseAllocatedJudgeField(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
-                                                                         Judge allocatedJudge) {
+    public static JudgeAndLegalAdvisor populateUseAllocatedJudgeField(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                                      Judge allocatedJudge) {
         if (checkJudgeEqualToAllocatedJudge(judgeAndLegalAdvisor, allocatedJudge)) {
             judgeAndLegalAdvisor.setUseAllocatedJudge("Yes");
         } else {

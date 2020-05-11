@@ -53,7 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepopulateUseAllocatedJudgeField;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.populateUseAllocatedJudgeField;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Api
@@ -110,7 +110,7 @@ public class DraftOrdersController {
         if (isNotEmpty(caseData.getStandardDirectionOrder())
             && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
             judgeAndLegalAdvisor = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
-            prepopulateUseAllocatedJudgeField(judgeAndLegalAdvisor, caseData.getAllocatedJudge());
+            populateUseAllocatedJudgeField(judgeAndLegalAdvisor, caseData.getAllocatedJudge());
         }
 
         judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));

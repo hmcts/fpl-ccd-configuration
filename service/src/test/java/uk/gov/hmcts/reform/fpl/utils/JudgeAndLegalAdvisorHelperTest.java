@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepopulateUseAllocatedJudgeField;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.populateUseAllocatedJudgeField;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 class JudgeAndLegalAdvisorHelperTest {
@@ -181,7 +181,7 @@ class JudgeAndLegalAdvisorHelperTest {
             .judgeLastName("Watson")
             .build();
 
-        prepopulateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
+        populateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
     }
 
@@ -198,7 +198,7 @@ class JudgeAndLegalAdvisorHelperTest {
             .judgeLastName("Watson")
             .build();
 
-        prepopulateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
+        populateUseAllocatedJudgeField(judgeAndLegalAdvisor, allocatedJudge);
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("No");
     }
 
