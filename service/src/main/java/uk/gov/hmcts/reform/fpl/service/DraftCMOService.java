@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,20 +48,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class DraftCMOService {
     private final CommonDirectionService commonDirectionService;
     private final Time time;
-
-    public Map<String, Object> extractCaseManagementOrderVariables(CaseManagementOrder caseManagementOrder,
-                                                                   List<Element<HearingBooking>> hearingDetails) {
-        if (isNull(caseManagementOrder)) {
-            caseManagementOrder = CaseManagementOrder.builder().build();
-        }
-
-        Map<String, Object> data = new HashMap<>();
-        data.put(HEARING_DATE_LIST.getKey(), getHearingDateDynamicList(hearingDetails, caseManagementOrder));
-        data.put(SCHEDULE.getKey(), caseManagementOrder.getSchedule());
-        data.put(RECITALS.getKey(), caseManagementOrder.getRecitals());
-
-        return data;
-    }
 
     public CaseManagementOrder prepareCaseManagementOrder(CaseData caseData) {
         Optional<CaseManagementOrder> caseManagementOrder = ofNullable(caseData.getCaseManagementOrder());
