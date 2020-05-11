@@ -79,6 +79,7 @@ class JudgeTest {
             .otherTitle("Other title")
             .judgeFullName("Judge Full Name")
             .judgeLastName("Judge Last Name")
+            .judgeEmailAddress("Judge Email Address")
             .build();
     }
 }

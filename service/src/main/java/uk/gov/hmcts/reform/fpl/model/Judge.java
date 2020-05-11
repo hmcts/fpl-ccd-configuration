@@ -21,6 +21,7 @@ public class Judge {
     private final String otherTitle;
     private final String judgeLastName;
     private final String judgeFullName;
+    private final String judgeEmailAddress;
 
     @JsonIgnore
     public String getJudgeOrMagistrateTitle() {

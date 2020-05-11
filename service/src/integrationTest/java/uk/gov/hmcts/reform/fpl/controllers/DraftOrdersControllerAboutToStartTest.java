@@ -175,6 +175,7 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
         return Judge.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Richards")
+            .judgeEmailAddress("richards@example.com")
             .build();
     }
 
