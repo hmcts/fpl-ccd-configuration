@@ -1365,7 +1365,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseShouldBeCompletedByLabel",
     "FieldType": "Label",
-    "Label": "This case should be completed by ${completionDate}",
+    "Label": "This case should be completed by ${completionDate}.",
     "SecurityClassification": "Public"
   }
 ]
