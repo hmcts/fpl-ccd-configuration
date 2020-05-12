@@ -6,7 +6,7 @@
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
     "TabDisplayOrder": 14,
-    "CaseFieldID": "comments",
+    "CaseFieldID": "caseCompletionDate",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -16,7 +16,18 @@
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
     "TabDisplayOrder": 14,
-    "CaseFieldID": "caseCompletionDate",
-    "TabFieldDisplayOrder": 1
+    "CaseFieldID": "caseExtensionReasonList",
+    "TabFieldDisplayOrder": 2
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OverviewTab",
+    "TabLabel": "Overview",
+    "TabDisplayOrder": 14,
+    "CaseFieldID": "comments",
+    "TabFieldDisplayOrder": 3
   }
 ]
