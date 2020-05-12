@@ -26,8 +26,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 class HearingBookingValidatorServiceTest {
 
     private static final String VALIDATION_ERROR = "Error 1";
-    private static final String ALLOCATED_JUDGE_VALIDATION_ERROR
-        = "You need to enter a judge before you can add hearing details";
 
     @MockBean
     private ValidateGroupService validateGroupService;
@@ -78,14 +76,15 @@ class HearingBookingValidatorServiceTest {
 
     @Test
     void shouldReturnValidationErrorsWhenAJudgeIsNotAllocatedToTheCase() {
+        final String errorMessage = "You need to enter the allocated judge.";
         final CaseData caseData = CaseData.builder().build();
 
         when(validateGroupService.validateGroup(caseData, HearingBookingDetailsGroup.class))
-            .thenReturn(List.of(ALLOCATED_JUDGE_VALIDATION_ERROR));
+            .thenReturn(List.of(errorMessage));
 
         final List<String> validationErrors = service.validateHasAllocatedJudge(caseData);
 
-        assertThat(validationErrors).containsExactly(ALLOCATED_JUDGE_VALIDATION_ERROR);
+        assertThat(validationErrors).containsExactly(errorMessage);
     }
 
     @Test
