@@ -1043,7 +1043,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
         private DocmosisCaseSubmission caseSubmission;
 
         @BeforeEach
-        void mocked() {
+        void setup() {
             caseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
         }
 
@@ -1052,6 +1052,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             templateDataGenerationService.populateDraftWaterOrCourtSeal(caseSubmission, true);
 
             assertThat(caseSubmission.getDraftWaterMark()).isEqualTo(DRAFT_WATERMARK.getValue());
+            assertThat(caseSubmission.getCourtSeal()).isNull();
         }
 
         @Test
@@ -1059,6 +1060,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
             templateDataGenerationService.populateDraftWaterOrCourtSeal(caseSubmission, false);
 
             assertThat(caseSubmission.getCourtSeal()).isEqualTo(COURT_SEAL.getValue());
+            assertThat(caseSubmission.getDraftWaterMark()).isNull();
         }
     }
 

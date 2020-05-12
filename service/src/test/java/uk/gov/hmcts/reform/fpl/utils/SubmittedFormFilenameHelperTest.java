@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 class SubmittedFormFilenameHelperTest {
 
     @Test
-    void fileNameShouldContainCaseReferenceWhenNoCaseNameIsProvidedAndNotDraftApplication() {
+    void filenameShouldContainCaseReferenceWhenNoCaseNameIsProvidedAndNotDraftApplication() {
         CaseDetails caseDetails = emptyCaseDetails();
 
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails, false);
@@ -22,7 +22,7 @@ class SubmittedFormFilenameHelperTest {
     }
 
     @Test
-    void fileNameShouldContainCaseTitleWhenProvidedAndNotDraftApplication() {
+    void filenameShouldContainCaseTitleWhenProvidedAndNotDraftApplication() {
         CaseDetails caseDetails = populatedCaseDetails();
 
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails, false);
@@ -31,7 +31,7 @@ class SubmittedFormFilenameHelperTest {
     }
 
     @Test
-    void fileShouldMatchDraftApplicationFilenameWhenAndApplicationIsDraft() {
+    void filenameShouldContainDraftApplicationAndCurrentDayWithMonthSuffixedWhenApplicationIsDraft() {
         CaseDetails caseDetails = populatedCaseDetails();
 
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails, true);
