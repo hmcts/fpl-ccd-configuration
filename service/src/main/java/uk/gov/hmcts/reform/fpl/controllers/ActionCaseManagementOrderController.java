@@ -66,11 +66,9 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        caseDetails.getData().putAll(caseManagementOrderService
-            .extractMapFieldsFromCaseManagementOrder(caseManagementOrder));
-
         draftCMOService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
+        caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
         caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
         caseDetails.getData().put(DATE_OF_ISSUE.getKey(), caseManagementOrder.getDateOfIssueAsDate());
 
