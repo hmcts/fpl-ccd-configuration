@@ -38,6 +38,7 @@ java:
         - ctsc-inbox
 
 idam-pr:
+  releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
   enabled: true
   redirect_uris:
     XUI:
@@ -66,7 +67,7 @@ ccd:
     definitionImporter:
       enabled: false
     managementWeb:
-      enabled: false
+      enabled: true
     s2s:
       enabled: false
 
@@ -115,7 +116,7 @@ ccd:
       registerAdditionalDns:
         enabled: true
         prefix: case-management-web
-        primaryIngressHost: ${SERVICE_FQDN} 
+        primaryIngressHost: ${SERVICE_FQDN}
   ccd-data-store-api:
     java:
       environment:
