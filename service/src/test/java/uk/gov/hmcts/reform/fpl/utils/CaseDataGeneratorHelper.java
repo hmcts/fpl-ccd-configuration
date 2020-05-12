@@ -329,14 +329,6 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static List<Element<Direction>> createElementCollection(Direction direction) {
-        return ImmutableList.of(
-            Element.<Direction>builder()
-                .value(direction)
-                .build()
-        );
-    }
-
     private static Direction createCustomDirection(DirectionAssignee assignee) {
         return Direction.builder()
             .directionType("Direction title")

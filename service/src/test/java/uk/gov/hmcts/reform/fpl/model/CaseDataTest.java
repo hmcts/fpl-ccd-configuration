@@ -10,27 +10,51 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.ActionType;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.time.format.FormatStyle;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
+import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, FixedTimeConfiguration.class})
 class CaseDataTest {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    private Time time;
 
     @Test
     void shouldSerialiseCaseManagementOrderToCorrectStringValueWhenInSelfReview() throws JsonProcessingException {
@@ -224,7 +248,6 @@ class CaseDataTest {
     @Nested
     class GetLastC2DocumentBundle {
         private CaseData caseData;
-        private List<Element<C2DocumentBundle>> c2DocumentBundle;
 
         @Test
         void shouldReturnLastC2DocumentBundleWhenC2DocumentBundleIsPopulated() {
@@ -236,7 +259,7 @@ class CaseDataTest {
                 .description("Mock bundle 2")
                 .build();
 
-            c2DocumentBundle = wrapElements(c2DocumentBundle1, c2DocumentBundle2);
+            List<Element<C2DocumentBundle>> c2DocumentBundle = wrapElements(c2DocumentBundle1, c2DocumentBundle2);
 
             caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
             assertThat(caseData.getLastC2DocumentBundle()).isEqualTo(c2DocumentBundle2);
@@ -250,22 +273,135 @@ class CaseDataTest {
     }
 
     @Nested
-    class DirectionsObject {
+    class PrepareCaseManagementOrder {
+        final Schedule schedule = Schedule.builder().includeSchedule("Yes").build();
+        final List<Element<Recital>> recitals = wrapElements(Recital.builder().title("example title").build());
+        final OrderAction action = baseOrderActionWithType().build();
 
         @Test
-        void test() {
-            CaseData caseData = CaseData.builder()
-                .directionsForCaseManagementOrder(Directions.builder()
-                    .allPartiesCustomCMO(wrapElements(Direction.builder().build()))
+        void shouldReturnCaseManagementOrderWhenFullDetailsButNoPreviousOrder() {
+            CaseData caseData = getCaseData();
+
+            assertThat(caseData.getCaseManagementOrder())
+                .isEqualToComparingFieldByField(buildOrder(schedule, recitals, createCmoDirections(), action));
+        }
+
+        @Test
+        void shouldReturnCaseManagementOrderAndEmptyListDirectionsWhenOnlyPreviousOrder() {
+            Map<String, Object> data = new HashMap<>();
+            String key = CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey();
+            data.put(key, buildOrder(schedule, recitals, createCmoDirections(), action));
+
+            CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+            assertThat(caseData.getCaseManagementOrder())
+                .isEqualToComparingFieldByField(buildOrder(schedule, recitals, emptyList(), action));
+        }
+
+        @Test
+        void shouldReturnCaseManagementOrderWhenNoCaseData() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getCaseManagementOrder()).isEqualTo(CaseManagementOrder.builder()
+                .directions(emptyList())
+                .build());
+        }
+
+        @Test
+        void shouldOverwriteRecitalsWithEmptyListWhenRemovingAllRecitals() {
+            Map<String, Object> data = new HashMap<>();
+            String key = CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey();
+            data.put(key, buildOrder(schedule, recitals, emptyList(), action));
+            data.put(RECITALS.getKey(), emptyList());
+
+            CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+            assertThat(caseData.getCaseManagementOrder().getRecitals()).isEmpty();
+        }
+
+        @Test
+        void shouldOverwriteDirectionsWithEmptyListWhenAllDirectionsRemoved() {
+            Map<String, Object> data = new HashMap<>();
+            String key = CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey();
+            data.put(key, buildOrder(schedule, recitals, createCmoDirections(), action));
+
+            Stream.of(DirectionAssignee.values()).forEach(assignee ->
+                data.put(assignee.toCustomDirectionField().concat("CMO"), emptyList()));
+
+            CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+            assertThat(caseData.getCaseManagementOrder().getDirections()).isEmpty();
+        }
+
+        private CaseManagementOrder buildOrder(Schedule schedule,
+                                               List<Element<Recital>> recitals,
+                                               List<Element<Direction>> directions,
+                                               OrderAction action) {
+            return CaseManagementOrder.builder()
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                .hearingDate(formatLocalDateToMediumStyle(5))
+                .directions(directions)
+                .action(action)
+                .nextHearing(NextHearing.builder()
+                    .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .date(formatLocalDateToMediumStyle(5))
                     .build())
+                .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), DATE))
+                .schedule(schedule)
+                .recitals(recitals)
+                .build();
+        }
+
+        private CaseData getCaseData() {
+            Map<String, Object> caseData = new HashMap<>();
+
+            Stream.of(DirectionAssignee.values()).forEach(direction -> {
+                Direction unassignedDirection = createUnassignedDirection();
+                caseData.put(direction.toCustomDirectionField().concat("CMO"), wrapElements(unassignedDirection));
+            });
+
+            caseData.put(HEARING_DATE_LIST.getKey(), getDynamicList());
+            caseData.put(NEXT_HEARING_DATE_LIST.getKey(), getDynamicList());
+            caseData.put(ORDER_ACTION.getKey(), action);
+            caseData.put("dateOfIssue", time.now());
+            caseData.put("schedule", schedule);
+            caseData.put("recitals", recitals);
+
+            return mapper.convertValue(caseData, CaseData.class);
+        }
+
+        private OrderAction.OrderActionBuilder baseOrderActionWithType() {
+            return OrderAction.builder().type(ActionType.SEND_TO_ALL_PARTIES);
+        }
+
+        private DynamicList getDynamicList() {
+            DynamicListElement listElement = DynamicListElement.builder()
+                .label(formatLocalDateToMediumStyle(5))
+                .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
                 .build();
 
-            assertThat(caseData.getDirectionsForCaseManagementOrder().getAllDirections())
-                .isEqualTo(wrapElements(Direction.builder()
-                    .assignee(ALL_PARTIES)
-                    .custom("Yes")
-                    .readOnly("No")
-                    .build()));
+            return DynamicList.builder()
+                .listItems(List.of(
+                    listElement,
+                    DynamicListElement.builder()
+                        .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                        .label(formatLocalDateToMediumStyle(2))
+                        .build(),
+                    DynamicListElement.builder()
+                        .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                        .label(formatLocalDateToMediumStyle(0))
+                        .build()))
+                .value(listElement)
+                .build();
         }
+
+        private String formatLocalDateToMediumStyle(int i) {
+            return formatLocalDateToString(time.now().plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+        }
+    }
+
+    @Test
+    void shouldSerialiseDirectionsAsNullWhenEmptyDirections() {
+        assertThat(CaseData.builder().build()).hasFieldOrPropertyWithValue("directionsForCaseManagementOrder", null);
     }
 }

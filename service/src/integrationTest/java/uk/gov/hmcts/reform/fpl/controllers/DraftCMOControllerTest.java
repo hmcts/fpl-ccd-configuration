@@ -56,7 +56,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -301,8 +300,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         Map<String, Object> data = new HashMap<>();
 
         Stream.of(DirectionAssignee.values()).forEach(direction ->
-            data.put(direction.toCustomDirectionField().concat("CMO"),
-                createElementCollection(createUnassignedDirection()))
+            data.put(direction.toCustomDirectionField().concat("CMO"), wrapElements(createUnassignedDirection()))
         );
 
         data.put(HEARING_DATE_LIST.getKey(), getDynamicList());

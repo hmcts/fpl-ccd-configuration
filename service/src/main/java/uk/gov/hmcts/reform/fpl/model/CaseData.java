@@ -362,7 +362,7 @@ public class CaseData {
         CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
             .hearingDate(order.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
             .id(order.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
-            .directions(directions.map(Directions::getAllDirections).orElse(emptyList()))
+            .directions(directions.map(Directions::getDirectionsList).orElse(emptyList()))
             .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
             .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
             .status(order.map(CaseManagementOrder::getStatus).orElse(null))
@@ -386,7 +386,7 @@ public class CaseData {
 
     @JsonSetter
     public void setDirectionsForCaseManagementOrder(Directions directions) {
-        if (!directions.getAllDirections().isEmpty()) {
+        if (!directions.getDirectionsList().isEmpty()) {
             directionsForCaseManagementOrder = directions;
         }
     }

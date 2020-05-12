@@ -28,31 +28,7 @@ public class Directions {
     private final List<Element<Direction>> otherPartiesDirectionsCustomCMO;
     private final List<Element<Direction>> courtDirectionsCustomCMO;
 
-    public List<Element<Direction>> getAllPartiesCustomCMO() {
-        return assignCustomDirections(allPartiesCustomCMO, ALL_PARTIES);
-    }
-
-    public List<Element<Direction>> getLocalAuthorityDirectionsCustomCMO() {
-        return assignCustomDirections(localAuthorityDirectionsCustomCMO, LOCAL_AUTHORITY);
-    }
-
-    public List<Element<Direction>> getRespondentDirectionsCustomCMO() {
-        return orderByRespondent(assignCustomDirections(respondentDirectionsCustomCMO, PARENTS_AND_RESPONDENTS));
-    }
-
-    public List<Element<Direction>> getCafcassDirectionsCustomCMO() {
-        return assignCustomDirections(cafcassDirectionsCustomCMO, CAFCASS);
-    }
-
-    public List<Element<Direction>> getOtherPartiesDirectionsCustomCMO() {
-        return orderByOther(assignCustomDirections(otherPartiesDirectionsCustomCMO, OTHERS));
-    }
-
-    public List<Element<Direction>> getCourtDirectionsCustomCMO() {
-        return assignCustomDirections(courtDirectionsCustomCMO, COURT);
-    }
-
-    List<Element<Direction>> getAllDirections() {
+    List<Element<Direction>> getDirectionsList() {
         List<Element<Direction>> directions = new ArrayList<>();
 
         directions.addAll(getAllPartiesCustomCMO());
@@ -63,6 +39,30 @@ public class Directions {
         directions.addAll(getCourtDirectionsCustomCMO());
 
         return directions;
+    }
+
+    private List<Element<Direction>> getAllPartiesCustomCMO() {
+        return assignCustomDirections(allPartiesCustomCMO, ALL_PARTIES);
+    }
+
+    private List<Element<Direction>> getLocalAuthorityDirectionsCustomCMO() {
+        return assignCustomDirections(localAuthorityDirectionsCustomCMO, LOCAL_AUTHORITY);
+    }
+
+    private List<Element<Direction>> getRespondentDirectionsCustomCMO() {
+        return orderByRespondent(assignCustomDirections(respondentDirectionsCustomCMO, PARENTS_AND_RESPONDENTS));
+    }
+
+    private List<Element<Direction>> getCafcassDirectionsCustomCMO() {
+        return assignCustomDirections(cafcassDirectionsCustomCMO, CAFCASS);
+    }
+
+    private List<Element<Direction>> getOtherPartiesDirectionsCustomCMO() {
+        return orderByOther(assignCustomDirections(otherPartiesDirectionsCustomCMO, OTHERS));
+    }
+
+    private List<Element<Direction>> getCourtDirectionsCustomCMO() {
+        return assignCustomDirections(courtDirectionsCustomCMO, COURT);
     }
 
     private List<Element<Direction>> orderByRespondent(List<Element<Direction>> directions) {

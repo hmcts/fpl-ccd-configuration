@@ -51,6 +51,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEA
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
@@ -103,6 +105,8 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     void shouldReturnCaseManagementOrderWithFinalDocumentWhenSendToAllParties() {
         populatedCaseDetails.getData().putAll(
             Map.of(
+                SCHEDULE.getKey(), createSchedule(true),
+                RECITALS.getKey(), createRecitals(),
                 HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(-1),
                 CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
                 ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
