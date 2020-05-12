@@ -39,6 +39,9 @@ java:
 
 idam-pr:
   enabled: true
+  redirect_uris:
+    xuiwebapp:
+      - https://xui-${SERVICE_FQDN}/oauth2/callback
 
 xui-webapp:
   enabled: true
