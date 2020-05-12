@@ -19,7 +19,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -90,7 +89,6 @@ public class HearingBookingService {
                     getSelectedJudge(hearingBooking.getJudgeAndLegalAdvisor(), allocatedJudge);
 
                 removeAllocatedJudgeProperties(selectedJudge);
-
                 hearingBooking.setJudgeAndLegalAdvisor(selectedJudge);
 
                 return buildHearingBookingElement(element.getId(), hearingBooking);
@@ -106,7 +104,7 @@ public class HearingBookingService {
 
                 if (isNotEmpty(judgeAndLegalAdvisor)
                     && allocatedJudge.equalsJudgeAndLegalAdvisor(judgeAndLegalAdvisor)) {
-                    judgeAndLegalAdvisor = judgeAndLegalAdvisor.resetJudgeProperties(YES);
+                    judgeAndLegalAdvisor = judgeAndLegalAdvisor.resetJudgeProperties();
 
                     hearingBooking.setJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
                     return buildHearingBookingElement(element.getId(), hearingBooking);

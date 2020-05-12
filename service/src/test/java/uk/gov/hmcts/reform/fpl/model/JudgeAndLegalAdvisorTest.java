@@ -33,9 +33,10 @@ class JudgeAndLegalAdvisorTest {
             .legalAdvisorName("Holmes")
             .build();
 
-        judgeAndLegalAdvisor = judgeAndLegalAdvisor.resetJudgeProperties(YES);
+        judgeAndLegalAdvisor = judgeAndLegalAdvisor.resetJudgeProperties();
 
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Holmes");
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(YES.getValue());
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isNull();
         assertThat(judgeAndLegalAdvisor.getJudgeFullName()).isNull();
     }
