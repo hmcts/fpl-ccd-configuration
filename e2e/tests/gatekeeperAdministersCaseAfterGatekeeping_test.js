@@ -3,29 +3,14 @@ const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const directions = require('../fixtures/directions.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
+const gatekeepingNoHearingDetails = require('../fixtures/gatekeepingNoHearingDetails.json');
 
 let caseId;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, allocatedJudgeEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterMandatoryFields();
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
-
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID();
-  await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
-  await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  await sendCaseToGatekeeperEventPage.enterEmail();
-  await I.completeEvent('Save and continue');
+BeforeSuite(async (I) => {
+  caseId = await I.submitNewCaseWithData(gatekeepingNoHearingDetails);
 
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });
