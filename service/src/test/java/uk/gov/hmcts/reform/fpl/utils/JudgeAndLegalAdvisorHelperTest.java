@@ -169,7 +169,7 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    void shouldPopulateWithYesAndResetJudgeFieldsWhenJudgeAndAllocatedJudgeAreEqual() {
+    void shouldPopulateUseAllocatedJudgeWithYesAndResetJudgeFieldsWhenJudgesAreEqual() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(OTHER)
             .otherTitle("Mr")
@@ -190,7 +190,7 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    void shouldPopulateWithNoWhenJudgeAndAllocatedJudgeAreNotEqual() {
+    void shouldPopulateUseAllocatedJudgeWithNoWhenJudgesAreNotEqual() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Hastings")
