@@ -36,7 +36,7 @@ public class JudgeAndLegalAdvisor {
         return judgeAndLegalAdvisorBuilder.build();
     }
 
-    public static JudgeAndLegalAdvisor resetNameAndTitle(String legalAdvisorName) {
+    public JudgeAndLegalAdvisor resetJudgeProperties() {
         return JudgeAndLegalAdvisor.builder()
             .useAllocatedJudge("Yes")
             .legalAdvisorName(legalAdvisorName)

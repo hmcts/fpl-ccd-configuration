@@ -25,11 +25,18 @@ class JudgeAndLegalAdvisorTest {
     }
 
     @Test
-    void shouldReturnNewJudgeWithOnlyLegalAdvisorAndUseAllocatedJudgeFieldsSet() {
-        assertThat(JudgeAndLegalAdvisor.resetNameAndTitle("James")).isEqualToComparingFieldByField(
-            JudgeAndLegalAdvisor.builder()
-                .useAllocatedJudge("Yes")
-                .legalAdvisorName("James")
-                .build());
+    void shouldResetJudgePropertiesWhilePersistingLegalAdvisorName() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(MAGISTRATES)
+            .judgeFullName("Davidson")
+            .legalAdvisorName("Holmes")
+            .build();
+
+        judgeAndLegalAdvisor = judgeAndLegalAdvisor.resetJudgeProperties();
+
+        assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Holmes");
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isNull();
+        assertThat(judgeAndLegalAdvisor.getJudgeFullName()).isNull();
     }
 }
