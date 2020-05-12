@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Data
@@ -13,7 +14,7 @@ import java.util.Set;
 public class RoboticsData {
     private final String caseNumber;
     private final String applicationType;
-    private final double feePaid;
+    private final BigDecimal feePaid;
     private final Set<Child> children;
     private final Set<Respondent> respondents;
     private final Solicitor solicitor;

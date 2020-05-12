@@ -216,12 +216,6 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    private final OrderAction orderAction;
-    private final DynamicList cmoHearingDateList;
-    private final Schedule schedule;
-    private final List<Element<Recital>> recitals;
-    private final DocumentReference sharedDraftCMODocument;
-
     @JsonIgnore
     private CaseManagementOrder caseManagementOrder;
 
@@ -259,6 +253,12 @@ public class CaseData {
         }
     }
 
+    private final OrderAction orderAction;
+    private final DynamicList cmoHearingDateList;
+    private final Schedule schedule;
+    private final List<Element<Recital>> recitals;
+    private final DocumentReference sharedDraftCMODocument;
+
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
 
     public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
@@ -281,6 +281,24 @@ public class CaseData {
     private final EPOType epoType;
     @Valid
     private final Address epoRemovalAddress;
+
+    @JsonIgnore
+    public List<Element<Proceeding>> getAllProceedings() {
+        List<Element<Proceeding>> proceedings = new ArrayList<>();
+
+        ofNullable(this.getProceeding()).map(ElementUtils::element).ifPresent(proceedings::add);
+        ofNullable(this.getProceeding())
+            .map(Proceeding::getAdditionalProceedings).ifPresent(proceedings::addAll);
+
+        return Collections.unmodifiableList(proceedings);
+    }
+
+    @JsonIgnore
+    public String getRelevantProceedings() {
+        return ofNullable(this.getProceeding())
+            .map(Proceeding::getOnGoingProceeding)
+            .orElse("");
+    }
 
     @JsonIgnore
     public List<Element<Other>> getAllOthers() {
@@ -347,6 +365,8 @@ public class CaseData {
     public String getComplianceDeadline() {
         return formatLocalDateToString(dateSubmitted.plusWeeks(26), FormatStyle.LONG);
     }
+
+    private final String amountToPay;
 
     private CaseManagementOrder prepareCaseManagementOrder() {
         Optional<CaseManagementOrder> order = ofNullable(caseManagementOrder);

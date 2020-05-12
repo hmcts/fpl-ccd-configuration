@@ -60,6 +60,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderGenerationService.class})
@@ -138,7 +140,8 @@ class CaseManagementOrderGenerationServiceTest {
             .respondents1(emptyList())
             .applicants(getApplicants())
             .schedule(Schedule.builder().includeSchedule("No").build())
-            .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder().build())));
+            .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder().build())))
+            .allocatedJudge(testJudge());
     }
 
     private List<Element<Applicant>> getApplicants() {
@@ -188,6 +191,7 @@ class CaseManagementOrderGenerationServiceTest {
             .directions(emptyList())
             .crest(CREST.getValue())
             .draftbackground(DRAFT_WATERMARK.getValue())
+            .allocatedJudge(testDocmosisJudge())
             .build();
     }
 
@@ -286,7 +290,6 @@ class CaseManagementOrderGenerationServiceTest {
             .dateOfIssue(formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG))
             .children(getExpectedChildren())
-            .numberOfChildren(getExpectedChildren().size())
             .applicantName("Bran Stark")
             .respondents(getExpectedRespondents())
             .respondentsProvided(true)
@@ -310,6 +313,7 @@ class CaseManagementOrderGenerationServiceTest {
             .scheduleProvided(true)
             .crest(CREST.getValue())
             .courtseal(COURT_SEAL.getValue())
+            .allocatedJudge(testDocmosisJudge())
             .build();
     }
 
