@@ -36,7 +36,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "CLOSED",
     "Name": "Closed",
-    "Description": "State indicating that the case has been closed, limited interaction in here",
+    "Description": "Final case state, no longer allowed to create orders apart from C21",
     "DisplayOrder": 5
   },
   {
