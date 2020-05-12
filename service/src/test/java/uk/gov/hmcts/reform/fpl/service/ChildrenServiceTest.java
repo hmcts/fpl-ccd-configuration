@@ -101,18 +101,19 @@ class ChildrenServiceTest {
     @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndAlreadyIssuedForOtherChild() {
         List<Element<Child>> children = List.of(childWithFinalOrderIssued("No"), childWithFinalOrderIssued("Yes"),
-            childWithFinalOrderIssued("No"));
+            childWithFinalOrderIssued("No"), childWithFinalOrderIssued("No"));
 
         ChildSelector childSelector = ChildSelector.builder()
-            .childCount("3")
-            .selected(List.of(0))
+            .childCount("4")
+            .selected(List.of(0,2))
             .build();
 
         List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
 
         assertThat(result.get(0).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
         assertThat(result.get(1).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
-        assertThat(result.get(2).getValue().getParty().getFinalOrderIssued()).isEqualTo("No");
+        assertThat(result.get(2).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
+        assertThat(result.get(3).getValue().getParty().getFinalOrderIssued()).isEqualTo("No");
     }
 
 
