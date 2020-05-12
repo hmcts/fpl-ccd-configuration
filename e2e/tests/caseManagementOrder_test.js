@@ -1,50 +1,15 @@
 const config = require('../config.js');
-const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const directions = require('../fixtures/directions.js');
 const schedule = require('../fixtures/schedule.js');
 const cmoHelper = require('../helpers/case_management_order_helper.js');
+const standardDirectionOrder = require('../fixtures/standardDirectionOrder.json');
 
 let caseId;
 
 Feature('Case Management Order Journey');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage, allocatedJudgeEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterMandatoryFields();
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
-
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID();
-  await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  await sendCaseToGatekeeperEventPage.enterEmail();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  await I.addAnotherElementToCollection();
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
-  I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
-
-  //gatekeeper adds allocated judge
-  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
-  await I.completeEvent('Save and continue');
-
-  // gatekeeper create sdo
-  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
-  await draftStandardDirectionsEventPage.skipDateOfIssue();
-  await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-  await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
-  await draftStandardDirectionsEventPage.markAsFinal();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+BeforeSuite(async (I) => {
+  caseId = await I.submitNewCaseWithData(standardDirectionOrder);
 });
 
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
@@ -103,7 +68,6 @@ Scenario('Judge sees Action CMO placeholder when CMO is not in Judge Review', as
 
 Scenario('Local Authority sends draft to Judge who requests corrections', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
 
