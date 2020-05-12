@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -53,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -208,6 +211,44 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         assertThat(migratedJudge.getLegalAdvisorName()).isEqualTo("Peter Parker");
     }
 
+    @Test
+    void aboutToSubmitShouldSetFinalOrderIssuedOnChildren() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .children1(createChildren("Fred", "John"))
+                .orderAppliesToAllChildren("Yes")
+        );
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getAllChildren().get(0).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
+        assertThat(caseData.getAllChildren().get(1).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
+    }
+
+    @Test
+    void aboutToSubmitShouldNotSetFinalOrderIssuedForInterimOrder() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(CARE_ORDER, INTERIM, judgeAndLegalAdvisor)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .children1(createChildren("Fred", "John"))
+                .orderAppliesToAllChildren("Yes")
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+        );
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getAllChildren().get(0).getValue().getParty().getFinalOrderIssued()).isNull();
+        assertThat(caseData.getAllChildren().get(1).getValue().getParty().getFinalOrderIssued()).isNull();
+    }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
         return JudgeAndLegalAdvisor.builder()
@@ -272,5 +313,17 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
             new TypeReference<>() {});
 
         assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
+    }
+
+    private List<Element<Child>> createChildren(String... firstNames) {
+        Child[] children = new Child[firstNames.length];
+        for (int i = 0; i < firstNames.length; i++) {
+            children[i] = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName(firstNames[i])
+                    .build())
+                .build();
+        }
+        return wrapElements(children);
     }
 }
