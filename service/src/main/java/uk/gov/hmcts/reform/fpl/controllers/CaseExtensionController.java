@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.time.LocalDate;
@@ -62,7 +63,7 @@ public class CaseExtensionController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, DateOfIssueGroup.class))
+            .errors(validateGroupService.validateGroup(caseData, CaseExtensionGroup.class))
             .build();
     }
 

@@ -102,7 +102,7 @@ public class CaseData {
     private final Order standardDirectionOrder;
 
     private LocalDate caseCompletionDate;
-    @Future(message = "New end date can't be in the past", groups = DateOfIssueGroup.class)
+    @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
     private LocalDate extensionDateOther;
 
     @NotNull(message = "You need to enter the allocated judge.", groups = SealedSDOGroup.class)
