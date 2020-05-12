@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -11,20 +12,22 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 class SubmittedFormFilenameHelperTest {
+    private static CaseDetails caseDetails;
+
+    @BeforeAll
+    static void setup() {
+        caseDetails = populatedCaseDetails();
+    }
 
     @Test
     void filenameShouldContainCaseReferenceWhenNoCaseNameIsProvidedAndNotDraftApplication() {
-        CaseDetails caseDetails = emptyCaseDetails();
-
-        String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails, false);
+        String fileName = SubmittedFormFilenameHelper.buildFileName(emptyCaseDetails(), false);
 
         assertThat(fileName).isEqualTo("123.pdf");
     }
 
     @Test
     void filenameShouldContainCaseTitleWhenProvidedAndNotDraftApplication() {
-        CaseDetails caseDetails = populatedCaseDetails();
-
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails, false);
 
         assertThat(fileName).isEqualTo("test.pdf");
@@ -32,8 +35,6 @@ class SubmittedFormFilenameHelperTest {
 
     @Test
     void filenameShouldContainDraftApplicationAndCurrentDayWithMonthSuffixedWhenApplicationIsDraft() {
-        CaseDetails caseDetails = populatedCaseDetails();
-
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails, true);
 
         assertThat(fileName)
