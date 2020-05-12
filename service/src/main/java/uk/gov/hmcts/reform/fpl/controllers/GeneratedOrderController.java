@@ -94,7 +94,6 @@ public class GeneratedOrderController {
             }
 
             if (CLOSED.getValue().equals(caseDetails.getState())) {
-                System.out.println(CLOSED);
                 caseDetails.getData()
                     .put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
             }
@@ -137,7 +136,6 @@ public class GeneratedOrderController {
             caseData.getAllocatedJudge());
 
         // Only generate a document if a blank order or further directions has been added
-        System.out.println(orderTypeAndDocument);
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
             Document document = getDocument(caseData, DRAFT, judgeAndLegalAdvisor);
 
