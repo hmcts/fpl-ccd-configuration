@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.Directions;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -41,6 +46,12 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
@@ -53,8 +64,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, CommonDirectionService.class, CaseManagementOrderService.class,
-    FixedTimeConfiguration.class
+    JacksonAutoConfiguration.class, CaseManagementOrderService.class, FixedTimeConfiguration.class
 })
 class CaseManagementOrderServiceTest {
     private static final Document DOCUMENT = document();
@@ -70,6 +80,9 @@ class CaseManagementOrderServiceTest {
 
     @Autowired
     private Time time;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
@@ -151,15 +164,28 @@ class CaseManagementOrderServiceTest {
 
     @Test
     void shouldMoveDirectionsToCaseDetailsWhenCMOExistsWithDirections() {
-        Map<String, Object> caseData = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        CaseManagementOrder order = CaseManagementOrder.builder().directions(createCmoDirections()).build();
 
-        service.prepareCustomDirections(CaseDetails.builder().data(caseData).build(),
-            CaseManagementOrder.builder()
-                .directions(createCmoDirections())
+        service.prepareCustomDirections(caseDetails, order);
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        Map<DirectionAssignee, List<Element<Direction>>> map = Directions.getMapping(createCmoDirections());
+
+        assertThat(data).containsKeys("allPartiesCustomCMO", "localAuthorityDirectionsCustomCMO",
+            "cafcassDirectionsCustomCMO", "courtDirectionsCustomCMO", "otherPartiesDirectionsCustomCMO",
+            "respondentDirectionsCustomCMO");
+
+        assertThat(caseData.getDirectionsForCaseManagementOrder())
+            .isEqualTo(Directions.builder()
+                .allPartiesCustomCMO(map.get(ALL_PARTIES))
+                .localAuthorityDirectionsCustomCMO(map.get(LOCAL_AUTHORITY))
+                .respondentDirectionsCustomCMO(map.get(PARENTS_AND_RESPONDENTS))
+                .cafcassDirectionsCustomCMO(map.get(CAFCASS))
+                .otherPartiesDirectionsCustomCMO(map.get(OTHERS))
+                .courtDirectionsCustomCMO(map.get(COURT))
                 .build());
-
-        assertThat(caseData).containsKeys("allParties", "localAuthorityDirections", "cafcassDirections",
-            "courtDirections", "otherPartiesDirections", "respondentDirections");
     }
 
     @Test
@@ -173,16 +199,15 @@ class CaseManagementOrderServiceTest {
         service.prepareCustomDirections(CaseDetails.builder().data(caseData).build(), null);
 
         assertThat(caseData).doesNotContainKeys("allPartiesCustomCMO", "localAuthorityDirectionsCustomCMO",
-            "cafcassDirectionsCustomCMO", "courtDirectionsCustomCMO", "otherPartiesDirections", "respondentDirections");
+            "cafcassDirectionsCustomCMO", "courtDirectionsCustomCMO", "otherPartiesDirectionsCustomCMO",
+            "respondentDirectionsCustomCMO");
     }
 
     private CaseManagementOrder createCaseManagementOrder() {
         return CaseManagementOrder.builder()
             .hearingDate(formatLocalDateToMediumStyle(2))
             .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-            .recitals(List.of(Element.<Recital>builder()
-                .value(Recital.builder().build())
-                .build()))
+            .recitals(wrapElements(Recital.builder().build()))
             .schedule(Schedule.builder().build())
             .status(SELF_REVIEW)
             .orderDoc(DocumentReference.builder().build())

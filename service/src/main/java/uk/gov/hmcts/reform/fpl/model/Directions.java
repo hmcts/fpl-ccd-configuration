@@ -3,12 +3,15 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.groupingBy;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -39,6 +42,10 @@ public class Directions {
         directions.addAll(getCourtDirectionsCustomCMO());
 
         return directions;
+    }
+
+    public static Map<DirectionAssignee, List<Element<Direction>>> getMapping(List<Element<Direction>> directions) {
+        return directions.stream().collect(groupingBy(element -> element.getValue().getAssignee()));
     }
 
     private List<Element<Direction>> getAllPartiesCustomCMO() {
