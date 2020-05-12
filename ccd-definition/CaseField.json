@@ -1313,7 +1313,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "extensionDate",
+    "ID": "extensionDate8Weeks",
     "Label": "Case extension date",
     "FieldType": "Text",
     "SecurityClassification": "Public"
@@ -1321,8 +1321,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseShouldBeCompletedByConfirmationLabel",
-    "Label": "You've select to extend the case by 8 weeks. The case should now be completed by ${extensionDate}.",
+    "ID": "shouldBeCompletedByConfirmationLabel",
+    "Label": "You've select to extend the case by 8 weeks. The case should now be completed by ${extensionDate8Weeks}.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
@@ -1346,7 +1346,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseExtensionConfirmationDate",
+    "ID": "8WeeksExtensionDateOther",
     "FieldType": "Date",
     "Label": "New end date",
     "HintText": "For example, 31 3 1980",
@@ -1355,23 +1355,23 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "completionDate",
-    "Label": "Case completion date",
+    "ID": "shouldBeCompletedByDate",
+    "Label": "Date case should be completed by",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseShouldBeCompletedByLabel",
+    "ID": "shouldBeCompletedByLabel",
     "FieldType": "Label",
-    "Label": "This case should be completed by ${completionDate}.",
+    "Label": "This case should be completed by ${shouldBeCompletedByDate}.",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseExtensionLabel",
+    "ID": "extendBy8WeeksOrOtherLabel",
     "FieldType": "Label",
     "Label": "You can either extend this date by 8 weeks, or enter a different end date.",
     "SecurityClassification": "Public"
@@ -1379,7 +1379,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseExtensionDate",
+    "ID": "extensionDateOther",
     "FieldType": "Date",
     "Label": "New end date",
     "HintText": "For example, 31 3 1980",

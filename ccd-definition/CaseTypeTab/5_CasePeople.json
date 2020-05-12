@@ -76,7 +76,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "completionDate",
+    "CaseFieldID": "shouldBeCompletedByDate",
     "TabFieldDisplayOrder": 8
   }
 ]

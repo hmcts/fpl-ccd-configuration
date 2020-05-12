@@ -492,28 +492,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseExtensionConfirmationDate",
+    "CaseFieldID": "8WeeksExtensionDateOther",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseShouldBeCompletedByLabel",
+    "CaseFieldID": "shouldBeCompletedByLabel",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "completionDate",
+    "CaseFieldID": "shouldBeCompletedByDate",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseExtensionDate",
+    "CaseFieldID": "extensionDateOther",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },

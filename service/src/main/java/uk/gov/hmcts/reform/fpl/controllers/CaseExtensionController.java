@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.time.LocalDate;
 
-import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -26,8 +25,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequestMapping("/callback/case-extension")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseExtensionController {
-    private static final String CASE_COMPLETION_DATE = "completionDate";
-    private static final String CASE_EXTENSION_DATE_LABEL = "extensionDate";
     private final ObjectMapper mapper;
     private LocalDate extensionDate;
 
@@ -37,7 +34,7 @@ public class CaseExtensionController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         LocalDate dateSubmitted = caseData.getDateSubmitted();
-        caseDetails.getData().put(CASE_COMPLETION_DATE, formatLocalDateToString(dateSubmitted, DATE));
+        caseDetails.getData().put("shouldBeCompletedByDate", formatLocalDateToString(dateSubmitted, DATE));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -49,18 +46,18 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if(isEmpty(caseData.getExtensionDate())){
+        // put into the label
             extensionDate = caseData.getDateSubmitted().plusWeeks(8);
-            caseDetails.getData().put(CASE_EXTENSION_DATE_LABEL, formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(8),
+            caseDetails.getData().put("extensionDate8Weeks", formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(8),
                 DATE));
-        }
 
 
-//        if(!isEmpty(caseDetails.getData().get("caseExtensionConfirmationDate")))
+
+//        if(!isEmpty(caseDetails.getData().get("8WeeksExtensionDateOther")))
 //        {
-//            System.out.println("caseExtensionConfirmationDate is not empty");
+//            System.out.println("8WeeksExtensionDateOther is not empty");
 //        } else {
-//            System.out.println("caseExtensionConfirmationDate is empty");
+//            System.out.println("8WeeksExtensionDateOther is empty");
 //        }
 //
 //        if(caseDetails.getData().get("caseExtensionTimeConfirmationList"))
@@ -78,10 +75,10 @@ public class CaseExtensionController {
 
         if(caseDetails.getData().get("caseExtensionTimeList").equals("8WeekExtension")){
             if(caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("8WeekExtension")) {
-                caseDetails.getData().put("caseExtensionDate", extensionDate);
+                caseDetails.getData().put("extensionDateOther", extensionDate);
             } else {
-                System.out.println("date to put in" + caseDetails.getData().get("caseExtensionConfirmationDate"));
-                caseDetails.getData().put("caseExtensionDate", caseDetails.getData().get("caseExtensionConfirmationDate"));
+                System.out.println("date to put in" + caseDetails.getData().get("8WeeksExtensionDateOther"));
+                caseDetails.getData().put("extensionDateOther", caseDetails.getData().get("8WeeksExtensionDateOther"));
             }
         }
 
