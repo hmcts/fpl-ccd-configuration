@@ -79,7 +79,6 @@ public class CloseCaseController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(List.of("STOP"))
             .build();
     }
 }
