@@ -378,11 +378,12 @@ public class CaseData {
         Schedule scheduleFromOrder = order.map(CaseManagementOrder::getSchedule).orElse(null);
         List<Element<Recital>> recitalsFromOrder = order.map(CaseManagementOrder::getRecitals).orElse(null);
         Optional<Directions> directions = ofNullable(directionsForCaseManagementOrder);
+        List<Element<Direction>> orderDirections = order.map(CaseManagementOrder::getDirections).orElse(emptyList());
 
         CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
             .hearingDate(order.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
             .id(order.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
-            .directions(directions.map(Directions::getDirectionsList).orElse(emptyList()))
+            .directions(directions.map(Directions::getDirectionsList).orElse(orderDirections))
             .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
             .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
             .status(order.map(CaseManagementOrder::getStatus).orElse(null))

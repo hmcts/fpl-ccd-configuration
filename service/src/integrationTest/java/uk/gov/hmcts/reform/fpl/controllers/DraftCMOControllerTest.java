@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.Directions;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -143,7 +144,8 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         assertThat(caseData.getSchedule()).isEqualTo(schedule);
         assertThat(caseData.getRecitals()).isEqualTo(recitals);
         assertThat(caseData.getOrderAction()).isEqualTo(action);
-        assertThat(caseData.getAllParties()).isEqualTo(directions);
+        assertThat(caseData.getDirectionsForCaseManagementOrder())
+            .isEqualTo(Directions.builder().allPartiesCustomCMO(directions).build());
     }
 
     @Test

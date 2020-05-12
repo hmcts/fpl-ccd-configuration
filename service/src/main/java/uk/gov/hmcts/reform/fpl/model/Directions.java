@@ -31,7 +31,7 @@ public class Directions {
     private final List<Element<Direction>> otherPartiesDirectionsCustomCMO;
     private final List<Element<Direction>> courtDirectionsCustomCMO;
 
-    List<Element<Direction>> getDirectionsList() {
+    public List<Element<Direction>> getDirectionsList() {
         List<Element<Direction>> directions = new ArrayList<>();
 
         directions.addAll(getAllPartiesCustomCMO());
