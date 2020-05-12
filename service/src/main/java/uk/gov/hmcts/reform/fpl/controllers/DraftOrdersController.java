@@ -96,7 +96,7 @@ public class DraftOrdersController {
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, prepareJudgePage(caseData));
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, prepareJudge(caseData));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -104,7 +104,7 @@ public class DraftOrdersController {
             .build();
     }
 
-    private JudgeAndLegalAdvisor prepareJudgePage(CaseData caseData) {
+    private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
 
         if (isNotEmpty(caseData.getStandardDirectionOrder())
