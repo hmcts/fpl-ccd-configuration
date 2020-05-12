@@ -46,22 +46,10 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        // put into the label
+            // Put into the label
             extensionDate = caseData.getDateSubmitted().plusWeeks(8);
             caseDetails.getData().put("extensionDate8Weeks", formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(8),
                 DATE));
-
-
-
-//        if(!isEmpty(caseDetails.getData().get("8WeeksExtensionDateOther")))
-//        {
-//            System.out.println("8WeeksExtensionDateOther is not empty");
-//        } else {
-//            System.out.println("8WeeksExtensionDateOther is empty");
-//        }
-//
-//        if(caseDetails.getData().get("caseExtensionTimeConfirmationList"))
-//        caseDetails.getData().put("caseExtensionDate", "2019-10-10");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -71,7 +59,6 @@ public class CaseExtensionController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if(caseDetails.getData().get("caseExtensionTimeList").equals("8WeekExtension")){
             if(caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("8WeekExtension")) {
