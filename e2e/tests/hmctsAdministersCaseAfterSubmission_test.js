@@ -7,18 +7,15 @@ const c2Payment = require('../fixtures/c2Payment.js');
 const expertReportLog = require('../fixtures/expertReportLog.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
+const mandatoryWithMultipleChildren = require('../fixtures/mandatoryWithMultipleChildren.json');
 
 let caseId;
 let submittedAt;
 
 Feature('Case administration after submission');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterMandatoryFields({multipleChildren: true});
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
+BeforeSuite(async (I) => {
+  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   submittedAt = new Date();
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);

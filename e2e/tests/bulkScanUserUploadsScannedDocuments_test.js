@@ -5,12 +5,8 @@ let caseId;
 
 Feature('Uploading bulk scan document');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterMandatoryFields({multipleChildren: false});
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
+BeforeSuite(async (I, caseViewPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage) => {
+  caseId = await I.submitNewCaseWithData();
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.bulkScan);

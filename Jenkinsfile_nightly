@@ -23,6 +23,9 @@ withNightlyPipeline(type, product, component) {
 
   before('fullFunctionalTest') {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
+    env.DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal"
+    env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
+    env.CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal"
     env.PROXY_SERVER = 'proxyout.reform.hmcts.net:8080'
 
     try {

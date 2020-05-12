@@ -4,13 +4,7 @@ let caseId;
 
 Feature('Access segregation');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterMandatoryFields();
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
-});
+BeforeSuite(async I => caseId = await I.submitNewCaseWithData());
 
 Scenario('Different user in the same local authority can see case created', async I => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserTwo, caseId);

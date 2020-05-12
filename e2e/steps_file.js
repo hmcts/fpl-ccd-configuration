@@ -2,24 +2,14 @@
 const output = require('codeceptjs').output;
 
 const config = require('./config');
+const caseHelper = require('./helpers/case_helper.js');
 
 const loginPage = require('./pages/login.page');
-const caseViewPage = require('./pages/caseView.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const ordersAndDirectionsNeededEventPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
-const enterHearingNeededEventPage = require('./pages/events/enterHearingNeededEvent.page');
-const enterChildrenEventPage = require('./pages/events/enterChildrenEvent.page');
-const enterApplicantEventPage  = require('./pages/events/enterApplicantEvent.page');
-const enterGroundsEventPage = require('./pages/events/enterGroundsForApplicationEvent.page');
-const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
-const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
-const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.page');
+const mandatorySubmissionFields = require('./fixtures/mandatorySubmissionFields.json');
 
-const applicant = require('./fixtures/applicant');
-const solicitor = require('./fixtures/solicitor');
-const respondent = require('./fixtures/respondents');
 const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
 const baseUrl = process.env.URL || 'http://localhost:3000';
@@ -52,7 +42,7 @@ module.exports = function () {
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
-      let caseId = await this.grabTextFrom('.heading-h1');
+      const caseId = await this.grabTextFrom('.heading-h1');
       console.log(`Case created ${caseId}`);
       return caseId;
     },
@@ -146,50 +136,6 @@ module.exports = function () {
       await caseListPage.navigate();
     },
 
-    async enterAllocationProposal () {
-      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District Judge');
-      await this.completeEvent('Save and continue');
-    },
-
-    async enterMandatoryFields (settings) {
-      await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
-      ordersAndDirectionsNeededEventPage.checkCareOrder();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
-      enterHearingNeededEventPage.enterTimeFrame();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-      enterApplicantEventPage.enterApplicantDetails(applicant);
-      enterApplicantEventPage.enterSolicitorDetails(solicitor);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
-      await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
-      if(settings && settings.multipleChildren){
-        await this.addAnotherElementToCollection('Child');
-        await enterChildrenEventPage.enterChildDetails('John', 'Black', '02', '09', '2016');
-      }
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
-      await enterRespondentsEventPage.enterRespondent(respondent[0]);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
-      enterGroundsEventPage.enterThresholdCriteriaDetails();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow();
-      uploadDocumentsEventPage.selectSocialWorkStatementIncludedInSWET();
-      uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
-      uploadDocumentsEventPage.uploadCarePlan(config.testFile);
-      uploadDocumentsEventPage.uploadSWET(config.testFile);
-      uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
-      uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District Judge');
-      await this.completeEvent('Save and continue');
-    },
-
     async fillDate(date, sectionId = 'form') {
       if (date instanceof Date) {
         date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear()};
@@ -229,6 +175,14 @@ module.exports = function () {
       this.click(locate('button')
         .inside('.mat-dialog-container')
         .withText('Remove'));
+    },
+
+    async submitNewCaseWithData(data = mandatorySubmissionFields) {
+      const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
+      await caseHelper.populateWithData(caseId, data);
+      console.log(`Case ${caseId} has been populated with data`);
+
+      return caseId;
     },
 
     /**
