@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -40,7 +39,7 @@ public class HearingVenueLookUpService {
     }
 
     public HearingVenue getHearingVenue(final HearingBooking hearingBooking) {
-        if (Objects.isNull(hearingBooking.getVenueCustomAddress())) {
+        if (!"OTHER".equals(hearingBooking.getVenue())) {
             return getHearingVenue(hearingBooking.getVenue());
         } else {
             return HearingVenue.builder()
