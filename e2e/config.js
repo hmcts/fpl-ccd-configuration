@@ -37,11 +37,18 @@ module.exports = {
     email: 'judiciary@mailnesia.com',
     password: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
   },
+  systemUpdateUser: {
+    email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
+    password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPassword,
+  },
   smokeTestUser: {
     email: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
     password: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
   },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
+  fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
+  idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',
+  dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'CARE_SUPERVISION_EPO',

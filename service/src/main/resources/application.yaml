@@ -133,6 +133,10 @@ scheduler:
       description: 'Finds upcoming hearings'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
       cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
+
+testing:
+  support:
+    enabled: ${TESTING_SUPPORT_ENABLED:false}
 ---
 
 spring:
@@ -250,6 +254,10 @@ feature:
 
 scheduler:
   enabled: false
+
+testing:
+  support:
+    enabled: true
 
 ---
 
@@ -372,3 +380,7 @@ feature:
 
 scheduler:
   enabled: false
+
+testing:
+  support:
+    enabled: true
