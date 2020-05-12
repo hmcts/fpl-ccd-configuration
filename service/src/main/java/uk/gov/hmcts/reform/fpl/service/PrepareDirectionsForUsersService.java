@@ -157,7 +157,7 @@ public class PrepareDirectionsForUsersService {
         List<Element<Direction>> directionsWithResponse = extractPartyResponse(assignee, directions);
 
         if (assignee.equals(COURT)) {
-            caseDetails.getData().put(assignee.getValue().concat("Custom"), directionsWithResponse);
+            caseDetails.getData().put(assignee.toCustomDirectionField(), directionsWithResponse);
         } else {
             caseDetails.getData().put(assignee.getValue(), directionsWithResponse);
         }

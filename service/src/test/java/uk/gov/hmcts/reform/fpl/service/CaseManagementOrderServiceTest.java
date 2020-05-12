@@ -193,7 +193,7 @@ class CaseManagementOrderServiceTest {
         Map<String, Object> caseData = new HashMap<>();
 
         Stream.of(values()).forEach(direction ->
-            caseData.put(direction.toCustomDirectionField().concat("CMO"), wrapElements(createUnassignedDirection()))
+            caseData.put(direction.toCaseManagementOrderDirectionField(), wrapElements(createUnassignedDirection()))
         );
 
         service.prepareCustomDirections(CaseDetails.builder().data(caseData).build(), null);

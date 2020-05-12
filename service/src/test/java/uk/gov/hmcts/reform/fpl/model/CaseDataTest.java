@@ -326,7 +326,7 @@ class CaseDataTest {
             data.put(key, buildOrder(schedule, recitals, createCmoDirections(), action));
 
             Stream.of(DirectionAssignee.values()).forEach(assignee ->
-                data.put(assignee.toCustomDirectionField().concat("CMO"), emptyList()));
+                data.put(assignee.toCaseManagementOrderDirectionField(), emptyList()));
 
             CaseData caseData = mapper.convertValue(data, CaseData.class);
 
@@ -357,7 +357,7 @@ class CaseDataTest {
 
             Stream.of(DirectionAssignee.values()).forEach(direction -> {
                 Direction unassignedDirection = createUnassignedDirection();
-                caseData.put(direction.toCustomDirectionField().concat("CMO"), wrapElements(unassignedDirection));
+                caseData.put(direction.toCaseManagementOrderDirectionField(), wrapElements(unassignedDirection));
             });
 
             caseData.put(HEARING_DATE_LIST.getKey(), getDynamicList());
