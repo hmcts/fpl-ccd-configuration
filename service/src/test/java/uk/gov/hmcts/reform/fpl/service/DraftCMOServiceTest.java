@@ -216,16 +216,27 @@ class DraftCMOServiceTest {
     }
 
     private DynamicList getDynamicList() {
-        DynamicList dynamicList = service.buildDynamicListFromHearingDetails(
-            createHearingBookingsFromInitialDate(time.now()));
-
         DynamicListElement listElement = DynamicListElement.builder()
             .label(formatLocalDateToMediumStyle(5))
             .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
             .build();
 
-        dynamicList.setValue(listElement);
-        return dynamicList;
+        return DynamicList.builder()
+            .listItems(List.of(
+                DynamicListElement.builder()
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .label(formatLocalDateToMediumStyle(5))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(2))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(0))
+                    .build()))
+            .value(listElement)
+            .build();
     }
 
     private CaseManagementOrder createCaseManagementOrder() {
