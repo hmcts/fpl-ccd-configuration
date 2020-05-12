@@ -223,6 +223,7 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
+  createNoticeOfProceedingsEventPage.useAlternateJudge();
   createNoticeOfProceedingsEventPage.selectJudgeTitle();
   createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
   createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
