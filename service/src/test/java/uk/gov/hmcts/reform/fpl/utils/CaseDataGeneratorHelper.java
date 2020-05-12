@@ -68,6 +68,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 public class CaseDataGeneratorHelper {
 
@@ -438,6 +439,7 @@ public class CaseDataGeneratorHelper {
             .respondentDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
             .caseManagementOrder(createApprovedCMO())
             .servedCaseManagementOrders(wrapElements(CaseManagementOrder.builder().build()))
+            .allocatedJudge(testJudge())
             .build();
     }
 
