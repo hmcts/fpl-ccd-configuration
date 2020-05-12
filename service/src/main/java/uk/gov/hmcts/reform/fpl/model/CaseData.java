@@ -101,6 +101,10 @@ public class CaseData {
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
 
+    private LocalDate caseCompletionDate;
+    @Future(message = "New end date can't be in the past", groups = DateOfIssueGroup.class)
+    private LocalDate extensionDateOther;
+
     @NotNull(message = "You need to enter the allocated judge.", groups = SealedSDOGroup.class)
     private final Judge allocatedJudge;
     @NotNull(message = "You need to add details to hearing needed")
@@ -165,7 +169,6 @@ public class CaseData {
     private final List<Element<HearingBooking>> hearingDetails;
 
     private LocalDate dateSubmitted;
-    private LocalDate caseCompletionDate;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;

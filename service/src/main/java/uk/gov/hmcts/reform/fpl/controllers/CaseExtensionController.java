@@ -12,13 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.time.LocalDate;
 
 import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-
 
 
 @Api
@@ -29,6 +30,7 @@ public class CaseExtensionController {
     private final ObjectMapper mapper;
     private LocalDate caseCompletionDate;
     private LocalDate eightWeekExtensionDate;
+    private final ValidateGroupService validateGroupService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -51,6 +53,7 @@ public class CaseExtensionController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         // Put into the label
         eightWeekExtensionDate = caseCompletionDate.plusWeeks(8);
@@ -59,6 +62,7 @@ public class CaseExtensionController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .errors(validateGroupService.validateGroup(caseData, DateOfIssueGroup.class))
             .build();
     }
 
