@@ -16,7 +16,7 @@
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
     "TabDisplayOrder": 14,
-    "CaseFieldID": "extensionDateOther",
+    "CaseFieldID": "caseCompletionDate",
     "TabFieldDisplayOrder": 1
   }
 ]

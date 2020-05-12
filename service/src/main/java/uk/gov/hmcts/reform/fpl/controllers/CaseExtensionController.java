@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.time.LocalDate;
 
+import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -26,15 +27,21 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseExtensionController {
     private final ObjectMapper mapper;
-    private LocalDate extensionDate;
+    private LocalDate caseCompletionDate;
+    private LocalDate eightWeekExtensionDate;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        LocalDate dateSubmitted = caseData.getDateSubmitted();
-        caseDetails.getData().put("shouldBeCompletedByDate", formatLocalDateToString(dateSubmitted, DATE));
+        if(isEmpty(caseData.getCaseCompletionDate())){
+            caseCompletionDate = caseData.getDateSubmitted();
+        } else {
+            caseCompletionDate = caseData.getCaseCompletionDate();
+        }
+
+        caseDetails.getData().put("shouldBeCompletedByDate", formatLocalDateToString(caseCompletionDate, DATE));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -44,11 +51,10 @@ public class CaseExtensionController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-            // Put into the label
-            extensionDate = caseData.getDateSubmitted().plusWeeks(8);
-            caseDetails.getData().put("extensionDate8Weeks", formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(8),
+        // Put into the label
+        eightWeekExtensionDate = caseCompletionDate.plusWeeks(8);
+        caseDetails.getData().put("extensionDate8Weeks", formatLocalDateToString(eightWeekExtensionDate,
                 DATE));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -59,14 +65,16 @@ public class CaseExtensionController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if(caseDetails.getData().get("caseExtensionTimeList").equals("8WeekExtension")){
             if(caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("8WeekExtension")) {
-                caseDetails.getData().put("extensionDateOther", extensionDate);
+                caseDetails.getData().put("caseCompletionDate", eightWeekExtensionDate);
             } else {
-                System.out.println("date to put in" + caseDetails.getData().get("8WeeksExtensionDateOther"));
-                caseDetails.getData().put("extensionDateOther", caseDetails.getData().get("8WeeksExtensionDateOther"));
+                caseDetails.getData().put("caseCompletionDate", caseDetails.getData().get("8WeeksExtensionDateOther"));
             }
+        } else {
+            caseDetails.getData().put("caseCompletionDate", caseDetails.getData().get("extensionDateOther"));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

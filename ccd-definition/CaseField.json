@@ -1402,5 +1402,13 @@
     "FieldTypeParameter": "CaseExtensionReasonList",
     "Label": "Why is this case being extended?",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseCompletionDate",
+    "FieldType": "Date",
+    "Label": "Case completion date",
+    "SecurityClassification": "Public"
   }
 ]

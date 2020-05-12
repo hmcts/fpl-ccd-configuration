@@ -165,6 +165,7 @@ public class CaseData {
     private final List<Element<HearingBooking>> hearingDetails;
 
     private LocalDate dateSubmitted;
+    private LocalDate caseCompletionDate;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
