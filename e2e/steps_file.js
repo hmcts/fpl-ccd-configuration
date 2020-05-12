@@ -22,7 +22,7 @@ const solicitor = require('./fixtures/solicitor');
 const respondent = require('./fixtures/respondents');
 const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
-const baseUrl = process.env.URL || 'http://localhost:3333';
+const baseUrl = process.env.URL || 'http://localhost:3000';
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
 
