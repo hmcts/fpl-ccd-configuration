@@ -39,7 +39,6 @@ public class Judge {
         return judgeLastName;
     }
 
-    @JsonIgnore
     public boolean equalsJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return Objects.equals(getJudgeTitle(), judgeAndLegalAdvisor.getJudgeTitle())
             && StringUtils.equals(getOtherTitle(), judgeAndLegalAdvisor.getOtherTitle())

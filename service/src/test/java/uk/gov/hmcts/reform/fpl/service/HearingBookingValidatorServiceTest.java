@@ -75,7 +75,7 @@ class HearingBookingValidatorServiceTest {
     }
 
     @Test
-    void shouldReturnValidationErrorsWhenAJudgeIsNotAllocatedToTheCase() {
+    void shouldReturnAValidationErrorWhenAJudgeHasNotBeenAllocatedToTheCase() {
         final String errorMessage = "You need to enter the allocated judge.";
         final CaseData caseData = CaseData.builder().build();
 
@@ -88,7 +88,7 @@ class HearingBookingValidatorServiceTest {
     }
 
     @Test
-    void shouldReturnNOEmptyValidationErrorsWhenAJudgeHasBeenAllocatedToTheCase() {
+    void shouldNotReturnAValidationErrorWhenAJudgeHasBeenAllocatedToTheCase() {
         final CaseData caseData = CaseData.builder()
             .allocatedJudge(Judge.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)

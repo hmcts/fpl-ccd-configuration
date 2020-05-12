@@ -18,7 +18,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -102,9 +101,8 @@ public class HearingBookingService {
                 HearingBooking hearingBooking = element.getValue();
                 JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
 
-                if (isNotEmpty(judgeAndLegalAdvisor)
-                    && allocatedJudge.equalsJudgeAndLegalAdvisor(judgeAndLegalAdvisor)) {
-                    judgeAndLegalAdvisor = judgeAndLegalAdvisor.resetJudgeProperties();
+                if (judgeAndLegalAdvisor != null && allocatedJudge.equalsJudgeAndLegalAdvisor(judgeAndLegalAdvisor)) {
+                    judgeAndLegalAdvisor = judgeAndLegalAdvisor.reset();
 
                     hearingBooking.setJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
                     return buildHearingBookingElement(element.getId(), hearingBooking);

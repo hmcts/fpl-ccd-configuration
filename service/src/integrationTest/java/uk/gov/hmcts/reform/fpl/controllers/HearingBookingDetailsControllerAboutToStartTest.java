@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETA
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.ALLOCATED_JUDGE_KEY;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(HearingBookingDetailsController.class)
@@ -35,14 +36,14 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
     }
 
     @Test
-    void shouldReturnValidationErrorsWhenAJudgeIsNotAllocatedToTheCase() {
+    void shouldReturnAValidationErrorWhenAJudgeIsNotAllocatedToTheCase() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails(ImmutableMap.of()));
         assertThat(response.getErrors()).containsExactly("You need to enter the allocated judge.");
     }
 
     @Test
     void shouldPopulateAllocatedJudgeLabelWhenCaseHasAllocatedJudge() {
-        Map<String, Object> data = Map.of("allocatedJudge", buildAllocatedJudge());
+        Map<String, Object> data = Map.of(ALLOCATED_JUDGE_KEY, buildAllocatedJudge());
         CaseDetails caseDetails = caseDetails(data);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
@@ -53,7 +54,7 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
 
     @Test
     void shouldReturnPopulatedHearingWhenNoOtherHearingsExist() {
-        Map<String, Object> data = Map.of("allocatedJudge", buildAllocatedJudge());
+        Map<String, Object> data = Map.of(ALLOCATED_JUDGE_KEY, buildAllocatedJudge());
         CaseDetails caseDetails = caseDetails(data);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
@@ -72,7 +73,7 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
 
         Map<String, Object> data = Map.of(
             HEARING_DETAILS_KEY, hearingDetails,
-            "allocatedJudge", buildAllocatedJudge()
+            ALLOCATED_JUDGE_KEY, buildAllocatedJudge()
         );
 
         CaseDetails caseDetails = caseDetails(data);
@@ -93,7 +94,7 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
 
         Map<String, Object> data = Map.of(
             HEARING_DETAILS_KEY, wrapElements(buildHearingBooking()),
-            "allocatedJudge", allocatedJudge
+            ALLOCATED_JUDGE_KEY, allocatedJudge
         );
 
         CaseDetails caseDetails = caseDetails(data);

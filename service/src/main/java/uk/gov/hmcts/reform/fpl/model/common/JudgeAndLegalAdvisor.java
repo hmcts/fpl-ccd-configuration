@@ -36,8 +36,7 @@ public class JudgeAndLegalAdvisor {
         return judgeAndLegalAdvisorBuilder.build();
     }
 
-    @JsonIgnore
-    public JudgeAndLegalAdvisor resetJudgeProperties() {
+    public JudgeAndLegalAdvisor reset() {
         return JudgeAndLegalAdvisor.builder()
             .useAllocatedJudge(YES.getValue())
             .legalAdvisorName(legalAdvisorName)

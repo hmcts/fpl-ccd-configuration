@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.ALLOCATED_JUDGE_KEY;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(HearingBookingDetailsController.class)
@@ -52,7 +53,7 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
         Map<String, Object> data = Map.of(
             HEARING_DETAILS_KEY, hearingDetails,
-            "allocatedJudge", buildAllocatedJudge()
+            ALLOCATED_JUDGE_KEY, buildAllocatedJudge()
         );
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
@@ -82,7 +83,7 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
         Map<String, Object> data = Map.of(
             HEARING_DETAILS_KEY, newArrayList(hearingDetail),
-            "allocatedJudge", buildAllocatedJudge()
+            ALLOCATED_JUDGE_KEY, buildAllocatedJudge()
         );
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
@@ -106,7 +107,7 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
         Map<String, Object> data = Map.of(
             HEARING_DETAILS_KEY, hearingBookings,
-            "allocatedJudge", buildAllocatedJudge()
+            ALLOCATED_JUDGE_KEY, buildAllocatedJudge()
         );
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
