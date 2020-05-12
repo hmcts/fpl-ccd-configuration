@@ -22,10 +22,8 @@ module.exports = {
 
   async goToNewActions(actionSelected) {
     I.waitForElement(this.actionsDropdown);
-    await I.retryUntilExists(() => {
-      I.selectOption(this.actionsDropdown, actionSelected);
-      I.click(this.goButton);
-    }, 'ccd-case-event-trigger');
+    I.selectOption(this.actionsDropdown, actionSelected);
+    await I.retryUntilExists(() => I.click(this.goButton), 'ccd-case-event-trigger');
   },
 
   checkActionsAreAvailable(actions) {

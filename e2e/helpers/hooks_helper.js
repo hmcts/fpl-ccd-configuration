@@ -9,7 +9,6 @@ module.exports = class HooksHelpers extends Helper {
   _beforeSuite() {
     recorder.retry({
       retries: 10,
-      minTimeout: 1000,
       when: err => err.message.indexOf('Execution context was destroyed') > -1,
     });
   }

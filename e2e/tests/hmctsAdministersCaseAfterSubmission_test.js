@@ -194,7 +194,7 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
 
   await I.navigateToCaseDetailsAs({email: representatives.servedByDigitalService.email, password: config.localAuthorityPassword}, caseId);
 
-  I.see('No cases found.');
+  I.seeInCurrentUrl('error');
 });
 
 Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {

@@ -10,18 +10,14 @@ module.exports = class PuppeteerHelpers extends Helper {
   }
 
   /**
-   * Finds elements described by selector.
+   * Finds elements described by locator.
    * If element cannot be found an empty collection is returned.
    *
-   * @param selector - element selector
+   * @param locator - element locator
    * @returns {Promise<Array>} - promise holding either collection of elements or empty collection if element is not found
    */
-  async locateSelector(selector) {
-    return this.helpers['Puppeteer']._locate(selector);
-  }
-
-  async hasSelector(selector) {
-    return (await this.locateSelector(selector)).length;
+  async locateSelector(locator) {
+    return this.helpers['Puppeteer']._locate(locator);
   }
 
   /**
@@ -41,10 +37,6 @@ module.exports = class PuppeteerHelpers extends Helper {
     } catch (error) {
       return undefined;
     }
-  }
-
-  async waitForAnySelector(selectors) {
-    return this.waitForSelector([].concat(selectors).join(','));
   }
 
   async canSee(selector){

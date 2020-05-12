@@ -12,9 +12,7 @@ const mandatorySubmissionFields = require('./fixtures/mandatorySubmissionFields.
 
 const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
-const baseUrl = process.env.URL || 'http://localhost:3000';
-const signedInSelector = 'exui-header';
-const signedOutSelector = '#global-header';
+let baseUrl = process.env.URL || 'http://localhost:3451';
 
 'use strict';
 
@@ -22,23 +20,26 @@ module.exports = function () {
   return actor({
     async signIn(user) {
       await this.retryUntilExists(async () => {
-        this.amOnPage(baseUrl);
-
-        if(await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null){
+        this.amOnPage(process.env.URL || 'http://localhost:3451');
+        if (await this.waitForSelector('#global-header') == null) {
           return;
         }
 
-        if(await this.hasSelector(signedInSelector)){
+        const userName = await this.grabText('#user-name');
+        if (userName !== undefined) {
+          if (userName.toLowerCase().includes(user.email)) {
+            return;
+          }
           this.signOut();
         }
 
         loginPage.signIn(user);
-      }, signedInSelector);
+      }, '#sign-out');
     },
 
     async logInAndCreateCase(user) {
       await this.signIn(user);
-      this.click('Create case');
+      this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
@@ -112,7 +113,7 @@ module.exports = function () {
     },
 
     signOut() {
-      this.click('Sign out');
+      this.click('Sign Out');
       this.waitForText('Sign in', 20);
     },
 
@@ -122,8 +123,8 @@ module.exports = function () {
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
         await this.retryUntilExists(() => {
-          this.amOnPage(`${baseUrl}/cases/case-details/${normalisedCaseId}`);
-        }, signedInSelector);
+          this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
+        }, '#sign-out');
       }
     },
 
@@ -199,7 +200,7 @@ module.exports = function () {
     async retryUntilExists(action, locator, maxNumberOfTries = 6) {
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
-        if (tryNumber > 1 && await this.hasSelector(locator)) {
+        if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
           output.log(`retryUntilExists(${locator}): element found before try #${tryNumber} was executed`);
           break;
         }
