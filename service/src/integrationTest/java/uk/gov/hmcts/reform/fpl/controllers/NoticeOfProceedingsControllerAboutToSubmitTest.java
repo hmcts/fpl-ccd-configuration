@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -132,16 +133,18 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
     }
 
     private Map<String, Object> createTemplatePlaceholders() {
-        return Map.of(
-            "courtName", "Swansea Family Court",
-            "familyManCaseNumber", "SW123123",
-            "applicantName", "James Nelson",
-            "orderTypes", "Care order",
-            "childrenNames", "James Nelson",
-            "hearingDate", "1 Jan 2001",
-            "hearingVenue", "Aldgate Tower floor 3",
-            "preHearingAttendance", "test",
-            "hearingTime", "09.00pm"
-        );
+        DocmosisNoticeOfProceeding docmosisNoticeOfProceeding = DocmosisNoticeOfProceeding.builder()
+            .courtName("Swansea Family Court")
+            .familyManCaseNumber("SW123123")
+            .applicantName("James Nelson")
+            .orderTypes("Care order")
+            .childrenNames("James Nelson")
+            .hearingDate("1 Jan 2001")
+            .hearingVenue("Aldgate Tower floor 3")
+            .preHearingAttendance("test")
+            .hearingTime("09.00pm")
+            .build();
+
+        return docmosisNoticeOfProceeding.toMap(mapper);
     }
 }
