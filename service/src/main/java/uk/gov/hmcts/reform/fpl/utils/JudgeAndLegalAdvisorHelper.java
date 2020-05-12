@@ -56,7 +56,7 @@ public class JudgeAndLegalAdvisorHelper {
     public static JudgeAndLegalAdvisor prepareJudgeFields(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                           Judge allocatedJudge) {
         if (allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)) {
-            return judgeAndLegalAdvisor.resetJudgeProperties();
+            return judgeAndLegalAdvisor.reset();
         } else {
             judgeAndLegalAdvisor.setUseAllocatedJudge("No");
             return judgeAndLegalAdvisor;

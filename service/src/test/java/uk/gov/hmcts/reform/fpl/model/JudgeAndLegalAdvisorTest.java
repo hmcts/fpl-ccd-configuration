@@ -32,7 +32,7 @@ class JudgeAndLegalAdvisorTest {
             .legalAdvisorName("Holmes")
             .build();
 
-        judgeAndLegalAdvisor = judgeAndLegalAdvisor.resetJudgeProperties();
+        judgeAndLegalAdvisor = judgeAndLegalAdvisor.reset();
 
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Holmes");
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
