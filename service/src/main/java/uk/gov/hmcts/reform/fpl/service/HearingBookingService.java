@@ -106,7 +106,10 @@ public class HearingBookingService {
 
                 if (isNotEmpty(judgeAndLegalAdvisor)
                     && allocatedJudge.equalsJudgeAndLegalAdvisor(judgeAndLegalAdvisor)) {
-                    return buildHearingBookingElement(element.getId(), resetJudgeDetails(hearingBooking));
+                    judgeAndLegalAdvisor = judgeAndLegalAdvisor.resetJudgeProperties(YES);
+
+                    hearingBooking.setJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
+                    return buildHearingBookingElement(element.getId(), hearingBooking);
                 }
 
                 return element;
@@ -118,16 +121,6 @@ public class HearingBookingService {
             .map(HearingBooking::getStartDate)
             .filter(hearingDate -> hearingDate.isBefore(time.now()))
             .isPresent();
-    }
-
-    private HearingBooking resetJudgeDetails(HearingBooking hearingBooking) {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .useAllocatedJudge(YES.getValue())
-            .legalAdvisorName(hearingBooking.getJudgeAndLegalAdvisor().getLegalAdvisorName())
-            .build();
-
-        hearingBooking.setJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
-        return hearingBooking;
     }
 
     private Element<HearingBooking> buildHearingBookingElement(UUID id, HearingBooking hearingBooking) {

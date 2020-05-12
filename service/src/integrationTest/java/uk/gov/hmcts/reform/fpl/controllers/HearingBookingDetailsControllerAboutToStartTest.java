@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(HearingBookingDetailsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class HearingBookingDetailsControllerAboutToStartTest extends AbstractControllerTest {
-    
     HearingBookingDetailsControllerAboutToStartTest() {
         super("add-hearing-bookings");
     }
