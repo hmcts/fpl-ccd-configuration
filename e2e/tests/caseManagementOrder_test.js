@@ -28,7 +28,7 @@ BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCa
 
   //gatekeeper adds allocated judge
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
 
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
