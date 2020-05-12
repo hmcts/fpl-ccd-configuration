@@ -23,4 +23,13 @@ class JudgeAndLegalAdvisorTest {
         assertThat(JudgeAndLegalAdvisor.from(null))
             .isEqualToComparingFieldByField(JudgeAndLegalAdvisor.builder().build());
     }
+
+    @Test
+    void shouldReturnNewJudgeWithOnlyLegalAdvisorAndUseAllocatedJudgeFieldsSet() {
+        assertThat(JudgeAndLegalAdvisor.resetNameAndTitle("James")).isEqualToComparingFieldByField(
+            JudgeAndLegalAdvisor.builder()
+                .useAllocatedJudge("Yes")
+                .legalAdvisorName("James")
+                .build());
+    }
 }

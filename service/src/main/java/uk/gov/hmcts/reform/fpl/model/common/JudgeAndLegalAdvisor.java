@@ -35,4 +35,11 @@ public class JudgeAndLegalAdvisor {
         }
         return judgeAndLegalAdvisorBuilder.build();
     }
+
+    public static JudgeAndLegalAdvisor resetNameAndTitle(String legalAdvisorName) {
+        return JudgeAndLegalAdvisor.builder()
+            .useAllocatedJudge("Yes")
+            .legalAdvisorName(legalAdvisorName)
+            .build();
+    }
 }

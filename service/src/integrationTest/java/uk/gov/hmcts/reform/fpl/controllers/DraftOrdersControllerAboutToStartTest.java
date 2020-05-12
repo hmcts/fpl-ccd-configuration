@@ -134,26 +134,28 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartCallbackShouldPopulateUseAllocatedJudgeWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
-        List<Direction> directions = createDirections();
         Judge judge = buildAllocatedJudge();
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "allocatedJudge", judge,
-                "standardDirectionOrder", Order.builder()
-                    .directions(buildDirections(directions))
-                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                        .judgeTitle(judge.getJudgeTitle())
-                        .judgeLastName(judge.getJudgeLastName())
-                        .build())
-                    .build()))
-            .build();
+        CaseDetails caseDetails = buildSameJudgeCaseDetails(judge);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+    }
+
+    private CaseDetails buildSameJudgeCaseDetails(Judge judge) {
+        return CaseDetails.builder()
+            .data(Map.of(
+                "allocatedJudge", judge,
+                "standardDirectionOrder", Order.builder()
+                    .directions(buildDirections(createDirections()))
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeTitle(judge.getJudgeTitle())
+                        .judgeLastName(judge.getJudgeLastName())
+                        .build())
+                    .build()))
+            .build();
     }
 
     @Test

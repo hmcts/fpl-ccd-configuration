@@ -56,18 +56,11 @@ public class JudgeAndLegalAdvisorHelper {
     public static JudgeAndLegalAdvisor prepareJudgeFields(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                           Judge allocatedJudge) {
         if (allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)) {
-            return resetJudgeFields(judgeAndLegalAdvisor.getLegalAdvisorName());
+            return JudgeAndLegalAdvisor.resetNameAndTitle(judgeAndLegalAdvisor.getLegalAdvisorName());
         } else {
             judgeAndLegalAdvisor.setUseAllocatedJudge("No");
             return judgeAndLegalAdvisor;
         }
-    }
-
-    private static JudgeAndLegalAdvisor resetJudgeFields(String legalAdvisorName) {
-        return JudgeAndLegalAdvisor.builder()
-            .useAllocatedJudge("Yes")
-            .legalAdvisorName(legalAdvisorName)
-            .build();
     }
 
     public static String buildAllocatedJudgeLabel(Judge judge) {
