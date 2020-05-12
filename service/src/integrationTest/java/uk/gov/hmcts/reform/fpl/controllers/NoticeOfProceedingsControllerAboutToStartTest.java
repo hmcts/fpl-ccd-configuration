@@ -73,6 +73,7 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
                 "allocatedJudge", Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Richards")
+                    .judgeEmailAddress("richards@example.com")
                     .build()
             )).build();
 

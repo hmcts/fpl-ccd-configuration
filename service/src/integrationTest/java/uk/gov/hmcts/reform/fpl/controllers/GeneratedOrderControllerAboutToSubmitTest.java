@@ -198,6 +198,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
                 .allocatedJudge(Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Robinson")
+                    .judgeEmailAddress("robinson@example.com")
                     .build()));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
