@@ -119,9 +119,9 @@ public class DraftCMOService {
             .build();
     }
 
-    private DynamicListElement getPreselectedDate(List<DynamicListElement> list, UUID id) {
-        return list.stream()
-            .filter(item -> item.getCode().equals(id))
+    private DynamicListElement getPreselectedDate(List<DynamicListElement> hearingList, UUID orderId) {
+        return hearingList.stream()
+            .filter(item -> item.getCode().equals(orderId))
             .findFirst()
             .orElse(DynamicListElement.EMPTY);
     }

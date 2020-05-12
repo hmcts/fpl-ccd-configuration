@@ -60,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.ALLOCATED_JUDGE_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
@@ -104,7 +105,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(-1),
                 CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
                 ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
-                NEXT_HEARING_DATE_LIST.getKey(), getDynamicList(),
+                NEXT_HEARING_DATE_LIST.getKey(), hearingDateList(),
                 ALLOCATED_JUDGE_KEY, testJudge()));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
@@ -180,7 +181,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 .build())
             .nextHearing(NextHearing.builder()
                 .id(ID)
-                .date(formatLocalDateToMediumStyle(0))
+                .date(formatTodayToMediumStyle())
                 .build())
             .status(SEND_TO_JUDGE)
             .build();
@@ -205,19 +206,16 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     }
 
     private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(int days) {
-        return List.of(Element.<HearingBooking>builder()
-            .id(ID)
-            .value(HearingBooking.builder()
-                .startDate(now().plusDays(days))
-                .endDate(now().plusDays(days))
-                .venue("venue")
-                .build())
-            .build());
+        return List.of(element(ID, HearingBooking.builder()
+            .startDate(now().plusDays(days))
+            .endDate(now().plusDays(days))
+            .venue("venue")
+            .build()));
     }
 
-    private DynamicList getDynamicList() {
+    private DynamicList hearingDateList() {
         DynamicListElement listElement = DynamicListElement.builder()
-            .label(formatLocalDateToMediumStyle(0))
+            .label(formatTodayToMediumStyle())
             .code(ID)
             .build();
 
@@ -227,8 +225,8 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
             .build();
     }
 
-    private String formatLocalDateToMediumStyle(int i) {
-        return formatLocalDateToString(dateNow().plusDays(i), FormatStyle.MEDIUM);
+    private String formatTodayToMediumStyle() {
+        return formatLocalDateToString(dateNow(), FormatStyle.MEDIUM);
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {
