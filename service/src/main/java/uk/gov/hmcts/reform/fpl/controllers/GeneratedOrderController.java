@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -89,10 +90,16 @@ public class GeneratedOrderController {
         if (errors.isEmpty()) {
             childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
             caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
-        }
 
-        if (isNotEmpty(caseData.getAllocatedJudge())) {
-            caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+            if (isNotEmpty(caseData.getAllocatedJudge())) {
+                caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+            }
+
+            if (CLOSED.getValue().equals(caseDetails.getState())) {
+                System.out.println(CLOSED);
+                caseDetails.getData()
+                    .put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
+            }
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -133,6 +140,7 @@ public class GeneratedOrderController {
             caseData.getAllocatedJudge());
 
         // Only generate a document if a blank order or further directions has been added
+        System.out.println(orderTypeAndDocument);
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
             Document document = getDocument(caseData, DRAFT, judgeAndLegalAdvisor);
 
