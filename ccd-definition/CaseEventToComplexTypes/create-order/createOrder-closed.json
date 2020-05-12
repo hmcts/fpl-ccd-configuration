@@ -7,7 +7,7 @@
     "ListElementCode": "type",
     "EventElementLabel": "",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "READONLY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -17,7 +17,8 @@
     "ListElementCode": "subtype",
     "EventElementLabel": "",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "document=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

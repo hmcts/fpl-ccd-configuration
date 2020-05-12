@@ -5,7 +5,7 @@
     "CaseEventID": "createOrder",
     "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "type",
-    "EventElementLabel": "",
+    "EventElementLabel": "Select the order you want to make",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   },
