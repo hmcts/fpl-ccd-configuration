@@ -77,7 +77,7 @@ public class CaseSubmissionController {
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
         Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails, true);
-        data.put("applicationDocumentToReview", buildFromDocument(document));
+        data.put("draftApplicationDocument", buildFromDocument(document));
 
         List<String> errors = validate(caseData);
 

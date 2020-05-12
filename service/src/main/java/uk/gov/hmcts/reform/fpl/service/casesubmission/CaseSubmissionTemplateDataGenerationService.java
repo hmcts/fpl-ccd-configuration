@@ -562,8 +562,7 @@ public class CaseSubmissionTemplateDataGenerationService
             .socialWorkEvidenceTemplate(formatAnnexDocumentDisplay(caseData.getSocialWorkEvidenceTemplateDocument()))
             .thresholdDocument(formatAnnexDocumentDisplay(caseData.getThresholdDocument()))
             .checklistDocument(formatAnnexDocumentDisplay(caseData.getChecklistDocument()))
-            .others(isNotEmpty(caseData.getOtherSocialWorkDocuments())
-                ? formatAnnexDocumentDisplay(caseData.getOtherSocialWorkDocuments()) : emptyList())
+            .others(formatAnnexDocumentDisplay(caseData.getOtherSocialWorkDocuments()))
             .build();
     }
 
@@ -582,11 +581,11 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private List<DocmosisSocialWorkOther> formatAnnexDocumentDisplay(
         final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
-        return otherSocialWorkDocuments.stream()
+        return isNotEmpty(otherSocialWorkDocuments) ? otherSocialWorkDocuments.stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(this::buildDocmosisSocialWorkOther)
-            .collect(toList());
+            .collect(toList()) : emptyList();
     }
 
     private DocmosisSocialWorkOther buildDocmosisSocialWorkOther(DocumentSocialWorkOther document) {

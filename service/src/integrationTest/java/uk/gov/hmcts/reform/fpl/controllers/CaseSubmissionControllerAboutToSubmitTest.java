@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENTS;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -62,7 +62,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
             .willReturn("Emma Taylor");
         given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(false)))
             .willReturn(document);
-        given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENTS, "2313.pdf"))
+        given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
     }
 

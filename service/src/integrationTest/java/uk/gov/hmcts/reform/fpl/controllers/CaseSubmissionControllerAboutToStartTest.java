@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENTS;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -68,7 +68,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
         given(userDetailsService.getUserName()).willReturn("Emma Taylor");
         given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true)))
             .willReturn(document);
-        given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENTS, "2313.pdf"))
+        given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
     }
 
@@ -128,11 +128,11 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldHaveApplicationDocumentToReviewInResponseWhenSubmitApplicationPageLoads() {
+    void shouldHaveDraftApplicationDocumentInResponse() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(populatedCaseDetails());
 
         assertThat(callbackResponse.getData())
-            .containsEntry("applicationDocumentToReview",
+            .containsEntry("draftApplicationDocument",
                 of("document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
                     "document_filename", "file.pdf",
                     "document_binary_url",
