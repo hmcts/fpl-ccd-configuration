@@ -103,8 +103,8 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
         HearingBooking updatedHearingBooking = caseData.getHearingDetails().get(0).getValue();
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = updatedHearingBooking.getJudgeAndLegalAdvisor();
 
-        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(null);
-        assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo(null);
+        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isNull();
+        assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isNull();
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
     }
 

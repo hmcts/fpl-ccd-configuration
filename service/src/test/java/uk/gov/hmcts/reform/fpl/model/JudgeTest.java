@@ -45,7 +45,7 @@ class JudgeTest {
     }
 
     @Test
-    void shouldReturnTrueWhenAllocatedJudgeAndJudgeAndLegalAdvisorAreEqual() {
+    void shouldReturnTrueWhenJudgesAreEqual() {
         JudgeOrMagistrateTitle judgeOrMagistrateTitle = MAGISTRATES;
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
@@ -60,7 +60,7 @@ class JudgeTest {
     }
 
     @Test
-    void shouldReturnFalseWhenAllocatedJudgeAndJudgeAndLegalAdvisorAreNotEqual() {
+    void shouldReturnFalseWhenJudgesAreNotEqual() {
         JudgeOrMagistrateTitle judgeOrMagistrateTitle = DEPUTY_DISTRICT_JUDGE;
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
