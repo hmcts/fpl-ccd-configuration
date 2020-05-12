@@ -2,20 +2,15 @@ const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
 const placementHelper = require('../helpers/placement_helper.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
+const mandatoryWithMultipleChildren = require('../fixtures/mandatoryWithMultipleChildren.json');
 
 let caseId;
 
 Feature('Case maintenance after submission');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterMandatoryFields({multipleChildren: true});
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
-});
+BeforeSuite(async I => caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren));
 
-Before(async I => await I.navigateToCaseDetails(caseId));
+Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 
 Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
