@@ -12,6 +12,6 @@ module.exports = {
   },
 
   seeDraftApplicationFile() {
-    I.see(('draft_c110a_application_' + dateFormat(new Date(), 'ddmmm') + '.pdf').toLowerCase());
+    I.see(('draft_c110a_application_'.concat(dateFormat(new Date(), 'ddmmm') + '.pdf').toLowerCase()));
   },
 };
