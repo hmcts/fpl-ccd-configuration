@@ -94,7 +94,9 @@ withPipeline(type, product, component) {
         try {
           sh '''
             set -e
+
             git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
+
             git fetch origin demo:demo
             git push --force origin HEAD:demo
           '''
@@ -113,6 +115,7 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+
       ./bin/configurer/add-roles.sh
       ./bin/configurer/import-ccd-definition.sh
     """
