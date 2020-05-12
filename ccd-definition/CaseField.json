@@ -1305,14 +1305,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "extend26WeekTimeline",
-    "Label": " ",
-    "FieldType": "Extend26WeekTimeline",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "comments",
     "Label": "Add comments",
     "FieldType": "TextArea",
@@ -1382,6 +1374,33 @@
     "ID": "caseExtensionLabel",
     "FieldType": "Label",
     "Label": "You can either extend this date by 8 weeks, or enter a different end date.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseExtensionDate",
+    "FieldType": "Date",
+    "Label": "New end date",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseExtensionTimeList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionTimeList",
+    "Label": "You can extend this date again, but you will not be able to revert back to the original date.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseExtensionReasonList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionReasonList",
+    "Label": "Why is this case being extended?",
     "SecurityClassification": "Public"
   }
 ]

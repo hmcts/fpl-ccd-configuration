@@ -41,8 +41,32 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "extend26WeekTimeline",
-    "CaseFieldID": "extend26WeekTimeline",
+    "CaseFieldID": "caseExtensionTimeList",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "extend26WeekTimeline",
+    "PageLabel": "",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "No"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "caseExtensionDate",
     "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": "extend26WeekTimeline",
+    "PageDisplayOrder": "2",
+    "ShowSummaryChangeOption": "No",
+    "FieldShowCondition": "caseExtensionTimeList=\"OtherExtension\""
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "extend26WeekTimeline",
+    "CaseFieldID": "caseExtensionReasonList",
+    "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "PageID": "extend26WeekTimeline",
     "PageLabel": "",
@@ -54,7 +78,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "extend26WeekTimeline",
     "CaseFieldID": "comments",
-    "PageFieldDisplayOrder": 4,
+    "PageFieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL",
     "PageID": "extend26WeekTimeline",
     "PageLabel": "",
@@ -85,7 +109,7 @@
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "ShowSummaryChangeOption": "No",
-    "PageShowCondition": "extend26WeekTimeline.caseExtensionTimeList=\"8WeekExtension\""
+    "PageShowCondition": "caseExtensionTimeList=\"8WeekExtension\""
   },
   {
     "LiveFrom": "01/01/2018",
@@ -119,7 +143,7 @@
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
     "PageID": "extend26WeekTimelineConfirmation",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": "2",
     "ShowSummaryChangeOption": "No",
     "FieldShowCondition": "caseExtensionTimeConfirmationList=\"OtherExtension\""
   }
