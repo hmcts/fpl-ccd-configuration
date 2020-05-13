@@ -65,7 +65,7 @@ def uploadCoreCaseDataDefinitions(env) {
     ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
     sh """
     eval \$(./variables/load-${env}-environment-variables.sh)
-    ./configurer/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+    ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
   """
   }
 }
@@ -105,6 +105,7 @@ withPipeline(type, product, component) {
         }
       }
     }
+    sh """ git submodule update --init """
   }
 
   before('smoketest:saat') {
@@ -115,15 +116,14 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-
-      ./bin/configurer/add-roles.sh
-      ./bin/configurer/import-ccd-definition.sh
+      ./fpla-docker/bin/add-roles.sh
+      ./bin/import-ccd-definition.sh
     """
 
     env.DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal"
     env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-    env.URL="https://case-management-web-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.URL="https://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
   }
 
   after('smoketest:saat') {
@@ -174,7 +174,7 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:aat') {
-    env.URL = "https://www-ccd.aat.platform.hmcts.net"
+    env.URL = "https://manage-case.aat.platform.hmcts.net"
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
   }

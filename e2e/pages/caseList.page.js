@@ -7,7 +7,7 @@ module.exports = {
     evidenceHandled: '#evidenceHandled-Yes',
     evidenceNotHandled: '#evidenceHandled-No',
     search: 'Apply',
-    caseList: 'Case List',
+    caseList: 'Case list',
   },
 
   navigate(){
