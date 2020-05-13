@@ -77,7 +77,8 @@
     "ListElementCode": "judgeEmailAddress",
     "FieldType": "Email",
     "ElementLabel": "Email Address",
-    "FieldShowCondition": "judgeTitle!=\"\"",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "judgeEmailAddress CONTAINS \"DO NOT SHOW\"",
+    "Comment": "Field will only be shown in the event and not in the tab (FieldShowCondition overwritten in CaseEventToComplexType)"
   }
 ]
