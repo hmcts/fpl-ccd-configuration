@@ -55,9 +55,6 @@ public class CaseSubmissionServiceTest {
         expectedCaseSubmission = expectedDocmosisCaseSubmission();
         given(templateDataGenerationService.getTemplateData(any())).willReturn(expectedCaseSubmission);
 
-        templateDataGenerationService.populateCaseNumber(
-            expectedCaseSubmission, 12345L);
-
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(new DocmosisDocument("case_submission_c110a.pdf", PDF));
 
@@ -68,7 +65,7 @@ public class CaseSubmissionServiceTest {
 
     @Test
     void shouldGenerateCaseSubmissionDocumentSuccessfully() {
-        caseSubmissionService.generateSubmittedFormPDF(givenCaseDetails);
+        caseSubmissionService.generateSubmittedFormPDF(givenCaseDetails, false);
 
         verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionDataCaptor.capture(), eq(C110A));
         DocmosisCaseSubmission caseSubmission = caseSubmissionDataCaptor.getValue();
