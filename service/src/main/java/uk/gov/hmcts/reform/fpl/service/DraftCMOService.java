@@ -26,6 +26,7 @@ import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
@@ -90,8 +91,8 @@ public class DraftCMOService {
         }
     }
 
-    public DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearings, CaseManagementOrder order) {
-        List<DynamicListElement> values = getDateElements(hearings);
+    public DynamicList getHearingDateDynamicList(CaseData caseData, CaseManagementOrder order) {
+        List<DynamicListElement> values = getDateElements(caseData, false);
 
         DynamicListElement selectedValue = ofNullable(order)
             .map(x -> getPreselectedDate(values, x.getId()))
@@ -103,13 +104,31 @@ public class DraftCMOService {
             .build();
     }
 
-    //TODO: isAfter method in hearing booking does not filter out todays date as Time is set before LocalDate.now()
-    // is evaluated
-    private List<DynamicListElement> getDateElements(List<Element<HearingBooking>> hearings) {
-        return hearings.stream()
-            .filter(hearingBooking -> hearingBooking.getValue().getStartDate().isAfter(time.now()))
-            .map(this::buildDynamicListElement)
-            .collect(toList());
+    public DynamicList getNextHearingDateDynamicList(CaseData caseData) {
+        return DynamicList.builder()
+            .listItems(getDateElements(caseData, true))
+            .build();
+    }
+
+    private List<DynamicListElement> getDateElements(CaseData caseData, boolean excludePastDates) {
+        var sealedCmoHearingDateIds = getSealedCmoHearingDateIds(caseData);
+
+        var hearingDetailsStream = caseData.getHearingDetails().stream()
+            .filter(hearingBooking -> !sealedCmoHearingDateIds.contains(hearingBooking.getId()));
+        if (excludePastDates) {
+            hearingDetailsStream = hearingDetailsStream.filter(hearingBooking -> hearingBooking.getValue()
+                .getStartDate()
+                .isAfter(time.now()));
+        }
+
+        return hearingDetailsStream.map(this::buildDynamicListElement).collect(toList());
+    }
+
+    private Set<UUID> getSealedCmoHearingDateIds(CaseData caseData) {
+        return caseData.getServedCaseManagementOrders()
+            .stream()
+            .map(e -> e.getValue().getId())
+            .collect(toSet());
     }
 
     private DynamicListElement buildDynamicListElement(Element<HearingBooking> element) {

@@ -50,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -68,6 +69,7 @@ class DraftCMOServiceTest {
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
+    private CaseData caseData;
 
     @BeforeEach
     void setUp() {
@@ -77,9 +79,10 @@ class DraftCMOServiceTest {
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
+        caseData = CaseData.builder().hearingDetails(hearingDetails).build();
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        DynamicList data = service.getHearingDateDynamicList(hearingDetails, caseManagementOrder);
+        DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
 
         assertThat(data.getListItems())
             .containsAll(Arrays.asList(
@@ -98,44 +101,102 @@ class DraftCMOServiceTest {
     }
 
     @Test
-    void shouldNotReturnHearingDatesWhenHearingDateIsInThePast() {
+    void shouldReturnHearingDateWhenHearingDateIsInThePast() {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(10));
+        caseData = CaseData.builder().hearingDetails(hearingDetails).build();
         caseManagementOrder = CaseManagementOrder.builder().build();
 
-        DynamicList data = service.getHearingDateDynamicList(hearingDetails, caseManagementOrder);
-
-        assertThat(data.getListItems()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnHearingDatesWhenHearingDateIsSameDayButLaterTime() {
-        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusMinutes(5));
-        caseManagementOrder = CaseManagementOrder.builder().build();
-
-        DynamicList data = service.getHearingDateDynamicList(hearingDetails, caseManagementOrder);
+        DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
 
         assertThat(data.getListItems())
             .containsAll(Arrays.asList(
                 DynamicListElement.builder()
                     .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                    .label(formatLocalDateToMediumStyle(5))
+                    .label(formatLocalDateToString(time.now().minusDays(5).toLocalDate(), FormatStyle.MEDIUM))
                     .build(),
                 DynamicListElement.builder()
                     .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-                    .label(formatLocalDateToMediumStyle(2))
+                    .label(formatLocalDateToString(time.now().minusDays(8).toLocalDate(), FormatStyle.MEDIUM))
                     .build(),
                 DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                    .label(formatLocalDateToMediumStyle(0))
+                    .label(formatLocalDateToString(time.now().minusDays(10).toLocalDate(), FormatStyle.MEDIUM))
+                    .build()));
+    }
+
+    @Test
+    void shouldNotReturnHearingDateWhenHearingIsInSealedCmo() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
+        caseData = CaseData.builder()
+            .hearingDetails(hearingDetails)
+            .servedCaseManagementOrders(List.of(element(CaseManagementOrder.builder()
+                .id(hearingDetails.get(0).getId())
+                .build())))
+            .build();
+        caseManagementOrder = CaseManagementOrder.builder().build();
+
+        DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
+
+        assertThat(data.getListItems())
+            .containsAll(Arrays.asList(
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(7))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(5))
+                    .build()));
+    }
+
+    @Test
+    void shouldNotReturnNextHearingDateWhenHearingDateIsInThePast() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(4));
+        caseData = CaseData.builder().hearingDetails(hearingDetails).build();
+        caseManagementOrder = CaseManagementOrder.builder().build();
+
+        DynamicList data = service.getNextHearingDateDynamicList(caseData);
+
+        assertThat(data.getListItems())
+            .containsOnly(
+                DynamicListElement.builder()
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .label(formatLocalDateToMediumStyle(1))
+                    .build());
+    }
+
+    @Test
+    void shouldNotReturnNextHearingDateWhenHearingIsInSealedCmo() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
+        caseData = CaseData.builder()
+            .hearingDetails(hearingDetails)
+            .servedCaseManagementOrders(List.of(element(CaseManagementOrder.builder()
+                .id(hearingDetails.get(0).getId())
+                .build())))
+            .build();
+        caseManagementOrder = CaseManagementOrder.builder().build();
+
+        DynamicList data = service.getNextHearingDateDynamicList(caseData);
+
+        assertThat(data.getListItems())
+            .containsAll(Arrays.asList(
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(7))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(5))
                     .build()));
     }
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
         hearingDetails = createHearingBookingsFromInitialDate(time.now());
+        caseData = CaseData.builder().hearingDetails(hearingDetails).build();
         caseManagementOrder = createCaseManagementOrder();
 
-        DynamicList data = service.getHearingDateDynamicList(hearingDetails, caseManagementOrder);
+        DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
 
         assertThat(data.getValue())
             .isEqualTo(DynamicListElement.builder()

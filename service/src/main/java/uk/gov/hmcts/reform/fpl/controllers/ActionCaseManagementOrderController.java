@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -69,7 +68,8 @@ public class ActionCaseManagementOrderController {
         draftCMOService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
         caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
-        caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
+        caseDetails.getData()
+            .put(NEXT_HEARING_DATE_LIST.getKey(), draftCMOService.getNextHearingDateDynamicList(caseData));
         caseDetails.getData().put(DATE_OF_ISSUE.getKey(), caseManagementOrder.getDateOfIssueAsDate());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -152,10 +152,6 @@ public class ActionCaseManagementOrderController {
         HearingBooking hearingBooking = hearingBookingService.getHearingBookingByUUID(hearings, id);
 
         return action.isSendToAllPartiesType() && hearingBooking.startsAfterToday();
-    }
-
-    private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
-        return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
     }
 
     private void publishEventOnApprovedCMO(CallbackRequest callbackRequest) {

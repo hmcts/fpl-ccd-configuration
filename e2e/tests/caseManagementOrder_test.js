@@ -15,7 +15,7 @@ BeforeSuite(async (I) => {
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
+  await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2020');
   await I.retryUntilExists(() => I.click('Continue'), '#allPartiesLabelCMO');
   await draftCaseManagementOrderEventPage.enterDirection(directions[0]);
   await I.retryUntilExists(() => I.click('Continue'), '#orderBasisLabel');
@@ -94,14 +94,7 @@ Scenario('Local Authority sends draft to Judge who requests corrections', async 
   cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, details);
 });
 
-
-//Skipped due to new error validation for approving a CMO with a hearing date in the future. We need to come up with
-// a better solution to account for this. Options:
-// - Have dynamic config to disable validation when e2es are run so it will allow us to skip the rules about submitting.
-// - Invoke the endpoint (not sure if jenkins have got access) to set the data with hearing date in past?
-// This would either require new endpoint on FPL or invoke the ccd endpoints.
-xScenario('Local Authority sends draft to Judge who approves CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
-  // LA sends to judge
+Scenario('Local Authority sends draft to Judge who approves CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.skipToReview(I);
   draftCaseManagementOrderEventPage.markToBeSentToJudge();
