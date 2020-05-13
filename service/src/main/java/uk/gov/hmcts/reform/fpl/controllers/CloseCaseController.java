@@ -13,12 +13,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.CloseCaseGroup;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 @Api
 @RestController
@@ -39,18 +39,20 @@ public class CloseCaseController {
         + "   •  submit a C2 application\n";
     private static final String LABEL_FIELD = "close_case_label";
     private final ValidateGroupService validatorService;
+    private final ChildrenService childrenService;
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.put(LABEL_FIELD, LABEL);
 
         // TODO: 11/05/2020 Determine YES or NO based on if all children have a final order
-        YesNo maybe = new Random().nextBoolean() ? YesNo.YES : YesNo.NO;
+        boolean displayFinalOrder = childrenService.allChildrenHaveFinalOrder(caseData.getAllChildren());
 
-        data.put("closeCase", CloseCase.builder().showFullReason(maybe).build());
+        data.put("closeCase", CloseCase.builder().showFullReason(YesNo.from(displayFinalOrder)).build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -73,9 +75,10 @@ public class CloseCaseController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
-
-        // TODO: 11/05/2020 Mark children and appropriate flags in the case
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        // TODO: 11/05/2020 Mark children
         // TODO: 11/05/2020 Check what needs to be displayed in the tabs, what is temporary and what is persistent?
+        data.put("deprivationOfLiberty", YesNo.from(caseData.getCloseCase().hasDeprivationOfLiberty()).getValue());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

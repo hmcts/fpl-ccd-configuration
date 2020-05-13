@@ -368,4 +368,5 @@ public class CaseData {
 
     // TODO: 11/05/2020 Better name
     private final CloseCase closeCase;
+    private final String deprivationOfLiberty;
 }

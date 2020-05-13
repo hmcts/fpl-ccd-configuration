@@ -1318,5 +1318,13 @@
     "FieldType": "CloseCase",
     "Label": " ",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "deprivationOfLiberty",
+    "FieldType": "YesOrNo",
+    "Label": "Flag for whether a case was closed due to deprivation of liberty",
+    "SecurityClassification": "Public"
   }
 ]

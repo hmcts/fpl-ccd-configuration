@@ -61,6 +61,31 @@ class ChildrenServiceTest {
     }
 
     @Test
+    void shouldReturnFalseWithEmptyList() {
+        boolean result = service.allChildrenHaveFinalOrder(List.of());
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenAtLeastOneChildDoesNotHaveFinalOrder() {
+        List<Element<Child>> children = List.of(buildChildWithFinalOrder(true), buildChildWithFinalOrder(false));
+
+        boolean result = service.allChildrenHaveFinalOrder(children);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenAllChildrenHaveFinalOrder() {
+        List<Element<Child>> children = List.of(buildChildWithFinalOrder(true), buildChildWithFinalOrder(true));
+
+        boolean result = service.allChildrenHaveFinalOrder(children);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
     void shouldPopulateCaseDataMapWithNoWhenThereIsEmptyList() {
         List<Element<Child>> children = new ArrayList<>();
 
@@ -80,5 +105,11 @@ class ChildrenServiceTest {
                 .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                 .build())
             .build());
+    }
+
+    private Element<Child> buildChildWithFinalOrder(boolean finalOrder) {
+        Element<Child> childElement = childWithConfidentialFields(randomUUID());
+        childElement.getValue().setFinalOrderIssued(finalOrder ? "Yes" : "No");
+        return childElement;
     }
 }
