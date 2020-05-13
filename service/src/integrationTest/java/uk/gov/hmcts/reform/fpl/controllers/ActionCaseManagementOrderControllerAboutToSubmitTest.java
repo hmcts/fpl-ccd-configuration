@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,10 +26,10 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,7 +58,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecita
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.ALLOCATED_JUDGE_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
@@ -71,9 +72,6 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     private static final UUID ID = randomUUID();
 
     private CaseDetails populatedCaseDetails;
-
-    @Autowired
-    private DraftCMOService draftCMOService;
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
@@ -183,7 +181,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 .build())
             .nextHearing(NextHearing.builder()
                 .id(ID)
-                .date(now().toString())
+                .date(formatTodayToMediumStyle())
                 .build())
             .status(SEND_TO_JUDGE)
             .build();
@@ -208,25 +206,27 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     }
 
     private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(int days) {
-        return List.of(Element.<HearingBooking>builder()
-            .id(ID)
-            .value(HearingBooking.builder()
-                .startDate(now().plusDays(days))
-                .endDate(now().plusDays(days))
-                .venue("venue")
-                .build())
-            .build());
+        return List.of(element(ID, HearingBooking.builder()
+            .startDate(now().plusDays(days))
+            .endDate(now().plusDays(days))
+            .venue("venue")
+            .build()));
     }
 
     private DynamicList hearingDateList() {
-        DynamicList dynamicHearingDates = draftCMOService
-            .buildDynamicListFromHearingDetails(hearingBookingWithStartDatePlus(0));
-
-        dynamicHearingDates.setValue(DynamicListElement.builder()
+        DynamicListElement listElement = DynamicListElement.builder()
+            .label(formatTodayToMediumStyle())
             .code(ID)
-            .label(now().toString())
-            .build());
-        return dynamicHearingDates;
+            .build();
+
+        return DynamicList.builder()
+            .listItems(List.of(listElement))
+            .value(listElement)
+            .build();
+    }
+
+    private String formatTodayToMediumStyle() {
+        return formatLocalDateToString(dateNow(), FormatStyle.MEDIUM);
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {
