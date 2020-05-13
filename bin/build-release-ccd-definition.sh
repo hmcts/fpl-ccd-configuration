@@ -24,4 +24,4 @@ mkdir -p ${build_dir}
 
 # build the ccd definition file
 export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-case-service-${environment}.service.core-compute-${environment}.internal
-${root_dir}/bin/configurer/utils/fpl-process-definition.sh ${config_dir} ${release_definition_output_file} "${excludedFilenamePatterns}"
+${root_dir}/fpla-docker/bin/utils/fpl-process-definition.sh ${config_dir} ${release_definition_output_file} "${excludedFilenamePatterns}"
