@@ -10,7 +10,7 @@ properties([
     string(name: 'PROXY_SERVER', defaultValue: 'proxyout.reform.hmcts.net:8080',
       description: 'The proxy server to use'),
     string(name: 'SECURITY_RULES',
-      defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/2366efe631a60672ff8d0698bd9cb07f0e878faa/conf/security-rules.conf',
+      defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/FPLA-security-test-rules-DO-NOT-MERGE/conf/security-rules.conf',
       description: 'The security rules to use'),
   ])
 ])
