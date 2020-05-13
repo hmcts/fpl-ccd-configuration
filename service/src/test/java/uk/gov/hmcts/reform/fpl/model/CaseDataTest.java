@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -293,23 +292,17 @@ class CaseDataTest {
 
         @Test
         void shouldReturnCaseManagementOrderWhenFullDetailsButNoPreviousOrder() {
-            CaseData caseData = getCaseData();
-
-            assertThat(caseData.getCaseManagementOrder())
-                .isEqualToComparingFieldByField(buildOrder(schedule, recitals, createCmoDirections(), action));
+            assertThat(getCaseData().getCaseManagementOrder()).isEqualTo(buildOrderWithDirections(createCmoDirections()));
         }
 
         @Test
-        @DisplayName("can pull directions from order in about to start callback")
         void shouldReturnCaseManagementOrderWithOrderDirectionsWhenOnlyPreviousOrder() {
             Map<String, Object> data = new HashMap<>();
-            String key = CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey();
-            data.put(key, buildOrder(schedule, recitals, createCmoDirections(), action));
+            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), buildOrderWithDirections(createCmoDirections()));
 
             CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-            assertThat(caseData.getCaseManagementOrder())
-                .isEqualToComparingFieldByField(buildOrder(schedule, recitals, createCmoDirections(), action));
+            assertThat(caseData.getCaseManagementOrder()).isEqualTo(buildOrderWithDirections(createCmoDirections()));
         }
 
         @Test
@@ -324,8 +317,7 @@ class CaseDataTest {
         @Test
         void shouldOverwriteRecitalsWithEmptyListWhenRemovingAllRecitals() {
             Map<String, Object> data = new HashMap<>();
-            String key = CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey();
-            data.put(key, buildOrder(schedule, recitals, emptyList(), action));
+            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), buildOrderWithDirections(emptyList()));
             data.put(RECITALS.getKey(), emptyList());
 
             CaseData caseData = mapper.convertValue(data, CaseData.class);
@@ -334,24 +326,19 @@ class CaseDataTest {
         }
 
         @Test
-        @DisplayName("can overwrite directions in order when all direction fields are null (mid event/about to submit")
         void shouldOverwriteDirectionsWithEmptyListWhenAllDirectionsRemoved() {
             Map<String, Object> data = new HashMap<>();
-            String key = CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey();
-            data.put(key, buildOrder(schedule, recitals, createCmoDirections(), action));
+            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), buildOrderWithDirections(createCmoDirections()));
 
             Stream.of(DirectionAssignee.values()).forEach(assignee ->
-                data.put(assignee.toCustomDirectionField().concat("CMO"), emptyList()));
+                data.put(assignee.toCaseManagementOrderDirectionField(), emptyList()));
 
             CaseData caseData = mapper.convertValue(data, CaseData.class);
 
             assertThat(caseData.getCaseManagementOrder().getDirections()).isEmpty();
         }
 
-        private CaseManagementOrder buildOrder(Schedule schedule,
-                                               List<Element<Recital>> recitals,
-                                               List<Element<Direction>> directions,
-                                               OrderAction action) {
+        private CaseManagementOrder buildOrderWithDirections(List<Element<Direction>> directions) {
             return CaseManagementOrder.builder()
                 .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
                 .hearingDate(formatLocalDateToMediumStyle(5))
@@ -372,7 +359,7 @@ class CaseDataTest {
 
             Stream.of(DirectionAssignee.values()).forEach(direction -> {
                 Direction unassignedDirection = createUnassignedDirection();
-                caseData.put(direction.toCustomDirectionField().concat("CMO"), wrapElements(unassignedDirection));
+                caseData.put(direction.toCaseManagementOrderDirectionField(), wrapElements(unassignedDirection));
             });
 
             caseData.put(HEARING_DATE_LIST.getKey(), getDynamicList());

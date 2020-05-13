@@ -104,8 +104,8 @@ public class CaseData {
     @NotNull(message = "You need to add details to allocation proposal")
     @Valid
     private final Allocation allocationProposal;
-
     private final Allocation allocationDecision;
+
     private final List<Element<Direction>> allParties;
     private final List<Element<Direction>> allPartiesCustom;
     private final List<Element<Direction>> localAuthorityDirections;
@@ -118,6 +118,18 @@ public class CaseData {
     private final List<Element<Direction>> otherPartiesDirectionsCustom;
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
+
+    @JsonUnwrapped
+    private Directions directionsForCaseManagementOrder;
+
+    public Directions getDirectionsForCaseManagementOrder() {
+        if (directionsForCaseManagementOrder != null && directionsForCaseManagementOrder.containsDirections()) {
+            return directionsForCaseManagementOrder;
+        }
+
+        return null;
+    }
+
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
 
@@ -221,6 +233,51 @@ public class CaseData {
 
     public CaseManagementOrder getCaseManagementOrder() {
         return prepareCaseManagementOrder();
+    }
+
+    private CaseManagementOrder prepareCaseManagementOrder() {
+        //existing order
+        Optional<CaseManagementOrder> oldOrder = ofNullable(caseManagementOrder);
+
+        //hearing date list that cmo is heard in
+        Optional<DynamicList> optionalDateList = ofNullable(cmoHearingDateList);
+        UUID idFromDynamicList = optionalDateList.map(DynamicList::getValueCode).orElse(null);
+        String hearingDate = optionalDateList.map(DynamicList::getValueLabel).orElse(null);
+
+        //schedule
+        Schedule scheduleFromOrder = oldOrder.map(CaseManagementOrder::getSchedule).orElse(null);
+
+        //recital
+        List<Element<Recital>> recitalsFromOrder = oldOrder.map(CaseManagementOrder::getRecitals).orElse(null);
+
+        //directions
+        Optional<Directions> directions = ofNullable(getDirectionsForCaseManagementOrder());
+        List<Element<Direction>> orderDirections = oldOrder.map(CaseManagementOrder::getDirections).orElse(emptyList());
+
+        //date of issue
+        Optional<LocalDate> optionalDateOfIssue = ofNullable(dateOfIssue);
+        String stringDate = optionalDateOfIssue.map(date -> formatLocalDateToString(date, DATE)).orElse(null);
+
+        CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
+            .id(oldOrder.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
+            .hearingDate(oldOrder.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
+            .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
+            .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
+            .directions(directions.map(Directions::getDirectionsList).orElse(orderDirections))
+            .dateOfIssue(oldOrder.map(CaseManagementOrder::getDateOfIssue).orElse(stringDate))
+            .status(oldOrder.map(CaseManagementOrder::getStatus).orElse(null))
+            .orderDoc(oldOrder.map(CaseManagementOrder::getOrderDoc).orElse(null))
+            .action(oldOrder.map(CaseManagementOrder::getAction).orElse(null))
+            .nextHearing(oldOrder.map(CaseManagementOrder::getNextHearing).orElse(null))
+            .build();
+
+        preparedOrder.setActionWithNullDocument(orderAction);
+
+        if (preparedOrder.isSealed() && nextHearingDateList != null) {
+            preparedOrder.setNextHearingFromDynamicElement(nextHearingDateList.getValue());
+        }
+
+        return preparedOrder;
     }
 
     @JsonGetter("caseManagementOrder")
@@ -367,49 +424,4 @@ public class CaseData {
     }
 
     private final String amountToPay;
-
-    private CaseManagementOrder prepareCaseManagementOrder() {
-        Optional<CaseManagementOrder> order = ofNullable(caseManagementOrder);
-        Optional<LocalDate> date = ofNullable(dateOfIssue);
-        Optional<DynamicList> dateList = ofNullable(cmoHearingDateList);
-        UUID idFromDynamicList = dateList.map(DynamicList::getValueCode).orElse(null);
-        String hearingDate = dateList.map(DynamicList::getValueLabel).orElse(null);
-        String dateOfIssue = date.map(x -> formatLocalDateToString(x, DATE)).orElse(null);
-        Schedule scheduleFromOrder = order.map(CaseManagementOrder::getSchedule).orElse(null);
-        List<Element<Recital>> recitalsFromOrder = order.map(CaseManagementOrder::getRecitals).orElse(null);
-        List<Element<Direction>> orderDirections = order.map(CaseManagementOrder::getDirections).orElse(emptyList());
-        Optional<Directions> directionsForCaseManagementOrder = ofNullable(getDirectionsForCaseManagementOrder());
-
-        CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
-            .hearingDate(order.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
-            .id(order.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
-            .directions(directionsForCaseManagementOrder.map(Directions::getDirectionsList).orElse(orderDirections))
-            .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
-            .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
-            .status(order.map(CaseManagementOrder::getStatus).orElse(null))
-            .orderDoc(order.map(CaseManagementOrder::getOrderDoc).orElse(null))
-            .action(order.map(CaseManagementOrder::getAction).orElse(null))
-            .nextHearing(order.map(CaseManagementOrder::getNextHearing).orElse(null))
-            .dateOfIssue(order.map(CaseManagementOrder::getDateOfIssue).orElse(dateOfIssue))
-            .build();
-
-        preparedOrder.setActionWithNullDocument(orderAction);
-
-        if (preparedOrder.isSealed() && nextHearingDateList != null) {
-            preparedOrder.setNextHearingFromDynamicElement(nextHearingDateList.getValue());
-        }
-
-        return preparedOrder;
-    }
-
-    @JsonUnwrapped
-    private Directions directionsForCaseManagementOrder;
-
-    public Directions getDirectionsForCaseManagementOrder() {
-        if (directionsForCaseManagementOrder != null && directionsForCaseManagementOrder.containsDirections()) {
-            return directionsForCaseManagementOrder;
-        }
-
-        return null;
-    }
 }
