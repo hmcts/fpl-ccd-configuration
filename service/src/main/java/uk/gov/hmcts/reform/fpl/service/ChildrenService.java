@@ -3,15 +3,12 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -42,35 +39,20 @@ public class ChildrenService {
 
     public List<Element<Child>> updateFinalOrderIssued(List<Element<Child>> children,
         String orderAppliesToAllChildren, ChildSelector childSelector) {
-
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
-            return children.stream()
-                .map(child -> updateFinalOrderIssuedOnChild(child, YES))
-                .collect(Collectors.toList());
+            children.forEach(child -> child.getValue().setFinalOrderIssued(YES.getValue()));
         } else {
             List<Integer> selectedChildren = childSelector != null ? childSelector.getSelected() : new ArrayList<>();
-            return IntStream.range(0, children.size())
-                .mapToObj(index -> {
-                    Element<Child> child = children.get(index);
+            IntStream.range(0, children.size())
+                .forEach(index -> {
+                    Child child = children.get(index).getValue();
                     if (!selectedChildren.isEmpty() && selectedChildren.contains(index)) {
-                        return updateFinalOrderIssuedOnChild(child, YES);
-                    } else if (StringUtils.isEmpty(child.getValue().getParty().getFinalOrderIssued())) {
-                        return updateFinalOrderIssuedOnChild(child, NO);
+                        child.setFinalOrderIssued(YES.getValue());
+                    } else if (StringUtils.isEmpty(child.getFinalOrderIssued())) {
+                        child.setFinalOrderIssued(NO.getValue());
                     }
-                    return child;
-                })
-                .collect(Collectors.toList());
+                });
         }
-    }
-
-    private Element<Child> updateFinalOrderIssuedOnChild(Element<Child> child, YesNo yesNo) {
-        ChildParty updatedChildParty = child.getValue().getParty().toBuilder()
-            .finalOrderIssued(yesNo.getValue()).build();
-        Child updatedChild = child.getValue().toBuilder()
-            .party(updatedChildParty).build();
-        return Element.<Child>builder()
-            .id(child.getId())
-            .value(updatedChild)
-            .build();
+        return children;
     }
 }

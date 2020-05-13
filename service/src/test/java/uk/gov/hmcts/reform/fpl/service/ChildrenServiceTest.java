@@ -78,8 +78,8 @@ class ChildrenServiceTest {
         List<Element<Child>> result = service.updateFinalOrderIssued(List.of(testChild(), testChild()),
             "Yes", null);
 
-        assertThat(result.get(0).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
-        assertThat(result.get(1).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
+        assertThat(result.get(0).getValue().getFinalOrderIssued()).isEqualTo("Yes");
+        assertThat(result.get(1).getValue().getFinalOrderIssued()).isEqualTo("Yes");
     }
 
     @Test
@@ -93,9 +93,9 @@ class ChildrenServiceTest {
 
         List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
 
-        assertThat(result.get(0).getValue().getParty().getFinalOrderIssued()).isEqualTo("No");
-        assertThat(result.get(1).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
-        assertThat(result.get(2).getValue().getParty().getFinalOrderIssued()).isEqualTo("No");
+        assertThat(result.get(0).getValue().getFinalOrderIssued()).isEqualTo("No");
+        assertThat(result.get(1).getValue().getFinalOrderIssued()).isEqualTo("Yes");
+        assertThat(result.get(2).getValue().getFinalOrderIssued()).isEqualTo("No");
     }
 
     @Test
@@ -110,10 +110,10 @@ class ChildrenServiceTest {
 
         List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
 
-        assertThat(result.get(0).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
-        assertThat(result.get(1).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
-        assertThat(result.get(2).getValue().getParty().getFinalOrderIssued()).isEqualTo("Yes");
-        assertThat(result.get(3).getValue().getParty().getFinalOrderIssued()).isEqualTo("No");
+        assertThat(result.get(0).getValue().getFinalOrderIssued()).isEqualTo("Yes");
+        assertThat(result.get(1).getValue().getFinalOrderIssued()).isEqualTo("Yes");
+        assertThat(result.get(2).getValue().getFinalOrderIssued()).isEqualTo("Yes");
+        assertThat(result.get(3).getValue().getFinalOrderIssued()).isEqualTo("No");
     }
 
 
@@ -131,10 +131,10 @@ class ChildrenServiceTest {
 
     private Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
         return element(Child.builder()
+            .finalOrderIssued(finalOrderIssued)
             .party(ChildParty.builder()
                 .firstName(randomAlphanumeric(10))
                 .lastName(randomAlphanumeric(10))
-                .finalOrderIssued(finalOrderIssued)
                 .build())
             .build());
     }

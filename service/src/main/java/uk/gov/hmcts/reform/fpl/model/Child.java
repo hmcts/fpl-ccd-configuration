@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +23,8 @@ public class Child implements ConfidentialParty<Child> {
     @NotNull(message = "You need to add details to children")
     private final ChildParty party;
 
+    private String finalOrderIssued;
+
     public boolean containsConfidentialDetails() {
         String hiddenValue = defaultIfNull(party.getDetailsHidden(), "");
 
@@ -30,6 +34,16 @@ public class Child implements ConfidentialParty<Child> {
     @Override
     public Party toParty() {
         return party;
+    }
+
+    @JsonSetter("finalOrderIssued")
+    public void setFinalOrderIssued(String finalOrderIssued) {
+        this.finalOrderIssued = finalOrderIssued;
+    }
+
+    @JsonGetter("finalOrderIssued")
+    public String getFinalOrderIssued() {
+        return this.finalOrderIssued;
     }
 
     @Override
