@@ -28,9 +28,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseExtensionController {
     private final ObjectMapper mapper;
+    private final ValidateGroupService validateGroupService;
+    private final String CASE_COMPLETION_DATE = "caseCompletionDate";
     private LocalDate caseCompletionDate;
     private LocalDate eightWeekExtensionDate;
-    private final ValidateGroupService validateGroupService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -55,7 +56,6 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        // Put into the label
         eightWeekExtensionDate = caseCompletionDate.plusWeeks(8);
         caseDetails.getData().put("extensionDateEightWeeks", formatLocalDateToString(eightWeekExtensionDate,
                 DATE));
@@ -69,20 +69,27 @@ public class CaseExtensionController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if(caseDetails.getData().get("caseExtensionTimeList").equals("EightWeekExtension")){
-            if(caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("EightWeekExtension")) {
-                caseDetails.getData().put("caseCompletionDate", eightWeekExtensionDate);
-            } else {
-                caseDetails.getData().put("caseCompletionDate", caseDetails.getData().get("eightWeeksExtensionDateOther"));
-            }
-        } else {
-            caseDetails.getData().put("caseCompletionDate", caseDetails.getData().get("extensionDateOther"));
-        }
+        caseCompletionDate = getCaseCompletionDate(caseDetails);
+        caseDetails.getData().put(CASE_COMPLETION_DATE, caseCompletionDate);
+
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private LocalDate getCaseCompletionDate(CaseDetails caseDetails){
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if(caseDetails.getData().get("caseExtensionTimeList").equals("EightWeekExtension")){
+            if(caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("EightWeekExtension")) {
+               return eightWeekExtensionDate;
+            } else {
+                return caseData.getEightWeeksExtensionDateOther();
+            }
+        } else {
+           return caseData.getExtensionDateOther();
+        }
     }
 }
