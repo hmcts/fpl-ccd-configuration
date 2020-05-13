@@ -48,7 +48,7 @@
     "ID": "allocatedJudge",
     "Name": "Allocated Judge",
     "Description": "Add allocated judge to a case",
-    "PreConditionState(s)": "*",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
