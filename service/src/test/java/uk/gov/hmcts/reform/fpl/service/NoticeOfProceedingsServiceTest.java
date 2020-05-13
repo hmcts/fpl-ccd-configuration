@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -104,8 +105,8 @@ class NoticeOfProceedingsServiceTest {
                 .build())
             .build();
 
-        Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
     }
 
     @Test
@@ -129,8 +130,8 @@ class NoticeOfProceedingsServiceTest {
                 .build())
             .build();
 
-        Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark");
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark");
     }
 
     @Test
@@ -148,8 +149,8 @@ class NoticeOfProceedingsServiceTest {
                 .orderType(ImmutableList.of(CARE_ORDER)).build())
             .build();
 
-        Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("judgeTitleAndName")).isEqualTo("James Nelson (JP)");
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.getJudgeTitleAndName()).isEqualTo("James Nelson (JP)");
     }
 
     @Test
@@ -163,8 +164,8 @@ class NoticeOfProceedingsServiceTest {
                 .proceedingTypes(emptyList())
                 .build())
             .build();
-        Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("judgeTitleAndName")).isEqualTo("");
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.getJudgeTitleAndName()).isEqualTo("");
     }
 
     @Test
@@ -179,8 +180,8 @@ class NoticeOfProceedingsServiceTest {
                 .build())
             .build();
 
-        Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.getApplicantName()).isEqualTo("Bran Stark");
     }
 
     @Test
@@ -198,21 +199,21 @@ class NoticeOfProceedingsServiceTest {
                 )).build())
             .build();
 
-        Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("courtName")).isEqualTo("Family Court");
-        assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
-        assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
-        assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
-        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
-        assertThat(templateData.get("hearingDate")).isEqualTo(formatLocalDateToString(futureDate, FormatStyle.LONG));
-        assertThat(templateData.get("hearingVenue"))
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.getCourtName()).isEqualTo("Family Court");
+        assertThat(templateData.getFamilyManCaseNumber()).isEqualTo("123");
+        assertThat(templateData.getApplicantName()).isEqualTo("Bran Stark");
+        assertThat(templateData.getOrderTypes()).isEqualTo("Care order, Education supervision order");
+        assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
+        assertThat(templateData.getHearingDate()).isEqualTo(formatLocalDateToString(futureDate, FormatStyle.LONG));
+        assertThat(templateData.getHearingVenue())
             .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo("8:30am");
-        assertThat(templateData.get("hearingTime")).isEqualTo("9:30am - 11:30am");
-        assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Samuel Davidson");
-        assertThat(templateData.get("legalAdvisorName")).isEqualTo("John Bishop");
-        assertThat(templateData.get("crest")).isEqualTo("[userImage:crest.png]");
-        assertThat(templateData.get("courtseal")).isEqualTo("[userImage:familycourtseal.png]");
+        assertThat(templateData.getPreHearingAttendance()).isEqualTo("8:30am");
+        assertThat(templateData.getHearingTime()).isEqualTo("9:30am - 11:30am");
+        assertThat(templateData.getJudgeTitleAndName()).isEqualTo("His Honour Judge Samuel Davidson");
+        assertThat(templateData.getLegalAdvisorName()).isEqualTo("John Bishop");
+        assertThat(templateData.getCrest()).isEqualTo("[userImage:crest.png]");
+        assertThat(templateData.getCourtseal()).isEqualTo("[userImage:familycourtseal.png]");
     }
 
     private JudgeAndLegalAdvisor createJudgeAndLegalAdvisor() {

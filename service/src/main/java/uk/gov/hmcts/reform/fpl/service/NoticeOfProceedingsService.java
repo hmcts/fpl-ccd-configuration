@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -59,13 +58,13 @@ public class NoticeOfProceedingsService {
         return removedDocumentBundles.build();
     }
 
-    public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
+    public DocmosisNoticeOfProceeding getNoticeOfProceedingTemplateData(CaseData caseData) {
 
         HearingBooking prioritisedHearingBooking = hearingBookingService
             .getMostUrgentHearingBooking(caseData.getHearingDetails());
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
 
-        DocmosisNoticeOfProceeding docmosisNoticeOfProceeding = DocmosisNoticeOfProceeding.builder()
+        return DocmosisNoticeOfProceeding.builder()
             .courtName(getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
@@ -86,7 +85,6 @@ public class NoticeOfProceedingsService {
             .crest(CREST.getValue())
             .courtseal(COURT_SEAL.getValue())
             .build();
-        return docmosisNoticeOfProceeding.toMap(mapper);
     }
 
     private String getCourtName(String courtName) {

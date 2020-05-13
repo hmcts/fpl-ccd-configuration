@@ -20,8 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -60,7 +58,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         CaseData caseData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
 
-        Map<String, Object> templateData = createTemplatePlaceholders();
+        DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
 
         given(noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData))
             .willReturn(templateData);
@@ -93,7 +91,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         CallbackRequest callbackRequest = buildCallbackRequest();
 
-        Map<String, Object> templateData = createTemplatePlaceholders();
+        DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
 
         given(noticeOfProceedingsService.getNoticeOfProceedingTemplateData(any()))
             .willReturn(templateData);
@@ -132,8 +130,9 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
         return callbackRequest;
     }
 
-    private Map<String, Object> createTemplatePlaceholders() {
-        DocmosisNoticeOfProceeding docmosisNoticeOfProceeding = DocmosisNoticeOfProceeding.builder()
+    private DocmosisNoticeOfProceeding createTemplatePlaceholders() {
+
+        return DocmosisNoticeOfProceeding.builder()
             .courtName("Swansea Family Court")
             .familyManCaseNumber("SW123123")
             .applicantName("James Nelson")
@@ -144,7 +143,5 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
             .preHearingAttendance("test")
             .hearingTime("09.00pm")
             .build();
-
-        return docmosisNoticeOfProceeding.toMap(mapper);
     }
 }

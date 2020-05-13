@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
@@ -42,7 +41,6 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGeneration<DocmosisCaseManagementOrder> {
     private static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
     private static final String DEFAULT = EMPTY;
@@ -50,6 +48,13 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
     private final HearingBookingService hearingService;
     private final CaseDataExtractionService dataExtractionService;
     private final DraftCMOService cmoService;
+
+    @Autowired
+    public CaseManagementOrderGenerationService(HearingBookingService hearingService, CaseDataExtractionService dataExtractionService, DraftCMOService cmoService) {
+        this.hearingService = hearingService;
+        this.dataExtractionService = dataExtractionService;
+        this.cmoService = cmoService;
+    }
 
     public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
