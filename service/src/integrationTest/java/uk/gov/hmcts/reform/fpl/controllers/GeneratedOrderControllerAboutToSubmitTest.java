@@ -227,8 +227,8 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getAllChildren().get(0).getValue().getFinalOrderIssued()).isEqualTo("Yes");
-        assertThat(caseData.getAllChildren().get(1).getValue().getFinalOrderIssued()).isEqualTo("Yes");
+        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsOnly("Yes");
     }
 
     @Test
@@ -247,8 +247,8 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getAllChildren().get(0).getValue().getFinalOrderIssued()).isNull();
-        assertThat(caseData.getAllChildren().get(1).getValue().getFinalOrderIssued()).isNull();
+        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsOnlyNulls();
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {

@@ -214,8 +214,8 @@ public class GeneratedOrderController {
     }
 
     private Document getDocument(CaseData caseData,
-        OrderStatus orderStatus,
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+                                 OrderStatus orderStatus,
+                                 JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 

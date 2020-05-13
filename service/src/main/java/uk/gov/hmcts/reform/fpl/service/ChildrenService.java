@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -43,15 +42,14 @@ public class ChildrenService {
             children.forEach(child -> child.getValue().setFinalOrderIssued(YES.getValue()));
         } else {
             List<Integer> selectedChildren = childSelector != null ? childSelector.getSelected() : new ArrayList<>();
-            IntStream.range(0, children.size())
-                .forEach(index -> {
-                    Child child = children.get(index).getValue();
-                    if (!selectedChildren.isEmpty() && selectedChildren.contains(index)) {
-                        child.setFinalOrderIssued(YES.getValue());
-                    } else if (StringUtils.isEmpty(child.getFinalOrderIssued())) {
-                        child.setFinalOrderIssued(NO.getValue());
-                    }
-                });
+            for (int i = 0; i < children.size(); i++) {
+                Child child = children.get(i).getValue();
+                if (!selectedChildren.isEmpty() && selectedChildren.contains(i)) {
+                    child.setFinalOrderIssued(YES.getValue());
+                } else if (StringUtils.isEmpty(child.getFinalOrderIssued())) {
+                    child.setFinalOrderIssued(NO.getValue());
+                }
+            }
         }
         return children;
     }
