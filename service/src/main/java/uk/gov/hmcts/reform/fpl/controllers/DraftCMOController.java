@@ -15,15 +15,12 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderGenerationService;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.Map;
@@ -31,6 +28,7 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
@@ -41,8 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final DraftCMOService draftCMOService;
-    private final DocmosisDocumentGeneratorService docmosisService;
-    private final UploadDocumentService uploadDocumentService;
+    private final DocumentService documentService;
     private final CaseManagementOrderGenerationService docmosisTemplateDataGenerationService;
     private final RespondentService respondentService;
     private final OthersService othersService;
@@ -53,10 +50,15 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+        draftCMOService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
-        caseDetails.getData().putAll(draftCMOService.extractCaseManagementOrderVariables(
-            caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
+        if (caseManagementOrder != null) {
+            caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
+        }
+
+        caseDetails.getData().put(HEARING_DATE_LIST.getKey(), draftCMOService
+            .getHearingDateDynamicList(caseData.getHearingDetails(), caseManagementOrder));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
@@ -68,27 +70,18 @@ public class DraftCMOController {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        final Map<String, Object> data = caseDetails.getData();
-        final CaseData caseData = mapper.convertValue(data, CaseData.class);
+        DocmosisCaseManagementOrder templateData = docmosisTemplateDataGenerationService.getTemplateData(caseData);
+        Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
 
-        Document document = getDocument(docmosisTemplateDataGenerationService.getTemplateData(caseData));
-
-        final DocumentReference reference = DocumentReference.builder()
-            .url(document.links.self.href)
-            .binaryUrl(document.links.binary.href)
-            .filename(document.originalDocumentName)
-            .build();
-
-        final CaseManagementOrder oldCMO = defaultIfNull(
+        CaseManagementOrder caseManagementOrder = defaultIfNull(
             caseData.getCaseManagementOrder(), CaseManagementOrder.builder().build());
 
-        final CaseManagementOrder updatedCMO = oldCMO.toBuilder()
-            .orderDoc(reference)
-            .build();
+        caseManagementOrder.setOrderDocReferenceFromDocument(document);
 
-        data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), updatedCMO);
+        data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), caseManagementOrder);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -100,12 +93,11 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseManagementOrder populatedCMO = draftCMOService.prepareCMO(caseData, caseData.getCaseManagementOrder());
+        CaseManagementOrder populatedCMO = draftCMOService.prepareCaseManagementOrder(caseData);
 
         draftCMOService.removeTransientObjectsFromCaseData(caseDetails.getData());
 
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), populatedCMO);
-
         caseDetails.getData().put("cmoEventId", DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -133,11 +125,5 @@ public class DraftCMOController {
 
     private String getOthersLabel(CaseData caseData) {
         return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
-    }
-
-    private Document getDocument(DocmosisData templateData) {
-        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, CMO);
-
-        return uploadDocumentService.uploadPDF(document.getBytes(), "draft-" + document.getDocumentTitle());
     }
 }

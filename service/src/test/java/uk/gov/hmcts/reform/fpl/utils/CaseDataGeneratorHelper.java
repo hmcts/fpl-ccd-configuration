@@ -68,6 +68,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 public class CaseDataGeneratorHelper {
 
@@ -362,10 +363,10 @@ public class CaseDataGeneratorHelper {
         return wrapElements(
             createCustomDirection(ALL_PARTIES),
             createCustomDirection(LOCAL_AUTHORITY),
-            createCustomDirection(CAFCASS),
-            createCustomDirection(COURT),
             createCustomDirection(PARENTS_AND_RESPONDENTS),
-            createCustomDirection(OTHERS)
+            createCustomDirection(CAFCASS),
+            createCustomDirection(OTHERS),
+            createCustomDirection(COURT)
         );
     }
 
@@ -438,6 +439,7 @@ public class CaseDataGeneratorHelper {
             .respondentDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
             .caseManagementOrder(createApprovedCMO())
             .servedCaseManagementOrders(wrapElements(CaseManagementOrder.builder().build()))
+            .allocatedJudge(testJudge())
             .build();
     }
 

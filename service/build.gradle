@@ -70,7 +70,7 @@ task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.
 }
 
 task awaitApplicationReadiness(type: Exec, description: 'Awaits until application is ready.') {
-  commandLine '../bin/configurer/utils/wait-for.sh', System.env.URL
+  commandLine '../bin/wait-for.sh', System.env.URL
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
@@ -156,7 +156,7 @@ sonarqube {
     property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java"
+    property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java, **/testingsupport/**"
   }
 }
 
@@ -193,7 +193,7 @@ dependencies {
   compile group: 'org.springframework.security', name: 'spring-security-config'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
-  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.16' // override to fix vulnerability issue (CVE-2019-17195)
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.17' // override to fix vulnerability issue (CVE-2019-17195)
   compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.6.0'
   compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.11.0'
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.13.0', classifier: 'thin'

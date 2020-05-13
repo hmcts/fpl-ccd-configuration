@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -21,5 +22,24 @@ public class JudgeAndLegalAdvisor {
     @JsonIgnore
     public boolean isUsingAllocatedJudge() {
         return YES.getValue().equals(useAllocatedJudge);
+    }
+
+    public static JudgeAndLegalAdvisor from(final Judge allocatedJudge) {
+        JudgeAndLegalAdvisorBuilder judgeAndLegalAdvisorBuilder = JudgeAndLegalAdvisor.builder();
+        if (allocatedJudge != null) {
+            judgeAndLegalAdvisorBuilder
+                .judgeTitle(allocatedJudge.getJudgeTitle())
+                .otherTitle(allocatedJudge.getOtherTitle())
+                .judgeLastName(allocatedJudge.getJudgeLastName())
+                .judgeFullName(allocatedJudge.getJudgeFullName());
+        }
+        return judgeAndLegalAdvisorBuilder.build();
+    }
+
+    public JudgeAndLegalAdvisor reset() {
+        return JudgeAndLegalAdvisor.builder()
+            .useAllocatedJudge("Yes")
+            .legalAdvisorName(legalAdvisorName)
+            .build();
     }
 }

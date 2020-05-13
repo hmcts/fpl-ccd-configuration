@@ -4,13 +4,7 @@ let caseId;
 
 Feature('Access segregation');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterMandatoryFields();
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
-});
+BeforeSuite(async I => caseId = await I.submitNewCaseWithData());
 
 Scenario('Different user in the same local authority can see case created', async I => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserTwo, caseId);
@@ -19,7 +13,7 @@ Scenario('Different user in the same local authority can see case created', asyn
 
 Scenario('Different user in a different local authority cannot see case created', async I => {
   await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserOne, caseId);
-  I.seeInCurrentUrl('error');
+  I.see('No cases found.');
 });
 
 Scenario('HMCTS admin user can see the case', async I => {
