@@ -65,7 +65,7 @@ def uploadCoreCaseDataDefinitions(env) {
     ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
     sh """
     eval \$(./variables/load-${env}-environment-variables.sh)
-    ./configurer/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+    ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
   """
   }
 }
@@ -105,6 +105,7 @@ withPipeline(type, product, component) {
         }
       }
     }
+    sh """ git submodule update --init """
   }
 
   before('smoketest:saat') {
@@ -115,7 +116,6 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-      git submodule update --init
       ./fpla-docker/bin/add-roles.sh
       ./bin/import-ccd-definition.sh
     """

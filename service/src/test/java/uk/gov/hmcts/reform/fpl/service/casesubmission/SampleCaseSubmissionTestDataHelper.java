@@ -21,7 +21,6 @@ import static java.time.LocalDate.now;
 import static java.time.LocalDate.parse;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.List.of;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisplay;
 
 public class SampleCaseSubmissionTestDataHelper {
@@ -44,7 +43,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .allocation(expectedAllocation())
             .hearingPreferences(expectedDocmosisHearingPreferences())
             .internationalElement(expectedDocmosisInternationalElement())
-            .courtseal(COURT_SEAL.getValue())
+            .courtSeal(null)
             .draftWaterMark(null)
             .userFullName("Professor")
             .submittedDate(now().format(ofPattern("d MMMM yyyy")))
