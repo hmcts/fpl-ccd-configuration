@@ -23,14 +23,15 @@ public class CaseSubmissionService  {
     private final CaseSubmissionTemplateDataGenerationService documentGenerationService;
     private final ObjectMapper mapper;
 
-    public Document generateSubmittedFormPDF(final CaseDetails caseDetails) {
+    public Document generateSubmittedFormPDF(final CaseDetails caseDetails, final boolean isDraft) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
         documentGenerationService.populateCaseNumber(submittedCase, caseDetails.getId());
+        documentGenerationService.populateDraftWaterOrCourtSeal(submittedCase, isDraft);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(submittedCase, C110A);
 
-        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseDetails));
+        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseDetails, isDraft));
     }
 }
