@@ -292,17 +292,17 @@ class CaseDataTest {
 
         @Test
         void shouldReturnCaseManagementOrderWhenFullDetailsButNoPreviousOrder() {
-            assertThat(getCaseData().getCaseManagementOrder()).isEqualTo(buildOrderWithDirections(createCmoDirections()));
+            assertThat(getCaseData().getCaseManagementOrder()).isEqualTo(orderWithDirections(createCmoDirections()));
         }
 
         @Test
         void shouldReturnCaseManagementOrderWithOrderDirectionsWhenOnlyPreviousOrder() {
             Map<String, Object> data = new HashMap<>();
-            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), buildOrderWithDirections(createCmoDirections()));
+            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), orderWithDirections(createCmoDirections()));
 
             CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-            assertThat(caseData.getCaseManagementOrder()).isEqualTo(buildOrderWithDirections(createCmoDirections()));
+            assertThat(caseData.getCaseManagementOrder()).isEqualTo(orderWithDirections(createCmoDirections()));
         }
 
         @Test
@@ -317,7 +317,7 @@ class CaseDataTest {
         @Test
         void shouldOverwriteRecitalsWithEmptyListWhenRemovingAllRecitals() {
             Map<String, Object> data = new HashMap<>();
-            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), buildOrderWithDirections(emptyList()));
+            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), orderWithDirections(emptyList()));
             data.put(RECITALS.getKey(), emptyList());
 
             CaseData caseData = mapper.convertValue(data, CaseData.class);
@@ -328,7 +328,7 @@ class CaseDataTest {
         @Test
         void shouldOverwriteDirectionsWithEmptyListWhenAllDirectionsRemoved() {
             Map<String, Object> data = new HashMap<>();
-            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), buildOrderWithDirections(createCmoDirections()));
+            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), orderWithDirections(createCmoDirections()));
 
             Stream.of(DirectionAssignee.values()).forEach(assignee ->
                 data.put(assignee.toCaseManagementOrderDirectionField(), emptyList()));
@@ -338,7 +338,7 @@ class CaseDataTest {
             assertThat(caseData.getCaseManagementOrder().getDirections()).isEmpty();
         }
 
-        private CaseManagementOrder buildOrderWithDirections(List<Element<Direction>> directions) {
+        private CaseManagementOrder orderWithDirections(List<Element<Direction>> directions) {
             return CaseManagementOrder.builder()
                 .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
                 .hearingDate(formatLocalDateToMediumStyle(5))
