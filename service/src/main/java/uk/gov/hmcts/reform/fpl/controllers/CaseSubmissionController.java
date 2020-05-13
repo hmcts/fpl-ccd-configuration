@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -130,19 +128,15 @@ public class CaseSubmissionController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails);
-
+//        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails);
+//
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
-
+//
         Map<String, Object> data = caseDetails.getData();
         data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
         data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
         data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()));
-        data.put("submittedForm", ImmutableMap.<String, String>builder()
-            .put("document_url", document.links.self.href)
-            .put("document_binary_url", document.links.binary.href)
-            .put("document_filename", document.originalDocumentName)
-            .build());
+
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

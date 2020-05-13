@@ -1408,7 +1408,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseCompletionDate",
     "FieldType": "Date",
-    "Label": "Case completion date",
+    "Label": "26-week timeline date",
     "SecurityClassification": "Public"
   }
 ]
