@@ -107,6 +107,7 @@ public class DraftCMOService {
     public DynamicList getNextHearingDateDynamicList(CaseData caseData) {
         return DynamicList.builder()
             .listItems(getDateElements(caseData, true))
+            .value(DynamicListElement.EMPTY)
             .build();
     }
 

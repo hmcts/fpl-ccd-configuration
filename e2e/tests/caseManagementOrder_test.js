@@ -99,7 +99,6 @@ Scenario('Local Authority sends draft to Judge who approves CMO', async (I, case
   await cmoHelper.skipToReview(I);
   draftCaseManagementOrderEventPage.markToBeSentToJudge();
   await I.completeEvent('Submit');
-  I.dontSee('Draft orders', '.tabs .tabs-list');
 
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge});
