@@ -139,7 +139,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "extend26WeekTimeline",
-    "CaseFieldID": "8WeeksExtensionDateOther",
+    "CaseFieldID": "eightWeeksExtensionDateOther",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
     "PageID": "extend26WeekTimelineConfirmation",

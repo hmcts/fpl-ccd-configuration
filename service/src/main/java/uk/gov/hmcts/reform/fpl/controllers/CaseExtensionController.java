@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.time.LocalDate;
 
@@ -76,7 +75,7 @@ public class CaseExtensionController {
             if(caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("8WeekExtension")) {
                 caseDetails.getData().put("caseCompletionDate", eightWeekExtensionDate);
             } else {
-                caseDetails.getData().put("caseCompletionDate", caseDetails.getData().get("8WeeksExtensionDateOther"));
+                caseDetails.getData().put("caseCompletionDate", caseDetails.getData().get("eightWeeksExtensionDateOther"));
             }
         } else {
             caseDetails.getData().put("caseCompletionDate", caseDetails.getData().get("extensionDateOther"));

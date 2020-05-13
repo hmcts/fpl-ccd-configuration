@@ -104,6 +104,8 @@ public class CaseData {
     private LocalDate caseCompletionDate;
     @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
     private LocalDate extensionDateOther;
+    @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    private LocalDate eightWeeksExtensionDateOther;
 
     @NotNull(message = "You need to enter the allocated judge.", groups = SealedSDOGroup.class)
     private final Judge allocatedJudge;
