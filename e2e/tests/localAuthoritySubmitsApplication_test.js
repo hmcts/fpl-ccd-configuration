@@ -441,8 +441,9 @@ Scenario('local authority cannot upload court bundle', async (I, caseViewPage, u
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
 });
 
-Scenario('local authority tries to submit without giving consent', async (I, caseViewPage) => {
+Scenario('local authority tries to submit without giving consent', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  submitApplicationEventPage.seeDraftApplicationFile();
   I.see(`I, ${config.swanseaLocalAuthorityUserOne.forename} ${config.swanseaLocalAuthorityUserOne.surname}, believe that the facts stated in this application are true.`);
   I.click('Continue');
   I.seeInCurrentUrl('/submitApplication');
@@ -451,6 +452,7 @@ Scenario('local authority tries to submit without giving consent', async (I, cas
 Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   // I.see('£2,055.00'); Disabled until Fee Register updated on AAT
+  submitApplicationEventPage.seeDraftApplicationFile();
   submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
