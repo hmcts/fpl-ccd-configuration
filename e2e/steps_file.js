@@ -2,27 +2,19 @@
 const output = require('codeceptjs').output;
 
 const config = require('./config');
+const caseHelper = require('./helpers/case_helper.js');
 
 const loginPage = require('./pages/login.page');
-const caseViewPage = require('./pages/caseView.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const ordersAndDirectionsNeededEventPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
-const enterHearingNeededEventPage = require('./pages/events/enterHearingNeededEvent.page');
-const enterChildrenEventPage = require('./pages/events/enterChildrenEvent.page');
-const enterApplicantEventPage  = require('./pages/events/enterApplicantEvent.page');
-const enterGroundsEventPage = require('./pages/events/enterGroundsForApplicationEvent.page');
-const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
-const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
-const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.page');
+const mandatorySubmissionFields = require('./fixtures/mandatorySubmissionFields.json');
 
-const applicant = require('./fixtures/applicant');
-const solicitor = require('./fixtures/solicitor');
-const respondent = require('./fixtures/respondents');
 const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 
-let baseUrl = process.env.URL || 'http://localhost:3451';
+const baseUrl = process.env.URL || 'http://localhost:3333';
+const signedInSelector = 'exui-header';
+const signedOutSelector = '#global-header';
 
 'use strict';
 
@@ -30,30 +22,27 @@ module.exports = function () {
   return actor({
     async signIn(user) {
       await this.retryUntilExists(async () => {
-        this.amOnPage(process.env.URL || 'http://localhost:3451');
-        if (await this.waitForSelector('#global-header') == null) {
+        this.amOnPage(baseUrl);
+
+        if(await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null){
           return;
         }
 
-        const userName = await this.grabText('#user-name');
-        if (userName !== undefined) {
-          if (userName.toLowerCase().includes(user.email)) {
-            return;
-          }
+        if(await this.hasSelector(signedInSelector)){
           this.signOut();
         }
 
         loginPage.signIn(user);
-      }, '#sign-out');
+      }, signedInSelector);
     },
 
     async logInAndCreateCase(user) {
       await this.signIn(user);
-      this.click('Create new case');
+      this.click('Create case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
-      let caseId = await this.grabTextFrom('.heading-h1');
+      const caseId = await this.grabTextFrom('.heading-h1');
       console.log(`Case created ${caseId}`);
       return caseId;
     },
@@ -123,7 +112,7 @@ module.exports = function () {
     },
 
     signOut() {
-      this.click('Sign Out');
+      this.click('Sign out');
       this.waitForText('Sign in', 20);
     },
 
@@ -133,8 +122,8 @@ module.exports = function () {
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
         await this.retryUntilExists(() => {
-          this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
-        }, '#sign-out');
+          this.amOnPage(`${baseUrl}/cases/case-details/${normalisedCaseId}`);
+        }, signedInSelector);
       }
     },
 
@@ -145,50 +134,6 @@ module.exports = function () {
 
     async navigateToCaseList(){
       await caseListPage.navigate();
-    },
-
-    async enterAllocationProposal () {
-      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
-      await this.completeEvent('Save and continue');
-    },
-
-    async enterMandatoryFields (settings) {
-      await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
-      ordersAndDirectionsNeededEventPage.checkCareOrder();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
-      enterHearingNeededEventPage.enterTimeFrame();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-      enterApplicantEventPage.enterApplicantDetails(applicant);
-      enterApplicantEventPage.enterSolicitorDetails(solicitor);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
-      await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
-      if(settings && settings.multipleChildren){
-        await this.addAnotherElementToCollection('Child');
-        await enterChildrenEventPage.enterChildDetails('John', 'Black', '02', '09', '2016');
-      }
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
-      await enterRespondentsEventPage.enterRespondent(respondent[0]);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
-      enterGroundsEventPage.enterThresholdCriteriaDetails();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow();
-      uploadDocumentsEventPage.selectSocialWorkStatementIncludedInSWET();
-      uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
-      uploadDocumentsEventPage.uploadCarePlan(config.testFile);
-      uploadDocumentsEventPage.uploadSWET(config.testFile);
-      uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
-      uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
-      await this.completeEvent('Save and continue');
     },
 
     async fillDate(date, sectionId = 'form') {
@@ -232,6 +177,14 @@ module.exports = function () {
         .withText('Remove'));
     },
 
+    async submitNewCaseWithData(data = mandatorySubmissionFields) {
+      const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
+      await caseHelper.populateWithData(caseId, data);
+      console.log(`Case ${caseId} has been populated with data`);
+
+      return caseId;
+    },
+
     /**
      * Retries defined action util element described by the locator is present. If element is not present
      * after 4 tries (run + 3 retries) this step throws an error.
@@ -246,7 +199,7 @@ module.exports = function () {
     async retryUntilExists(action, locator, maxNumberOfTries = 6) {
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
-        if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
+        if (tryNumber > 1 && await this.hasSelector(locator)) {
           output.log(`retryUntilExists(${locator}): element found before try #${tryNumber} was executed`);
           break;
         }

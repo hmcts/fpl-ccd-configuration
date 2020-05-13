@@ -133,6 +133,32 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
+    void aboutToStartCallbackShouldPopulateUseAllocatedJudgeWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
+        Judge judge = buildAllocatedJudge();
+        CaseDetails caseDetails = buildSameJudgeCaseDetails(judge);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+    }
+
+    private CaseDetails buildSameJudgeCaseDetails(Judge judge) {
+        return CaseDetails.builder()
+            .data(Map.of(
+                "allocatedJudge", judge,
+                "standardDirectionOrder", Order.builder()
+                    .directions(buildDirections(createDirections()))
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeTitle(judge.getJudgeTitle())
+                        .judgeLastName(judge.getJudgeLastName())
+                        .build())
+                    .build()))
+            .build();
+    }
+
+    @Test
     void aboutToStartCallbackShouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
@@ -151,6 +177,7 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
         return Judge.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Richards")
+            .judgeEmailAddress("richards@example.com")
             .build();
     }
 
