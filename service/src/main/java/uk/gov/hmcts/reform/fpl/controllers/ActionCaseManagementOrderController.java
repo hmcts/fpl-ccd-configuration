@@ -81,7 +81,7 @@ public class ActionCaseManagementOrderController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        Document document = caseManagementOrderService.getOrder(caseData);
+        Document document = caseManagementOrderService.getOrderDocument(caseData);
         caseManagementOrder.setOrderDocReferenceFromDocument(document);
 
         data.put(ORDER_ACTION.getKey(), OrderAction.builder().document(buildFromDocument(document)).build());
@@ -114,7 +114,7 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        Document document = caseManagementOrderService.getOrder(caseData);
+        Document document = caseManagementOrderService.getOrderDocument(caseData);
         order.setOrderDocReferenceFromDocument(document);
 
         caseDetails.getData().remove(DATE_OF_ISSUE.getKey());

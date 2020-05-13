@@ -37,7 +37,7 @@ public class CaseManagementOrderService {
     private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final DocumentService documentService;
 
-    public Document getOrder(CaseData caseData) {
+    public Document getOrderDocument(CaseData caseData) {
         DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(caseData);
         return documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
     }
@@ -66,6 +66,15 @@ public class CaseManagementOrderService {
             .build();
     }
 
+    private void addDirections(CaseDetails caseDetails, List<Element<Direction>> directions) {
+        getMapping(directions)
+            .forEach((key, value) -> caseDetails.getData().put(key.toCaseManagementOrderDirectionField(), value));
+    }
+
+    private void removeDirections(CaseDetails caseDetails) {
+        Stream.of(Directions.class.getDeclaredFields()).forEach(field -> caseDetails.getData().remove(field.getName()));
+    }
+
     private List<DynamicListElement> getDateElements(List<Element<HearingBooking>> hearings) {
         return hearings.stream()
             .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
@@ -85,14 +94,5 @@ public class CaseManagementOrderService {
             .filter(item -> item.getCode().equals(id))
             .findFirst()
             .orElse(DynamicListElement.EMPTY);
-    }
-
-    private void removeDirections(CaseDetails caseDetails) {
-        Stream.of(Directions.class.getDeclaredFields()).forEach(field -> caseDetails.getData().remove(field.getName()));
-    }
-
-    private void addDirections(CaseDetails caseDetails, List<Element<Direction>> directions) {
-        getMapping(directions)
-            .forEach((key, value) -> caseDetails.getData().put(key.toCaseManagementOrderDirectionField(), value));
     }
 }

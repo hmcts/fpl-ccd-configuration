@@ -68,7 +68,7 @@ public class DraftCMOController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        Document document = caseManagementOrderService.getOrder(caseData);
+        Document document = caseManagementOrderService.getOrderDocument(caseData);
         caseManagementOrder.setOrderDocReferenceFromDocument(document);
 
         data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), caseManagementOrder);

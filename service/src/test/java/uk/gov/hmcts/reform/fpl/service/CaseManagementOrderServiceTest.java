@@ -249,7 +249,7 @@ class CaseManagementOrderServiceTest {
         @Test
         void shouldGetCaseManagementOrderWithDocumentReference() {
             LocalDateTime dateTime = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
-            Document document = service.getOrder(buildCaseDataForCMODocmosisGeneration(dateTime));
+            Document document = service.getOrderDocument(buildCaseDataForCMODocmosisGeneration(dateTime));
 
             assertThat(document).isEqualTo(DOCUMENT);
         }
