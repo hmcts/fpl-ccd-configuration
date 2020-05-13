@@ -37,6 +37,7 @@ public class StandardDirectionOrderGenerationService extends
         HearingBooking firstHearing = hearingBookingService.getFirstHearing(caseData.getHearingDetails())
             .orElse(null);
 
+        @SuppressWarnings("rawtypes")
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder orderBuilder =
             DocmosisStandardDirectionOrder.builder()
                 .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder.getJudgeAndLegalAdvisor()))
