@@ -15,6 +15,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 class JudgeAndLegalAdvisorHelperTest {
@@ -165,6 +166,44 @@ class JudgeAndLegalAdvisorHelperTest {
 
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isNull();
+    }
+
+    @Test
+    void shouldPopulateUseAllocatedJudgeWithYesAndResetJudgeFieldsWhenJudgesAreEqual() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(OTHER)
+            .otherTitle("Mr")
+            .judgeLastName("Watson")
+            .build();
+
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(OTHER)
+            .otherTitle("Mr")
+            .judgeLastName("Watson")
+            .build();
+
+        judgeAndLegalAdvisor = prepareJudgeFields(judgeAndLegalAdvisor, allocatedJudge);
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+        assertThat(judgeAndLegalAdvisor.getJudgeFullName()).isNull();
+        assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isNull();
+        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isNull();
+    }
+
+    @Test
+    void shouldPopulateUseAllocatedJudgeWithNoWhenJudgesAreNotEqual() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Hastings")
+            .build();
+
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(OTHER)
+            .otherTitle("Mr")
+            .judgeLastName("Watson")
+            .build();
+
+        judgeAndLegalAdvisor = prepareJudgeFields(judgeAndLegalAdvisor, allocatedJudge);
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("No");
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
