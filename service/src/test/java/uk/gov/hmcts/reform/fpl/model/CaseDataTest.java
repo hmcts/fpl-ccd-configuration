@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,10 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -41,10 +44,17 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -63,7 +73,7 @@ class CaseDataTest {
             .caseManagementOrder(CaseManagementOrder.builder().status(SELF_REVIEW).build())
             .build());
 
-        JSONAssert.assertEquals(String.format("{%s:{status: %s}}",
+        JSONAssert.assertEquals(format("{%s:{status: %s}}",
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), SELF_REVIEW.name()), serialised, false);
     }
 
@@ -74,31 +84,33 @@ class CaseDataTest {
             .build());
 
         JSONAssert.assertEquals(
-            String.format("{%s:{status: %s}}", CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), SEND_TO_JUDGE.name()),
+            format("{%s:{status: %s}}", CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), SEND_TO_JUDGE.name()),
             serialised, false);
     }
 
     @Test
     void shouldDeserialiseCaseDataWhenCaseManagementOrderWithSelfReviewState() throws JsonProcessingException {
-        String content = String.format("{\"%s\":{\"status\": \"%s\"}}",
+        String content = format("{\"%s\":{\"status\": \"%s\"}}",
             CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), SELF_REVIEW.name());
 
         CaseData deserialised = mapper.readValue(content, CaseData.class);
 
         assertThat(deserialised).isEqualTo(CaseData.builder()
             .caseManagementOrder(CaseManagementOrder.builder().status(SELF_REVIEW).build())
+            .directionsForCaseManagementOrder(Directions.builder().build())
             .build());
     }
 
     @Test
     void shouldDeserialiseCaseDataWhenCaseManagementOrderWithSendToJudgeState() throws JsonProcessingException {
-        String content = String.format("{\"%s\":{\"status\": \"%s\"}}",
+        String content = format("{\"%s\":{\"status\": \"%s\"}}",
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), SEND_TO_JUDGE.name());
 
         CaseData deserialised = mapper.readValue(content, CaseData.class);
 
         assertThat(deserialised).isEqualTo(CaseData.builder()
             .caseManagementOrder(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build())
+            .directionsForCaseManagementOrder(Directions.builder().build())
             .build());
     }
 
@@ -288,7 +300,8 @@ class CaseDataTest {
         }
 
         @Test
-        void shouldReturnCaseManagementOrderAndEmptyListDirectionsWhenOnlyPreviousOrder() {
+        @DisplayName("can pull directions from order in about to start callback")
+        void shouldReturnCaseManagementOrderWithOrderDirectionsWhenOnlyPreviousOrder() {
             Map<String, Object> data = new HashMap<>();
             String key = CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey();
             data.put(key, buildOrder(schedule, recitals, createCmoDirections(), action));
@@ -296,7 +309,7 @@ class CaseDataTest {
             CaseData caseData = mapper.convertValue(data, CaseData.class);
 
             assertThat(caseData.getCaseManagementOrder())
-                .isEqualToComparingFieldByField(buildOrder(schedule, recitals, emptyList(), action));
+                .isEqualToComparingFieldByField(buildOrder(schedule, recitals, createCmoDirections(), action));
         }
 
         @Test
@@ -320,13 +333,8 @@ class CaseDataTest {
             assertThat(caseData.getCaseManagementOrder().getRecitals()).isEmpty();
         }
 
-        //TODO: test fails due to custom setter for directionsForCaseManagementOrder being null.
-        // get directions from fields and add to order, i.e mid event / about to submit when we want prepped cmo
-        // if order is not null, we want to take directions from the order, i.e about to start
-        // if all directions fields are empty, overwrite directions on order i.e about to submit removed everything.
-        // directions fields are never null, always return empty list...
-        @Disabled
         @Test
+        @DisplayName("can overwrite directions in order when all direction fields are null (mid event/about to submit")
         void shouldOverwriteDirectionsWithEmptyListWhenAllDirectionsRemoved() {
             Map<String, Object> data = new HashMap<>();
             String key = CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey();
@@ -410,5 +418,71 @@ class CaseDataTest {
     @Test
     void shouldSerialiseDirectionsAsNullWhenEmptyDirections() {
         assertThat(CaseData.builder().build()).hasFieldOrPropertyWithValue("directionsForCaseManagementOrder", null);
+    }
+
+    @Test
+    void shouldDeserialiseIndividualCmoDirectionsToDirectionsObject() throws JsonProcessingException {
+        UUID id = randomUUID();
+
+        CaseData deserialised = mapper.readValue(buildJsonDirections(id), CaseData.class);
+
+        assertThat(deserialised).isEqualToComparingFieldByField(caseDataWithPopulatedDirections(id));
+    }
+
+    @Test
+    void shouldSerialiseDirectionsObjectToIndividualDirections() throws JsonProcessingException {
+        UUID id = randomUUID();
+
+        String serialised = mapper.writeValueAsString(caseDataWithPopulatedDirections(id));
+
+        Stream.of(DirectionAssignee.values())
+            .forEach(assignee -> JSONAssert.assertEquals(getExpectedString(assignee, id), serialised, false));
+    }
+
+    private String buildJsonDirections(UUID id) throws JsonProcessingException {
+        List<Element<Direction>> directions = List.of(element(id, Direction.builder().directionType("title").build()));
+        String directionString = mapper.writeValueAsString(directions);
+
+        StringBuilder builder = new StringBuilder().append("{");
+
+        DirectionAssignee[] values = DirectionAssignee.values();
+        for (int i = 0; i < values.length; i++) {
+            DirectionAssignee assignee = values[i];
+            builder.append(getJsonDirectionForParty(assignee.toCaseManagementOrderDirectionField(), directionString));
+
+            if (i != values.length - 1) {
+                builder.append(",");
+            }
+        }
+
+        return builder.append("}").toString();
+    }
+
+    private Direction directionForParty(DirectionAssignee assignee) {
+        return Direction.builder().assignee(assignee).custom("Yes").readOnly("No").directionType("title").build();
+    }
+
+    private String getJsonDirectionForParty(String key, String directionString) {
+        return format("\"%s\": %s", key, directionString);
+    }
+
+    private CaseData caseDataWithPopulatedDirections(UUID id) {
+        return CaseData.builder()
+            .directionsForCaseManagementOrder(Directions.builder()
+                .allPartiesCustomCMO(List.of(element(id, directionForParty(ALL_PARTIES))))
+                .localAuthorityDirectionsCustomCMO(List.of(element(id, directionForParty(LOCAL_AUTHORITY))))
+                .respondentDirectionsCustomCMO(List.of(element(id, directionForParty(PARENTS_AND_RESPONDENTS))))
+                .cafcassDirectionsCustomCMO(List.of(element(id, directionForParty(CAFCASS))))
+                .otherPartiesDirectionsCustomCMO(List.of(element(id, directionForParty(OTHERS))))
+                .courtDirectionsCustomCMO(List.of(element(id, directionForParty(COURT))))
+                .build())
+            .build();
+    }
+
+    private String getExpectedString(DirectionAssignee assignee, UUID id) {
+        String key = assignee.toCaseManagementOrderDirectionField();
+
+        return format("{\"%s\": [{\"id\":\"%s\",\"value\":{\"directionType\":\"title\",\"assignee\":\"%s\","
+            + "\"readOnly\":\"No\",\"custom\":\"Yes\",\"responses\":[]}}]}", key, id, assignee.toString());
     }
 }

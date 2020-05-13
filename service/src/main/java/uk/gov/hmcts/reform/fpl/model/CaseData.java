@@ -377,13 +377,13 @@ public class CaseData {
         String dateOfIssue = date.map(x -> formatLocalDateToString(x, DATE)).orElse(null);
         Schedule scheduleFromOrder = order.map(CaseManagementOrder::getSchedule).orElse(null);
         List<Element<Recital>> recitalsFromOrder = order.map(CaseManagementOrder::getRecitals).orElse(null);
-        Optional<Directions> directions = ofNullable(directionsForCaseManagementOrder);
         List<Element<Direction>> orderDirections = order.map(CaseManagementOrder::getDirections).orElse(emptyList());
+        Optional<Directions> directionsForCaseManagementOrder = ofNullable(getDirectionsForCaseManagementOrder());
 
         CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
             .hearingDate(order.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
             .id(order.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
-            .directions(directions.map(Directions::getDirectionsList).orElse(orderDirections))
+            .directions(directionsForCaseManagementOrder.map(Directions::getDirectionsList).orElse(orderDirections))
             .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
             .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
             .status(order.map(CaseManagementOrder::getStatus).orElse(null))
@@ -405,10 +405,11 @@ public class CaseData {
     @JsonUnwrapped
     private Directions directionsForCaseManagementOrder;
 
-    @JsonSetter
-    public void setDirectionsForCaseManagementOrder(Directions directions) {
-        if (!directions.getDirectionsList().isEmpty()) {
-            directionsForCaseManagementOrder = directions;
+    public Directions getDirectionsForCaseManagementOrder() {
+        if (directionsForCaseManagementOrder != null && directionsForCaseManagementOrder.containsDirections()) {
+            return directionsForCaseManagementOrder;
         }
+
+        return null;
     }
 }

@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
