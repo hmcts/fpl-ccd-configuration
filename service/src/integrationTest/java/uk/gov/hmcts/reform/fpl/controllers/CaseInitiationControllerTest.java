@@ -39,13 +39,13 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     private static final String CASE_ID = "12345";
     private static final Set<String> CASE_ROLES = Set.of("[LASOLICITOR]", "[CREATOR]");
 
-    @MockBean
+    @MockBean(name = "uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi")
     private ServiceAuthorisationApi serviceAuthorisationApi;
 
-    @MockBean
+    @MockBean(name = "uk.gov.hmcts.reform.idam.client.IdamApi")
     private IdamApi idamApi;
 
-    @MockBean
+    @MockBean(name = "uk.gov.hmcts.reform.ccd.client.CaseUserApi")
     private CaseUserApi caseUserApi;
 
     @MockBean
