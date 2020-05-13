@@ -66,19 +66,26 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
-
-    this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName,
-      hearingDetails.judgeAndLegalAdvisor.legalAdvisorName,
-      hearingDetails.judgeAndLegalAdvisor.judgeTitle,
-      hearingDetails.judgeAndLegalAdvisor.otherTitle,
-      elementIndex
-    );
   },
 
-  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, title, otherTitle, elementIndex) {
+  async enterJudge(judge) {
+    const elementIndex = await this.getActiveElementIndex();
     const complexTypeAppender = `hearingDetails_${elementIndex}_`;
-    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, title, otherTitle);
-    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, complexTypeAppender);
+
+    judgeAndLegalAdvisor.useAlternateJudge(complexTypeAppender);
+    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, judge.judgeTitle, judge.otherTitle);
+    judgeAndLegalAdvisor.enterJudgeLastName(judge.judgeLastName, complexTypeAppender);
+  },
+
+  async useAllocatedJudge() {
+    const elementIndex = await this.getActiveElementIndex();
+    const complexTypeAppender = `hearingDetails_${elementIndex}_`;
+    judgeAndLegalAdvisor.useAllocatedJudge(complexTypeAppender);
+  },
+
+  async enterLegalAdvisor(legalAdvisorName) {
+    const elementIndex = await this.getActiveElementIndex();
+    const complexTypeAppender = `hearingDetails_${elementIndex}_`;
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, complexTypeAppender);
   },
 
