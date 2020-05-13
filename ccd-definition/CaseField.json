@@ -1316,7 +1316,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "closeCase",
     "FieldType": "CloseCase",
-    "Label": " ",
+    "Label": "Close the case",
     "SecurityClassification": "Public"
   },
   {

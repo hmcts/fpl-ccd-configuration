@@ -24,7 +24,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CloseCaseFull",
     "ElementLabel": "Reason",
-    "FieldShowCondition": "showFullReason = \"YES\"",
+    "FieldShowCondition": "showFullReason != \"NO\"",
     "SecurityClassification": "Public"
   },
   {
@@ -34,7 +34,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CloseCasePartial",
     "ElementLabel": "Reason",
-    "FieldShowCondition": "showFullReason = \"NO\"",
+    "FieldShowCondition": "showFullReason != \"YES\"",
     "SecurityClassification": "Public"
   },
   {
