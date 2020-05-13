@@ -31,7 +31,7 @@ public class HearingBooking {
     private final LocalDateTime endDate;
     private final List<String> hearingNeedsBooked;
     private final String hearingNeedsDetails;
-    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());

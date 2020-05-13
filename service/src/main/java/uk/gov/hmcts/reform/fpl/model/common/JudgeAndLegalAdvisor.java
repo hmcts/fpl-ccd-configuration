@@ -38,7 +38,7 @@ public class JudgeAndLegalAdvisor {
 
     public JudgeAndLegalAdvisor reset() {
         return JudgeAndLegalAdvisor.builder()
-            .useAllocatedJudge("Yes")
+            .useAllocatedJudge(YES.getValue())
             .legalAdvisorName(legalAdvisorName)
             .build();
     }
