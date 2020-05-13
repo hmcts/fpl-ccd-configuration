@@ -101,7 +101,7 @@ public class HearingBookingService {
                 HearingBooking hearingBooking = element.getValue();
                 JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
 
-                if (judgeAndLegalAdvisor != null && allocatedJudge.equalsJudgeAndLegalAdvisor(judgeAndLegalAdvisor)) {
+                if (judgeAndLegalAdvisor != null && allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)) {
                     judgeAndLegalAdvisor = judgeAndLegalAdvisor.reset();
 
                     hearingBooking.setJudgeAndLegalAdvisor(judgeAndLegalAdvisor);

@@ -45,7 +45,7 @@ class JudgeTest {
     }
 
     @Test
-    void shouldReturnTrueWhenJudgesAreEqual() {
+    void shouldReturnTrueWhenJudgesHaveEqualFields() {
         JudgeOrMagistrateTitle judgeOrMagistrateTitle = MAGISTRATES;
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
@@ -56,11 +56,11 @@ class JudgeTest {
             .build();
 
         Judge allocatedJudge = buildAllocatedJudge(judgeOrMagistrateTitle);
-        assertThat(allocatedJudge.equalsJudgeAndLegalAdvisor(judgeAndLegalAdvisor)).isTrue();
+        assertThat(allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)).isTrue();
     }
 
     @Test
-    void shouldReturnFalseWhenJudgesAreNotEqual() {
+    void shouldReturnFalseWhenJudgesDoNotHaveEqualFields() {
         JudgeOrMagistrateTitle judgeOrMagistrateTitle = DEPUTY_DISTRICT_JUDGE;
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
@@ -69,7 +69,7 @@ class JudgeTest {
             .build();
 
         Judge allocatedJudge = buildAllocatedJudge(judgeOrMagistrateTitle);
-        assertThat(allocatedJudge.equalsJudgeAndLegalAdvisor(judgeAndLegalAdvisor)).isFalse();
+        assertThat(allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)).isFalse();
     }
 
     private Judge buildAllocatedJudge(JudgeOrMagistrateTitle title) {
