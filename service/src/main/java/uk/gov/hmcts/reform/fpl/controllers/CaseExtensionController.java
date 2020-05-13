@@ -57,7 +57,7 @@ public class CaseExtensionController {
 
         // Put into the label
         eightWeekExtensionDate = caseCompletionDate.plusWeeks(8);
-        caseDetails.getData().put("extensionDate8Weeks", formatLocalDateToString(eightWeekExtensionDate,
+        caseDetails.getData().put("extensionDateEightWeeks", formatLocalDateToString(eightWeekExtensionDate,
                 DATE));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -71,8 +71,8 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if(caseDetails.getData().get("caseExtensionTimeList").equals("8WeekExtension")){
-            if(caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("8WeekExtension")) {
+        if(caseDetails.getData().get("caseExtensionTimeList").equals("EightWeekExtension")){
+            if(caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("EightWeekExtension")) {
                 caseDetails.getData().put("caseCompletionDate", eightWeekExtensionDate);
             } else {
                 caseDetails.getData().put("caseCompletionDate", caseDetails.getData().get("eightWeeksExtensionDateOther"));

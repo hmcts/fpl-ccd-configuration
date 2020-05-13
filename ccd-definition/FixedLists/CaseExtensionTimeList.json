@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseExtensionTimeList",
-    "ListElementCode": "8WeekExtension",
+    "ListElementCode": "EightWeekExtension",
     "ListElement": "Extend by 8 Weeks",
     "DisplayOrder": 1
   },

@@ -772,7 +772,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "extensionDate8Weeks",
+    "CaseFieldID": "extensionDateEightWeeks",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
@@ -786,7 +786,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "extendBy8WeeksOrOtherLabel",
+    "CaseFieldID": "extendByEightWeeksOrOtherLabel",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },

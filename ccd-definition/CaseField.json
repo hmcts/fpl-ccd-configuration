@@ -1313,7 +1313,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "extensionDate8Weeks",
+    "ID": "extensionDateEightWeeks",
     "Label": "Case extension date",
     "FieldType": "Text",
     "SecurityClassification": "Public"
@@ -1322,7 +1322,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "shouldBeCompletedByConfirmationLabel",
-    "Label": "You've select to extend the case by 8 weeks. The case should now be completed by ${extensionDate8Weeks}.",
+    "Label": "You've select to extend the case by 8 weeks. The case should now be completed by ${extensionDateEightWeeks}.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
@@ -1371,7 +1371,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "extendBy8WeeksOrOtherLabel",
+    "ID": "extendByEightWeeksOrOtherLabel",
     "FieldType": "Label",
     "Label": "You can either extend this date by 8 weeks, or enter a different end date.",
     "SecurityClassification": "Public"
