@@ -57,6 +57,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     void aboutToStartShouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
+                "familyManCaseNumber", "123",
                 "allocatedJudge", Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Richards")
@@ -76,6 +77,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     void aboutToStartShouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
+                "familyManCaseNumber", "123",
                 "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build()
             ))
             .build();
