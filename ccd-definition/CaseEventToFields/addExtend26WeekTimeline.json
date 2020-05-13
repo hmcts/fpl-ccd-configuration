@@ -106,6 +106,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "extend26WeekTimelineConfirmation",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/mid-event",
     "PageLabel": "",
     "PageDisplayOrder": 2,
     "ShowSummaryChangeOption": "No",
