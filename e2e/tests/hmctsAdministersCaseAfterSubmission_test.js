@@ -281,3 +281,13 @@ Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage
   I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
 });
+
+Scenario('HMCTS admin closes the case', async (I, caseViewPage, closeTheCaseEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
+  closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, false, closeTheCaseEventPage.fields.radioGroup.partialReason.options.deprivation);
+  await I.completeEvent('Submit');
+  I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
+  caseViewPage.selectTab(caseViewPage.tabs.overview);
+  I.seeInTab(['Close the Case', 'Date case was closed'], '12 Mar 2020');
+  I.seeInTab(['Close the Case', 'Reason'], 'Deprivation of liberty');
+});

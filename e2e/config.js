@@ -101,6 +101,7 @@ module.exports = {
     bulkScan: 'Attach scanned docs',
     addNote: 'Add a case note',
     addExpertReportLog: 'Log expert report',
+    closeTheCase: 'Close the case',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
