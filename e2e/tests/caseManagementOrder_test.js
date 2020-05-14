@@ -96,9 +96,7 @@ Scenario('Local Authority sends draft to Judge who requests corrections', async 
 
 Scenario('Local Authority sends draft to Judge who approves CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await cmoHelper.skipToReview(I);
-  draftCaseManagementOrderEventPage.markToBeSentToJudge();
-  await I.completeEvent('Submit');
+  await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
 
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge});
@@ -113,4 +111,6 @@ Scenario('Local Authority sends draft to Judge who approves CMO', async (I, case
   actionCaseManagementOrderEventPage.selectNextHearingDate('1 Jan 2050');
   await I.completeEvent('Save and continue');
   cmoHelper.assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.sealedCaseManagementOrder);
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  I.dontSee('Draft orders', '.tabs .tabs-list');
 });
