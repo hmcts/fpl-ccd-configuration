@@ -78,7 +78,6 @@
     "FieldType": "Email",
     "ElementLabel": "Email Address",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "judgeEmailAddress CONTAINS \"DO NOT SHOW\"",
-    "Comment": "Field will only be shown in the event and not in the tab (FieldShowCondition overwritten in CaseEventToComplexType)"
+    "FieldShowCondition":"judgeTitle!=\"\""
   }
 ]

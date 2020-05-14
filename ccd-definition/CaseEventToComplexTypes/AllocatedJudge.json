@@ -47,7 +47,6 @@
     "ListElementCode": "judgeEmailAddress",
     "EventElementLabel": "Email Address",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition":"allocatedJudge.judgeTitle!=\"\""
+    "DisplayContext": "MANDATORY"
   }
 ]
