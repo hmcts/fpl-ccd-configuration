@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,15 +27,12 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractControllerTest {
     CaseExtensionController caseExtensionController;
 
     @Test
-    void shouldPopulateCaseCompletionDateWhenSubmittingWithOtherDate() {
-
-        Map<String, Object> data = new HashMap<>();
-
-        data.put("extensionDateOther", LocalDate.of(2030, 11, 12));
-        data.put("caseExtensionTimeList", "otherExtension");
+    void shouldPopulateCaseCompletionDateWhenSubmittingWithOtherExtensionDate() {
+        LocalDate extensionDateOther = LocalDate.of(2030, 11, 12);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(data)
+            .data(Map.of("extensionDateOther", extensionDateOther,
+                "caseExtensionTimeList", "otherExtension"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -46,15 +42,12 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldPopulateCaseCompletionDateWhenSubmittingWith8WeekExtensionOther() {
-
-        Map<String, Object> data = new HashMap<>();
-
-        data.put("caseExtensionTimeList", "EightWeekExtension");
-        data.put("caseExtensionTimeConfirmationList", "EightWeekExtensionDateOther");
-        data.put("eightWeeksExtensionDateOther", LocalDate.of(2030, 11, 12));
+        LocalDate eightWeeksExtensionDateOther = LocalDate.of(2030, 11, 12);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(data)
+            .data(Map.of("caseExtensionTimeList", "EightWeekExtension",
+                "caseExtensionTimeConfirmationList", "EightWeekExtensionDateOther",
+                "eightWeeksExtensionDateOther", eightWeeksExtensionDateOther))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -63,19 +56,13 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldPopulateCaseCompletionDateWhenSubmittingWith8WeekExtension() throws NoSuchFieldException {
-
-        Map<String, Object> data = new HashMap<>();
-
-        data.put("caseExtensionTimeList", "EightWeekExtension");
-        data.put("caseExtensionTimeConfirmationList", "EightWeekExtension");
-
-        LocalDate date = LocalDate.of(2030,11,11);
-
-        setField(caseExtensionController, "eightWeekExtensionDate", date);
+    void shouldPopulateCaseCompletionDateWhenSubmittingWith8WeekExtension() {
+        LocalDate eightWeekExtensionDate = LocalDate.of(2030,11,11);
+        setField(caseExtensionController, "eightWeekExtensionDate", eightWeekExtensionDate);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(data)
+            .data(Map.of("caseExtensionTimeList", "EightWeekExtension",
+                "caseExtensionTimeConfirmationList", "EightWeekExtension"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
