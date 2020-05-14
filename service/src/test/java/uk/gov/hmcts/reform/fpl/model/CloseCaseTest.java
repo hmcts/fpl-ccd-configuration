@@ -25,8 +25,8 @@ class CloseCaseTest {
 
     @Test
     void shouldSetShowFullReasonToYesWhenFullReasonIsPopulated() throws JsonProcessingException {
-        String json = "{\"showFullReason\":\"YES\",\"date\":null,\"details\":null,\"fullReason\":\"FINAL_ORDER\"," +
-            "\"partialReason\":null}";
+        String json = "{\"showFullReason\":\"YES\",\"date\":null,\"details\":null,\"fullReason\":\"FINAL_ORDER\","
+            + "\"partialReason\":null}";
 
         CloseCase closeCase = mapper.readValue(json, CloseCase.class);
         CloseCase expected = CloseCase.builder().showFullReason(YES).reason(FINAL_ORDER).build();
@@ -38,8 +38,8 @@ class CloseCaseTest {
 
     @Test
     void shouldSetShowFullReasonToNoWhenPartialReasonIsPopulated() throws JsonProcessingException {
-        String json = "{\"showFullReason\":\"NO\",\"date\":null,\"details\":null,\"fullReason\":null," +
-            "\"partialReason\":\"WITHDRAWN\"}";
+        String json = "{\"showFullReason\":\"NO\",\"date\":null,\"details\":null,\"fullReason\":null,"
+            + "\"partialReason\":\"WITHDRAWN\"}";
 
         CloseCase closeCase = mapper.readValue(json, CloseCase.class);
         CloseCase expected = CloseCase.builder().showFullReason(NO).reason(WITHDRAWN).build();
@@ -52,8 +52,8 @@ class CloseCaseTest {
     @Test
     void shouldMapReasonToFullReasonWhenShowFullReasonIsYes() throws JsonProcessingException {
         CloseCase closeCase = CloseCase.builder().showFullReason(YES).reason(FINAL_ORDER).build();
-        String expected = "{\"showFullReason\":\"YES\",\"date\":null,\"details\":null,\"fullReason\":\"FINAL_ORDER\"," +
-            "\"partialReason\":null}";
+        String expected = "{\"showFullReason\":\"YES\",\"date\":null,\"details\":null,\"fullReason\":\"FINAL_ORDER\","
+            + "\"partialReason\":null}";
 
         String json = mapper.writeValueAsString(closeCase);
 
@@ -63,8 +63,8 @@ class CloseCaseTest {
     @Test
     void shouldMapReasonToPartialReasonWhenShowFullReasonIsNo() throws JsonProcessingException {
         CloseCase closeCase = CloseCase.builder().showFullReason(NO).reason(WITHDRAWN).build();
-        String expected = "{\"showFullReason\":\"NO\",\"date\":null,\"details\":null,\"fullReason\":null," +
-            "\"partialReason\":\"WITHDRAWN\"}";
+        String expected = "{\"showFullReason\":\"NO\",\"date\":null,\"details\":null,\"fullReason\":null,"
+            + "\"partialReason\":\"WITHDRAWN\"}";
 
         String json = mapper.writeValueAsString(closeCase);
 
