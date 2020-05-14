@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -60,9 +62,10 @@ class ChildrenServiceTest {
         assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }
 
-    @Test
-    void shouldReturnFalseWithEmptyList() {
-        boolean result = service.allChildrenHaveFinalOrder(List.of());
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnFalseWithEmptyOrNullList(List<Element<Child>> list) {
+        boolean result = service.allChildrenHaveFinalOrder(list);
 
         assertThat(result).isFalse();
     }

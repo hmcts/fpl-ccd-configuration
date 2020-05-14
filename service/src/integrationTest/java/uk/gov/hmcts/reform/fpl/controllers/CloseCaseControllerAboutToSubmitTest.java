@@ -47,5 +47,4 @@ public class CloseCaseControllerAboutToSubmitTest extends AbstractControllerTest
 
         assertThat(response.getData()).containsEntry("deprivationOfLiberty", "No");
     }
-
 }
