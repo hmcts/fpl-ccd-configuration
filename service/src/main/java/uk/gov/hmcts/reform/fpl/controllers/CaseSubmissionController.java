@@ -33,18 +33,19 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.groups.Default;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
-import javax.validation.groups.Default;
 
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
 @RestController
@@ -74,6 +75,10 @@ public class CaseSubmissionController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.remove(DISPLAY_AMOUNT_TO_PAY);
+
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails, true);
+        data.put("draftApplicationDocument", buildFromDocument(document));
+
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
@@ -130,7 +135,7 @@ public class CaseSubmissionController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails);
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails, false);
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 

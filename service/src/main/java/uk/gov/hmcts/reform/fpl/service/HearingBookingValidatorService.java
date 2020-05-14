@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 
@@ -29,4 +30,7 @@ public class HearingBookingValidatorService {
         return errors;
     }
 
+    public List<String> validateHasAllocatedJudge(CaseData caseData) {
+        return validateGroupService.validateGroup(caseData, HearingBookingDetailsGroup.class);
+    }
 }

@@ -9,7 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
-import uk.gov.hmcts.reform.fpl.model.common.*;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
@@ -25,13 +34,21 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
+import javax.validation.Valid;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Optional.empty;
@@ -101,13 +118,8 @@ public class CaseData {
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
 
-    private LocalDate caseCompletionDate;
-    @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
-    private LocalDate extensionDateOther;
-    @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
-    private LocalDate eightWeeksExtensionDateOther;
-
-    @NotNull(message = "You need to enter the allocated judge.", groups = SealedSDOGroup.class)
+    @NotNull(message = "You need to enter the allocated judge.",
+             groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
     private final Judge allocatedJudge;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
@@ -349,4 +361,10 @@ public class CaseData {
     }
 
     private final String amountToPay;
+
+    private LocalDate caseCompletionDate;
+    @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    private LocalDate extensionDateOther;
+    @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    private LocalDate eightWeeksExtensionDateOther;
 }
