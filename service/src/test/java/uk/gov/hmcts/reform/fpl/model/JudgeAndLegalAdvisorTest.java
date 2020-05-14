@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 class JudgeAndLegalAdvisorTest {
@@ -35,7 +36,7 @@ class JudgeAndLegalAdvisorTest {
         judgeAndLegalAdvisor = judgeAndLegalAdvisor.reset();
 
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Holmes");
-        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(YES.getValue());
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isNull();
         assertThat(judgeAndLegalAdvisor.getJudgeFullName()).isNull();
     }
