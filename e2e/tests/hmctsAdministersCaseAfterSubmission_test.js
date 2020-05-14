@@ -293,6 +293,6 @@ Scenario('HMCTS admin closes the case', async (I, caseViewPage, closeTheCaseEven
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
   caseViewPage.selectTab(caseViewPage.tabs.overview);
-  I.seeInTab(['Close the Case', 'Date case was closed'], '12 Mar 2020');
-  I.seeInTab(['Close the Case', 'Reason'], 'Deprivation of liberty');
+  I.seeInTab(['Close the case', 'Date case was closed'], '12 Mar 2020');
+  I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
 });
