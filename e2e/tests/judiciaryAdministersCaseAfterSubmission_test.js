@@ -4,17 +4,14 @@ const orders = require('../fixtures/orders.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
+const mandatoryWithMultipleChildren = require('../fixtures/mandatoryWithMultipleChildren.json');
 
 let caseId;
 
 Feature('Judiciary case administration after submission');
 
 BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterMandatoryFields({multipleChildren: true});
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
+  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
@@ -30,7 +27,7 @@ Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);

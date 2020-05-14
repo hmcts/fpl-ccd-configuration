@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -26,6 +27,7 @@ public class ApplicantParty extends Party implements TelephoneContacts {
     private final Telephone mobileNumber;
     @NotBlank(message = "Enter a job title for the contact")
     private final String jobTitle;
+    @ToString.Exclude
     @NotBlank(message = "Enter a PBA number for the contact")
     private final String pbaNumber;
     private final String clientCode;

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -48,17 +51,18 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_2;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_4;
-import static uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService.DEFAULT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderGenerationService.class})
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, DraftCMOService.class, CommonCaseDataExtractionService.class,
+    JacksonAutoConfiguration.class, DraftCMOService.class, CaseDataExtractionService.class,
     CommonDirectionService.class, HearingVenueLookUpService.class, HearingBookingService.class,
     JsonOrdersLookupService.class, StandardDirectionOrderGenerationService.class, LookupTestConfig.class,
     FixedTimeConfiguration.class
@@ -133,9 +137,16 @@ class CaseManagementOrderGenerationServiceTest {
             .children1(emptyList())
             .dateSubmitted(NOW.toLocalDate())
             .respondents1(emptyList())
-            .applicants(emptyList())
+            .applicants(getApplicants())
             .schedule(Schedule.builder().includeSchedule("No").build())
-            .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder().build())));
+            .hearingDetails(List.of(element(HEARING_ID, HearingBooking.builder().build())))
+            .allocatedJudge(testJudge());
+    }
+
+    private List<Element<Applicant>> getApplicants() {
+        return wrapElements(Applicant.builder()
+            .party(ApplicantParty.builder().organisationName("").build())
+            .build());
     }
 
     private CaseData caseDataWithRespondentDirections(List<Element<Direction>> respondentDirections) {
@@ -149,11 +160,11 @@ class CaseManagementOrderGenerationServiceTest {
     private DocmosisCaseManagementOrder caseManagementOrderWithEmptyFields(DocmosisCaseManagementOrder templateData) {
         return DocmosisCaseManagementOrder.builder()
             .representatives(List.of(DocmosisRepresentative.builder()
-                .name(DEFAULT)
+                .name(StringUtils.EMPTY)
                 .representedBy(List.of(DocmosisRepresentedBy.builder()
-                    .name(DEFAULT)
-                    .email(DEFAULT)
-                    .phoneNumber(DEFAULT)
+                    .name(StringUtils.EMPTY)
+                    .email(StringUtils.EMPTY)
+                    .phoneNumber(StringUtils.EMPTY)
                     .build()))
                 .build()))
             .schedule(Schedule.builder().includeSchedule("No").build())
@@ -164,7 +175,6 @@ class CaseManagementOrderGenerationServiceTest {
                 .build())
             .courtName("Family Court")
             .familyManCaseNumber("123")
-            .dateOfIssue(formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(NOW.plusWeeks(26).toLocalDate(), FormatStyle.LONG))
             .respondents(emptyList())
             .children(emptyList())
@@ -178,6 +188,7 @@ class CaseManagementOrderGenerationServiceTest {
             .directions(emptyList())
             .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
+            .allocatedJudge(testDocmosisJudge())
             .build();
     }
 
@@ -268,14 +279,12 @@ class CaseManagementOrderGenerationServiceTest {
 
     private DocmosisCaseManagementOrder expectedCaseManagementOrder(DocmosisCaseManagementOrder templateData) {
         String hearingDateOnDifferentDays = "";
-
         return DocmosisCaseManagementOrder.builder()
             .courtName("Family Court")
             .familyManCaseNumber("123")
             .dateOfIssue(formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG))
             .complianceDeadline(formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG))
             .children(getExpectedChildren())
-            .numberOfChildren(getExpectedChildren().size())
             .applicantName("Bran Stark")
             .respondents(getExpectedRespondents())
             .respondentsProvided(true)
@@ -285,6 +294,8 @@ class CaseManagementOrderGenerationServiceTest {
                 .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
                 .preHearingAttendance(formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "d MMMM yyyy, h:mma"))
                 .hearingTime(getHearingTime())
+                .hearingJudgeTitleAndName("Her Honour Judge Law")
+                .hearingLegalAdvisorName("Peter Parker")
                 .build())
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Law")
@@ -298,6 +309,7 @@ class CaseManagementOrderGenerationServiceTest {
             .crest(templateData.getCrest())
             .draftbackground(templateData.getDraftbackground())
             .courtseal(templateData.getCourtseal())
+            .allocatedJudge(testDocmosisJudge())
             .build();
     }
 

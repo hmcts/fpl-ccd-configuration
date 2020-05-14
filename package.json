@@ -4,16 +4,17 @@
   "description": "FPL CCD e2e tests",
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "codeceptjs": "2.6.2",
+    "codeceptjs": "2.6.4",
     "dateformat": "^3.0.3",
-    "eslint": "6.7.2",
+    "eslint": "7.0.0",
     "eslint-plugin-codeceptjs": "^1.3.0",
     "glob": "^7.1.6",
     "husky": "^3.1.0",
     "mocha-junit-reporter": "^1.23.3",
     "mocha-multi": "^1.1.3",
-    "mochawesome": "^6.1.0",
-    "puppeteer": "^2.0.0"
+    "mochawesome": "^6.1.1",
+    "puppeteer": "2.0.0",
+    "axios": "^0.19.2"
   },
   "scripts": {
     "lint": "eslint e2e",

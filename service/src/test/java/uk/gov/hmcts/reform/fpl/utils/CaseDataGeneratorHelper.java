@@ -61,12 +61,14 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 public class CaseDataGeneratorHelper {
 
@@ -161,7 +163,7 @@ public class CaseDataGeneratorHelper {
     public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
         return Order.builder()
             .dateOfIssue("29 November 2019")
-            .directions(ElementUtils.wrapElements(Direction.builder()
+            .directions(wrapElements(Direction.builder()
                     .directionType("Test SDO type 1")
                     .directionText("Test body 1")
                     .directionNeeded(YES.getValue())
@@ -174,6 +176,9 @@ public class CaseDataGeneratorHelper {
                     .directionNeeded(YES.getValue())
                     .dateToBeCompletedBy(today)
                     .assignee(ALL_PARTIES)
+                    .build(),
+                Direction.builder()
+                    .directionNeeded(NO.getValue())
                     .build()
             ))
             .orderStatus(status)
@@ -358,10 +363,10 @@ public class CaseDataGeneratorHelper {
         return wrapElements(
             createCustomDirection(ALL_PARTIES),
             createCustomDirection(LOCAL_AUTHORITY),
-            createCustomDirection(CAFCASS),
-            createCustomDirection(COURT),
             createCustomDirection(PARENTS_AND_RESPONDENTS),
-            createCustomDirection(OTHERS)
+            createCustomDirection(CAFCASS),
+            createCustomDirection(OTHERS),
+            createCustomDirection(COURT)
         );
     }
 
@@ -412,6 +417,7 @@ public class CaseDataGeneratorHelper {
             .children1(createPopulatedChildren(dateTime.toLocalDate()))
             .hearingDetails(createHearingBookingsFromInitialDate(dateTime))
             .dateSubmitted(LocalDate.now())
+            .dateOfIssue(LocalDate.now())
             .respondents1(respondents)
             .others(others)
             .solicitor(createSolicitor())
@@ -433,6 +439,7 @@ public class CaseDataGeneratorHelper {
             .respondentDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
             .caseManagementOrder(createApprovedCMO())
             .servedCaseManagementOrders(wrapElements(CaseManagementOrder.builder().build()))
+            .allocatedJudge(testJudge())
             .build();
     }
 

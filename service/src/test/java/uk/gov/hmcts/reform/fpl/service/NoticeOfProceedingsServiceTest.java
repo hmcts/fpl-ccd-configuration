@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -46,39 +47,23 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopula
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingVenueLookUpService.class,
-    HearingBookingService.class, FixedTimeConfiguration.class})
+@SpringBootTest(classes = {NoticeOfProceedingsService.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, LookupTestConfig.class, HearingBookingService.class,
+    HearingVenueLookUpService.class, CaseDataExtractionService.class, FixedTimeConfiguration.class
+})
 class NoticeOfProceedingsServiceTest {
-
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String COURT_NAME = "Example Court";
-    private static final String COURT_EMAIL = "example@court.com";
-    private static final String COURT_CODE = "11";
-    private static final String CONFIG = String.format("%s=>%s:%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL,
-        COURT_CODE);
     private LocalDate futureDate;
     private List<Element<Child>> children;
-
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
     @Autowired
     private Time time;
 
     @Autowired
-    private HearingBookingService hearingBookingService;
-
-    @Autowired
-    private HearingVenueLookUpService hearingVenueLookUpService;
-
-    private CommonCaseDataExtractionService commonCaseDataExtractionService = new CommonCaseDataExtractionService();
-
-
     private NoticeOfProceedingsService noticeOfProceedingService;
 
     @BeforeEach
     void setup() {
-        noticeOfProceedingService = new NoticeOfProceedingsService(hearingBookingService, hmctsCourtLookupConfiguration,
-            hearingVenueLookUpService, commonCaseDataExtractionService, time);
         futureDate = time.now().toLocalDate().plusDays(1);
         children = createPopulatedChildren(time.now().toLocalDate());
     }
@@ -214,7 +199,7 @@ class NoticeOfProceedingsServiceTest {
             .build();
 
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("courtName")).isEqualTo("Example Court");
+        assertThat(templateData.get("courtName")).isEqualTo("Family Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -19,7 +20,9 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
@@ -47,6 +50,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.time.format.DateTimeFormatter.ofLocalizedDate;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,14 +73,16 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long CASE_ID = 1L;
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-        .localizedBy(Locale.UK);
+    private static final DateTimeFormatter FORMATTER = ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK);
+    private static final String DRAFT_CMO_FILE_NAME = "draft-case-management-order.pdf";
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -98,7 +104,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToStartCallbackShouldPrepareCaseForCMO() {
+    void aboutToStartCallbackShouldPrepareCaseForCMOWhenNoCaseManagementOrder() {
         Map<String, Object> data = Map.of(
             HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
             "respondents1", createRespondents(),
@@ -116,6 +122,38 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(callbackResponse.getData().get("others_label"))
             .isEqualTo("Person 1 - Kyle Stafford\nOther person 1 - Sarah Simpson\n");
+
+        assertThat(callbackResponse.getData()).doesNotContainKeys("schedule", "recitals", "orderAction");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldAddCCDFieldsWhenCaseManagementOrderIsNotNull() {
+        Schedule schedule = Schedule.builder().includeSchedule("Yes").build();
+        List<Element<Recital>> recitals = wrapElements(Recital.builder().title("title").build());
+        OrderAction action = OrderAction.builder().type(ActionType.SELF_REVIEW).build();
+        Direction direction = Direction.builder().assignee(ALL_PARTIES).directionType("title").build();
+        List<Element<Direction>> directions = wrapElements(direction);
+
+        CaseManagementOrder order = CaseManagementOrder.builder()
+            .schedule(schedule)
+            .recitals(recitals)
+            .action(action)
+            .directions(directions)
+            .build();
+
+        Map<String, Object> data = Map.of(
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
+            "respondents1", createRespondents(),
+            "others", createOthers(),
+            CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), order);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails(data));
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getSchedule()).isEqualTo(schedule);
+        assertThat(caseData.getRecitals()).isEqualTo(recitals);
+        assertThat(caseData.getOrderAction()).isEqualTo(action);
+        assertThat(caseData.getAllParties()).isEqualTo(directions);
     }
 
     @Test
@@ -128,12 +166,11 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(getCaseDetails());
 
-        verify(uploadService).uploadPDF(pdf, "draft-case-management-order.pdf");
+        verify(uploadService).uploadPDF(pdf, DRAFT_CMO_FILE_NAME);
 
         assertThat(callbackResponse.getData()).containsKey(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
         assertThat(getDocumentReference(callbackResponse)).isEqualTo(expectedDocument());
-        //need to pass in captor for draft image string
-        assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplateData(captor.getValue()));
+        assertThat(captor.getValue()).isEqualToComparingFieldByField(expectedTemplateData());
     }
 
     @Test
@@ -148,7 +185,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
         assertThat(caseManagementOrder.getHearingDate()).isEqualTo(now().plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
-        assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo("draft-case-management-order.pdf");
+        assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo(DRAFT_CMO_FILE_NAME);
         assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");
     }
 
@@ -190,17 +227,22 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .dateToBeCompletedBy(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
             .build()));
 
+        caseDetails.getData().put("allocatedJudge", testJudge());
+
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
             CaseManagementOrder.builder().build());
+
+        caseDetails.getData().put("dateOfIssue", dateNow());
 
         return caseDetails;
     }
 
-    private DocmosisCaseManagementOrder expectedTemplateData(DocmosisCaseManagementOrder order) {
+    private DocmosisCaseManagementOrder expectedTemplateData() {
         return DocmosisCaseManagementOrder.builder()
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .judgeAndLegalAdvisor(expectedJudgeAndLegalAdvisor())
+            .allocatedJudge(testDocmosisJudge())
             .dateOfIssue(formatLocalDateToString(dateNow(), FormatStyle.LONG))
             .complianceDeadline("18 September 2020")
             .representatives(expectedRepresentatives())
@@ -209,8 +251,8 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .children(expectedChildren())
             .applicantName("London Borough of Southwark")
             .hearingBooking(expectedHearing())
-            .crest(order.getCrest())
-            .draftbackground(order.getDraftbackground())
+            .crest("[userImage:crest.png]")
+            .draftbackground("[userImage:draft-watermark.png]")
             .recitals(expectedRecitals())
             .recitalsProvided(true)
             .directions(expectedDirections())
@@ -326,7 +368,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         data.put(HEARING_DATE_LIST.getKey(), dynamicHearingDates);
         data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder()
-            .orderDoc(DocumentReference.builder().filename("draft-case-management-order.pdf").build())
+            .orderDoc(DocumentReference.builder().filename(DRAFT_CMO_FILE_NAME).build())
             .status(SELF_REVIEW)
             .action(OrderAction.builder().changeRequestedByJudge("Changes").build())
             .build());

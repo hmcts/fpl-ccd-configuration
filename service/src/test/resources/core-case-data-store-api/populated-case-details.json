@@ -488,6 +488,7 @@
         "hearingNeedsDetails": "ok"
       }
     }],
-    "familyManCaseNumber": "12345"
+    "familyManCaseNumber": "12345",
+    "amountToPay": "2055.0"
   }
 }
