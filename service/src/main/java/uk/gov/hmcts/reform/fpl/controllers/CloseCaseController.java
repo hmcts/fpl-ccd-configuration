@@ -38,6 +38,7 @@ public class CloseCaseController {
         + "   •  issue a C21 (blank order)\n"
         + "   •  submit a C2 application\n";
     private static final String LABEL_FIELD = "close_case_label";
+    private static final String CLOSE_CASE_FIELD = "closeCase";
     private final ValidateGroupService validatorService;
     private final ChildrenService childrenService;
     private final ObjectMapper mapper;
@@ -52,7 +53,7 @@ public class CloseCaseController {
         // TODO: 11/05/2020 Determine YES or NO based on if all children have a final order
         boolean displayFinalOrder = childrenService.allChildrenHaveFinalOrder(caseData.getAllChildren());
 
-        data.put("closeCase", CloseCase.builder().showFullReason(YesNo.from(displayFinalOrder)).build());
+        data.put(CLOSE_CASE_FIELD, CloseCase.builder().showFullReason(YesNo.from(displayFinalOrder)).build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
