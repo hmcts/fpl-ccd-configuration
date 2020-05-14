@@ -95,6 +95,7 @@ Scenario('Local Authority sends draft to Judge who requests corrections', async 
 });
 
 Scenario('Local Authority sends draft to Judge who approves CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
 

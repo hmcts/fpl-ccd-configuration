@@ -14,7 +14,7 @@ const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   I.seeInTab(['Order actions', 'Is this ready to be sent to parties?'], 'Yes, send this to all parties');
   I.seeInTab(['Order actions', 'What is the next hearing?'], 'Final hearing');
   I.seeInTab(['Date of issue'], getFormattedDateNow());
-  I.seeInTab(['Which hearing is this order for?'], '1 Jan 2050');
+  I.seeInTab(['Which hearing is this order for?'], '1 Jan 2020');
   I.seeInTab(['Directions 1', 'Title'], 'Mock title');
   I.seeInTab(['Directions 1', 'Description'], 'Mock description');
   I.seeInTab(['Directions 1', 'For'], 'All parties');
