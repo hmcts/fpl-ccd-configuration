@@ -45,7 +45,7 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @MockBean
+    @MockBean(name = "uk.gov.hmcts.reform.rd.client.OrganisationApi")
     private OrganisationApi organisationApi;
 
     RepresentativeMidEventControllerTest() {
