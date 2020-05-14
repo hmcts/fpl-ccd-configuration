@@ -103,6 +103,20 @@ module.exports = function () {
       }
     },
 
+    dontSeeInTab(pathToField) {
+      let path = [].concat(pathToField);
+      let fieldName = path.splice(-1, 1)[0];
+      let selector = '//div[@class="tabs-panel"]';
+
+      path.forEach(step => {
+        selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
+      }, this);
+
+      let fieldSelector = `${selector}//*[@class="complex-panel-simple-field" and .//th/span[text()="${fieldName}"]]`;
+
+      this.dontSeeElement(locate(fieldSelector));
+    },
+
     seeCaseInSearchResult(caseId) {
       this.seeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
     },
