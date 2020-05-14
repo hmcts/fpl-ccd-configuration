@@ -39,7 +39,7 @@ public class CloseCase {
 
     @JsonSetter("fullReason")
     public void setFullReason(CloseCaseReason fullReason) {
-        if (reason != null) {
+        if (fullReason != null) {
             this.reason = fullReason;
             this.showFullReason = YES;
         }
