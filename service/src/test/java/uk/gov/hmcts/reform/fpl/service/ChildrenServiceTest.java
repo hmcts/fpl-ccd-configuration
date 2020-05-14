@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -60,6 +62,32 @@ class ChildrenServiceTest {
         assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }
 
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnFalseWithEmptyOrNullList(List<Element<Child>> list) {
+        boolean result = service.allChildrenHaveFinalOrder(list);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenAtLeastOneChildDoesNotHaveFinalOrder() {
+        List<Element<Child>> children = List.of(buildChildWithFinalOrder(true), buildChildWithFinalOrder(false));
+
+        boolean result = service.allChildrenHaveFinalOrder(children);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenAllChildrenHaveFinalOrder() {
+        List<Element<Child>> children = List.of(buildChildWithFinalOrder(true), buildChildWithFinalOrder(true));
+
+        boolean result = service.allChildrenHaveFinalOrder(children);
+
+        assertThat(result).isTrue();
+    }
+
     @Test
     void shouldPopulateCaseDataMapWithNoWhenThereIsEmptyList() {
         List<Element<Child>> children = new ArrayList<>();
@@ -80,5 +108,11 @@ class ChildrenServiceTest {
                 .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                 .build())
             .build());
+    }
+
+    private Element<Child> buildChildWithFinalOrder(boolean finalOrder) {
+        Element<Child> childElement = childWithConfidentialFields(randomUUID());
+        childElement.getValue().setFinalOrderIssued(finalOrder ? "Yes" : "No");
+        return childElement;
     }
 }

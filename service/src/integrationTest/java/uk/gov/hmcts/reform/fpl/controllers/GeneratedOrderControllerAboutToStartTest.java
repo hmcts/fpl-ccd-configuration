@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 
 @ActiveProfiles("integration-test")
@@ -41,7 +43,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     }
 
     @Test
-    void aboutToStartShouldSetDateOfIssueAsTodayByDefault() {
+    void shouldSetDateOfIssueAsTodayByDefault() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
             .data(Map.of("familyManCaseNumber", "123"))
@@ -54,9 +56,10 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     }
 
     @Test
-    void aboutToStartShouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
+    void shouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of(
+            .data(Map.of(
+                "familyManCaseNumber", "123",
                 "allocatedJudge", Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Richards")
@@ -73,9 +76,10 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     }
 
     @Test
-    void aboutToStartShouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
+    void shouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of(
+            .data(Map.of(
+                "familyManCaseNumber", "123",
                 "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build()
             ))
             .build();
@@ -85,5 +89,35 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Submitted", "Gatekeeping", "PREPARE-FOR-HEARING"})
+    void shouldNotAutocompleteDocumentTypeWhenStateIsNotClosed(String state) {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "familyManCaseNumber", "123"
+                ))
+            .state(state)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+
+        assertThat(response.getData()).doesNotContainKey("orderTypeAndDocument");
+    }
+
+    @Test
+    void shouldAutocompleteDocumentTypeWithC21WhenStateIsClosed() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "familyManCaseNumber", "123"
+                ))
+            .state("CLOSED")
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getOrderTypeAndDocument().getType()).isEqualTo(BLANK_ORDER);
     }
 }

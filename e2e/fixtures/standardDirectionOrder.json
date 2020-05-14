@@ -619,12 +619,10 @@
     "respondentDirectionsCustom": [],
     "cafcassDirectionsHearingDate": "1 January 2050, 3:15pm",
     "documents_checklist_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+      "documentStatus": "Attached"
     },
     "documents_threshold_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+      "documentStatus": "Attached"
     },
     "otherPartiesDirectionsCustom": [],
     "localAuthorityDirectionsCustom": [],
@@ -632,23 +630,20 @@
     "otherPartiesDirectionsHearingDate": "1 January 2050, 3:15pm",
     "localAuthorityDirectionsHearingDate": "1 January 2050, 3:15pm",
     "documents_socialWorkCarePlan_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+      "documentStatus": "Attached"
     },
     "documents_socialWorkStatement_document": {
       "documentStatus": "Included in social work evidence template (SWET)"
     },
     "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+      "documentStatus": "Attached"
     },
     "documents_socialWorkChronology_document": {
       "statusReason": "mock reason",
       "documentStatus": "To follow"
     },
     "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+      "documentStatus": "Attached"
     }
   }
 }

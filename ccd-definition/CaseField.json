@@ -324,8 +324,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submissionConsentLabel",
-    "Label": " ",
+    "Label": "Declaration",
     "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "downloadApplicationForReviewHintLabel",
+    "Label": "**Download application** <br>Use this link to download and check the application before <br>sending:",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "draftApplicationDocument",
+    "FieldType": "Document",
+    "Label": " ",
     "SecurityClassification": "Public"
   },
   {
@@ -426,6 +442,14 @@
     "ID": "allocatedJudge",
     "Label": "Allocated Judge",
     "FieldType": "JudgeAndLegalAdvisor",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "allocatedJudgeLabel",
+    "Label": " ",
+    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {
@@ -1316,7 +1340,15 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "closeCase",
     "FieldType": "CloseCase",
-    "Label": " ",
+    "Label": "Close the case",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "deprivationOfLiberty",
+    "FieldType": "YesOrNo",
+    "Label": "Flag for whether a case was closed due to deprivation of liberty",
     "SecurityClassification": "Public"
   }
 ]
