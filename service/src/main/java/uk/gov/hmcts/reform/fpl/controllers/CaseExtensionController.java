@@ -56,6 +56,7 @@ public class CaseExtensionController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         eightWeekExtensionDate = caseCompletionDate.plusWeeks(8);
+
         caseDetails.getData().put("extensionDateEightWeeks", formatLocalDateToString(eightWeekExtensionDate,
                 DATE));
 
