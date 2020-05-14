@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;

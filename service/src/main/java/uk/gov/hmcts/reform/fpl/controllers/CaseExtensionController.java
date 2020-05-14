@@ -29,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseExtensionController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
-    private final String CASE_COMPLETION_DATE = "caseCompletionDate";
     private LocalDate caseCompletionDate;
     private LocalDate eightWeekExtensionDate;
 
@@ -38,7 +37,7 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if(isEmpty(caseData.getCaseCompletionDate())){
+        if (isEmpty(caseData.getCaseCompletionDate())) {
             caseCompletionDate = caseData.getDateSubmitted();
         } else {
             caseCompletionDate = caseData.getCaseCompletionDate();
@@ -71,24 +70,24 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         caseCompletionDate = getCaseCompletionDate(caseDetails);
-        caseDetails.getData().put(CASE_COMPLETION_DATE, caseCompletionDate);
+        caseDetails.getData().put("caseCompletionDate", caseCompletionDate);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
     }
 
-    private LocalDate getCaseCompletionDate(CaseDetails caseDetails){
+    private LocalDate getCaseCompletionDate(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if(caseDetails.getData().get("caseExtensionTimeList").equals("EightWeekExtension")){
-            if(caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("EightWeekExtension")) {
-               return eightWeekExtensionDate;
+        if (caseDetails.getData().get("caseExtensionTimeList").equals("EightWeekExtension")) {
+            if (caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("EightWeekExtension")) {
+                return eightWeekExtensionDate;
             } else {
                 return caseData.getEightWeeksExtensionDateOther();
             }
         } else {
-           return caseData.getExtensionDateOther();
+            return caseData.getExtensionDateOther();
         }
     }
 }
