@@ -95,7 +95,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         given(noticeOfProceedingsService.getNoticeOfProceedingTemplateData(any()))
             .willReturn(templateData);
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(anyMap(), any()))
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), any()))
             .willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any()))
             .willReturn(document);
