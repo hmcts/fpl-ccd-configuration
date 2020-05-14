@@ -73,7 +73,6 @@ public class CaseExtensionController {
         caseCompletionDate = getCaseCompletionDate(caseDetails);
         caseDetails.getData().put(CASE_COMPLETION_DATE, caseCompletionDate);
 
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
