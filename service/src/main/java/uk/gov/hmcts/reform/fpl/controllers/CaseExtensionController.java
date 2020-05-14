@@ -37,11 +37,7 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (isEmpty(caseData.getCaseCompletionDate())) {
-            caseCompletionDate = caseData.getDateSubmitted();
-        } else {
-            caseCompletionDate = caseData.getCaseCompletionDate();
-        }
+        caseCompletionDate = getCaseCompletionDate(caseData);
 
         caseDetails.getData().put("shouldBeCompletedByDate", formatLocalDateToString(caseCompletionDate, DATE));
 
@@ -55,7 +51,7 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        eightWeekExtensionDate = caseCompletionDate.plusWeeks(8);
+        eightWeekExtensionDate = getCaseCompletionDateFor8WeekExtension(caseData);
 
         caseDetails.getData().put("extensionDateEightWeeks", formatLocalDateToString(eightWeekExtensionDate,
                 DATE));
@@ -83,12 +79,24 @@ public class CaseExtensionController {
 
         if (caseDetails.getData().get("caseExtensionTimeList").equals("EightWeekExtension")) {
             if (caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("EightWeekExtension")) {
-                return eightWeekExtensionDate;
+                return getCaseCompletionDateFor8WeekExtension(caseData);
             } else {
                 return caseData.getEightWeeksExtensionDateOther();
             }
         } else {
             return caseData.getExtensionDateOther();
+        }
+    }
+
+    private LocalDate getCaseCompletionDateFor8WeekExtension(CaseData caseData) {
+        return getCaseCompletionDate(caseData).plusWeeks(8);
+    }
+
+    private LocalDate getCaseCompletionDate(CaseData caseData) {
+        if (isEmpty(caseData.getCaseCompletionDate())) {
+            return caseData.getDateSubmitted();
+        } else {
+            return caseData.getCaseCompletionDate();
         }
     }
 }
