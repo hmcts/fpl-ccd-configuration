@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparingInt;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.groupingBy;
@@ -85,7 +86,7 @@ public class Directions {
     }
 
     private List<Element<Direction>> assignDirections(List<Element<Direction>> directions, DirectionAssignee assignee) {
-        return ofNullable(directions).map(values -> addAssignee(values, assignee)).orElse(null);
+        return ofNullable(directions).map(values -> addAssignee(values, assignee)).orElse(emptyList());
     }
 
     private List<Element<Direction>> addAssignee(List<Element<Direction>> directions, DirectionAssignee assignee) {

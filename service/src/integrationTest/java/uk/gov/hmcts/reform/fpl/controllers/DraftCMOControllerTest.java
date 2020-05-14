@@ -104,17 +104,22 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         List<String> expected = List.of(formatLocalDateToMediumStyle(5), formatLocalDateToMediumStyle(2));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails(data));
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        Map<String, Object> responseData = callbackResponse.getData();
+        CaseData caseData = mapper.convertValue(responseData, CaseData.class);
 
         assertThat(getHearingDates(caseData.getCmoHearingDateList().getListItems())).isEqualTo(expected);
 
-        assertThat(callbackResponse.getData().get("respondents_label"))
+        assertThat(responseData.get("respondents_label"))
             .isEqualTo("Respondent 1 - Timothy Jones\nRespondent 2 - Sarah Simpson\n");
 
-        assertThat(callbackResponse.getData().get("others_label"))
+        assertThat(responseData.get("others_label"))
             .isEqualTo("Person 1 - Kyle Stafford\nOther person 1 - Sarah Simpson\n");
 
-        assertThat(callbackResponse.getData()).doesNotContainKeys("schedule", "recitals", "orderAction");
+        assertThat(responseData.get("recitals")).asList().isEmpty();
+        assertThat(responseData).doesNotContainKeys("schedule", "orderAction");
+
+        Stream.of(DirectionAssignee.values()).forEach(assignee ->
+            assertThat(responseData).doesNotContainKey(assignee.toCaseManagementOrderDirectionField()));
     }
 
     @Test

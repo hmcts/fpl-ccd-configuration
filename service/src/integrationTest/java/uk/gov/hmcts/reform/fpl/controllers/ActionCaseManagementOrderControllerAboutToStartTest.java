@@ -97,8 +97,11 @@ class ActionCaseManagementOrderControllerAboutToStartTest extends AbstractContro
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getCaseManagementOrder())
-            .isEqualTo(CaseManagementOrder.builder().directions(emptyList()).build());
+        assertThat(caseData.getCaseManagementOrder()).isEqualTo(emptyCmo());
+    }
+
+    private CaseManagementOrder emptyCmo() {
+        return CaseManagementOrder.builder().directions(emptyList()).recitals(emptyList()).build();
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {
