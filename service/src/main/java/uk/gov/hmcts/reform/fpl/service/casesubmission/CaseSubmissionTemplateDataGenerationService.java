@@ -57,6 +57,7 @@ import java.util.Objects;
 
 import static java.lang.String.join;
 import static java.time.LocalDate.parse;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -115,14 +116,21 @@ public class CaseSubmissionTemplateDataGenerationService
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(buildDocmosisAnnexDocuments(caseData))
-            .userFullName(userDetailsService.getUserName())
-            .courtseal(getCourtSealData());
+            .userFullName(userDetailsService.getUserName());
 
         return applicationFormBuilder.build();
     }
 
     public void populateCaseNumber(final DocmosisCaseSubmission submittedCase, final long caseNumber) {
         submittedCase.setCaseNumber(String.valueOf(caseNumber));
+    }
+
+    public void populateDraftWaterOrCourtSeal(final DocmosisCaseSubmission caseSubmission, final boolean isDraft) {
+        if (isDraft) {
+            caseSubmission.setDraftWaterMark(getDraftWaterMarkData());
+        } else {
+            caseSubmission.setCourtSeal(getCourtSealData());
+        }
     }
 
     private String getApplicantsOrganisations(final List<Element<Applicant>> applicants) {
@@ -573,11 +581,11 @@ public class CaseSubmissionTemplateDataGenerationService
 
     private List<DocmosisSocialWorkOther> formatAnnexDocumentDisplay(
         final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
-        return otherSocialWorkDocuments.stream()
+        return isNotEmpty(otherSocialWorkDocuments) ? otherSocialWorkDocuments.stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(this::buildDocmosisSocialWorkOther)
-            .collect(toList());
+            .collect(toList()) : emptyList();
     }
 
     private DocmosisSocialWorkOther buildDocmosisSocialWorkOther(DocumentSocialWorkOther document) {
