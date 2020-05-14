@@ -82,7 +82,7 @@ module "fpl-performance-alert" {
 
   alert_name                 = "${var.product}-performance-alert"
   alert_desc                 = "Requests that took longer than 1 seconds to complete"
-  app_insights_query         = "requests | where url !contains '/health' and success == 'True' and duration > 1000 | project timestamp, name, url, duration | sort by duration nulls last"
+  app_insights_query         = "requests | where url !contains '/health' and success == 'True' and duration > 1000 | project timestamp, name, operation_Id, duration | sort by duration nulls last"
   custom_email_subject       = "Alert: performance errors"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
