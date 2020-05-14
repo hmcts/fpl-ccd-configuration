@@ -38,7 +38,6 @@ public class NoticeOfProceedingsService {
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final Time time;
-    private final ObjectMapper mapper;
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
                                                                    List<DocmosisTemplates> templateTypes) {
