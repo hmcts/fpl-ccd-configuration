@@ -77,7 +77,7 @@
     "ListElementCode": "judgeEmailAddress",
     "FieldType": "Email",
     "ElementLabel": "Email Address",
-    "SecurityClassification": "Public",
-    "FieldShowCondition":"judgeTitle!=\"\""
+    "FieldShowCondition":"judgeTitle!=\"\"",
+    "SecurityClassification": "Public"
   }
 ]
