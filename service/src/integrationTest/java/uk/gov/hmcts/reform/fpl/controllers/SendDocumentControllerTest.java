@@ -75,7 +75,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockBean(name = "uk.gov.hmcts.reform.sendletter.api.SendLetterApi")
     private SendLetterApi sendLetterApi;
 
     @MockBean
