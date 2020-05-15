@@ -78,9 +78,9 @@ public class CaseExtensionController {
             if (caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("EightWeekExtension")) {
                 return getCaseCompletionDateFor8WeekExtension(caseData);
             }
-                return caseData.getEightWeeksExtensionDateOther();
-            }
-            return caseData.getExtensionDateOther();
+            return caseData.getEightWeeksExtensionDateOther();
+        }
+        return caseData.getExtensionDateOther();
     }
 
     private LocalDate getCaseCompletionDateFor8WeekExtension(CaseData caseData) {
