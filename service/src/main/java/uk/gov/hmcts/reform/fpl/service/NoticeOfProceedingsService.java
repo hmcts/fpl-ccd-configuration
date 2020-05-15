@@ -79,8 +79,8 @@ public class NoticeOfProceedingsService extends DocmosisTemplateDataGeneration<D
             .preHearingAttendance(caseDataExtractionService.extractPrehearingAttendance(
                 prioritisedHearingBooking))
             .hearingTime(caseDataExtractionService.getHearingTime(prioritisedHearingBooking))
-            .crest(getCourtSealData())
-            .courtseal(getCrestData())
+            .crest(getCrestData())
+            .courtseal(getCourtSealData())
             .build();
     }
 

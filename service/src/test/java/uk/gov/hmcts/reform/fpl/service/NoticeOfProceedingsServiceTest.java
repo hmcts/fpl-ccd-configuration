@@ -199,20 +199,25 @@ class NoticeOfProceedingsServiceTest {
             .build();
 
         DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getTemplateData(caseData);
-        assertThat(templateData.getCourtName()).isEqualTo("Family Court");
-        assertThat(templateData.getFamilyManCaseNumber()).isEqualTo("123");
-        assertThat(templateData.getApplicantName()).isEqualTo("Bran Stark");
-        assertThat(templateData.getOrderTypes()).isEqualTo("Care order, Education supervision order");
-        assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
-        assertThat(templateData.getHearingDate()).isEqualTo(formatLocalDateToString(futureDate, FormatStyle.LONG));
-        assertThat(templateData.getHearingVenue())
-            .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
-        assertThat(templateData.getPreHearingAttendance()).isEqualTo("8:30am");
-        assertThat(templateData.getHearingTime()).isEqualTo("9:30am - 11:30am");
-        assertThat(templateData.getJudgeTitleAndName()).isEqualTo("His Honour Judge Samuel Davidson");
-        assertThat(templateData.getLegalAdvisorName()).isEqualTo("John Bishop");
-        assertThat(templateData.getCrest()).isEqualTo("[userImage:crest.png]");
-        assertThat(templateData.getCourtseal()).isEqualTo("[userImage:familycourtseal.png]");
+
+        DocmosisNoticeOfProceeding expectedData = DocmosisNoticeOfProceeding.builder()
+            .courtName("Family Court")
+            .familyManCaseNumber("123")
+            .applicantName("Bran Stark")
+            .orderTypes("Care order, Education supervision order")
+            .childrenNames("Bran Stark, Sansa Stark and Jon Snow")
+            .hearingDate(formatLocalDateToString(futureDate, FormatStyle.LONG))
+            .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
+            .preHearingAttendance("8:30am")
+            .hearingTime("9:30am - 11:30am")
+            .judgeTitleAndName("His Honour Judge Samuel Davidson")
+            .legalAdvisorName("John Bishop")
+            .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
+            .crest("[userImage:crest.png]")
+            .courtseal("[userImage:familycourtseal.png]")
+            .build();
+
+        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
     }
 
     private JudgeAndLegalAdvisor createJudgeAndLegalAdvisor() {
