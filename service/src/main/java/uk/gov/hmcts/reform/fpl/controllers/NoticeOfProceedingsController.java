@@ -101,7 +101,7 @@ public class NoticeOfProceedingsController {
         caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         DocmosisNoticeOfProceeding templateData = noticeOfProceedingsService
-            .getNoticeOfProceedingTemplateData(caseData);
+            .getTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 

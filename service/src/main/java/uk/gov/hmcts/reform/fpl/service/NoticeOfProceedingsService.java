@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class NoticeOfProceedingsService {
+public class NoticeOfProceedingsService extends DocmosisTemplateDataGeneration<DocmosisNoticeOfProceeding> {
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
@@ -56,7 +56,8 @@ public class NoticeOfProceedingsService {
         return removedDocumentBundles.build();
     }
 
-    public DocmosisNoticeOfProceeding getNoticeOfProceedingTemplateData(CaseData caseData) {
+    @Override
+    public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData) {
 
         HearingBooking prioritisedHearingBooking = hearingBookingService
             .getMostUrgentHearingBooking(caseData.getHearingDetails());

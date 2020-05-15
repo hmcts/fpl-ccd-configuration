@@ -104,7 +104,7 @@ class NoticeOfProceedingsServiceTest {
                 .build())
             .build();
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getTemplateData(caseData);
         assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
     }
 
@@ -129,7 +129,7 @@ class NoticeOfProceedingsServiceTest {
                 .build())
             .build();
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getTemplateData(caseData);
         assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark");
     }
 
@@ -148,7 +148,7 @@ class NoticeOfProceedingsServiceTest {
                 .orderType(ImmutableList.of(CARE_ORDER)).build())
             .build();
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getTemplateData(caseData);
         assertThat(templateData.getJudgeTitleAndName()).isEqualTo("James Nelson (JP)");
     }
 
@@ -163,7 +163,7 @@ class NoticeOfProceedingsServiceTest {
                 .proceedingTypes(emptyList())
                 .build())
             .build();
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getTemplateData(caseData);
         assertThat(templateData.getJudgeTitleAndName()).isEqualTo("");
     }
 
@@ -179,7 +179,7 @@ class NoticeOfProceedingsServiceTest {
                 .build())
             .build();
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getTemplateData(caseData);
         assertThat(templateData.getApplicantName()).isEqualTo("Bran Stark");
     }
 
@@ -198,7 +198,7 @@ class NoticeOfProceedingsServiceTest {
                 )).build())
             .build();
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingService.getTemplateData(caseData);
         assertThat(templateData.getCourtName()).isEqualTo("Family Court");
         assertThat(templateData.getFamilyManCaseNumber()).isEqualTo("123");
         assertThat(templateData.getApplicantName()).isEqualTo("Bran Stark");

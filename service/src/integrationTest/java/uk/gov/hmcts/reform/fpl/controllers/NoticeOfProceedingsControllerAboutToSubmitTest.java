@@ -59,7 +59,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
 
-        given(noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData))
+        given(noticeOfProceedingsService.getTemplateData(caseData))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
@@ -92,7 +92,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
 
-        given(noticeOfProceedingsService.getNoticeOfProceedingTemplateData(any()))
+        given(noticeOfProceedingsService.getTemplateData(any()))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), any()))
             .willReturn(docmosisDocument);
