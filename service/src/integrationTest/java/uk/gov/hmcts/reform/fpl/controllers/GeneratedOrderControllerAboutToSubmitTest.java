@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
@@ -27,6 +28,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
+import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
@@ -48,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -96,11 +100,11 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .order(GeneratedOrder.builder()
-                .title("Example Order")
-                .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                .build()));
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .order(GeneratedOrder.builder()
+                    .title("Example Order")
+                    .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                    .build()));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -156,9 +160,9 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM, judgeAndLegalAdvisor)
-            .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -175,9 +179,9 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
-            .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .orderMonths(14));
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .orderMonths(14));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -246,6 +250,54 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
                 .children1(createChildren("Fred", "John"))
                 .orderAppliesToAllChildren("Yes")
                 .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+        );
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsOnlyNulls();
+    }
+
+    @Test
+    void shouldNotSetFinalOrderIssuedForBlankOrder() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .children1(createChildren("Fred", "John"))
+                .orderAppliesToAllChildren("Yes")
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+                .order(GeneratedOrder.builder()
+                    .title("Example Order")
+                    .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                    .build())
+        );
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsOnlyNulls();
+    }
+
+    @Test
+    void shouldNotSetFinalOrderIssuedForEmergencyProtectionOrder() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(EMERGENCY_PROTECTION_ORDER, null, judgeAndLegalAdvisor)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .children1(createChildren("Fred", "John"))
+                .orderAppliesToAllChildren("Yes")
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+                .epoChildren(EPOChildren.builder().descriptionNeeded("No").build())
+                .epoType(EPOType.PREVENT_REMOVAL)
+                .epoPhrase(EPOPhrase.builder().includePhrase("PHRASE").build())
+                .epoEndDate(now())
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
