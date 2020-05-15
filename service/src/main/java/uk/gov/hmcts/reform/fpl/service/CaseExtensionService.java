@@ -25,10 +25,10 @@ public class CaseExtensionService {
     }
 
     public LocalDate getCaseCompletionDateFor8WeekExtension(CaseData caseData) {
-        return getShouldBeCompletedByDate(caseData).plusWeeks(8);
+        return getCaseShouldBeCompletedByDate(caseData).plusWeeks(8);
     }
 
-    public LocalDate getShouldBeCompletedByDate(CaseData caseData) {
+    public LocalDate getCaseShouldBeCompletedByDate(CaseData caseData) {
         return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted());
     }
 }
