@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -81,8 +79,8 @@ public class NoticeOfProceedingsService extends DocmosisTemplateDataGeneration<D
             .preHearingAttendance(caseDataExtractionService.extractPrehearingAttendance(
                 prioritisedHearingBooking))
             .hearingTime(caseDataExtractionService.getHearingTime(prioritisedHearingBooking))
-            .crest(CREST.getValue())
-            .courtseal(COURT_SEAL.getValue())
+            .crest(getCourtSealData())
+            .courtseal(getCrestData())
             .build();
     }
 
