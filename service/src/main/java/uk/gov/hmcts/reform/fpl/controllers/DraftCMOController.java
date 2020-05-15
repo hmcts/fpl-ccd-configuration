@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -51,9 +52,10 @@ public class DraftCMOController {
             caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
         }
 
-        caseDetails.getData().put(HEARING_DATE_LIST.getKey(), caseManagementOrderService
-            .getHearingDateDynamicList(caseData.getHearingDetails(), caseManagementOrder));
+        DynamicList hearingDateDynamicList = caseManagementOrderService
+            .getHearingDateDynamicList(caseData.getHearingDetails(), caseManagementOrder);
 
+        caseDetails.getData().put(HEARING_DATE_LIST.getKey(), hearingDateDynamicList);
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
 

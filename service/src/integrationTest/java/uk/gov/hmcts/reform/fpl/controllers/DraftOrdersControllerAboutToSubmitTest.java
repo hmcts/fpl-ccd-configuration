@@ -83,6 +83,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME)).willReturn(DOCUMENT);
     }
 
+    //TODO: improve test to assert all directions are added back to case details with complete data
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
         UUID directionId = UUID.randomUUID();
@@ -131,6 +132,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
         assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isNotNull();
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
+        assertThat(caseData.getLocalAuthorityDirections()).isEqualTo(fullyPopulatedDirection);
     }
 
     @Test
@@ -159,8 +161,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
 
-        assertThat(response.getErrors())
-            .containsOnly("You need to enter the allocated judge.");
+        assertThat(response.getErrors()).containsOnly("You need to enter the allocated judge.");
     }
 
     private List<Element<Direction>> buildDirectionWithShowHideValuesRemoved(UUID uuid) {
@@ -195,25 +196,17 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .data(Map.of(
-                    HEARING_DETAILS_KEY, List.of(
-                        Element.builder()
-                            .value(HearingBooking.builder()
-                                .startDate(HEARING_START_DATE)
-                                .endDate(HEARING_END_DATE)
-                                .build())
-                            .build()),
-                    "respondents1", List.of(
-                        Map.of(
-                            "id", "",
-                            "value", Respondent.builder()
-                                .party(RespondentParty.builder()
-                                    .dateOfBirth(dateNow().plusDays(1))
-                                    .lastName("Moley")
-                                    .relationshipToChild("Uncle")
-                                    .build())
-                                .build()
-                        )
-                    ),
+                    HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
+                        .startDate(HEARING_START_DATE)
+                        .endDate(HEARING_END_DATE)
+                        .build()),
+                    "respondents1", wrapElements(Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .dateOfBirth(dateNow().plusDays(1))
+                            .lastName("Moley")
+                            .relationshipToChild("Uncle")
+                            .build())
+                        .build()),
                     "standardDirectionOrder", Order.builder()
                         .orderStatus(OrderStatus.SEALED)
                         .orderDoc(DOCUMENT_REFERENCE)
@@ -229,9 +222,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
     private List<Element<Applicant>> getApplicant() {
         return wrapElements(Applicant.builder()
-            .party(ApplicantParty.builder()
-                .organisationName("")
-                .build())
+            .party(ApplicantParty.builder().organisationName("").build())
             .build());
     }
 }
