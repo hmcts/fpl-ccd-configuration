@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -76,6 +77,7 @@ public class GeneratedOrderController {
     private final CoreCaseDataService coreCaseDataService;
     private final ChildrenService childrenService;
     private final DocumentDownloadService documentDownloadService;
+    private final FeatureToggleService featureToggleService;
     private final RequestData requestData;
     private final Time time;
 
@@ -172,7 +174,7 @@ public class GeneratedOrderController {
 
         caseDetails.getData().put("orderCollection", orders);
 
-        if (caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
+        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
             List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
                 caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
             caseDetails.getData().put("children1", updatedChildren);

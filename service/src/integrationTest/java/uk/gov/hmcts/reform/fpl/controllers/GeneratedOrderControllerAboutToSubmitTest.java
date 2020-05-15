@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.time.LocalDateTime;
@@ -72,6 +73,9 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     GeneratedOrderControllerAboutToSubmitTest() {
         super("create-order");
     }
@@ -83,6 +87,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(anyMap(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
+        given(featureToggleService.isCloseCaseEnabled()).willReturn(true);
     }
 
     @Test
