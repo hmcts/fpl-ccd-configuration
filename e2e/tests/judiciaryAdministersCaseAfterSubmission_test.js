@@ -111,11 +111,10 @@ Scenario('Judiciary creates notice of proceedings documents with allocated judge
 
 Scenario('Judiciary makes 26-week case extension', async (I, caseViewPage, addExtend26WeekTimelineEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
-  addExtend26WeekTimelineEventPage.selectCaseExtensionTime();
-  addExtend26WeekTimelineEventPage.selectCaseExtensionReason();
-  addExtend26WeekTimelineEventPage.addComment('Comment');
+  addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
+  addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
+  addExtend26WeekTimelineEventPage.addExtensionComment('Comment');
   I.click('Continue');
-  addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
   addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
   addExtend26WeekTimelineEventPage.addCaseExtensionDate();
   await I.completeEvent('Save and continue');

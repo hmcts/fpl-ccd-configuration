@@ -2,8 +2,8 @@ const { I } = inject();
 
 module.exports = {
   fields: {
-    caseExtensionTime: '#caseExtensionTimeList-EightWeekExtension',
-    caseExtensionReason: '#caseExtensionReasonList-TimetableForChild',
+    eightWeekExtensionOption: '#caseExtensionTimeList-EightWeekExtension',
+    timetableForChildReason: '#caseExtensionReasonList-TimetableForChild',
     caseExtensionComment: '#extensionComments',
     caseExtensionTimeConfirmation: '#caseExtensionTimeConfirmationList-OtherExtension',
     caseExtensionDate: {
@@ -13,15 +13,15 @@ module.exports = {
     },
   },
 
-  selectCaseExtensionTime() {
-    I.click(this.fields.caseExtensionTime);
+  selectEightWeekExtensionTime() {
+    I.click(this.fields.eightWeekExtensionOption);
   },
 
-  selectCaseExtensionReason() {
-    I.click(this.fields.caseExtensionReason);
+  selectTimetableForChildExtensionReason() {
+    I.click(this.fields.timetableForChildReason);
   },
 
-  addComment(comment) {
+  addExtensionComment(comment) {
     I.fillField(this.fields.caseExtensionComment, comment);
   },
 
