@@ -4,7 +4,7 @@ module.exports = {
   fields: {
     caseExtensionTime: '#caseExtensionTimeList-EightWeekExtension',
     caseExtensionReason: '#caseExtensionReasonList-TimetableForChild',
-    caseExtensionComment: '#comments',
+    caseExtensionComment: '#extensionComments',
     caseExtensionTimeConfirmation: '#caseExtensionTimeConfirmationList-OtherExtension',
     caseExtensionDate: {
       day: '#eightWeeksExtensionDateOther-day',
