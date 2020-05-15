@@ -269,7 +269,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .children1(createChildren("Fred", "John"))
                 .orderAppliesToAllChildren("Yes")
-                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
                 .order(GeneratedOrder.builder()
                     .title("Example Order")
                     .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -293,7 +292,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .children1(createChildren("Fred", "John"))
                 .orderAppliesToAllChildren("Yes")
-                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
                 .epoChildren(EPOChildren.builder().descriptionNeeded("No").build())
                 .epoType(EPOType.PREVENT_REMOVAL)
                 .epoPhrase(EPOPhrase.builder().includePhrase("PHRASE").build())
@@ -310,24 +308,21 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void shouldNotUpdateChildrenWhenFeatureIsNotEnabled() {
-        given(featureToggleService.isCloseCaseEnabled()).willReturn(true);
+        given(featureToggleService.isCloseCaseEnabled()).willReturn(false);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
-        List<Element<Child>> children = createChildren("Fred", "John");
         final CaseDetails caseDetails = buildCaseDetails(
-            commonCaseDetailsComponents(CARE_ORDER, INTERIM, judgeAndLegalAdvisor)
+            commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(children)
-                .orderAppliesToAllChildren("Yes")
-                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+                .children1(createChildren("Fred", "John"))
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
         final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getAllChildren()).isEqualTo(children);
+        assertThat(caseData.getAllChildren()).isEqualTo(createChildren("Fred", "John"));
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
