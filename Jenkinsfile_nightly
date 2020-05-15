@@ -28,8 +28,8 @@ withNightlyPipeline(type, product, component) {
   env.SECURITY_RULES = params.SECURITY_RULES
 
   enableSecurityScan()
-//  enableMutationTest()
- // enableFullFunctionalTest()
+  enableMutationTest()
+  enableFullFunctionalTest()
 
   after('mutationTest') {
     withSonarQubeEnv('SonarQube') {
