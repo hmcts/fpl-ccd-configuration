@@ -49,11 +49,10 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
 
     private final HearingBookingService hearingService;
     private final CaseDataExtractionService dataExtractionService;
-    private final DraftCMOService cmoService;
 
     public DocmosisCaseManagementOrder getTemplateData(CaseData caseData) {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-        CaseManagementOrder caseManagementOrder = cmoService.prepareCaseManagementOrder(caseData);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
         HearingBooking nextHearing = null;
 
