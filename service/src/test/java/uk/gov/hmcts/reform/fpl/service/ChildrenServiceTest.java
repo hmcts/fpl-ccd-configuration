@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +18,10 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 @ExtendWith(SpringExtension.class)
 class ChildrenServiceTest {
@@ -70,6 +73,47 @@ class ChildrenServiceTest {
         assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }
 
+    @Test
+    void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
+        List<Element<Child>> result = service.updateFinalOrderIssued(List.of(testChild(), testChild()),
+            "Yes", null);
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("Yes", "Yes");
+    }
+
+    @Test
+    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildren() {
+        List<Element<Child>> children = List.of(testChild(), testChild(), testChild());
+
+        ChildSelector childSelector = ChildSelector.builder()
+            .childCount("1")
+            .selected(List.of(1))
+            .build();
+
+        List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("No", "Yes", "No");
+    }
+
+    @Test
+    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndAlreadyIssuedForOtherChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("No"), childWithFinalOrderIssued("Yes"),
+            childWithFinalOrderIssued("No"), childWithFinalOrderIssued("No"));
+
+        ChildSelector childSelector = ChildSelector.builder()
+            .childCount("4")
+            .selected(List.of(0,2))
+            .build();
+
+        List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("Yes", "Yes", "Yes", "No");
+    }
+
+
     private Element<Child> childWithConfidentialFields(UUID id) {
         return element(id, Child.builder()
             .party(ChildParty.builder()
@@ -78,6 +122,16 @@ class ChildrenServiceTest {
                 .email(EmailAddress.builder().email("email@email.com").build())
                 .address(Address.builder().addressLine1("Address Line 1").build())
                 .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                .build())
+            .build());
+    }
+
+    private Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
+        return element(Child.builder()
+            .finalOrderIssued(finalOrderIssued)
+            .party(ChildParty.builder()
+                .firstName(randomAlphanumeric(10))
+                .lastName(randomAlphanumeric(10))
                 .build())
             .build());
     }
