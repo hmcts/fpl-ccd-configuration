@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -72,5 +73,42 @@ class CaseExtensionServiceTest {
         LocalDate caseCompletionDate = service.getCaseCompletionDate(caseDetails);
 
         assertThat(caseCompletionDate.isEqual(dateSubmitted.plusWeeks(8)));
+    }
+
+    @Test
+    void shouldGetCaseCompletionDateFor8WeekExtension() {
+        CaseData data = CaseData.builder().dateSubmitted(LocalDate
+            .of(2020, 11, 20)).build();
+
+        LocalDate expectedCaseCompletionDate = data.getDateSubmitted().plusWeeks(8);
+
+        LocalDate caseCompletionDate = service.getCaseCompletionDateFor8WeekExtension(data);
+
+        assertThat(caseCompletionDate.isEqual(expectedCaseCompletionDate));
+    }
+
+    @Test
+    void shouldGetCaseSubmittedDateWhenNoCompletionDate() {
+        CaseData data = CaseData.builder().dateSubmitted(LocalDate
+            .of(2020, 11, 20))
+            .caseCompletionDate(LocalDate.of(2030, 11, 20)).build();
+
+        LocalDate expectedCaseCompletionDate = data.getCaseCompletionDate();
+
+        LocalDate caseCompletionDate = service.getCaseCompletionOrSubmittedDate(data);
+
+        assertThat(caseCompletionDate.isEqual(expectedCaseCompletionDate));
+    }
+
+    @Test
+    void shouldGetCaseCompletionDateWhenCompletionDateExists() {
+        CaseData data = CaseData.builder().dateSubmitted(LocalDate
+            .of(2020, 11, 20)).build();
+
+        LocalDate expectedCaseCompletionDate = data.getDateSubmitted().plusWeeks(8);
+
+        LocalDate caseCompletionDate = service.getCaseCompletionOrSubmittedDate(data);
+
+        assertThat(caseCompletionDate.isEqual(expectedCaseCompletionDate));
     }
 }
