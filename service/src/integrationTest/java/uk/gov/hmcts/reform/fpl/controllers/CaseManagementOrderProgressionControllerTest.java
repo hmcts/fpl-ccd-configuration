@@ -310,6 +310,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         return Judge.builder()
             .judgeLastName("Moley")
             .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeEmailAddress("moley@example.com")
             .build();
     }
 

@@ -220,10 +220,7 @@ class CaseManagementOrderServiceTest {
 
     @Nested
     class PrepareCaseDetailsTest {
-        private final String[] keys = {
-            HEARING_DATE_LIST.getKey(),
-            RECITALS.getKey(),
-            SCHEDULE.getKey()};
+        private final String[] keys = {HEARING_DATE_LIST.getKey(), RECITALS.getKey(), SCHEDULE.getKey()};
 
         private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
 
@@ -239,19 +236,22 @@ class CaseManagementOrderServiceTest {
         }
     }
 
-    @Test
-    void shouldGetCaseManagementOrderWithDocumentReference() {
-        initMocks();
+    @Nested
+    class GetOrder {
 
-        LocalDateTime dateTime = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
-        Document document = service.getOrder(buildCaseDataForCMODocmosisGeneration(dateTime));
+        @BeforeEach
+        void setup() {
+            DocmosisOrder order = any(DocmosisOrder.class);
+            given(documentService.getDocumentFromDocmosisOrderTemplate(order, eq(CMO))).willReturn(DOCUMENT);
+            given(templateDataService.getTemplateData(any())).willReturn(DocmosisCaseManagementOrder.builder().build());
+        }
 
-        assertThat(document).isEqualTo(DOCUMENT);
-    }
+        @Test
+        void shouldGetCaseManagementOrderWithDocumentReference() {
+            LocalDateTime dateTime = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
+            Document document = service.getOrderDocument(buildCaseDataForCMODocmosisGeneration(dateTime));
 
-    private void initMocks() {
-        DocmosisOrder order = any(DocmosisOrder.class);
-        given(documentService.getDocumentFromDocmosisOrderTemplate(order, eq(CMO))).willReturn(DOCUMENT);
-        given(templateDataService.getTemplateData(any())).willReturn(DocmosisCaseManagementOrder.builder().build());
+            assertThat(document).isEqualTo(DOCUMENT);
+        }
     }
 }

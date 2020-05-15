@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDa
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.constraints.Future;
 
@@ -29,13 +31,13 @@ public class HearingBooking {
     private final LocalDateTime endDate;
     private final List<String> hearingNeedsBooked;
     private final String hearingNeedsDetails;
-    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
     }
 
     public boolean startsAfterToday() {
-        return startDate.isAfter(LocalDateTime.now());
+        return startDate.isAfter(ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime());
     }
 }

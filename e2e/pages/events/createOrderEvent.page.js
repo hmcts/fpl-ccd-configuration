@@ -89,6 +89,10 @@ module.exports = {
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
+  useAlternateJudge() {
+    judgeAndLegalAdvisor.useAlternateJudge();
+  },
+
   useAllocatedJudge(legalAdvisorName) {
     judgeAndLegalAdvisor.useAllocatedJudge();
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);

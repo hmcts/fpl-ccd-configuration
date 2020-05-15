@@ -38,11 +38,11 @@ public class EmailNotificationHelper {
     }
 
     public String buildSubjectLineWithHearingBookingDateSuffix(final CaseData caseData,
-                                                                      final List<Element<HearingBooking>>
-                                                                          hearingBookings) {
+                                                               final List<Element<HearingBooking>> hearingBookings) {
         String subjectLine = buildSubjectLine(caseData);
         String hearingDateText = "";
-        if (isNotEmpty(hearingBookings)) {
+
+        if (hasFutureHearing(hearingBookings)) {
             hearingDateText = buildHearingDateText(hearingBookings);
         }
 
@@ -58,6 +58,11 @@ public class EmailNotificationHelper {
     public static String formatCaseUrl(String uiBaseUrl, Long caseId, String tab) {
         String caseUrl = formatCaseUrl(uiBaseUrl, caseId);
         return isBlank(tab) ? caseUrl : String.format("%s#%s", caseUrl, tab);
+    }
+
+    private boolean hasFutureHearing(List<Element<HearingBooking>> hearingBookings) {
+        return isNotEmpty(hearingBookings) && hearingBookings.stream()
+            .anyMatch(hearing -> hearing.getValue().startsAfterToday());
     }
 
     private String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {

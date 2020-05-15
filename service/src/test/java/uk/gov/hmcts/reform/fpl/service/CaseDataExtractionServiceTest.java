@@ -38,6 +38,8 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseDataExtractionService.class})
@@ -268,6 +270,12 @@ class CaseDataExtractionServiceTest {
                 .assignee(DirectionAssignee.LOCAL_AUTHORITY)
                 .title("1. Example title by unknown")
                 .body("Example description"));
+    }
+
+    @Test
+    void shouldReturnExpectedDocmosisJudgeWhenJudgeAndLegalAdvisorGiven() {
+        assertThat(service.getAllocatedJudge(JudgeAndLegalAdvisor.from(testJudge())))
+            .isEqualToComparingFieldByField(testDocmosisJudge());
     }
 
     private DocmosisDirection.Builder expectedDirection(String title) {

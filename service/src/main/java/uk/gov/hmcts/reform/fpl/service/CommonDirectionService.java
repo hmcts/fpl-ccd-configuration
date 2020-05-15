@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,17 +47,17 @@ public class CommonDirectionService {
     public List<Element<Direction>> combineAllDirections(CaseData caseData) {
         return
             Stream.of(caseData.getAllParties(),
-                assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES),
+                getElements(caseData.getAllPartiesCustom(), ALL_PARTIES),
                 caseData.getLocalAuthorityDirections(),
-                assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY),
+                getElements(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY),
                 caseData.getRespondentDirections(),
-                assignCustomDirections(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS),
+                getElements(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS),
                 caseData.getCafcassDirections(),
-                assignCustomDirections(caseData.getCafcassDirectionsCustom(), CAFCASS),
+                getElements(caseData.getCafcassDirectionsCustom(), CAFCASS),
                 caseData.getOtherPartiesDirections(),
-                assignCustomDirections(caseData.getOtherPartiesDirectionsCustom(), OTHERS),
+                getElements(caseData.getOtherPartiesDirectionsCustom(), OTHERS),
                 caseData.getCourtDirections(),
-                assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT))
+                getElements(caseData.getCourtDirectionsCustom(), COURT))
                 .flatMap(Collection::stream)
                 .collect(toList());
     }
@@ -68,19 +69,21 @@ public class CommonDirectionService {
      * @param assignee   the assignee of the directions to be returned.
      * @return A list of custom directions.
      */
-    public static List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
-                                                                  DirectionAssignee assignee) {
-        return ofNullable(directions).map(values -> addAssignee(values, assignee)).orElse(emptyList());
+    List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
+                                                    DirectionAssignee assignee) {
+        return getElements(directions, assignee);
     }
 
-    private static List<Element<Direction>> addAssignee(List<Element<Direction>> values, DirectionAssignee assignee) {
-        return values.stream()
-            .map(element -> element(element.getId(), element.getValue().toBuilder()
-                .assignee(assignee)
-                .custom("Yes")
-                .readOnly("No")
-                .build()))
-            .collect(toList());
+    private List<Element<Direction>> getElements(List<Element<Direction>> directions, DirectionAssignee assignee) {
+        return ofNullable(directions)
+            .map(values -> values.stream()
+                .map(element -> element(element.getId(), element.getValue().toBuilder()
+                    .assignee(assignee)
+                    .custom("Yes")
+                    .readOnly("No")
+                    .build()))
+                .collect(toList()))
+            .orElseGet(Collections::emptyList);
     }
 
     /**
