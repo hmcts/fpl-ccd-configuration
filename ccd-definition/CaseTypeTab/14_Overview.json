@@ -28,6 +28,7 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 14,
     "CaseFieldID": "extensionComments",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "extensionComments!=\"\""
   }
 ]
