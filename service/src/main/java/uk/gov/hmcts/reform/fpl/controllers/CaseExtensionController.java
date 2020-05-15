@@ -63,8 +63,9 @@ public class CaseExtensionController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        LocalDate caseCompletionDate = caseExtensionService.getCaseCompletionDate(caseDetails);
+        LocalDate caseCompletionDate = caseExtensionService.getCaseCompletionDate(caseData);
         caseDetails.getData().put("caseCompletionDate", caseCompletionDate);
 
         return AboutToStartOrSubmitCallbackResponse.builder()

@@ -1,25 +1,22 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.*;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseExtensionService {
-    private final ObjectMapper mapper;
 
-    public LocalDate getCaseCompletionDate(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        if (caseDetails.getData().get("caseExtensionTimeList").equals("EightWeekExtension")) {
-            if (caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("EightWeekExtension")) {
+    public LocalDate getCaseCompletionDate(CaseData caseData) {
+        if (caseData.getCaseExtensionTimeList().equals(eightWeekExtension)) {
+            if (caseData.getCaseExtensionTimeConfirmationList().equals(eightWeekExtension)) {
                 return getCaseCompletionDateFor8WeekExtension(caseData);
             }
             return caseData.getEightWeeksExtensionDateOther();

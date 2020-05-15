@@ -1,20 +1,17 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseExtensionService.class})
@@ -23,24 +20,15 @@ class CaseExtensionServiceTest {
     @Autowired
     private CaseExtensionService service;
 
-    @Autowired
-    private ObjectMapper mapper;
-
-    @BeforeEach
-    void before() {
-        service = new CaseExtensionService(mapper);
-    }
-
     @Test
     void shouldGetCaseCompletionDateWhenSubmittingWithOtherExtensionDate() {
         LocalDate extensionDateOther = LocalDate.of(2030, 11, 12);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("extensionDateOther", extensionDateOther,
-                "caseExtensionTimeList", "otherExtension"))
-            .build();
+        CaseData data = CaseData.builder()
+            .extensionDateOther(extensionDateOther)
+            .caseExtensionTimeList(otherExtension).build();
 
-        LocalDate caseCompletionDate = service.getCaseCompletionDate(caseDetails);
+        LocalDate caseCompletionDate = service.getCaseCompletionDate(data);
 
         assertThat(caseCompletionDate.isEqual(extensionDateOther));
     }
@@ -49,13 +37,13 @@ class CaseExtensionServiceTest {
     void shouldGetCaseCompletionDateWhenSubmittingWith8WeekExtensionOther() {
         LocalDate eightWeeksExtensionDateOther = LocalDate.of(2030, 11, 12);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseExtensionTimeList", "EightWeekExtension",
-                "caseExtensionTimeConfirmationList", "EightWeekExtensionDateOther",
-                "eightWeeksExtensionDateOther", eightWeeksExtensionDateOther))
+        CaseData data = CaseData.builder()
+            .caseExtensionTimeList(eightWeekExtension)
+            .caseExtensionTimeConfirmationList(otherExtension)
+            .eightWeeksExtensionDateOther(eightWeeksExtensionDateOther)
             .build();
 
-        LocalDate caseCompletionDate = service.getCaseCompletionDate(caseDetails);
+        LocalDate caseCompletionDate = service.getCaseCompletionDate(data);
 
         assertThat(caseCompletionDate.isEqual(eightWeeksExtensionDateOther));
     }
@@ -64,13 +52,13 @@ class CaseExtensionServiceTest {
     void shouldGetCaseCompletionDateWhenSubmittingWhenSubmittingWith8WeekExtension() {
         LocalDate dateSubmitted = LocalDate.of(2030,11,11);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseExtensionTimeList", "EightWeekExtension",
-                "caseExtensionTimeConfirmationList", "EightWeekExtension",
-                "dateSubmitted", dateSubmitted))
+        CaseData data = CaseData.builder()
+            .caseExtensionTimeList(eightWeekExtension)
+            .caseExtensionTimeConfirmationList(eightWeekExtension)
+            .dateSubmitted(dateSubmitted)
             .build();
 
-        LocalDate caseCompletionDate = service.getCaseCompletionDate(caseDetails);
+        LocalDate caseCompletionDate = service.getCaseCompletionDate(data);
 
         assertThat(caseCompletionDate.isEqual(dateSubmitted.plusWeeks(8)));
     }

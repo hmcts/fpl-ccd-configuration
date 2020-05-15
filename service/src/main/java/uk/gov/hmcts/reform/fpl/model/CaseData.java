@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -374,4 +375,6 @@ public class CaseData {
     private LocalDate extensionDateOther;
     @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
     private LocalDate eightWeeksExtensionDateOther;
+    private final CaseExtensionTime caseExtensionTimeList;
+    private final CaseExtensionTime caseExtensionTimeConfirmationList;
 }
