@@ -66,19 +66,20 @@ data "azurerm_key_vault_secret" "fpl_support_email_secret" {
 module "fpl-action-group" {
   source                 = "git@github.com:hmcts/cnp-module-action-group"
   location               = "global"
-  env                    = "prod"
+  env                    = "${var.env}"
   resourcegroup_name     = "${local.alert_resource_group_name}"
   action_group_name      = "${var.product}-support"
   short_name             = "${var.product}-support"
   email_receiver_name    = "FPL Support Mailing List"
   email_receiver_address = "${data.azurerm_key_vault_secret.fpl_support_email_secret.value}"
+  count                  = "${var.enable_alerts ? 1 : 0}"
 }
 
 module "fpl-performance-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = "${var.appinsights_location}"
 
-  app_insights_name          = "${var.product}-${var.component}-appinsights-prod"
+  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
 
   alert_name                 = "${var.product}-performance-alert"
   alert_desc                 = "Requests that took longer than 1 seconds to complete"
@@ -91,6 +92,7 @@ module "fpl-performance-alert" {
   trigger_threshold_operator = "GreaterThan"
   trigger_threshold          = 2
   resourcegroup_name         = "${local.alert_resource_group_name}"
+  count                      = "${var.enable_alerts ? 1 : 0}"
 }
 
 resource "azurerm_key_vault_secret" "scheduler-db-password" {
