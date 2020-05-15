@@ -16,7 +16,7 @@
     "CaseEventID": "closeCase",
     "CaseFieldID": "closeCase",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "COMPLEX",
     "PageID": "1",
     "PageDisplayOrder": 1
   }

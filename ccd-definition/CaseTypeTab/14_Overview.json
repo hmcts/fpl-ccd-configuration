@@ -6,7 +6,7 @@
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
     "TabDisplayOrder": 14,
-    "CaseFieldID": "closeCase",
+    "CaseFieldID": "closeCaseTabField",
     "TabFieldDisplayOrder": 1
   }
 ]
