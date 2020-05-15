@@ -89,7 +89,7 @@
     "CaseEventID": "closeCase",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU",
-    "Comment": "CLOSED events starts here (todo, split this file out into separate files based on something, user?)"
+    "Comment": "CLOSED events starts here"
   },
   {
     "LiveFrom": "01/01/2017",
