@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# This file is called by the jenkins nightly pipeline -> file: Jenkins_nightly (file) -> function: enableSecurityScan()
+# This file is called by the jenkins nightly pipeline -> file: Jenkins_nightly -> function: enableSecurityScan()
 echo ${URL_FOR_SECURITY_SCAN}
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
