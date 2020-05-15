@@ -81,7 +81,7 @@ class PrepareDirectionsForUsersServiceTest {
             expectedDirections.addAll(buildDirections(ALL_PARTIES));
 
             assertThat(caseDetails).isEqualTo(CaseDetails.builder()
-                .data(ImmutableMap.of(assignee.getValue().concat("Custom"), expectedDirections))
+                .data(ImmutableMap.of(assignee.toCustomDirectionField(), expectedDirections))
                 .build());
         }
 
@@ -100,7 +100,7 @@ class PrepareDirectionsForUsersServiceTest {
             expectedDirections.addAll(buildDirections(ALL_PARTIES));
 
             assertThat(caseDetails).isEqualTo(CaseDetails.builder()
-                .data(ImmutableMap.of(assignee.getValue().concat("Custom"), expectedDirections))
+                .data(ImmutableMap.of(assignee.toCustomDirectionField(), expectedDirections))
                 .build());
         }
 
@@ -119,7 +119,7 @@ class PrepareDirectionsForUsersServiceTest {
             expectedDirections.addAll(allPartyDirections());
 
             assertThat(caseDetails).isEqualTo(CaseDetails.builder()
-                .data(Map.of(PARENTS_AND_RESPONDENTS.getValue().concat("Custom"), expectedDirections))
+                .data(Map.of(PARENTS_AND_RESPONDENTS.toCustomDirectionField(), expectedDirections))
                 .build());
         }
 
