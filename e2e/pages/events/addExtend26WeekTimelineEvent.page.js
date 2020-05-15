@@ -32,6 +32,6 @@ module.exports = {
   addCaseExtensionDate(){
     I.fillField(this.fields.caseExtensionDate.day, '10');
     I.fillField(this.fields.caseExtensionDate.month, '10');
-    I.fillField(this.fields.caseExtensionDate.year, '2020');
+    I.fillField(this.fields.caseExtensionDate.year, '2030');
   },
 };
