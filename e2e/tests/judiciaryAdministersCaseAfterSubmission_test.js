@@ -108,3 +108,19 @@ Scenario('Judiciary creates notice of proceedings documents with allocated judge
   I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6a.pdf');
   I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6.pdf');
 });
+
+Scenario('Judiciary makes 26-week case extension', async (I, caseViewPage, addExtend26WeekTimelineEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
+  addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
+  addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
+  addExtend26WeekTimelineEventPage.addExtensionComment('Comment');
+  I.click('Continue');
+  addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
+  addExtend26WeekTimelineEventPage.addCaseExtensionDate();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
+  caseViewPage.selectTab(caseViewPage.tabs.overview);
+  I.see('10 Oct 2030');
+  I.see('Timetable for child');
+  I.see('Comment');
+});
