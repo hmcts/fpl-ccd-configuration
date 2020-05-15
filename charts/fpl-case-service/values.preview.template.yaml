@@ -137,3 +137,7 @@ ccd:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults:
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
+
+  postgresql:
+    persistence:
+      enabled: false
