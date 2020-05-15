@@ -47,7 +47,6 @@ public class CloseCaseController {
 
         data.put(LABEL_FIELD, LABEL);
 
-        // TODO: 11/05/2020 Determine YES or NO based on if all children have a final order
         boolean displayFinalOrder = childrenService.allChildrenHaveFinalOrder(caseData.getAllChildren());
 
         data.put(CLOSE_CASE_FIELD, CloseCase.builder().showFullReason(YesNo.from(displayFinalOrder)).build());
@@ -74,7 +73,7 @@ public class CloseCaseController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        // TODO: 11/05/2020 Mark children
+
         data.put(DEPRIVATION_OF_LIBERTY_FLAG, YesNo.from(caseData.getCloseCase().hasDeprivationOfLiberty()).getValue());
         data.put(CLOSE_CASE_TAB_FIELD, caseData.getCloseCase());
 
