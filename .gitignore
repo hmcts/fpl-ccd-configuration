@@ -44,3 +44,6 @@ application-feature-toggle.yaml
 # wiremock response
 docker/wiremock/__files/mockResponse.json
 docker/wiremock/mappings/user-by-email/*
+
+# report outputs
+functional-output/
