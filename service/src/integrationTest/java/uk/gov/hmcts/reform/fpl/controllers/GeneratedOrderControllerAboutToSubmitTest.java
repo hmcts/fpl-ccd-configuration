@@ -95,7 +95,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+    void shouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -117,7 +117,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldNotHaveDraftAppendedToFilename() {
+    void shouldNotHaveDraftAppendedToFilename() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -134,7 +134,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
     @ParameterizedTest
     @EnumSource(GeneratedOrderSubtype.class)
-    void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
+    void shouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
         GeneratedOrderSubtype subtype) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
@@ -155,7 +155,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+    void shouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -174,7 +174,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+    void shouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -196,7 +196,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
+    void shouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(YES);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -222,7 +222,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldSetFinalOrderIssuedOnChildren() {
+    void shouldSetFinalOrderIssuedOnChildren() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -241,7 +241,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldNotSetFinalOrderIssuedForInterimOrder() {
+    void shouldNotSetFinalOrderIssuedForInterimOrder() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -306,6 +306,28 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsOnlyNulls();
+    }
+
+    @Test
+    void shouldNotUpdateChildrenWhenFeatureIsNotEnabled() {
+        given(featureToggleService.isCloseCaseEnabled()).willReturn(true);
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        List<Element<Child>> children = createChildren("Fred", "John");
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(CARE_ORDER, INTERIM, judgeAndLegalAdvisor)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .children1(children)
+                .orderAppliesToAllChildren("Yes")
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+        );
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getAllChildren()).isEqualTo(children);
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
