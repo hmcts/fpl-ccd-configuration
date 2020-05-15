@@ -72,7 +72,6 @@ module "fpl-action-group" {
   short_name             = "${var.product}-support"
   email_receiver_name    = "FPL Support Mailing List"
   email_receiver_address = "${data.azurerm_key_vault_secret.fpl_support_email_secret.value}"
-  count                  = "${var.enable_alerts ? 1 : 0}"
 }
 
 module "fpl-performance-alert" {
@@ -92,7 +91,7 @@ module "fpl-performance-alert" {
   trigger_threshold_operator = "GreaterThan"
   trigger_threshold          = 2
   resourcegroup_name         = "${local.alert_resource_group_name}"
-  count                      = "${var.enable_alerts ? 1 : 0}"
+  enabled                    = "${var.enable_alerts}"
 }
 
 resource "azurerm_key_vault_secret" "scheduler-db-password" {
