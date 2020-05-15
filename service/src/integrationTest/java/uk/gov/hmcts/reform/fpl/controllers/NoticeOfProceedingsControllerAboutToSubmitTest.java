@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +42,8 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     @MockBean
+    private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
+    @MockBean
     private UploadDocumentService uploadDocumentService;
 
     NoticeOfProceedingsControllerAboutToSubmitTest() {
@@ -59,7 +62,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
 
-        given(noticeOfProceedingsService.getTemplateData(caseData))
+        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
@@ -92,7 +95,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
 
-        given(noticeOfProceedingsService.getTemplateData(any()))
+        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(any()))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), any()))
             .willReturn(docmosisDocument);

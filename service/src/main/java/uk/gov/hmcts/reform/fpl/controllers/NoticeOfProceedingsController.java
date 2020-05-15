@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
@@ -55,6 +56,7 @@ public class NoticeOfProceedingsController {
     private final UploadDocumentService uploadDocumentService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
+    private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -100,7 +102,7 @@ public class NoticeOfProceedingsController {
         caseDetails.getData().put("noticeOfProceedings", noticeOfProceedings);
         caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsService
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
             .getTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
