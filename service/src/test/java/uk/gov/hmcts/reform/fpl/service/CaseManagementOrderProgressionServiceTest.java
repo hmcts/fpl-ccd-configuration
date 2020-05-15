@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_SHARED;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -72,7 +74,9 @@ class CaseManagementOrderProgressionServiceTest {
 
     @Test
     void shouldPopulateCmoToActionWhenLocalAuthoritySendsToJudge() {
-        CaseData caseData = caseDataWithCaseManagementOrder(SEND_TO_JUDGE).build();
+        CaseData caseData = caseDataWithCaseManagementOrder(SEND_TO_JUDGE)
+            .nextHearingDateList(DynamicList.builder().build())
+            .build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
         service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
@@ -82,6 +86,7 @@ class CaseManagementOrderProgressionServiceTest {
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder().toBuilder()
             .status(SEND_TO_JUDGE).build());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
+        assertThat(caseDetails.getData().get(NEXT_HEARING_DATE_LIST.getKey())).isNull();
     }
 
     @Test

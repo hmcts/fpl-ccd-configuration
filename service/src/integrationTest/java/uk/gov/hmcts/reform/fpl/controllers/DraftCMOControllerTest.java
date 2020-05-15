@@ -97,11 +97,14 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMOWhenNoCaseManagementOrder() {
         Map<String, Object> data = Map.of(
-            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now().minusDays(3)),
             "respondents1", createRespondents(),
             "others", createOthers());
 
-        List<String> expected = List.of(formatLocalDateToMediumStyle(5), formatLocalDateToMediumStyle(2));
+        List<String> expected = List.of(
+            formatLocalDateToString(dateNow().plusDays(2), FormatStyle.MEDIUM),
+            formatLocalDateToString(dateNow().minusDays(1), FormatStyle.MEDIUM),
+            formatLocalDateToString(dateNow().minusDays(3), FormatStyle.MEDIUM));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -345,8 +348,8 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     private CaseDetails prepareCaseDetailsForAboutToSubmit() {
         Map<String, Object> data = new HashMap<>();
 
-        Stream.of(DirectionAssignee.values()).forEach(direction ->
-            data.put(direction.toCustomDirectionField().concat("CMO"), wrapElements(createUnassignedDirection()))
+        Stream.of(DirectionAssignee.values()).forEach(assignee ->
+            data.put(assignee.toCaseManagementOrderDirectionField(), wrapElements(createUnassignedDirection()))
         );
 
         data.put(HEARING_DATE_LIST.getKey(), getDynamicList());
