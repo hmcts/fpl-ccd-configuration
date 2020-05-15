@@ -120,7 +120,7 @@ Scenario('Judiciary makes 26-week case extension', async (I, caseViewPage, addEx
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
   caseViewPage.selectTab(caseViewPage.tabs.overview);
-  I.see('10 Oct 2020');
+  I.see('10 Oct 2030');
   I.see('Timetable for child');
   I.see('Comment');
 });
