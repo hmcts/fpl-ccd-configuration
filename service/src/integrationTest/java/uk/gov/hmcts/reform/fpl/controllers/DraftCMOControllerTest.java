@@ -350,8 +350,8 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     private CaseDetails prepareCaseDetailsForAboutToSubmit() {
         Map<String, Object> data = new HashMap<>();
 
-        Stream.of(DirectionAssignee.values()).forEach(direction ->
-            data.put(direction.toCustomDirectionField().concat("CMO"), wrapElements(createUnassignedDirection()))
+        Stream.of(DirectionAssignee.values()).forEach(assignee ->
+            data.put(assignee.toCaseManagementOrderDirectionField(), wrapElements(createUnassignedDirection()))
         );
 
         data.put(HEARING_DATE_LIST.getKey(), getDynamicList());
