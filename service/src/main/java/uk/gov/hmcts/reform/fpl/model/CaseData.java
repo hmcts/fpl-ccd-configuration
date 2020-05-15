@@ -1,26 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.Document;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.Recital;
-import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.model.common.*;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
@@ -29,14 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
-import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.*;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
@@ -46,19 +26,10 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 import javax.validation.Valid;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
@@ -430,9 +401,9 @@ public class CaseData {
     private final String amountToPay;
 
     private LocalDate caseCompletionDate;
-    @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
     private LocalDate extensionDateOther;
-    @Future(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
     private LocalDate eightWeeksExtensionDateOther;
     private final CaseExtensionTime caseExtensionTimeList;
     private final CaseExtensionTime caseExtensionTimeConfirmationList;
