@@ -35,8 +35,7 @@ public class CaseExtensionService {
     public LocalDate getCaseCompletionOrSubmittedDate(CaseData caseData) {
         if (isEmpty(caseData.getCaseCompletionDate())) {
             return caseData.getDateSubmitted();
-        } else {
-            return caseData.getCaseCompletionDate();
         }
+        return caseData.getCaseCompletionDate();
     }
 }
