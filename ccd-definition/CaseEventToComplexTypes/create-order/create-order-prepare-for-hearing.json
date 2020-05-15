@@ -107,9 +107,19 @@
     "ID": "JudgeAndLegalAdvisorComplexType",
     "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "otherTitle",
+    "EventElementLabel": "Title",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
+    "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -119,7 +129,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -129,7 +139,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Justices' Legal Adviser's full name",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
   },
   {

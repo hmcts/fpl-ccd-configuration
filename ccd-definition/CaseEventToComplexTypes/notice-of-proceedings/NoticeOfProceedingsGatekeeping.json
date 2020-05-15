@@ -44,9 +44,19 @@
     "ID": "NoticeOfProceedings",
     "CaseEventID": "createNoticeOfProceedingsGatekeeping",
     "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.otherTitle",
+    "EventElementLabel": "Title",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedingsGatekeeping",
+    "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "judgeAndLegalAdvisor.judgeLastName",
     "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -56,7 +66,7 @@
     "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "judgeAndLegalAdvisor.judgeFullName",
     "EventElementLabel": "Full name",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -66,7 +76,7 @@
     "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "judgeAndLegalAdvisor.legalAdvisorName",
     "EventElementLabel": "Justices' Legal Adviser's full name",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -76,7 +86,7 @@
     "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "proceedingTypes",
     "EventElementLabel": "What would you like to create?",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "MANDATORY"
   }
 ]
