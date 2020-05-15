@@ -12,6 +12,8 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseExtensionController.class)
@@ -31,7 +33,7 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractControllerTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("extensionDateOther", extensionDateOther,
-                "caseExtensionTimeList", "otherExtension"))
+                "caseExtensionTimeList", OTHER_EXTENSION))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -44,8 +46,8 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractControllerTest {
         LocalDate eightWeeksExtensionDateOther = LocalDate.of(2030, 11, 12);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseExtensionTimeList", "EightWeekExtension",
-                "caseExtensionTimeConfirmationList", "EightWeekExtensionDateOther",
+            .data(Map.of("caseExtensionTimeList", EIGHT_WEEK_EXTENSION,
+                "caseExtensionTimeConfirmationList", OTHER_EXTENSION,
                 "eightWeeksExtensionDateOther", eightWeeksExtensionDateOther))
             .build();
 
@@ -60,8 +62,8 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractControllerTest {
         LocalDate eightWeekExtensionDate = dateSubmitted.plusWeeks(8);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseExtensionTimeList", "EightWeekExtension",
-                "caseExtensionTimeConfirmationList", "EightWeekExtension",
+            .data(Map.of("caseExtensionTimeList", EIGHT_WEEK_EXTENSION,
+                "caseExtensionTimeConfirmationList", EIGHT_WEEK_EXTENSION,
                 "dateSubmitted", dateSubmitted))
             .build();
 

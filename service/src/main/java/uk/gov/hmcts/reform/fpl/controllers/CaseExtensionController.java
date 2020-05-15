@@ -36,7 +36,7 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        LocalDate caseCompletionDate = caseExtensionService.getCaseCompletionOrSubmittedDate(caseData);
+        LocalDate caseCompletionDate = caseExtensionService.getShouldBeCompletedByDate(caseData);
 
         caseDetails.getData().put("shouldBeCompletedByDate", formatLocalDateToString(caseCompletionDate, DATE));
 

@@ -11,7 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.*;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseExtensionService.class})
@@ -26,7 +27,7 @@ class CaseExtensionServiceTest {
 
         CaseData data = CaseData.builder()
             .extensionDateOther(extensionDateOther)
-            .caseExtensionTimeList(otherExtension).build();
+            .caseExtensionTimeList(OTHER_EXTENSION).build();
 
         LocalDate caseCompletionDate = service.getCaseCompletionDate(data);
 
@@ -38,8 +39,8 @@ class CaseExtensionServiceTest {
         LocalDate eightWeeksExtensionDateOther = LocalDate.of(2030, 11, 12);
 
         CaseData data = CaseData.builder()
-            .caseExtensionTimeList(eightWeekExtension)
-            .caseExtensionTimeConfirmationList(otherExtension)
+            .caseExtensionTimeList(EIGHT_WEEK_EXTENSION)
+            .caseExtensionTimeConfirmationList(OTHER_EXTENSION)
             .eightWeeksExtensionDateOther(eightWeeksExtensionDateOther)
             .build();
 
@@ -53,8 +54,8 @@ class CaseExtensionServiceTest {
         LocalDate dateSubmitted = LocalDate.of(2030,11,11);
 
         CaseData data = CaseData.builder()
-            .caseExtensionTimeList(eightWeekExtension)
-            .caseExtensionTimeConfirmationList(eightWeekExtension)
+            .caseExtensionTimeList(EIGHT_WEEK_EXTENSION)
+            .caseExtensionTimeConfirmationList(EIGHT_WEEK_EXTENSION)
             .dateSubmitted(dateSubmitted)
             .build();
 
@@ -83,7 +84,7 @@ class CaseExtensionServiceTest {
 
         LocalDate expectedCaseCompletionDate = data.getCaseCompletionDate();
 
-        LocalDate caseCompletionDate = service.getCaseCompletionOrSubmittedDate(data);
+        LocalDate caseCompletionDate = service.getShouldBeCompletedByDate(data);
 
         assertThat(caseCompletionDate.isEqual(expectedCaseCompletionDate));
     }
@@ -95,7 +96,7 @@ class CaseExtensionServiceTest {
 
         LocalDate expectedCaseCompletionDate = data.getDateSubmitted().plusWeeks(8);
 
-        LocalDate caseCompletionDate = service.getCaseCompletionOrSubmittedDate(data);
+        LocalDate caseCompletionDate = service.getShouldBeCompletedByDate(data);
 
         assertThat(caseCompletionDate.isEqual(expectedCaseCompletionDate));
     }

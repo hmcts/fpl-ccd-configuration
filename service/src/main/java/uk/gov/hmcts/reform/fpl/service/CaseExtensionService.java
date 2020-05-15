@@ -8,15 +8,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.*;
+import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseExtensionService {
 
     public LocalDate getCaseCompletionDate(CaseData caseData) {
-        if (caseData.getCaseExtensionTimeList().equals(eightWeekExtension)) {
-            if (caseData.getCaseExtensionTimeConfirmationList().equals(eightWeekExtension)) {
+        if (caseData.getCaseExtensionTimeList().equals(EIGHT_WEEK_EXTENSION)) {
+            if (caseData.getCaseExtensionTimeConfirmationList().equals(EIGHT_WEEK_EXTENSION)) {
                 return getCaseCompletionDateFor8WeekExtension(caseData);
             }
             return caseData.getEightWeeksExtensionDateOther();
@@ -25,10 +25,10 @@ public class CaseExtensionService {
     }
 
     public LocalDate getCaseCompletionDateFor8WeekExtension(CaseData caseData) {
-        return getCaseCompletionOrSubmittedDate(caseData).plusWeeks(8);
+        return getShouldBeCompletedByDate(caseData).plusWeeks(8);
     }
 
-    public LocalDate getCaseCompletionOrSubmittedDate(CaseData caseData) {
+    public LocalDate getShouldBeCompletedByDate(CaseData caseData) {
         return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted());
     }
 }
