@@ -21,7 +21,6 @@ public class Child implements ConfidentialParty<Child> {
     @NotNull(message = "You need to add details to children")
     private final ChildParty party;
 
-    // TODO: 13/05/2020 replace once FPLA-1728 is merged
     private String finalOrderIssued;
 
     public boolean containsConfidentialDetails() {

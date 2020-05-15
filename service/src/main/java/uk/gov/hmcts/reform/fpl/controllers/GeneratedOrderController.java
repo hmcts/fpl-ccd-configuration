@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -48,6 +50,7 @@ import java.util.Map;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -64,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RequestMapping("/callback/create-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderController {
+
     private final ObjectMapper mapper;
     private final GeneratedOrderService service;
     private final ValidateGroupService validateGroupService;
@@ -74,6 +78,7 @@ public class GeneratedOrderController {
     private final CoreCaseDataService coreCaseDataService;
     private final ChildrenService childrenService;
     private final DocumentDownloadService documentDownloadService;
+    private final FeatureToggleService featureToggleService;
     private final RequestData requestData;
     private final Time time;
 
@@ -172,6 +177,12 @@ public class GeneratedOrderController {
             caseData.getInterimEndDate()));
 
         caseDetails.getData().put("orderCollection", orders);
+
+        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
+            List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
+                caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
+            caseDetails.getData().put("children1", updatedChildren);
+        }
 
         service.removeOrderProperties(caseDetails.getData());
 

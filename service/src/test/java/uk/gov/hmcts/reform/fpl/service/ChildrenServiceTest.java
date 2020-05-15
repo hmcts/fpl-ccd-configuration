@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,8 +20,10 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 @ExtendWith(SpringExtension.class)
 class ChildrenServiceTest {
@@ -72,7 +75,7 @@ class ChildrenServiceTest {
 
     @Test
     void shouldReturnFalseWhenAtLeastOneChildDoesNotHaveFinalOrder() {
-        List<Element<Child>> children = List.of(buildChildWithFinalOrder(true), buildChildWithFinalOrder(false));
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Yes"), childWithFinalOrderIssued("No"));
 
         boolean result = service.allChildrenHaveFinalOrder(children);
 
@@ -81,7 +84,7 @@ class ChildrenServiceTest {
 
     @Test
     void shouldReturnTrueWhenAllChildrenHaveFinalOrder() {
-        List<Element<Child>> children = List.of(buildChildWithFinalOrder(true), buildChildWithFinalOrder(true));
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Yes"), childWithFinalOrderIssued("Yes"));
 
         boolean result = service.allChildrenHaveFinalOrder(children);
 
@@ -98,6 +101,47 @@ class ChildrenServiceTest {
         assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }
 
+    @Test
+    void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
+        List<Element<Child>> result = service.updateFinalOrderIssued(List.of(testChild(), testChild()),
+            "Yes", null);
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("Yes", "Yes");
+    }
+
+    @Test
+    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildren() {
+        List<Element<Child>> children = List.of(testChild(), testChild(), testChild());
+
+        ChildSelector childSelector = ChildSelector.builder()
+            .childCount("1")
+            .selected(List.of(1))
+            .build();
+
+        List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("No", "Yes", "No");
+    }
+
+    @Test
+    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndAlreadyIssuedForOtherChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("No"), childWithFinalOrderIssued("Yes"),
+            childWithFinalOrderIssued("No"), childWithFinalOrderIssued("No"));
+
+        ChildSelector childSelector = ChildSelector.builder()
+            .childCount("4")
+            .selected(List.of(0, 2))
+            .build();
+
+        List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("Yes", "Yes", "Yes", "No");
+    }
+
+
     private Element<Child> childWithConfidentialFields(UUID id) {
         return element(id, Child.builder()
             .party(ChildParty.builder()
@@ -110,9 +154,13 @@ class ChildrenServiceTest {
             .build());
     }
 
-    private Element<Child> buildChildWithFinalOrder(boolean finalOrder) {
-        Element<Child> childElement = childWithConfidentialFields(randomUUID());
-        childElement.getValue().setFinalOrderIssued(finalOrder ? "Yes" : "No");
-        return childElement;
+    private Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
+        return element(Child.builder()
+            .finalOrderIssued(finalOrderIssued)
+            .party(ChildParty.builder()
+                .firstName(randomAlphanumeric(10))
+                .lastName(randomAlphanumeric(10))
+                .build())
+            .build());
     }
 }

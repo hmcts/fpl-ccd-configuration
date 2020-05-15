@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,6 +49,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
@@ -57,12 +59,14 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Data
@@ -101,26 +105,32 @@ public class CaseData {
     @NotNull(message = "You need to add details to allocation proposal")
     @Valid
     private final Allocation allocationProposal;
-
     private final Allocation allocationDecision;
+
     private final List<Element<Direction>> allParties;
     private final List<Element<Direction>> allPartiesCustom;
-    private final List<Element<Direction>> allPartiesCustomCMO;
     private final List<Element<Direction>> localAuthorityDirections;
     private final List<Element<Direction>> localAuthorityDirectionsCustom;
-    private final List<Element<Direction>> localAuthorityDirectionsCustomCMO;
     private final List<Element<Direction>> courtDirections;
     private final List<Element<Direction>> courtDirectionsCustom;
-    private final List<Element<Direction>> courtDirectionsCustomCMO;
     private final List<Element<Direction>> cafcassDirections;
     private final List<Element<Direction>> cafcassDirectionsCustom;
-    private final List<Element<Direction>> cafcassDirectionsCustomCMO;
     private final List<Element<Direction>> otherPartiesDirections;
     private final List<Element<Direction>> otherPartiesDirectionsCustom;
-    private final List<Element<Direction>> otherPartiesDirectionsCustomCMO;
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
-    private final List<Element<Direction>> respondentDirectionsCustomCMO;
+
+    @JsonUnwrapped
+    private Directions directionsForCaseManagementOrder;
+
+    public Directions getDirectionsForCaseManagementOrder() {
+        if (directionsForCaseManagementOrder != null && directionsForCaseManagementOrder.containsDirections()) {
+            return directionsForCaseManagementOrder;
+        }
+
+        return null;
+    }
+
     private final List<Element<Placement>> placements;
     private final Order standardDirectionOrder;
 
@@ -223,8 +233,57 @@ public class CaseData {
     @JsonIgnore
     private CaseManagementOrder caseManagementOrder;
 
+    public CaseManagementOrder getCaseManagementOrder() {
+        return prepareCaseManagementOrder();
+    }
+
+    private CaseManagementOrder prepareCaseManagementOrder() {
+        //existing order
+        Optional<CaseManagementOrder> oldOrder = ofNullable(caseManagementOrder);
+
+        //hearing date list that cmo is heard in
+        Optional<DynamicList> optionalDateList = ofNullable(cmoHearingDateList);
+        UUID idFromDynamicList = optionalDateList.map(DynamicList::getValueCode).orElse(null);
+        String hearingDate = optionalDateList.map(DynamicList::getValueLabel).orElse(null);
+
+        //schedule
+        Schedule scheduleFromOrder = oldOrder.map(CaseManagementOrder::getSchedule).orElse(null);
+
+        //recital
+        List<Element<Recital>> recitalsFromOrder = oldOrder.map(CaseManagementOrder::getRecitals).orElse(null);
+
+        //directions
+        Optional<Directions> directions = ofNullable(getDirectionsForCaseManagementOrder());
+        List<Element<Direction>> orderDirections = oldOrder.map(CaseManagementOrder::getDirections).orElse(emptyList());
+
+        //date of issue
+        Optional<LocalDate> optionalDateOfIssue = ofNullable(dateOfIssue);
+        String stringDate = optionalDateOfIssue.map(date -> formatLocalDateToString(date, DATE)).orElse(null);
+
+        CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
+            .id(oldOrder.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
+            .hearingDate(oldOrder.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
+            .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
+            .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
+            .directions(directions.map(Directions::getDirectionsList).orElse(orderDirections))
+            .dateOfIssue(oldOrder.map(CaseManagementOrder::getDateOfIssue).orElse(stringDate))
+            .status(oldOrder.map(CaseManagementOrder::getStatus).orElse(null))
+            .orderDoc(oldOrder.map(CaseManagementOrder::getOrderDoc).orElse(null))
+            .action(oldOrder.map(CaseManagementOrder::getAction).orElse(null))
+            .nextHearing(oldOrder.map(CaseManagementOrder::getNextHearing).orElse(null))
+            .build();
+
+        preparedOrder.setActionWithNullDocument(orderAction);
+
+        if (preparedOrder.isSealed() && nextHearingDateList != null) {
+            preparedOrder.setNextHearingFromDynamicElement(nextHearingDateList.getValue());
+        }
+
+        return preparedOrder;
+    }
+
     @JsonGetter("caseManagementOrder")
-    private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
+    private CaseManagementOrder getCaseManagementOrderForLocalAuthority() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
             return caseManagementOrder;
         }
