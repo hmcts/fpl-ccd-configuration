@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -96,7 +97,8 @@ class ActionCaseManagementOrderControllerAboutToStartTest extends AbstractContro
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getCaseManagementOrder()).isEqualTo(CaseManagementOrder.builder().build());
+        assertThat(caseData.getCaseManagementOrder())
+            .isEqualTo(CaseManagementOrder.builder().directions(emptyList()).build());
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {
