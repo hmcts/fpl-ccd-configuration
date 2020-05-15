@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseExtensionController.class)
@@ -29,7 +28,6 @@ class CaseExtensionControllerMidEventTest extends AbstractControllerTest {
     @Test
     void shouldPopulateExtensionDateLabelWith8WeekExtensionDate() {
         LocalDate caseCompletionDate = LocalDate.of(2030, 11, 12);
-        setField(caseExtensionController, "caseCompletionDate", caseCompletionDate);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseCompletionDate", caseCompletionDate))

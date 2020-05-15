@@ -29,15 +29,13 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class CaseExtensionController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
-    private LocalDate caseCompletionDate;
-    private LocalDate eightWeekExtensionDate;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseCompletionDate = getCaseCompletionDate(caseData);
+        LocalDate caseCompletionDate = getCaseCompletionOrSubmittedDate(caseData);
 
         caseDetails.getData().put("shouldBeCompletedByDate", formatLocalDateToString(caseCompletionDate, DATE));
 
@@ -51,10 +49,9 @@ public class CaseExtensionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        eightWeekExtensionDate = getCaseCompletionDateFor8WeekExtension(caseData);
+        LocalDate eightWeekExtensionDate = getCaseCompletionDateFor8WeekExtension(caseData);
 
-        caseDetails.getData().put("extensionDateEightWeeks", formatLocalDateToString(eightWeekExtensionDate,
-                DATE));
+        caseDetails.getData().put("extensionDateEightWeeks", formatLocalDateToString(eightWeekExtensionDate, DATE));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -66,7 +63,7 @@ public class CaseExtensionController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        caseCompletionDate = getCaseCompletionDate(caseDetails);
+        LocalDate caseCompletionDate = getCaseCompletionDate(caseDetails);
         caseDetails.getData().put("caseCompletionDate", caseCompletionDate);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -80,19 +77,17 @@ public class CaseExtensionController {
         if (caseDetails.getData().get("caseExtensionTimeList").equals("EightWeekExtension")) {
             if (caseDetails.getData().get("caseExtensionTimeConfirmationList").equals("EightWeekExtension")) {
                 return getCaseCompletionDateFor8WeekExtension(caseData);
-            } else {
+            }
                 return caseData.getEightWeeksExtensionDateOther();
             }
-        } else {
             return caseData.getExtensionDateOther();
-        }
     }
 
     private LocalDate getCaseCompletionDateFor8WeekExtension(CaseData caseData) {
-        return getCaseCompletionDate(caseData).plusWeeks(8);
+        return getCaseCompletionOrSubmittedDate(caseData).plusWeeks(8);
     }
 
-    private LocalDate getCaseCompletionDate(CaseData caseData) {
+    private LocalDate getCaseCompletionOrSubmittedDate(CaseData caseData) {
         if (isEmpty(caseData.getCaseCompletionDate())) {
             return caseData.getDateSubmitted();
         } else {

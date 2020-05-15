@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseExtensionController.class)
@@ -57,16 +56,17 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldPopulateCaseCompletionDateWhenSubmittingWith8WeekExtension() {
-        LocalDate eightWeekExtensionDate = LocalDate.of(2030,11,11);
-        setField(caseExtensionController, "eightWeekExtensionDate", eightWeekExtensionDate);
+        LocalDate dateSubmitted = LocalDate.of(2030,11,11);
+        LocalDate eightWeekExtensionDate = dateSubmitted.plusWeeks(8);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseExtensionTimeList", "EightWeekExtension",
-                "caseExtensionTimeConfirmationList", "EightWeekExtension"))
+                "caseExtensionTimeConfirmationList", "EightWeekExtension",
+                "dateSubmitted", dateSubmitted))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(callbackResponse.getData().get("caseCompletionDate")).isEqualTo("2030-11-11");
+        assertThat(callbackResponse.getData().get("caseCompletionDate")).isEqualTo(eightWeekExtensionDate.toString());
     }
 }
