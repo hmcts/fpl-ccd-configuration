@@ -214,7 +214,7 @@
     "Name": "Documents",
     "Description": "Upload documents",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "*",
+    "PreConditionState(s)": "Open;Submitted;Gatekeeping;PREPARE_FOR_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
