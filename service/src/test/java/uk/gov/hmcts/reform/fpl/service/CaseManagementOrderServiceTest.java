@@ -192,8 +192,8 @@ class CaseManagementOrderServiceTest {
     void shouldRemoveCustomDirectionsWhenCMODoesNotExistOnCaseDetails() {
         Map<String, Object> caseData = new HashMap<>();
 
-        Stream.of(values()).forEach(direction ->
-            caseData.put(direction.toCaseManagementOrderDirectionField(), wrapElements(createUnassignedDirection()))
+        Stream.of(values()).forEach(assignee ->
+            caseData.put(assignee.toCaseManagementOrderDirectionField(), wrapElements(createUnassignedDirection()))
         );
 
         service.prepareCustomDirections(CaseDetails.builder().data(caseData).build(), null);

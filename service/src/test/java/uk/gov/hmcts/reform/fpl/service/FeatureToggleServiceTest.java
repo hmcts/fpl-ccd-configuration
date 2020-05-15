@@ -82,6 +82,17 @@ public class FeatureToggleServiceTest {
         verify(ldClient).boolVariation(eq("payments"), any(LDUser.class), eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void shouldMakeCorrectCallForCloseCase(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(featureToggleService.isCloseCaseEnabled()).isEqualTo(toggleState);
+
+        verify(ldClient).boolVariation(eq("close-case"), any(LDUser.class), eq(false));
+    }
+
+
     private void givenToggle(boolean state) {
         when(ldClient.boolVariation(anyString(), any(), anyBoolean())).thenReturn(state);
     }

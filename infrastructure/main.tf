@@ -89,8 +89,9 @@ module "fpl-performance-alert" {
   severity_level             = "2"
   action_group_name          = "${var.product}-support"
   trigger_threshold_operator = "GreaterThan"
-  trigger_threshold          = 5
+  trigger_threshold          = 2
   resourcegroup_name         = "${local.alert_resource_group_name}"
+  enabled                    = "${var.enable_alerts}"
 }
 
 resource "azurerm_key_vault_secret" "scheduler-db-password" {
