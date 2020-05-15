@@ -66,7 +66,7 @@ data "azurerm_key_vault_secret" "fpl_support_email_secret" {
 module "fpl-action-group" {
   source                 = "git@github.com:hmcts/cnp-module-action-group"
   location               = "global"
-  env                    = "${var.env}"
+  env                    = "prod"
   resourcegroup_name     = "${local.alert_resource_group_name}"
   action_group_name      = "${var.product}-support"
   short_name             = "${var.product}-support"
@@ -78,7 +78,7 @@ module "fpl-performance-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
   location                   = "${var.appinsights_location}"
 
-  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  app_insights_name          = "${var.product}-${var.component}-appinsights-prod"
 
   alert_name                 = "${var.product}-performance-alert"
   alert_desc                 = "Requests that took longer than 1 seconds to complete"
@@ -89,7 +89,7 @@ module "fpl-performance-alert" {
   severity_level             = "2"
   action_group_name          = "${var.product}-support"
   trigger_threshold_operator = "GreaterThan"
-  trigger_threshold          = 5
+  trigger_threshold          = 2
   resourcegroup_name         = "${local.alert_resource_group_name}"
 }
 
