@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,22 +34,18 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentedBy;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.time.format.DateTimeFormatter.ofLocalizedDate;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,11 +76,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 @OverrideAutoConfiguration(enabled = true)
 class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long CASE_ID = 1L;
-    private static final DateTimeFormatter FORMATTER = ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK);
     private static final String DRAFT_CMO_FILE_NAME = "draft-case-management-order.pdf";
-
-    @Autowired
-    private DraftCMOService draftCMOService;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
@@ -110,7 +101,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             "respondents1", createRespondents(),
             "others", createOthers());
 
-        List<String> expected = List.of(now().plusDays(5).format(FORMATTER), now().plusDays(2).format(FORMATTER));
+        List<String> expected = List.of(formatLocalDateToMediumStyle(5), formatLocalDateToMediumStyle(2));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -183,7 +174,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
         assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
-        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(now().plusDays(5).toString());
+        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(formatLocalDateToMediumStyle(5));
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
         assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo(DRAFT_CMO_FILE_NAME);
         assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");
@@ -351,14 +342,6 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     }
 
     private CaseDetails prepareCaseDetailsForAboutToSubmit() {
-        DynamicList dynamicHearingDates = draftCMOService
-            .buildDynamicListFromHearingDetails(createHearingBookingsFromInitialDate(now()));
-
-        dynamicHearingDates.setValue(DynamicListElement.builder()
-            .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-            .label(now().plusDays(5).toString())
-            .build());
-
         Map<String, Object> data = new HashMap<>();
 
         Stream.of(DirectionAssignee.values()).forEach(direction ->
@@ -366,7 +349,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
                 createElementCollection(createUnassignedDirection()))
         );
 
-        data.put(HEARING_DATE_LIST.getKey(), dynamicHearingDates);
+        data.put(HEARING_DATE_LIST.getKey(), getDynamicList());
         data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder()
             .orderDoc(DocumentReference.builder().filename(DRAFT_CMO_FILE_NAME).build())
             .status(SELF_REVIEW)
@@ -374,6 +357,30 @@ class DraftCMOControllerTest extends AbstractControllerTest {
             .build());
 
         return buildCaseDetails(data);
+    }
+
+    private DynamicList getDynamicList() {
+        DynamicListElement listElement = DynamicListElement.builder()
+            .label(formatLocalDateToMediumStyle(5))
+            .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+            .build();
+
+        return DynamicList.builder()
+            .listItems(List.of(
+                DynamicListElement.builder()
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .label(formatLocalDateToMediumStyle(5))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(2))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(0))
+                    .build()))
+            .value(listElement)
+            .build();
     }
 
     private CallbackRequest buildSubmittedRequest() {
@@ -387,5 +394,9 @@ class DraftCMOControllerTest extends AbstractControllerTest {
                 .data(Map.of(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), order))
                 .build())
             .build();
+    }
+
+    private String formatLocalDateToMediumStyle(int i) {
+        return formatLocalDateToString(dateNow().plusDays(i), FormatStyle.MEDIUM);
     }
 }

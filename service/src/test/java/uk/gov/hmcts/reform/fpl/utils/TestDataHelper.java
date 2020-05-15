@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 public class TestDataHelper {
     public static final String ALLOCATED_JUDGE_KEY = "allocatedJudge";
+    public static final byte[] DOCUMENT_CONTENT = {1, 2, 3, 4, 5};
 
     private TestDataHelper() {
     }

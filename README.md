@@ -19,44 +19,20 @@ git submodule init
 git submodule update
 ```
 
-You must run this command once to enable modules.
+Add services, roles and users from fpla-docker repository.
+
+Run 
 ```
-./ccd enable backend frontend sidam sidam-local sidam-local-ccd dm-store
+./bin/generate-local-user-mappings.sh
 ```
-
-To enable the ccd gateway service to route payments requests to our wiremock service make sure that following environmental variable is set:
-```shell script
-PROXY_PAYMENTS_STUB=http://wiremock:8080/payments
-```
-
-Creating and starting containers:
-```
-./ccd compose up -d
-```
-
-Add services, roles and users (needs to be run in below order).
-
-Make sure the `IDAM_ADMIN_USER` and `IDAM_ADMIN_PASSWORD` env variables are set to IDAM initial user.
-You can run the below scripts by prefixing them with `IDAM_ADMIN_USER= IDAM_ADMIN_PASSWORD=`,
-by exporting variables or use some other approach of managing env variables,
-e.g. [direnv](https://direnv.net).
-
-The values can be found on [Confluence](https://tools.hmcts.net/confluence/x/eQP3P).
-
-```bash
-$ ./bin/configurer/add-services.sh
-$ ./bin/configurer/add-roles.sh
-$ ./bin/configurer/add-users.sh
-```
-
-Users are defined in `bin/configurer/users.json`. Run the final script each time new LA users are added in order to fix access segregation locally.
+script each time new LA users are added in order to fix access segregation locally.
 
 Load CCD definition:
 
 CCD definition is stored in JSON format. To load it into CCD instance please run:
 
 ```bash
-$ ./bin/configurer/import-ccd-definition.sh
+$ ./bin/import-ccd-definition.sh
 ```
 
 Note: Above script will export JSON content into XLSX file and upload it into instance of CCD definition store.
@@ -66,7 +42,7 @@ Additional note:
 You can skip some of the files by using -e option on the import-ccd-definitions, i.e.
 
 ```bash
-$ ./bin/configurer/import-ccd-definition.sh -e 'UserProfile.json,*-nonprod.json
+$ ./bin/import-ccd-definition.sh -e 'UserProfile.json,*-nonprod.json
 ```
 
 The command above will skip UserProfile.json and all files with -nonprod suffix (from the folders).
@@ -125,13 +101,8 @@ Note: Case number will be printed to the console while tests run e.g. `Applicati
 See [fpl-service](service/README.md) for more information.
 
 ## Stubbing
-Some external dependencies need to be stubbed (i.e. professional reference data).
-
-Docker-compose configures Wiremock to be exposed under port 8765.
-
-docker/wiremock folder configures the stubs themselves.
-Refer to the [documentation](http://wiremock.org)
-for an additional guide.
+Some external dependencies need to be stubbed (i.e. professional reference data). 
+Stubbing is configured in fpla-docker repository
 
 
 ## License

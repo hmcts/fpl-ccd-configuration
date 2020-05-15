@@ -55,7 +55,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     @MockBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockBean(name = "uk.gov.hmcts.reform.idam.client.IdamApi")
     private IdamApi idamApi;
 
     @MockBean
