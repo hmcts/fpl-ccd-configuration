@@ -8,8 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.time.LocalDate;
-
-import static org.springframework.util.StringUtils.isEmpty;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -33,9 +32,6 @@ public class CaseExtensionService {
     }
 
     public LocalDate getCaseCompletionOrSubmittedDate(CaseData caseData) {
-        if (isEmpty(caseData.getCaseCompletionDate())) {
-            return caseData.getDateSubmitted();
-        }
-        return caseData.getCaseCompletionDate();
+        return Optional.ofNullable(caseData.getCaseCompletionDate()).orElse(caseData.getDateSubmitted());
     }
 }
