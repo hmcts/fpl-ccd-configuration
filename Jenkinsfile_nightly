@@ -1,17 +1,33 @@
 #!groovy
 
 properties([
-  pipelineTriggers([cron('20 21 * * *')])
+  pipelineTriggers([cron('20 21 * * *')]),
+  parameters([
+    string(name: 'URL_FOR_FULL_FUNCTIONAL_TEST', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
+      description: 'The URL you want to run the full functional tests against'),
+    string(name: 'URL_FOR_SECURITY_SCAN', defaultValue: 'http://fpl-case-service-aat.service.core-compute-aat.internal',
+      description: 'The URL you want to run these security scan against'),
+    string(name: 'PROXY_SERVER', defaultValue: 'proxyout.reform.hmcts.net:8080',
+      description: 'The proxy server to use'),
+    string(name: 'SECURITY_RULES',
+      defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/FPLA-security-test-rules-DO-NOT-MERGE/conf/security-rules.conf',
+      description: 'The security rules to use'),
+  ])
 ])
 
 @Library('Infrastructure')
 
 def type = 'java'
-
 def product = 'fpl'
 def component = 'case-service'
 
 withNightlyPipeline(type, product, component) {
+  env.URL = params.URL_FOR_FULL_FUNCTIONAL_TEST
+  env.URL_FOR_SECURITY_SCAN = params.URL_FOR_SECURITY_SCAN
+  env.PROXY_SERVER = params.PROXY_SERVER
+  env.SECURITY_RULES = params.SECURITY_RULES
+
+  enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest()
 
@@ -24,9 +40,7 @@ withNightlyPipeline(type, product, component) {
   before('fullFunctionalTest') {
     env.DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal"
     env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
-    env.CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal"
-    env.URL = "https://manage-case.aat.platform.hmcts.net"
-    env.PROXY_SERVER = 'proxyout.reform.hmcts.net:8080'
+    env.CASE_SERVICE_URL=params.URL_FOR_SECURITY_SCAN
 
     try {
       sh('./gradlew --no-daemon --info --rerun-tasks functional')

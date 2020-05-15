@@ -21,6 +21,8 @@ public class Child implements ConfidentialParty<Child> {
     @NotNull(message = "You need to add details to children")
     private final ChildParty party;
 
+    private String finalOrderIssued;
+
     public boolean containsConfidentialDetails() {
         String hiddenValue = defaultIfNull(party.getDetailsHidden(), "");
 
