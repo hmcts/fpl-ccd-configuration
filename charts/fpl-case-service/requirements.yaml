@@ -15,3 +15,7 @@ dependencies:
     version: ~2.2.3
     repository: '@hmctspublic'
     condition: idam-pr.enabled
+  - name: postgresql
+    version: ~6.3.5
+    repository: '@stable'
+    condition: postgresql.enabled

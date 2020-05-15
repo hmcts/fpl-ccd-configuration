@@ -7,6 +7,9 @@ idam-pr:
 xui-webapp:
   enabled: false
 
+postgresql:
+  enabled: false
+
 java:
   aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest
