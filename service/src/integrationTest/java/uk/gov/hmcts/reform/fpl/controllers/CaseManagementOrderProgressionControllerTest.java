@@ -24,18 +24,17 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -61,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_SHORT_MONTH;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
@@ -115,18 +115,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(responseData.getCaseManagementOrder().getStatus()).isEqualTo(SELF_REVIEW);
-        cmoCommonAssertions(responseData, caseDataBefore);
+        assertResponseDataContainsExpectedFields(responseData, caseDataBefore);
 
         verify(notificationClient).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
             expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
-    }
-
-    private void cmoCommonAssertions(CaseData responseData, CaseData caseDataBefore) {
-        assertThat(responseData.getHearingDetails()).isEqualTo(caseDataBefore.getHearingDetails());
-        assertThat(responseData.getRespondents1()).isEqualTo(caseDataBefore.getRespondents1());
-        assertThat(responseData.getCaseLocalAuthority()).isEqualTo(caseDataBefore.getCaseLocalAuthority());
-        assertThat(responseData.getFamilyManCaseNumber()).isEqualTo(caseDataBefore.getFamilyManCaseNumber());
     }
 
     @Test
@@ -158,12 +151,9 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             ACTION_CASE_MANAGEMENT_ORDER));
         CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        List<CaseManagementOrder> expectedServedCMOs = new ArrayList<>();
-        expectedServedCMOs.add(order);
+        assertThat(unwrapElements(responseData.getServedCaseManagementOrders())).containsOnly(order);
 
-        assertThat(ElementUtils.unwrapElements(responseData.getServedCaseManagementOrders())).isEqualTo(
-            expectedServedCMOs);
-        cmoCommonAssertions(responseData, caseDataBefore);
+        assertResponseDataContainsExpectedFields(responseData, caseDataBefore);
     }
 
     @Test
@@ -241,6 +231,13 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         );
     }
 
+    private void assertResponseDataContainsExpectedFields(CaseData responseData, CaseData caseDataBefore) {
+        assertThat(responseData.getHearingDetails()).isEqualTo(caseDataBefore.getHearingDetails());
+        assertThat(responseData.getRespondents1()).isEqualTo(caseDataBefore.getRespondents1());
+        assertThat(responseData.getCaseLocalAuthority()).isEqualTo(caseDataBefore.getCaseLocalAuthority());
+        assertThat(responseData.getFamilyManCaseNumber()).isEqualTo(caseDataBefore.getFamilyManCaseNumber());
+    }
+
     private Map<String, Object> expectedReviewByRepresentativesNotificationParameters(
         RepresentativeServingPreferences servingPreference) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
@@ -291,6 +288,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .action(OrderAction.builder()
                 .type(actionType)
                 .build())
+            .directions(emptyList())
             .build();
     }
 
