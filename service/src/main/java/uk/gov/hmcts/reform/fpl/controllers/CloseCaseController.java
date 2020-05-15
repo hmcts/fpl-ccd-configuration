@@ -26,11 +26,6 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CloseCaseController {
 
-    // TODO: 11/05/2020 give access to current events in new state
-    //  • probably won't use ";" for the generated order stuff, it will be simpler
-    //  • Others could probably use ";" separation on their base version though, will need to change post state
-    //    condition to "*" though
-
     private static final String LABEL = "The case will remain open for 21 days to allow for appeal.\n\n"
         + "In a closed case, you can still:\n"
         + "   •  add a case note\n"
@@ -39,6 +34,8 @@ public class CloseCaseController {
         + "   •  submit a C2 application\n";
     private static final String LABEL_FIELD = "close_case_label";
     private static final String CLOSE_CASE_FIELD = "closeCase";
+    private static final String CLOSE_CASE_TAB_FIELD = "closeCaseTabField";
+    private static final String DEPRIVATION_OF_LIBERTY_FLAG = "deprivationOfLiberty";
     private final ValidateGroupService validatorService;
     private final ChildrenService childrenService;
     private final ObjectMapper mapper;
@@ -78,8 +75,11 @@ public class CloseCaseController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         // TODO: 11/05/2020 Mark children
-        // TODO: 11/05/2020 Check what needs to be displayed in the tabs, what is temporary and what is persistent?
-        data.put("deprivationOfLiberty", YesNo.from(caseData.getCloseCase().hasDeprivationOfLiberty()).getValue());
+        data.put(DEPRIVATION_OF_LIBERTY_FLAG, YesNo.from(caseData.getCloseCase().hasDeprivationOfLiberty()).getValue());
+        data.put(CLOSE_CASE_TAB_FIELD, caseData.getCloseCase());
+
+        data.remove(CLOSE_CASE_FIELD);
+        data.remove(LABEL_FIELD);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
