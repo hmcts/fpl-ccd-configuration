@@ -32,6 +32,8 @@ java:
     SCHEDULER_DB_USER: fpl_scheduler@fpl-case-service-{{ .Values.global.environment }}
     SCHEDULER_DB_HOST: fpl-case-service-{{ .Values.global.environment }}.postgres.database.azure.com
     SCHEDULER_DB_PORT: 5432
+    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
+    FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
   keyVaults:
     fpl:
       secrets:

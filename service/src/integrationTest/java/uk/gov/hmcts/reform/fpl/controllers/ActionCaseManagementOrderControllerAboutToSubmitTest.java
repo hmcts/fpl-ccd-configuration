@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
@@ -34,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,6 +50,9 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEA
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
@@ -61,6 +64,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.ALLOCATED_JUDGE_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
@@ -102,11 +106,14 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
     void shouldReturnCaseManagementOrderWithFinalDocumentWhenSendToAllParties() {
         populatedCaseDetails.getData().putAll(
             Map.of(
+                SCHEDULE.getKey(), createSchedule(true),
+                RECITALS.getKey(), createRecitals(),
                 HEARING_DETAILS_KEY, hearingBookingWithStartDatePlus(-1),
                 CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
                 ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
                 NEXT_HEARING_DATE_LIST.getKey(), hearingDateList(),
-                ALLOCATED_JUDGE_KEY, testJudge()));
+                ALLOCATED_JUDGE_KEY, testJudge(),
+                ALL_PARTIES.toCaseManagementOrderDirectionField(), wrapElements(Direction.builder().build())));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
@@ -119,7 +126,7 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
         assertThat(hearingBooking.getHearingTime()).isEqualTo(expectedHearingTime());
         assertThat(hearingBooking.getPreHearingAttendance()).isEqualTo(expectedPreHearing());
-        assertThat(caseData.getCaseManagementOrder()).isEqualTo(expectedCaseManagementOrder());
+        assertThat(caseData.getCaseManagementOrder()).isEqualToComparingFieldByField(expectedCaseManagementOrder());
     }
 
     @Test
@@ -156,25 +163,21 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-
-        assertThat(caseData.getCaseManagementOrder()).isNull();
+        assertThat(response.getData()).doesNotContainKey(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
     }
 
     @Test
     void shouldAllowJudiciaryToCompleteActionEventWhenNoCaseManagementOrder() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(populatedCaseDetails);
 
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-
-        assertThat(caseData.getCaseManagementOrder()).isNull();
+        assertThat(response.getData()).doesNotContainKey(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
     }
 
     private CaseManagementOrder expectedCaseManagementOrder() {
         return CaseManagementOrder.builder()
             .orderDoc(buildFromDocument(document()))
             .id(ID)
-            .directions(emptyList())
+            .directions(wrapElements(Direction.builder().assignee(ALL_PARTIES).readOnly("No").custom("Yes").build()))
             .action(OrderAction.builder()
                 .type(SEND_TO_ALL_PARTIES)
                 .nextHearingType(ISSUES_RESOLUTION_HEARING)
@@ -184,6 +187,8 @@ class ActionCaseManagementOrderControllerAboutToSubmitTest extends AbstractContr
                 .date(formatTodayToMediumStyle())
                 .build())
             .status(SEND_TO_JUDGE)
+            .schedule(createSchedule(true))
+            .recitals(createRecitals())
             .build();
     }
 

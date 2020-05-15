@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -45,7 +44,6 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 @RequestMapping("/callback/action-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ActionCaseManagementOrderController {
-    private final DraftCMOService draftCMOService;
     private final CaseManagementOrderService caseManagementOrderService;
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -66,7 +64,7 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseManagementOrder);
+        caseManagementOrderService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
         caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
         caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
@@ -81,7 +79,10 @@ public class ActionCaseManagementOrderController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        Document document = caseManagementOrderService.getDocument(caseData);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+
+        Document document = caseManagementOrderService.getOrderDocument(caseData);
+        caseManagementOrder.setOrderDocReferenceFromDocument(document);
 
         data.put(ORDER_ACTION.getKey(), OrderAction.builder().document(buildFromDocument(document)).build());
 
@@ -113,10 +114,11 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        CaseManagementOrder preparedOrder = caseManagementOrderService.getOrder(caseData);
+        Document document = caseManagementOrderService.getOrderDocument(caseData);
+        order.setOrderDocReferenceFromDocument(document);
 
         caseDetails.getData().remove(DATE_OF_ISSUE.getKey());
-        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), preparedOrder);
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
         caseDetails.getData().put("cmoEventId", ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -155,7 +157,7 @@ public class ActionCaseManagementOrderController {
     }
 
     private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
-        return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
+        return caseManagementOrderService.getHearingDateDynamicList(hearingBookings, null);
     }
 
     private void publishEventOnApprovedCMO(CallbackRequest callbackRequest) {
