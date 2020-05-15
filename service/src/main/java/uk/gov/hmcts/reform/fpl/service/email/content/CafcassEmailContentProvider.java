@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
@@ -12,19 +12,11 @@ import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTempl
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
-
-    @Autowired
-    protected CafcassEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                          ObjectMapper mapper,
-                                          LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                          CafcassLookupConfiguration cafcassLookupConfiguration) {
-        super(uiBaseUrl, mapper);
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-        this.cafcassLookupConfiguration = cafcassLookupConfiguration;
-    }
+    private final ObjectMapper mapper;
 
     public SubmitCaseCafcassTemplate buildCafcassSubmissionNotification(CaseDetails caseDetails,
                                                                         String localAuthorityCode) {
