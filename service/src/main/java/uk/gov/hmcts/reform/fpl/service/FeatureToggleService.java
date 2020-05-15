@@ -46,4 +46,8 @@ public class FeatureToggleService {
     public boolean isPaymentsEnabled() {
         return ldClient.boolVariation("payments", ldUser, false);
     }
+
+    public boolean isExpertUIEnabled() {
+        return ldClient.boolVariation("expert-ui", ldUser, false);
+    }
 }

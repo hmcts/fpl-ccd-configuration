@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -12,19 +12,11 @@ import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplat
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HmctsEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-
-    @Autowired
-    protected HmctsEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                        ObjectMapper mapper,
-                                        LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                        HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
-        super(uiBaseUrl, mapper);
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
-    }
+    private final ObjectMapper mapper;
 
     public SubmitCaseHmctsTemplate buildHmctsSubmissionNotification(CaseDetails caseDetails,
                                                                     String localAuthorityCode) {
