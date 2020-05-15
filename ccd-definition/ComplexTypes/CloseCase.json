@@ -4,7 +4,7 @@
     "ID": "CloseCase",
     "ListElementCode": "date",
     "FieldType": "Date",
-    "ElementLabel": "Date case was closed",
+    "ElementLabel": "Date",
     "HintText": "For example, 31 3 1980",
     "SecurityClassification": "Public"
   },
@@ -42,7 +42,7 @@
     "ID": "CloseCase",
     "ListElementCode": "details",
     "FieldType": "TextArea",
-    "ElementLabel": "Add why the case was closed",
+    "ElementLabel": "Closure details",
     "FieldShowCondition": "fullReason = \"OTHER\" OR partialReason = \"OTHER\"",
     "SecurityClassification": "Public"
   }
