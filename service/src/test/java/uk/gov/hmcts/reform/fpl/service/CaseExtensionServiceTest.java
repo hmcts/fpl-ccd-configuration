@@ -84,7 +84,7 @@ class CaseExtensionServiceTest {
 
         LocalDate expectedCaseCompletionDate = data.getCaseCompletionDate();
 
-        LocalDate caseCompletionDate = service.getShouldBeCompletedByDate(data);
+        LocalDate caseCompletionDate = service.getCaseShouldBeCompletedByDate(data);
 
         assertThat(caseCompletionDate.isEqual(expectedCaseCompletionDate));
     }
@@ -96,7 +96,7 @@ class CaseExtensionServiceTest {
 
         LocalDate expectedCaseCompletionDate = data.getDateSubmitted().plusWeeks(8);
 
-        LocalDate caseCompletionDate = service.getShouldBeCompletedByDate(data);
+        LocalDate caseCompletionDate = service.getCaseShouldBeCompletedByDate(data);
 
         assertThat(caseCompletionDate.isEqual(expectedCaseCompletionDate));
     }
