@@ -74,13 +74,13 @@ class DraftCMOServiceTest {
     @BeforeEach
     void setUp() {
         hearingDetails = createHearingBookingsFromInitialDate(time.now());
+        caseManagementOrder = CaseManagementOrder.builder().build();
     }
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
         caseData = CaseData.builder().hearingDetails(hearingDetails).build();
-        caseManagementOrder = CaseManagementOrder.builder().build();
 
         DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
 
@@ -104,7 +104,6 @@ class DraftCMOServiceTest {
     void shouldReturnHearingDateWhenHearingDateIsInThePast() {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(10));
         caseData = CaseData.builder().hearingDetails(hearingDetails).build();
-        caseManagementOrder = CaseManagementOrder.builder().build();
 
         DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
 
@@ -133,7 +132,6 @@ class DraftCMOServiceTest {
                 .id(hearingDetails.get(0).getId())
                 .build())))
             .build();
-        caseManagementOrder = CaseManagementOrder.builder().build();
 
         DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
 
@@ -153,7 +151,6 @@ class DraftCMOServiceTest {
     void shouldNotReturnNextHearingDateWhenHearingDateIsInThePast() {
         hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(4));
         caseData = CaseData.builder().hearingDetails(hearingDetails).build();
-        caseManagementOrder = CaseManagementOrder.builder().build();
 
         DynamicList data = service.getNextHearingDateDynamicList(caseData);
 
@@ -174,7 +171,6 @@ class DraftCMOServiceTest {
                 .id(hearingDetails.get(0).getId())
                 .build())))
             .build();
-        caseManagementOrder = CaseManagementOrder.builder().build();
 
         DynamicList data = service.getNextHearingDateDynamicList(caseData);
 
