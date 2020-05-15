@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.Directions;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.Order;
@@ -68,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 public class CaseDataGeneratorHelper {
 
@@ -328,14 +330,6 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static List<Element<Direction>> createElementCollection(Direction direction) {
-        return ImmutableList.of(
-            Element.<Direction>builder()
-                .value(direction)
-                .build()
-        );
-    }
-
     private static Direction createCustomDirection(DirectionAssignee assignee) {
         return Direction.builder()
             .directionType("Direction title")
@@ -430,14 +424,17 @@ public class CaseDataGeneratorHelper {
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .representatives(representatives)
-            .allPartiesCustomCMO(getDirectionByAssignee(cmoDirections, ALL_PARTIES))
-            .localAuthorityDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
-            .courtDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, COURT))
-            .cafcassDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, CAFCASS))
-            .otherPartiesDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, OTHERS))
-            .respondentDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
+            .directionsForCaseManagementOrder(Directions.builder()
+                .allPartiesCustomCMO(getDirectionByAssignee(cmoDirections, ALL_PARTIES))
+                .localAuthorityDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
+                .courtDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, COURT))
+                .cafcassDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, CAFCASS))
+                .otherPartiesDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, OTHERS))
+                .respondentDirectionsCustomCMO(getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
+                .build())
             .caseManagementOrder(createApprovedCMO())
             .servedCaseManagementOrders(wrapElements(CaseManagementOrder.builder().build()))
+            .allocatedJudge(testJudge())
             .build();
     }
 

@@ -95,6 +95,7 @@ const enterJudgeAndLegalAdvisor =  (I, createOrderEventPage, order, hasAllocated
   if (hasAllocatedJudge) {
     createOrderEventPage.useAllocatedJudge(order.judgeAndLegalAdvisor.legalAdvisorName);
   } else {
+    createOrderEventPage.useAlternateJudge();
     createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
   }
 };

@@ -46,10 +46,10 @@ class RepresentativeAboutToSubmitControllerTest extends AbstractControllerTest {
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @MockBean
+    @MockBean(name = "uk.gov.hmcts.reform.rd.client.OrganisationApi")
     private OrganisationApi organisationApi;
 
-    @MockBean
+    @MockBean(name = "uk.gov.hmcts.reform.ccd.client.CaseUserApi")
     private CaseUserApi caseUserApi;
 
     RepresentativeAboutToSubmitControllerTest() {

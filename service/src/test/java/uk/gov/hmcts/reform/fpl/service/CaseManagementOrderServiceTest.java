@@ -1,39 +1,49 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.NextHearing;
-import uk.gov.hmcts.reform.fpl.model.OrderAction;
+import uk.gov.hmcts.reform.fpl.model.Directions;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -42,23 +52,23 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
-import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
-import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {FixedTimeConfiguration.class, CaseManagementOrderService.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, CaseManagementOrderService.class, FixedTimeConfiguration.class
+})
 class CaseManagementOrderServiceTest {
     private static final Document DOCUMENT = document();
-    private static final UUID ID = fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
 
     @MockBean
     private DocumentService documentService;
@@ -66,118 +76,239 @@ class CaseManagementOrderServiceTest {
     @MockBean
     private CaseManagementOrderGenerationService templateDataService;
 
-    @MockBean
-    private DraftCMOService draftCMOService;
+    @Autowired
+    private CaseManagementOrderService service;
 
     @Autowired
     private Time time;
 
     @Autowired
-    private CaseManagementOrderService service;
+    private ObjectMapper mapper;
 
-    @Test
-    void shouldExtractExpectedMapFieldsWhenAllDataIsPresent() {
-        Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(CaseManagementOrder.builder()
-            .schedule(Schedule.builder().build())
-            .recitals(emptyList())
-            .action(OrderAction.builder().build())
-            .build());
+    private CaseManagementOrder caseManagementOrder;
+    private List<Element<HearingBooking>> hearingDetails;
+    private CaseData caseData;
 
-        assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
+    @BeforeEach
+    void setUp() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now());
+        caseManagementOrder = CaseManagementOrder.builder().build();
     }
 
     @Test
-    void shouldExtractMapFieldsWhenPartialDataIsPresent() {
-        Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(CaseManagementOrder.builder()
-            .schedule(Schedule.builder().build())
-            .build());
+    void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
+        caseData = CaseData.builder().hearingDetails(hearingDetails).build();
 
-        assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
+        DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
+
+        assertThat(data.getListItems())
+            .containsAll(Arrays.asList(
+                DynamicListElement.builder()
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .label(formatLocalDateToMediumStyle(10))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(7))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(5))
+                    .build()));
     }
 
     @Test
-    void shouldExtractMapFieldsWhenCaseManagementOrderIsNull() {
-        Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(null);
+    void shouldReturnHearingDateWhenHearingDateIsInThePast() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(10));
+        caseData = CaseData.builder().hearingDetails(hearingDetails).build();
 
-        assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
+        DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
+
+        assertThat(data.getListItems())
+            .containsAll(Arrays.asList(
+                DynamicListElement.builder()
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .label(formatLocalDateToString(time.now().minusDays(5).toLocalDate(), FormatStyle.MEDIUM))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToString(time.now().minusDays(8).toLocalDate(), FormatStyle.MEDIUM))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToString(time.now().minusDays(10).toLocalDate(), FormatStyle.MEDIUM))
+                    .build()));
     }
 
     @Test
-    void shouldGetCaseManagementOrderWithDocumentReference() {
-        initMocks();
-
-        LocalDateTime dateTime = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
-        CaseManagementOrder order = service.getOrder(buildCaseDataForCMODocmosisGeneration(dateTime));
-
-        assertThat(order).isEqualToComparingFieldByField(expectedCaseManagementOrder());
-    }
-
-    @Test
-    void shouldGetDocumentObjectWhenCalled() {
-        initMocks();
-
-        assertThat(service.getDocument(buildCaseDataForCMODocmosisGeneration(time.now()))).isEqualTo(DOCUMENT);
-    }
-
-    private void initMocks() {
-        DocmosisOrder order = any(DocmosisOrder.class);
-        given(documentService.getDocumentFromDocmosisOrderTemplate(order, eq(CMO))).willReturn(DOCUMENT);
-        given(templateDataService.getTemplateData(any())).willReturn(DocmosisCaseManagementOrder.builder().build());
-        given(draftCMOService.prepareCaseManagementOrder(any())).willReturn(baseOrder().build());
-    }
-
-    private CaseManagementOrder expectedCaseManagementOrder() {
-        return baseOrder().orderDoc(buildFromDocument(DOCUMENT)).build();
-    }
-
-    private CaseManagementOrder.CaseManagementOrderBuilder baseOrder() {
-        return CaseManagementOrder.builder()
-            .id(ID)
-            .hearingDate("6 Jan 2099")
-            .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
-            .directions(expectedDirections())
-            .schedule(createSchedule(true))
-            .recitals(createRecitals())
-            .action(OrderAction.builder().type(SEND_TO_ALL_PARTIES).build())
-            .nextHearing(NextHearing.builder().id(CaseManagementOrderServiceTest.ID).build());
-    }
-
-    private List<Element<Direction>> expectedDirections() {
-        return wrapElements(
-            expectedDirection(ALL_PARTIES),
-            expectedDirection(LOCAL_AUTHORITY),
-            expectedDirection(RESPONDENT_1),
-            expectedDirection(CAFCASS),
-            expectedDirection(OTHER_1),
-            expectedDirection(COURT)
-        );
-    }
-
-    private Direction expectedDirection(ParentsAndRespondentsDirectionAssignee respondent) {
-        return baseDirection(PARENTS_AND_RESPONDENTS, respondent, null);
-    }
-
-    private Direction expectedDirection(OtherPartiesDirectionAssignee other) {
-        return baseDirection(OTHERS, null, other);
-    }
-
-    private Direction expectedDirection(DirectionAssignee assignee) {
-        return baseDirection(assignee, null, null);
-    }
-
-    private Direction baseDirection(DirectionAssignee assignee,
-                                    ParentsAndRespondentsDirectionAssignee respondent,
-                                    OtherPartiesDirectionAssignee other) {
-        return Direction.builder()
-            .directionType("Direction title")
-            .directionText("Mock direction text")
-            .directionNeeded(YES.getValue())
-            .assignee(assignee)
-            .parentsAndRespondentsAssignee(respondent)
-            .otherPartiesAssignee(other)
-            .readOnly("No")
-            .custom("Yes")
-            .dateToBeCompletedBy(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
+    void shouldNotReturnHearingDateWhenHearingIsInSealedCmo() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
+        caseData = CaseData.builder()
+            .hearingDetails(hearingDetails)
+            .servedCaseManagementOrders(List.of(element(CaseManagementOrder.builder()
+                .id(hearingDetails.get(0).getId())
+                .build())))
             .build();
+
+        DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
+
+        assertThat(data.getListItems())
+            .containsAll(Arrays.asList(
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(7))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(5))
+                    .build()));
+    }
+
+    @Test
+    void shouldNotReturnNextHearingDateWhenHearingDateIsInThePast() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().minusDays(4));
+        caseData = CaseData.builder().hearingDetails(hearingDetails).build();
+
+        DynamicList data = service.getNextHearingDateDynamicList(caseData);
+
+        assertThat(data.getListItems())
+            .containsOnly(
+                DynamicListElement.builder()
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .label(formatLocalDateToMediumStyle(1))
+                    .build());
+    }
+
+    @Test
+    void shouldNotReturnNextHearingDateWhenHearingIsInSealedCmo() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now().plusDays(5));
+        caseData = CaseData.builder()
+            .hearingDetails(hearingDetails)
+            .servedCaseManagementOrders(List.of(element(CaseManagementOrder.builder()
+                .id(hearingDetails.get(0).getId())
+                .build())))
+            .build();
+
+        DynamicList data = service.getNextHearingDateDynamicList(caseData);
+
+        assertThat(data.getListItems())
+            .containsAll(Arrays.asList(
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(7))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(5))
+                .build()));
+    }
+
+    @Test
+    void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
+        hearingDetails = createHearingBookingsFromInitialDate(time.now());
+        caseData = CaseData.builder().hearingDetails(hearingDetails).build();
+        caseManagementOrder = createCaseManagementOrder();
+
+        DynamicList data = service.getHearingDateDynamicList(caseData, caseManagementOrder);
+
+        assertThat(data.getValue())
+            .isEqualTo(DynamicListElement.builder()
+                .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                .label(formatLocalDateToMediumStyle(2))
+                .build());
+    }
+
+    @Test
+    void shouldMoveDirectionsToCaseDetailsWhenCMOExistsWithDirections() {
+        Map<String, Object> data = new HashMap<>();
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        CaseManagementOrder order = CaseManagementOrder.builder().directions(createCmoDirections()).build();
+
+        service.prepareCustomDirections(caseDetails, order);
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        Map<DirectionAssignee, List<Element<Direction>>> map = Directions.getMapping(createCmoDirections());
+
+        assertThat(data).containsKeys("allPartiesCustomCMO", "localAuthorityDirectionsCustomCMO",
+            "cafcassDirectionsCustomCMO", "courtDirectionsCustomCMO", "otherPartiesDirectionsCustomCMO",
+            "respondentDirectionsCustomCMO");
+
+        assertThat(caseData.getDirectionsForCaseManagementOrder())
+            .isEqualTo(Directions.builder()
+                .allPartiesCustomCMO(map.get(ALL_PARTIES))
+                .localAuthorityDirectionsCustomCMO(map.get(LOCAL_AUTHORITY))
+                .respondentDirectionsCustomCMO(map.get(PARENTS_AND_RESPONDENTS))
+                .cafcassDirectionsCustomCMO(map.get(CAFCASS))
+                .otherPartiesDirectionsCustomCMO(map.get(OTHERS))
+                .courtDirectionsCustomCMO(map.get(COURT))
+                .build());
+    }
+
+    @Test
+    void shouldRemoveCustomDirectionsWhenCMODoesNotExistOnCaseDetails() {
+        Map<String, Object> caseData = new HashMap<>();
+
+        Stream.of(values()).forEach(assignee ->
+            caseData.put(assignee.toCaseManagementOrderDirectionField(), wrapElements(createUnassignedDirection()))
+        );
+
+        service.prepareCustomDirections(CaseDetails.builder().data(caseData).build(), null);
+
+        assertThat(caseData).doesNotContainKeys("allPartiesCustomCMO", "localAuthorityDirectionsCustomCMO",
+            "cafcassDirectionsCustomCMO", "courtDirectionsCustomCMO", "otherPartiesDirectionsCustomCMO",
+            "respondentDirectionsCustomCMO");
+    }
+
+    private CaseManagementOrder createCaseManagementOrder() {
+        return CaseManagementOrder.builder()
+            .hearingDate(formatLocalDateToMediumStyle(2))
+            .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+            .recitals(wrapElements(Recital.builder().build()))
+            .schedule(Schedule.builder().build())
+            .status(SELF_REVIEW)
+            .orderDoc(DocumentReference.builder().build())
+            .build();
+    }
+
+    private String formatLocalDateToMediumStyle(int i) {
+        return formatLocalDateToString(time.now().plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+    }
+
+    @Nested
+    class PrepareCaseDetailsTest {
+        private final String[] keys = {HEARING_DATE_LIST.getKey(), RECITALS.getKey(), SCHEDULE.getKey()};
+
+        private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
+
+        @Test
+        void shouldRemoveScheduleAndRecitalsAndHearingDateListFromCaseData() {
+            data = new HashMap<>();
+
+            Arrays.stream(keys).forEach(key -> data.put(key, ""));
+
+            service.removeTransientObjectsFromCaseData(data);
+
+            assertThat(data).doesNotContainKeys(keys);
+        }
+    }
+
+    @Nested
+    class GetOrder {
+
+        @BeforeEach
+        void setup() {
+            DocmosisOrder order = any(DocmosisOrder.class);
+            given(documentService.getDocumentFromDocmosisOrderTemplate(order, eq(CMO))).willReturn(DOCUMENT);
+            given(templateDataService.getTemplateData(any())).willReturn(DocmosisCaseManagementOrder.builder().build());
+        }
+
+        @Test
+        void shouldGetCaseManagementOrderWithDocumentReference() {
+            LocalDateTime dateTime = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
+            Document document = service.getOrderDocument(buildCaseDataForCMODocmosisGeneration(dateTime));
+
+            assertThat(document).isEqualTo(DOCUMENT);
+        }
     }
 }

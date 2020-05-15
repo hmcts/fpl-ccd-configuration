@@ -6,7 +6,6 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Representation of a CCD Dynamic List which is then converted to a select dropdown list.
@@ -25,23 +24,6 @@ public class DynamicList {
      */
     @JsonProperty("list_items")
     private List<DynamicListElement> listItems;
-
-    /**
-     * Converts a list of elements to the appropriate structure to then be handled correctly by CCD.
-     *
-     * @param elements elements to convert into options for the dropdown
-     * @param selected a {@link DynamicListElement} that will be the default selected element of the list
-     * @param <T>      a class that implements {@link DynamicElementIndicator#toDynamicElement()}
-     * @return a {@link DynamicList} to be sent to CCD
-     */
-    public static <T extends DynamicElementIndicator> DynamicList toDynamicList(List<T> elements,
-                                                                                DynamicListElement selected) {
-        List<DynamicListElement> items = elements.stream()
-            .map(DynamicElementIndicator::toDynamicElement)
-            .collect(Collectors.toList());
-
-        return DynamicList.builder().listItems(items).value(selected).build();
-    }
 
     public String getValueLabel() {
         return value == null ? null : value.getLabel();

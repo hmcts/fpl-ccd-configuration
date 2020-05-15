@@ -82,15 +82,16 @@ module "fpl-performance-alert" {
 
   alert_name                 = "${var.product}-performance-alert"
   alert_desc                 = "Requests that took longer than 1 seconds to complete"
-  app_insights_query         = "requests | where url !contains '/health' and success == 'True' and duration > 1000 | project timestamp, name, url, duration | sort by duration nulls last"
+  app_insights_query         = "requests | where url !contains '/health' and success == 'True' and duration > 1000 | project timestamp, name, operation_Id, duration | sort by duration nulls last"
   custom_email_subject       = "Alert: performance errors"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
   severity_level             = "2"
   action_group_name          = "${var.product}-support"
   trigger_threshold_operator = "GreaterThan"
-  trigger_threshold          = 5
+  trigger_threshold          = 2
   resourcegroup_name         = "${local.alert_resource_group_name}"
+  enabled                    = "${var.enable_alerts}"
 }
 
 resource "azurerm_key_vault_secret" "scheduler-db-password" {

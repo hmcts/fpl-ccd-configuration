@@ -46,4 +46,8 @@ public class FeatureToggleService {
     public boolean isPaymentsEnabled() {
         return ldClient.boolVariation("payments", ldUser, false);
     }
+
+    public boolean isCloseCaseEnabled() {
+        return ldClient.boolVariation("close-case", ldUser, false);
+    }
 }

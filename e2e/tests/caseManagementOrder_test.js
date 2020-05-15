@@ -1,56 +1,21 @@
 const config = require('../config.js');
-const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const directions = require('../fixtures/directions.js');
 const schedule = require('../fixtures/schedule.js');
 const cmoHelper = require('../helpers/case_management_order_helper.js');
+const standardDirectionOrder = require('../fixtures/standardDirectionOrder.json');
 
 let caseId;
 
 Feature('Case Management Order Journey');
 
-BeforeSuite(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage, allocatedJudgeEventPage) => {
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
-  await I.enterMandatoryFields();
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
-
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID();
-  await I.completeEvent('Save and continue');
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  await sendCaseToGatekeeperEventPage.enterEmail();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
-  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  await I.addAnotherElementToCollection();
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
-  I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
-
-  //gatekeeper adds allocated judge
-  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley');
-  await I.completeEvent('Save and continue');
-
-  // gatekeeper create sdo
-  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
-  await draftStandardDirectionsEventPage.skipDateOfIssue();
-  await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-  await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
-  await draftStandardDirectionsEventPage.markAsFinal();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+BeforeSuite(async (I) => {
+  caseId = await I.submitNewCaseWithData(standardDirectionOrder);
 });
 
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
+  await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2020');
   await I.retryUntilExists(() => I.click('Continue'), '#allPartiesLabelCMO');
   await draftCaseManagementOrderEventPage.enterDirection(directions[0]);
   await I.retryUntilExists(() => I.click('Continue'), '#orderBasisLabel');
@@ -103,7 +68,6 @@ Scenario('Judge sees Action CMO placeholder when CMO is not in Judge Review', as
 
 Scenario('Local Authority sends draft to Judge who requests corrections', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
 
@@ -130,19 +94,10 @@ Scenario('Local Authority sends draft to Judge who requests corrections', async 
   cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, details);
 });
 
-
-//Skipped due to new error validation for approving a CMO with a hearing date in the future. We need to come up with
-// a better solution to account for this. Options:
-// - Have dynamic config to disable validation when e2es are run so it will allow us to skip the rules about submitting.
-// - Invoke the endpoint (not sure if jenkins have got access) to set the data with hearing date in past?
-// This would either require new endpoint on FPL or invoke the ccd endpoints.
-xScenario('Local Authority sends draft to Judge who approves CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
-  // LA sends to judge
+Scenario('Local Authority sends draft to Judge who approves CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await cmoHelper.skipToReview(I);
-  draftCaseManagementOrderEventPage.markToBeSentToJudge();
-  await I.completeEvent('Submit');
-  I.dontSee('Draft orders', '.tabs .tabs-list');
+  await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
 
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge});
@@ -157,4 +112,6 @@ xScenario('Local Authority sends draft to Judge who approves CMO', async (I, cas
   actionCaseManagementOrderEventPage.selectNextHearingDate('1 Jan 2050');
   await I.completeEvent('Save and continue');
   cmoHelper.assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.sealedCaseManagementOrder);
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  I.dontSee('Draft orders', '.tabs .tabs-list');
 });

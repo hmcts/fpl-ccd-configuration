@@ -26,8 +26,6 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final Allocation allocation;
     private final DocmosisHearingPreferences hearingPreferences;
     private final DocmosisInternationalElement internationalElement;
-    private final String courtseal;
-    private final String draftWaterMark;
     private final String userFullName;
     private final String submittedDate;
     private final String groundsForEPOReason;
@@ -40,4 +38,6 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final String relevantProceedings;
 
     private String caseNumber;
+    private String courtSeal;
+    private String draftWaterMark;
 }

@@ -11,10 +11,9 @@ java:
     SPRING_SECURITY_ENABLED: true
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     GATEWAY_URL: https://gateway-${SERVICE_FQDN}
-    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
-    FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
     LD_USER_KEY: FPLA_PREVIEW
     SCHEDULER_ENABLED: false
+    TESTING_SUPPORT_ENABLED: true
   keyVaults:
     fpl:
       secrets:
@@ -35,6 +34,27 @@ java:
         - robotics-notification-recipient
         - ld-sdk-key
         - ctsc-inbox
+
+idam-pr:
+  releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
+  enabled: true
+  redirect_uris:
+    XUI:
+      - https://xui-${SERVICE_FQDN}/oauth2/callback
+
+xui-webapp:
+  enabled: true
+  nodejs:
+    releaseNameOverride: ${SERVICE_NAME}-xui-webapp
+    image: hmctspublic.azurecr.io/xui/webapp:latest
+    ingressHost: xui-${SERVICE_FQDN}
+    environment:
+      HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
+      HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
+      HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
+      SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
+      SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
+      SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
 
 ccd:
   ccd:

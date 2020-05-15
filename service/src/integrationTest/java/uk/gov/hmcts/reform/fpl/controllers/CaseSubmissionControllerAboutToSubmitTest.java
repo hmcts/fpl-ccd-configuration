@@ -23,11 +23,13 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -56,13 +58,11 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @BeforeEach
     void mocking() {
-        byte[] pdf = {1, 2, 3, 4, 5};
-
         given(userDetailsService.getUserName())
             .willReturn("Emma Taylor");
-        given(caseSubmissionService.generateSubmittedFormPDF(any()))
+        given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(false)))
             .willReturn(document);
-        given(uploadDocumentService.uploadPDF(pdf, "2313.pdf"))
+        given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
     }
 

@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 
@@ -111,6 +112,12 @@ public class CaseDataExtractionService {
         return DocmosisJudgeAndLegalAdvisor.builder()
             .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
             .legalAdvisorName(getLegalAdvisorName(judgeAndLegalAdvisor))
+            .build();
+    }
+
+    DocmosisJudge getAllocatedJudge(JudgeAndLegalAdvisor allocatedJudge) {
+        return DocmosisJudge.builder()
+            .judgeTitleAndName(formatJudgeTitleAndName(allocatedJudge))
             .build();
     }
 
