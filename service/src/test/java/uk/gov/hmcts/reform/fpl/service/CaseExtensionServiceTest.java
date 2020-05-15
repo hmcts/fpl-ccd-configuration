@@ -58,4 +58,19 @@ class CaseExtensionServiceTest {
 
         assertThat(caseCompletionDate.isEqual(eightWeeksExtensionDateOther));
     }
+
+    @Test
+    void shouldGetCaseCompletionDateWhenSubmittingWhenSubmittingWith8WeekExtension() {
+        LocalDate dateSubmitted = LocalDate.of(2030,11,11);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("caseExtensionTimeList", "EightWeekExtension",
+                "caseExtensionTimeConfirmationList", "EightWeekExtension",
+                "dateSubmitted", dateSubmitted))
+            .build();
+
+        LocalDate caseCompletionDate = service.getCaseCompletionDate(caseDetails);
+
+        assertThat(caseCompletionDate.isEqual(dateSubmitted.plusWeeks(8)));
+    }
 }
