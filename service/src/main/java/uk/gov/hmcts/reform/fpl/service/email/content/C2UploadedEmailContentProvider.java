@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -12,20 +12,12 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider {
 
     private final EmailNotificationHelper emailNotificationHelper;
-
-    @Autowired
-    protected C2UploadedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl, ObjectMapper mapper,
-                                                EmailNotificationHelper emailNotificationHelper) {
-        super(uiBaseUrl, mapper);
-        this.emailNotificationHelper = emailNotificationHelper;
-    }
+    private final ObjectMapper mapper;
 
     public Map<String, Object> buildC2UploadNotification(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -44,8 +36,6 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     }
 
     private Map<String, Object> buildCommonNotificationParameters(final CaseDetails caseDetails) {
-        return Map.of(
-            "caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId()
-        );
+        return Map.of("caseUrl", getCaseUrl(caseDetails.getId()));
     }
 }

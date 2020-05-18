@@ -2,22 +2,16 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -28,22 +22,21 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {CaseManagementOrderRejectedEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, HearingBookingService.class, HmctsEmailContentProvider.class, FixedTimeConfiguration.class})
 public class CaseManagementOrderRejectedEventHandlerTest {
-    @MockBean
+
+    @Mock
     private RequestData requestData;
 
-    @MockBean
+    @Mock
     private InboxLookupService inboxLookupService;
 
-    @MockBean
+    @Mock
     private NotificationService notificationService;
 
-    @MockBean
+    @Mock
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
-    @Autowired
+    @InjectMocks
     private CaseManagementOrderRejectedEventHandler caseManagementOrderRejectedEventHandler;
 
     @Test
@@ -64,6 +57,6 @@ public class CaseManagementOrderRejectedEventHandlerTest {
             CMO_REJECTED_BY_JUDGE_TEMPLATE,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
             getCMORejectedCaseLinkNotificationParameters(),
-            "12345");
+            caseDetails.getId().toString());
     }
 }

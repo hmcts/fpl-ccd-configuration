@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -68,6 +69,9 @@ public class CaseManagementOrderIssuedEventHandlerTest {
 
     @MockBean
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
+
+    @MockBean
+    private CaseUrlService caseUrlService;
 
     @Autowired
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
