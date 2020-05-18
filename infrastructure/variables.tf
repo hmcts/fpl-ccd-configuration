@@ -55,3 +55,7 @@ variable "docmosis_resource_group" {
 variable "docmosis_vault" {
   default = "docmosisiaasdevkv"
 }
+
+variable "enable_alerts" {
+  default = false
+}

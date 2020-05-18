@@ -43,6 +43,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
 
         notificationService.sendEmail(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters,
             eventData.getReference());
+
         issuedOrderAdminNotificationHandler.sendToAdmin(eventData,
             noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
 

@@ -13,8 +13,8 @@ const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   I.see(fileName);
   I.seeInTab(['Order actions', 'Is this ready to be sent to parties?'], 'Yes, send this to all parties');
   I.seeInTab(['Order actions', 'What is the next hearing?'], 'Final hearing');
-  I.seeInTab(['Case management orders 1', 'Date of issue'], '12 December 2019');
-  I.seeInTab(['Case management orders 1', 'Which hearing is this order for?'], '1 Jan 2050');
+  I.seeInTab(['Date of issue'], '12 December 2019');
+  I.seeInTab(['Which hearing is this order for?'], '1 Jan 2020');
   I.seeInTab(['Directions 1', 'Title'], 'Mock title');
   I.seeInTab(['Directions 1', 'Description'], 'Mock description');
   I.seeInTab(['Directions 1', 'For'], 'All parties');
@@ -70,7 +70,7 @@ const assertCanSeeDraftCMO = (I, caseViewPage, details = {}) => {
     I.seeInTab(['Case management order', 'Date of issue'], '12 December 2019');
   }
 
-  I.seeInTab(['Case management order', 'Which hearing is this order for?'], '1 Jan 2050');
+  I.seeInTab(['Case management order', 'Which hearing is this order for?'], '1 Jan 2020');
   I.seeInTab(['Directions 1', 'Title'], 'Mock title');
   I.seeInTab(['Directions 1', 'Description'], 'Mock description');
   I.seeInTab(['Directions 1', 'For'], 'All parties');

@@ -38,7 +38,7 @@ class CafcassEmailContentProviderSDOIssuedTest extends AbstractEmailContentProvi
             .put("leadRespondentsName", "Smith,")
             .put("hearingDate", "1 January 2020")
             .put("reference", CASE_REFERENCE)
-            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
             .build();
     }
 }

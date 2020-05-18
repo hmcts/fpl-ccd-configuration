@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -20,17 +20,11 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderEmailContentProvider extends AbstractEmailContentProvider {
 
     private final EmailNotificationHelper emailNotificationHelper;
-
-    @Autowired
-    protected CaseManagementOrderEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                                      ObjectMapper mapper,
-                                                      EmailNotificationHelper emailNotificationHelper) {
-        super(uiBaseUrl, mapper);
-        this.emailNotificationHelper = emailNotificationHelper;
-    }
+    private final ObjectMapper mapper;
 
     public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
                                                                             final String recipientName) {
@@ -68,11 +62,10 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return ImmutableMap.<String, Object>builder()
             .put("subjectLineWithHearingDate", emailNotificationHelper
                 .buildSubjectLineWithHearingBookingDateSuffix(caseData,
-                caseData.getHearingDetails()))
+                    caseData.getHearingDetails()))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
-            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? EmailNotificationHelper
-                .formatCaseUrl(uiBaseUrl, caseDetails.getId()) : "")
+            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
             .putAll(linkToAttachedDocument(documentContents))
             .build();
     }
@@ -94,9 +87,9 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return ImmutableMap.of(
             "subjectLineWithHearingDate", emailNotificationHelper
                 .buildSubjectLineWithHearingBookingDateSuffix(caseData,
-                caseData.getHearingDetails()),
+                    caseData.getHearingDetails()),
             "reference", String.valueOf(caseDetails.getId()),
-            "caseUrl", EmailNotificationHelper.formatCaseUrl(uiBaseUrl, caseDetails.getId())
+            "caseUrl", getCaseUrl(caseDetails.getId())
         );
     }
 
