@@ -21,8 +21,6 @@ public class DocmosisGeneratedOrder extends DocmosisOrder {
     private final String epoStartDateTime;
     private final String epoEndDateTime;
     private final GeneratedOrderType orderType;
-    private final String judgeTitleAndName;
-    private final String legalAdvisorName;
-    private final Integer childrenCount;
     private final String furtherDirections;
+    private final Integer childrenCount;
 }

@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
@@ -411,14 +412,18 @@ class GeneratedOrderServiceTest {
             orderBuilder.courtseal(COURT_SEAL.getValue()).build();
         }
 
+        DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor = DocmosisJudgeAndLegalAdvisor.builder()
+            .judgeTitleAndName("Her Honour Judge Judy")
+            .legalAdvisorName("Peter Parker")
+            .build();
+
         return orderBuilder
             .orderType(type)
             .furtherDirections(type != BLANK_ORDER ? "Example Directions" : "")
             .familyManCaseNumber("123")
             .courtName("Family Court")
             .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
-            .judgeTitleAndName("Her Honour Judge Judy")
-            .legalAdvisorName("Peter Parker")
+            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .children(children)
             .crest("[userImage:crest.png]")
             .childrenCount(children.size())
