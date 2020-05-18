@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -14,16 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration config;
+    private final ObjectMapper mapper;
 
-    @Autowired
-    protected GatekeeperEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                             ObjectMapper mapper,
-                                             LocalAuthorityNameLookupConfiguration config) {
-        super(uiBaseUrl, mapper);
-        this.config = config;
-    }
 
     public NotifyGatekeeperTemplate buildGatekeeperNotification(CaseDetails caseDetails,
                                                                 String localAuthorityCode) {

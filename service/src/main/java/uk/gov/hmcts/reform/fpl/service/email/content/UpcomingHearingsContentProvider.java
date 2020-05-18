@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
@@ -18,15 +16,9 @@ import java.util.stream.Stream;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @Service
 public class UpcomingHearingsContentProvider extends AbstractEmailContentProvider {
-
-    @Autowired
-    public UpcomingHearingsContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl) {
-        super(uiBaseUrl);
-    }
 
     public Map<String, Object> buildParameters(final LocalDate dateOfHearing, final List<CaseDetails> casesToBeHeard) {
         final String formattedCases = casesToBeHeard.stream()
@@ -42,7 +34,7 @@ public class UpcomingHearingsContentProvider extends AbstractEmailContentProvide
     private String formatCase(CaseDetails caseDetails) {
         Object caseNumber = caseDetails.getData().get("familyManCaseNumber");
         Object caseName = caseDetails.getData().get("caseName");
-        String caseUrl = formatCaseUrl(uiBaseUrl, caseDetails.getId(), "OrdersTab");
+        String caseUrl = getCaseUrl(caseDetails.getId(), "OrdersTab");
 
         return Stream.of(caseNumber, caseName, caseUrl)
             .filter(Objects::nonNull)
