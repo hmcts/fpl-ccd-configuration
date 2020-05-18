@@ -34,7 +34,7 @@ class PartyAddedToCaseContentProviderTest extends AbstractEmailContentProviderTe
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("firstRespondentLastName", "Smith")
             .put("familyManCaseNumber", "12345L")
-            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
             .build();
 
         assertThat(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(

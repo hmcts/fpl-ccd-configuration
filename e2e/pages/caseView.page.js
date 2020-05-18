@@ -16,6 +16,7 @@ module.exports = {
     paymentHistory: 'Payment History',
     notes: 'Notes',
     expertReports: 'Expert Reports',
+    overview: 'Overview',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
@@ -53,6 +55,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -426,4 +429,12 @@ public class CaseData {
     }
 
     private final String amountToPay;
+
+    private LocalDate caseCompletionDate;
+    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    private LocalDate extensionDateOther;
+    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    private LocalDate eightWeeksExtensionDateOther;
+    private final CaseExtensionTime caseExtensionTimeList;
+    private final CaseExtensionTime caseExtensionTimeConfirmationList;
 }

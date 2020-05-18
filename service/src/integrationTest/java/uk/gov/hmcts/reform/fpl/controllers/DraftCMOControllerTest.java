@@ -97,11 +97,14 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMOWhenNoCaseManagementOrder() {
         Map<String, Object> data = Map.of(
-            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now()),
+            HEARING_DETAILS_KEY, createHearingBookingsFromInitialDate(now().minusDays(3)),
             "respondents1", createRespondents(),
             "others", createOthers());
 
-        List<String> expected = List.of(formatLocalDateToMediumStyle(5), formatLocalDateToMediumStyle(2));
+        List<String> expected = List.of(
+            formatLocalDateToString(dateNow().plusDays(2), FormatStyle.MEDIUM),
+            formatLocalDateToString(dateNow().minusDays(1), FormatStyle.MEDIUM),
+            formatLocalDateToString(dateNow().minusDays(3), FormatStyle.MEDIUM));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(buildCaseDetails(data));
         Map<String, Object> responseData = callbackResponse.getData();
