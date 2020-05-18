@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
 
 @Getter
+@EqualsAndHashCode
 public class EventData {
     private static final String CASE_LOCAL_AUTHORITY_PROPERTY_NAME = "caseLocalAuthority";
 

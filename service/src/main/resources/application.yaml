@@ -203,6 +203,11 @@ payment:
   api:
     url: http://fake-payment-api
 
+manage-case:
+  ui:
+    base:
+      url: http://fake-url
+
 ccd:
   ui:
     base:
@@ -333,6 +338,11 @@ send-letter:
 payment:
   api:
     url: http://localhost:8765
+
+manage-case:
+  ui:
+    base:
+      url: http://localhost:3333
 
 ccd:
   ui:

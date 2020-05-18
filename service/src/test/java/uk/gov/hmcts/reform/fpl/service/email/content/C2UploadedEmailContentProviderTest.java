@@ -19,14 +19,13 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
     HearingBookingService.class, FixedTimeConfiguration.class})
 class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
-
     @Autowired
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @Test
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
             .put("subjectLine", format("Smith, %s", CASE_REFERENCE))
             .put("hearingDetailsCallout", format("Smith, %s", CASE_REFERENCE))
             .put("reference", CASE_REFERENCE)
@@ -39,7 +38,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Test
     void shouldReturnExpectedPbaPaymentNotTakenNotification() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
             .build();
 
         assertThat(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(createCase()))
