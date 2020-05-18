@@ -67,7 +67,7 @@ class ChildrenServiceTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void shouldReturnFalseWithEmptyOrNullList(List<Element<Child>> list) {
+    void shouldReturnFalseWhenListEmptyOrNull(List<Element<Child>> list) {
         boolean result = service.allChildrenHaveFinalOrder(list);
 
         assertThat(result).isFalse();

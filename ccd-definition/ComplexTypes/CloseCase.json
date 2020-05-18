@@ -14,7 +14,7 @@
     "ListElementCode": "showFullReason",
     "ElementLabel": " ",
     "FieldType": "Text",
-    "FieldShowCondition": "date = \"DO_NOT_SHOW\"",
+    "FieldShowCondition": "date=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -24,7 +24,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CloseCaseFull",
     "ElementLabel": "Reason",
-    "FieldShowCondition": "showFullReason != \"NO\"",
+    "FieldShowCondition": "showFullReason!=\"NO\"",
     "SecurityClassification": "Public"
   },
   {
@@ -34,7 +34,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CloseCasePartial",
     "ElementLabel": "Reason",
-    "FieldShowCondition": "showFullReason != \"YES\"",
+    "FieldShowCondition": "showFullReason!=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -43,7 +43,7 @@
     "ListElementCode": "details",
     "FieldType": "TextArea",
     "ElementLabel": "Closure details",
-    "FieldShowCondition": "fullReason = \"OTHER\" OR partialReason = \"OTHER\"",
+    "FieldShowCondition": "fullReason=\"OTHER\" OR partialReason=\"OTHER\"",
     "SecurityClassification": "Public"
   }
 ]

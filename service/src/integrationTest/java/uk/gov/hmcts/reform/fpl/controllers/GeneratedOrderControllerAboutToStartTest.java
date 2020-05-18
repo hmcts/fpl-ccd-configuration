@@ -95,9 +95,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     @ValueSource(strings = {"Submitted", "Gatekeeping", "PREPARE-FOR-HEARING"})
     void shouldNotAutocompleteDocumentTypeWhenStateIsNotClosed(String state) {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "familyManCaseNumber", "123"
-                ))
+            .data(Map.of("familyManCaseNumber", "123"))
             .state(state)
             .build();
 
@@ -109,9 +107,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     @Test
     void shouldAutocompleteDocumentTypeWithC21WhenStateIsClosed() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "familyManCaseNumber", "123"
-                ))
+            .data(Map.of("familyManCaseNumber", "123"))
             .state("CLOSED")
             .build();
 
