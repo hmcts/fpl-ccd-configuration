@@ -1,0 +1,20 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnApplication",
+    "ListElementCode": "reason",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ReturnedReason",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnApplication",
+    "ListElementCode": "note",
+    "FieldType": "TextArea",
+    "ElementLabel": "Let the local authority know what they need to change",
+    "FieldShowCondition": "reason!=\"\"",
+    "SecurityClassification": "Public"
+  }
+]
