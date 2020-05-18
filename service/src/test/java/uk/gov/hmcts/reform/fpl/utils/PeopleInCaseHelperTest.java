@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -11,12 +13,46 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.formatRepresentativesForPostNotification;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstApplicantName;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 class PeopleInCaseHelperTest {
+
+    @Test
+    void shouldReturnFirstApplicantNameWhenFirstApplicantWithNamePresent() {
+
+        String applicantName = getFirstApplicantName(createPopulatedApplicants());
+        assertThat(applicantName).isEqualTo("Bran Stark");
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenNoApplicants() {
+
+        String applicantName = getFirstApplicantName(null);
+        assertThat(applicantName).isEmpty();
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenApplicantWithNoPartyPresent() {
+
+        String applicantName = getFirstApplicantName(wrapElements(Applicant.builder().build()));
+        assertThat(applicantName).isEmpty();
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenApplicantWithNoNamePresent() {
+        List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
+            .party(ApplicantParty.builder().build())
+            .build());
+
+        String applicantName = getFirstApplicantName(applicants);
+        assertThat(applicantName).isEmpty();
+    }
+
     @Test
     void shouldReturnFirstRespondentSurnameWhenFirstRespondentWithNamePresent() {
 

@@ -19,13 +19,11 @@ public class PeopleInCaseHelper {
     }
 
     public static String getFirstApplicantName(List<Element<Applicant>> applicants) {
-        return applicants.stream()
-            .map(Element::getValue)
+        return ElementUtils.unwrapElements(applicants).stream()
             .filter(Objects::nonNull)
-            .map(Applicant::getParty)
-            .filter(Objects::nonNull)
-            .map(ApplicantParty::getOrganisationName)
             .findFirst()
+            .map(Applicant::getParty)
+            .map(ApplicantParty::getOrganisationName)
             .orElse("");
     }
 
