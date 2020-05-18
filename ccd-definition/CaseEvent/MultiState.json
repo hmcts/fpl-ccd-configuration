@@ -101,7 +101,7 @@
     "ID": "extend26WeekTimeline",
     "Name": "Extend 26-week timeline",
     "Description": "Non standard track indicator event",
-    "PreConditionState(s)": "*",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING",
     "PostConditionState": "*",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-extension/about-to-submit",
