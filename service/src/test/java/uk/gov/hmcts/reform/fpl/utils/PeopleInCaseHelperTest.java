@@ -24,21 +24,18 @@ class PeopleInCaseHelperTest {
 
     @Test
     void shouldReturnFirstApplicantNameWhenFirstApplicantWithNamePresent() {
-
         String applicantName = getFirstApplicantName(createPopulatedApplicants());
         assertThat(applicantName).isEqualTo("Bran Stark");
     }
 
     @Test
     void shouldReturnEmptyStringWhenNoApplicants() {
-
         String applicantName = getFirstApplicantName(null);
         assertThat(applicantName).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyStringWhenApplicantWithNoPartyPresent() {
-
         String applicantName = getFirstApplicantName(wrapElements(Applicant.builder().build()));
         assertThat(applicantName).isEmpty();
     }

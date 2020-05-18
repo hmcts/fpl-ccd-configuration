@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
@@ -80,7 +81,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .filter(Objects::nonNull)
             .map(Child::getParty)
             .filter(Objects::nonNull)
-            .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
+            .map(Party::getFullName)
             .collect(Collectors.joining(", "));
 
         if (childrenNames.contains(",")) {
