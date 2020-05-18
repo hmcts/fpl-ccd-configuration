@@ -61,7 +61,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
     @Test
     void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
-        CaseData caseData = initNoticeOfProceedingCaseData()
+        CaseData caseData = prepareCaseData()
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
@@ -75,7 +75,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
     @Test
     void shouldNotApplySentenceFormattingWhenOnlyOneChildExistsOnCase() {
-        CaseData caseData = initNoticeOfProceedingCaseData()
+        CaseData caseData = prepareCaseData()
             .children1(ImmutableList.of(
                 Element.<Child>builder()
                     .id(UUID.randomUUID())
@@ -99,7 +99,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
     @Test
     void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() {
-        CaseData caseData = initNoticeOfProceedingCaseData()
+        CaseData caseData = prepareCaseData()
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(MAGISTRATES)
@@ -116,7 +116,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
     @Test
     void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() {
-        CaseData caseData = initNoticeOfProceedingCaseData()
+        CaseData caseData = prepareCaseData()
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .proceedingTypes(emptyList())
@@ -129,7 +129,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
     @Test
     void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() {
-        CaseData caseData = initNoticeOfProceedingCaseData()
+        CaseData caseData = prepareCaseData()
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
@@ -143,7 +143,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
     @Test
     void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
-        CaseData caseData = initNoticeOfProceedingCaseData()
+        CaseData caseData = prepareCaseData()
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
@@ -204,7 +204,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
         );
     }
 
-    private CaseData.CaseDataBuilder initNoticeOfProceedingCaseData() {
+    private CaseData.CaseDataBuilder prepareCaseData() {
         return CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
