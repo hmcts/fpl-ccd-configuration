@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
@@ -42,9 +40,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTest {
 
-    @Autowired
-    private Time time;
-
     DraftOrdersControllerDateOfIssueMidEventTest() {
         super("draft-standard-directions");
     }
@@ -54,21 +49,21 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
 
         @Test
         void shouldReturnErrorsWhenTheDateOfIssueIsInFuture() {
-            CaseDetails caseDetails = caseDetails(time.now().plusDays(1));
+            CaseDetails caseDetails = caseDetails(now().plusDays(1));
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
             assertThat(response.getErrors()).containsOnlyOnce("Date of issue cannot be in the future");
         }
 
         @Test
         void shouldNotReturnErrorsWhenDateOfIssueIsToday() {
-            CaseDetails caseDetails = caseDetails(time.now());
+            CaseDetails caseDetails = caseDetails(now());
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
             assertThat(response.getErrors()).isEmpty();
         }
 
         @Test
         void shouldNotReturnErrorsWhenDateOfIssueIsInPast() {
-            CaseDetails caseDetails = caseDetails(time.now().minusDays(1));
+            CaseDetails caseDetails = caseDetails(now().minusDays(1));
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
             assertThat(response.getErrors()).isEmpty();
         }
