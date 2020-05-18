@@ -52,10 +52,9 @@ public class DraftCMOController {
             caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
         }
 
-        DynamicList hearingDateDynamicList = caseManagementOrderService
-            .getHearingDateDynamicList(caseData.getHearingDetails(), caseManagementOrder);
+        DynamicList hearingList = caseManagementOrderService.getHearingDateDynamicList(caseData, caseManagementOrder);
 
-        caseDetails.getData().put(HEARING_DATE_LIST.getKey(), hearingDateDynamicList);
+        caseDetails.getData().put(HEARING_DATE_LIST.getKey(), hearingList);
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
 
