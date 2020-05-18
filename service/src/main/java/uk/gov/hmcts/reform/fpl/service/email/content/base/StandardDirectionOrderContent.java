@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.base;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
@@ -10,18 +10,11 @@ import java.time.format.FormatStyle;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 public abstract class StandardDirectionOrderContent extends AbstractEmailContentProvider {
 
-    private final HearingBookingService hearingBookingService;
-
-    protected StandardDirectionOrderContent(String uiBaseUrl,
-                                            ObjectMapper mapper,
-                                            HearingBookingService hearingBookingService) {
-        super(uiBaseUrl, mapper);
-        this.hearingBookingService = hearingBookingService;
-    }
+    @Autowired
+    private HearingBookingService hearingBookingService;
 
     protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(Long caseId, CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
@@ -34,7 +27,7 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
                 .getLastName()) + ",")
             .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseId))
-            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseId));
+            .put("caseUrl", getCaseUrl(caseId));
     }
 
     private String getHearingBooking(CaseData data) {

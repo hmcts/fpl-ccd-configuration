@@ -84,6 +84,16 @@ public class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    public void shouldMakeCorrectCallForExpertUI(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(featureToggleService.isExpertUIEnabled()).isEqualTo(toggleState);
+
+        verify(ldClient).boolVariation(eq("expert-ui"), any(LDUser.class), eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     public void shouldMakeCorrectCallForCloseCase(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -91,7 +101,6 @@ public class FeatureToggleServiceTest {
 
         verify(ldClient).boolVariation(eq("close-case"), any(LDUser.class), eq(false));
     }
-
 
     private void givenToggle(boolean state) {
         when(ldClient.boolVariation(anyString(), any(), anyBoolean())).thenReturn(state);

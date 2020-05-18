@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 
 import java.util.Map;
@@ -8,9 +10,11 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
+@ContextConfiguration(classes = {FailedPBAPaymentContentProvider.class})
 class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTest {
 
-    private final FailedPBAPaymentContentProvider contentProvider = new FailedPBAPaymentContentProvider(BASE_URL);
+    @Autowired
+    private FailedPBAPaymentContentProvider contentProvider;
 
     @Test
     void shouldReturnExpectedMapWithValidCtscNotificationParameters() {
@@ -31,6 +35,6 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
     }
 
     private Map<String, Object> getExpectedCtscNotificationParameters() {
-        return Map.of("applicationType", "C2", "caseUrl", buildCaseUrl(CASE_REFERENCE));
+        return Map.of("applicationType", "C2", "caseUrl", caseUrl(CASE_REFERENCE));
     }
 }

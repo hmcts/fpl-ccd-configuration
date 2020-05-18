@@ -39,7 +39,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     void shouldBuildCMOIssuedCaseLinkNotificationExpectedParameters() {
         Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("localAuthorityNameOrRepresentativeFullName", "testName")
-            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
             .put("subjectLineWithHearingDate", "lastName, 11")
             .put("reference", CASE_REFERENCE)
             .build();
@@ -54,7 +54,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
         Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("cafcassOrRespondentName", "testName")
-            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
             .put("subjectLineWithHearingDate", "lastName, 11")
             .put("reference", CASE_REFERENCE)
             .build();
@@ -74,7 +74,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
         Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("cafcassOrRespondentName", "testName")
-            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
             .put("subjectLineWithHearingDate", "lastName, 11")
             .put("link_to_document", expectedDocumentLink)
             .put("reference", CASE_REFERENCE)
@@ -105,7 +105,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     void shouldBuildCMORejectedByJudgeNotificationExpectedParameters() {
         Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("requestedChanges", "change it")
-            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
             .put("subjectLineWithHearingDate", "lastName, 11")
             .put("reference", CASE_REFERENCE)
             .build();
@@ -117,7 +117,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     @Test
     void shouldBuildCMOReadyForJudgeReviewNotificationExpectedParameters() {
         Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", buildCaseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
             .put("respondentLastName", "lastName")
             .put("judgeName", "JudgeLastName")
             .put("judgeTitle", "Deputy District Judge")

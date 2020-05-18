@@ -173,6 +173,48 @@
         "value": {
           "type": "CASE_MANAGEMENT",
           "venue": "96",
+          "endDate": "2020-01-02T16:30:00",
+          "startDate": "2020-01-01T15:15:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "venueCustomAddress": {},
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          }
+        }
+      },
+      {
+        "id": "c2a5d73b-0c5c-416b-b288-236e3b395df9",
+        "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "96",
+          "endDate": "2020-03-02T16:30:00",
+          "startDate": "2020-03-01T15:15:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "venueCustomAddress": {},
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          }
+        }
+      },
+      {
+        "id": "c2a5d73a-0c5c-416b-b288-236e3b395df9",
+        "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "96",
           "endDate": "2050-01-02T16:30:00",
           "startDate": "2050-01-01T15:15:00",
           "hearingNeedsBooked": [

@@ -79,6 +79,7 @@ exports.config = {
     attachScannedDocsEventPage: './e2e/pages/events/attachScannedDocsEvent.page.js',
     addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
     addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js',
+    addExtend26WeekTimelineEventPage: './e2e/pages/events/addExtend26WeekTimelineEvent.page.js',
     closeTheCaseEventPage: './e2e/pages/events/closeTheCase.page.js',
   },
   plugins: {

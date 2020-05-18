@@ -78,6 +78,7 @@ module.exports = {
     complyWithDirections: 'Comply with directions',
     complyOnBehalfOf: 'Comply on behalf of others',
     allocatedJudge: 'Allocated Judge',
+    extend26WeekTimeline: 'Extend 26-week timeline',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
