@@ -6,8 +6,6 @@ import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 
-import java.util.List;
-
 @Getter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
@@ -23,15 +21,8 @@ public class DocmosisGeneratedOrder extends DocmosisOrder {
     private final String epoStartDateTime;
     private final String epoEndDateTime;
     private final GeneratedOrderType orderType;
-    private final String familyManCaseNumber;
-    private final String courtName;
-    private final String dateOfIssue;
     private final String judgeTitleAndName;
     private final String legalAdvisorName;
-    private final List<DocmosisChild> children;
     private final Integer childrenCount;
     private final String furtherDirections;
-    private final String crest;
-    private final String draftbackground;
-    private final String courtseal;
 }
