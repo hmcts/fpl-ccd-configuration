@@ -39,7 +39,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
         hmctsSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         hmctsSubmissionTemplate.setFirstRespondentName("Smith");
         hmctsSubmissionTemplate.setReference(CASE_REFERENCE);
-        hmctsSubmissionTemplate.setCaseUrl(buildCaseUrl(CASE_REFERENCE));
+        hmctsSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
 
         assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(hmctsSubmissionTemplate);
@@ -60,7 +60,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
         hmctsSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         hmctsSubmissionTemplate.setFirstRespondentName("");
         hmctsSubmissionTemplate.setReference("123");
-        hmctsSubmissionTemplate.setCaseUrl(buildCaseUrl("123"));
+        hmctsSubmissionTemplate.setCaseUrl(caseUrl("123"));
 
         assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(buildCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(hmctsSubmissionTemplate);

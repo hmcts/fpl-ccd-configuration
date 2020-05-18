@@ -1,15 +1,21 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.base;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractEmailContentProvider {
-    protected final String uiBaseUrl;
-    protected final ObjectMapper mapper;
 
-    protected AbstractEmailContentProvider(String uiBaseUrl) {
-        this(uiBaseUrl, null);
+    @Autowired
+    private CaseUrlService caseUrlService;
+
+    public String getCaseUrl(Long caseId) {
+        return caseUrlService.getCaseUrl(caseId);
+    }
+
+    public String getCaseUrl(Long caseId, String tab) {
+        return caseUrlService.getCaseUrl(caseId, tab);
     }
 }
