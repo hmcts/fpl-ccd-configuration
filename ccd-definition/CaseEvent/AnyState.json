@@ -50,6 +50,7 @@
     "Description": "Add allocated judge to a case",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/allocated-judge/submitted",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "EndButtonLabel": "Save and continue"
