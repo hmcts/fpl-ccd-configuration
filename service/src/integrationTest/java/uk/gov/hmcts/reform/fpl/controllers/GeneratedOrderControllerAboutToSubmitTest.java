@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
@@ -42,7 +43,6 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -85,7 +85,8 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         document = document();
         DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", PDF);
 
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(anyMap(), any())).willReturn(docmosisDocument);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
+            .willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
         given(featureToggleService.isCloseCaseEnabled()).willReturn(true);
     }
@@ -327,6 +328,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
             children[i] = Child.builder()
                 .party(ChildParty.builder()
                     .firstName(firstNames[i])
+                    .dateOfBirth(dateNow().minusYears(1))
                     .build())
                 .build();
         }

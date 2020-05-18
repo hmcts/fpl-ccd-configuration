@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +9,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -25,6 +26,9 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
@@ -45,6 +49,8 @@ import java.util.stream.Stream;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -69,9 +75,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    FixedTimeConfiguration.class, LookupTestConfig.class, GeneratedOrderService.class
+    FixedTimeConfiguration.class, LookupTestConfig.class, JacksonAutoConfiguration.class, GeneratedOrderService.class,
+    CaseDataExtractionService.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class
 })
 class GeneratedOrderServiceTest {
+    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
+
     @Autowired
     private Time time;
 
@@ -267,8 +276,8 @@ class GeneratedOrderServiceTest {
     @ParameterizedTest
     @MethodSource("fileNameSource")
     void shouldGenerateCorrectFileNameGivenOrderType(GeneratedOrderType type,
-                                                     GeneratedOrderSubtype subtype,
-                                                     String expected) {
+        GeneratedOrderSubtype subtype,
+        String expected) {
         final String fileName = service.generateOrderDocumentFileName(type, subtype);
         assertThat(fileName).isEqualTo(expected);
     }
@@ -279,13 +288,13 @@ class GeneratedOrderServiceTest {
                                                            GeneratedOrderSubtype subtype) {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
+        OrderStatus orderStatus = SEALED;
 
-        Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData, SEALED,
+        DocmosisGeneratedOrder templateData = service.getOrderTemplateData(caseData, orderStatus,
             caseData.getJudgeAndLegalAdvisor());
 
-        assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsEntry("courtseal", "[userImage:familycourtseal.png]");
+        DocmosisGeneratedOrder expectedData = createExpectedDocmosisData(orderType, subtype, now, orderStatus);
+        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
     }
 
     @ParameterizedTest
@@ -294,13 +303,13 @@ class GeneratedOrderServiceTest {
                                                                   GeneratedOrderSubtype subtype) {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
+        OrderStatus orderStatus = DRAFT;
 
-        Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData, DRAFT,
+        DocmosisGeneratedOrder templateData = service.getOrderTemplateData(caseData, orderStatus,
             caseData.getJudgeAndLegalAdvisor());
 
-        assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsEntry("draftbackground", "[userImage:draft-watermark.png]");
+        DocmosisGeneratedOrder expectedData = createExpectedDocmosisData(orderType, subtype, now, orderStatus);
+        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
     }
 
     @Test
@@ -355,111 +364,131 @@ class GeneratedOrderServiceTest {
         );
     }
 
-    private Map<String, Object> createExpectedDocmosisData(GeneratedOrderType type,
-                                                           GeneratedOrderSubtype subtype,
-                                                           LocalDateTime dateTime) {
-        ImmutableMap.Builder<String, Object> expectedMap = ImmutableMap.builder();
+    private DocmosisGeneratedOrder createExpectedDocmosisData(GeneratedOrderType type, GeneratedOrderSubtype subtype,
+        LocalDateTime dateTime, OrderStatus orderStatus) {
         final LocalDate date = dateTime.toLocalDate();
-        final String localAuthorityName = "Example Local Authority";
 
         String formattedDate = formatLocalDateToString(date, FormatStyle.LONG);
 
-        List<Map<String, String>> children = ImmutableList.of(
-            ImmutableMap.of(
-                "name", "Timmy Jones",
-                "gender", "Boy",
-                "dateOfBirth", formattedDate),
-            ImmutableMap.of(
-                "name", "Robbie Jones",
-                "gender", "Boy",
-                "dateOfBirth", formattedDate));
-        int childrenCount = children.size();
+        List<DocmosisChild> children = ImmutableList.of(
+            DocmosisChild.builder()
+                .name("Timmy Jones")
+                .gender("Boy")
+                .dateOfBirth(formattedDate).build(),
+            DocmosisChild.builder()
+                .name("Robbie Jones")
+                .gender("Boy")
+                .dateOfBirth(formattedDate).build());
 
+        DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = DocmosisGeneratedOrder.builder();
         switch (type) {
             case BLANK_ORDER:
-                expectedMap
-                    .put("orderType", BLANK_ORDER)
-                    .put("orderTitle", "Example Title")
-                    .put("childrenAct", "Children Act 1989")
-                    .put("orderDetails", "Example details");
+                orderBuilder = initialiseBlankOrder();
                 break;
             case CARE_ORDER:
-                expectedMap
-                    .put("orderType", CARE_ORDER)
-                    .put("localAuthorityName", localAuthorityName);
-                if (subtype == INTERIM) {
-                    expectedMap
-                        .put("orderTitle", "Interim care order")
-                        .put("childrenAct", "Section 38 Children Act 1989")
-                        .put("orderDetails",
-                            "It is ordered that the children are placed in the care of Example Local Authority"
-                                + " until the end of the proceedings.");
-                } else if (subtype == FINAL) {
-                    expectedMap
-                        .put("orderTitle", "Care order")
-                        .put("childrenAct", "Section 31 Children Act 1989")
-                        .put("orderDetails",
-                            "It is ordered that the children are placed in the care of Example Local Authority.");
-                }
+                orderBuilder = initialiseCareOrder(subtype);
                 break;
             case SUPERVISION_ORDER:
                 children = ImmutableList.of(
-                    ImmutableMap.of(
-                        "name", "Timmy Jones",
-                        "gender", "Boy",
-                        "dateOfBirth", formattedDate));
-
-                expectedMap
-                    .put("orderType", SUPERVISION_ORDER);
-                if (subtype == INTERIM) {
-                    String dayOrdinalSuffix = getDayOfMonthSuffix(date.getDayOfMonth());
-                    String detailsDate = formatLocalDateToString(
-                        date, "d'" + dayOrdinalSuffix + "' MMMM y");
-
-                    expectedMap
-                        .put("orderTitle", "Interim supervision order")
-                        .put("childrenAct", "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails", String.format("It is ordered that Example Local Authority supervises"
-                            + " the child until 11:59pm on the %s.", detailsDate));
-                } else if (subtype == FINAL) {
-                    LocalDateTime expiryDate = dateTime.plusMonths(5);
-                    final String suffix = getDayOfMonthSuffix(expiryDate.getDayOfMonth());
-                    final String formattedDateTime = formatLocalDateTimeBaseUsingFormat(expiryDate,
-                            "h:mma 'on the' d'" + suffix + "' MMMM y");
-                    expectedMap
-                        .put("orderTitle", "Supervision order")
-                        .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .put("orderDetails",
-                            String.format(
-                                "It is ordered that Example Local Authority supervises the child for 5 months from the "
-                                    + "date of this order until %s.", formattedDateTime));
-                }
+                    DocmosisChild.builder()
+                        .name("Timmy Jones")
+                        .gender("Boy")
+                        .dateOfBirth(formattedDate).build());
+                orderBuilder = initialiseSupervisionOrder(subtype);
                 break;
             case EMERGENCY_PROTECTION_ORDER:
-                expectedMap
-                    .put("orderType", EMERGENCY_PROTECTION_ORDER)
-                    .put("localAuthorityName", localAuthorityName)
-                    .put("childrenDescription", "Test description")
-                    .put("epoType", REMOVE_TO_ACCOMMODATION)
-                    .put("includePhrase", "Yes")
-                    .put("removalAddress", "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
-                    .put("childrenCount", childrenCount)
-                    .put("epoStartDateTime", formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"))
-                    .put("epoEndDateTime", formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"));
+                orderBuilder = initialiseEPO();
                 break;
             default:
+
         }
 
-        expectedMap
-            .put("furtherDirections", (type != BLANK_ORDER) ? "Example Directions" : "")
-            .put("familyManCaseNumber", "123")
-            .put("courtName", "Family Court")
-            .put("dateOfIssue", formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
-            .put("judgeTitleAndName", "Her Honour Judge Judy")
-            .put("legalAdvisorName", "Peter Parker")
-            .put("children", children)
-            .put("crest", "[userImage:crest.png]");
-        return expectedMap.build();
+        if (orderStatus == DRAFT) {
+            orderBuilder.draftbackground(DRAFT_WATERMARK.getValue()).build();
+        }
+
+        if (orderStatus == SEALED) {
+            orderBuilder.courtseal(COURT_SEAL.getValue()).build();
+        }
+
+        return orderBuilder
+            .orderType(type)
+            .furtherDirections(type != BLANK_ORDER ? "Example Directions" : "")
+            .familyManCaseNumber("123")
+            .courtName("Family Court")
+            .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
+            .judgeTitleAndName("Her Honour Judge Judy")
+            .legalAdvisorName("Peter Parker")
+            .children(children)
+            .crest("[userImage:crest.png]")
+            .childrenCount(children.size())
+            .build();
+    }
+
+    private DocmosisGeneratedOrderBuilder initialiseBlankOrder() {
+        return initialiseOrderBuilder("Example Title", "Children Act 1989",
+            "Example details");//.orderType(BLANK_ORDER);
+    }
+
+    private DocmosisGeneratedOrderBuilder initialiseCareOrder(GeneratedOrderSubtype subtype) {
+        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder();
+        if (subtype == INTERIM) {
+            orderBuilder = initialiseOrderBuilder("Interim care order",
+                "Section 38 Children Act 1989", "It is ordered that the children are "
+                    + "placed in the care of Example Local Authority until the end of the proceedings.");
+        } else if (subtype == FINAL) {
+            orderBuilder = initialiseOrderBuilder("Care order", "Section 31 Children Act 1989",
+                "It is ordered that the children are placed in the care of "
+                    + "Example Local Authority.");
+        }
+        return orderBuilder
+            .orderType(CARE_ORDER)
+            .localAuthorityName(LOCAL_AUTHORITY_NAME);
+    }
+
+    private DocmosisGeneratedOrderBuilder initialiseSupervisionOrder(GeneratedOrderSubtype subtype) {
+        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder();
+        if (subtype == INTERIM) {
+            String detailsDate = formatLocalDateToString(
+                time.now().toLocalDate(), "d'" + getDayOfMonthSuffix(time.now().toLocalDate().getDayOfMonth())
+                    + "' MMMM y");
+
+            orderBuilder = initialiseOrderBuilder("Interim supervision order",
+                "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
+                String.format("It is ordered that Example Local Authority supervises"
+                    + " the child until 11:59pm on the %s.", detailsDate));
+        } else if (subtype == FINAL) {
+            LocalDateTime expiryDate = time.now().plusMonths(5);
+            final String formattedDateTime = formatLocalDateTimeBaseUsingFormat(expiryDate,
+                "h:mma 'on the' d'" + getDayOfMonthSuffix(expiryDate.getDayOfMonth()) + "' MMMM y");
+
+            orderBuilder = initialiseOrderBuilder("Supervision order",
+                "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
+                String.format("It is ordered that Example Local Authority supervises the child for 5 months "
+                    + "from the date of this order until %s.", formattedDateTime));
+        }
+        return orderBuilder
+            .orderType(SUPERVISION_ORDER);
+    }
+
+    private DocmosisGeneratedOrderBuilder initialiseEPO() {
+        return DocmosisGeneratedOrder.builder()
+            .orderType(EMERGENCY_PROTECTION_ORDER)
+            .localAuthorityName(LOCAL_AUTHORITY_NAME)
+            .childrenDescription("Test description")
+            .epoType(REMOVE_TO_ACCOMMODATION)
+            .includePhrase("Yes")
+            .removalAddress("1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
+            .epoStartDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"))
+            .epoEndDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"));
+    }
+
+    private DocmosisGeneratedOrderBuilder initialiseOrderBuilder(String orderTitle, String childrenAct,
+                                                                    String orderDetails) {
+        return DocmosisGeneratedOrder.builder()
+            .orderTitle(orderTitle)
+            .childrenAct(childrenAct)
+            .orderDetails(orderDetails);
     }
 
     private CaseData createPopulatedCaseData(GeneratedOrderType type,
