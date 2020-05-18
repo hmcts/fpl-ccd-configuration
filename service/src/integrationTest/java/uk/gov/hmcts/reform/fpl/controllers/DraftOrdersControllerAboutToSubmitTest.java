@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -86,12 +87,19 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
+        JudgeAndLegalAdvisor legalAdvisorWithAllocatedJudge = JudgeAndLegalAdvisor.builder()
+            .useAllocatedJudge("Yes")
+            .legalAdvisorName("Chris Newport")
+            .build();
+
+        Judge allocatedJudge = Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build();
+
         CaseDetails caseDetails = CaseDetails.builder()
             .data(directionsWithShowHideValuesRemoved()
                 .put("dateOfIssue", dateNow())
                 .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
-                .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                .put("allocatedJudge", Judge.builder().build())
+                .put("judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge)
+                .put("allocatedJudge", allocatedJudge)
                 .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
                     .startDate(HEARING_START_DATE)
                     .endDate(HEARING_END_DATE)
@@ -163,7 +171,11 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                 .binaryUrl(DOCUMENT.links.binary.href)
                 .filename("standard-directions-order.pdf")
                 .build())
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(MAGISTRATES)
+                .judgeFullName("John Walker")
+                .legalAdvisorName("Chris Newport")
+                .build())
             .dateOfIssue(formatLocalDateToString(dateNow(), "d MMMM yyyy"))
             .build();
     }
