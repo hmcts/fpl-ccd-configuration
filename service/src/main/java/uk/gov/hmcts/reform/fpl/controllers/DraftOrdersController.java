@@ -40,9 +40,11 @@ import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -140,13 +142,15 @@ public class DraftOrdersController {
                 .build())
             .build();
 
-        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
-            getConfigDirections(), updated.getStandardDirectionOrder().getDirections());
+        Order standardDirectionOrder = updated.getStandardDirectionOrder();
+
+        //add hidden values to directions
+        persistValues(getFirstHearing(caseData.getHearingDetails()), standardDirectionOrder.getDirections());
 
         DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
-        Order order = updated.getStandardDirectionOrder().toBuilder()
+        Order order = standardDirectionOrder.toBuilder()
             .directions(List.of())
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
@@ -185,7 +189,7 @@ public class DraftOrdersController {
         List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
 
         //add hidden values to directions
-        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(getConfigDirections(), combinedDirections);
+        persistValues(getFirstHearing(caseData.getHearingDetails()), combinedDirections);
 
         //place directions with hidden values back into case details
         Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(combinedDirections);
@@ -269,9 +273,13 @@ public class DraftOrdersController {
     }
 
     private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
-        return hearingBookingService.getFirstHearing(hearings)
+        return ofNullable(getFirstHearing(hearings))
             .map(hearing -> formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME))
             .orElse("Please enter a hearing date");
+    }
+
+    private HearingBooking getFirstHearing(List<Element<HearingBooking>> hearingBookings) {
+        return hearingBookingService.getFirstHearing(hearingBookings).orElse(null);
     }
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> list) {
@@ -280,11 +288,9 @@ public class DraftOrdersController {
         return commonDirectionService.sortDirectionsByAssignee(nonCustomDirections);
     }
 
-    private List<Element<Direction>> getConfigDirections() throws IOException {
-        // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
-        return ordersLookupService.getStandardDirectionOrder().getDirections()
-            .stream()
-            .map(direction -> commonDirectionService.constructDirectionForCCD(direction, time.now()))
-            .collect(Collectors.toList());
+    private void persistValues(HearingBooking firstHearing, List<Element<Direction>> directions) throws IOException {
+        List<Element<Direction>> standardDirections = ordersLookupService.getStandardDirections(firstHearing);
+
+        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(standardDirections, directions);
     }
 }

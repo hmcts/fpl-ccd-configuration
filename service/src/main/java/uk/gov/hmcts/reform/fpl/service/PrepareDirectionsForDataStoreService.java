@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -51,13 +54,16 @@ public class PrepareDirectionsForDataStoreService {
                 .filter(element -> hasSameDirectionType(elementToAddValue, element))
                 .forEach(element -> {
                     Direction direction = elementToAddValue.getValue();
+                    Direction value = element.getValue();
 
-                    direction.setReadOnly(element.getValue().getReadOnly());
-                    direction.setDirectionRemovable(element.getValue().getDirectionRemovable());
-                    direction.setAssignee(defaultIfNull(direction.getAssignee(), element.getValue().getAssignee()));
+                    direction.setReadOnly(value.getReadOnly());
+                    direction.setDirectionRemovable(value.getDirectionRemovable());
+                    direction.setAssignee(defaultIfNull(direction.getAssignee(), value.getAssignee()));
+                    direction.setDateToBeCompletedBy(
+                        defaultIfNull(direction.getDateToBeCompletedBy(), value.getDateToBeCompletedBy()));
 
-                    if (!element.getValue().getReadOnly().equals("No")) {
-                        direction.setDirectionText(element.getValue().getDirectionText());
+                    if (!value.getReadOnly().equals("No")) {
+                        direction.setDirectionText(value.getDirectionText());
                     }
                 }));
     }

@@ -19,23 +19,17 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
-import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.Integer.parseInt;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -49,7 +43,6 @@ public class PopulateStandardDirectionsHandler {
     private final SystemUpdateUserConfiguration userConfig;
     private final CommonDirectionService commonDirectionService;
     private final HearingBookingService hearingBookingService;
-    private final CalendarService calendarService;
 
     @Async
     @EventListener
@@ -85,17 +78,13 @@ public class PopulateStandardDirectionsHandler {
             caseDataContent);
     }
 
-    //TODO: move logic to separate service and unit test FPLA-1512
     private Map<String, Object> populateStandardDirections(CallbackRequest callbackrequest) throws IOException {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        LocalDateTime hearingStartDate = getFirstHearingStartDate(caseData.getHearingDetails());
+        HearingBooking firstHearing = getFirstHearing(caseData.getHearingDetails());
 
-        List<Element<Direction>> directions = ordersLookupService.getStandardDirectionOrder().getDirections()
-            .stream()
-            .map(configuration -> getDirectionElement(hearingStartDate, configuration))
-            .collect(toList());
+        List<Element<Direction>> directions = ordersLookupService.getStandardDirections(firstHearing);
 
         commonDirectionService.sortDirectionsByAssignee(directions)
             .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
@@ -103,40 +92,7 @@ public class PopulateStandardDirectionsHandler {
         return caseDetails.getData();
     }
 
-    // TODO: should really throw an exception. FPLA-1516
-    private LocalDateTime getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
-        return hearingBookingService.getFirstHearing(hearings)
-            .map(HearingBooking::getStartDate)
-            .orElse(null);
-    }
-
-    private Element<Direction> getDirectionElement(LocalDateTime hearingStartDate, DirectionConfiguration config) {
-        LocalDateTime completeBy = null;
-
-        if (hearingStartDate != null) {
-            completeBy = getCompleteByDate(hearingStartDate, config);
-        }
-
-        return commonDirectionService.constructDirectionForCCD(config, completeBy);
-    }
-
-    private LocalDateTime getCompleteByDate(LocalDateTime startDate, DirectionConfiguration direction) {
-        return ofNullable(direction.getDisplay().getDelta())
-            .map(delta -> addDelta(startDate, parseInt(delta)))
-            .map(date -> getLocalDateTime(direction, date))
-            .orElse(null);
-    }
-
-    private LocalDateTime getLocalDateTime(DirectionConfiguration direction, LocalDate date) {
-        return ofNullable(direction.getDisplay().getTime())
-            .map(time -> LocalDateTime.of(date, LocalTime.parse(time)))
-            .orElse(date.atStartOfDay());
-    }
-
-    private LocalDate addDelta(LocalDateTime date, int delta) {
-        if (delta == 0) {
-            return date.toLocalDate();
-        }
-        return calendarService.getWorkingDayFrom(date.toLocalDate(), delta);
+    private HearingBooking getFirstHearing(List<Element<HearingBooking>> hearings) {
+        return hearingBookingService.getFirstHearing(hearings).orElse(null);
     }
 }

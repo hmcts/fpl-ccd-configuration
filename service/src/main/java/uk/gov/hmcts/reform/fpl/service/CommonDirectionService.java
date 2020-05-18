@@ -190,25 +190,6 @@ public class CommonDirectionService {
     }
 
     /**
-     * Takes a direction from a configuration file and builds a CCD direction.
-     *
-     * @param direction  the direction taken from json config.
-     * @param completeBy the date to be completed by. Can be null.
-     * @return Direction to be stored in CCD.
-     */
-    public Element<Direction> constructDirectionForCCD(DirectionConfiguration direction, LocalDateTime completeBy) {
-        return element(Direction.builder()
-            .directionType(direction.getTitle())
-            .directionText(direction.getText())
-            .assignee(direction.getAssignee())
-            .directionNeeded(YES.getValue())
-            .directionRemovable(booleanToYesOrNo(direction.getDisplay().isDirectionRemovable()))
-            .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
-            .dateToBeCompletedBy(completeBy)
-            .build());
-    }
-
-    /**
      * Returns a list of directions to comply with.
      *
      * @param caseData case data with standard directions and case management order directions.
