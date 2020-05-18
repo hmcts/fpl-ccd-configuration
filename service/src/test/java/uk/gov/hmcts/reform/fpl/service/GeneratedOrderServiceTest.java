@@ -426,7 +426,6 @@ class GeneratedOrderServiceTest {
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .children(children)
             .crest("[userImage:crest.png]")
-            .childrenCount(children.size())
             .build();
     }
 

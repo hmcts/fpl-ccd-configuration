@@ -222,7 +222,6 @@ public class GeneratedOrderService {
             .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)
             .children(children)
-            .childrenCount(childrenCount)
             .furtherDirections(caseData.getFurtherDirectionsText())
             .crest(CREST.getValue())
             .build();
