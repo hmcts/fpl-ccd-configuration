@@ -41,7 +41,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setNonUrgentHearing(NO.getValue());
         gatekeeperNotificationTemplate.setFirstRespondentName("Smith");
         gatekeeperNotificationTemplate.setReference(CASE_REFERENCE);
-        gatekeeperNotificationTemplate.setCaseUrl(buildCaseUrl(CASE_REFERENCE));
+        gatekeeperNotificationTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
 
         assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
@@ -61,7 +61,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setNonUrgentHearing(NO.getValue());
         gatekeeperNotificationTemplate.setFirstRespondentName("");
         gatekeeperNotificationTemplate.setReference("123");
-        gatekeeperNotificationTemplate.setCaseUrl(buildCaseUrl("123"));
+        gatekeeperNotificationTemplate.setCaseUrl(caseUrl("123"));
 
         Map<String, Object> caseData = ImmutableMap.of(
             "orders", Orders.builder().orderType(List.of(CARE_ORDER))
@@ -87,7 +87,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setNonUrgentHearing(YES.getValue());
         gatekeeperNotificationTemplate.setFirstRespondentName("");
         gatekeeperNotificationTemplate.setReference("123");
-        gatekeeperNotificationTemplate.setCaseUrl(buildCaseUrl("123"));
+        gatekeeperNotificationTemplate.setCaseUrl(caseUrl("123"));
 
         Map<String, Object> caseData = ImmutableMap.of(
             "orders", Orders.builder().orderType(List.of(CARE_ORDER)).build(),

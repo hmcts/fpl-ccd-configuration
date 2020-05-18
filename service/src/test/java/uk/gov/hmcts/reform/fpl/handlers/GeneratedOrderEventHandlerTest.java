@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -70,6 +71,9 @@ class GeneratedOrderEventHandlerTest {
 
     @MockBean
     private NotificationService notificationService;
+
+    @MockBean
+    private CaseUrlService caseUrlService;
 
     @Autowired
     private ObjectMapper objectMapper;

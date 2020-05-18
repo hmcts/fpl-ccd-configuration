@@ -41,7 +41,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         cafcassSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         cafcassSubmissionTemplate.setFirstRespondentName("Smith");
         cafcassSubmissionTemplate.setReference(CASE_REFERENCE);
-        cafcassSubmissionTemplate.setCaseUrl(buildCaseUrl(CASE_REFERENCE));
+        cafcassSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
 
         assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(cafcassSubmissionTemplate);
@@ -61,7 +61,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         cafcassSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         cafcassSubmissionTemplate.setFirstRespondentName("");
         cafcassSubmissionTemplate.setReference("123");
-        cafcassSubmissionTemplate.setCaseUrl(buildCaseUrl("123"));
+        cafcassSubmissionTemplate.setCaseUrl(caseUrl("123"));
 
         assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(buildCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(cafcassSubmissionTemplate);
