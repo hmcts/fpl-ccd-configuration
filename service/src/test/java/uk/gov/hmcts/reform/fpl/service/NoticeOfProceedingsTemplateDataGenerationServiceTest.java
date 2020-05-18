@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -34,17 +33,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {NoticeOfProceedingsTemplateDataGenerationService.class})
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, LookupTestConfig.class, HearingBookingService.class,
-    HearingVenueLookUpService.class, CaseDataExtractionService.class, FixedTimeConfiguration.class
+    HearingVenueLookUpService.class, CaseDataExtractionService.class, FixedTimeConfiguration.class,
+    NoticeOfProceedingsTemplateDataGenerationService.class
 })
 class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
@@ -55,20 +53,15 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     private LocalDate futureDate;
-    private List<Element<Child>> children;
 
     @BeforeEach
     void setup() {
         futureDate = time.now().toLocalDate().plusDays(1);
-        children = createPopulatedChildren(time.now().toLocalDate());
     }
 
     @Test
     void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(children)
-            .orders(Orders.builder()
-                .orderType(ImmutableList.of(CARE_ORDER)).build())
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
@@ -93,8 +86,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
                             .build())
                         .build())
                     .build()))
-            .orders(Orders.builder()
-                .orderType(ImmutableList.of(CARE_ORDER)).build())
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
@@ -109,7 +100,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     @Test
     void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(children)
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(MAGISTRATES)
@@ -117,8 +107,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
                     .build())
                 .proceedingTypes(emptyList())
                 .build())
-            .orders(Orders.builder()
-                .orderType(ImmutableList.of(CARE_ORDER)).build())
             .build();
 
         DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
@@ -129,9 +117,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     @Test
     void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(children)
-            .orders(Orders.builder()
-                .orderType(ImmutableList.of(CARE_ORDER)).build())
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
                 .proceedingTypes(emptyList())
@@ -145,9 +130,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     @Test
     void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(children)
-            .orders(Orders.builder()
-                .orderType(ImmutableList.of(CARE_ORDER)).build())
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
@@ -162,16 +144,10 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     @Test
     void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
         CaseData caseData = initNoticeOfProceedingCaseData()
-            .children1(children)
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
                 .build())
-            .orders(Orders.builder()
-                .orderType(ImmutableList.of(
-                    CARE_ORDER,
-                    EDUCATION_SUPERVISION_ORDER
-                )).build())
             .build();
 
         DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
@@ -181,7 +157,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
             .courtName("Family Court")
             .familyManCaseNumber("123")
             .applicantName("Bran Stark")
-            .orderTypes("Care order, Education supervision order")
+            .orderTypes("Care order")
             .childrenNames("Bran Stark, Sansa Stark and Jon Snow")
             .hearingDate(formatLocalDateToString(futureDate, FormatStyle.LONG))
             .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
@@ -232,7 +208,10 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
         return CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
+            .orders(Orders.builder()
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
             .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings());
+            .hearingDetails(createHearingBookings())
+            .children1(createPopulatedChildren(time.now().toLocalDate()));
     }
 }
