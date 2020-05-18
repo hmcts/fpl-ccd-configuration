@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -23,19 +23,11 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration config;
     private final EmailNotificationHelper emailNotificationHelper;
-
-    @Autowired
-    protected OrderIssuedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-        ObjectMapper mapper,
-        HmctsCourtLookupConfiguration config,
-        EmailNotificationHelper emailNotificationHelper) {
-        super(uiBaseUrl, mapper);
-        this.config = config;
-        this.emailNotificationHelper = emailNotificationHelper;
-    }
+    private final ObjectMapper mapper;
 
     public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
                                                              final String localAuthorityCode,
@@ -59,7 +51,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return ImmutableMap.<String, Object>builder()
             .putAll(buildParametersWithoutCaseUrl(caseDetails, localAuthorityCode, documentContents,
                 issuedOrderType))
-            .put("caseUrl", EmailNotificationHelper.formatCaseUrl(uiBaseUrl, caseDetails.getId()))
+            .put("caseUrl", getCaseUrl(caseDetails.getId()))
             .build();
     }
 

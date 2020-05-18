@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
@@ -53,8 +54,8 @@ public class CaseManagementOrderService {
             order -> addDirections(caseDetails, order.getDirections()), () -> removeDirections(caseDetails));
     }
 
-    public DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearings, CaseManagementOrder order) {
-        List<DynamicListElement> values = getDateElements(hearings);
+    public DynamicList getHearingDateDynamicList(CaseData caseData, CaseManagementOrder order) {
+        List<DynamicListElement> values = getDateElements(caseData, false);
 
         DynamicListElement selectedValue = ofNullable(order)
             .map(x -> getPreselectedDate(values, x.getId()))
@@ -63,6 +64,13 @@ public class CaseManagementOrderService {
         return DynamicList.builder()
             .listItems(values)
             .value(selectedValue)
+            .build();
+    }
+
+    public DynamicList getNextHearingDateDynamicList(CaseData caseData) {
+        return DynamicList.builder()
+            .listItems(getDateElements(caseData, true))
+            .value(DynamicListElement.EMPTY)
             .build();
     }
 
@@ -75,11 +83,24 @@ public class CaseManagementOrderService {
         Stream.of(Directions.class.getDeclaredFields()).forEach(field -> caseDetails.getData().remove(field.getName()));
     }
 
-    private List<DynamicListElement> getDateElements(List<Element<HearingBooking>> hearings) {
-        return hearings.stream()
-            .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
-            .map(this::buildDynamicListElement)
-            .collect(toList());
+    private List<DynamicListElement> getDateElements(CaseData caseData, boolean excludePastDates) {
+        var sealedCmoHearingDateIds = getSealedCmoHearingDateIds(caseData);
+
+        var hearingDetailsStream = caseData.getHearingDetails().stream()
+            .filter(hearingBooking -> !sealedCmoHearingDateIds.contains(hearingBooking.getId()));
+        if (excludePastDates) {
+            hearingDetailsStream = hearingDetailsStream
+                .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday());
+        }
+
+        return hearingDetailsStream.map(this::buildDynamicListElement).collect(toList());
+    }
+
+    private Set<UUID> getSealedCmoHearingDateIds(CaseData caseData) {
+        return caseData.getServedCaseManagementOrders()
+            .stream()
+            .map(e -> e.getValue().getId())
+            .collect(toSet());
     }
 
     private DynamicListElement buildDynamicListElement(Element<HearingBooking> element) {

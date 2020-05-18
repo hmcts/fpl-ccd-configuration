@@ -11,6 +11,8 @@ java:
     SPRING_SECURITY_ENABLED: true
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     GATEWAY_URL: https://gateway-${SERVICE_FQDN}
+    CCD_UI_BASE_URL: https://case-management-web-${SERVICE_FQDN}
+    MANAGE_CASE_UI_BASE_URL: https://xui-${SERVICE_FQDN}
     LD_USER_KEY: FPLA_PREVIEW
     SCHEDULER_ENABLED: false
     TESTING_SUPPORT_ENABLED: true
@@ -137,3 +139,7 @@ ccd:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults:
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
+
+  postgresql:
+    persistence:
+      enabled: false
