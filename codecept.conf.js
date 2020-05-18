@@ -12,7 +12,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       keepCookies: true,
-      waitForTimeout: 10000,
+      waitForTimeout: 20000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
@@ -62,6 +62,7 @@ exports.config = {
     enterFamilyManCaseNumberEventPage: './e2e/pages/events/enterFamilyManCaseNumberEvent.page.js',
     uploadStandardDirectionsDocumentEventPage: './e2e/pages/events/uploadStandardDirectionsDocumentEvent.page.js',
     sendCaseToGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
+    notifyGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
     createNoticeOfProceedingsEventPage: './e2e/pages/events/createNoticeOfProceedingsEvent.page.js',
     addHearingBookingDetailsEventPage: './e2e/pages/events/addHearingBookingDetailsEvent.page.js',
     addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
@@ -77,6 +78,8 @@ exports.config = {
     handleSupplementaryEvidenceEventPage: './e2e/pages/events/handleSupplementaryEvidenceEvent.page.js',
     attachScannedDocsEventPage: './e2e/pages/events/attachScannedDocsEvent.page.js',
     addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
+    addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js',
+    addExtend26WeekTimelineEventPage: './e2e/pages/events/addExtend26WeekTimelineEvent.page.js',
   },
   plugins: {
     autoDelay: {

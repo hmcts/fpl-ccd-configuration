@@ -28,7 +28,7 @@ public class PeopleInCaseHelper {
     //To be deleted when print and post is available to use as part of FPLA-1287
     public static List<String> formatRepresentativesForPostNotification(List<Representative> representatives) {
         return representatives.stream()
-            .map(representative -> String.format("%s\n%s", representative.getFullName(),
+            .map(representative -> String.format("%s%n%s", representative.getFullName(),
                 representative.getAddress().getAddressAsString(", ")))
             .collect(toList());
     }

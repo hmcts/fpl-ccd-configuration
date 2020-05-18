@@ -3,7 +3,15 @@ dependencies:
     version: 2.17.2
     repository: '@hmctspublic'
   - name: ccd
-    version: 3.3.3
+    version: 4.2.3
     repository: '@hmctspublic'
     tags:
       - fpl-ccd-stack
+  - name: xui-webapp
+    version: ~0.2.1
+    repository: '@hmctspublic'
+    condition: xui-webapp.enabled
+  - name: idam-pr
+    version: ~2.2.3
+    repository: '@hmctspublic'
+    condition: idam-pr.enabled

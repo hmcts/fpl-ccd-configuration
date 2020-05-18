@@ -133,10 +133,16 @@ scheduler:
       description: 'Finds upcoming hearings'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
       cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
+
+testing:
+  support:
+    enabled: ${TESTING_SUPPORT_ENABLED:false}
 ---
 
 spring:
   profiles: integration-test
+  main:
+    lazy-initialization: true
   mail:
     host: 127.0.0.1
     port: 1025
@@ -197,6 +203,11 @@ payment:
   api:
     url: http://fake-payment-api
 
+manage-case:
+  ui:
+    base:
+      url: http://fake-url
+
 ccd:
   ui:
     base:
@@ -248,6 +259,10 @@ feature:
 
 scheduler:
   enabled: false
+
+testing:
+  support:
+    enabled: true
 
 ---
 
@@ -324,6 +339,11 @@ payment:
   api:
     url: http://localhost:8765
 
+manage-case:
+  ui:
+    base:
+      url: http://localhost:3333
+
 ccd:
   ui:
     base:
@@ -370,3 +390,7 @@ feature:
 
 scheduler:
   enabled: false
+
+testing:
+  support:
+    enabled: true

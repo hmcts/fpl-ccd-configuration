@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -35,10 +35,7 @@ class AddNoteAboutToSubmitControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        when(idamClient.getUserDetails(userAuthToken)).thenReturn(UserDetails.builder()
-            .forename("John")
-            .surname("Smith")
-            .build());
+        when(idamClient.getUserInfo(USER_AUTH_TOKEN)).thenReturn(UserInfo.builder().name("John Smith").build());
     }
 
     @Test
@@ -56,7 +53,7 @@ class AddNoteAboutToSubmitControllerTest extends AbstractControllerTest {
 
         assertThat(caseData.getCaseNote()).isNull();
         assertThat(unwrapElements(caseData.getCaseNotes()))
-            .containsExactly(caseNote, caseNote(LocalDate.now(), "John Smith", "Example case note"));
+            .containsExactly(caseNote, caseNote(dateNow(), "John Smith", "Example case note"));
     }
 
     private CaseNote caseNote(LocalDate date, String createdBy, String note) {

@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentSenderService;
@@ -65,7 +65,7 @@ public class SendDocumentController {
     }
 
     private void updateSentDocumentsHistory(CaseDetails caseDetails, List<SentDocument> sentDocuments) {
-        List<Element<DocumentsSentToParty>> sentDocumentsHistory = mapper
+        List<Element<SentDocuments>> sentDocumentsHistory = mapper
             .convertValue(caseDetails.getData().get("documentsSentToParties"), new TypeReference<>() {
             });
 

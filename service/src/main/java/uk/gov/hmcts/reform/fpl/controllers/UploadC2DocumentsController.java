@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequestMapping("/callback/upload-c2")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadC2DocumentsController {
+    private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
     private final UserDetailsService userDetailsService;
@@ -63,7 +64,7 @@ public class UploadC2DocumentsController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        data.remove("displayAmountToPay");
+        data.remove(DISPLAY_AMOUNT_TO_PAY);
 
         //workaround for previous-continue bug
         if (shouldRemoveDocument(caseData)) {
@@ -74,10 +75,10 @@ public class UploadC2DocumentsController {
             if (featureToggleService.isFeesEnabled()) {
                 FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
                 data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-                data.put("displayAmountToPay", YES.getValue());
+                data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
             }
         } catch (FeeRegisterException ignore) {
-            data.put("displayAmountToPay", NO.getValue());
+            data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -129,7 +130,7 @@ public class UploadC2DocumentsController {
                 }
             }
 
-            if (NO.getValue().equals(caseDetails.getData().get("displayAmountToPay"))) {
+            if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, requestData,
                     C2_APPLICATION));
             }
@@ -178,7 +179,7 @@ public class UploadC2DocumentsController {
     }
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {
-        return YES.getValue().equals(caseDetails.getData().get("displayAmountToPay"));
+        return YES.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY));
     }
 
     private boolean isNotPaidByPba(C2DocumentBundle c2DocumentBundle) {

@@ -32,7 +32,17 @@ module.exports = [
   },
   {
     caseManagement: 'Case management',
-    venue: 'Aberystwyth Justice Centre',
+    venue: 'Other',
+    venueCustomAddress: {
+      buildingAndStreet: {
+        lineOne: 'Flat 11',
+        lineTwo: 'Pinnacle Court',
+        lineThree: 'Saffron Central Square',
+      },
+      town: 'Croydon',
+      postcode: 'CR0 2GE',
+      country: 'United Kingdom',
+    },
     startDate: {
       second: '00',
       minute: '00',

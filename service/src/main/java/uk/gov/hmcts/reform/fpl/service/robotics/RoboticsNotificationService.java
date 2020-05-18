@@ -48,6 +48,8 @@ public class RoboticsNotificationService {
                 EmailData emailData = prepareEmailData(roboticsData);
 
                 emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
+                log.info("Robotics email notification successful for case with caseId {} and familyManNumber {}",
+                    caseDetails.getId(), caseData.getFamilyManCaseNumber());
 
             } catch (Exception exc) {
                 log.error("Robotics email notification failed for case with caseId {} and familyManNumber {} due to {}",

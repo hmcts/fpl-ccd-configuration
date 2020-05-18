@@ -29,6 +29,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "venueCustomAddress",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Venue address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "startDate",
     "FieldType": "DateTime",
     "ElementLabel": "Start date and time",

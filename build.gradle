@@ -4,8 +4,8 @@ buildscript {
   }
   configurations.maybeCreate('pitest')
   dependencies {
-    classpath group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.4.6'
-    pitest group: 'org.pitest', name: 'pitest-junit5-plugin', version: '0.12'
+    // reverting from 1.4.8 -> 1.4.7 to get proper reports, fix appears to be in the works for 1.5.0
+    classpath group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.4.7'
   }
 }
 
@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-  performanceTestCompile group: 'org.scala-lang', name: 'scala-library', version: '2.12.9'
+  performanceTestCompile group: 'org.scala-lang', name: 'scala-library', version: '2.13.2'
   performanceTestCompile group: 'io.gatling', name: 'gatling-core', version: '3.1.1'
   performanceTestCompile group: 'io.gatling', name: 'gatling-http', version: '3.1.1'
 }

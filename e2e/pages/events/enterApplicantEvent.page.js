@@ -1,4 +1,5 @@
 const { I } = inject();
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
   fields: function (index) {
@@ -33,6 +34,10 @@ module.exports = {
     I.fillField(this.fields(elementIndex).applicant.pbaNumber, applicant.pbaNumber);
     I.fillField(this.fields(elementIndex).applicant.clientCode, applicant.clientCode);
     I.fillField(this.fields(elementIndex).applicant.customerReference, applicant.customerReference);
+    within(this.fields(elementIndex).applicant.address, async () => {
+      await postcodeLookup.enterAddressIfNotPresent(applicant.address);
+    });
+
     I.fillField(this.fields(elementIndex).applicant.telephone, applicant.telephoneNumber);
     I.fillField(this.fields(elementIndex).applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
     I.fillField(this.fields(elementIndex).applicant.mobileNumber, applicant.mobileNumber);

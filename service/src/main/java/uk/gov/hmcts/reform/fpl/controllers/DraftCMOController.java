@@ -15,24 +15,17 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
+import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
 @Api
@@ -41,24 +34,25 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOController {
     private final ObjectMapper mapper;
-    private final DraftCMOService draftCMOService;
-    private final DocmosisDocumentGeneratorService docmosisService;
-    private final UploadDocumentService uploadDocumentService;
-    private final CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService;
+    private final CaseManagementOrderService caseManagementOrderService;
     private final RespondentService respondentService;
     private final OthersService othersService;
     private final CoreCaseDataService coreCaseDataService;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+        caseManagementOrderService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
-        caseDetails.getData().putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
-            caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
+        if (caseManagementOrder != null) {
+            caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
+        }
+
+        caseDetails.getData().put(HEARING_DATE_LIST.getKey(),
+            caseManagementOrderService.getHearingDateDynamicList(caseData, caseManagementOrder));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
@@ -69,31 +63,15 @@ public class DraftCMOController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest)
-        throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        final Map<String, Object> data = caseDetails.getData();
-        final CaseData caseData = mapper.convertValue(data, CaseData.class);
+        Document document = caseManagementOrderService.getOrderDocument(caseData);
+        caseManagementOrder.setOrderDocReferenceFromDocument(document);
 
-        Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData, true);
-
-        Document document = getDocument(cmoTemplateData);
-
-        final DocumentReference reference = DocumentReference.builder()
-            .url(document.links.self.href)
-            .binaryUrl(document.links.binary.href)
-            .filename(document.originalDocumentName)
-            .build();
-
-        final CaseManagementOrder oldCMO = defaultIfNull(
-            caseData.getCaseManagementOrder(), CaseManagementOrder.builder().build());
-
-        final CaseManagementOrder updatedCMO = oldCMO.toBuilder()
-            .orderDoc(reference)
-            .build();
-
-        data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), updatedCMO);
+        data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), caseManagementOrder);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -105,12 +83,9 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseManagementOrder populatedCMO = draftCMOService.prepareCMO(caseData, caseData.getCaseManagementOrder());
+        caseManagementOrderService.removeTransientObjectsFromCaseData(caseDetails.getData());
 
-        draftCMOService.removeTransientObjectsFromCaseData(caseDetails.getData());
-
-        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), populatedCMO);
-
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), caseData.getCaseManagementOrder());
         caseDetails.getData().put("cmoEventId", DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -138,11 +113,5 @@ public class DraftCMOController {
 
     private String getOthersLabel(CaseData caseData) {
         return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
-    }
-
-    private Document getDocument(Map<String, Object> templateData) {
-        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, CMO);
-
-        return uploadDocumentService.uploadPDF(document.getBytes(), "draft-" + document.getDocumentTitle());
     }
 }

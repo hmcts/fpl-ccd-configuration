@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 @RequestMapping("/callback/enter-applicant")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicantController {
+    private static final String APPLICANTS_PROPERTY = "applicants";
     private final ApplicantService applicantService;
     private final PbaNumberService pbaNumberService;
     private final ObjectMapper mapper;
@@ -31,7 +32,7 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData,
+        caseDetails.getData().put(APPLICANTS_PROPERTY, applicantService.expandApplicantCollection(caseData,
             organisationService.findOrganisation()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -46,7 +47,7 @@ public class ApplicantController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         var updatedApplicants = pbaNumberService.update(caseData.getApplicants());
-        data.put("applicants", updatedApplicants);
+        data.put(APPLICANTS_PROPERTY, updatedApplicants);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -59,7 +60,7 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("applicants", applicantService.addHiddenValues(caseData));
+        caseDetails.getData().put(APPLICANTS_PROPERTY, applicantService.addHiddenValues(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

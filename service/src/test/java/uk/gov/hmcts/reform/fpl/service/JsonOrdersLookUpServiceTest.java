@@ -43,7 +43,7 @@ class JsonOrdersLookUpServiceTest {
             .directions(ImmutableList.of(
                 DirectionConfiguration.builder()
                     .title("Test SDO type 1")
-                    .text("- Test body 1 \n\n- Two")
+                    .text("- Test body 1 \n\n- Two\n")
                     .assignee(ALL_PARTIES)
                     .display(Display.builder()
                         .due(Display.Due.ON)
@@ -54,7 +54,7 @@ class JsonOrdersLookUpServiceTest {
                     .build(),
                 DirectionConfiguration.builder()
                     .title("Test SDO type 2")
-                    .text("Test body 2")
+                    .text("Test body 2\n")
                     .assignee(LOCAL_AUTHORITY)
                     .display(Display.builder()
                         .due(Display.Due.BY)
@@ -65,7 +65,7 @@ class JsonOrdersLookUpServiceTest {
                     .build(),
                 DirectionConfiguration.builder()
                     .title("Test SDO type 3")
-                    .text("Test body 3")
+                    .text("Test body 3\n")
                     .assignee(LOCAL_AUTHORITY)
                     .display(Display.builder()
                         .due(Display.Due.BY)

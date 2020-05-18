@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -277,29 +276,31 @@ class GeneratedOrderServiceTest {
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) throws IOException {
+                                                           GeneratedOrderSubtype subtype) {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
         Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData, SEALED);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, SEALED,
+            caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsKey("courtseal");
+        assertThat(templateData).containsEntry("courtseal", "[userImage:familycourtseal.png]");
     }
 
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")
     void shouldCreateExpectedMapWhenGivenPopulatedCaseDataInDraft(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) throws IOException {
+                                                                  GeneratedOrderSubtype subtype) {
         LocalDateTime now = time.now();
         CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
 
         Map<String, Object> expectedMap = createExpectedDocmosisData(orderType, subtype, now);
-        Map<String, Object> templateData = service.getOrderTemplateData(caseData, DRAFT);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData, DRAFT,
+            caseData.getJudgeAndLegalAdvisor());
 
         assertThat(templateData).containsAllEntriesOf(expectedMap);
-        assertThat(templateData).containsKey("draftbackground");
+        assertThat(templateData).containsEntry("draftbackground", "[userImage:draft-watermark.png]");
     }
 
     @Test
@@ -456,8 +457,8 @@ class GeneratedOrderServiceTest {
             .put("dateOfIssue", formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
-            .put("children", children);
-
+            .put("children", children)
+            .put("crest", "[userImage:crest.png]");
         return expectedMap.build();
     }
 

@@ -13,15 +13,16 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingValidatorService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
 @RestController
@@ -29,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETA
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingBookingDetailsController {
     private final HearingBookingService service;
-    private final ValidateGroupService validateGroupService;
+    private final HearingBookingValidatorService validationService;
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
@@ -37,16 +38,26 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
+        List<String> errors = validationService.validateHasAllocatedJudge(caseData);
 
-        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetails);
+        Judge allocatedJudge = caseData.getAllocatedJudge();
 
-        hearingDetails.removeAll(pastHearings);
+        if (errors.isEmpty()) {
+            List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
 
-        caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
+            hearingDetails = service.resetHearingJudge(hearingDetails, allocatedJudge);
+
+            List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetails);
+
+            hearingDetails.removeAll(pastHearings);
+
+            caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
+            caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .errors(errors)
             .build();
     }
 
@@ -57,7 +68,7 @@ public class HearingBookingDetailsController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateHearingBookings(caseData.getHearingDetails()))
+            .errors(validationService.validateHearingBookings(unwrapElements(caseData.getHearingDetails())))
             .build();
     }
 
@@ -71,31 +82,16 @@ public class HearingBookingDetailsController {
         List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
         List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
 
+        List<Element<HearingBooking>> updatedHearings =
+            service.setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
+
         List<Element<HearingBooking>> combinedHearingDetails =
-            service.combineHearingDetails(caseData.getHearingDetails(), pastHearings);
+            service.combineHearingDetails(updatedHearings, pastHearings);
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    private List<String> validateHearingBookings(List<Element<HearingBooking>> hearingDetails) {
-        final List<String> errors = new ArrayList<>();
-        for (int i = 0; i < hearingDetails.size(); i++) {
-            HearingBooking hearingDetail = hearingDetails.get(i).getValue();
-            for (String message : validateGroupService.validateGroup(hearingDetail, HearingBookingDetailsGroup.class)) {
-                String formattedMessage;
-                // Format the message if there is more than one hearing
-                if (hearingDetails.size() != 1) {
-                    formattedMessage = String.format("%s for hearing %d", message, i + 1);
-                } else {
-                    formattedMessage = message;
-                }
-                errors.add(formattedMessage);
-            }
-        }
-        return errors;
     }
 }

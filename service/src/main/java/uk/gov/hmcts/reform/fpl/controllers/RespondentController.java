@@ -17,13 +17,13 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
-import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
 @Api
 @RestController
@@ -31,15 +31,16 @@ import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentController {
     private final ObjectMapper mapper;
-    private final RespondentService respondentService;
     private final ConfidentialDetailsService confidentialDetailsService;
+    private final Time time;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("respondents1", respondentService.prepareRespondents(caseData));
+        caseDetails.getData().put("respondents1", confidentialDetailsService.prepareCollection(
+            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -61,13 +62,7 @@ public class RespondentController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Respondent>> confidentialRespondents =
-            confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllRespondents());
-
-        confidentialDetailsService.addConfidentialDetailsToCaseDetails(
-            caseDetails, confidentialRespondents, RESPONDENT);
-
-        caseDetails.getData().put("respondents1", respondentService.modifyHiddenValues(caseData.getAllRespondents()));
+        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllRespondents(), RESPONDENT);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -83,7 +78,7 @@ public class RespondentController {
             .map(Respondent::getParty)
             .map(Party::getDateOfBirth)
             .filter(Objects::nonNull)
-            .filter(dob -> dob.isAfter(LocalDate.now()))
+            .filter(dob -> dob.isAfter(time.now().toLocalDate()))
             .findAny()
             .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
 

@@ -41,6 +41,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RequestMapping("/callback/placement")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PlacementController {
+    private static final String PLACEMENT = "placement";
+    private static final String PLACEMENT_CHILD_NAME = "placementChildName";
+    private static final String CHILDREN_LIST = "childrenList";
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ObjectMapper mapper;
     private final PlacementService placementService;
@@ -60,10 +63,10 @@ public class PlacementController {
 
         if (singleChild) {
             Element<Child> child = caseData.getAllChildren().get(0);
-            caseProperties.put("placement", placementService.getPlacement(caseData, child));
-            caseProperties.put("placementChildName", child.getValue().getParty().getFullName());
+            caseProperties.put(PLACEMENT, placementService.getPlacement(caseData, child));
+            caseProperties.put(PLACEMENT_CHILD_NAME, child.getValue().getParty().getFullName());
         } else {
-            caseProperties.put("childrenList", placementService.getChildrenList(caseData, null));
+            caseProperties.put(CHILDREN_LIST, placementService.getChildrenList(caseData, null));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -80,9 +83,9 @@ public class PlacementController {
         UUID childId = getSelectedChildId(caseDetails, caseData);
         Element<Child> child = placementService.getChild(caseData, childId);
 
-        caseProperties.put("childrenList", placementService.getChildrenList(caseData, child));
-        caseProperties.put("placement", placementService.getPlacement(caseData, child));
-        caseProperties.put("placementChildName", child.getValue().getParty().getFullName());
+        caseProperties.put(CHILDREN_LIST, placementService.getChildrenList(caseData, child));
+        caseProperties.put(PLACEMENT, placementService.getPlacement(caseData, child));
+        caseProperties.put(PLACEMENT_CHILD_NAME, child.getValue().getParty().getFullName());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
@@ -98,7 +101,7 @@ public class PlacementController {
         UUID childId = getSelectedChildId(caseDetails, caseData);
         Element<Child> child = placementService.getChild(caseData, childId);
 
-        Placement placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
+        Placement placement = mapper.convertValue(caseDetails.getData().get(PLACEMENT), Placement.class)
             .setChild(child);
 
         List<Element<Placement>> updatedPlacement = placementService.setPlacement(caseData, placement);
@@ -107,7 +110,7 @@ public class PlacementController {
         caseProperties.put("placementsWithoutPlacementOrder", placementService.withoutPlacementOrder(updatedPlacement));
         caseProperties.put("placements", placementService.withoutConfidentialData(updatedPlacement));
 
-        removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
+        removeTemporaryFields(caseDetails, PLACEMENT, PLACEMENT_CHILD_NAME, "singleChild");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
@@ -171,7 +174,7 @@ public class PlacementController {
             return caseData.getAllChildren().get(0).getId();
         }
 
-        Object childrenList = caseDetails.getData().get("childrenList");
+        Object childrenList = caseDetails.getData().get(CHILDREN_LIST);
 
         //see RDM-5696
         if (childrenList instanceof String) {

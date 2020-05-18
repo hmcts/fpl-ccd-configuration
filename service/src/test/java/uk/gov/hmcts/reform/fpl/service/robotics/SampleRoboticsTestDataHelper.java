@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Respondent;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.model.robotics.Solicitor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ public class SampleRoboticsTestDataHelper {
         return RoboticsData.builder()
             .caseNumber("12345")
             .applicationType(applicationType)
-            .feePaid(2055.00)
+            .feePaid(BigDecimal.valueOf(2055.00))
             .children(expectedChildren())
             .respondents(expectedRespondents())
             .solicitor(Solicitor.builder()
@@ -61,7 +62,7 @@ public class SampleRoboticsTestDataHelper {
                     .postcode("BT22 2345")
                     .country("UK")
                     .build())
-                .relationshipToChild(null)
+                .relationshipToChild("Cousin")
                 .dob("2-APR-1933")
                 .confidential(false)
                 .build(),

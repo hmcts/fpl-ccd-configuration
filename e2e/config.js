@@ -3,33 +3,52 @@
 const defaultPassword = 'Password12';
 
 module.exports = {
-  // users
   swanseaLocalAuthorityUserOne: {
+    email: 'kurt@swansea.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'kurt@swansea.gov.uk',
     surname: '(local-authority)',
   },
   swanseaLocalAuthorityUserTwo: {
+    email: 'damian@swansea.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'damian@swansea.gov.uk',
     surname: '(local-authority)',
   },
   hillingdonLocalAuthorityUserOne: {
+    email: 'sam@hillingdon.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'sam@hillingdon.gov.uk',
     surname: '(local-authority)',
   },
-  swanseaLocalAuthorityEmailUserOne: 'kurt@swansea.gov.uk',
-  swanseaLocalAuthorityEmailUserTwo: 'damian@swansea.gov.uk',
-  hillingdonLocalAuthorityEmailUserOne: 'sam@hillingdon.gov.uk',
+  hmctsAdminUser: {
+    email: 'hmcts-admin@example.com',
+    password: process.env.CA_USER_PASSWORD || defaultPassword,
+  },
+  cafcassUser: {
+    email: 'cafcass@example.com',
+    password: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
+  },
+  gateKeeperUser: {
+    email: 'gatekeeper@mailnesia.com',
+    password: process.env.GATEKEEPER_USER_PASSWORD || defaultPassword,
+  },
+  judicaryUser: {
+    email: 'judiciary@mailnesia.com',
+    password: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
+  },
+  systemUpdateUser: {
+    email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
+    password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPassword,
+  },
+  smokeTestUser: {
+    email: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
+    password: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
+  },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
-  hmctsAdminEmail: 'hmcts-admin@example.com',
-  hmctsAdminPassword: process.env.CA_USER_PASSWORD || defaultPassword,
-  cafcassEmail: 'cafcass@example.com',
-  cafcassPassword: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
-  gateKeeperEmail: 'gatekeeper@mailnesia.com',
-  gateKeeperPassword: process.env.GATEKEEPER_USER_PASSWORD || defaultPassword,
-  judiciaryEmail: 'judiciary@mailnesia.com',
-  judiciaryPassword: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
-  smokeTestLocalAuthorityEmail: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
-  smokeTestLocalAuthorityPassword: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
+  fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
+  idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',
+  dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'CARE_SUPERVISION_EPO',
@@ -59,10 +78,12 @@ module.exports = {
     complyWithDirections: 'Comply with directions',
     complyOnBehalfOf: 'Comply on behalf of others',
     allocatedJudge: 'Allocated Judge',
+    extend26WeekTimeline: 'Extend 26-week timeline',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
     sendToGatekeeper: 'Send to gatekeeper',
+    notifyGatekeeper: 'Notify gatekeeper',
     amendChildren: 'Children',
     amendRespondents: 'Respondents',
     amendOther: 'Others to be given notice',
@@ -80,6 +101,7 @@ module.exports = {
     handleSupplementaryEvidence: 'Handle supplementary evidence',
     bulkScan: 'Attach scanned docs',
     addNote: 'Add a case note',
+    addExpertReportLog: 'Log expert report',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

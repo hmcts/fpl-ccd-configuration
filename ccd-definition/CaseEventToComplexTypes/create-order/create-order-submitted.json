@@ -66,9 +66,40 @@
     "ID": "JudgeAndLegalAdvisorComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "allocatedJudgeLabel",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "useAllocatedJudge",
+    "EventElementLabel": "Is this judge issuing the order?",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeSubHeading",
+    "ElementLabel": "Who is issuing the order?",
+    "FieldDisplayOrder": 3,
+    "SecurityClassification": "Public",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
-    "FieldDisplayOrder": 1,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -78,7 +109,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -88,7 +119,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -98,7 +129,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Justices' Legal Adviser's full name",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
   {

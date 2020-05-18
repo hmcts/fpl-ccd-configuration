@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submitApplication",
     "Name": "Submit application",
-    "Description": "Submit application",
+    "Description": "Check and send application",
     "DisplayOrder": 17,
     "PreConditionState(s)": "Open",
     "PostConditionState": "Submitted",
@@ -52,6 +52,33 @@
     "ID": "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING",
     "Name": "-",
     "PreConditionState(s)": "Gatekeeping",
+    "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "populateCase-Submitted",
+    "Name": "Populate - submitted",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "Submitted",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "populateCase-Gatekeeping",
+    "Name": "Populate - Gatekeeping",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "Gatekeeping",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "populateCase-PREPARE_FOR_HEARING",
+    "Name": "Populate - Prepare for hearing",
+    "PreConditionState(s)": "*",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public"
   }

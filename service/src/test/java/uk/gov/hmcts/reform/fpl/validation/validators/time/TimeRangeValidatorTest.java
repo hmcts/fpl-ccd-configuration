@@ -1,50 +1,37 @@
 package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
+import java.util.List;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {FixedTimeConfiguration.class, LocalValidatorFactoryBean.class})
+@ContextConfiguration(classes = {FixedTimeConfiguration.class})
 public class TimeRangeValidatorTest extends TimeValidatorTest {
 
-    private final Time time;
-
     @Autowired
-    public TimeRangeValidatorTest(Validator validator, Time time) {
-        super(validator);
-        this.time = time;
-    }
+    private Time time;
 
     @Test
     void shouldReturnAnErrorWhenDateTimeExceedsRange() {
         InvalidTimeRangeValidation invalidTimeRangeValidation = new InvalidTimeRangeValidation(time);
-        final Set<ConstraintViolation<InvalidTimeRangeValidation>> validate =
-            validator.validate(invalidTimeRangeValidation);
-        assertThat(validate).size().isEqualTo(1);
+        final List<String> violations = validate(invalidTimeRangeValidation);
+        assertThat(violations).hasSize(1);
     }
 
     @Test
     void shouldNotReturnAnErrorWhenDateTimeDoesNotExceedRange() {
         ValidTimeRangeValidation validTimeRangeValidation = new ValidTimeRangeValidation(time);
-        final Set<ConstraintViolation<ValidTimeRangeValidation>> validate =
-            validator.validate(validTimeRangeValidation);
-        assertThat(validate).size().isEqualTo(0);
+        final List<String> violations = validate(validTimeRangeValidation);
+        assertThat(violations).isEmpty();
     }
 
     class ValidTimeRangeValidation {

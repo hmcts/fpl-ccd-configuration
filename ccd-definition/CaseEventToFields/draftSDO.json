@@ -31,7 +31,7 @@
     "CaseEventID": "draftSDO",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "COMPLEX",
     "PageID": "judgeAndLegalAdvisor",
     "PageLabel": " ",
     "PageDisplayOrder": 2,

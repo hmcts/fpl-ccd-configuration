@@ -20,9 +20,8 @@ module.exports = {
     await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeAndLegalAdvisor');
   },
 
-  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
-    judgeAndLegalAdvisor.selectJudgeTitle();
-    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+  async useAllocatedJudge(legalAdvisorName) {
+    judgeAndLegalAdvisor.useAllocatedJudge();
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
     await I.retryUntilExists(() => I.click('Continue'), '#allParties');
   },

@@ -14,30 +14,28 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,11 +43,16 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Api
 @RestController
@@ -57,9 +60,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftOrdersController {
     private final ObjectMapper mapper;
-    private final DocmosisDocumentGeneratorService docmosisService;
-    private final UploadDocumentService uploadDocumentService;
-    private final CaseDataExtractionService caseDataExtractionService;
+    private final DocumentService documentService;
+    private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
     private final CommonDirectionService commonDirectionService;
     private final OrdersLookupService ordersLookupService;
     private final CoreCaseDataService coreCaseDataService;
@@ -69,6 +71,8 @@ public class DraftOrdersController {
     private final HearingBookingService hearingBookingService;
     private final Time time;
     private final RequestData requestData;
+
+    private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -87,13 +91,31 @@ public class DraftOrdersController {
 
             directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-            caseDetails.getData()
-                .put("judgeAndLegalAdvisor", caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY,
+                caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
+        }
+
+        if (isNotEmpty(caseData.getAllocatedJudge())) {
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, prepareJudge(caseData));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
+
+        if (isNotEmpty(caseData.getStandardDirectionOrder())
+            && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
+            judgeAndLegalAdvisor = prepareJudgeFields(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor(),
+                caseData.getAllocatedJudge());
+        }
+
+        judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+
+        return judgeAndLegalAdvisor;
     }
 
     private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
@@ -115,10 +137,13 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
+            caseData.getAllocatedJudge());
+
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(commonDirectionService.combineAllDirections(caseData))
-                .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
@@ -126,11 +151,11 @@ public class DraftOrdersController {
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
-        Document document = getDocument(
-            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
-        );
+        DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
+        Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
+            .directions(List.of())
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
@@ -159,11 +184,17 @@ public class DraftOrdersController {
                 .build();
         }
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+            caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
+
+        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
-                .directions(commonDirectionService.combineAllDirections(caseData))
+                .directions(commonDirectionService.removeUnnecessaryDirections(
+                    commonDirectionService.combineAllDirections(caseData)))
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
-                .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                 .build())
             .build();
@@ -171,9 +202,8 @@ public class DraftOrdersController {
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
-        Document document = getDocument(
-            caseDataExtractionService.getStandardOrderDirectionData(updated).toMap(mapper)
-        );
+        DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
+        Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
         Order order = updated.getStandardDirectionOrder().toBuilder()
             .orderDoc(DocumentReference.builder()
@@ -184,7 +214,7 @@ public class DraftOrdersController {
             .build();
 
         caseDetails.getData().put("standardDirectionOrder", order);
-        caseDetails.getData().remove("judgeAndLegalAdvisor");
+        caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
         caseDetails.getData().remove("dateOfIssue");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -226,19 +256,7 @@ public class DraftOrdersController {
         // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
         return ordersLookupService.getStandardDirectionOrder().getDirections()
             .stream()
-            .map(direction -> commonDirectionService.constructDirectionForCCD(direction, LocalDateTime.now()))
+            .map(direction -> commonDirectionService.constructDirectionForCCD(direction, time.now()))
             .collect(Collectors.toList());
-    }
-
-    private Document getDocument(Map<String, Object> templateData) {
-        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
-
-        String docTitle = document.getDocumentTitle();
-
-        if (isNotEmpty(templateData.get("draftbackground"))) {
-            docTitle = "draft-" + document.getDocumentTitle();
-        }
-
-        return uploadDocumentService.uploadPDF(document.getBytes(), docTitle);
     }
 }

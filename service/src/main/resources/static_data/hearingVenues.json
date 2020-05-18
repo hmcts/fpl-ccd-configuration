@@ -2080,16 +2080,6 @@
     }
   },
   {
-    "hearingVenueId": 32,
-    "venue": "Liverpool Civil and Family Court",
-    "address": {
-      "AddressLine1": "Liverpool Civil and Family Court, Liverpool",
-      "AddressLine2": "35 Vernon Street",
-      "PostTown": "Liverpool",
-      "PostCode": "L2 2BX"
-    }
-  },
-  {
     "hearingVenueId": 276,
     "venue": "Liverpool Crown Court",
     "address": {

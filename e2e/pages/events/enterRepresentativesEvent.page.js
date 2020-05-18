@@ -42,7 +42,7 @@ module.exports = {
       });
     }
     if(representative.servingPreferences) {
-      this.setServingPreferences(representative.servingPreferences.toLowerCase());
+      await this.setServingPreferences(representative.servingPreferences.toLowerCase());
     }
     if(representative.role) {
       I.selectOption(this.fields(elementIndex).representative.role, representative.role);

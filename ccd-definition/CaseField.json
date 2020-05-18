@@ -324,8 +324,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submissionConsentLabel",
-    "Label": " ",
+    "Label": "Declaration",
     "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "downloadApplicationForReviewHintLabel",
+    "Label": "**Download application** <br>Use this link to download and check the application before <br>sending:",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "draftApplicationDocument",
+    "FieldType": "Document",
+    "Label": " ",
     "SecurityClassification": "Public"
   },
   {
@@ -341,7 +357,15 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "gateKeeperLabel",
-    "Label": "Let the gatekeeper know there's a new case",
+    "Label": "### Let the gatekeeper know there's a new case",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeeperHintLabel",
+    "Label": "You must add at least 1 gatekeeper",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
@@ -352,6 +376,15 @@
     "Label": "Gatekeeper's email address",
     "FieldType": "Email",
     "HintText": "For example, joe.bloggs@la.gov.uk",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeeperEmails",
+    "Label": "Gatekeeper",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GatekeeperEmail",
     "SecurityClassification": "Public"
   },
   {
@@ -409,6 +442,14 @@
     "ID": "allocatedJudge",
     "Label": "Allocated Judge",
     "FieldType": "JudgeAndLegalAdvisor",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "allocatedJudgeLabel",
+    "Label": " ",
+    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {
@@ -1235,6 +1276,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "expertReport",
+    "Label": "Report",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ExpertReport",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "dateOfIssue_label",
     "Label": "## Date of issue",
     "FieldType": "Label",
@@ -1275,5 +1325,114 @@
     "FieldTypeParameter": "CaseNote",
     "SecurityClassification": "Public",
     "Comment": "The note fields to be displayed in the tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "extensionComments",
+    "Label": "Add comments",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "extensionDateEightWeeks",
+    "Label": "Case extension date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "shouldBeCompletedByConfirmationLabel",
+    "Label": "You've select to extend the case by 8 weeks. The case should now be completed by ${extensionDateEightWeeks}.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseFurtherExtensionLabel",
+    "Label": "You can extend this date again, but you will not be able to revert back to the original date.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseExtensionTimeConfirmationList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionTimeConfirmationList",
+    "Label": "Do you still want to extend the date by 8 weeks?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "eightWeeksExtensionDateOther",
+    "FieldType": "Date",
+    "Label": "New end date",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "shouldBeCompletedByDate",
+    "Label": "Date case should be completed by",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "shouldBeCompletedByLabel",
+    "FieldType": "Label",
+    "Label": "This case should be completed by ${shouldBeCompletedByDate}.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "extendByEightWeeksOrOtherLabel",
+    "FieldType": "Label",
+    "Label": "You can either extend this date by 8 weeks, or enter a different end date.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "extensionDateOther",
+    "FieldType": "Date",
+    "Label": "New end date",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseExtensionTimeList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionTimeList",
+    "Label": "You can extend this date again, but you will not be able to revert back to the original date.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseExtensionReasonList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionReasonList",
+    "Label": "Why is this case being extended?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseCompletionDate",
+    "FieldType": "Date",
+    "Label": "26-week timeline date",
+    "SecurityClassification": "Public"
   }
 ]

@@ -1,42 +1,36 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-
-import java.util.Map;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
-public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
-
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class HmctsEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final ObjectMapper mapper;
 
-    @Autowired
-    public HmctsEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                     @Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                     HearingBookingService hearingBookingService,
-                                     ObjectMapper mapper) {
-        super(uiBaseUrl, hearingBookingService);
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
-        this.mapper = mapper;
-    }
-
-    public Map<String, Object> buildHmctsSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
+    public SubmitCaseHmctsTemplate buildHmctsSubmissionNotification(CaseDetails caseDetails,
+                                                                    String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getCasePersonalisationBuilder(caseDetails.getId(), caseData)
-            .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
-            .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .build();
+        SubmitCaseHmctsTemplate template = super.buildNotifyTemplate(new SubmitCaseHmctsTemplate(),
+            caseDetails.getId(),
+            caseData.getOrders(),
+            caseData.getHearing(),
+            caseData.getRespondents1());
+
+        template.setCourt(hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName());
+        template.setLocalAuthority(localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode));
+
+        return template;
     }
 }

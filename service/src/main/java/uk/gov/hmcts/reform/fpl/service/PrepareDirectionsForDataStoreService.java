@@ -132,6 +132,7 @@ public class PrepareDirectionsForDataStoreService {
                     addResponseElementsToDirections(otherResponses, directionsToComplyWith);
 
                     break;
+                default: break;
             }
         });
     }

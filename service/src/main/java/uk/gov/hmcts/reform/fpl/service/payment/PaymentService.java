@@ -120,7 +120,7 @@ public class PaymentService {
             log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
                 creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
 
-            throw new PaymentsApiException(ex.status(), ex.contentUTF8(), ex);
+            throw new PaymentsApiException(ex.contentUTF8(), ex);
         }
     }
 }

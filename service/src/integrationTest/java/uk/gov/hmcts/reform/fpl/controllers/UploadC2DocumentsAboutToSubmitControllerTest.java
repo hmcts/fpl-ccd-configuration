@@ -67,7 +67,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
     }
 
     @Test
-    void shouldAppendAnAdditionalC2DocumentBundleWhenAC2DocumentBundleIsPresent() throws Exception {
+    void shouldAppendAnAdditionalC2DocumentBundleWhenAC2DocumentBundleIsPresent() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);

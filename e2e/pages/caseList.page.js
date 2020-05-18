@@ -7,7 +7,7 @@ module.exports = {
     evidenceHandled: '#evidenceHandled-Yes',
     evidenceNotHandled: '#evidenceHandled-No',
     search: 'Apply',
-    caseList: 'Case List',
+    caseList: 'Case list',
   },
 
   navigate(){
@@ -19,8 +19,9 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  searchForCasesWithHandledEvidences() {
+  searchForCasesWithHandledEvidences(submittedAt) {
     I.waitForElement(this.fields.evidenceHandled);
+    I.fillDate(submittedAt);
     I.click(this.fields.evidenceHandled);
     I.click(this.fields.search);
   },

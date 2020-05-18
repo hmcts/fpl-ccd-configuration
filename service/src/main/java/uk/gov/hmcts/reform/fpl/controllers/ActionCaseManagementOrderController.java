@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,29 +13,23 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.DATE_OF_ISSUE;
@@ -50,16 +43,13 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 @RequestMapping("/callback/action-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ActionCaseManagementOrderController {
-    private final DraftCMOService draftCMOService;
     private final CaseManagementOrderService caseManagementOrderService;
-    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-    private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
     private final DocumentDownloadService documentDownloadService;
     private final RequestData requestData;
+    private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -73,15 +63,12 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        caseDetails.getData().putAll(caseManagementOrderService
-                .extractMapFieldsFromCaseManagementOrder(caseManagementOrder));
+        caseManagementOrderService.prepareCustomDirections(caseDetails, caseManagementOrder);
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseManagementOrder);
-
-        caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
-
-        caseDetails.getData().put(DATE_OF_ISSUE.getKey(),
-            caseManagementOrderService.getIssuedDate(caseManagementOrder));
+        caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
+        caseDetails.getData()
+            .put(NEXT_HEARING_DATE_LIST.getKey(), caseManagementOrderService.getNextHearingDateDynamicList(caseData));
+        caseDetails.getData().put(DATE_OF_ISSUE.getKey(), caseManagementOrder.getDateOfIssueAsDate());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -89,32 +76,28 @@ public class ActionCaseManagementOrderController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Document document = caseManagementOrderService.getOrderDocument(caseData);
+        caseManagementOrder.setOrderDocReferenceFromDocument(document);
 
-        Document document = getDocument(caseData, true);
-
-        caseDetails.getData()
-            .put(ORDER_ACTION.getKey(), OrderAction.builder().document(buildFromDocument(document)).build());
+        data.put(ORDER_ACTION.getKey(), OrderAction.builder().document(buildFromDocument(document)).build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(data)
             .build();
     }
 
-    //TODO: refactor. far too much logic in this controller now FPLA-1469
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
-
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseManagementOrder order = caseData.getCaseManagementOrder();
 
-        if (caseData.getCaseManagementOrder() == null || !caseData.getCaseManagementOrder().isInJudgeReview()) {
-            // CMO created via placeholder state
+        if (order == null || !order.isInJudgeReview()) {
             caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
@@ -122,35 +105,20 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        if (sendToAllPartiesBeforeHearingDate(caseData)) {
+        OrderAction orderAction = caseData.getOrderAction();
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+
+        if (issuingOrderBeforeHearingDate(orderAction, order.getId(), hearingDetails)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(ImmutableList.of(HEARING_NOT_COMPLETED.getValue()))
+                .errors(singletonList(HEARING_NOT_COMPLETED.getValue()))
                 .build();
         }
 
-        CaseManagementOrder order = caseData.getCaseManagementOrder();
-
-        order = draftCMOService.prepareCMO(caseData, order).toBuilder()
-            .id(order.getId())
-            .hearingDate(order.getHearingDate())
-            .build();
-
-        OrderAction orderAction = caseManagementOrderService.removeDocumentFromOrderAction(caseData.getOrderAction());
-
-        order = caseManagementOrderService.addAction(order, orderAction);
-
-        if (!order.isDraft()) {
-            order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
-        }
-
-        Document document = getDocument(caseData, order.isDraft());
-
-        order = caseManagementOrderService.addDocument(order, document);
+        Document document = caseManagementOrderService.getOrderDocument(caseData);
+        order.setOrderDocReferenceFromDocument(document);
 
         caseDetails.getData().remove(DATE_OF_ISSUE.getKey());
-
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
-
         caseDetails.getData().put("cmoEventId", ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -182,24 +150,10 @@ public class ActionCaseManagementOrderController {
         }
     }
 
-    private boolean sendToAllPartiesBeforeHearingDate(CaseData caseData) {
-        return caseData.getOrderAction().getType() == SEND_TO_ALL_PARTIES
-            && caseManagementOrderService.isHearingDateInFuture(caseData);
-    }
+    private boolean issuingOrderBeforeHearingDate(OrderAction action, UUID id, List<Element<HearingBooking>> hearings) {
+        HearingBooking hearingBooking = hearingBookingService.getHearingBookingByUUID(hearings, id);
 
-    private Document getDocument(CaseData data, boolean draft) throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, draft);
-
-        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            cmoDocumentTemplateData, DocmosisTemplates.CMO);
-
-        String documentTitle = (draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle());
-
-        return uploadDocumentService.uploadPDF(document.getBytes(), documentTitle);
-    }
-
-    private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
-        return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
+        return action.isSendToAllPartiesType() && hearingBooking.startsAfterToday();
     }
 
     private void publishEventOnApprovedCMO(CallbackRequest callbackRequest) {

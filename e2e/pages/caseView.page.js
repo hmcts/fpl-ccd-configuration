@@ -15,14 +15,18 @@ module.exports = {
     placement: 'Placement',
     paymentHistory: 'Payment History',
     notes: 'Notes',
+    expertReports: 'Expert Reports',
+    overview: 'Overview',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
 
   async goToNewActions(actionSelected) {
     I.waitForElement(this.actionsDropdown);
-    I.selectOption(this.actionsDropdown, actionSelected);
-    await I.retryUntilExists(() => I.click(this.goButton), 'ccd-case-event-trigger');
+    await I.retryUntilExists(() => {
+      I.selectOption(this.actionsDropdown, actionSelected);
+      I.click(this.goButton);
+    }, 'ccd-case-event-trigger');
   },
 
   checkActionsAreAvailable(actions) {

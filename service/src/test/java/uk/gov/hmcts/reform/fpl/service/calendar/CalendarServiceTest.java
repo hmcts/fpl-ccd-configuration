@@ -6,12 +6,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.util.Set;
 
-import static java.time.LocalDate.now;
 import static java.time.Month.APRIL;
 import static java.time.Month.AUGUST;
 import static java.time.Month.DECEMBER;
@@ -22,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {FixedTimeConfiguration.class})
 public class CalendarServiceTest {
 
     private static final LocalDate SATURDAY = LocalDate.of(2020, APRIL, 4);
@@ -49,6 +53,9 @@ public class CalendarServiceTest {
 
     @Mock
     private BankHolidaysService bankHolidaysService;
+
+    @Autowired
+    private Time time;
 
     @InjectMocks
     private CalendarService workingDayService;
@@ -171,7 +178,8 @@ public class CalendarServiceTest {
 
         @Test
         public void shouldThrowExceptionWhenNumberOfWorkingDaysIs0() {
-            assertThrows(IllegalArgumentException.class, () -> workingDayService.getWorkingDayFrom(now(), 0));
+            assertThrows(IllegalArgumentException.class, () ->
+                workingDayService.getWorkingDayFrom(time.now().toLocalDate(), 0));
         }
     }
 }

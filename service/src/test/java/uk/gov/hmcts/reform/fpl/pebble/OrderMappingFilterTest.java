@@ -22,7 +22,7 @@ public class OrderMappingFilterTest {
         "INTERIM_SUPERVISION_ORDER, 'Interim supervision order'",
         "EDUCATION_SUPERVISION_ORDER, 'Education supervision order'",
         "EMERGENCY_PROTECTION_ORDER, 'Emergency protection order'",
-        "OTHER, 'Other order under part 4 of the Children Act 1989'"
+        "OTHER, 'Variation or discharge of care or supervision order'"
     })
     void shouldReturnCorrectLabel(String code, String label) {
         assertThat(filter.apply(code, NO_ARGS)).isEqualTo(label);

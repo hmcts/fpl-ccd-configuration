@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,6 +31,7 @@ import java.util.UUID;
 
 import static java.lang.Long.parseLong;
 import static java.util.UUID.randomUUID;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -53,16 +52,16 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOr
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.OTHER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForAdminWhenNoRepresentativesServedByPost;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacementOrderAndNotices;
+import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
@@ -80,9 +79,6 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> dataCaptor;
 
     PlacementSubmittedEventControllerTest() {
         super("placement");
@@ -170,7 +166,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedTemplateParameters(),
-                String.valueOf(CASE_ID));
+                CASE_ID);
         }
 
         @Test
@@ -209,6 +205,11 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
     class NoticeOfPlacementOrderNotification {
         private final Element<Child> childElement = testChild();
         private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocumentReference()));
+        private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
+        private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
+        private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
+        private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
+        private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
 
         @Test
         void shouldSendEmailNotificationsWhenNewNoticeOfPlacementOrder() throws NotificationClientException {
@@ -218,42 +219,40 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
             verify(notificationClient).sendEmail(
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-                "admin@family-court.com",
+                ADMIN_EMAIL_ADDRESS,
                 expectedParameters(),
                 CASE_ID);
 
             verify(notificationClient).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                "local-authority@local-authority.com",
+                LOCAL_AUTHORITY_EMAIL_ADDRESS,
                 expectedParameters(),
                 CASE_ID);
 
             verify(notificationClient).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                "representative@example.com",
+                DIGITAL_SERVED_REPRESENTATIVE_ADDRESS,
                 expectedParameters(),
-                CASE_ID);
-
-            verify(notificationClient).sendEmail(
-                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-                "admin@family-court.com",
-                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
-                CASE_ID);
-
-            verify(notificationClient, never()).sendEmail(
-                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-                "FamilyPublicLaw+ctsc@gmail.com",
-                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
                 CASE_ID);
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
-                eq("bill@example.com"),
-                dataCaptor.capture(),
+                eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
+                eqJson(getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(),
+                    false)),
                 eq(CASE_ID));
 
-            assertEquals(dataCaptor.getValue(),
-                getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false));
+            verify(notificationClient).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(ADMIN_EMAIL_ADDRESS),
+                eqJson(getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
+                eq(CASE_ID));
+
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(CTSC_EMAIL_ADDRESS),
+                any(),
+                any());
 
             verifyZeroInteractions(notificationClient);
         }
@@ -281,16 +280,16 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequest);
 
             verify(notificationClient, never()).sendEmail(
-                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-                "admin@family-court.com",
-                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
-                CASE_ID);
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(ADMIN_EMAIL_ADDRESS),
+                any(),
+                any());
 
             verify(notificationClient).sendEmail(
-                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-                "FamilyPublicLaw+ctsc@gmail.com",
-                getExpectedParametersForAdminWhenNoRepresentativesServedByPost(false),
-                CASE_ID);
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(CTSC_EMAIL_ADDRESS),
+                eqJson(getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
+                eq(CASE_ID));
         }
 
         @Test
@@ -298,16 +297,28 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequestWithMatchingCaseDetailsBefore());
 
             verify(notificationClient, never()).sendEmail(
-                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                "local-authority@local-authority.com",
-                expectedParameters(),
-                CASE_ID);
+                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                any(),
+                any());
 
             verify(notificationClient, never()).sendEmail(
-                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                "representative@example.com",
-                expectedParameters(),
-                CASE_ID);
+                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+                eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
+                any(),
+                any());
+
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(ADMIN_EMAIL_ADDRESS),
+                any(),
+                any());
+
+            verify(notificationClient, never()).sendEmail(
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
+                eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
+                any(),
+                any());
         }
 
         private Map<String, Object> expectedParameters() {
@@ -364,11 +375,11 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                     "respondents1", wrapElements(respondent),
                     "representatives", List.of(element(representativeId, Representative.builder()
                             .servingPreferences(DIGITAL_SERVICE)
-                            .email("representative@example.com")
+                            .email(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS)
                             .build()),
                         element(randomUUID(), Representative.builder()
                             .servingPreferences(EMAIL)
-                            .email("bill@example.com")
+                            .email(EMAIL_SERVED_REPRESENTATIVE_ADDRESS)
                             .build())),
                     "children1", List.of(childElement),
                     "childrenList", childElement.getId()))
@@ -412,6 +423,8 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 .caseDetails(caseDetails)
                 .caseDetailsBefore(caseDetailsBefore)
                 .build();
+
+            given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
 
             postSubmittedEvent(callbackRequest);
 
