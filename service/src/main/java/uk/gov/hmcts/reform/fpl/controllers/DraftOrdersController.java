@@ -94,6 +94,15 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        List<String> errors = validateGroupService.validateGroup(caseData, DateOfIssueGroup.class);
+
+        if (!errors.isEmpty()) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .errors(errors)
+                .build();
+        }
+
         String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
@@ -111,7 +120,6 @@ public class DraftOrdersController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, DateOfIssueGroup.class))
             .build();
     }
 

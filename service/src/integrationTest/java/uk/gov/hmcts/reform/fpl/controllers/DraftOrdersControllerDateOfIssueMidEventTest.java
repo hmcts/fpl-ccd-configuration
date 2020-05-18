@@ -58,14 +58,14 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
         void shouldNotReturnErrorsWhenDateOfIssueIsToday() {
             CaseDetails caseDetails = caseDetails(now());
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
-            assertThat(response.getErrors()).isEmpty();
+            assertThat(response.getErrors()).isNull();
         }
 
         @Test
         void shouldNotReturnErrorsWhenDateOfIssueIsInPast() {
             CaseDetails caseDetails = caseDetails(now().minusDays(1));
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
-            assertThat(response.getErrors()).isEmpty();
+            assertThat(response.getErrors()).isNull();
         }
 
         private CaseDetails caseDetails(LocalDateTime localDateTime) {
