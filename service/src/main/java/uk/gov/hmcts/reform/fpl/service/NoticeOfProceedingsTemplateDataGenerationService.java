@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -16,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
+import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
 
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -46,7 +45,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .courtName(getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
-            .applicantName(getFirstApplicantName(caseData.getApplicants()))
+            .applicantName(PeopleInCaseHelper.getFirstApplicantName(caseData.getApplicants()))
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
             .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
@@ -73,17 +72,6 @@ public class NoticeOfProceedingsTemplateDataGenerationService
         return orders.getOrderType().stream()
             .map(OrderType::getLabel)
             .collect(Collectors.joining(", "));
-    }
-
-    private String getFirstApplicantName(List<Element<Applicant>> applicants) {
-        return applicants.stream()
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .map(Applicant::getParty)
-            .filter(Objects::nonNull)
-            .map(ApplicantParty::getOrganisationName)
-            .findFirst()
-            .orElse("");
     }
 
     private String getAllChildrenNames(List<Element<Child>> children) {

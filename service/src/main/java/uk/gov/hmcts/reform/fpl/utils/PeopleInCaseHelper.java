@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -14,6 +16,17 @@ public class PeopleInCaseHelper {
 
     private PeopleInCaseHelper() {
         // NO-OP
+    }
+
+    public static String getFirstApplicantName(List<Element<Applicant>> applicants) {
+        return applicants.stream()
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .map(Applicant::getParty)
+            .filter(Objects::nonNull)
+            .map(ApplicantParty::getOrganisationName)
+            .findFirst()
+            .orElse("");
     }
 
     public static String getFirstRespondentLastName(List<Element<Respondent>> respondents) {
