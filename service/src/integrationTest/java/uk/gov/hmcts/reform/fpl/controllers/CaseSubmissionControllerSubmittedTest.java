@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -40,6 +41,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLAT
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.CONTACT_WITH_NAMED_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -105,7 +108,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() throws Exception {
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO, OPEN);
         postSubmittedEvent(caseDetails);
         Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
 
@@ -130,7 +133,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldSendNotificationToCtscAdminWhenCtscIsEnabledWithinCaseDetails() throws Exception {
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
         postSubmittedEvent(caseDetails);
         Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
 
@@ -150,9 +153,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldMakePaymentWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
+    void shouldMakePaymentOfAnOpenCaseWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
         postSubmittedEvent(caseDetails);
@@ -162,9 +165,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotMakePaymentWhenFeatureToggleIsFalse() {
+    void shouldNotMakePaymentOfAnOpenCaseWhenFeatureToggleIsFalse() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
         postSubmittedEvent(caseDetails);
@@ -173,10 +176,21 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
+    void shouldNotMakePaymentOfAnOpenCaseWhenAmountToPayWasNotDisplayed() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
         caseDetails.getData().put("displayAmountToPay", NO.getValue());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
+    }
+
+    @Test
+    void shouldNotMakePaymentOnAReturnedCaseWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, RETURNED);
+        caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
         postSubmittedEvent(caseDetails);
 
@@ -186,7 +200,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
 
         doThrow(new PaymentsApiException("", new Throwable())).when(paymentService)
@@ -210,7 +224,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
 
         postSubmittedEvent(caseDetails);
 
@@ -230,7 +244,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
         caseDetails.getData().put("displayAmountToPay", NO.getValue());
 
         postSubmittedEvent(caseDetails);
@@ -253,9 +267,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
     }
 
-    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
+    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc, State state) {
         return CaseDetails.builder()
             .id(CASE_REFERENCE)
+            .state(state.getValue())
             .data(new HashMap<>(Map.of(
                 "orders", Orders.builder()
                         .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
