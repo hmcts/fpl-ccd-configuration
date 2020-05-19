@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +18,10 @@ import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ALLOCATED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedAllocatedJudgeNotificationParameters;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NotifyAllocatedJudgeEventHandler.class, JacksonAutoConfiguration.class})
@@ -58,14 +56,5 @@ public class NotifyAllocatedJudgeEventHandlerTest {
             ALLOCATED_JUDGE_EMAIL_ADDRESS,
             expectedParameters,
             "12345");
-    }
-
-    private Map<String, Object> getExpectedAllocatedJudgeNotificationParameters() {
-        return ImmutableMap.of(
-            "judgeTitle", "Her Honour Judge",
-            "judgeName", "McVerry",
-            "caseName", "Test Application",
-            "caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345"
-        );
     }
 }

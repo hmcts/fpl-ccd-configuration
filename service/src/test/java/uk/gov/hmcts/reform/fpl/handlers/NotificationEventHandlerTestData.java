@@ -58,6 +58,15 @@ public class NotificationEventHandlerTestData {
             .build();
     }
 
+    public static Map<String, Object> getExpectedAllocatedJudgeNotificationParameters() {
+        return ImmutableMap.of(
+            "judgeTitle", "Her Honour Judge",
+            "judgeName", "McBerry",
+            "caseName", "test",
+            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345"
+        );
+    }
+
     public static Map<String, Object> expectedCommonCMONotificationParameters() {
         String subjectLine = "Lastname, SACCCCCCCC5676576567";
         return ImmutableMap.of("subjectLineWithHearingDate", subjectLine,
