@@ -31,8 +31,6 @@ class CloseCaseTest {
         CloseCase closeCase = mapper.readValue(json, CloseCase.class);
         CloseCase expected = CloseCase.builder().showFullReason(YES).reason(FINAL_ORDER).build();
 
-        System.out.println(mapper.writeValueAsString(expected));
-
         assertThat(closeCase).isEqualTo(expected);
     }
 
@@ -43,8 +41,6 @@ class CloseCaseTest {
 
         CloseCase closeCase = mapper.readValue(json, CloseCase.class);
         CloseCase expected = CloseCase.builder().showFullReason(NO).reason(WITHDRAWN).build();
-
-        System.out.println(mapper.writeValueAsString(expected));
 
         assertThat(closeCase).isEqualTo(expected);
     }
