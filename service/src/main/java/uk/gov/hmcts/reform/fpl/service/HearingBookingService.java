@@ -63,15 +63,21 @@ public class HearingBookingService {
      * Combines two lists of hearings into one, ordered by start date.
      * Implemented due to work around with hearing start date validation.
      *
-     * @param firstList  the first list of hearing bookings to combine.
-     * @param secondList the second list of hearing bookings to combine.
+     * @param newHearings  the first list of hearing bookings to combine.
+     * @param oldHearings the second list of hearing bookings to combine.
      * @return an ordered list of hearing bookings.
      */
-    public List<Element<HearingBooking>> combineHearingDetails(List<Element<HearingBooking>> firstList,
-                                                               List<Element<HearingBooking>> secondList) {
+    public List<Element<HearingBooking>> combineHearingDetails(List<Element<HearingBooking>> newHearings,
+                                                               List<Element<HearingBooking>> oldHearings) {
         List<Element<HearingBooking>> combinedHearingDetails = newArrayList();
-        combinedHearingDetails.addAll(firstList);
-        combinedHearingDetails.addAll(secondList);
+        combinedHearingDetails.addAll(newHearings);
+
+        oldHearings.forEach(hearing -> {
+            UUID id = hearing.getId();
+            if (combinedHearingDetails.stream().noneMatch(oldHearing -> oldHearing.getId().equals(id))) {
+                combinedHearingDetails.add(hearing);
+            }
+        });
 
         combinedHearingDetails.sort(comparing(element -> element.getValue().getStartDate()));
 
