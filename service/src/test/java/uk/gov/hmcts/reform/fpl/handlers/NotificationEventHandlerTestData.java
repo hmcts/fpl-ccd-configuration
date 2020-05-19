@@ -21,6 +21,7 @@ public class NotificationEventHandlerTestData {
     static final String LOCAL_AUTHORITY_CODE = "example";
     static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     static final String COURT_EMAIL_ADDRESS = "admin@family-court.com";
+    static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "test@test.com";
     static final String COURT_NAME = "Family Court";
     static final String AUTH_TOKEN = "Bearer token";
     static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
