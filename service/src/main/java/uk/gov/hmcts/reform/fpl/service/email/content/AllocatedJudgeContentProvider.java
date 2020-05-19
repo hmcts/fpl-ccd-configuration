@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 @Service
@@ -16,7 +15,7 @@ public class AllocatedJudgeContentProvider extends AbstractEmailContentProvider 
 
     private final ObjectMapper mapper;
 
-    public NotifyData buildAllocatedJudgeNotificationParameters(CaseDetails caseDetails) {
+    public AllocatedJudgeTemplate buildAllocatedJudgeNotificationParameters(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         AllocatedJudgeTemplate allocatedJudgeTemplate = new AllocatedJudgeTemplate();

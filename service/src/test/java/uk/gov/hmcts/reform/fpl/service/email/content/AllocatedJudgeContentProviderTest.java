@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ContextConfiguration(classes = {AllocatedJudgeContentProvider.class})
 class AllocatedJudgeContentProviderTest extends AbstractEmailContentProviderTest {
+
     @Autowired
     private AllocatedJudgeContentProvider allocatedJudgeContentProvider;
 
