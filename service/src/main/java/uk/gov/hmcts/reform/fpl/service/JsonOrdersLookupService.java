@@ -48,7 +48,7 @@ public class JsonOrdersLookupService implements OrdersLookupService {
 
     private Element<Direction> constructDirectionForCCD(LocalDateTime hearingDate, DirectionConfiguration direction) {
         LocalDateTime dateToBeCompletedBy = ofNullable(hearingDate)
-            .map(x -> getCompleteByDate(x, direction.getDisplay()))
+            .map(date -> getCompleteByDate(date, direction.getDisplay()))
             .orElse(null);
 
         return element(Direction.builder()

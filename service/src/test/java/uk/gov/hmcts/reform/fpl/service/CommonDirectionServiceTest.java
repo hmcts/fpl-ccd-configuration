@@ -125,41 +125,41 @@ class CommonDirectionServiceTest {
         assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionsTypes);
     }
 
-    @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsRealDate() {
-        LocalDateTime today = LocalDateTime.now();
-
-        DirectionConfiguration directionConfig = getDirectionConfig();
-
-        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, today);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(today)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
-    }
-
-    @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsNull() {
-        DirectionConfiguration directionConfig = getDirectionConfig();
-
-        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, null);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(null)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
-    }
+//    @Test
+//    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsRealDate() {
+//        LocalDateTime today = LocalDateTime.now();
+//
+//        DirectionConfiguration directionConfig = getDirectionConfig();
+//
+//        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, today);
+//
+//        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
+//            .directionType("direction title")
+//            .directionText("direction text")
+//            .readOnly("No")
+//            .directionRemovable("No")
+//            .directionNeeded("Yes")
+//            .dateToBeCompletedBy(today)
+//            .assignee(LOCAL_AUTHORITY)
+//            .build());
+//    }
+//
+//    @Test
+//    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsNull() {
+//        DirectionConfiguration directionConfig = getDirectionConfig();
+//
+//        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, null);
+//
+//        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
+//            .directionType("direction title")
+//            .directionText("direction text")
+//            .readOnly("No")
+//            .directionRemovable("No")
+//            .directionNeeded("Yes")
+//            .dateToBeCompletedBy(null)
+//            .assignee(LOCAL_AUTHORITY)
+//            .build());
+//    }
 
     //TODO FPLA-1481 will probably remove that test, but now it counts even if the directions as
     // marked as not needed due to CMO issue

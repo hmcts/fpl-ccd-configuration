@@ -117,9 +117,6 @@ class PopulateStandardDirectionsHandlerTest {
     @Mock
     private BankHolidaysService bankHolidaysService;
 
-    @InjectMocks
-    private CalendarService calendarService;
-
     @Captor
     private ArgumentCaptor<CaseDataContent> caseDataContent;
 
@@ -130,7 +127,7 @@ class PopulateStandardDirectionsHandlerTest {
     @BeforeEach
     void before() {
         handler = new PopulateStandardDirectionsHandler(mapper, ordersLookupService, coreCaseDataApi,
-            authTokenGenerator, idamClient, userConfig, commonDirectionService, hearingBookingService, calendarService);
+            authTokenGenerator, idamClient, userConfig, commonDirectionService, hearingBookingService);
 
         given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
         given(idamClient.getUserInfo(TOKEN)).willReturn(UserInfo.builder().uid(USER_ID).build());
