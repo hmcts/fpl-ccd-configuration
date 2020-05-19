@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 
@@ -23,17 +25,23 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 public abstract class GeneratedOrderTemplateDataGeneration
     extends DocmosisTemplateDataGeneration<DocmosisGeneratedOrder> {
 
-    protected final CaseDataExtractionService caseDataExtractionService;
+    private final CaseDataExtractionService caseDataExtractionService;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     public GeneratedOrderTemplateDataGeneration(
-        CaseDataExtractionService caseDataExtractionService) {
+        CaseDataExtractionService caseDataExtractionService,
+        LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
         this.caseDataExtractionService = caseDataExtractionService;
+        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }
 
     abstract DocmosisGeneratedOrderBuilder getGeneratedOrderBuilder(CaseData caseData);
@@ -72,8 +80,11 @@ public abstract class GeneratedOrderTemplateDataGeneration
             .build();
     }
 
-    List<DocmosisChild> getChildrenDetails(CaseData caseData) {
+    int getChildrenCount(CaseData caseData) {
+        return getChildrenDetails(caseData).size();
+    }
 
+    List<DocmosisChild> getChildrenDetails(CaseData caseData) {
         List<Element<Child>> selectedChildren = getSelectedChildren(caseData.getAllChildren(),
             caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren());
         return caseDataExtractionService.getChildrenDetails(selectedChildren);
@@ -95,4 +106,17 @@ public abstract class GeneratedOrderTemplateDataGeneration
         return choice == null || "Yes".equals(choice);
     }
 
+    String getLocalAuthorityName(String caseLocalAuthority) {
+        return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
+    }
+
+    String getInterimEndDateString(InterimEndDate interimEndDate) {
+        return interimEndDate.toLocalDateTime()
+            .map(dateTime -> {
+                final String dayOrdinalSuffix = getDayOfMonthSuffix(dateTime.getDayOfMonth());
+                return formatLocalDateTimeBaseUsingFormat(
+                    dateTime, String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix));
+            })
+            .orElse("the end of the proceedings");
+    }
 }

@@ -5,39 +5,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.docmosis.BlankOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CareOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionCareOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.Objects.requireNonNull;
@@ -45,34 +36,21 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
-
-// REFACTOR: 27/01/2020 Extract docmosis logic into a new service that extends DocmosisTemplateDataGeneration
 
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderService {
-    private static final String CHILDREN = "children";
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-    private final CaseDataExtractionService caseDataExtractionService;
     private final BlankOrderGenerationService blankOrderGenerationService;
     private final CareOrderGenerationService careOrderGenerationService;
+    private final SupervisionCareOrderGenerationService supervisionCareOrderGenerationService;
+    private final EPOGenerationService epoGenerationService;
     private final Time time;
 
     public OrderTypeAndDocument buildOrderTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
@@ -145,75 +123,20 @@ public class GeneratedOrderService {
 
     public DocmosisGeneratedOrder getOrderTemplateData(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
-        InterimEndDate interimEndDate = caseData.getInterimEndDate();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
-        GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
 
-        List<Element<Child>> selectedChildren = getSelectedChildren(caseData.getAllChildren(),
-            caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren());
-        List<DocmosisChild> children = caseDataExtractionService.getChildrenDetails(selectedChildren);
-        int childrenCount = children.size();
-
-        DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = DocmosisGeneratedOrder.builder();
         switch (orderType) {
             case BLANK_ORDER:
                 return blankOrderGenerationService.getTemplateData(caseData);
             case CARE_ORDER:
                 return careOrderGenerationService.getTemplateData(caseData);
             case SUPERVISION_ORDER:
-                if (subtype == INTERIM) {
-                    orderBuilder
-                        .orderTitle(orderTypeAndDocument.getFullType(INTERIM))
-                        .childrenAct("Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .orderDetails(getFormattedInterimSupervisionOrderDetails(childrenCount,
-                            caseData.getCaseLocalAuthority(), interimEndDate));
-                } else {
-                    orderBuilder
-                        .orderTitle(orderTypeAndDocument.getFullType())
-                        .childrenAct("Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                        .orderDetails(getFormattedFinalSupervisionOrderDetails(childrenCount,
-                            caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
-                }
-                break;
+                return supervisionCareOrderGenerationService.getTemplateData(caseData);
             case EMERGENCY_PROTECTION_ORDER:
-                orderBuilder
-                    .localAuthorityName(getLocalAuthorityName(caseData.getCaseLocalAuthority()))
-                    .childrenDescription(getChildrenDescription(caseData.getEpoChildren()))
-                    .epoType(caseData.getEpoType())
-                    .includePhrase(caseData.getEpoPhrase().getIncludePhrase())
-                    .removalAddress(getFormattedRemovalAddress(caseData))
-                    .epoStartDateTime(formatEPODateTime(time.now()))
-                    .epoEndDateTime(formatEPODateTime(caseData.getEpoEndDate()));
-                break;
+                return epoGenerationService.getTemplateData(caseData);
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + orderType);
         }
-
-        OrderStatus orderStatus = caseData.getGeneratedOrderStatus();
-        if (orderStatus == DRAFT) {
-            orderBuilder.draftbackground(DRAFT_WATERMARK.getValue());
-        }
-
-        if (orderStatus == SEALED) {
-            orderBuilder.courtseal(COURT_SEAL.getValue());
-        }
-
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
-            caseData.getAllocatedJudge());
-
-        DocmosisJudgeAndLegalAdvisor docmosisJudgeAndLegalAdvisor
-            = caseDataExtractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
-
-        return orderBuilder
-            .orderType(orderType)
-            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
-            .courtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
-            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
-            .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)
-            .children(children)
-            .furtherDirections(caseData.getFurtherDirectionsText())
-            .crest(CREST.getValue())
-            .build();
     }
 
     public String generateOrderDocumentFileName(GeneratedOrderType orderType, GeneratedOrderSubtype orderSubtype) {
@@ -255,74 +178,5 @@ public class GeneratedOrderService {
         return interimEndDate.toLocalDateTime()
             .map(dateTime -> formatLocalDateTimeBaseUsingFormat(dateTime, TIME_DATE))
             .orElse(END_OF_PROCEEDINGS.getLabel());
-    }
-
-    private String getLocalAuthorityName(String caseLocalAuthority) {
-        return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
-    }
-
-    private String getFormattedInterimSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority,
-                                                              InterimEndDate interimEndDate) {
-        return String.format("It is ordered that %s supervises the %s until %s.",
-            getLocalAuthorityName(caseLocalAuthority),
-            (numOfChildren == 1) ? "child" : CHILDREN,
-            getInterimEndDateString(interimEndDate));
-    }
-
-    private String getInterimEndDateString(InterimEndDate interimEndDate) {
-        return interimEndDate.toLocalDateTime()
-            .map(dateTime -> {
-                final String dayOrdinalSuffix = getDayOfMonthSuffix(dateTime.getDayOfMonth());
-                return formatLocalDateTimeBaseUsingFormat(
-                    dateTime, String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix));
-            })
-            .orElse("the end of the proceedings");
-    }
-
-    private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,
-                                                            String caseLocalAuthority,
-                                                            int numOfMonths) {
-        final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
-        final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
-        return String.format(
-            "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
-            getLocalAuthorityName(caseLocalAuthority),
-            (numOfChildren == 1) ? "child" : CHILDREN,
-            numOfMonths,
-            formatLocalDateTimeBaseUsingFormat(orderExpiration,
-                String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)));
-    }
-
-    private List<Element<Child>> getSelectedChildren(List<Element<Child>> allChildren, ChildSelector selector,
-                                                        String choice) {
-        if (useAllChildren(choice)) {
-            return allChildren;
-        }
-
-        return selector.getSelected().stream()
-            .map(allChildren::get)
-            .collect(Collectors.toList());
-    }
-
-    private boolean useAllChildren(String choice) {
-        // If there is only one child in the case then the choice will be null
-        return choice == null || "Yes".equals(choice);
-    }
-
-    private String getChildrenDescription(EPOChildren epoChildren) {
-        if ("Yes".equals(epoChildren.getDescriptionNeeded())) {
-            return epoChildren.getDescription();
-        }
-
-        return "";
-    }
-
-    private String formatEPODateTime(LocalDateTime dateTime) {
-        return formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME_AT);
-    }
-
-    private String getFormattedRemovalAddress(CaseData caseData) {
-        return Optional.ofNullable(caseData.getEpoRemovalAddress())
-            .map(address -> address.getAddressAsString(", ")).orElse("");
     }
 }

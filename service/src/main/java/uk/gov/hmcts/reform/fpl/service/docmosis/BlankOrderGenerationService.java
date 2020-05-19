@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
@@ -11,8 +12,9 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Service
 public class BlankOrderGenerationService extends GeneratedOrderTemplateDataGeneration {
 
-    public BlankOrderGenerationService(CaseDataExtractionService caseDataExtractionService) {
-        super(caseDataExtractionService);
+    public BlankOrderGenerationService(CaseDataExtractionService caseDataExtractionService,
+        LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
+        super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
     }
 
     @Override

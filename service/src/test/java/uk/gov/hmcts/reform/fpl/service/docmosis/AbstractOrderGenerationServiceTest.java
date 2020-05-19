@@ -57,6 +57,10 @@ public abstract class AbstractOrderGenerationServiceTest {
     @Autowired
     Time time;
 
+    CaseData createPopulatedCaseData(GeneratedOrderType type, OrderStatus orderStatus) {
+        return createPopulatedCaseData(type, null, orderStatus);
+    }
+
     CaseData createPopulatedCaseData(GeneratedOrderType type, GeneratedOrderSubtype subtype, OrderStatus orderStatus) {
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
         caseDataBuilder.orderAppliesToAllChildren(YES.getValue());
@@ -177,6 +181,10 @@ public abstract class AbstractOrderGenerationServiceTest {
             .build();
 
         return caseDataBuilder.build();
+    }
+
+    DocmosisGeneratedOrder createExpectedDocmosisData(GeneratedOrderType type, OrderStatus orderStatus) {
+        return createExpectedDocmosisData(type, null, orderStatus);
     }
 
     DocmosisGeneratedOrder createExpectedDocmosisData(GeneratedOrderType type, GeneratedOrderSubtype subtype,

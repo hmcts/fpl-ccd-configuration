@@ -5,29 +5,20 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 
-import java.util.List;
-
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 
 @Service
 public class CareOrderGenerationService extends GeneratedOrderTemplateDataGeneration {
 
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-
     public CareOrderGenerationService(CaseDataExtractionService caseDataExtractionService,
         LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
-        super(caseDataExtractionService);
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
+        super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
     }
 
     @Override
@@ -47,16 +38,12 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
                 .childrenAct("Section 31 Children Act 1989");
         }
 
-        List<DocmosisChild> children = getChildrenDetails(caseData);
+        int childrenCount = getChildrenCount(caseData);
 
         return orderBuilder
             .localAuthorityName(getLocalAuthorityName(caseData.getCaseLocalAuthority()))
-            .orderDetails(getFormattedCareOrderDetails(children.size(), caseData.getCaseLocalAuthority(),
+            .orderDetails(getFormattedCareOrderDetails(childrenCount, caseData.getCaseLocalAuthority(),
                 orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
-    }
-
-    private String getLocalAuthorityName(String caseLocalAuthority) {
-        return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
     }
 
     private String getFormattedCareOrderDetails(int numOfChildren,
@@ -69,13 +56,4 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
             isInterim ? " until " + getInterimEndDateString(interimEndDate) : "");
     }
 
-    private String getInterimEndDateString(InterimEndDate interimEndDate) {
-        return interimEndDate.toLocalDateTime()
-            .map(dateTime -> {
-                final String dayOrdinalSuffix = getDayOfMonthSuffix(dateTime.getDayOfMonth());
-                return formatLocalDateTimeBaseUsingFormat(
-                    dateTime, String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix));
-            })
-            .orElse("the end of the proceedings");
-    }
 }
