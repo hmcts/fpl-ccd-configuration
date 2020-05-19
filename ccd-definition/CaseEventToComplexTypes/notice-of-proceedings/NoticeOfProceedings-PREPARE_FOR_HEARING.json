@@ -15,7 +15,7 @@
     "CaseEventID": "createNoticeOfProceedings-PREPARE_FOR_HEARING",
     "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "judgeAndLegalAdvisor.useAllocatedJudge",
-    "EventElementLabel": "Is this judge creating the notice?",
+    "EventElementLabel": "Is this judge hearing the case?",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
@@ -25,7 +25,7 @@
     "CaseEventID": "createNoticeOfProceedings-PREPARE_FOR_HEARING",
     "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "judgeAndLegalAdvisor.judgeSubHeading",
-    "EventElementLabel": "Who is creating the notice?",
+    "EventElementLabel": "Who is hearing the case?",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
