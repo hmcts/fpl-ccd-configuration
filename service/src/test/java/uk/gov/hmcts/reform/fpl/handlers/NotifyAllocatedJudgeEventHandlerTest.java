@@ -18,13 +18,14 @@ import uk.gov.hmcts.reform.fpl.service.email.content.AllocatedJudgeContentProvid
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ALLOCATED_JUDGE_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedAllocatedJudgeNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NotifyAllocatedJudgeEventHandler.class, JacksonAutoConfiguration.class})
 public class NotifyAllocatedJudgeEventHandlerTest {
+    static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "test@test.com";
+
     @MockBean
     private RequestData requestData;
 
