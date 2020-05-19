@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Order;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -24,7 +23,7 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldPopulateDateOfIssueWithTodayWhenNoStoredDateAvailable() {
+    void shouldPopulateDateOfIssueWithTodayWhenNoDatePreviouslyEntered() {
         CaseDetails caseDetails = buildCaseDetails("");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
@@ -33,7 +32,7 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldPopulateDateOfIssueWithStoredDateWhenStoredDateAvailable() {
+    void shouldPopulateDateOfIssueWithPreviouslyEnteredDate() {
         CaseDetails caseDetails = buildCaseDetails("20 March 2020");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
