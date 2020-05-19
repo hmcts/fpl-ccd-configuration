@@ -22,4 +22,5 @@ public class SharedNotifyTemplate implements NotifyData {
     private String reference;
     private String caseUrl;
     private String localAuthority;
+    private String caseName;
 }
