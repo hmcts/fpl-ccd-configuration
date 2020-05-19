@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NotifyAllocatedJudgeEventHandler.class, JacksonAutoConfiguration.class})
 public class NotifyAllocatedJudgeEventHandlerTest {
-    static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "test@test.com";
+    private final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "test@test.com";
 
     @MockBean
     private RequestData requestData;
