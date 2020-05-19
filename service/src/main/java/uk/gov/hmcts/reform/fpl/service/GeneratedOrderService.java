@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.service.docmosis.BlankOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.CareOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 // REFACTOR: 27/01/2020 Extract docmosis logic into a new service that extends DocmosisTemplateDataGeneration
 
@@ -68,6 +71,8 @@ public class GeneratedOrderService {
     private static final String CHILDREN = "children";
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseDataExtractionService caseDataExtractionService;
+    private final BlankOrderGenerationService blankOrderGenerationService;
+    private final CareOrderGenerationService careOrderGenerationService;
     private final Time time;
 
     public OrderTypeAndDocument buildOrderTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
@@ -138,10 +143,7 @@ public class GeneratedOrderService {
             .build();
     }
 
-    public DocmosisGeneratedOrder getOrderTemplateData(CaseData caseData,
-                                                    OrderStatus orderStatus,
-                                                    JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-
+    public DocmosisGeneratedOrder getOrderTemplateData(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         InterimEndDate interimEndDate = caseData.getInterimEndDate();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
@@ -155,26 +157,9 @@ public class GeneratedOrderService {
         DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = DocmosisGeneratedOrder.builder();
         switch (orderType) {
             case BLANK_ORDER:
-                orderBuilder
-                    .orderTitle(defaultIfNull(caseData.getOrder().getTitle(), "Order"))
-                    .childrenAct("Children Act 1989")
-                    .orderDetails(caseData.getOrder().getDetails());
-                break;
+                return blankOrderGenerationService.getTemplateData(caseData);
             case CARE_ORDER:
-                if (subtype == INTERIM) {
-                    orderBuilder
-                        .orderTitle(orderTypeAndDocument.getFullType(INTERIM))
-                        .childrenAct("Section 38 Children Act 1989");
-                } else if (subtype == FINAL) {
-                    orderBuilder
-                        .orderTitle(orderTypeAndDocument.getFullType())
-                        .childrenAct("Section 31 Children Act 1989");
-                }
-                orderBuilder
-                    .localAuthorityName(getLocalAuthorityName(caseData.getCaseLocalAuthority()))
-                    .orderDetails(getFormattedCareOrderDetails(childrenCount, caseData.getCaseLocalAuthority(),
-                        orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
-                break;
+                return careOrderGenerationService.getTemplateData(caseData);
             case SUPERVISION_ORDER:
                 if (subtype == INTERIM) {
                     orderBuilder
@@ -204,6 +189,7 @@ public class GeneratedOrderService {
                 throw new UnsupportedOperationException("Unexpected value: " + orderType);
         }
 
+        OrderStatus orderStatus = caseData.getGeneratedOrderStatus();
         if (orderStatus == DRAFT) {
             orderBuilder.draftbackground(DRAFT_WATERMARK.getValue());
         }
@@ -211,6 +197,9 @@ public class GeneratedOrderService {
         if (orderStatus == SEALED) {
             orderBuilder.courtseal(COURT_SEAL.getValue());
         }
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
+            caseData.getAllocatedJudge());
 
         DocmosisJudgeAndLegalAdvisor docmosisJudgeAndLegalAdvisor
             = caseDataExtractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
@@ -270,16 +259,6 @@ public class GeneratedOrderService {
 
     private String getLocalAuthorityName(String caseLocalAuthority) {
         return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
-    }
-
-    private String getFormattedCareOrderDetails(int numOfChildren,
-                                                String caseLocalAuthority,
-                                                boolean isInterim,
-                                                InterimEndDate interimEndDate) {
-        String childOrChildren = (numOfChildren == 1 ? "child is" : "children are");
-        return String.format("It is ordered that the %s placed in the care of %s%s.",
-            childOrChildren, getLocalAuthorityName(caseLocalAuthority),
-            isInterim ? " until " + getInterimEndDateString(interimEndDate) : "");
     }
 
     private String getFormattedInterimSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority,

@@ -37,6 +37,8 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.docmosis.BlankOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.CareOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -77,7 +79,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     FixedTimeConfiguration.class, LookupTestConfig.class, JacksonAutoConfiguration.class, GeneratedOrderService.class,
-    CaseDataExtractionService.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class
+    CaseDataExtractionService.class, HearingVenueLookUpService.class, BlankOrderGenerationService.class,
+    CareOrderGenerationService.class, JacksonAutoConfiguration.class
 })
 class GeneratedOrderServiceTest {
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
@@ -283,36 +286,6 @@ class GeneratedOrderServiceTest {
         assertThat(fileName).isEqualTo(expected);
     }
 
-    @ParameterizedTest
-    @MethodSource("docmosisDataGenerationSource")
-    void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType,
-                                                           GeneratedOrderSubtype subtype) {
-        LocalDateTime now = time.now();
-        CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
-        OrderStatus orderStatus = SEALED;
-
-        DocmosisGeneratedOrder templateData = service.getOrderTemplateData(caseData, orderStatus,
-            caseData.getJudgeAndLegalAdvisor());
-
-        DocmosisGeneratedOrder expectedData = createExpectedDocmosisData(orderType, subtype, now, orderStatus);
-        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
-    }
-
-    @ParameterizedTest
-    @MethodSource("docmosisDataGenerationSource")
-    void shouldCreateExpectedMapWhenGivenPopulatedCaseDataInDraft(GeneratedOrderType orderType,
-                                                                  GeneratedOrderSubtype subtype) {
-        LocalDateTime now = time.now();
-        CaseData caseData = createPopulatedCaseData(orderType, subtype, now.toLocalDate());
-        OrderStatus orderStatus = DRAFT;
-
-        DocmosisGeneratedOrder templateData = service.getOrderTemplateData(caseData, orderStatus,
-            caseData.getJudgeAndLegalAdvisor());
-
-        DocmosisGeneratedOrder expectedData = createExpectedDocmosisData(orderType, subtype, now, orderStatus);
-        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
-    }
-
     @Test
     void shouldReturnMostRecentUploadedOrderDocumentUrl() {
         DocumentReference lastOrderDocumentReference = DocumentReference.builder()
@@ -497,9 +470,10 @@ class GeneratedOrderServiceTest {
 
     private CaseData createPopulatedCaseData(GeneratedOrderType type,
                                              GeneratedOrderSubtype subtype,
-                                             LocalDate localDate) {
+                                             LocalDate localDate, OrderStatus orderStatus) {
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
         caseDataBuilder.orderAppliesToAllChildren(YES.getValue());
+        caseDataBuilder.generatedOrderStatus(orderStatus);
 
         switch (type) {
             case BLANK_ORDER:
