@@ -153,6 +153,13 @@ class HearingBookingServiceTest {
         }
 
         @Test
+        void shouldNotAddElementWithSameIdToList() {
+            List<Element<HearingBooking>> hearingBooking = List.of(hearingElementWithStartDate(0));
+
+            assertThat(service.combineHearingDetails(hearingBooking, hearingBooking)).isEqualTo(hearingBooking);
+        }
+
+        @Test
         void shouldReturnOrderedListWhenPastAndFutureHearings() {
             List<Element<HearingBooking>> futureHearingBooking = List.of(hearingElementWithStartDate(+5));
             List<Element<HearingBooking>> pastHearingBooking = List.of(hearingElementWithStartDate(-5));
