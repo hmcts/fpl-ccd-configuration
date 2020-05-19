@@ -78,6 +78,9 @@ withPipeline(type, product, component) {
   onDemo {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
+  onIthc {
+    loadVaultSecrets(serviceSecrets + otherSecrets)
+  }
   onPR {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
@@ -170,6 +173,16 @@ withPipeline(type, product, component) {
       withTeamSecrets(pipelineConf, 'demo') {
         archiveCoreCaseDataDefinitions('demo')
         uploadCoreCaseDataDefinitions('demo')
+      }
+    }
+  }
+
+  before('buildinfra:ithc') {
+    def subscription = 'nonprod'
+    withSubscription(subscription) {
+      withTeamSecrets(pipelineConf, 'ithc') {
+        archiveCoreCaseDataDefinitions('ithc')
+        uploadCoreCaseDataDefinitions('ithc')
       }
     }
   }
