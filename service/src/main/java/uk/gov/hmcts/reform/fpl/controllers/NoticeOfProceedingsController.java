@@ -24,16 +24,17 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 
 import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
@@ -55,6 +56,7 @@ public class NoticeOfProceedingsController {
     private final UploadDocumentService uploadDocumentService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
+    private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -100,7 +102,8 @@ public class NoticeOfProceedingsController {
         caseDetails.getData().put("noticeOfProceedings", noticeOfProceedings);
         caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, Object> templateData = noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
+            .getTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 
@@ -143,7 +146,7 @@ public class NoticeOfProceedingsController {
             .collect(Collectors.toList());
     }
 
-    private List<Document> generateAndUploadDocuments(Map<String, Object> templatePlaceholders,
+    private List<Document> generateAndUploadDocuments(DocmosisNoticeOfProceeding templatePlaceholders,
                                                       List<DocmosisTemplates> templates) {
         List<DocmosisDocument> docmosisDocuments = templates.stream()
             .map(template -> docmosisDocumentGeneratorService.generateDocmosisDocument(templatePlaceholders, template))
