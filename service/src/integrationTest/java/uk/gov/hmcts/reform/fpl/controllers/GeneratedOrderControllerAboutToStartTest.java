@@ -25,6 +25,8 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 public class GeneratedOrderControllerAboutToStartTest extends AbstractControllerTest {
 
     private static final String CASE_ID = "12345";
+    private static final String FAMILY_MAN_CASE_NUMBER_KEY = "familyManCaseNumber";
+    private static final String FAMILY_MAN_CASE_NUMBER_VALUE = "123";
 
     GeneratedOrderControllerAboutToStartTest() {
         super("create-order");
@@ -46,7 +48,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     void shouldSetDateOfIssueAsTodayByDefault() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
-            .data(Map.of("familyManCaseNumber", "123"))
+            .data(Map.of(FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
@@ -59,7 +61,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     void shouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
-                "familyManCaseNumber", "123",
+                FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE,
                 "allocatedJudge", Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Richards")
@@ -79,7 +81,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     void shouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
-                "familyManCaseNumber", "123",
+                FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE,
                 "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build()
             ))
             .build();
@@ -95,7 +97,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     @ValueSource(strings = {"Submitted", "Gatekeeping", "PREPARE-FOR-HEARING"})
     void shouldNotAutocompleteDocumentTypeWhenStateIsNotClosed(String state) {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("familyManCaseNumber", "123"))
+            .data(Map.of(FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE))
             .state(state)
             .build();
 
@@ -107,7 +109,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     @Test
     void shouldAutocompleteDocumentTypeWithC21WhenStateIsClosed() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("familyManCaseNumber", "123"))
+            .data(Map.of(FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE))
             .state("CLOSED")
             .build();
 

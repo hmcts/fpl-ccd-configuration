@@ -36,6 +36,7 @@ public class CloseCaseController {
     private static final String CLOSE_CASE_FIELD = "closeCase";
     private static final String CLOSE_CASE_TAB_FIELD = "closeCaseTabField";
     private static final String DEPRIVATION_OF_LIBERTY_FLAG = "deprivationOfLiberty";
+
     private final ValidateGroupService validatorService;
     private final ChildrenService childrenService;
     private final ObjectMapper mapper;

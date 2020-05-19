@@ -47,7 +47,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -94,7 +93,7 @@ public class GeneratedOrderController {
             childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
             caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
 
-            if (isNotEmpty(caseData.getAllocatedJudge())) {
+            if (caseData.getAllocatedJudge() != null) {
                 caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
             }
 

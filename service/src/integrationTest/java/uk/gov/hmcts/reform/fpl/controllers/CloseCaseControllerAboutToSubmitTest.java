@@ -23,6 +23,12 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.WITHD
 @OverrideAutoConfiguration(enabled = true)
 public class CloseCaseControllerAboutToSubmitTest extends AbstractControllerTest {
 
+    private static final String FULL_REASON_KEY = "fullReason";
+    private static final String DEPRIVATION_OF_LIBERTY_KEY = "deprivationOfLiberty";
+    private static final String CLOSE_CASE_KEY = "closeCase";
+    private static final String DATE_KEY = "date";
+    private static final String DETAILS_KEY = "details";
+
     CloseCaseControllerAboutToSubmitTest() {
         super("close-case");
     }
@@ -31,53 +37,53 @@ public class CloseCaseControllerAboutToSubmitTest extends AbstractControllerTest
     void shouldSetDeprivationOfLibertyFlagToYesWhenDeprivationReasonIsSet() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
-                "closeCase", Map.of("fullReason", DEPRIVATION_OF_LIBERTY)
+                CLOSE_CASE_KEY, Map.of(FULL_REASON_KEY, DEPRIVATION_OF_LIBERTY)
             ))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(response.getData()).containsEntry("deprivationOfLiberty", "Yes");
+        assertThat(response.getData()).containsEntry(DEPRIVATION_OF_LIBERTY_KEY, "Yes");
     }
 
     @Test
     void shouldSetDeprivationOfLibertyFlagToNoWhenDeprivationReasonIsNotSet() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
-                "closeCase", Map.of("fullReason", WITHDRAWN)
+                CLOSE_CASE_KEY, Map.of(FULL_REASON_KEY, WITHDRAWN)
             ))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(response.getData()).containsEntry("deprivationOfLiberty", "No");
+        assertThat(response.getData()).containsEntry(DEPRIVATION_OF_LIBERTY_KEY, "No");
     }
 
     @Test
     void shouldCleanCaseDataOfTransientFields() {
         Map<String, Object> closeCaseMap = Map.of(
-            "date", LocalDate.of(2013, 2, 26),
-            "fullReason", OTHER,
-            "details", "Just give me a reason, just a little bit's enough"
+            DATE_KEY, LocalDate.of(2013, 2, 26),
+            FULL_REASON_KEY, OTHER,
+            DETAILS_KEY, "Just give me a reason, just a little bit's enough"
         );
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseDetails.builder()
-            .data(Map.of("closeCase", closeCaseMap))
+            .data(Map.of(CLOSE_CASE_KEY, closeCaseMap))
             .build());
 
-        assertThat(response.getData()).doesNotContainKeys("closeCase", "close_case_label");
+        assertThat(response.getData()).doesNotContainKeys(CLOSE_CASE_KEY, "close_case_label");
     }
 
     @Test
     void shouldPopulateTabObjectOfCloseCaseData() {
         Map<String, Object> closeCaseMap = Map.of(
-            "date", LocalDate.of(2013, 2, 26),
-            "fullReason", OTHER,
-            "details", "Just a second we're not broken just bent, and we can learn to love again"
+            DATE_KEY, LocalDate.of(2013, 2, 26),
+            FULL_REASON_KEY, OTHER,
+            DETAILS_KEY, "Just a second we're not broken just bent, and we can learn to love again"
         );
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(CaseDetails.builder()
-            .data(Map.of("closeCase", closeCaseMap))
+            .data(Map.of(CLOSE_CASE_KEY, closeCaseMap))
             .build());
 
         CloseCase closeCase = CloseCase.builder()
