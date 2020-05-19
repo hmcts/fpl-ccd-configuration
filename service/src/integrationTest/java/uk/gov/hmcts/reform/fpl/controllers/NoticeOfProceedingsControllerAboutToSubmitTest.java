@@ -15,15 +15,14 @@ import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -43,6 +42,8 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     @MockBean
+    private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
+    @MockBean
     private UploadDocumentService uploadDocumentService;
 
     NoticeOfProceedingsControllerAboutToSubmitTest() {
@@ -59,9 +60,9 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         CaseData caseData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
 
-        Map<String, Object> templateData = createTemplatePlaceholders();
+        DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
 
-        given(noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData))
+        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
@@ -92,11 +93,11 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         CallbackRequest callbackRequest = buildCallbackRequest();
 
-        Map<String, Object> templateData = createTemplatePlaceholders();
+        DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
 
-        given(noticeOfProceedingsService.getNoticeOfProceedingTemplateData(any()))
+        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(any()))
             .willReturn(templateData);
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(anyMap(), any()))
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), any()))
             .willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any()))
             .willReturn(document);
@@ -131,17 +132,18 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
         return callbackRequest;
     }
 
-    private Map<String, Object> createTemplatePlaceholders() {
-        return Map.of(
-            "courtName", "Swansea Family Court",
-            "familyManCaseNumber", "SW123123",
-            "applicantName", "James Nelson",
-            "orderTypes", "Care order",
-            "childrenNames", "James Nelson",
-            "hearingDate", "1 Jan 2001",
-            "hearingVenue", "Aldgate Tower floor 3",
-            "preHearingAttendance", "test",
-            "hearingTime", "09.00pm"
-        );
+    private DocmosisNoticeOfProceeding createTemplatePlaceholders() {
+
+        return DocmosisNoticeOfProceeding.builder()
+            .courtName("Swansea Family Court")
+            .familyManCaseNumber("SW123123")
+            .applicantName("James Nelson")
+            .orderTypes("Care order")
+            .childrenNames("James Nelson")
+            .hearingDate("1 Jan 2001")
+            .hearingVenue("Aldgate Tower floor 3")
+            .preHearingAttendance("test")
+            .hearingTime("09.00pm")
+            .build();
     }
 }
