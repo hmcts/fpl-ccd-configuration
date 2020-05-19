@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -34,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
@@ -84,7 +84,7 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
-            AssertionsForClassTypes.assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
+            assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
                 .isEqualTo("1 January 2020, 12:00am"));
     }
 
@@ -105,7 +105,7 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
-                "allocatedJudge", buildAllocatedJudge(),
+                "allocatedJudge", testJudge(),
                 "standardDirectionOrder", Order.builder()
                     .directions(buildDirections(directions))
                     .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -123,7 +123,7 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isEqualTo(
-            "Case assigned to: His Honour Judge Richards");
+            "Case assigned to: Magistrates (JP) Brandon Stark");
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
         assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Davidson");
     }
@@ -131,7 +131,7 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
     @Test
     void shouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("allocatedJudge", buildAllocatedJudge()))
+            .data(Map.of("allocatedJudge", testJudge()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
@@ -139,12 +139,12 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
-            .isEqualTo("Case assigned to: His Honour Judge Richards");
+            .isEqualTo("Case assigned to: Magistrates (JP) Brandon Stark");
     }
 
     @Test
     void shouldPopulateUseAllocatedJudgeWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
-        CaseDetails caseDetails = buildSameJudgeCaseDetails(buildAllocatedJudge());
+        CaseDetails caseDetails = buildSameJudgeCaseDetails(testJudge());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -175,16 +175,9 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
                     .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                         .judgeTitle(judge.getJudgeTitle())
                         .judgeLastName(judge.getJudgeLastName())
+                        .judgeFullName(judge.getJudgeFullName())
                         .build())
                     .build()))
-            .build();
-    }
-
-    private Judge buildAllocatedJudge() {
-        return Judge.builder()
-            .judgeTitle(HIS_HONOUR_JUDGE)
-            .judgeLastName("Richards")
-            .judgeEmailAddress("richards@example.com")
             .build();
     }
 
