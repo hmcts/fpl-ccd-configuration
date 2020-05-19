@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ public class NotificationEventHandlerTestData {
     static final String LOCAL_AUTHORITY_CODE = "example";
     static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     static final String COURT_EMAIL_ADDRESS = "admin@family-court.com";
-    static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "test@test.com";
     static final String COURT_NAME = "Family Court";
     static final String AUTH_TOKEN = "Bearer token";
     static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
@@ -58,13 +58,13 @@ public class NotificationEventHandlerTestData {
             .build();
     }
 
-    public static Map<String, Object> getExpectedAllocatedJudgeNotificationParameters() {
-        return ImmutableMap.of(
-            "judgeTitle", "Her Honour Judge",
-            "judgeName", "McBerry",
-            "caseName", "test",
-            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345"
-        );
+    public static AllocatedJudgeTemplate getExpectedAllocatedJudgeNotificationParameters() {
+        AllocatedJudgeTemplate allocatedJudgeTemplate = new AllocatedJudgeTemplate();
+        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
+        allocatedJudgeTemplate.setJudgeName("McBerry");
+        allocatedJudgeTemplate.setCaseName("test");
+        allocatedJudgeTemplate.setCaseUrl("http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
+        return allocatedJudgeTemplate;
     }
 
     public static Map<String, Object> expectedCommonCMONotificationParameters() {

@@ -1,8 +1,7 @@
-package uk.gov.hmcts.reform.fpl.model.notify.submittedcase;
+package uk.gov.hmcts.reform.fpl.model.notify;
 
 import lombok.Getter;
 import lombok.Setter;
-import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 
 @Getter
 @Setter
