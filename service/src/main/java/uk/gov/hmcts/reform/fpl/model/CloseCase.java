@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason;
 import uk.gov.hmcts.reform.fpl.validation.groups.CloseCaseGroup;
@@ -20,6 +20,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.DEPRI
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CloseCase {
     // This field is hidden so runs into our favourite CCD issue of not persisting, we are ignoring the
@@ -32,12 +34,12 @@ public class CloseCase {
     @JsonIgnore
     private CloseCaseReason reason;
 
-    @JsonGetter("fullReason")
+    @JsonProperty("fullReason")
     public CloseCaseReason getFullReason() {
         return showFullReason == YES ? reason : null;
     }
 
-    @JsonSetter("fullReason")
+    @JsonProperty("fullReason")
     public void setFullReason(CloseCaseReason fullReason) {
         if (fullReason != null) {
             this.reason = fullReason;
@@ -45,12 +47,12 @@ public class CloseCase {
         }
     }
 
-    @JsonGetter("partialReason")
+    @JsonProperty("partialReason")
     public CloseCaseReason getPartialReason() {
         return showFullReason == NO ? reason : null;
     }
 
-    @JsonSetter("partialReason")
+    @JsonProperty("partialReason")
     public void setPartialReason(CloseCaseReason partialReason) {
         if (partialReason != null) {
             this.reason = partialReason;
