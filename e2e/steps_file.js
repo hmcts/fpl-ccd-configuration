@@ -83,7 +83,7 @@ module.exports = function () {
       }
     },
 
-    seeInTab(pathToField, fieldValue) {
+    tabFieldSelector(pathToField) {
       let path = [].concat(pathToField);
       let fieldName = path.splice(-1, 1)[0];
       let selector = '//div[@class="tabs-panel"]';
@@ -92,7 +92,11 @@ module.exports = function () {
         selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
       }, this);
 
-      let fieldSelector = `${selector}//*[@class="complex-panel-simple-field" and .//th/span[text()="${fieldName}"]]`;
+      return `${selector}//*[@class="complex-panel-simple-field" and .//th/span[text()="${fieldName}"]]`;
+    },
+
+    seeInTab(pathToField, fieldValue) {
+      const fieldSelector = this.tabFieldSelector(pathToField);
 
       if (Array.isArray(fieldValue)) {
         fieldValue.forEach((value, index) => {
@@ -101,6 +105,10 @@ module.exports = function () {
       } else {
         this.seeElement(locate(fieldSelector).withText(fieldValue));
       }
+    },
+
+    dontSeeInTab(pathToField) {
+      this.dontSeeElement(locate(this.tabFieldSelector(pathToField)));
     },
 
     seeCaseInSearchResult(caseId) {
