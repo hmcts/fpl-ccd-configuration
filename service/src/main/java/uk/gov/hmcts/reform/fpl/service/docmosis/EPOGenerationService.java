@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -20,6 +21,7 @@ public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
 
     private final Time time;
 
+    @Autowired
     public EPOGenerationService(CaseDataExtractionService caseDataExtractionService,
         LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration, Time time) {
         super(caseDataExtractionService, localAuthorityNameLookupConfiguration);

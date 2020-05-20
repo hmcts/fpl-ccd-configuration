@@ -58,10 +58,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    FixedTimeConfiguration.class, LookupTestConfig.class, JacksonAutoConfiguration.class, GeneratedOrderService.class,
-    CaseDataExtractionService.class, HearingVenueLookUpService.class, BlankOrderGenerationService.class,
-    CareOrderGenerationService.class, SupervisionOrderGenerationService.class, EPOGenerationService.class,
-    JacksonAutoConfiguration.class
+    FixedTimeConfiguration.class, LookupTestConfig.class, GeneratedOrderService.class, CaseDataExtractionService.class,
+    HearingVenueLookUpService.class, JacksonAutoConfiguration.class
 })
 class GeneratedOrderServiceTest {
 

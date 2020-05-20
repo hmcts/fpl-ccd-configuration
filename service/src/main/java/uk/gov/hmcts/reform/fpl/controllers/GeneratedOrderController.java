@@ -218,7 +218,8 @@ public class GeneratedOrderController {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
-        DocmosisGeneratedOrder orderTemplateData = service.getOrderTemplateData(setOrderStatus(caseData, DRAFT));
+        caseData.setGeneratedOrderStatus(DRAFT);
+        DocmosisGeneratedOrder orderTemplateData = service.getOrderTemplateData(caseData);
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
             orderTemplateData, templateType);
@@ -252,7 +253,4 @@ public class GeneratedOrderController {
         return type == EMERGENCY_PROTECTION_ORDER ? EPO : ORDER;
     }
 
-    private CaseData setOrderStatus(CaseData caseData, OrderStatus orderStatus) {
-        return caseData.toBuilder().generatedOrderStatus(orderStatus).build();
-    }
 }

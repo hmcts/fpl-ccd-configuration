@@ -303,4 +303,5 @@ class StandardDirectionOrderGenerationServiceTest {
 
         return wrapElements(createHearingBooking(today.atStartOfDay(), today.atTime(NOON)));
     }
+
 }

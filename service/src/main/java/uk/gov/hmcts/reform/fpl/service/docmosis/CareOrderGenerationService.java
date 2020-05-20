@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 @Service
 public class CareOrderGenerationService extends GeneratedOrderTemplateDataGeneration {
 
+    @Autowired
     public CareOrderGenerationService(CaseDataExtractionService caseDataExtractionService,
         LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
         super(caseDataExtractionService, localAuthorityNameLookupConfiguration);

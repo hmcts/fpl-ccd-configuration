@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
@@ -25,6 +26,7 @@ public class SupervisionOrderGenerationService extends GeneratedOrderTemplateDat
 
     private final Time time;
 
+    @Autowired
     public SupervisionOrderGenerationService(CaseDataExtractionService caseDataExtractionService,
         LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration, Time time) {
         super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
