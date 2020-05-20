@@ -19,9 +19,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -56,11 +53,11 @@ public abstract class GeneratedOrderTemplateDataGeneration
 
         OrderStatus orderStatus = caseData.getGeneratedOrderStatus();
         if (orderStatus == DRAFT) {
-            orderBuilder.draftbackground(DRAFT_WATERMARK.getValue());
+            orderBuilder.draftbackground(getDraftWaterMarkData());
         }
 
         if (orderStatus == SEALED) {
-            orderBuilder.courtseal(COURT_SEAL.getValue());
+            orderBuilder.courtseal(getCourtSealData());
         }
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
@@ -77,7 +74,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)
             .children(getChildrenDetails(caseData))
             .furtherDirections(caseData.getFurtherDirectionsText())
-            .crest(CREST.getValue())
+            .crest(getCrestData())
             .build();
     }
 
