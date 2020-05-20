@@ -42,7 +42,7 @@ module.exports = function () {
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
-      const caseId = await this.grabTextFrom('.heading-h1');
+      const caseId = await this.grabTextFrom('.markdown h2');
       console.log(`Case created ${caseId}`);
       return caseId;
     },
