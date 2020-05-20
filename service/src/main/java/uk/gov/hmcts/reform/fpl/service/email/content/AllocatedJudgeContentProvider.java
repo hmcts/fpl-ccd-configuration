@@ -15,7 +15,7 @@ public class AllocatedJudgeContentProvider extends AbstractEmailContentProvider 
 
     private final ObjectMapper mapper;
 
-    public AllocatedJudgeTemplate buildAllocatedJudgeNotificationParameters(CaseDetails caseDetails) {
+    public AllocatedJudgeTemplate buildNotificationParameters(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         AllocatedJudgeTemplate allocatedJudgeTemplate = new AllocatedJudgeTemplate();

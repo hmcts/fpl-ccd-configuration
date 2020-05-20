@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NotifyAllocatedJudgeEventHandler.class, JacksonAutoConfiguration.class})
-public class NotifyAllocatedJudgeEventHandlerTest {
+class NotifyAllocatedJudgeEventHandlerTest {
     private final String allocatedJudgeEmailAddress = "test@test.com";
 
     @MockBean
@@ -45,7 +45,7 @@ public class NotifyAllocatedJudgeEventHandlerTest {
 
         final AllocatedJudgeTemplate expectedParameters = getExpectedAllocatedJudgeNotificationParameters();
 
-        given(allocatedJudgeContentProvider.buildAllocatedJudgeNotificationParameters(caseDetails))
+        given(allocatedJudgeContentProvider.buildNotificationParameters(caseDetails))
             .willReturn(expectedParameters);
 
         notifyAllocatedJudgeEventHandler.notifyAllocatedJudge(new NotifyAllocatedJudgeEvent(callbackRequest,

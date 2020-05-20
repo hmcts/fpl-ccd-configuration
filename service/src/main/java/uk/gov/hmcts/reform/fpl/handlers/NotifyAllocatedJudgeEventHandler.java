@@ -27,7 +27,7 @@ public class NotifyAllocatedJudgeEventHandler {
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
         AllocatedJudgeTemplate parameters = allocatedJudgeContentProvider
-            .buildAllocatedJudgeNotificationParameters(eventData.getCaseDetails());
+            .buildNotificationParameters(eventData.getCaseDetails());
 
         String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 

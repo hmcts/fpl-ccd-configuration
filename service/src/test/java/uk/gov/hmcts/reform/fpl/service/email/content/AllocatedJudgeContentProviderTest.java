@@ -19,7 +19,7 @@ class AllocatedJudgeContentProviderTest extends AbstractEmailContentProviderTest
     void shouldBuildAllocatedJudgeNotificationWithExpectedParameters() {
         final AllocatedJudgeTemplate expectedParameters = getExpectedAllocatedJudgeNotificationParameters();
 
-        assertThat(allocatedJudgeContentProvider.buildAllocatedJudgeNotificationParameters(
+        assertThat(allocatedJudgeContentProvider.buildNotificationParameters(
             callbackRequest().getCaseDetails())).isEqualToComparingFieldByField(expectedParameters);
     }
 }
