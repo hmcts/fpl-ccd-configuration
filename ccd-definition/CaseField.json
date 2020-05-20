@@ -1434,5 +1434,39 @@
     "FieldType": "Date",
     "Label": "26-week timeline date",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "close_case_label",
+    "FieldType": "TextArea",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Design preferred this over the style the CCD label provided"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "closeCase",
+    "FieldType": "CloseCase",
+    "Label": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "closeCaseTabField",
+    "FieldType": "CloseCase",
+    "Label": "Close the case",
+    "SecurityClassification": "Public",
+    "Comment": "Couldn't work out how to show the label of the field for the tab view yet hide it in the event, could do it with the elements of the complex type but not the actual case field"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "deprivationOfLiberty",
+    "FieldType": "YesOrNo",
+    "Label": "Flag for whether a case was closed due to deprivation of liberty",
+    "SecurityClassification": "Public"
   }
 ]

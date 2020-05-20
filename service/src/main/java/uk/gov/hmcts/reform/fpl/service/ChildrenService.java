@@ -36,8 +36,15 @@ public class ChildrenService {
         caseDetails.getData().put("pageShow", children.size() <= 1 ? "No" : "Yes");
     }
 
+    public boolean allChildrenHaveFinalOrder(List<Element<Child>> children) {
+        if (children == null || children.isEmpty()) {
+            return false;
+        }
+        return children.stream().allMatch(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()));
+    }
+
     public List<Element<Child>> updateFinalOrderIssued(List<Element<Child>> children,
-        String orderAppliesToAllChildren, ChildSelector childSelector) {
+                                                       String orderAppliesToAllChildren, ChildSelector childSelector) {
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
             children.forEach(child -> child.getValue().setFinalOrderIssued(YES.getValue()));
         } else {
