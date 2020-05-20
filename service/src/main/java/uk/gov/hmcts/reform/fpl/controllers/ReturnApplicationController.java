@@ -12,10 +12,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.returnapplication.ReturnedDocumentBundle;
-
-import java.time.LocalDate;
 
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -26,14 +24,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReturnApplicationController {
     public static final String RETURN_APPLICATION = "returnApplication";
-    public static final String RETURNED_DOCUMENT_BUNDLE = "returnedDocumentBundle";
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         caseDetails.getData().put(RETURN_APPLICATION, null);
-        caseDetails.getData().put(RETURNED_DOCUMENT_BUNDLE, null);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -45,13 +41,10 @@ public class ReturnApplicationController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        LocalDate dateSubmitted = caseData.getDateSubmitted();
         DocumentReference documentReference = mapper.convertValue(caseDetails.getData().get("submittedForm"),
             DocumentReference.class);
 
-        ReturnedDocumentBundle returnedDocumentBundle = buildReturnedDocumentBundle(documentReference, dateSubmitted);
-
-        caseDetails.getData().put(RETURNED_DOCUMENT_BUNDLE, returnedDocumentBundle);
+        caseDetails.getData().put(RETURN_APPLICATION, buildReturnApplication(caseData, documentReference));
         caseDetails.getData().put("submittedForm", null);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -59,14 +52,16 @@ public class ReturnApplicationController {
             .build();
     }
 
-    private ReturnedDocumentBundle buildReturnedDocumentBundle(DocumentReference documentReference,
-                                                               LocalDate dateSubmitted) {
+    private ReturnApplication buildReturnApplication(CaseData caseData,
+                                                     DocumentReference documentReference) {
         documentReference.setFilename(buildReturnedFileName(documentReference.getFilename()));
 
-        return ReturnedDocumentBundle.builder()
+        return ReturnApplication.builder()
+            .note(caseData.getReturnApplication().getNote())
+            .reason(caseData.getReturnApplication().getReason())
             .document(documentReference)
             .returnedDate(formatLocalDateToString(now(), "dd MMM YYYY"))
-            .submittedDate(formatLocalDateToString(dateSubmitted, "dd MMM YYYY"))
+            .submittedDate(formatLocalDateToString(caseData.getDateSubmitted(), "dd MMM YYYY"))
             .build();
     }
 

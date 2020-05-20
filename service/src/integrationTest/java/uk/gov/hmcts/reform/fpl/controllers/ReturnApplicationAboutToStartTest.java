@@ -7,14 +7,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.returnapplication.ReturnApplication;
-import uk.gov.hmcts.reform.fpl.model.returnapplication.ReturnedDocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURNED_DOCUMENT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons.INCOMPLETE;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
@@ -30,10 +28,6 @@ class ReturnApplicationAboutToStartTest extends AbstractControllerTest {
     @Test
     void shouldResetReturnApplicationProperties() {
         Map<String, Object> data = ImmutableMap.of(
-            RETURNED_DOCUMENT_BUNDLE, ReturnedDocumentBundle.builder()
-                .submittedDate("submitted date")
-                .returnedDate("returned date")
-                .build(),
             RETURN_APPLICATION, ReturnApplication.builder()
                 .reason(List.of(INCOMPLETE))
                 .note("Some reason")
@@ -42,7 +36,6 @@ class ReturnApplicationAboutToStartTest extends AbstractControllerTest {
         CaseDetails caseDetails = buildCaseDetails(data);
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         assertThat(response.getData().get(RETURN_APPLICATION)).isNull();
-        assertThat(response.getData().get(RETURNED_DOCUMENT_BUNDLE)).isNull();
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {

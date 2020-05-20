@@ -1438,14 +1438,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "returnedDocumentBundle",
-    "Label": "Returned document",
-    "FieldType": "ReturnedDocumentBundle",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "returnApplication",
     "Label": "Rejection reason",
     "FieldType": "ReturnApplication",
