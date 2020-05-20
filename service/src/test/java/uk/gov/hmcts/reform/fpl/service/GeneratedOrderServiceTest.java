@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.docmosis.BlankOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CareOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionCareOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -60,7 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @ContextConfiguration(classes = {
     FixedTimeConfiguration.class, LookupTestConfig.class, JacksonAutoConfiguration.class, GeneratedOrderService.class,
     CaseDataExtractionService.class, HearingVenueLookUpService.class, BlankOrderGenerationService.class,
-    CareOrderGenerationService.class, SupervisionCareOrderGenerationService.class, EPOGenerationService.class,
+    CareOrderGenerationService.class, SupervisionOrderGenerationService.class, EPOGenerationService.class,
     JacksonAutoConfiguration.class
 })
 class GeneratedOrderServiceTest {
@@ -73,7 +73,7 @@ class GeneratedOrderServiceTest {
     @MockBean
     private CareOrderGenerationService careOrderGenerationService;
     @MockBean
-    private SupervisionCareOrderGenerationService supervisionCareOrderGenerationService;
+    private SupervisionOrderGenerationService supervisionOrderGenerationService;
     @MockBean
     private EPOGenerationService epoGenerationService;
 
@@ -326,7 +326,7 @@ class GeneratedOrderServiceTest {
             .build();
 
         DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
-        given(supervisionCareOrderGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
+        given(supervisionOrderGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
 
         DocmosisGeneratedOrder result = service.getOrderTemplateData(caseData);
 

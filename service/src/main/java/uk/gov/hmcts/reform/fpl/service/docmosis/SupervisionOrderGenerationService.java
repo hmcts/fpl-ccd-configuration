@@ -19,20 +19,20 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 
 @Service
-public class SupervisionCareOrderGenerationService extends GeneratedOrderTemplateDataGeneration {
+public class SupervisionOrderGenerationService extends GeneratedOrderTemplateDataGeneration {
 
     private static final String CHILDREN = "children";
 
     private final Time time;
 
-    public SupervisionCareOrderGenerationService(CaseDataExtractionService caseDataExtractionService,
+    public SupervisionOrderGenerationService(CaseDataExtractionService caseDataExtractionService,
         LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration, Time time) {
         super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
         this.time = time;
     }
 
     @Override
-    DocmosisGeneratedOrderBuilder getGeneratedOrderBuilder(CaseData caseData) {
+    DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
         InterimEndDate interimEndDate = caseData.getInterimEndDate();

@@ -28,13 +28,13 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {SupervisionCareOrderGenerationService.class, CaseDataExtractionService.class,
+@ContextConfiguration(classes = {SupervisionOrderGenerationService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class,
     FixedTimeConfiguration.class})
-class SupervisionCareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
+class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
     @Autowired
-    private SupervisionCareOrderGenerationService service;
+    private SupervisionOrderGenerationService service;
 
     @ParameterizedTest
     @MethodSource("docmosisDataGenerationSource")

@@ -44,14 +44,15 @@ public abstract class GeneratedOrderTemplateDataGeneration
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }
 
-    abstract DocmosisGeneratedOrderBuilder<?,?> getGeneratedOrderBuilder(CaseData caseData);
+    @SuppressWarnings("rawtypes")
+    abstract DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData);
 
     @Override
     public DocmosisGeneratedOrder getTemplateData(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
 
-        DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = getGeneratedOrderBuilder(caseData);
+        DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = populateCustomOrderFields(caseData);
 
         OrderStatus orderStatus = caseData.getGeneratedOrderStatus();
         if (orderStatus == DRAFT) {

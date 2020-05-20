@@ -27,7 +27,7 @@ public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
     }
 
     @Override
-    DocmosisGeneratedOrderBuilder getGeneratedOrderBuilder(CaseData caseData) {
+    DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
         return DocmosisGeneratedOrder.builder()
             .localAuthorityName(getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .childrenDescription(getChildrenDescription(caseData.getEpoChildren()))

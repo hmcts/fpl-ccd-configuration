@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.docmosis.BlankOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CareOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionCareOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
@@ -49,7 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class GeneratedOrderService {
     private final BlankOrderGenerationService blankOrderGenerationService;
     private final CareOrderGenerationService careOrderGenerationService;
-    private final SupervisionCareOrderGenerationService supervisionCareOrderGenerationService;
+    private final SupervisionOrderGenerationService supervisionOrderGenerationService;
     private final EPOGenerationService epoGenerationService;
     private final Time time;
 
@@ -131,7 +131,7 @@ public class GeneratedOrderService {
             case CARE_ORDER:
                 return careOrderGenerationService.getTemplateData(caseData);
             case SUPERVISION_ORDER:
-                return supervisionCareOrderGenerationService.getTemplateData(caseData);
+                return supervisionOrderGenerationService.getTemplateData(caseData);
             case EMERGENCY_PROTECTION_ORDER:
                 return epoGenerationService.getTemplateData(caseData);
             default:
