@@ -1,0 +1,27 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnedDocumentBundle",
+    "ListElementCode": "submittedDate",
+    "FieldType": "Text",
+    "ElementLabel": "Date submitted",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnedDocumentBundle",
+    "ListElementCode": "returnedDate",
+    "FieldType": "Text",
+    "ElementLabel": "Date returned",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnedDocumentBundle",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Document",
+    "SecurityClassification": "Public"
+  }
+]
+

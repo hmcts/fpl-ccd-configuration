@@ -1,4 +1,5 @@
 const config = require('../config.js');
+const dateFormat = require('dateformat');
 const mandatorySubmissionFields = require('../fixtures/mandatorySubmissionFields.json');
 
 let caseId;
@@ -19,8 +20,15 @@ Scenario('Admin returns application to the LA', async (I, caseViewPage, returnAp
 });
 
 Scenario('LA makes corrections to the application', async (I, caseViewPage, enterApplicantEventPage, submitApplicationEventPage) => {
+  const now = new Date();
+  const formattedDate = dateFormat(now, 'dd mmmm yyyy');
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.dontSee('mockSubmittedForm.pdf');
   caseViewPage.selectTab(caseViewPage.tabs.overview);
+  I.seeInTab(['Returned document', 'Date submitted'], formattedDate);
+  I.seeInTab(['Returned document', 'Date returned'], formattedDate);
+  I.seeInTab(['Returned document', 'Document'], 'mockSubmittedForm_returned.pdf');
   I.seeInTab(['Rejection reason', 'Reason for rejection'], 'Application Incorrect');
   I.seeInTab(['Rejection reason', 'Let the local authority know what they need to change'], 'PBA number is incorrect');
   await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
