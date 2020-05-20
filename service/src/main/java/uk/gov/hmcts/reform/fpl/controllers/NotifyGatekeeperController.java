@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGrou
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURNED_DOCUMENT_BUNDLE;
+import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -51,6 +53,8 @@ public class NotifyGatekeeperController {
         }
 
         caseDetails.getData().put(GATEKEEPER_EMAIL_KEY, resetGateKeeperEmailCollection());
+        caseDetails.getData().put(RETURNED_DOCUMENT_BUNDLE, null);
+        caseDetails.getData().put(RETURN_APPLICATION, null);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
