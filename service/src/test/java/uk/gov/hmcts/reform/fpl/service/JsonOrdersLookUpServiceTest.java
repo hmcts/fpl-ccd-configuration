@@ -21,8 +21,10 @@ import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -106,7 +108,7 @@ class JsonOrdersLookUpServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedListOfDirectionsForCCD() throws IOException {
+    void shouldReturnExpectedListOfDirectionsWithPopulatedDatesWhenThereIsHearingDate() throws IOException {
         LocalDate date = LocalDate.of(2099, 6, 1);
         given(calendarService.getWorkingDayFrom(eq(date), eq(-2))).willReturn(date.minusDays(2));
         given(calendarService.getWorkingDayFrom(eq(date), eq(-3))).willReturn(date.minusDays(3));
@@ -116,11 +118,20 @@ class JsonOrdersLookUpServiceTest {
         assertThat(unwrapElements(directions)).containsOnly(expectedDirections(date));
     }
 
+    @Test
+    void shouldReturnExpectedListOfDirectionsWithNullDatesWhenThereIsNoHearingDate() throws IOException {
+        List<Element<Direction>> directions = service.getStandardDirections(null);
+
+        assertThat(unwrapElements(directions)).containsOnly(expectedDirections(null));
+    }
+
     private HearingBooking hearingOnDateAtMidday(LocalDate hearingDate) {
         return HearingBooking.builder().startDate(hearingDate.atTime(12, 0, 0)).build();
     }
 
-    private Direction[] expectedDirections(LocalDate hearingDate) {
+    private Direction[] expectedDirections(LocalDate date) {
+        Optional<LocalDate> hearingDate = ofNullable(date);
+
         return new Direction[]{Direction.builder()
             .assignee(ALL_PARTIES)
             .directionType(DIRECTION_TYPE_1)
@@ -128,7 +139,7 @@ class JsonOrdersLookUpServiceTest {
             .readOnly("Yes")
             .directionRemovable("No")
             .directionNeeded("Yes")
-            .dateToBeCompletedBy(hearingDate.atStartOfDay())
+            .dateToBeCompletedBy(hearingDate.map(LocalDate::atStartOfDay).orElse(null))
             .responses(emptyList())
             .build(),
             Direction.builder()
@@ -138,7 +149,7 @@ class JsonOrdersLookUpServiceTest {
                 .readOnly("No")
                 .directionRemovable("No")
                 .directionNeeded("Yes")
-                .dateToBeCompletedBy(hearingDate.minusDays(3).atTime(12, 0, 0))
+                .dateToBeCompletedBy(hearingDate.map(x -> x.minusDays(3).atTime(12, 0, 0)).orElse(null))
                 .responses(emptyList())
                 .build(),
             Direction.builder()
@@ -148,7 +159,7 @@ class JsonOrdersLookUpServiceTest {
                 .readOnly("No")
                 .directionRemovable("Yes")
                 .directionNeeded("Yes")
-                .dateToBeCompletedBy(hearingDate.minusDays(2).atTime(16, 0, 0))
+                .dateToBeCompletedBy(hearingDate.map(x -> x.minusDays(2).atTime(16, 0, 0)).orElse(null))
                 .responses(emptyList())
                 .build()};
     }

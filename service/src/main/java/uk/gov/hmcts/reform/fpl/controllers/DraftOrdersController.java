@@ -40,8 +40,6 @@ import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;

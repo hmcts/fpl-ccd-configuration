@@ -28,9 +28,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Integer.parseInt;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PopulateStandardDirectionsHandler {
