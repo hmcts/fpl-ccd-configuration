@@ -149,7 +149,8 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notice-of-proceedings/about-to-submit",
     "EndButtonLabel": "Save and continue",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N"
+    "ShowEventNotes": "N",
+    "Comment": "Backwards compatibility with case history"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -225,7 +226,8 @@
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/submitted"
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/submitted",
+    "Comment": "Backwards compatibility with case history"
   },
   {
     "LiveFrom": "01/01/2017",
