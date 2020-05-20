@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.config.SystemUpdateTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -57,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, HearingBookingService.class, PopulateStandardDirectionsHandler.class,
     SystemUpdateTestConfig.class, CommonDirectionService.class, JsonOrdersLookupService.class,
-    FixedTimeConfiguration.class
+    FixedTimeConfiguration.class, StandardDirectionsService.class
 })
 class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_EVENT = "populateSDO";

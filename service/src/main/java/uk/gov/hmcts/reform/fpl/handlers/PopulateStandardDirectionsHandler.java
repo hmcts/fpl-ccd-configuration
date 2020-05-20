@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class PopulateStandardDirectionsHandler {
     private static final Boolean IGNORE_WARNING = true;
     private final ObjectMapper mapper;
-    private final OrdersLookupService ordersLookupService;
+    private final StandardDirectionsService standardDirectionsService;
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient idamClient;
@@ -81,7 +81,7 @@ public class PopulateStandardDirectionsHandler {
 
         HearingBooking firstHearing = getFirstHearing(caseData.getHearingDetails());
 
-        List<Element<Direction>> directions = ordersLookupService.getStandardDirections(firstHearing);
+        List<Element<Direction>> directions = standardDirectionsService.getDirections(firstHearing);
 
         commonDirectionService.sortDirectionsByAssignee(directions)
             .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));

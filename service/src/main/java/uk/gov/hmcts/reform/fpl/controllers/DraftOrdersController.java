@@ -29,9 +29,9 @@ import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
-import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -64,7 +64,6 @@ public class DraftOrdersController {
     private final DocumentService documentService;
     private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
     private final CommonDirectionService commonDirectionService;
-    private final OrdersLookupService ordersLookupService;
     private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
@@ -73,6 +72,7 @@ public class DraftOrdersController {
     private final Time time;
     private final RequestData requestData;
     private final ValidateGroupService validateGroupService;
+    private final StandardDirectionsService standardDirectionsService;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
@@ -287,7 +287,7 @@ public class DraftOrdersController {
     }
 
     private void persistValues(HearingBooking firstHearing, List<Element<Direction>> directions) throws IOException {
-        List<Element<Direction>> standardDirections = ordersLookupService.getStandardDirections(firstHearing);
+        List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(firstHearing);
 
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(standardDirections, directions);
     }
