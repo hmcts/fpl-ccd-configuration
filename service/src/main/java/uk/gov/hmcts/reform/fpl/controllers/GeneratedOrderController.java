@@ -218,7 +218,7 @@ public class GeneratedOrderController {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
-        caseData.setGeneratedOrderStatus(DRAFT);
+        caseData.setGeneratedOrderStatus(orderStatus);
         DocmosisGeneratedOrder orderTemplateData = service.getOrderTemplateData(caseData);
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
