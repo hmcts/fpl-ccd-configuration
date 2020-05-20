@@ -19,7 +19,7 @@ public class AllocatedJudgeContentProvider extends AbstractEmailContentProvider 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         AllocatedJudgeTemplate allocatedJudgeTemplate = new AllocatedJudgeTemplate();
-        allocatedJudgeTemplate.setJudgeTitle(caseData.getAllocatedJudge().getJudgeTitle().getLabel());
+        allocatedJudgeTemplate.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
         allocatedJudgeTemplate.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
         allocatedJudgeTemplate.setCaseName(caseData.getCaseName());
         allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseDetails.getId()));
