@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.docmosis.BlankOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CareOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
