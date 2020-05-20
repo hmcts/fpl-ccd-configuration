@@ -437,4 +437,7 @@ public class CaseData {
     private LocalDate eightWeeksExtensionDateOther;
     private final CaseExtensionTime caseExtensionTimeList;
     private final CaseExtensionTime caseExtensionTimeConfirmationList;
+
+    private final CloseCase closeCase;
+    private final String deprivationOfLiberty;
 }
