@@ -16,15 +16,18 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.ALLOCATED_JUDGE_KEY;
 
@@ -39,8 +42,9 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void shouldReturnEmptyHearingListWhenNoHearingInCase() {
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
-            Map.of(HEARING_DETAILS_KEY, emptyList()), Map.of(HEARING_DETAILS_KEY, emptyList())));
+        CallbackRequest callbackRequest = callbackRequest(hearingMapOf(emptyList()), hearingMapOf(emptyList()));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -56,8 +60,8 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
             ALLOCATED_JUDGE_KEY, buildAllocatedJudge()
         );
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
-            data, Map.of(HEARING_DETAILS_KEY, hearingDetails)));
+        CallbackRequest callbackRequest = callbackRequest(data, hearingMapOf(hearingDetails));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -68,8 +72,8 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
     void shouldReturnHearingsWhenNoHearingsExistInFuture() {
         List<Element<HearingBooking>> hearingDetails = newArrayList(createHearingBooking(now().minusDays(5)));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
-            Map.of(HEARING_DETAILS_KEY, emptyList()), Map.of(HEARING_DETAILS_KEY, hearingDetails)));
+        CallbackRequest callbackRequest = callbackRequest(hearingMapOf(emptyList()), hearingMapOf(hearingDetails));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -78,20 +82,20 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
     @Test
     void shouldReturnHearingsWhenHearingsInPastAndFutureExist() {
-        Element<HearingBooking> hearingDetail = createHearingBooking(now().plusDays(5));
-        Element<HearingBooking> hearingDetailPast = createHearingBooking(now().minusDays(5));
+        Element<HearingBooking> hearing = createHearingBooking(now().plusDays(5));
+        Element<HearingBooking> pastHearing = createHearingBooking(now().minusDays(5));
 
         Map<String, Object> data = Map.of(
-            HEARING_DETAILS_KEY, newArrayList(hearingDetail),
+            HEARING_DETAILS_KEY, newArrayList(hearing),
             ALLOCATED_JUDGE_KEY, buildAllocatedJudge()
         );
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
-            data, Map.of(HEARING_DETAILS_KEY, newArrayList(hearingDetail, hearingDetailPast))));
+        CallbackRequest callbackRequest = callbackRequest(data, hearingMapOf(List.of(hearing, pastHearing)));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getHearingDetails()).containsExactly(hearingDetailPast, hearingDetail);
+        assertThat(caseData.getHearingDetails()).containsExactly(pastHearing, hearing);
     }
 
     @Test
@@ -110,16 +114,48 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
             ALLOCATED_JUDGE_KEY, buildAllocatedJudge()
         );
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest(
-            data, Map.of(HEARING_DETAILS_KEY, emptyList())));
+        CallbackRequest callbackRequest = callbackRequest(data, hearingMapOf(emptyList()));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+        HearingBooking returnedHearing = unwrapElements(caseData.getHearingDetails()).get(0);
 
+        assertThat(returnedHearing.getJudgeAndLegalAdvisor().getJudgeTitle()).isEqualTo(HER_HONOUR_JUDGE);
+        assertThat(returnedHearing.getJudgeAndLegalAdvisor().getJudgeLastName()).isEqualTo("Watson");
+    }
+
+    @Test
+    void shouldOnlyAddCurrentHearingToListWhenSameIdForHearings() {
+        UUID id = randomUUID();
+
+        HearingBooking hearing = getHearing(now());
+        HearingBooking hearingInPast = getHearing(now().minusMinutes(1));
+
+        CallbackRequest callbackRequest = getCallbackRequest(hearing, hearingInPast, id);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor
-            = caseData.getHearingDetails().get(0).getValue().getJudgeAndLegalAdvisor();
+        assertThat(caseData.getHearingDetails()).containsExactly(element(id, hearing));
+    }
 
-        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HER_HONOUR_JUDGE);
-        assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Watson");
+    private CallbackRequest getCallbackRequest(HearingBooking hearing, HearingBooking hearingInPast, UUID id) {
+        return callbackRequest(
+            hearingMapOf(List.of(element(id, hearing))),
+            hearingMapOf(List.of(element(id, hearingInPast))));
+    }
+
+    private Map<String, Object> hearingMapOf(List<Element<HearingBooking>> hearings) {
+        return Map.of(HEARING_DETAILS_KEY, hearings);
+    }
+
+    private HearingBooking getHearing(LocalDateTime now) {
+        return HearingBooking.builder()
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Davidson")
+                .build())
+            .startDate(now)
+            .build();
     }
 
     private CallbackRequest callbackRequest(Map<String, Object> data, Map<String, Object> dataBefore) {
@@ -134,12 +170,7 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
     }
 
     private Element<HearingBooking> createHearingBooking(LocalDateTime date) {
-        return element(HearingBooking.builder()
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HIS_HONOUR_JUDGE)
-                .judgeLastName("Davidson")
-                .build())
-            .startDate(date).build());
+        return element(getHearing(date));
     }
 
     private Judge buildAllocatedJudge() {

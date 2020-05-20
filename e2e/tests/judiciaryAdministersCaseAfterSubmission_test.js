@@ -33,6 +33,16 @@ Scenario('Judiciary adds allocated judge', async (I, caseViewPage, allocatedJudg
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
   I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
+  I.seeInTab(['Allocated Judge', 'Email Address'], 'moley@example.com');
+
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+  I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
+  I.dontSeeInTab(['Allocated Judge', 'Email Address']);
+
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 });
 
 Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
