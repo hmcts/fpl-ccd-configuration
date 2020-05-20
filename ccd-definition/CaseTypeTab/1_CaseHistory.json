@@ -8,5 +8,27 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "caseHistory",
     "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CaseHistory",
+    "TabLabel": "History",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "familyManCaseNumber",
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "familyManCaseNumber = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CaseHistory",
+    "TabLabel": "History",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseName",
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "caseName = \"DO_NOT_SHOW\""
   }
 ]
