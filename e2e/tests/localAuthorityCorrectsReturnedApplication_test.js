@@ -26,11 +26,11 @@ Scenario('LA makes corrections to the application', async (I, caseViewPage, ente
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.dontSee('mockSubmittedForm.pdf');
   caseViewPage.selectTab(caseViewPage.tabs.overview);
-  I.seeInTab(['Rejection reason', 'Date submitted'], formattedDate);
-  I.seeInTab(['Rejection reason', 'Date returned'], formattedDate);
-  I.seeInTab(['Rejection reason', 'Document'], 'mockSubmittedForm_returned.pdf');
-  I.seeInTab(['Rejection reason', 'Reason for rejection'], 'Application Incorrect');
-  I.seeInTab(['Rejection reason', 'Let the local authority know what they need to change'], 'PBA number is incorrect');
+  I.seeInTab(['Return details', 'Date submitted'], formattedDate);
+  I.seeInTab(['Return details', 'Date returned'], formattedDate);
+  I.seeInTab(['Return details', 'Document'], 'mockSubmittedForm_returned.pdf');
+  I.seeInTab(['Return details', 'Reason for rejection'], 'Application Incorrect');
+  I.seeInTab(['Return details', 'Let the local authority know what they need to change'], 'PBA number is incorrect');
   await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
   enterApplicantEventPage.enterPbaNumber();
   await I.completeEvent('Save and continue');
