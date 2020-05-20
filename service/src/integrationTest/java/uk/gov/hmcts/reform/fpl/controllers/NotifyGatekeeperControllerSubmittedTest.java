@@ -48,7 +48,7 @@ public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerT
     }
 
     @Test
-    void shouldNotPublishPopulateStandardDirectionsEventWhenEventIsNotInSubmittedState() throws IOException {
+    void shouldNotPublishPopulateStandardDirectionsEventWhenEventIsNotInSubmittedState() {
         postSubmittedEvent(buildCallbackRequest(GATEKEEPING));
 
         verify(populateStandardDirectionsHandler, never()).populateStandardDirections(any());

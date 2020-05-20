@@ -34,9 +34,11 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.calendar.BankHolidaysService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -129,8 +131,7 @@ class PopulateStandardDirectionsHandlerTest {
 
     @BeforeEach
     void before() {
-        handler = new PopulateStandardDirectionsHandler(mapper, ordersLookupService, coreCaseDataApi,
-            authTokenGenerator, idamClient, userConfig, commonDirectionService, hearingBookingService, calendarService);
+        handler = new PopulateStandardDirectionsHandler(coreCaseDataService, standardDirectionsService, commonDirectionService, mapper, hearingBookingService);
 
         given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
         given(idamClient.getUserInfo(TOKEN)).willReturn(UserInfo.builder().uid(USER_ID).build());
@@ -144,7 +145,7 @@ class PopulateStandardDirectionsHandlerTest {
     }
 
     @Test
-    void shouldAddDirectionCompleteByDateBeforeWeekendWhenDeltaLandsOnWeekendDay() throws IOException {
+    void shouldAddDirectionCompleteByDateBeforeWeekendWhenDeltaLandsOnWeekendDay() {
         callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
 
         given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
@@ -164,7 +165,7 @@ class PopulateStandardDirectionsHandlerTest {
     }
 
     @Test
-    void shouldPrepopulateDirectionsCorrectlyWhenDifferentDeltaValues() throws IOException {
+    void shouldPrepopulateDirectionsCorrectlyWhenDifferentDeltaValues() {
         callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
 
         given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
@@ -185,7 +186,7 @@ class PopulateStandardDirectionsHandlerTest {
     }
 
     @Test
-    void shouldPopulateStandardDirectionsWhenPopulatedDisplayInConfiguration() throws IOException {
+    void shouldPopulateStandardDirectionsWhenPopulatedDisplayInConfiguration() {
         callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
 
         given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
@@ -203,7 +204,7 @@ class PopulateStandardDirectionsHandlerTest {
     }
 
     @Test
-    void shouldPopulateStandardDirectionsWhenNullDeltaValueInConfiguration() throws IOException {
+    void shouldPopulateStandardDirectionsWhenNullDeltaValueInConfiguration() {
         given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
 
         given(ordersLookupService.getStandardDirectionOrder())
@@ -219,7 +220,7 @@ class PopulateStandardDirectionsHandlerTest {
     }
 
     @Test
-    void shouldPopulateStandardDirectionsWhenTextContainsSpecialCharacters() throws IOException {
+    void shouldPopulateStandardDirectionsWhenTextContainsSpecialCharacters() {
         callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
 
         given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
@@ -237,7 +238,7 @@ class PopulateStandardDirectionsHandlerTest {
 
     //TODO: this test just asserts previous functionality. To be looked into in FPLA-1516.
     @Test
-    void shouldAddNoCompleteByDateWhenNoHearings() throws IOException {
+    void shouldAddNoCompleteByDateWhenNoHearings() {
         callbackRequest.getCaseDetails().getData().remove("hearingDetails");
 
         given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
@@ -254,7 +255,7 @@ class PopulateStandardDirectionsHandlerTest {
     }
 
     @Test
-    void shouldDefaultToBeginningOfTheDayWhenNoTimeSpecifiedInDirectionConfig() throws IOException {
+    void shouldDefaultToBeginningOfTheDayWhenNoTimeSpecifiedInDirectionConfig() {
         callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
 
         given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));

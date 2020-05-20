@@ -107,7 +107,7 @@ public class C2UploadedEventHandlerTest {
         }
 
         @Test
-        void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() throws IOException {
+        void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() {
             CallbackRequest callbackRequest = appendSendToCtscOnCallback();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 

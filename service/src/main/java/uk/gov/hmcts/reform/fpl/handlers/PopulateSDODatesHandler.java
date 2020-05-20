@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,17 +40,11 @@ public class PopulateSDODatesHandler {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
 
         getFirstHearing(caseDetails).ifPresent(firstHearing ->
-        {
-            try {
-                coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
-                    caseDetails.getCaseTypeId(),
-                    caseDetails.getId(),
-                    "populateSDO",
-                    populateDates(firstHearing, caseDetails.getData()));
-            } catch (IOException e) {
-                //TODO: this exception should be handled in JsonOrdersLookupService
-            }
-        });
+            coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
+                caseDetails.getCaseTypeId(),
+                caseDetails.getId(),
+                "populateSDO",
+                populateDates(firstHearing, caseDetails.getData())));
     }
 
     private Optional<HearingBooking> getFirstHearing(CaseDetails caseDetails) {
@@ -60,7 +53,7 @@ public class PopulateSDODatesHandler {
         return hearingBookingService.getFirstHearing(caseData.getHearingDetails());
     }
 
-    private Map<String, Object> populateDates(HearingBooking hearingBooking, Map<String, Object> data) throws IOException {
+    private Map<String, Object> populateDates(HearingBooking hearingBooking, Map<String, Object> data) {
         List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(hearingBooking);
 
         commonDirectionService.sortDirectionsByAssignee(standardDirections).forEach(

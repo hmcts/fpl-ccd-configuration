@@ -133,7 +133,7 @@ public class DraftOrdersController {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+        @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -172,7 +172,7 @@ public class DraftOrdersController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+        @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -252,7 +252,7 @@ public class DraftOrdersController {
         }
     }
 
-    private List<Element<Direction>> getConfigDirectionsWithHiddenValues() throws IOException {
+    private List<Element<Direction>> getConfigDirectionsWithHiddenValues() {
         // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
         return ordersLookupService.getStandardDirectionOrder().getDirections()
             .stream()

@@ -35,7 +35,7 @@ class JsonOrdersLookUpServiceTest {
     }
 
     @Test
-    void shouldPopulateOrderDefinitionForStandardDirectionOrder() throws IOException {
+    void shouldPopulateOrderDefinitionForStandardDirectionOrder() {
         OrderDefinition expectedOrderDefinition = OrderDefinition.builder()
             .type("standardDirectionOrder")
             .language(ENGLISH)

@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -28,7 +27,7 @@ public class StandardDirectionsService {
     private final CalendarService calendarService;
     private final OrdersLookupService ordersLookupService;
 
-    public List<Element<Direction>> getDirections(HearingBooking hearingBooking) throws IOException {
+    public List<Element<Direction>> getDirections(HearingBooking hearingBooking) {
         LocalDateTime hearingStartDate = ofNullable(hearingBooking).map(HearingBooking::getStartDate).orElse(null);
 
         return ordersLookupService.getStandardDirectionOrder().getDirections()

@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -32,26 +31,26 @@ public class PopulateStandardDirectionsHandler {
 
     @Async
     @EventListener
-    public void populateStandardDirections(PopulateStandardDirectionsEvent event) throws IOException {
+    public void populateStandardDirections(PopulateStandardDirectionsEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
 
         coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
             caseDetails.getCaseTypeId(),
             caseDetails.getId(),
             "populateSDO",
-            populateStandardDirections(caseDetails));
+            populateStandardDirections(caseDetails.getData()));
     }
 
-    private Map<String, Object> populateStandardDirections(CaseDetails caseDetails) throws IOException {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    private Map<String, Object> populateStandardDirections(Map<String, Object> data) {
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
         HearingBooking hearingBooking = hearingBookingService.getFirstHearing(caseData.getHearingDetails())
             .orElse(null);
 
         List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(hearingBooking);
         commonDirectionService.sortDirectionsByAssignee(standardDirections)
-            .forEach((directionAssignee, directionsElements) -> caseDetails.getData().put(directionAssignee.getValue(),
+            .forEach((directionAssignee, directionsElements) -> data.put(directionAssignee.getValue(),
                 directionsElements));
 
-        return caseDetails.getData();
+        return data;
     }
 }

@@ -31,7 +31,7 @@ public class StandardDirectionOrderGenerationService extends
 
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
-    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
+    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData)  {
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         HearingBooking firstHearing = hearingBookingService.getFirstHearing(caseData.getHearingDetails())
@@ -65,7 +65,7 @@ public class StandardDirectionOrderGenerationService extends
         return dataService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
     }
 
-    private List<DocmosisDirection> buildDirections(List<Element<Direction>> elements) throws IOException {
+    private List<DocmosisDirection> buildDirections(List<Element<Direction>> elements) {
         List<Direction> directions = unwrapElements(elements);
         List<DirectionConfiguration> config = ordersLookupService.getStandardDirectionOrder().getDirections();
         List<DocmosisDirection> formattedDirections = new ArrayList<>();
