@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -63,6 +65,32 @@ class ChildrenServiceTest {
         assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }
 
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnFalseWhenListEmptyOrNull(List<Element<Child>> list) {
+        boolean result = service.allChildrenHaveFinalOrder(list);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenAtLeastOneChildDoesNotHaveFinalOrder() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Yes"), childWithFinalOrderIssued("No"));
+
+        boolean result = service.allChildrenHaveFinalOrder(children);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenAllChildrenHaveFinalOrder() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Yes"), childWithFinalOrderIssued("Yes"));
+
+        boolean result = service.allChildrenHaveFinalOrder(children);
+
+        assertThat(result).isTrue();
+    }
+
     @Test
     void shouldPopulateCaseDataMapWithNoWhenThereIsEmptyList() {
         List<Element<Child>> children = new ArrayList<>();
@@ -104,7 +132,7 @@ class ChildrenServiceTest {
 
         ChildSelector childSelector = ChildSelector.builder()
             .childCount("4")
-            .selected(List.of(0,2))
+            .selected(List.of(0, 2))
             .build();
 
         List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
