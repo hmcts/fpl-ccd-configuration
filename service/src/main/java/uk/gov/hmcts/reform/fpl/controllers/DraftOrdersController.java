@@ -38,12 +38,12 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -82,13 +82,14 @@ public class DraftOrdersController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        LocalDate issuedDate = time.now().toLocalDate();
 
-        if (isEmpty(caseData.getStandardDirectionOrder().getDateOfIssue())) {
-            caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
-        } else {
-            caseDetails.getData().put("dateOfIssue",
-                parseLocalDateFromStringUsingFormat(caseData.getStandardDirectionOrder().getDateOfIssue(), DATE));
+        if (isNotEmpty(caseData.getStandardDirectionOrder().getDateOfIssue())) {
+            issuedDate = parseLocalDateFromStringUsingFormat(caseData.getStandardDirectionOrder().getDateOfIssue(),
+                DATE);
         }
+
+        caseDetails.getData().put("dateOfIssue", issuedDate);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
