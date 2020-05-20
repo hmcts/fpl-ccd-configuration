@@ -70,7 +70,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CaseSubmissionGenerationService.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, FixedTimeConfiguration.class})
-public class CaseSubmissionGenerationServiceTest {
+class CaseSubmissionGenerationServiceTest {
     private static final LocalDate NOW = now();
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
