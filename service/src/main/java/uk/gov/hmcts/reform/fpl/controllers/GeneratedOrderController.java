@@ -48,7 +48,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -56,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -93,10 +93,15 @@ public class GeneratedOrderController {
         if (errors.isEmpty()) {
             childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
             caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
-        }
 
-        if (isNotEmpty(caseData.getAllocatedJudge())) {
-            caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+            if (caseData.getAllocatedJudge() != null) {
+                caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+            }
+
+            if (CLOSED.getValue().equals(caseDetails.getState())) {
+                caseDetails.getData()
+                    .put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
+            }
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -126,8 +131,7 @@ public class GeneratedOrderController {
     }
 
     @PostMapping("/generate-document/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
@@ -148,8 +152,7 @@ public class GeneratedOrderController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
