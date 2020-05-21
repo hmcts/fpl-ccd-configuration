@@ -82,14 +82,14 @@ public class DraftOrdersController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        LocalDate issuedDate = time.now().toLocalDate();
+        LocalDate dateOfIssue = time.now().toLocalDate();
 
         if (isNotEmpty(caseData.getStandardDirectionOrder().getDateOfIssue())) {
-            issuedDate = parseLocalDateFromStringUsingFormat(caseData.getStandardDirectionOrder().getDateOfIssue(),
+            dateOfIssue = parseLocalDateFromStringUsingFormat(caseData.getStandardDirectionOrder().getDateOfIssue(),
                 DATE);
         }
 
-        caseDetails.getData().put("dateOfIssue", issuedDate);
+        caseDetails.getData().put("dateOfIssue", dateOfIssue);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
