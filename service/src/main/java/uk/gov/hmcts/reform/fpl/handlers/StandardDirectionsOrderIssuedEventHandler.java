@@ -9,11 +9,13 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.content.AllocatedJudgeEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 
 @Service
@@ -24,6 +26,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
+    private final AllocatedJudgeEmailContentProvider allocatedJudgeEmailContentProvider;
 
     @EventListener
     public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
@@ -47,6 +50,18 @@ public class StandardDirectionsOrderIssuedEventHandler {
             eventData.getLocalAuthorityCode());
 
         notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters,
+            eventData.getReference());
+    }
+
+    @EventListener
+    public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+        EventData eventData = new EventData(event);
+        Map<String, Object> parameters = allocatedJudgeEmailContentProvider
+            .buildStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(),
+                eventData.getLocalAuthorityCode());
+        String email = "moleytoireasa@gmail.com";
+
+        notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, email, parameters,
             eventData.getReference());
     }
 }

@@ -6,6 +6,8 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
@@ -41,5 +43,21 @@ public class JudgeAndLegalAdvisor {
             .useAllocatedJudge(YES.getValue())
             .legalAdvisorName(legalAdvisorName)
             .build();
+    }
+
+    @JsonIgnore
+    public String getJudgeOrMagistrateTitle() {
+        if (judgeTitle == OTHER) {
+            return otherTitle;
+        }
+        return judgeTitle.getLabel();
+    }
+
+    @JsonIgnore
+    public String getJudgeName() {
+        if (judgeTitle == MAGISTRATES) {
+            return judgeFullName;
+        }
+        return judgeLastName;
     }
 }

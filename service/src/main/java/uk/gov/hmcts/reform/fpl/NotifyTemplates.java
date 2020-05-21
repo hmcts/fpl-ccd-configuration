@@ -10,6 +10,7 @@ public class NotifyTemplates {
     public static final String CAFCASS_SUBMISSION_TEMPLATE = "1f5303e3-94ba-485d-b33e-b364ee22767c";
     public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "1e8f7e14-64aa-44ce-a5c1-83affff5f1a0";
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE = "c06968ea-048b-49d6-a4b5-1f13ee995ba1";
+    public static final String STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE = "f9551e87-f646-4e5e-b7be-7a00e498934b";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "6b961e81-c5ff-4f6f-8c56-f90d932a2f9b";
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =
