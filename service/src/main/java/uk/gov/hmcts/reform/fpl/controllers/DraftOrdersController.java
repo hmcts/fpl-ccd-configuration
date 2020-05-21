@@ -83,10 +83,10 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         LocalDate dateOfIssue = time.now().toLocalDate();
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
-        if (isNotEmpty(caseData.getStandardDirectionOrder().getDateOfIssue())) {
-            dateOfIssue = parseLocalDateFromStringUsingFormat(caseData.getStandardDirectionOrder().getDateOfIssue(),
-                DATE);
+        if (standardDirectionOrder != null && standardDirectionOrder.getDateOfIssue() != null) {
+            dateOfIssue = parseLocalDateFromStringUsingFormat(standardDirectionOrder.getDateOfIssue(), DATE);
         }
 
         caseDetails.getData().put("dateOfIssue", dateOfIssue);
