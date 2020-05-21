@@ -15,9 +15,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons.INCOMPLETE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {FixedTimeConfiguration.class})
+@ContextConfiguration(classes = {FixedTimeConfiguration.class, ReturnApplicationService.class})
 class ReturnApplicationServiceTest {
 
     @Autowired
@@ -29,6 +30,7 @@ class ReturnApplicationServiceTest {
     @Test
     void shouldUpdateReturnedApplicationPropertiesWithFormattedDates() {
         LocalDate now = time.now().toLocalDate();
+        String expectedDate = formatLocalDateToString(now, "d MMMM YYYY");
 
         ReturnApplication returnApplication = service.updateReturnApplication(buildReturnedApplication(),
             buildDocumentReference(), now);
@@ -37,8 +39,8 @@ class ReturnApplicationServiceTest {
 
         assertThat(returnApplication.getReason()).isEqualTo(List.of(INCOMPLETE));
         assertThat(returnApplication.getNote()).isEqualTo("Missing child details");
-        assertThat(returnApplication.getSubmittedDate()).isEqualTo("Some date");
-        assertThat(returnApplication.getReturnedDate()).isEqualTo("Some date");
+        assertThat(returnApplication.getSubmittedDate()).isEqualTo(expectedDate);
+        assertThat(returnApplication.getReturnedDate()).isEqualTo(expectedDate);
         assertThat(documentReference.getFilename()).isEqualTo("mock_document.pdf");
     }
 
