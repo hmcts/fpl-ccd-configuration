@@ -1,400 +1,145 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
-import uk.gov.hmcts.reform.fpl.model.configuration.Display;
-import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
-import uk.gov.hmcts.reform.fpl.service.calendar.BankHolidaysService;
-import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.io.IOException;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, HearingBookingService.class, FixedTimeConfiguration.class
-})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, PopulateStandardDirectionsHandler.class})
 class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
-    private static final String TOKEN = "1";
-    private static final String USER_ID = "12345";
-    private static final String CASE_ID = "12345";
-    private static final String AUTH_TOKEN = "Bearer token";
-    private static final String DIRECTION_TITLE = "Direction";
-    private static final String DIRECTION_TEXT = "Example Direction";
-    private static final String DIRECTION_TEXT_SPECIAL_CHARACTERS = "- Test body's 1 \n\n- Two";
-    private static final LocalDate MONDAY_DATE = LocalDate.of(2099, 1, 12);
-    private static final LocalDateTime MONDAY_DATE_AT_NOON = LocalDateTime.of(MONDAY_DATE, LocalTime.NOON);
-    private static final String TWO_DAYS_BEFORE_HEARING = "-2";
-    private static final String THREE_DAYS_BEFORE_HEARING = "-3";
-    private static final String SAME_DAY_AS_HEARING = "0";
+    private static final Long CASE_ID = 12345L;
+    private static final List<Element<HearingBooking>> HEARING_DETAILS = List.of(element(HearingBooking.builder().type("testHearing").build()));
+    private static final HearingBooking FIRST_HEARING = HearingBooking.builder().type("firstHearing").build();
+    private static final Map<DirectionAssignee, List<Element<Direction>>> DIRECTIONS_SORTED_BY_ASSIGNEE = Map.of(
+        ALL_PARTIES, List.of(element(Direction.builder().directionText("All Parties text").build())),
+        LOCAL_AUTHORITY, List.of(element(Direction.builder().directionText("LA text").build())),
+        PARENTS_AND_RESPONDENTS, List.of(element(Direction.builder().directionText("P&R text").build()))
+    );
+    private static final List<Element<Direction>> STANDARD_DIRECTIONS = List.of(
+        element(Direction.builder().assignee(ALL_PARTIES).build()),
+        element(Direction.builder().assignee(LOCAL_AUTHORITY).build()),
+        element(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build())
+    );
 
     @Autowired
-    Time time;
-
-    @Mock
-    private OrdersLookupService ordersLookupService;
-
-    @Mock
-    private CoreCaseDataApi coreCaseDataApi;
-
-    @Mock
-    private IdamClient idamClient;
-
-    @Mock
-    private AuthTokenGenerator authTokenGenerator;
-
-    @Mock
-    private SystemUpdateUserConfiguration userConfig;
-
-    @Mock
-    private RequestData requestData;
-
-    @Autowired
-    private HearingBookingService hearingBookingService;
-
-    @Autowired
-    private ObjectMapper mapper;
+    private PopulateStandardDirectionsHandler handler;
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private HearingBookingService hearingBookingService;
 
-    @InjectMocks
+    @MockBean
     private CommonDirectionService commonDirectionService;
 
-    @Mock
-    private BankHolidaysService bankHolidaysService;
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
-    @InjectMocks
-    private CalendarService calendarService;
+    @MockBean
+    private StandardDirectionsService standardDirectionsService;
+
+    @MockBean
+    private RequestData requestData;
 
     @Captor
-    private ArgumentCaptor<CaseDataContent> caseDataContent;
-
-    private PopulateStandardDirectionsHandler handler;
+    private ArgumentCaptor<Map<String, Object>> data;
 
     private CallbackRequest callbackRequest;
 
     @BeforeEach
     void before() {
-        handler = new PopulateStandardDirectionsHandler(coreCaseDataService, standardDirectionsService, commonDirectionService, mapper, hearingBookingService);
+        given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.of(FIRST_HEARING));
+        given(standardDirectionsService.getDirections(any())).willReturn(STANDARD_DIRECTIONS);
+        given(commonDirectionService.sortDirectionsByAssignee(any())).willReturn(DIRECTIONS_SORTED_BY_ASSIGNEE);
 
-        given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
-        given(idamClient.getUserInfo(TOKEN)).willReturn(UserInfo.builder().uid(USER_ID).build());
-        given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
-        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
-        given(requestData.userId()).willReturn(USER_ID);
-        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-        given(bankHolidaysService.getBankHolidays()).willReturn(Set.of(time.now().toLocalDate()));
-
-        callbackRequest = callbackRequest();
+        callbackRequest = getCallbackRequest();
     }
 
     @Test
-    void shouldAddDirectionCompleteByDateBeforeWeekendWhenDeltaLandsOnWeekendDay() {
-        callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
-
-        given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
-
-        // delta of -2 would result in Saturday complete by date.
-        given(ordersLookupService.getStandardDirectionOrder())
-            .willReturn(getOrderDefinition(DIRECTION_TEXT, TWO_DAYS_BEFORE_HEARING));
-
+    void shouldTriggerEventWithCorrectData() {
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
 
-        verifyCoreCaseDataApiIsCalledWithCorrectParameters();
-
-        List<Direction> directions = localAuthorityDirections(getCaseData());
-        // ignoring Saturday and Sunday and taking into account delta = -2 results in 4.
-        assertThat(directions).containsOnly(expectedDirection(DIRECTION_TEXT, MONDAY_DATE_AT_NOON.minusDays(4)));
-        assertThat(directions.get(0).getDateToBeCompletedBy().getDayOfWeek()).isEqualTo(DayOfWeek.THURSDAY);
-    }
-
-    @Test
-    void shouldPrepopulateDirectionsCorrectlyWhenDifferentDeltaValues() {
-        callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
-
-        given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
-
-        // delta of -2 and -3
-        given(ordersLookupService.getStandardDirectionOrder())
-            .willReturn(getOrderDefinitionContainingTwoDirectionsWithDifferentDeltas());
-
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        verifyCoreCaseDataApiIsCalledWithCorrectParameters();
-
-        List<Direction> directions = localAuthorityDirections(getCaseData());
-
-        assertThat(directions).containsOnly(
-            expectedDirection(DIRECTION_TEXT, MONDAY_DATE_AT_NOON.minusDays(4)),
-            expectedDirection(DIRECTION_TEXT, MONDAY_DATE_AT_NOON.minusDays(5)));
-    }
-
-    @Test
-    void shouldPopulateStandardDirectionsWhenPopulatedDisplayInConfiguration() {
-        callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
-
-        given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
-
-        given(ordersLookupService.getStandardDirectionOrder())
-            .willReturn(getOrderDefinition(DIRECTION_TEXT, SAME_DAY_AS_HEARING));
-
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        verifyCoreCaseDataApiIsCalledWithCorrectParameters();
-
-        assertThat(caseDataContent.getValue()).isEqualTo(expectedCaseDataContent(callbackRequest));
-        assertThat(localAuthorityDirections(getCaseData()))
-            .containsOnly(expectedDirection(DIRECTION_TEXT, MONDAY_DATE_AT_NOON));
-    }
-
-    @Test
-    void shouldPopulateStandardDirectionsWhenNullDeltaValueInConfiguration() {
-        given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
-
-        given(ordersLookupService.getStandardDirectionOrder())
-            .willReturn(getOrderDefinition(DIRECTION_TEXT, null));
-
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        verifyCoreCaseDataApiIsCalledWithCorrectParameters();
-
-        assertThat(caseDataContent.getValue()).isEqualTo(expectedCaseDataContent(callbackRequest));
-        assertThat(localAuthorityDirections(getCaseData()))
-            .containsOnly(expectedDirection(DIRECTION_TEXT, null));
-    }
-
-    @Test
-    void shouldPopulateStandardDirectionsWhenTextContainsSpecialCharacters() {
-        callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
-
-        given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
-
-        given(ordersLookupService.getStandardDirectionOrder())
-            .willReturn(getOrderDefinition(DIRECTION_TEXT_SPECIAL_CHARACTERS, SAME_DAY_AS_HEARING));
-
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        verifyCoreCaseDataApiIsCalledWithCorrectParameters();
-
-        assertThat(localAuthorityDirections(getCaseData()))
-            .containsOnly(expectedDirection(DIRECTION_TEXT_SPECIAL_CHARACTERS, MONDAY_DATE_AT_NOON));
-    }
-
-    //TODO: this test just asserts previous functionality. To be looked into in FPLA-1516.
-    @Test
-    void shouldAddNoCompleteByDateWhenNoHearings() {
-        callbackRequest.getCaseDetails().getData().remove("hearingDetails");
-
-        given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
-
-        given(ordersLookupService.getStandardDirectionOrder())
-            .willReturn(getOrderDefinition(DIRECTION_TEXT_SPECIAL_CHARACTERS, SAME_DAY_AS_HEARING));
-
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        verifyCoreCaseDataApiIsCalledWithCorrectParameters();
-
-        assertThat(localAuthorityDirections(getCaseData()))
-            .containsOnly(expectedDirection(DIRECTION_TEXT_SPECIAL_CHARACTERS, null));
-    }
-
-    @Test
-    void shouldDefaultToBeginningOfTheDayWhenNoTimeSpecifiedInDirectionConfig() {
-        callbackRequest = getCallbackRequestWithCustomHearingOnMonday();
-
-        given(startPopulateStandardDirectionsEvent()).willReturn(getStartEventResponse(callbackRequest));
-
-        given(ordersLookupService.getStandardDirectionOrder()).willReturn(getOrderDefinition(null));
-
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        verifyCoreCaseDataApiIsCalledWithCorrectParameters();
-
-        assertThat(localAuthorityDirections(getCaseData()))
-            .containsOnly(expectedDirection(DIRECTION_TEXT, MONDAY_DATE.atStartOfDay()));
-
-    }
-
-    private StartEventResponse startPopulateStandardDirectionsEvent() {
-        return coreCaseDataApi.startEventForCaseWorker(
-            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT);
-    }
-
-    private OrderDefinition getOrderDefinition(String text, String delta) {
-        return OrderDefinition.builder()
-            .directions(ImmutableList.of(directionConfiguration(text, delta)))
-            .build();
-    }
-
-    private OrderDefinition getOrderDefinition(String time) {
-        return OrderDefinition.builder()
-            .directions(ImmutableList.of(directionConfiguration(time)))
-            .build();
-    }
-
-    private CallbackRequest getCallbackRequestWithCustomHearingOnMonday() {
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(Long.parseLong(CASE_ID))
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .data(getCaseDetailsWithMondayHearing())
-                .build())
-            .build();
-    }
-
-    private Map<String, Object> getCaseDetailsWithMondayHearing() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(wrapElements(HearingBooking.builder()
-                .startDate(MONDAY_DATE_AT_NOON)
-                .build()))
-            .build();
-
-        return mapper.convertValue(caseData, new TypeReference<>() {
-        });
-    }
-
-    private StartEventResponse getStartEventResponse(CallbackRequest callbackRequest) {
-        return StartEventResponse.builder()
-            .caseDetails(callbackRequest.getCaseDetails())
-            .eventId(CASE_EVENT)
-            .token(TOKEN)
-            .build();
-    }
-
-    private CaseDataContent expectedCaseDataContent(CallbackRequest callbackRequest) {
-        return CaseDataContent.builder()
-            .eventToken(TOKEN)
-            .event(Event.builder()
-                .id(CASE_EVENT)
-                .build())
-            .data(callbackRequest.getCaseDetails().getData())
-            .build();
-    }
-
-    private void verifyCoreCaseDataApiIsCalledWithCorrectParameters() {
-        verify(coreCaseDataApi).submitEventForCaseWorker(
-            eq(TOKEN),
-            eq(AUTH_TOKEN),
-            eq(USER_ID),
+        verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
             eq(CASE_ID),
-            eq(true),
-            caseDataContent.capture());
+            eq(CASE_EVENT),
+            data.capture());
+        verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
+        verify(standardDirectionsService).getDirections(FIRST_HEARING);
+        verify(commonDirectionService).sortDirectionsByAssignee(STANDARD_DIRECTIONS);
+        assertThat(data.getValue()).isEqualTo(getExpectedData());
     }
 
-    private CaseData getCaseData() {
-        return mapper.convertValue(caseDataContent.getValue().getData(), CaseData.class);
+    @Test
+    void shouldCallStandardDirectionsServiceWithNullIfNoFirstHearing() {
+        given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.empty());
+
+        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(CASE_ID),
+            eq(CASE_EVENT),
+            data.capture());
+        verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
+        verify(standardDirectionsService).getDirections(null);
+        verify(commonDirectionService).sortDirectionsByAssignee(STANDARD_DIRECTIONS);
+        assertThat(data.getValue()).isEqualTo(getExpectedData());
     }
 
-    private List<Direction> localAuthorityDirections(CaseData caseData) {
-        return unwrapElements(caseData.getLocalAuthorityDirections());
-    }
-
-    private Direction expectedDirection(String directionText, LocalDateTime localDateTime) {
-        return Direction.builder()
-            .directionType(DIRECTION_TITLE)
-            .directionText(directionText)
-            .assignee(LOCAL_AUTHORITY)
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(localDateTime)
-            .build();
-    }
-
-    private OrderDefinition getOrderDefinitionContainingTwoDirectionsWithDifferentDeltas() {
-        return OrderDefinition.builder()
-            .directions(ImmutableList.of(
-                directionConfiguration(DIRECTION_TEXT, TWO_DAYS_BEFORE_HEARING),
-                directionConfiguration(DIRECTION_TEXT, THREE_DAYS_BEFORE_HEARING)))
-            .build();
-    }
-
-    private DirectionConfiguration directionConfiguration(String directionText, String deltaValue) {
-        return DirectionConfiguration.builder()
-            .assignee(LOCAL_AUTHORITY)
-            .title(DIRECTION_TITLE)
-            .text(directionText)
-            .display(Display.builder()
-                .delta(deltaValue)
-                .due(Display.Due.BY)
-                .templateDateFormat("h:mma, d MMMM yyyy")
-                .directionRemovable(false)
-                .time("12:00:00")
+    private CallbackRequest getCallbackRequest() {
+        return CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(CASE_ID)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .data(new HashMap<>(Map.of("hearingDetails", HEARING_DETAILS)))
                 .build())
             .build();
     }
 
-    private DirectionConfiguration directionConfiguration(String time) {
-        return DirectionConfiguration.builder()
-            .assignee(LOCAL_AUTHORITY)
-            .title(DIRECTION_TITLE)
-            .text(DIRECTION_TEXT)
-            .display(Display.builder()
-                .delta(SAME_DAY_AS_HEARING)
-                .due(Display.Due.BY)
-                .templateDateFormat("h:mma, d MMMM yyyy")
-                .directionRemovable(false)
-                .time(time)
-                .build())
-            .build();
+    private Map<String, Object> getExpectedData() {
+        return Map.of(
+            "hearingDetails", HEARING_DETAILS,
+            ALL_PARTIES.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(ALL_PARTIES),
+            LOCAL_AUTHORITY.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(LOCAL_AUTHORITY),
+            PARENTS_AND_RESPONDENTS.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(PARENTS_AND_RESPONDENTS));
     }
 }
