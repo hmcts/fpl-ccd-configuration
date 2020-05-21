@@ -57,8 +57,9 @@ public class StandardDirectionsOrderIssuedEventHandler {
     public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
         Map<String, Object> parameters = allocatedJudgeEmailContentProvider
-            .buildStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(),
-                eventData.getLocalAuthorityCode());
+            .buildStandardDirectionOrderIssuedNotification(eventData.getCaseDetails());
+
+        System.out.println("params are" + parameters.get("leadRespondentsName"));
         String email = "moleytoireasa@gmail.com";
 
         notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, email, parameters,
