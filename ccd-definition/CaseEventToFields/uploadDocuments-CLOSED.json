@@ -2,10 +2,10 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createNoticeOfProceedingsGatekeeping",
-    "CaseFieldID": "proceedingLabel",
+    "CaseEventID": "uploadDocuments-CLOSED",
+    "CaseFieldID": "documents_socialWorkOther",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "READONLY",
+    "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
@@ -13,13 +13,12 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createNoticeOfProceedingsGatekeeping",
-    "CaseFieldID": "noticeOfProceedings",
+    "CaseEventID": "uploadDocuments-CLOSED",
+    "CaseFieldID": "otherCourtAdminDocuments",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "COMPLEX",
+    "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "PageColumnNumber": 1
   }
 ]
