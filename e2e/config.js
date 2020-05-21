@@ -102,6 +102,7 @@ module.exports = {
     bulkScan: 'Attach scanned docs',
     addNote: 'Add a case note',
     addExpertReportLog: 'Log expert report',
+    closeTheCase: 'Close the case',
     returnApplication: 'Return application',
   },
   // files

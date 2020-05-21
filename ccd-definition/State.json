@@ -34,10 +34,18 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "CLOSED",
+    "Name": "Closed",
+    "Description": "Final case state, no longer allowed to create orders apart from C21",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "Deleted",
     "Name": "Deleted",
     "Description": "Deleted case state - all data is removed",
-    "DisplayOrder": 5
+    "DisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
@@ -45,6 +53,6 @@
     "ID": "RETURNED",
     "Name": "Returned",
     "Description": "Returned case state - LA to make changes to previously submitted application",
-    "DisplayOrder": 5
+    "DisplayOrder": 7
   }
 ]

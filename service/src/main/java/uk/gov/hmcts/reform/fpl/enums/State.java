@@ -10,6 +10,7 @@ public enum State {
     SUBMITTED("Submitted"),
     GATEKEEPING("Gatekeeping"),
     PREPARE_FOR_HEARING("PREPARE_FOR_HEARING"),
+    CLOSED("CLOSED"),
     DELETED("Deleted"),
     RETURNED("RETURNED");
 
