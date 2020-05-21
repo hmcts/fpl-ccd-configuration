@@ -20,6 +20,7 @@ public class JudgeAndLegalAdvisor {
     private final String legalAdvisorName;
     private String allocatedJudgeLabel;
     private String useAllocatedJudge;
+    private String judgeEmailAddress;
 
     @JsonIgnore
     public boolean isUsingAllocatedJudge() {
@@ -33,7 +34,8 @@ public class JudgeAndLegalAdvisor {
                 .judgeTitle(allocatedJudge.getJudgeTitle())
                 .otherTitle(allocatedJudge.getOtherTitle())
                 .judgeLastName(allocatedJudge.getJudgeLastName())
-                .judgeFullName(allocatedJudge.getJudgeFullName());
+                .judgeFullName(allocatedJudge.getJudgeFullName())
+                .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress());
         }
         return judgeAndLegalAdvisorBuilder.build();
     }
