@@ -18,13 +18,12 @@ import java.util.List;
 import static java.lang.Integer.parseInt;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StandardDirectionsService {
     private final CalendarService calendarService;
+    private final CommonDirectionService commonDirectionService;
     private final OrdersLookupService ordersLookupService;
 
     public List<Element<Direction>> getDirections(HearingBooking hearingBooking) {
@@ -41,15 +40,7 @@ public class StandardDirectionsService {
             .map(date -> getCompleteByDate(date, direction.getDisplay()))
             .orElse(null);
 
-        return element(Direction.builder()
-            .directionType(direction.getTitle())
-            .directionText(direction.getText())
-            .assignee(direction.getAssignee())
-            .directionNeeded(YES.getValue())
-            .directionRemovable(booleanToYesOrNo(direction.getDisplay().isDirectionRemovable()))
-            .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
-            .dateToBeCompletedBy(dateToBeCompletedBy)
-            .build());
+        return commonDirectionService.constructDirectionForCCD(direction, dateToBeCompletedBy);
     }
 
     private LocalDateTime getCompleteByDate(LocalDateTime startDate, Display display) {

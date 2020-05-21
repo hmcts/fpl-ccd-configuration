@@ -82,7 +82,7 @@ class PopulateStandardDirectionsHandlerTest {
     private CallbackRequest callbackRequest;
 
     @BeforeEach
-    void before() {
+    void setup() {
         given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.of(FIRST_HEARING));
         given(standardDirectionsService.getDirections(any())).willReturn(STANDARD_DIRECTIONS);
         given(commonDirectionService.sortDirectionsByAssignee(any())).willReturn(DIRECTIONS_SORTED_BY_ASSIGNEE);
