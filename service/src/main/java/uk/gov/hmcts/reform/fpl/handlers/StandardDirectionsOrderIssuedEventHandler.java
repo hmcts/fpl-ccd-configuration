@@ -63,7 +63,6 @@ public class StandardDirectionsOrderIssuedEventHandler {
         Map<String, Object> parameters = allocatedJudgeEmailContentProvider
             .buildStandardDirectionOrderIssuedNotification(eventData.getCaseDetails());
 
-        System.out.println("email should be" + caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress());
         String email = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
 
         notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, email, parameters,
