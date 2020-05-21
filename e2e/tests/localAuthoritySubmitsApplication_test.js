@@ -18,10 +18,10 @@ Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('local authority changes case name @create-case-with-mandatory-sections-only', async (I, caseViewPage, changeCaseNameEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
-  changeCaseNameEventPage.changeCaseName('Changing it to new case name');
+  changeCaseNameEventPage.changeCaseName('New case name');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
-  caseViewPage.seeInCaseTitle('Changing it to new case name');
+  caseViewPage.seeInCaseTitle('New case name');
   caseViewPage.seeInCaseTitle(caseId);
 });
 
@@ -459,5 +459,5 @@ Scenario('local authority submits after giving consent @create-case-with-mandato
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.see('Changing_it_to_new_case_name.pdf');
+  I.see('New_case_name.pdf');
 });

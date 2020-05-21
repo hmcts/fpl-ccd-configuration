@@ -18,7 +18,8 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "familyManCaseNumber",
     "TabFieldDisplayOrder": 2,
-    "FieldShowCondition": "familyManCaseNumber = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "familyManCaseNumber = \"DO_NOT_SHOW\"",
+    "Comment": "A field should be loaded in case tab first to show it in the case title"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,6 +30,7 @@
     "TabDisplayOrder": 1,
     "CaseFieldID": "caseName",
     "TabFieldDisplayOrder": 3,
-    "FieldShowCondition": "caseName = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "familyManCaseNumber = \"DO_NOT_SHOW\"",
+    "Comment": "A field should be loaded in case tab first to show it in the case title"
   }
 ]
