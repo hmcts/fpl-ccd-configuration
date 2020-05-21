@@ -379,11 +379,11 @@ public class GeneratedOrderService {
         // generate order if one of the following is met:
         //  • the order is a blank order
         //  • further directions is not null and one of the following is met:
-        //      • not all children have a final order
-        //      • closeCaseFromOrder is not null
-        return orderTypeAndDocument.getType() == BLANK_ORDER
-            || orderFurtherDirections != null
-            && (!childrenService.allChildrenHaveFinalOrder(children) || closeCaseFromOrder != null);
+        //      • not all children have a final order (can't close the case)
+        //      • closeCaseFromOrder is not null (close case decision has been made)
+        return BLANK_ORDER == orderTypeAndDocument.getType()
+            || (orderFurtherDirections != null
+            && (!childrenService.allChildrenHaveFinalOrder(children) || closeCaseFromOrder != null));
     }
 
     public boolean showCloseCase(OrderTypeAndDocument orderType,
