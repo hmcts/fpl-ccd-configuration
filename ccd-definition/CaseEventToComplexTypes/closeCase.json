@@ -1,0 +1,56 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "CaseEventID": "closeCase",
+    "CaseFieldID": "closeCase",
+    "ListElementCode": "date",
+    "EventElementLabel": "Date case was closed",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "CaseEventID": "closeCase",
+    "CaseFieldID": "closeCase",
+    "ListElementCode": "showFullReason",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "closeCase.date=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "CaseEventID": "closeCase",
+    "CaseFieldID": "closeCase",
+    "ListElementCode": "fullReason",
+    "EventElementLabel": "Reason",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "closeCase.showFullReason!=\"NO\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "CaseEventID": "closeCase",
+    "CaseFieldID": "closeCase",
+    "ListElementCode": "partialReason",
+    "EventElementLabel": "Reason",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "closeCase.showFullReason!=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "CaseEventID": "closeCase",
+    "CaseFieldID": "closeCase",
+    "ListElementCode": "details",
+    "EventElementLabel": "Add why the case was closed",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "closeCase.fullReason=\"OTHER\" OR closeCase.partialReason=\"OTHER\""
+  }
+]
