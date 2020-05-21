@@ -142,8 +142,7 @@ public class DraftOrdersController {
 
         Order standardDirectionOrder = updated.getStandardDirectionOrder();
 
-        //add hidden values to directions
-        persistValues(getFirstHearing(caseData.getHearingDetails()), standardDirectionOrder.getDirections());
+        persistHiddenValues(getFirstHearing(caseData.getHearingDetails()), standardDirectionOrder.getDirections());
 
         DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
@@ -186,14 +185,12 @@ public class DraftOrdersController {
         //combine all directions from collections
         List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
 
-        //add hidden values to directions
-        persistValues(getFirstHearing(caseData.getHearingDetails()), combinedDirections);
+        persistHiddenValues(getFirstHearing(caseData.getHearingDetails()), combinedDirections);
 
         //place directions with hidden values back into case details
         Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(combinedDirections);
         directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-        //build order
         Order order = Order.builder()
             .directions(commonDirectionService.removeUnnecessaryDirections(combinedDirections))
             .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
@@ -286,7 +283,8 @@ public class DraftOrdersController {
         return commonDirectionService.sortDirectionsByAssignee(nonCustomDirections);
     }
 
-    private void persistValues(HearingBooking firstHearing, List<Element<Direction>> directions) throws IOException {
+    private void persistHiddenValues(HearingBooking firstHearing,
+                                     List<Element<Direction>> directions) throws IOException {
         List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(firstHearing);
 
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(standardDirections, directions);

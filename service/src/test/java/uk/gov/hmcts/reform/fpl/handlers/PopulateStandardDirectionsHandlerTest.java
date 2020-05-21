@@ -18,29 +18,29 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
-import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.config.SystemUpdateTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-import static java.lang.Integer.parseInt;
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -50,15 +50,18 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, HearingBookingService.class, PopulateStandardDirectionsHandler.class,
-    SystemUpdateTestConfig.class, CommonDirectionService.class, JsonOrdersLookupService.class,
-    FixedTimeConfiguration.class, StandardDirectionsService.class
+    JacksonAutoConfiguration.class, SystemUpdateTestConfig.class, PopulateStandardDirectionsHandler.class
 })
 class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
@@ -67,11 +70,12 @@ class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_ID = "12345";
     private static final String AUTH_TOKEN = "Bearer token";
     private static final LocalDate DATE = LocalDate.of(2099, 1, 12);
-    private static final String TWO_DAYS_BEFORE_HEARING = "-2";
-    private static final String THREE_DAYS_BEFORE_HEARING = "-3";
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Mock
+    private RequestData requestData;
 
     @MockBean
     private CoreCaseDataApi coreCaseDataApi;
@@ -82,17 +86,26 @@ class PopulateStandardDirectionsHandlerTest {
     @MockBean
     private IdamClient idamClient;
 
-    @Mock
-    private RequestData requestData;
+    @MockBean
+    private StandardDirectionsService standardDirectionsService;
 
     @MockBean
-    private CalendarService calendarService;
+    private HearingBookingService hearingBookingService;
+
+    @MockBean
+    private CommonDirectionService directionService;
 
     @Autowired
     private PopulateStandardDirectionsHandler handler;
 
     @Captor
     private ArgumentCaptor<CaseDataContent> caseDataContent;
+
+    @Captor
+    private ArgumentCaptor<HearingBooking> hearingContent;
+
+    @Captor
+    private ArgumentCaptor<List<Element<Direction>>> directionsContent;
 
     @BeforeEach
     void before() {
@@ -102,65 +115,60 @@ class PopulateStandardDirectionsHandlerTest {
         given(requestData.userId()).willReturn(USER_ID);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
-        when(calendarService.getWorkingDayFrom(eq(DATE), eq(parseInt(TWO_DAYS_BEFORE_HEARING))))
-            .thenReturn(DATE.minusDays(2));
-        when(calendarService.getWorkingDayFrom(eq(DATE), eq(parseInt(THREE_DAYS_BEFORE_HEARING))))
-            .thenReturn(DATE.minusDays(3));
-
+        when(hearingBookingService.getFirstHearing(any())).thenReturn(Optional.of(getHearing()));
+        when(directionService.sortDirectionsByAssignee(directionsContent.capture())).thenReturn(directionMap());
     }
 
     @Test
     void shouldAddDirectionsToCaseData() throws IOException {
+        List<Element<Direction>> directionsToReturn = directionsToReturn();
+
+        when(standardDirectionsService.getDirections(hearingContent.capture())).thenReturn(directionsToReturn);
+
         CallbackRequest callbackRequest = getCallbackRequestWithHearing();
         when(startEventResponse()).thenReturn(getStartEventResponse(callbackRequest));
 
         handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
 
+        assertThat(hearingContent.getValue()).isEqualTo(getHearing());
+        assertThat(directionsContent.getValue()).isEqualTo(directionsToReturn);
         verifyCoreCaseDataApiIsCalledWithCorrectParameters();
-
-        CaseData caseData = mapper.convertValue(caseDataContent.getValue().getData(), CaseData.class);
-        List<Direction> allParties = unwrapElements(caseData.getAllParties());
-        List<Direction> localAuthority = unwrapElements(caseData.getLocalAuthorityDirections());
-
-        assertThat(allParties).containsOnly(expectedAllPartiesDirection());
-
-        assertThat(localAuthority).containsOnly(expectedLocalAuthorityDirections());
+        assertAssigneeDirectionsAreCorrect(caseDataContent.getValue());
     }
 
-    private Direction[] expectedLocalAuthorityDirections() {
-        return new Direction[]{Direction.builder()
-            .assignee(LOCAL_AUTHORITY)
-            .directionType("Test SDO type 2")
-            .directionText("Test body 2\n")
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(DATE.minusDays(3).atTime(12, 0, 0))
-            .responses(emptyList())
-            .build(),
-            Direction.builder()
-                .assignee(LOCAL_AUTHORITY)
-                .directionType("Test SDO type 3")
-                .directionText("Test body 3\n")
-                .readOnly("No")
-                .directionRemovable("Yes")
-                .directionNeeded("Yes")
-                .dateToBeCompletedBy(DATE.minusDays(2).atTime(16, 0, 0))
-                .responses(emptyList())
-                .build()};
+    private void assertAssigneeDirectionsAreCorrect(CaseDataContent caseDataContent) {
+        CaseData caseData = mapper.convertValue(caseDataContent.getData(), CaseData.class);
+
+        assertThatDirectionsAreExpected(caseData.getAllParties(), ALL_PARTIES);
+        assertThatDirectionsAreExpected(caseData.getLocalAuthorityDirections(), LOCAL_AUTHORITY);
+        assertThatDirectionsAreExpected(caseData.getCafcassDirections(), CAFCASS);
+        assertThatDirectionsAreExpected(caseData.getOtherPartiesDirections(), OTHERS);
+        assertThatDirectionsAreExpected(caseData.getRespondentDirections(), PARENTS_AND_RESPONDENTS);
+        assertThatDirectionsAreExpected(caseData.getCourtDirections(), COURT);
     }
 
-    private Direction expectedAllPartiesDirection() {
-        return Direction.builder()
-            .assignee(ALL_PARTIES)
-            .directionType("Test SDO type 1")
-            .directionText("- Test body 1 \n\n- Two\n")
-            .readOnly("Yes")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(DATE.atStartOfDay())
-            .responses(emptyList())
-            .build();
+    private void assertThatDirectionsAreExpected(List<Element<Direction>> directions, DirectionAssignee assignee) {
+        assertThat(unwrapElements(directions)).containsOnly(directionForAssignee(assignee));
+    }
+
+    private Map<DirectionAssignee, List<Element<Direction>>> directionMap() {
+        Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
+        Stream.of(DirectionAssignee.values())
+            .forEach(assignee -> directionsMap.put(assignee, wrapElements(directionForAssignee(assignee))));
+
+        return directionsMap;
+    }
+
+    private Direction directionForAssignee(DirectionAssignee assignee) {
+        return Direction.builder().directionText("example title").assignee(assignee).build();
+    }
+
+    private List<Element<Direction>> directionsToReturn() {
+        List<Element<Direction>> directions = new ArrayList<>();
+        Stream.of(DirectionAssignee.values())
+            .forEach(assignee -> directions.add(element(directionForAssignee(assignee))));
+
+        return directions;
     }
 
     private StartEventResponse startEventResponse() {
@@ -171,9 +179,7 @@ class PopulateStandardDirectionsHandlerTest {
     private CallbackRequest getCallbackRequestWithHearing() {
         Map<String, Object> data = new HashMap<>();
 
-        data.put("hearingDetails", wrapElements(HearingBooking.builder()
-            .startDate(DATE.atTime(12,0,0))
-            .build()));
+        data.put("hearingDetails", wrapElements(getHearing()));
 
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -182,6 +188,12 @@ class PopulateStandardDirectionsHandlerTest {
                 .caseTypeId(CASE_TYPE)
                 .data(data)
                 .build())
+            .build();
+    }
+
+    private HearingBooking getHearing() {
+        return HearingBooking.builder()
+            .startDate(DATE.atTime(12, 0, 0))
             .build();
     }
 
