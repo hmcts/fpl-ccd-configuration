@@ -125,15 +125,6 @@ public class DraftOrdersController {
                 .build();
         }
 
-        List<String> errors = validateGroupService.validateGroup(caseData, DateOfIssueGroup.class);
-
-        if (!errors.isEmpty()) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .errors(errors)
-                .build();
-        }
-
         String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
