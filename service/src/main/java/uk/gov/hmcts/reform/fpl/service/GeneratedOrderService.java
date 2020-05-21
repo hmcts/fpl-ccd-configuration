@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
+import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
@@ -48,6 +49,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
@@ -72,6 +75,7 @@ public class GeneratedOrderService {
     private static final String CHILDREN = "children";
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final ChildrenService childrenService;
     private final Time time;
 
     public OrderTypeAndDocument buildOrderTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
@@ -367,5 +371,32 @@ public class GeneratedOrderService {
     private String getFormattedRemovalAddress(CaseData caseData) {
         return Optional.ofNullable(caseData.getEpoRemovalAddress())
             .map(address -> address.getAddressAsString(", ")).orElse("");
+    }
+
+    public boolean shouldGenerateDocument(OrderTypeAndDocument orderTypeAndDocument,
+                                          FurtherDirections orderFurtherDirections,
+                                          List<Element<Child>> updatedChildren) {
+        // generate order if:
+        //  • the order is a blank order
+        //  • further directions is not null
+        //  • if not all children have a final order
+        return orderTypeAndDocument.getType() == BLANK_ORDER
+            || orderFurtherDirections != null
+            || !childrenService.allChildrenHaveFinalOrder(updatedChildren);
+    }
+
+    public boolean showCloseCase(OrderTypeAndDocument orderType,
+                                 String closeCaseFromOrder,
+                                 List<Element<Child>> children,
+                                 boolean closeCaseEnabled) {
+        // Can close case if:
+        //  • close case is enabled
+        //  • the order type is final or epo
+        //  • all children will be marked to have a final order issued against them
+        //  • the flag hasn't already been set
+        return closeCaseEnabled
+            && (FINAL == orderType.getSubtype() || EMERGENCY_PROTECTION_ORDER == orderType.getType())
+            && childrenService.allChildrenHaveFinalOrder(children)
+            && closeCaseFromOrder == null;
     }
 }
