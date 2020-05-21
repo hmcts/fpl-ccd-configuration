@@ -12,11 +12,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-
-import static java.time.LocalDate.now;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import uk.gov.hmcts.reform.fpl.service.ReturnApplicationService;
 
 @Api
 @RestController
@@ -25,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class ReturnApplicationController {
     public static final String RETURN_APPLICATION = "returnApplication";
     private final ObjectMapper mapper;
+    private final ReturnApplicationService returnApplicationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -44,31 +42,16 @@ public class ReturnApplicationController {
         DocumentReference documentReference = mapper.convertValue(caseDetails.getData().get("submittedForm"),
             DocumentReference.class);
 
-        caseDetails.getData().put(RETURN_APPLICATION, buildReturnApplication(caseData, documentReference));
+        String updatedFileName = returnApplicationService.appendReturnedToFileName(documentReference.getFilename());
+        documentReference.setFilename(updatedFileName);
+
+        caseDetails.getData().put(RETURN_APPLICATION, returnApplicationService.updateReturnApplication(
+            caseData.getReturnApplication(), documentReference, caseData.getDateSubmitted()));
+
         caseDetails.getData().put("submittedForm", null);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    private ReturnApplication buildReturnApplication(CaseData caseData,
-                                                     DocumentReference documentReference) {
-        documentReference.setFilename(buildReturnedFileName(documentReference.getFilename()));
-
-        return ReturnApplication.builder()
-            .note(caseData.getReturnApplication().getNote())
-            .reason(caseData.getReturnApplication().getReason())
-            .document(documentReference)
-            .returnedDate(formatLocalDateToString(now(), "dd MMM YYYY"))
-            .submittedDate(formatLocalDateToString(caseData.getDateSubmitted(), "dd MMM YYYY"))
-            .build();
-    }
-
-    private String buildReturnedFileName(String fileName) {
-        String documentName = fileName.substring(0, fileName.lastIndexOf('.'));
-        String extension = fileName.substring(fileName.lastIndexOf('.'));
-
-        return documentName + "_returned" + extension;
     }
 }

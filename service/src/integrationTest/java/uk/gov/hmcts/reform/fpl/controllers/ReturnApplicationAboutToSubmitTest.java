@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(NoticeOfProceedingsController.class)
+@WebMvcTest(ReturnApplicationController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ReturnApplicationAboutToSubmitTest extends AbstractControllerTest {
     ReturnApplicationAboutToSubmitTest() {

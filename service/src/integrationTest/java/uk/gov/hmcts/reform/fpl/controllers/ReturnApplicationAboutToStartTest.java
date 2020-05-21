@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons.INCOMPLET
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(NoticeOfProceedingsController.class)
+@WebMvcTest(ReturnApplicationController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ReturnApplicationAboutToStartTest extends AbstractControllerTest {
     ReturnApplicationAboutToStartTest() {
