@@ -97,7 +97,7 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/date-of-issue/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEventValidateDateOfIssue(
+    public AboutToStartOrSubmitCallbackResponse handleMidEventDateOfIssue(
         @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
