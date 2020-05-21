@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,16 @@ public class NotificationEventHandlerTestData {
         return ImmutableMap.<String, Object>builder()
             .putAll(expectedCommonCMONotificationParameters())
             .build();
+    }
+
+    public static AllocatedJudgeTemplate getExpectedAllocatedJudgeNotificationParameters() {
+        AllocatedJudgeTemplate allocatedJudgeTemplate = new AllocatedJudgeTemplate();
+        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
+        allocatedJudgeTemplate.setJudgeName("McBerry");
+        allocatedJudgeTemplate.setCaseName("test");
+        allocatedJudgeTemplate.setCaseUrl("http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
+
+        return allocatedJudgeTemplate;
     }
 
     public static Map<String, Object> expectedCommonCMONotificationParameters() {
