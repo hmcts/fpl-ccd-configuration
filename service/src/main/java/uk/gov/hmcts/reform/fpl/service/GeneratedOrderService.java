@@ -50,7 +50,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
@@ -375,27 +374,29 @@ public class GeneratedOrderService {
 
     public boolean shouldGenerateDocument(OrderTypeAndDocument orderTypeAndDocument,
                                           FurtherDirections orderFurtherDirections,
-                                          List<Element<Child>> updatedChildren) {
-        // generate order if:
+                                          List<Element<Child>> children,
+                                          String closeCaseFromOrder) {
+        // generate order if one of the following is met:
         //  • the order is a blank order
-        //  • further directions is not null
-        //  • if not all children have a final order
+        //  • further directions is not null and one of the following is met:
+        //      • not all children have a final order
+        //      • closeCaseFromOrder is not null
         return orderTypeAndDocument.getType() == BLANK_ORDER
             || orderFurtherDirections != null
-            || !childrenService.allChildrenHaveFinalOrder(updatedChildren);
+            && (!childrenService.allChildrenHaveFinalOrder(children) || closeCaseFromOrder != null);
     }
 
     public boolean showCloseCase(OrderTypeAndDocument orderType,
                                  String closeCaseFromOrder,
                                  List<Element<Child>> children,
                                  boolean closeCaseEnabled) {
-        // Can close case if:
+        // Can show close case page if all of the following are met:
         //  • close case is enabled
         //  • the order type is final or epo
         //  • all children will be marked to have a final order issued against them
         //  • the flag hasn't already been set
         return closeCaseEnabled
-            && (FINAL == orderType.getSubtype() || EMERGENCY_PROTECTION_ORDER == orderType.getType())
+            && orderType.isClosable()
             && childrenService.allChildrenHaveFinalOrder(children)
             && closeCaseFromOrder == null;
     }

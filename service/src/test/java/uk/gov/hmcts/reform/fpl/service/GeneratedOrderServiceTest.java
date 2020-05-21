@@ -69,7 +69,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    FixedTimeConfiguration.class, LookupTestConfig.class, GeneratedOrderService.class
+    FixedTimeConfiguration.class, LookupTestConfig.class, GeneratedOrderService.class, ChildrenService.class
 })
 class GeneratedOrderServiceTest {
     @Autowired

@@ -50,6 +50,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -95,7 +96,7 @@ public class GeneratedOrderController {
         if (errors.isEmpty()) {
             childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
             caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
-            caseDetails.getData().put("close_case_label", "some text that will be replaced");
+            caseDetails.getData().put("close_case_label", CloseCaseController.LABEL);
 
             if (caseData.getAllocatedJudge() != null) {
                 caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
@@ -138,16 +139,23 @@ public class GeneratedOrderController {
         // This mid event is called after:
         //  • Inputting Judge + LA
         //  • Adding further directions
-        //  •
+        //  • Close case page
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
-        List<Element<Child>> updatedChildren = getUpdatedChildren(caseData);
+        String closeCaseFromOrder = caseData.getCloseCaseFromOrder();
+        List<Element<Child>> children;
+
+        if (FINAL == orderTypeAndDocument.getSubtype()) {
+            children = getUpdatedChildren(caseData);
+        } else {
+            children = caseData.getAllChildren();
+        }
 
         // If can display close case, set the flag and return
-        if (service.showCloseCase(orderTypeAndDocument, caseData.getCloseCaseFromOrder(), updatedChildren,
+        if (service.showCloseCase(orderTypeAndDocument, closeCaseFromOrder, children,
             featureToggleService.isCloseCaseEnabled())) {
 
             data.put("showCloseCaseFromOrderPage", YES);
@@ -157,7 +165,10 @@ public class GeneratedOrderController {
                 .build();
         }
 
-        if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections, updatedChildren)) {
+        if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections, children,
+            closeCaseFromOrder)) {
+
+            log.info("Generating document for type {}", orderTypeAndDocument.getType());
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
                 caseData.getAllocatedJudge());
             Document document = getDocument(caseData, DRAFT, judgeAndLegalAdvisor);
