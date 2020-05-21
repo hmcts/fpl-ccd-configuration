@@ -24,7 +24,7 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void shouldPopulateDateOfIssueWithTodayWhenNoDatePreviouslyEntered() {
-        CaseDetails caseDetails = buildCaseDetails("");
+        CaseDetails caseDetails = buildCaseDetails(null);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
