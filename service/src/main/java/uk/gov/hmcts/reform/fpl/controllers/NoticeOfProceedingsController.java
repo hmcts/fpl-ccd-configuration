@@ -120,6 +120,11 @@ public class NoticeOfProceedingsController {
             .build();
     }
 
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        applicationEventPublisher.publishEvent(new NoticeOfProceedingsIssuedEvent(callbackRequest, requestData));
+    }
+
     private String buildProceedingLabel(HearingBooking hearingBooking) {
         return String.format("The case management hearing will be on the %s.",
             formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG));
@@ -149,12 +154,6 @@ public class NoticeOfProceedingsController {
         return docmosisDocuments.stream()
             .map(document -> uploadDocumentService.uploadPDF(document.getBytes(), document.getDocumentTitle()))
             .collect(Collectors.toList());
-    }
-
-    @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new NoticeOfProceedingsIssuedEvent(callbackRequest,
-            requestData));
     }
 
     private List<DocmosisTemplates> getProceedingTemplateTypes(CaseData caseData) {

@@ -26,8 +26,6 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
     public Map<String, Object> buildAllocatedJudgeNotification(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        System.out.println(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor());
-
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
             .put("leadRespondentsName", capitalize(caseData.getRespondents1()

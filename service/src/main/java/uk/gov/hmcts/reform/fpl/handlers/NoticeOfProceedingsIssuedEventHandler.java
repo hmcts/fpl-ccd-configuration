@@ -26,11 +26,10 @@ public class NoticeOfProceedingsIssuedEventHandler {
     public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(NoticeOfProceedingsIssuedEvent event) {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+
         Map<String, Object> parameters = noticeOfProceedingsEmailContentProvider
             .buildAllocatedJudgeNotification(eventData.getCaseDetails());
 
-        System.out.println("email should be" + caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeEmailAddress());
-        System.out.println(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor());
         String email = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
 
         notificationService.sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, email, parameters,
