@@ -79,20 +79,7 @@ public class DraftOrdersController {
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-
-        caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
-    }
-
-    @PostMapping("/date-of-issue/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEventDateOfIssue(
-        @RequestBody CallbackRequest callbackRequest) {
-
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         LocalDate issuedDate = time.now().toLocalDate();
