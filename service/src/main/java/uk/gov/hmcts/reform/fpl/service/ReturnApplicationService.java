@@ -30,9 +30,6 @@ public class ReturnApplicationService {
     }
 
     public String appendReturnedToFileName(String fileName) {
-        String documentName = fileName.substring(0, fileName.lastIndexOf('.'));
-        String extension = fileName.substring(fileName.lastIndexOf('.'));
-
-        return documentName + "_returned" + extension;
+        return new StringBuilder(fileName).insert(fileName.lastIndexOf('.'), "_returned").toString();
     }
 }
