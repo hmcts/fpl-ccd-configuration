@@ -96,7 +96,8 @@ const enterJudgeAndLegalAdvisor =  (I, createOrderEventPage, order, hasAllocated
     createOrderEventPage.useAllocatedJudge(order.judgeAndLegalAdvisor.legalAdvisorName);
   } else {
     createOrderEventPage.useAlternateJudge();
-    createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
+    createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle,
+      order.judgeAndLegalAdvisor.judgeEmailAddress);
   }
 };
 
