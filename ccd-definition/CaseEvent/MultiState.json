@@ -150,7 +150,7 @@
     "Name": "Upload a C2",
     "Description": "Upload a c2 to the case",
     "DisplayOrder": 4,
-    "PreConditionState(s)": "Submitted;CLOSED",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
