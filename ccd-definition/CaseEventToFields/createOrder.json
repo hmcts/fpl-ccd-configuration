@@ -266,7 +266,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 12,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y",
+    "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "closeCaseFromOrder=\"Yes\""
   },
   {
@@ -280,7 +280,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 12,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y",
+    "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "closeCaseFromOrder=\"DO_NOT_SHOW\""
   }
 ]
