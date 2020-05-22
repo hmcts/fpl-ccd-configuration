@@ -11,14 +11,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "placementGatekeeping",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "placement-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -32,7 +32,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "placementGatekeeping",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -53,7 +53,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "placementGatekeeping",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
