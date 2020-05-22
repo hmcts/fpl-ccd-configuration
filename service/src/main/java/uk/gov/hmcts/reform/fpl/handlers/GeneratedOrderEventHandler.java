@@ -9,15 +9,19 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Map;
+import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -57,7 +61,11 @@ public class GeneratedOrderEventHandler {
         Map<String, Object> parameters = orderIssuedEmailContentProvider
             .buildAllocatedJudgeOrderIssuedNotification(eventData.getCaseDetails());
 
-        System.out.println("order is " + caseData.getOrderCollection());
+        Optional<Element<GeneratedOrder>> order = caseData.getOrderCollection().stream().reduce((first, last) -> last);
+        System.out.println("last order is " + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeOrMagistrateTitle()
+        + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeName());
+
+
 //        String email = caseData.getOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
 //
 //        System.out.println("Email is" + email);
