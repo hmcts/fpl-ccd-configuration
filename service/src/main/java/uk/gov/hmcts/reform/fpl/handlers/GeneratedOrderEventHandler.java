@@ -20,7 +20,9 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -67,7 +69,8 @@ public class GeneratedOrderEventHandler {
     }
 
     private String getAllocatedJudgeEmail(CaseData caseData) {
-        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection().stream().reduce((first, last) -> last);
+        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
+            .stream().reduce((first, last) -> last);
         return generatedOrder.get().getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
     }
 

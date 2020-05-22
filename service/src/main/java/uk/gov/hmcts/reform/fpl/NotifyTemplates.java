@@ -26,7 +26,8 @@ public class NotifyTemplates {
         "931dcd86-d331-4273-abaa-208daed0761a";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "58aa7e13-e80a-4630-a610-ee7fc1b6f9f9";
-    public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE = "c61f59d0-2ece-4b00-acef-3d168943d583";
+    public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE =
+        "c61f59d0-2ece-4b00-acef-3d168943d583";
     public static final String CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE =
         "7a513cfd-cf3c-4778-aca0-4bbd1a37863a";
     public static final String CMO_REJECTED_BY_JUDGE_TEMPLATE = "44124d30-dce0-4ae4-8e74-27dc43fc282a";

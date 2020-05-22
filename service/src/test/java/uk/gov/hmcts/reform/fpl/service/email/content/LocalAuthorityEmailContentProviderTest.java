@@ -47,7 +47,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
         return ImmutableMap.<String, Object>builder()
             .put("title", LOCAL_AUTHORITY_NAME)
             .put("familyManCaseNumber", "12345,")
-            .put("leadRespondentsName", "Smith,")
+            .put("leadRespondentsName", "Smith")
             .put("hearingDate", "1 January 2020")
             .put("reference", CASE_REFERENCE)
             .put("caseUrl", caseUrl(CASE_REFERENCE))
@@ -59,7 +59,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .put("title", LOCAL_AUTHORITY_NAME)
             .put("familyManCaseNumber", "")
             .put("hearingDate", "")
-            .put("leadRespondentsName", "Moley,")
+            .put("leadRespondentsName", "Moley")
             .put("reference", "1")
             .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, 1L))
             .build();

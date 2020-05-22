@@ -38,7 +38,8 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters(caseDetails))
-            .put("callout", emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(caseData, caseData.getHearingDetails()))
+            .put("callout", emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(caseData,
+                caseData.getHearingDetails()))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("judgeTitle", caseData.getAllocatedJudge().getJudgeOrMagistrateTitle())
             .put("judgeName", caseData.getAllocatedJudge().getJudgeName())

@@ -75,7 +75,8 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     }
 
     private JudgeAndLegalAdvisor getAllocatedJudge(CaseData caseData) {
-        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection().stream().reduce((first, last) -> last);
+        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
+            .stream().reduce((first, last) -> last);
         return generatedOrder.get().getValue().getJudgeAndLegalAdvisor();
     }
 

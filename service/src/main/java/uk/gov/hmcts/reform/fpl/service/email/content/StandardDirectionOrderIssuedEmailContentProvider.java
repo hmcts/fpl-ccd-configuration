@@ -19,7 +19,8 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return super.getSDOPersonalisationBuilder(caseDetails.getId(), caseData)
-            .put("judgeTitle", caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getJudgeOrMagistrateTitle())
+            .put("judgeTitle", caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()
+                .getJudgeOrMagistrateTitle())
             .put("judgeName", caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getJudgeName())
             .build();
     }

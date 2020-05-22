@@ -27,7 +27,8 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
+            .put("familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? ""
+                : caseData.getFamilyManCaseNumber() + ",")
             .put("leadRespondentsName", capitalize(caseData.getRespondents1()
                 .get(0)
                 .getValue()
