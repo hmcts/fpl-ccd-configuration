@@ -410,7 +410,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendInternationalElementGatekeeping",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -613,7 +613,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendInternationalElement-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
