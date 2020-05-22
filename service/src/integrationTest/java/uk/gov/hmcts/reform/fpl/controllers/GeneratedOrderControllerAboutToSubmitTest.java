@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -51,8 +52,10 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -126,6 +129,46 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getOrderCollection().get(0).getValue().getDocument()).isEqualTo(expectedDocument());
+    }
+
+    @Test
+    void shouldAddCloseCaseObjectToCaseDataWhenOptionWasSelectedAndChangeState() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .children1(createChildren("Fred", "John"))
+                .orderAppliesToAllChildren("Yes")
+                .closeCaseFromOrder("Yes"));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        CloseCase expected = CloseCase.builder()
+            .date(dateNow())
+            .showFullReason(YES)
+            .reason(FINAL_ORDER)
+            .build();
+
+        assertThat(caseData.getCloseCase()).isEqualTo(expected);
+        assertThat(caseData.getState()).isEqualTo(CLOSED);
+    }
+
+    @Test
+    void shouldAddCloseCaseObjectToCaseDataWhenOptionWasNotSelected() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .children1(createChildren("Fred", "John"))
+                .orderAppliesToAllChildren("Yes")
+                .closeCaseFromOrder("No"));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+        assertThat(response.getData()).extracting("closeCaseTabField", "state").containsOnlyNulls();
     }
 
     @ParameterizedTest
