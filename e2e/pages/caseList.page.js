@@ -6,6 +6,7 @@ module.exports = {
     caseState: '#wb-case-state',
     evidenceHandled: '#evidenceHandled-Yes',
     evidenceNotHandled: '#evidenceHandled-No',
+    caseName: '#caseName',
     search: 'Apply',
     caseList: 'Case list',
   },
@@ -28,6 +29,12 @@ module.exports = {
 
   searchForCasesWithUnhandledEvidences() {
     I.click(this.fields.evidenceNotHandled);
+    I.click(this.fields.search);
+  },
+
+  searchForCasesWithName(caseName, state='Any') {
+    I.selectOption(this.fields.caseState, state);
+    I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
   },
 
