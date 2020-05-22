@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.events.PopulateSDODatesEvent;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -39,18 +39,18 @@ public class PopulateSDODatesHandler {
     public void populateSDODates(PopulateSDODatesEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
 
-        getFirstHearing(caseDetails).ifPresent(firstHearing ->
-            coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
-                caseDetails.getCaseTypeId(),
-                caseDetails.getId(),
-                "populateSDO",
-                populateDates(firstHearing, caseDetails.getData())));
+        coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
+            caseDetails.getCaseTypeId(),
+            caseDetails.getId(),
+            "populateSDO",
+            populateDates(getFirstHearing(caseDetails), caseDetails.getData()));
     }
 
-    private Optional<HearingBooking> getFirstHearing(CaseDetails caseDetails) {
+    private HearingBooking getFirstHearing(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return hearingBookingService.getFirstHearing(caseData.getHearingDetails());
+        return hearingBookingService.getFirstHearing(caseData.getHearingDetails())
+            .orElseThrow(NoHearingBookingException::new);
     }
 
     private Map<String, Object> populateDates(HearingBooking hearingBooking, Map<String, Object> data) {

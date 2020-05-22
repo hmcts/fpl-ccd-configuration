@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 @Service
 public class JsonOrdersLookupService implements OrdersLookupService {
     private final ObjectMapper objectMapper;
-    private final String ORDERS_CONFIG_FILENAME = "ordersConfig.json";
+    private final String ordersConfigFilename = "ordersConfig.json";
 
     @Autowired
     public JsonOrdersLookupService(ObjectMapper objectMapper) {
@@ -19,12 +19,12 @@ public class JsonOrdersLookupService implements OrdersLookupService {
     }
 
     public OrderDefinition getStandardDirectionOrder() {
-        String content = readString(ORDERS_CONFIG_FILENAME);
+        String content = readString(ordersConfigFilename);
 
         try {
             return this.objectMapper.readValue(content, OrderDefinition.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not read file " + ORDERS_CONFIG_FILENAME);
+            throw new RuntimeException("Could not read file " + ordersConfigFilename);
         }
     }
 }
