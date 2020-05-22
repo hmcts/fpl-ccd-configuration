@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnedReason",
+    "ListElementCode": "INCOMPLETE",
+    "ListElement": "Application Incomplete",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnedReason",
+    "ListElementCode": "INCORRECT",
+    "ListElement": "Application Incorrect",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnedReason",
+    "ListElementCode": "CLARIFICATION_NEEDED",
+    "ListElement": "Clarification Needed",
+    "DisplayOrder": 3
+  }
+]
