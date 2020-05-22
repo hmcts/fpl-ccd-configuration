@@ -10,8 +10,6 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.handlers.PopulateStandardDirectionsHandler;
 import uk.gov.service.notify.NotificationClient;
 
-import java.io.IOException;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,7 +38,7 @@ public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerT
     }
 
     @Test
-    void shouldReturnPopulatedDirectionsByRoleInSubmittedCallback() throws Exception {
+    void shouldReturnPopulatedDirectionsByRoleInSubmittedCallback() {
         postSubmittedEvent(buildCallbackRequest(SUBMITTED));
 
         verify(populateStandardDirectionsHandler).populateStandardDirections(any(

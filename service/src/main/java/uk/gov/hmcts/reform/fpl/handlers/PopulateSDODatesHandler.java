@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -66,10 +67,10 @@ public class PopulateSDODatesHandler {
                                     List<Element<Direction>> directionsConfigForAssignee) {
         List<Element<Direction>> directionsForAssignee = mapper.convertValue(data.get(assignee.getValue()),
             new TypeReference<>() {});
-        for (int directionIndex = 0; directionIndex < directionsForAssignee.size(); directionIndex++) {
-            var direction = directionsForAssignee.get(directionIndex).getValue();
+        for (int i = 0; i < directionsForAssignee.size(); i++) {
+            var direction = directionsForAssignee.get(i).getValue();
             if (direction.getDateToBeCompletedBy() == null) {
-                direction.setDateToBeCompletedBy(directionsConfigForAssignee.get(directionIndex)
+                direction.setDateToBeCompletedBy(directionsConfigForAssignee.get(i)
                     .getValue()
                     .getDateToBeCompletedBy());
             }

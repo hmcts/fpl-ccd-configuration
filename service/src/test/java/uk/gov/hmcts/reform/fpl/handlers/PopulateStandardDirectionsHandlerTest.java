@@ -45,7 +45,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
     private static final Long CASE_ID = 12345L;
-    private static final List<Element<HearingBooking>> HEARING_DETAILS = List.of(element(HearingBooking.builder().type("testHearing").build()));
+    private static final List<Element<HearingBooking>> HEARING_DETAILS = List.of(element(HearingBooking.builder()
+        .type("testHearing")
+        .build()));
     private static final HearingBooking FIRST_HEARING = HearingBooking.builder().type("firstHearing").build();
     private static final Map<DirectionAssignee, List<Element<Direction>>> DIRECTIONS_SORTED_BY_ASSIGNEE = Map.of(
         ALL_PARTIES, List.of(element(Direction.builder().directionText("All Parties text").build())),
