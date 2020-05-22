@@ -12,10 +12,10 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class AllocatedJudgeEmailContentProvider extends StandardDirectionOrderContent {
+public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDirectionOrderContent {
     private final ObjectMapper mapper;
 
-    public Map<String, Object> buildStandardDirectionOrderIssuedNotification(CaseDetails caseDetails) {
+    public Map<String, Object> buildNotificationParametersForAllocatedJudge(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return super.getSDOPersonalisationBuilder(caseDetails.getId(), caseData)

@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.AllocatedJudgeEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 
@@ -29,7 +29,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
-    private final AllocatedJudgeEmailContentProvider allocatedJudgeEmailContentProvider;
+    private final StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
     private final ObjectMapper mapper;
     private final FeatureToggleService featureToggleService;
 
@@ -63,8 +63,8 @@ public class StandardDirectionsOrderIssuedEventHandler {
         if (featureToggleService.isSDONotificationForAllocatedJudgeEnabled()) {
             EventData eventData = new EventData(event);
             CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-            Map<String, Object> parameters = allocatedJudgeEmailContentProvider
-                .buildStandardDirectionOrderIssuedNotification(eventData.getCaseDetails());
+            Map<String, Object> parameters = standardDirectionOrderIssuedEmailContentProvider
+                .buildNotificationParametersForAllocatedJudge(eventData.getCaseDetails());
 
             String email = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
 
