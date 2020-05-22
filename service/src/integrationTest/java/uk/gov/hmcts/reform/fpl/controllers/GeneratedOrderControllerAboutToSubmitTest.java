@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -143,7 +144,8 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
                 .closeCaseFromOrder("Yes"));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+        CloseCase closeCase = mapper.convertValue(response.getData().get("closeCaseTabField"), CloseCase.class);
+        State state = mapper.convertValue(response.getData().get("state"), State.class);
 
         CloseCase expected = CloseCase.builder()
             .date(dateNow())
@@ -151,8 +153,8 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
             .reason(FINAL_ORDER)
             .build();
 
-        assertThat(caseData.getCloseCase()).isEqualTo(expected);
-        assertThat(caseData.getState()).isEqualTo(CLOSED);
+        assertThat(closeCase).isEqualTo(expected);
+        assertThat(state).isEqualTo(CLOSED);
     }
 
     @Test
