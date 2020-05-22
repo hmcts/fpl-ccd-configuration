@@ -50,15 +50,15 @@ public class C2UploadedEventHandler {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(
+        if (caseData.getAllocatedJudge() != null) {
+
+            Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(
                 eventData.getCaseDetails());
 
-        String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
+            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-        //try with no allocated judge
-        System.out.println("Sending to" + email);
-
-        notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
+            notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
                 eventData.getReference());
+        }
     }
 }
