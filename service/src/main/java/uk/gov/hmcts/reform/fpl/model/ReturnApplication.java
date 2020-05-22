@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -17,4 +18,14 @@ public class ReturnApplication {
     private String submittedDate;
     private String returnedDate;
     private DocumentReference document;
+
+    public String getFormattedReturnReasons() {
+        if (reason != null) {
+            return reason.stream()
+                .map(ReturnedApplicationReasons::getLabel)
+                .collect(Collectors.joining(", "));
+        }
+
+        return "";
+    }
 }

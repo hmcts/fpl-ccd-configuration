@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -44,6 +45,7 @@ import javax.validation.groups.Default;
 
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -177,6 +179,11 @@ public class CaseSubmissionController {
                     C110A_APPLICATION));
             }
         }
+
+        if (isReturnedState(caseDetails.getState())) {
+            applicationEventPublisher.publishEvent(new AmendedReturnedCaseEvent(callbackRequest, requestData));
+        }
+
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, requestData));
     }
 
@@ -192,5 +199,9 @@ public class CaseSubmissionController {
 
     private boolean isOpenedState(String state) {
         return OPEN.getValue().equals(state);
+    }
+
+    private boolean isReturnedState(String state) {
+        return RETURNED.getValue().equals(state);
     }
 }
