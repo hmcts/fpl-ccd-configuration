@@ -57,7 +57,6 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
         assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(dateNow().toString());
     }
 
@@ -70,7 +69,6 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
         assertThat(callbackResponse.getData().get("pageShow")).isEqualTo("No");
         assertThat(callbackResponse.getData().get("orderAppliesToAllChildren")).isEqualTo("Yes");
     }
