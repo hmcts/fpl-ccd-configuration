@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildSelectorType.SEL
 @JsonComponent
 public class ChildSelectorSerializer extends JsonSerializer<ChildSelector> {
 
+
     @Override
     public void serialize(ChildSelector value, JsonGenerator gen,
                           SerializerProvider serializers) throws IOException {
@@ -27,6 +28,13 @@ public class ChildSelectorSerializer extends JsonSerializer<ChildSelector> {
 
         for (int i = 0; i < max; i++) {
             generateChild(gen, i, selected.contains(i));
+        }
+
+        List<Integer> hidden = defaultIfNull(value.getHidden(), new ArrayList<>());
+        max = hidden.stream().mapToInt(i -> i + 1).max().orElse(0);
+
+        for (int i = 0; i < max; i++) {
+            gen.writeObjectField("child" + i +  "Hidden", hidden.contains(i) ? "Yes" : "No");
         }
 
         gen.writeEndObject();

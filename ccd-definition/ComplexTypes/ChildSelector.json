@@ -10,12 +10,39 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
+    "ListElementCode": "child0Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "child1Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "child2Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 2",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
     "ListElementCode": "child0",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 1",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"1*\""
+    "FieldShowCondition": "childCount=\"1*\" AND child0Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -25,7 +52,7 @@
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 2",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"12*\""
+    "FieldShowCondition": "childCount=\"12*\" AND child1Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -35,7 +62,7 @@
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 3",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"123*\""
+    "FieldShowCondition": "childCount=\"123*\" AND child2Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

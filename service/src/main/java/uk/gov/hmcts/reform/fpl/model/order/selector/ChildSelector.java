@@ -4,6 +4,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Setter;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,9 @@ public class ChildSelector {
     private String childCount = "";
     @Builder.Default
     private List<Integer> selected = new ArrayList<>();
+    @Builder.Default
+    private List<Integer> hidden = new ArrayList<>();
+
 
     public void generateChildCount(int max) {
         StringBuilder builder = new StringBuilder();
@@ -25,5 +31,15 @@ public class ChildSelector {
         }
 
         setChildCount(builder.toString());
+    }
+
+    public void generatedHiddenList(List<Element<Child>> allChildren) {
+        List<Integer> hiddenList = new ArrayList<>();
+        for (int i = 0; i < allChildren.size(); i++) {
+            if (YesNo.YES.getValue().equals(allChildren.get(i).getValue().getFinalOrderIssued())) {
+                hiddenList.add(i);
+            }
+        }
+        setHidden(hiddenList);
     }
 }

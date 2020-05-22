@@ -15,6 +15,15 @@
     "ElementLabel": "Final Order Issued",
     "FieldShowCondition": "finalOrderIssued!=\"\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildrenNew",
+    "ListElementCode": "finalOrderIssuedType",
+    "FieldType": "Text",
+    "ElementLabel": "Final Order Issued Type",
+    "FieldShowCondition": "finalOrderIssued=\"HIDDEN FIELD FOR FINAL ORDER TYPE\"",
+    "SecurityClassification": "Public"
   }
 
 ]

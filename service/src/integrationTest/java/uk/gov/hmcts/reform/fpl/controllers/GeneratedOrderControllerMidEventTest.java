@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -117,6 +118,19 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
             assertThat(caseData.getChildSelector()).isNull();
         }
 
+        @Test
+        void shouldPopulateChildSelectorAndLabelWhenNoIsSelectedAndFinalOrderIssuedOnChildren() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseDetails("No", true), "populate-selector");
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(callbackResponse.getData().get("children_label"))
+                .isEqualTo("Child 1: Wallace - Care order issued\nChild 2: Gromit - Care order issued\n");
+
+            assertThat(caseData.getChildSelector()).isEqualTo(getExpectedChildSelector());
+        }
+
         private ChildSelector getExpectedChildSelector() {
             return ChildSelector.builder()
                 .childCount("12")
@@ -124,8 +138,12 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         }
 
         private CaseDetails buildCaseDetails(String choice) {
+            return buildCaseDetails(choice, false);
+        }
+
+        private CaseDetails buildCaseDetails(String choice, boolean finalOrderIssued) {
             CaseData caseData = CaseData.builder()
-                .children1(createChildren("Wallace", "Gromit"))
+                .children1(createChildren(finalOrderIssued, "Wallace", "Gromit"))
                 .orderAppliesToAllChildren(choice)
                 .build();
 
@@ -134,7 +152,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 .build();
         }
 
-        private List<Element<Child>> createChildren(String... firstNames) {
+        private List<Element<Child>> createChildren(boolean finalOrderIssued, String... firstNames) {
             Child[] children = new Child[firstNames.length];
             for (int i = 0; i < firstNames.length; i++) {
                 children[i] = Child.builder()
@@ -142,6 +160,10 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                         .firstName(firstNames[i])
                         .build())
                     .build();
+                if (finalOrderIssued) {
+                    children[i].setFinalOrderIssued(YesNo.YES.getValue());
+                    children[i].setFinalOrderIssuedType(CARE_ORDER.getLabel());
+                }
             }
             return wrapElements(children);
         }

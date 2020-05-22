@@ -119,6 +119,7 @@ public class GeneratedOrderController {
         if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
             ChildSelector childSelector = ChildSelector.builder().build();
             childSelector.generateChildCount(caseData.getAllChildren().size());
+            childSelector.generatedHiddenList(caseData.getAllChildren());
 
             caseDetails.getData().put("childSelector", childSelector);
             caseDetails.getData().put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
@@ -178,8 +179,11 @@ public class GeneratedOrderController {
         caseDetails.getData().put("orderCollection", orders);
 
         if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
-            List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
-                caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
+            List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(
+                caseData.getOrderTypeAndDocument().getType(),
+                caseData.getAllChildren(),
+                caseData.getOrderAppliesToAllChildren(),
+                caseData.getChildSelector());
             caseDetails.getData().put("children1", updatedChildren);
         }
 

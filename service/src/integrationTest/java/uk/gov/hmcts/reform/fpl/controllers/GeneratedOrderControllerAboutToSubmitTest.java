@@ -234,6 +234,9 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsOnly("Yes");
+
+        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsOnly("Care order");
     }
 
     @Test
