@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -15,8 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -30,6 +31,7 @@ public class GeneratedOrderEventHandler {
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
+    private final ObjectMapper mapper;
 
     @EventListener
     public void sendEmailsForOrder(final GeneratedOrderEvent orderEvent) {
@@ -45,6 +47,23 @@ public class GeneratedOrderEventHandler {
         sendNotificationToEmailServedRepresentatives(eventData, documentContents);
         sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(eventData, documentContents, localAuthorityCode,
             caseDetails);
+    }
+
+    @EventListener
+    public void sendNotificationToAllocatedJudgeForOrder(final GeneratedOrderEvent orderEvent) {
+        final EventData eventData = new EventData(orderEvent);
+        CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+
+        Map<String, Object> parameters = orderIssuedEmailContentProvider
+            .buildAllocatedJudgeOrderIssuedNotification(eventData.getCaseDetails());
+
+        System.out.println("order is " + caseData.getOrderCollection());
+//        String email = caseData.getOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+//
+//        System.out.println("Email is" + email);
+//
+//        notificationService.sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, email, parameters,
+//            eventData.getReference());
     }
 
     private void sendNotificationToEmailServedRepresentatives(final EventData eventData,

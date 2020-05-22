@@ -55,6 +55,16 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
+    public Map<String, Object> buildAllocatedJudgeOrderIssuedNotification(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return ImmutableMap.<String, Object>builder()
+            .put("orderType", getTypeOfOrder(caseData, GENERATED_ORDER))
+            .put("callout", buildCallout(caseData))
+            .put("caseUrl", getCaseUrl(caseDetails.getId()))
+            .build();
+    }
+
     private String buildCallout(CaseData caseData) {
         return "^" + emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(
             caseData,
