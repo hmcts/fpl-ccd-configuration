@@ -14,11 +14,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CaseHistory",
-    "TabLabel": "History",
+    "TabLabel": "History123",
     "TabDisplayOrder": 1,
     "CaseFieldID": "familyManCaseNumber",
     "TabFieldDisplayOrder": 2,
-    "FieldShowCondition": "familyManCaseNumber = \"DO_NOT_SHOW\"",
+    "FieldShowCondition": "",
     "Comment": "A field should be loaded in case tab first to show it in the case title"
   },
   {
