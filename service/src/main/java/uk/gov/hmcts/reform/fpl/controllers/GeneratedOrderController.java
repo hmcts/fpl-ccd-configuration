@@ -96,7 +96,6 @@ public class GeneratedOrderController {
         if (errors.isEmpty()) {
             childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
             caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
-            caseDetails.getData().put("close_case_label", CloseCaseController.LABEL);
 
             if (caseData.getAllocatedJudge() != null) {
                 caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
@@ -159,6 +158,7 @@ public class GeneratedOrderController {
             featureToggleService.isCloseCaseEnabled())) {
 
             data.put("showCloseCaseFromOrderPage", YES);
+            data.put("close_case_label", CloseCaseController.LABEL);
 
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(data)
@@ -214,7 +214,11 @@ public class GeneratedOrderController {
 
         if (caseData.isClosedFromOrder()) {
             data.put("state", CLOSED);
-            data.put("closeCase", CloseCase.builder().showFullReason(YES).reason(FINAL_ORDER).build());
+            data.put("closeCaseTabField", CloseCase.builder()
+                .date(time.now().toLocalDate())
+                .showFullReason(YES)
+                .reason(FINAL_ORDER)
+                .build());
         }
 
         service.removeOrderProperties(data);
