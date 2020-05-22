@@ -20,8 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -61,17 +60,19 @@ public class GeneratedOrderEventHandler {
         Map<String, Object> parameters = orderIssuedEmailContentProvider
             .buildAllocatedJudgeOrderIssuedNotification(eventData.getCaseDetails());
 
+        String email = getAllocatedJudgeEmail(caseData);
+
+        notificationService.sendEmail(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE, email, parameters,
+            eventData.getReference());
+    }
+
+    private String getAllocatedJudgeEmail(CaseData caseData) {
         Optional<Element<GeneratedOrder>> order = caseData.getOrderCollection().stream().reduce((first, last) -> last);
-        System.out.println("last order is " + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeOrMagistrateTitle()
-        + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeName());
-
-
-//        String email = caseData.getOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
-//
-//        System.out.println("Email is" + email);
-//
-//        notificationService.sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, email, parameters,
-//            eventData.getReference());
+        System.out.println("Name is" + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeOrMagistrateTitle()
+            + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeName());
+        System.out.println("Email address is" + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress());
+        //add email box for orders
+        return  order.get().getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
     }
 
     private void sendNotificationToEmailServedRepresentatives(final EventData eventData,
