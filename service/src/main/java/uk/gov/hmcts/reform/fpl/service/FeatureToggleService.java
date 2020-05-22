@@ -38,6 +38,10 @@ public class FeatureToggleService {
             false);
     }
 
+    public boolean isSDONotificationForAllocatedJudgeEnabled() {
+        return ldClient.boolVariation("allocatedJudgeNotificationSDO", ldUser, false);
+    }
+
     public boolean isFeesEnabled() {
         return ldClient.boolVariation("FNP", ldUser, false);
     }
