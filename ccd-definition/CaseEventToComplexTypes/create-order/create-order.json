@@ -130,7 +130,17 @@
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
     "FieldDisplayOrder": 7,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeEmailAddress",
+    "EventElementLabel": "Email Address",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -139,7 +149,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Justices' Legal Adviser's full name",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
   {

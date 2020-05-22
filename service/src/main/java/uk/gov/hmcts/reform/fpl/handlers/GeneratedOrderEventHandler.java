@@ -67,12 +67,8 @@ public class GeneratedOrderEventHandler {
     }
 
     private String getAllocatedJudgeEmail(CaseData caseData) {
-        Optional<Element<GeneratedOrder>> order = caseData.getOrderCollection().stream().reduce((first, last) -> last);
-        System.out.println("Name is" + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeOrMagistrateTitle()
-            + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeName());
-        System.out.println("Email address is" + order.get().getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress());
-        //add email box for orders
-        return  order.get().getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection().stream().reduce((first, last) -> last);
+        return generatedOrder.get().getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
     }
 
     private void sendNotificationToEmailServedRepresentatives(final EventData eventData,
