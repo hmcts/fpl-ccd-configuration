@@ -32,7 +32,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         expectedReturnCaseTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
         expectedReturnCaseTemplate.setFamilyManCaseNumber("12345");
         expectedReturnCaseTemplate.setFirstRespondentLastName("Smith");
-        expectedReturnCaseTemplate.setFirstRespondentName("Paul Smith");
+        expectedReturnCaseTemplate.setFirstRespondentFullName("Paul Smith");
         expectedReturnCaseTemplate.setReturnedReasons("Application incomplete, clarification needed");
         expectedReturnCaseTemplate.setReturnedNote("Missing children details");
         expectedReturnCaseTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
@@ -48,7 +48,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         expectedReturnCaseTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
         expectedReturnCaseTemplate.setFamilyManCaseNumber("");
         expectedReturnCaseTemplate.setFirstRespondentLastName("Wilson");
-        expectedReturnCaseTemplate.setFirstRespondentName("Tim Wilson");
+        expectedReturnCaseTemplate.setFirstRespondentFullName("Tim Wilson");
         expectedReturnCaseTemplate.setReturnedReasons("Application incomplete");
         expectedReturnCaseTemplate.setReturnedNote("Missing details");
         expectedReturnCaseTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
