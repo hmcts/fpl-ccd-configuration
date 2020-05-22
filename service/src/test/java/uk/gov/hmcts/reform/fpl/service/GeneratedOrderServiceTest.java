@@ -618,8 +618,8 @@ class GeneratedOrderServiceTest {
         }
 
         @Test
-        @DisplayName("Should generate if the order is case closable but not all children have a final " +
-            "order ")
+        @DisplayName("Should generate if the order is case closable but not all children have a final "
+            + "order ")
         void shouldReturnTrueWhenFurtherDirectionsIsPopulatedAndNotAllChildrenHaveFinalOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
             FurtherDirections directions = FurtherDirections.builder()
@@ -635,8 +635,8 @@ class GeneratedOrderServiceTest {
         }
 
         @Test
-        @DisplayName("Should not generate if all children have final order but case has not been selected to be " +
-            "closed or not")
+        @DisplayName("Should not generate if all children have final order but case has not been selected to be "
+            + "closed or not")
         void shouldReturnFalseWhenAllChildrenHaveFinalOrderButCloseCaseFromFinalOrderIsNull() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
             FurtherDirections directions = FurtherDirections.builder()
