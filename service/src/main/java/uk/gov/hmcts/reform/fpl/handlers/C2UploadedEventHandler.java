@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -25,6 +28,7 @@ public class C2UploadedEventHandler {
     private final NotificationService notificationService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
+    private final ObjectMapper mapper;
 
     @EventListener
     public void sendNotifications(final C2UploadedEvent event) {
@@ -39,5 +43,22 @@ public class C2UploadedEventHandler {
             notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters,
                 eventData.getReference());
         }
+    }
+
+    @EventListener
+    public void sendC2UploadedNotificationToAllocatedJudge(final C2UploadedEvent event) {
+        EventData eventData = new EventData(event);
+        CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+
+        Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(
+                eventData.getCaseDetails());
+
+        String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
+
+        //try with no allocated judge
+        System.out.println("Sending to" + email);
+
+        notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
+                eventData.getReference());
     }
 }

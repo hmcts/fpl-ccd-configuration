@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider {
@@ -28,6 +30,18 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
             .put("subjectLine", subjectLine)
             .put("hearingDetailsCallout", subjectLine)
             .put("reference", String.valueOf(caseDetails.getId()))
+            .build();
+    }
+
+    public Map<String, Object> buildC2UploadNotificationForAllocatedJudge(final CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters(caseDetails))
+            .put("callout", emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(caseData, caseData.getHearingDetails()))
+            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
+            .put("judgeTitle", caseData.getAllocatedJudge().getJudgeOrMagistrateTitle())
+            .put("judgeName", caseData.getAllocatedJudge().getJudgeName())
             .build();
     }
 
