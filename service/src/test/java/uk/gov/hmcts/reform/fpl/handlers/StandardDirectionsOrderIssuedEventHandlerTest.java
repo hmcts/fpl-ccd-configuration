@@ -12,11 +12,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssuedEmailContentProvider;
 
 import java.util.Map;
 
@@ -39,6 +41,12 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
 
     @MockBean
     private RequestData requestData;
+
+    @MockBean
+    private StandardDirectionOrderIssuedEmailContentProvider standardDirectionsOrderIssuedEmailContentProvider;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @MockBean
     private CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
