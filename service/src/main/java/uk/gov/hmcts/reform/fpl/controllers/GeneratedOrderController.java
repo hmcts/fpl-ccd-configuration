@@ -90,7 +90,13 @@ public class GeneratedOrderController {
             ValidateFamilyManCaseNumberGroup.class);
 
         if (errors.isEmpty()) {
-            childrenService.addPageShowToCaseDetails(caseDetails, caseData.getAllChildren());
+            int numOfChildren = caseData.getAllChildren().size();
+            caseDetails.getData().put("pageShow", numOfChildren <= 1 ? "No" : "Yes");
+
+            if (numOfChildren <= 1) {
+                caseDetails.getData().put("orderAppliesToAllChildren", "Yes");
+            }
+
             caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
 
             if (caseData.getAllocatedJudge() != null) {
