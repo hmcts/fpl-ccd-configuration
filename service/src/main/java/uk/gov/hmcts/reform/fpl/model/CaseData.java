@@ -449,4 +449,6 @@ public class CaseData {
     public boolean isClosedFromOrder() {
         return YES.getValue().equals(closeCaseFromOrder);
     }
+
+    private final ReturnApplication returnApplication;
 }

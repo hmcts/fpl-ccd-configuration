@@ -20,7 +20,9 @@ public enum State {
     CLOSED("CLOSED"),
 
     @JsonProperty("Deleted")
-    DELETED("Deleted");
+    DELETED("Deleted"),
+
+    RETURNED("RETURNED");
 
     private final String value;
 }

@@ -43,6 +43,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -82,15 +83,16 @@ public class CaseSubmissionController {
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
-            try {
-                if (featureToggleService.isFeesEnabled()) {
+            if (isOpenedState(caseDetails.getState()) && featureToggleService.isFeesEnabled()) {
+                try {
                     FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
                     data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+                } catch (FeeRegisterException ignore) {
+                    data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
                 }
-            } catch (FeeRegisterException ignore) {
-                data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
             }
+
             String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName());
             data.put("submissionConsentLabel", label);
         }
@@ -159,7 +161,7 @@ public class CaseSubmissionController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        if (featureToggleService.isPaymentsEnabled()) {
+        if (featureToggleService.isPaymentsEnabled() && isOpenedState(caseDetails.getState())) {
 
             if (displayAmountToPay(caseDetails)) {
                 try {
@@ -186,5 +188,9 @@ public class CaseSubmissionController {
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {
         return YES.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY));
+    }
+
+    private boolean isOpenedState(String state) {
+        return OPEN.getValue().equals(state);
     }
 }

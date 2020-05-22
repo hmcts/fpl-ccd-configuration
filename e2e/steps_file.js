@@ -36,11 +36,11 @@ module.exports = function () {
       }, signedInSelector);
     },
 
-    async logInAndCreateCase(user) {
+    async logInAndCreateCase(user, caseName) {
       await this.signIn(user);
       this.click('Create case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
-      await openApplicationEventPage.populateForm();
+      await openApplicationEventPage.populateForm(caseName);
       await this.completeEvent('Save and continue');
       const caseId = await this.grabTextFrom('.heading-h1');
       console.log(`Case created ${caseId}`);
