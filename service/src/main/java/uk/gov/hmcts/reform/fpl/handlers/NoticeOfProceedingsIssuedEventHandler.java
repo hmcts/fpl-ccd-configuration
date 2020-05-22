@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfProceedingsEmailContentProvider;
 
@@ -21,18 +22,21 @@ public class NoticeOfProceedingsIssuedEventHandler {
     private final NotificationService notificationService;
     private final NoticeOfProceedingsEmailContentProvider noticeOfProceedingsEmailContentProvider;
     private final ObjectMapper mapper;
+    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(NoticeOfProceedingsIssuedEvent event) {
-        EventData eventData = new EventData(event);
-        CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        if (featureToggleService.isNoticeOfProceedingsNotificationForAllocatedJudgeEnabled()) {
+            EventData eventData = new EventData(event);
+            CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        Map<String, Object> parameters = noticeOfProceedingsEmailContentProvider
-            .buildAllocatedJudgeNotification(eventData.getCaseDetails());
+            Map<String, Object> parameters = noticeOfProceedingsEmailContentProvider
+                .buildAllocatedJudgeNotification(eventData.getCaseDetails());
 
-        String email = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+            String email = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
 
-        notificationService.sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, email, parameters,
-            eventData.getReference());
+            notificationService.sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, email, parameters,
+                eventData.getReference());
+        }
     }
 }

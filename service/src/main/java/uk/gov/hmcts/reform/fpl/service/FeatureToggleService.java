@@ -42,6 +42,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("allocatedJudgeNotificationSDO", ldUser, false);
     }
 
+    public boolean isNoticeOfProceedingsNotificationForAllocatedJudgeEnabled() {
+        return ldClient.boolVariation("allocatedJudgeNotificationNoticeOfProceedings", ldUser, false);
+    }
+
     public boolean isFeesEnabled() {
         return ldClient.boolVariation("FNP", ldUser, false);
     }
