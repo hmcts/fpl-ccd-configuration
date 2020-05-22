@@ -30,8 +30,8 @@ public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
         returnedCaseTemplate.setLocalAuthority(
             localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthority));
 
-        returnedCaseTemplate.setFirstRespondentFullName(getFirstRespondentFullName(caseData.getRespondents1()));
-        returnedCaseTemplate.setFirstRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        returnedCaseTemplate.setRespondentFullName(getFirstRespondentFullName(caseData.getRespondents1()));
+        returnedCaseTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         returnedCaseTemplate.setFamilyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""));
         returnedCaseTemplate.setReturnedReasons(returnApplication.getFormattedReturnReasons());
         returnedCaseTemplate.setReturnedNote(returnApplication.getNote());

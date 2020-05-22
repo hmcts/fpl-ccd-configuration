@@ -10,8 +10,8 @@ public class ReturnedCaseTemplate implements NotifyData {
     private String familyManCaseNumber;
     private String returnedReasons;
     private String returnedNote;
-    private String firstRespondentLastName;
-    private String firstRespondentFullName;
+    private String respondentLastName;
+    private String respondentFullName;
     private String caseUrl;
     private String localAuthority;
 }

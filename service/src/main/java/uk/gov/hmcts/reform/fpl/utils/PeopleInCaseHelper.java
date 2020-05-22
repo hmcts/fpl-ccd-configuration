@@ -29,13 +29,13 @@ public class PeopleInCaseHelper {
     }
 
     public static String getFirstRespondentLastName(List<Element<Respondent>> respondents) {
-        return getFirstRespondent(respondents)
+        return getFirstRespondentParty(respondents)
             .map(RespondentParty::getLastName)
             .orElse("");
     }
 
     public static String getFirstRespondentFullName(List<Element<Respondent>> respondents) {
-        return getFirstRespondent(respondents)
+        return getFirstRespondentParty(respondents)
             .map(RespondentParty::getFullName)
             .orElse("");
     }
@@ -48,7 +48,7 @@ public class PeopleInCaseHelper {
             .collect(toList());
     }
 
-    private static Optional<RespondentParty> getFirstRespondent(List<Element<Respondent>> respondents) {
+    private static Optional<RespondentParty> getFirstRespondentParty(List<Element<Respondent>> respondents) {
         return ElementUtils.unwrapElements(respondents).stream()
             .filter(Objects::nonNull)
             .findFirst()
