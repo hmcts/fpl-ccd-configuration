@@ -14,14 +14,14 @@ class ReturnApplicationTest {
     @Test
     void shouldFormatReturnReasonsWhenMultipleReasonsAreGiven() {
         ReturnApplication returnApplication = buildReturnApplication(INCOMPLETE, CLARIFICATION_NEEDED);
-        assertThat(returnApplication.getFormattedReturnReasons()).isEqualTo("Application Incomplete,"
-            + " Clarification Needed");
+        assertThat(returnApplication.getFormattedReturnReasons()).isEqualTo("Application incomplete,"
+            + " clarification needed");
     }
 
     @Test
     void shouldFormatReturnReasonsWhenASingleReasonIsGiven() {
         ReturnApplication returnApplication = buildReturnApplication(INCOMPLETE);
-        assertThat(returnApplication.getFormattedReturnReasons()).isEqualTo("Application Incomplete");
+        assertThat(returnApplication.getFormattedReturnReasons()).isEqualTo("Application incomplete");
     }
 
     @Test

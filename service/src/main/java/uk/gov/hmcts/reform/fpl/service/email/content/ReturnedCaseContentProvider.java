@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentFullName;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -31,7 +32,7 @@ public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
 
         returnedCaseTemplate.setFirstRespondentName(getFirstRespondentFullName(caseData.getRespondents1()));
         returnedCaseTemplate.setFirstRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        returnedCaseTemplate.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
+        returnedCaseTemplate.setFamilyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""));
         returnedCaseTemplate.setReturnedReasons(returnApplication.getFormattedReturnReasons());
         returnedCaseTemplate.setReturnedNote(returnApplication.getNote());
         returnedCaseTemplate.setCaseUrl(getCaseUrl(caseDetails.getId()));

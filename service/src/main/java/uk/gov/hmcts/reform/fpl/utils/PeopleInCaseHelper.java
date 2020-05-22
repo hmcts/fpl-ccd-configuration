@@ -36,7 +36,7 @@ public class PeopleInCaseHelper {
 
     public static String getFirstRespondentFullName(List<Element<Respondent>> respondents) {
         return getFirstRespondent(respondents)
-            .map(PeopleInCaseHelper::buildPartyFullName)
+            .map(RespondentParty::getFullName)
             .orElse("");
     }
 
@@ -53,9 +53,5 @@ public class PeopleInCaseHelper {
             .filter(Objects::nonNull)
             .findFirst()
             .map(Respondent::getParty);
-    }
-
-    private static String buildPartyFullName(RespondentParty respondentParty) {
-        return String.format("%s %s", respondentParty.getFirstName(), respondentParty.getLastName());
     }
 }

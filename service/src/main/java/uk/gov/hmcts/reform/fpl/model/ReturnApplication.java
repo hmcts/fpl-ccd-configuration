@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.capitalize;
 
 @Data
 @Builder
@@ -19,11 +22,15 @@ public class ReturnApplication {
     private String returnedDate;
     private DocumentReference document;
 
+    @JsonIgnore
     public String getFormattedReturnReasons() {
         if (reason != null) {
-            return reason.stream()
+            String formattedReasons = reason.stream()
                 .map(ReturnedApplicationReasons::getLabel)
+                .map(String::toLowerCase)
                 .collect(Collectors.joining(", "));
+
+            return capitalize(formattedReasons);
         }
 
         return "";
