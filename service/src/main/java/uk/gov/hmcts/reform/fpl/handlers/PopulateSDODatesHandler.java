@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
