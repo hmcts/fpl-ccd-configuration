@@ -251,19 +251,5 @@
     "CaseEventID": "otherAllocationDecision-CLOSED",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "returnApplication",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "returnApplication",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "R"
   }
 ]
