@@ -166,7 +166,7 @@
     "Name": "Add statement of service (c9)",
     "Description": "Add statement of service",
     "DisplayOrder": 13,
-    "PreConditionState(s)": "Submitted;CLOSED",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/statement-of-service/about-to-start",
