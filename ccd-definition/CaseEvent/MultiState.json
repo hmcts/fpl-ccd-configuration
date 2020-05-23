@@ -468,5 +468,19 @@
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadStandardDirections",
+    "Name": "Documents",
+    "Description": "Upload standard directions",
+    "DisplayOrder": 3,
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
   }
 ]
