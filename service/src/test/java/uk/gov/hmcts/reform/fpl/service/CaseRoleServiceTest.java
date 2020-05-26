@@ -23,6 +23,7 @@ import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -136,10 +137,10 @@ class CaseRoleServiceTest {
             when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).thenReturn(localAuthorityUsers);
 
             doThrow(new RuntimeException())
-                .when(caseUser).updateCaseRolesForUser(any(), any(), any(), eq(USER_1_ID), any());
+                .when(caseUser).updateCaseRolesForUser(any(), any(), any(), or(eq(USER_1_ID), eq(USER_2_ID)), any());
 
             GrantCaseAccessException expectedException =
-                new GrantCaseAccessException(CASE_ID, Set.of(USER_1_ID), CASE_ROLES);
+                new GrantCaseAccessException(CASE_ID, Set.of(USER_1_ID, USER_2_ID), CASE_ROLES);
 
             GrantCaseAccessException actualException = assertThrows(GrantCaseAccessException.class,
                 () -> caseRoleService.grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, excludedUser));
