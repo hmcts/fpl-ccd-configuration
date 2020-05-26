@@ -228,7 +228,11 @@ public class CaseData {
     private final String orderAppliesToAllChildren;
 
     public String getOrderAppliesToAllChildren() {
-        return children1.size() == 1 ? YES.getValue() : orderAppliesToAllChildren;
+        if (children1 != null) {
+            return children1.size() == 1 ? YES.getValue() : orderAppliesToAllChildren;
+        } else {
+            return null;
+        }
     }
 
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
