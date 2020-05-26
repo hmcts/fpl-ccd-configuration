@@ -27,10 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
@@ -109,23 +107,6 @@ class CommonDirectionServiceTest {
     }
 
     @Test
-    void numberDirections_shouldNumberDirectionsStartingAtTwo() {
-        CaseData caseData = populateCaseDataWithFixedDirections().build();
-
-        List<Element<Direction>> directions = service.combineAllDirections(caseData);
-
-        List<String> numberedDirectionTypes = service.numberDirections(directions).stream()
-            .map(direction -> direction.getValue().getDirectionType())
-            .collect(toList());
-
-        List<String> expectedDirectionsTypes = IntStream.range(0, numberedDirectionTypes.size())
-            .mapToObj(x -> (x + 2) + ". direction")
-            .collect(toList());
-
-        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionsTypes);
-    }
-
-    @Test
     void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsRealDate() {
         LocalDateTime today = LocalDateTime.now();
 
@@ -159,22 +140,6 @@ class CommonDirectionServiceTest {
             .dateToBeCompletedBy(null)
             .assignee(LOCAL_AUTHORITY)
             .build());
-    }
-
-    //TODO FPLA-1481 will probably remove that test, but now it counts even if the directions as
-    // marked as not needed due to CMO issue
-    @Test
-    void numberDirections_shouldApplyCorrectNumberingWhenDirectionsAreMarkedAsNotNeeded() {
-        List<Element<Direction>> directions = directionsMarkedAsRemoved();
-
-        List<String> numberedDirectionTypes = service.numberDirections(directions).stream()
-            .map(direction -> direction.getValue().getDirectionType())
-            .collect(toList());
-
-        List<String> expectedDirectionTypes = asList("2. direction", "3. direction", "4. direction", "5. direction",
-            "6. direction", "7. direction");
-
-        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionTypes);
     }
 
     @Test
