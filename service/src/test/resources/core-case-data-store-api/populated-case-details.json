@@ -501,6 +501,11 @@
         "useAllocatedJudge": null,
         "allocatedJudgeLabel": null
       }
+    },
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
     }
   }
 }

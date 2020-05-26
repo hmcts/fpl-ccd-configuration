@@ -25,14 +25,18 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
@@ -75,6 +79,15 @@ public class C2UploadedEventHandlerTest {
             .put("hearingDetailsCallout", subjectLine)
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        final Map<String, Object> c2ParametersForAllocatedJudge = ImmutableMap.<String, Object>builder()
+            .put("subjectLine", subjectLine)
+            .put("hearingDetailsCallout", subjectLine)
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .put("judgeTitle", "Her Honour Judge")
+            .put("judgeName", "Byrne")
             .build();
 
         @BeforeEach
@@ -141,6 +154,42 @@ public class C2UploadedEventHandlerTest {
             verify(notificationService, never())
                 .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-admin@test.com",
                     c2Parameters, "12345");
+        }
+
+        @Test
+        void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExists() {
+            CallbackRequest callbackRequest = appendSendToCtscOnCallback();
+            CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+            given(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(caseDetails))
+                .willReturn(c2ParametersForAllocatedJudge);
+
+            c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
+                new C2UploadedEvent(callbackRequest, requestData));
+
+            verify(notificationService).sendEmail(
+                C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE,
+                ALLOCATED_JUDGE_EMAIL_ADDRESS,
+                c2ParametersForAllocatedJudge,
+                "12345");
+        }
+
+        @Test
+        void shouldNotNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeDoesNotExist() {
+            CaseDetails caseDetails =  CaseDetails.builder().id(1L)
+                .data(Map.of("caseLocalAuthority", "SA"))
+                .build();
+
+            CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(
+                caseDetails).build();
+
+            given(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(caseDetails))
+                .willReturn(c2ParametersForAllocatedJudge);
+
+            c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
+                new C2UploadedEvent(callbackRequest, requestData));
+
+            verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
         }
     }
 }

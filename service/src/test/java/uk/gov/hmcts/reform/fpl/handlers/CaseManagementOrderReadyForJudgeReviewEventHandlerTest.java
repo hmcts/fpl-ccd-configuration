@@ -18,6 +18,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailCon
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.appendSendToCtscOnCallback;
@@ -74,6 +76,26 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             CTSC_INBOX,
+            getCMOReadyForJudgeNotificationParameters(),
+            "12345");
+    }
+
+    @Test
+    void shouldNotifyAllocatedJudgeWhenCMOReadyForJudgeReview() {
+        CallbackRequest callbackRequest = callbackRequest();
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        given(caseManagementOrderEmailContentProvider
+            .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+            .willReturn(getCMOReadyForJudgeNotificationParameters());
+
+        caseManagementOrderReadyForJudgeReviewEventHandler
+            .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
+            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+
+        verify(notificationService).sendEmail(
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
+            ALLOCATED_JUDGE_EMAIL_ADDRESS,
             getCMOReadyForJudgeNotificationParameters(),
             "12345");
     }

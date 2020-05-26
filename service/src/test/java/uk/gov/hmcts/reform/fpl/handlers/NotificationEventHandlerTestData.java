@@ -55,6 +55,9 @@ public class NotificationEventHandlerTestData {
     public static ImmutableMap<String, Object> getCMOReadyForJudgeNotificationParameters() {
         return ImmutableMap.<String, Object>builder()
             .putAll(expectedCommonCMONotificationParameters())
+            .put("respondentLastName", "Smith")
+            .put("judgeTitle", "Her Honour Judge")
+            .put("judgeName", "Moley")
             .build();
     }
 
