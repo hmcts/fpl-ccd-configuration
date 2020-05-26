@@ -31,7 +31,7 @@ module.exports = {
     const elementIndex = 0;
 
     I.fillField(this.fields(elementIndex).applicant.name, applicant.name);
-    I.fillField(this.fields(elementIndex).applicant.pbaNumber, applicant.pbaNumber);
+    this.enterPbaNumber(applicant.pbaNumber);
     I.fillField(this.fields(elementIndex).applicant.clientCode, applicant.clientCode);
     I.fillField(this.fields(elementIndex).applicant.customerReference, applicant.customerReference);
     within(this.fields(elementIndex).applicant.address, async () => {
@@ -54,5 +54,10 @@ module.exports = {
     I.fillField(this.fields(elementIndex).solicitor.email, solicitor.email);
     I.fillField(this.fields(elementIndex).solicitor.dx, solicitor.dx);
     I.fillField(this.fields(elementIndex).solicitor.reference, solicitor.reference);
+  },
+
+  enterPbaNumber(pbaNumber = 'PBA1234567') {
+    const elementIndex = 0;
+    I.fillField(this.fields(elementIndex).applicant.pbaNumber, pbaNumber);
   },
 };

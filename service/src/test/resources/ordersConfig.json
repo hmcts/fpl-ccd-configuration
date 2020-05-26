@@ -11,7 +11,8 @@
         "due": "ON",
         "templateDateFormat": "d MMMM yyyy 'at' h:mma",
         "directionRemovable": false,
-        "showDateOnly": true
+        "showDateOnly": true,
+        "delta": "0"
       }
     },
     {
@@ -22,7 +23,9 @@
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
-        "showDateOnly": false
+        "showDateOnly": false,
+        "delta": "-3",
+        "time": "12:00:00"
       }
     },
     {
@@ -33,7 +36,9 @@
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": true,
-        "showDateOnly": false
+        "showDateOnly": false,
+        "delta": "-2",
+        "time": "16:00:00"
       }
     }
   ]

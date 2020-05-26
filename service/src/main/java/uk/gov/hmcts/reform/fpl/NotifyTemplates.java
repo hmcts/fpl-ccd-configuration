@@ -44,4 +44,5 @@ public class NotifyTemplates {
         = "7d362e1e-bc87-4d63-8218-3835abecb600";
     public static final String UPCOMING_HEARINGS_TEMPLATE = "c24308e9-cc0b-4548-8927-33c0a8a3cdb8";
     public static final String NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE = "406ddb81-0b23-438c-ab5c-cfd45726419f";
+    public static final String ALLOCATED_JUDGE_TEMPLATE = "ac2e2309-49cf-47ed-b1b0-7552d76bef85";
 }
