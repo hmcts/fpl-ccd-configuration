@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -50,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
@@ -77,10 +79,17 @@ public class DraftOrdersController {
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        LocalDate dateOfIssue = time.now().toLocalDate();
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
-        caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
+        if (standardDirectionOrder != null && standardDirectionOrder.getDateOfIssue() != null) {
+            dateOfIssue = parseLocalDateFromStringUsingFormat(standardDirectionOrder.getDateOfIssue(), DATE);
+        }
+
+        caseDetails.getData().put("dateOfIssue", dateOfIssue);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
