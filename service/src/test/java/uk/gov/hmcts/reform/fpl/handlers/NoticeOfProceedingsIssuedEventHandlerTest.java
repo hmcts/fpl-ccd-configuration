@@ -87,7 +87,6 @@ public class NoticeOfProceedingsIssuedEventHandlerTest {
             .put("familyManCaseNumber", "6789")
             .put("leadRespondentsName", "Moley")
             .put("hearingDate", "21 October 2020")
-            .put("reference", "12345")
             .put("judgeTitle", "Her Honour Judge")
             .put("judgeName", "Byrne")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")

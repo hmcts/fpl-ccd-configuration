@@ -35,7 +35,6 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
                 .getParty()
                 .getLastName()))
             .put("hearingDate", getHearingBooking(caseData))
-            .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", getCaseUrl(caseDetails.getId()))
             .put("judgeTitle", caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeOrMagistrateTitle())
             .put("judgeName", caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName())
