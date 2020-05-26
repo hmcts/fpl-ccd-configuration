@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,8 +62,8 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -366,13 +365,9 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         }
 
         private Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
-            return element(Child.builder()
-                .finalOrderIssued(finalOrderIssued)
-                .party(ChildParty.builder()
-                    .firstName(randomAlphanumeric(10))
-                    .lastName(randomAlphanumeric(10))
-                    .build())
-                .build());
+            Element<Child> childElement = testChild();
+            childElement.getValue().setFinalOrderIssued(finalOrderIssued);
+            return childElement;
         }
     }
 }

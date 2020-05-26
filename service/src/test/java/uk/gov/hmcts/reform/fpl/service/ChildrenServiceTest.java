@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
@@ -155,12 +154,8 @@ class ChildrenServiceTest {
     }
 
     private Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
-        return element(Child.builder()
-            .finalOrderIssued(finalOrderIssued)
-            .party(ChildParty.builder()
-                .firstName(randomAlphanumeric(10))
-                .lastName(randomAlphanumeric(10))
-                .build())
-            .build());
+        Element<Child> childElement = testChild();
+        childElement.getValue().setFinalOrderIssued(finalOrderIssued);
+        return childElement;
     }
 }
