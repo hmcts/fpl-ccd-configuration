@@ -489,6 +489,18 @@
       }
     }],
     "familyManCaseNumber": "12345",
-    "amountToPay": "2055.0"
+    "amountToPay": "2055.0",
+    "standardDirectionOrder": {
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "otherTitle": null,
+        "judgeFullName": null,
+        "judgeLastName": "Byrne",
+        "legalAdvisorName": "Maria McDonnell",
+        "judgeEmailAddress": "judge@gmail.com",
+        "useAllocatedJudge": null,
+        "allocatedJudgeLabel": null
+      }
+    }
   }
 }
