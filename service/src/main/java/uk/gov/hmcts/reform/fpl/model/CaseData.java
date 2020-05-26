@@ -447,4 +447,6 @@ public class CaseData {
 
     private final CloseCase closeCase;
     private final String deprivationOfLiberty;
+
+    private final ReturnApplication returnApplication;
 }
