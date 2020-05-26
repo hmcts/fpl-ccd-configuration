@@ -37,7 +37,8 @@ class NoticeOfProceedingsSubmittedControllerTest extends AbstractControllerTest 
     }
 
     @Test
-    void shouldSendAllocatedJudgeNotificationWhenNoticeOfProceedingsIssuedAndEnabled() throws NotificationClientException {
+    void shouldSendAllocatedJudgeNotificationWhenNoticeOfProceedingsIssuedAndEnabled()
+        throws NotificationClientException {
         given(featureToggleService.isNoticeOfProceedingsNotificationForAllocatedJudgeEnabled()).willReturn(true);
 
         postSubmittedEvent(callbackRequest().getCaseDetails());
