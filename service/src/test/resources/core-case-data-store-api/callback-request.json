@@ -599,7 +599,36 @@
         "judgeTitle": "HER_HONOUR_JUDGE",
         "judgeLastName": "Moley",
         "judgeEmailAddress": "judge@gmail.com"
-      }
+      },
+      "orderCollection": [
+        {
+          "id": "52caf114-d171-4dc5-ac33-c842dba88205",
+          "value": {
+            "date": "2:33pm, 26 May 2020",
+            "type": "Blank order (C21)",
+            "title": "Order",
+            "details": "szvd",
+            "document": {
+              "document_url": "http://dm-store:8080/documents/a8372cb0-dcfc-47d8-8810-c5292b872a33",
+              "document_filename": "blank_order_c21.pdf",
+              "document_binary_url": "http://dm-store:8080/documents/a8372cb0-dcfc-47d8-8810-c5292b872a33/binary"
+            },
+            "expiryDate": null,
+            "dateOfIssue": "26 May 2020",
+            "furtherDirections": {},
+            "judgeAndLegalAdvisor": {
+              "judgeTitle": "HER_HONOUR_JUDGE",
+              "otherTitle": null,
+              "judgeFullName": null,
+              "judgeLastName": "Moley",
+              "legalAdvisorName": null,
+              "judgeEmailAddress": "judge@gmail.com",
+              "useAllocatedJudge": null,
+              "allocatedJudgeLabel": null
+            }
+          }
+        }
+      ]
     }
   },
   "case_details_before": {

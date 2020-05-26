@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -9,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.AssertionHelper;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -43,7 +44,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
             createCase(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true);
 
-        AssertionHelper.assertEquals(actualParameters, expectedParameters);
+        assertEquals(actualParameters, expectedParameters);
     }
 
     @Test
@@ -52,7 +53,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
             createCase(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true);
 
-        AssertionHelper.assertEquals(actualParameters, expectedParameters);
+        assertEquals(actualParameters, expectedParameters);
     }
 
     @Test
@@ -62,7 +63,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(),
             false);
 
-        AssertionHelper.assertEquals(actualParameters, expectedParameters);
+        assertEquals(actualParameters, expectedParameters);
     }
 
     @Test
@@ -71,7 +72,30 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
             createCase(), LOCAL_AUTHORITY_CODE, documentContents, CMO);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(CMO.getLabel(), true);
 
-        AssertionHelper.assertEquals(actualParameters, expectedParameters);
+        assertEquals(actualParameters, expectedParameters);
+    }
+
+    @Test
+    void shouldBuildGeneratedOrderParametersForAllocatedJudge() {
+        Map<String, Object> actualParameters = orderIssuedEmailContentProvider
+            .buildAllocatedJudgeOrderIssuedNotification(createCase());
+
+        System.out.println("actual" + actualParameters);
+
+        Map<String, Object> expectedParameters = getExpectedAllocatedJudgeParameters();
+
+        assertEquals(actualParameters, expectedParameters);
+    }
+
+    private Map<String, Object> getExpectedAllocatedJudgeParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .put("orderType", "blank order (c21)")
+            .put("callout", "^Jones, SACCCCCCCC5676576567, hearing 26 Aug 2020")
+            .put("respondentLastName", "Jones")
+            .put("judgeTitle", "Deputy District Judge")
+            .put("judgeName", "Scott")
+            .put("caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
+            .build();
     }
 
     private static CaseDetails createCase() {

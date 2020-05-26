@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,17 +28,22 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -135,6 +141,34 @@ class GeneratedOrderEventHandlerTest {
             eq("fred@flinstone.com"),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq("12345"));
+    }
+
+    @Test
+    void shouldNotifyAllocatedJudgeOnOrderIssued() {
+        final Map<String, Object> expectedParameters = getOrderIssuedAllocatedJudgeParameters();
+
+        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
+            callbackRequest().getCaseDetails())).willReturn(expectedParameters);
+
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
+            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+
+        verify(notificationService).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),
+            eq(ALLOCATED_JUDGE_EMAIL_ADDRESS),
+            eq(expectedParameters),
+            eq("12345"));
+    }
+
+    private Map<String, Object> getOrderIssuedAllocatedJudgeParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .put("orderType", "blank order (c21)")
+            .put("callout", "^Jones, SACCCCCCCC5676576567, hearing 26 Aug 2020")
+            .put("hearingDate", "21 October 2020")
+            .put("judgeTitle", "Her Honour Judge")
+            .put("judgeName", "Byrne")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
     }
 
     private List<Representative> getExpectedEmailRepresentativesForAddingPartiesToCase() {
