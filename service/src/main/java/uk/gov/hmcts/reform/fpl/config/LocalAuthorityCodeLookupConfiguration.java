@@ -7,7 +7,8 @@ import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
 
 import java.util.Map;
 
-import static org.assertj.core.util.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
+
 
 @Configuration
 public class LocalAuthorityCodeLookupConfiguration {
@@ -19,7 +20,7 @@ public class LocalAuthorityCodeLookupConfiguration {
     }
 
     public String getLocalAuthorityCode(String emailDomain) {
-        checkNotNull(emailDomain, "Email domain cannot be null");
+        requireNonNull(emailDomain, "Email domain cannot be null");
 
         if (mapping.get(emailDomain) == null) {
             throw new UnknownLocalAuthorityDomainException(emailDomain + " not found");

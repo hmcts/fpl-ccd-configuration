@@ -31,6 +31,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
@@ -85,7 +87,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddAmountToPayFieldWhenFeatureToggleIsTrue() {
+    void shouldAddAmountToPayFieldToAnOpenedCaseWhenFeatureToggle() {
         Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
         FeesData feesData = FeesData.builder()
             .totalAmount(BigDecimal.valueOf(123))
@@ -96,6 +98,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(of("orders", orders))
+            .state(OPEN.getValue())
             .build());
 
         assertThat(response.getData()).containsEntry("amountToPay", "12300");
@@ -103,7 +106,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotAddAmountToPayFieldWhenFeatureToggleIsFalse() {
+    void shouldNotAddAmountToPayFieldToAnOpenedCaseWhenFeatureToggleIsFalse() {
         givenPaymentToggle(false);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
@@ -115,16 +118,30 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotDisplayAmountToPayFieldWhenErrorIsThrown() {
+    void shouldNotDisplayAmountToPayFieldToAnOpenedCaseWhenErrorIsThrown() {
         givenPaymentToggle(true);
         given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(of())
+            .state(OPEN.getValue())
             .build());
 
         assertThat(response.getData()).doesNotContainKey("amountToPay");
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
+    }
+
+    @Test
+    void shouldNotDisplayAmountToPayFieldWhenCaseIsInReturnedState() {
+        givenPaymentToggle(true);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
+            .data(of())
+            .state(RETURNED.getValue())
+            .build());
+
+        verify(feeService, never()).getFeesDataForOrders(any());
+        assertThat(response.getData()).doesNotContainKeys("amountToPay", "displayAmountToPay");
     }
 
     @Test
