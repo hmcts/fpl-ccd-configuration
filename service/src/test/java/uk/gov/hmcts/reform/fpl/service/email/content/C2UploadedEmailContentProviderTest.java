@@ -45,6 +45,20 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
             .isEqualTo(expectedMap);
     }
 
+    @Test
+    void shouldReturnExpectedMapWithAllocatedJudgeDetails() {
+        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+            .put("caseUrl", caseUrl(CASE_REFERENCE))
+            .put("callout", format("Smith, %s", CASE_REFERENCE))
+            .put("respondentLastName", "Smith")
+            .put("judgeTitle", "Her Honour Judge")
+            .put("judgeName", "Moley")
+            .build();
+
+        assertThat(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(populatedCaseDetails()))
+            .isEqualTo(expectedMap);
+    }
+
     private static CaseDetails createCase() {
         return CaseDetails.builder()
             .id(Long.valueOf(CASE_REFERENCE))
