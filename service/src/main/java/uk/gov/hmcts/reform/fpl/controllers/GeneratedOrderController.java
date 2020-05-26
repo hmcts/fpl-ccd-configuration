@@ -179,13 +179,8 @@ public class GeneratedOrderController {
         caseDetails.getData().put("orderCollection", orders);
 
         if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
-            String orderAppliesToAllChildren = caseData.getOrderAppliesToAllChildren();
-            if (caseData.getChildren1().size() <= 1) {
-                orderAppliesToAllChildren = "Yes";
-            }
-
             List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
-                orderAppliesToAllChildren, caseData.getChildSelector());
+                caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
             caseDetails.getData().put("children1", updatedChildren);
         }
 

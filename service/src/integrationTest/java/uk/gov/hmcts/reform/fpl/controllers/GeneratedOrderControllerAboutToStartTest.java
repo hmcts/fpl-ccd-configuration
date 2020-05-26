@@ -73,7 +73,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     }
 
     @Test
-    void shouldSetPageShowFlagOrderToYesWhenMultipleChildrenOnCase() {
+    void shouldSetPageShowFlagToYesWhenMultipleChildrenOnCase() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
             .data(Map.of(FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE, CHILDREN_KEY, testChildren()))

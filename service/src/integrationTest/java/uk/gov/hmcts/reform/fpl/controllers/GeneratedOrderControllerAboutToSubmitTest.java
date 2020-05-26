@@ -92,7 +92,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+    void shouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -113,7 +113,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldNotHaveDraftAppendedToFilename() {
+    void shouldNotHaveDraftAppendedToFilename() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -129,7 +129,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
     @ParameterizedTest
     @EnumSource(GeneratedOrderSubtype.class)
-    void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
+    void shouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
         GeneratedOrderSubtype subtype) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
@@ -149,7 +149,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+    void shouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -167,7 +167,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+    void shouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -188,7 +188,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
+    void shouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(YES);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -213,7 +213,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldSetFinalOrderIssuedOnSingleChild() {
+    void shouldSetFinalOrderIssuedOnSingleChild() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -230,7 +230,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldSetFinalOrderIssuedOnChildren() {
+    void shouldSetFinalOrderIssuedOnChildren() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -247,7 +247,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldNotSetFinalOrderIssuedForInterimOrder() {
+    void shouldNotSetFinalOrderIssuedForInterimOrder() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
