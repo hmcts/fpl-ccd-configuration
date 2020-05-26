@@ -27,10 +27,9 @@ public class ReturnApplication {
         if (reason != null) {
             String formattedReasons = reason.stream()
                 .map(ReturnedApplicationReasons::getLabel)
-                .map(String::toLowerCase)
                 .collect(Collectors.joining(", "));
 
-            return capitalize(formattedReasons);
+            return capitalize(formattedReasons.toLowerCase());
         }
 
         return "";
