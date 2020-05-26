@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingValidatorService;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class HearingBookingDetailsController {
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RequestData requestData;
+    private final StandardDirectionsService standardDirectionsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -102,6 +104,8 @@ public class HearingBookingDetailsController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new PopulateSDODatesEvent(callbackRequest, requestData));
+        if (true) {
+            applicationEventPublisher.publishEvent(new PopulateSDODatesEvent(callbackRequest, requestData));
+        }
     }
 }

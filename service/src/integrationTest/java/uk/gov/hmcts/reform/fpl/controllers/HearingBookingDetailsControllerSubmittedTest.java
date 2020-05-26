@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -42,8 +44,8 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     }
 
     @Test
-    void shouldTriggerPopulateDatesEvent() {
-        postSubmittedEvent(callbackRequest());
+    void shouldTriggerPopulateDatesEventWhenThereAreEmptyDates() {
+        postSubmittedEvent(callbackRequestWithEmptyDates());
 
         verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
             JURISDICTION,
@@ -53,7 +55,14 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
             getExpectedData());
     }
 
-    private CallbackRequest callbackRequest() {
+    @Test
+    void shouldNotTriggerPopulateDatesEventWhenThereAreNoEmptyDates() {
+        postSubmittedEvent(callbackRequestWithNoEmptyDates());
+
+        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+    }
+
+    private CallbackRequest callbackRequestWithEmptyDates() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -87,6 +96,44 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
                         buildDirection("others1")),
                     COURT.getValue(), wrapElements(
                         buildDirection("court1", LocalDateTime.of(2060, 8, 8, 18, 0, 0)))))
+                .build())
+            .build();
+    }
+
+    private CallbackRequest callbackRequestWithNoEmptyDates() {
+        return CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .data(Map.of(
+                    "hearingDetails", wrapElements(Map.of("startDate", "2050-05-20T13:00")),
+                    ALL_PARTIES.getValue(),
+                    wrapElements(
+                        buildDirection("allParties1", LocalDateTime.now()),
+                        buildDirection("allParties2", LocalDateTime.now()),
+                        buildDirection("allParties3", LocalDateTime.now()),
+                        buildDirection("allParties4", LocalDateTime.now()),
+                        buildDirection("allParties5", LocalDateTime.now())),
+                    LOCAL_AUTHORITY.getValue(),
+                    wrapElements(
+                        buildDirection("la1", LocalDateTime.now()),
+                        buildDirection("la2", LocalDateTime.now()),
+                        buildDirection("la3", LocalDateTime.now()),
+                        buildDirection("la4", LocalDateTime.now()),
+                        buildDirection("la5", LocalDateTime.now()),
+                        buildDirection("la6", LocalDateTime.now()),
+                        buildDirection("la7", LocalDateTime.now())),
+                    PARENTS_AND_RESPONDENTS.getValue(), wrapElements(
+                        buildDirection("p&r1", LocalDateTime.now())),
+                    CAFCASS.getValue(), wrapElements(
+                        buildDirection("cafcass1", LocalDateTime.now()),
+                        buildDirection("cafcass2", LocalDateTime.now()),
+                        buildDirection("cafcass3", LocalDateTime.now())),
+                    OTHERS.getValue(), wrapElements(
+                        buildDirection("others1", LocalDateTime.now())),
+                    COURT.getValue(), wrapElements(
+                        buildDirection("court1", LocalDateTime.now()))))
                 .build())
             .build();
     }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -16,7 +17,9 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,9 +33,10 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.ON;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {StandardDirectionsService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, StandardDirectionsService.class})
 class StandardDirectionsServiceTest {
     private static final String DIRECTION_TYPE_1 = "Test SDO type 1";
     private static final String DIRECTION_TEXT_1 = "- Test body 1 \n\n- Two\n";
@@ -106,6 +110,36 @@ class StandardDirectionsServiceTest {
         verify(calendarService).getWorkingDayFrom(date, -3);
         verify(calendarService).getWorkingDayFrom(date, -2);
         verifyNoMoreInteractions(calendarService);
+    }
+
+    @Test
+    void shouldReturnTrueWhenThereAreEmptyDates() {
+        Map<String, Object> data = Map.of(
+            "allParties", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
+            "localAuthorityDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
+            "respondentDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
+            "cafcassDirections", wrapElements(buildDirectionWithDate(), Direction.builder().build()),
+            "otherPartiesDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
+            "courtDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()));
+
+        assertThat(service.hasEmptyDates(data)).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenThereAreNoEmptyDates() {
+        Map<String, Object> data = Map.of(
+            "allParties", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
+            "localAuthorityDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
+            "respondentDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
+            "cafcassDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
+            "otherPartiesDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
+            "courtDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()));
+
+        assertThat(service.hasEmptyDates(data)).isFalse();
+    }
+
+    private Direction buildDirectionWithDate() {
+        return Direction.builder().dateToBeCompletedBy(LocalDateTime.now()).build();
     }
 
     private List<DirectionConfiguration> testDirectionConfigurations() {
