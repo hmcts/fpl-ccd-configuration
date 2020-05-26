@@ -168,7 +168,6 @@ public class GeneratedOrderController {
         if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections, children,
             closeCaseFromOrder)) {
 
-            log.info("Generating document for type {}", orderTypeAndDocument.getType());
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
                 caseData.getAllocatedJudge());
             Document document = getDocument(caseData, DRAFT, judgeAndLegalAdvisor);

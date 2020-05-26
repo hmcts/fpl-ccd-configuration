@@ -372,29 +372,54 @@ public class GeneratedOrderService {
             .map(address -> address.getAddressAsString(", ")).orElse("");
     }
 
-    public boolean shouldGenerateDocument(OrderTypeAndDocument orderTypeAndDocument,
-                                          FurtherDirections orderFurtherDirections,
+
+    /**
+     * Determine if the service should generate the draft order document.
+     *
+     * <p>Will return {@code true} if one of the following is met:
+     * <ul>
+     *     <li>the order is a blank order</li>
+     *     <li>further directions is not null and one of the following is met:<ul>
+     *         <li>not all children have a final order (can't close the case)</li>
+     *         <li>closeCaseFromOrder is not null (close case decision has been made)</li>
+     *     </ul></li>
+     * </ul>
+     *
+     * @param orderType          type of order
+     * @param furtherDirections  further directions for the order
+     * @param children           children in the case
+     * @param closeCaseFromOrder YesOrNo field for close case from order
+     */
+    public boolean shouldGenerateDocument(OrderTypeAndDocument orderType,
+                                          FurtherDirections furtherDirections,
                                           List<Element<Child>> children,
                                           String closeCaseFromOrder) {
-        // generate order if one of the following is met:
-        //  • the order is a blank order
-        //  • further directions is not null and one of the following is met:
-        //      • not all children have a final order (can't close the case)
-        //      • closeCaseFromOrder is not null (close case decision has been made)
-        return BLANK_ORDER == orderTypeAndDocument.getType()
-            || (orderFurtherDirections != null
+        return BLANK_ORDER == orderType.getType()
+            || (furtherDirections != null
             && (!childrenService.allChildrenHaveFinalOrder(children) || closeCaseFromOrder != null));
     }
 
+
+    /**
+     * Determine if the user should see the close case page.
+     *
+     * <p>Will return {@code true} if all of the following are met:
+     * <ul>
+     *     <li>close case is enabled</li>
+     *     <li>the order type is final or epo</li>
+     *     <li>all children will be marked to have a final order issued against them</li>
+     *     <li>the flag hasn't already been set</li>
+     * </ul>
+     *
+     * @param orderType          type of order
+     * @param closeCaseFromOrder YesOrNo field for close case from order
+     * @param children           list of children in the case
+     * @param closeCaseEnabled   feature toggle flag for close case
+     */
     public boolean showCloseCase(OrderTypeAndDocument orderType,
                                  String closeCaseFromOrder,
                                  List<Element<Child>> children,
                                  boolean closeCaseEnabled) {
-        // Can show close case page if all of the following are met:
-        //  • close case is enabled
-        //  • the order type is final or epo
-        //  • all children will be marked to have a final order issued against them
-        //  • the flag hasn't already been set
         return closeCaseEnabled
             && orderType.isClosable()
             && childrenService.allChildrenHaveFinalOrder(children)
