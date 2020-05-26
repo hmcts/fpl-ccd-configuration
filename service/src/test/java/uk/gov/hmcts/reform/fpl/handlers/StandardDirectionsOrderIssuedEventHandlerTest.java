@@ -22,15 +22,20 @@ import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssue
 
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
@@ -41,9 +46,6 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
 
     @MockBean
     private RequestData requestData;
-
-    @MockBean
-    private StandardDirectionOrderIssuedEmailContentProvider standardDirectionsOrderIssuedEmailContentProvider;
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -59,6 +61,9 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
 
     @MockBean
     private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
+
+    @MockBean
+    private StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
 
     @MockBean
     private InboxLookupService inboxLookupService;
@@ -107,12 +112,56 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
             "12345");
     }
 
+    @Test
+    void shouldNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationEnabled() {
+        final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+
+        given(featureToggleService.isSDONotificationForAllocatedJudgeEnabled()).willReturn(true);
+
+        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
+            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+            new StandardDirectionsOrderIssuedEvent(callbackRequest, requestData));
+
+        verify(notificationService).sendEmail(
+            STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
+            "12345");
+    }
+
+    @Test
+    void shouldNotNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationDisabled() {
+        final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+
+        given(featureToggleService.isSDONotificationForAllocatedJudgeEnabled()).willReturn(false);
+
+        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
+            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+            new StandardDirectionsOrderIssuedEvent(callbackRequest, requestData));
+
+        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+    }
+
     private Map<String, Object> getStandardDirectionTemplateParameters() {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", "6789")
             .put("leadRespondentsName", "Moley")
             .put("hearingDate", "21 October 2020")
             .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+    }
+
+    private Map<String, Object> getAllocatedJudgeSDOTemplateParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .put("familyManCaseNumber", "6789")
+            .put("leadRespondentsName", "Moley")
+            .put("hearingDate", "21 October 2020")
+            .put("reference", "12345")
+            .put("judgeTitle", "Her Honour Judge")
+            .put("judgeName", "Byrne")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
     }
