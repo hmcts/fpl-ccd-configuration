@@ -61,7 +61,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
     }
 
     @Test
-    void shouldSetOrderAppliesFlagToYesWhenOnlyOneChildOnCase() {
+    void shouldSetPageShowFlagToNoWhenOnlyOneChildOnCase() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
             .data(Map.of(FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE, CHILDREN_KEY, List.of(testChild())))
@@ -70,11 +70,10 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         assertThat(callbackResponse.getData().get("pageShow")).isEqualTo("No");
-        assertThat(callbackResponse.getData().get("orderAppliesToAllChildren")).isEqualTo("Yes");
     }
 
     @Test
-    void shouldNotSetOrderAppliesFlagWhenMultipleChildrenOnCase() {
+    void shouldSetPageShowFlagOrderToYesWhenMultipleChildrenOnCase() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
             .data(Map.of(FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE, CHILDREN_KEY, testChildren()))
@@ -82,9 +81,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
         assertThat(callbackResponse.getData().get("pageShow")).isEqualTo("Yes");
-        assertThat(callbackResponse.getData().get("orderAppliesToAllChildren")).isNull();
     }
 
     @Test

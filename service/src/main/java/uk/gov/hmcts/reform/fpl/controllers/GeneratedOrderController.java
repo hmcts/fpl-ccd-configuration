@@ -90,12 +90,7 @@ public class GeneratedOrderController {
             ValidateFamilyManCaseNumberGroup.class);
 
         if (errors.isEmpty()) {
-            int numOfChildren = caseData.getAllChildren().size();
-            caseDetails.getData().put("pageShow", numOfChildren <= 1 ? "No" : "Yes");
-
-            if (numOfChildren <= 1) {
-                caseDetails.getData().put("orderAppliesToAllChildren", "Yes");
-            }
+            caseDetails.getData().put("pageShow", caseData.getAllChildren().size() <= 1 ? "No" : "Yes");
 
             caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
 
@@ -184,8 +179,13 @@ public class GeneratedOrderController {
         caseDetails.getData().put("orderCollection", orders);
 
         if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
+            String orderAppliesToAllChildren = caseData.getOrderAppliesToAllChildren();
+            if (caseData.getChildren1().size() <= 1) {
+                orderAppliesToAllChildren = "Yes";
+            }
+
             List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
-                caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
+                orderAppliesToAllChildren, caseData.getChildSelector());
             caseDetails.getData().put("children1", updatedChildren);
         }
 

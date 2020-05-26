@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.EN
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -96,11 +97,10 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .order(GeneratedOrder.builder()
-                .title("Example Order")
-                .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                .build()));
+                .order(GeneratedOrder.builder()
+                    .title("Example Order")
+                    .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                    .build()));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -118,7 +118,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -137,7 +136,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, subtype, judgeAndLegalAdvisor)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
         );
 
@@ -156,9 +154,8 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM, judgeAndLegalAdvisor)
-            .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -175,9 +172,8 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
-            .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .orderMonths(14));
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .orderMonths(14));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -198,7 +194,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .orderMonths(14)
                 .allocatedJudge(Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -218,13 +213,28 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
+    void aboutToSubmitShouldSetFinalOrderIssuedOnSingleChild() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
+                .children1(createChildren("Fred"))
+        );
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsOnly("Yes");
+    }
+
+    @Test
     void aboutToSubmitShouldSetFinalOrderIssuedOnChildren() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
                 .orderAppliesToAllChildren("Yes")
         );
 
@@ -242,8 +252,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, INTERIM, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
                 .orderAppliesToAllChildren("Yes")
                 .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
         );
@@ -282,6 +290,8 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
                 .build())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .familyManCaseNumber("12345L")
+            .children1(testChildren())
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .dateOfIssue(dateNow());
     }
 
