@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -73,7 +74,7 @@ public class ValidateOrderController {
 
         List<String> errors = new ArrayList<>();
 
-        if (caseData.getChildSelector().getSelected().isEmpty()) {
+        if (StringUtils.isBlank(caseData.getRemainingChildCount()) && caseData.getChildSelector().getSelected().isEmpty()) {
             errors.add("Select the children included in the order.");
         }
 

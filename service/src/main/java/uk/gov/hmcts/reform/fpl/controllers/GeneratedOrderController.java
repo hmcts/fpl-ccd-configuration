@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector.ChildSelectorBuilder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -117,12 +119,23 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
-            ChildSelector childSelector = ChildSelector.builder().build();
-            childSelector.generateChildCount(caseData.getAllChildren().size());
-            childSelector.generatedHiddenList(caseData.getAllChildren());
+            String remainingChildCount = childrenService.getRemainingChildCount(caseData.getAllChildren());
+            caseDetails.getData().put("remainingChildCount", remainingChildCount);
+            if (StringUtils.isNotBlank(remainingChildCount)) {
+                caseDetails.getData()
+                    .put("remainingChild", childrenService.getRemainingChildren(caseData.getAllChildren()));
+                caseDetails.getData().put("otherFinalOrderChildren",
+                    childrenService.getFinalOrderIssuedChildren(caseData.getAllChildren()));
+            } else {
+                caseDetails.getData()
+                    .put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
+                ChildSelector childSelector = ChildSelector.builder()
+                    .childCount(ChildSelector.generateChildCount(caseData.getAllChildren().size()))
+                    .hidden(ChildSelector.generatedHiddenList(caseData.getAllChildren()))
+                    .build();
+                caseDetails.getData().put("childSelector", childSelector);
+            }
 
-            caseDetails.getData().put("childSelector", childSelector);
-            caseDetails.getData().put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

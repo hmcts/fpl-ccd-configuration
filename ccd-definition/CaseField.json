@@ -1166,6 +1166,48 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "remainingChildCount",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "remainingChild_label",
+    "Label": "## Create order for",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "remainingChild",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Comment": "Displays a list of names for children, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherFinalOrderChildren_label",
+    "Label": "### Other children in this case with final orders:",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherFinalOrderChildren",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Comment": "Displays a list of names for children, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "childrenList",
     "Label": "Which child?",
     "FieldType": "DynamicList",

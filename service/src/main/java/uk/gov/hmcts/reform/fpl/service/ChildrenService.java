@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -69,5 +70,41 @@ public class ChildrenService {
             }
         }
         return children;
+    }
+
+    public String getRemainingChildCount(List<Element<Child>> allChildren) {
+        List<String> remainingChildIndex = new ArrayList<>();
+        for (int i = 0; i < allChildren.size(); i++) {
+            if (!YES.getValue().equals(allChildren.get(i).getValue().getFinalOrderIssued())) {
+                remainingChildIndex.add(String.valueOf(i));
+            }
+            if (remainingChildIndex.size() > 2) {
+                return "";
+            }
+        }
+
+        return (remainingChildIndex.size() == 1) ? remainingChildIndex.get(0) : "";
+    }
+
+    public String getRemainingChildren(List<Element<Child>> allChildren) {
+        return allChildren.stream()
+            .filter(child -> !YES.getValue().equals(child.getValue().getFinalOrderIssued()))
+            .map(child -> child.getValue().getParty().getFullName())
+            .collect(Collectors.joining("\n"));
+    }
+
+    public String getFinalOrderIssuedChildren(List<Element<Child>> allChildren) {
+        return allChildren.stream()
+            .filter(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()))
+            .map(child -> {
+                StringBuilder builder = new StringBuilder();
+                builder.append(child.getValue().getParty().getFullName());
+                if (child.getValue().getFinalOrderIssuedType() != null) {
+                    builder.append(String.format(" - %s issued", child.getValue().getFinalOrderIssuedType()));
+
+                }
+                return builder.toString();
+            })
+            .collect(Collectors.joining("\n"));
     }
 }

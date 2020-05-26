@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -153,7 +154,7 @@ public class GeneratedOrderService {
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
 
         List<Child> children = getSelectedChildren(unwrapElements(caseData.getAllChildren()),
-            caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren());
+            caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren(), caseData.getRemainingChildCount());
         List<Map<String, String>> childrenDetails = getChildrenDetails(children);
         int childrenCount = children.size();
 
@@ -326,11 +327,13 @@ public class GeneratedOrderService {
                 String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)));
     }
 
-    private List<Child> getSelectedChildren(List<Child> allChildren, ChildSelector selector, String choice) {
+    private List<Child> getSelectedChildren(List<Child> allChildren, ChildSelector selector, String choice, String remainingChild) {
         if (useAllChildren(choice)) {
             return allChildren;
         }
-
+        if (StringUtils.isNotBlank(remainingChild)) {
+          return List.of(allChildren.get(Integer.parseInt(remainingChild)));
+        }
         return selector.getSelected().stream()
             .map(allChildren::get)
             .collect(Collectors.toList());
