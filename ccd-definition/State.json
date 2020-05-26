@@ -46,5 +46,13 @@
     "Name": "Deleted",
     "Description": "Deleted case state - all data is removed",
     "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "RETURNED",
+    "Name": "Returned",
+    "Description": "Returned case state - LA to make changes to previously submitted application",
+    "DisplayOrder": 7
   }
 ]
