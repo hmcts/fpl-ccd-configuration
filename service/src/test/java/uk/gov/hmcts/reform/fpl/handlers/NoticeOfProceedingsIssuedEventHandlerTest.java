@@ -54,7 +54,7 @@ public class NoticeOfProceedingsIssuedEventHandlerTest {
     void shouldNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenNotificationEnabled() {
         final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
-        given(featureToggleService.isNoticeOfProceedingsNotificationForAllocatedJudgeEnabled()).willReturn(true);
+        given(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).willReturn(true);
 
         given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);
@@ -71,7 +71,7 @@ public class NoticeOfProceedingsIssuedEventHandlerTest {
     void shouldNotNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenNotificationDisabled() {
         final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
-        given(featureToggleService.isNoticeOfProceedingsNotificationForAllocatedJudgeEnabled()).willReturn(false);
+        given(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).willReturn(false);
 
         given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);

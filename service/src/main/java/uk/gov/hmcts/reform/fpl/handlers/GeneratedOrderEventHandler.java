@@ -71,9 +71,6 @@ public class GeneratedOrderEventHandler {
     private String getAllocatedJudgeEmail(CaseData caseData) {
         Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
             .stream().reduce((first, last) -> last);
-        System.out.println("case" + caseData);
-        System.out.println("case" + caseData.getOrderCollection());
-        System.out.println("orders are" + generatedOrder);
         return generatedOrder.get().getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
     }
 

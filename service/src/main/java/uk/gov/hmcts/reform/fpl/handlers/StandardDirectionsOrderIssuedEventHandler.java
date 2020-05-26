@@ -60,7 +60,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
 
     @EventListener
     public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
-        if (featureToggleService.isSDONotificationForAllocatedJudgeEnabled()) {
+        if (featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()) {
             EventData eventData = new EventData(event);
             CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
             Map<String, Object> parameters = standardDirectionOrderIssuedEmailContentProvider

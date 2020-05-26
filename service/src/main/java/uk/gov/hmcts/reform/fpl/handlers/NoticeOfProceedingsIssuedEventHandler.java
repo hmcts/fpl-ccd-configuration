@@ -26,7 +26,7 @@ public class NoticeOfProceedingsIssuedEventHandler {
 
     @EventListener
     public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(NoticeOfProceedingsIssuedEvent event) {
-        if (featureToggleService.isNoticeOfProceedingsNotificationForAllocatedJudgeEnabled()) {
+        if (featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()) {
             EventData eventData = new EventData(event);
             CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 

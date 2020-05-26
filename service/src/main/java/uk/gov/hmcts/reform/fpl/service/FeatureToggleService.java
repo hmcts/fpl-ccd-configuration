@@ -38,11 +38,11 @@ public class FeatureToggleService {
             false);
     }
 
-    public boolean isSDONotificationForAllocatedJudgeEnabled() {
+    public boolean isSdoAllocatedJudgeNotificationsEnabled() {
         return ldClient.boolVariation("allocatedJudgeNotificationSDO", ldUser, false);
     }
 
-    public boolean isNoticeOfProceedingsNotificationForAllocatedJudgeEnabled() {
+    public boolean isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled() {
         return ldClient.boolVariation("allocatedJudgeNotificationNoticeOfProceedings", ldUser, false);
     }
 

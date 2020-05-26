@@ -34,15 +34,15 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
                 .getValue()
                 .getParty()
                 .getLastName()))
-            .put("hearingDate", getHearingBooking(caseData))
+            .put("hearingDate", getHearingBookingStartDate(caseData))
             .put("caseUrl", getCaseUrl(caseDetails.getId()))
             .put("judgeTitle", caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeOrMagistrateTitle())
             .put("judgeName", caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName())
             .build();
     }
 
-    private String getHearingBooking(CaseData data) {
-        return hearingBookingService.getFirstHearing(data.getHearingDetails())
+    private String getHearingBookingStartDate(CaseData caseData) {
+        return hearingBookingService.getFirstHearing(caseData.getHearingDetails())
             .map(hearing -> formatLocalDateToString(hearing.getStartDate().toLocalDate(), FormatStyle.LONG))
             .orElse("");
     }

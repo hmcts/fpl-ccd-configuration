@@ -116,7 +116,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationEnabled() {
         final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
-        given(featureToggleService.isSDONotificationForAllocatedJudgeEnabled()).willReturn(true);
+        given(featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()).willReturn(true);
 
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);
@@ -133,7 +133,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationDisabled() {
         final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
-        given(featureToggleService.isSDONotificationForAllocatedJudgeEnabled()).willReturn(false);
+        given(featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()).willReturn(false);
 
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);
