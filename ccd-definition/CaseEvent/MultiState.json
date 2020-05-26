@@ -390,7 +390,8 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/about-to-submit",
     "ShowSummary": "Y",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "Comment": "Moved from Submitted.json in here to utilize multi state event feature"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -407,7 +408,8 @@
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/submitted"
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/submitted",
+    "Comment": "Moved from Submitted.json in here to utilize multi state event feature"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -421,7 +423,8 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "Comment": "Moved from Submitted.json in here to utilize multi state event feature"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -435,7 +438,8 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "Comment": "Moved from Submitted.json in here to utilize multi state event feature"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -451,7 +455,8 @@
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-others/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-others/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-others/about-to-submit",
+    "Comment": "Moved from Submitted.json in here to utilize multi state event feature"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -467,7 +472,8 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-submit",
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "Comment": "Moved from Submitted.json in here to utilize multi state event feature"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -481,6 +487,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "Comment": "Moved from Submitted.json in here to utilize multi state event feature"
   }
 ]

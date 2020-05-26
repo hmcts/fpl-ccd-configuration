@@ -396,21 +396,24 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendRespondentsGatekeeping",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendOthersGatekeeping",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendInternationalElementGatekeeping",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -424,21 +427,24 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendAttendingHearingGatekeeping",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -473,7 +479,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addStatementOfServiceGatekeeping",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -487,7 +494,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addStatementOfService-PREPARE_FOR_HEARING",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -536,14 +544,16 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2Gatekeeping",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2Gatekeeping",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -557,21 +567,24 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2Gatekeeping",
     "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "CRU"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -585,7 +598,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "hearingBookingDetails-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -599,21 +613,24 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendRespondents-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendOthers-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendInternationalElement-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -627,7 +644,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendAttendingHearing-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -767,7 +785,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2Gatekeeping",
     "UserRole": "[SOLICITOR]",
-    "CRUD": "R"
+    "CRUD": "R",
+    "Comment": "Read only for backwards compatibility"
   },
   {
     "LiveFrom": "01/01/2017",
