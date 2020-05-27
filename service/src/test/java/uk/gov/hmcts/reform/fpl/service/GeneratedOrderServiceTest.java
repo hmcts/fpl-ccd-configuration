@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -66,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -329,6 +331,33 @@ class GeneratedOrderServiceTest {
         service.removeOrderProperties(data);
 
         assertThat(data).containsOnlyKeys("DO NOT REMOVE");
+    }
+
+    @Test
+    void shouldGetAllocatedJudgeFromMostRecentOrderWhenOrderExists() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeLastName("Moley")
+            .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+            .judgeEmailAddress("judge@gmail.com")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .orderCollection(wrapElements(GeneratedOrder.builder()
+                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+                .build()))
+            .build();
+
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(caseData);
+
+        assertThat(judgeAndLegalAdvisor).isEqualTo(expectedJudgeAndLegalAdvisor);
+    }
+
+    @Test
+    void shouldGetEmptyAllocatedJudgeFromMostRecentOrderWhenNoOrderExists() {
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(CaseData
+            .builder().build());
+
+        assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(JudgeAndLegalAdvisor.builder().build());
     }
 
     private static Stream<Arguments> fileNameSource() {
