@@ -32,6 +32,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "Name": "Documents",
+    "Description": "Upload documents",
+    "DisplayOrder": 8,
+    "PreConditionState(s)": "PREPARE_FOR_HEARING",
+    "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "limitedUploadDocuments-PREPARE_FOR_HEARING",
     "Name": "Documents",
     "Description": "Upload documents",
