@@ -6,7 +6,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 
 import java.util.List;
 import java.util.Map;
@@ -53,13 +54,20 @@ public class NotificationEventHandlerTestData {
         return callbackRequest;
     }
 
-    public static ImmutableMap<String, Object> getCMOReadyForJudgeNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(expectedCommonCMONotificationParameters())
-            .put("respondentLastName", "Smith")
-            .put("judgeTitle", "Her Honour Judge")
-            .put("judgeName", "Moley")
-            .build();
+    public static AllocatedJudgeTemplateForCMO getCMOReadyForJudgeNotificationParameters() {
+        Map<String, Object> commonCMONotificationParameters = expectedCommonCMONotificationParameters();
+
+        AllocatedJudgeTemplateForCMO allocatedJudgeTemplate = new AllocatedJudgeTemplateForCMO();
+        allocatedJudgeTemplate.setSubjectLineWithHearingDate(commonCMONotificationParameters
+            .get("subjectLineWithHearingDate")
+            .toString());
+        allocatedJudgeTemplate.setCaseUrl(commonCMONotificationParameters.get("caseUrl").toString());
+        allocatedJudgeTemplate.setReference(commonCMONotificationParameters.get("reference").toString());
+        allocatedJudgeTemplate.setRespondentLastName("Smith");
+        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
+        allocatedJudgeTemplate.setJudgeName("Moley");
+
+        return allocatedJudgeTemplate;
     }
 
     public static AllocatedJudgeTemplate getExpectedAllocatedJudgeNotificationParameters() {

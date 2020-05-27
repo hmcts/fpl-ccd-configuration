@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -46,10 +47,11 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
     void shouldNotifyHmctsAdminOfCMOReadyForJudgeReviewWhenCtscIsDisabled() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
 
         given(caseManagementOrderEmailContentProvider
             .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
-            .willReturn(getCMOReadyForJudgeNotificationParameters());
+            .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
             new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
@@ -57,7 +59,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             COURT_EMAIL_ADDRESS,
-            getCMOReadyForJudgeNotificationParameters(),
+            cmoJudgeReviewParameters,
             "12345");
     }
 
@@ -65,10 +67,11 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
     void shouldNotifyCtscAdminOfCMOReadyForJudgeReviewWhenCtscIsEnabled() throws Exception {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
 
         given(caseManagementOrderEmailContentProvider
             .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
-            .willReturn(getCMOReadyForJudgeNotificationParameters());
+            .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
             new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
@@ -76,7 +79,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             CTSC_INBOX,
-            getCMOReadyForJudgeNotificationParameters(),
+            cmoJudgeReviewParameters,
             "12345");
     }
 
@@ -84,10 +87,11 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
     void shouldNotifyAllocatedJudgeWhenCMOReadyForJudgeReview() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
 
         given(caseManagementOrderEmailContentProvider
             .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
-            .willReturn(getCMOReadyForJudgeNotificationParameters());
+            .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler
             .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
@@ -96,7 +100,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
             ALLOCATED_JUDGE_EMAIL_ADDRESS,
-            getCMOReadyForJudgeNotificationParameters(),
+            cmoJudgeReviewParameters,
             "12345");
     }
 }

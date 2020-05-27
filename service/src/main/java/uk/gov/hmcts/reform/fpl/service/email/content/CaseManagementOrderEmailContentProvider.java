@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -70,15 +71,23 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .build();
     }
 
-    public Map<String, Object> buildCMOReadyForJudgeReviewNotificationParameters(final CaseDetails caseDetails) {
+    public AllocatedJudgeTemplateForCMO buildCMOReadyForJudgeReviewNotificationParameters(
+        final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<String, Object> commonCMONotificationParameters = buildCommonCMONotificationParameters(caseDetails);
 
-        return ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonCMONotificationParameters(caseDetails))
-            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
-            .put("judgeTitle", caseData.getAllocatedJudge().getJudgeOrMagistrateTitle())
-            .put("judgeName", caseData.getAllocatedJudge().getJudgeName())
-            .build();
+        AllocatedJudgeTemplateForCMO allocatedJudgeTemplate
+            = new AllocatedJudgeTemplateForCMO();
+        allocatedJudgeTemplate.setSubjectLineWithHearingDate(commonCMONotificationParameters
+            .get("subjectLineWithHearingDate")
+            .toString());
+        allocatedJudgeTemplate.setCaseUrl(commonCMONotificationParameters.get("caseUrl").toString());
+        allocatedJudgeTemplate.setReference(commonCMONotificationParameters.get("reference").toString());
+        allocatedJudgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        allocatedJudgeTemplate.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
+        allocatedJudgeTemplate.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
+
+        return allocatedJudgeTemplate;
     }
 
     private Map<String, Object> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
