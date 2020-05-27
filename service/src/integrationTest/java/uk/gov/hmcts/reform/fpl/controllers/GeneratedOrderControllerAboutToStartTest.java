@@ -12,12 +12,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -26,6 +29,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
 
     private static final String CASE_ID = "12345";
     private static final String FAMILY_MAN_CASE_NUMBER_KEY = "familyManCaseNumber";
+    private static final String CHILDREN_KEY = "children1";
     private static final String FAMILY_MAN_CASE_NUMBER_VALUE = "123";
 
     GeneratedOrderControllerAboutToStartTest() {
@@ -55,6 +59,30 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
 
         assertThat(callbackResponse.getErrors()).isEmpty();
         assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(dateNow().toString());
+    }
+
+    @Test
+    void shouldSetPageShowFlagToNoWhenOnlyOneChildOnCase() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(parseLong(CASE_ID))
+            .data(Map.of(FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE, CHILDREN_KEY, List.of(testChild())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        assertThat(callbackResponse.getData().get("pageShow")).isEqualTo("No");
+    }
+
+    @Test
+    void shouldSetPageShowFlagToYesWhenMultipleChildrenOnCase() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(parseLong(CASE_ID))
+            .data(Map.of(FAMILY_MAN_CASE_NUMBER_KEY, FAMILY_MAN_CASE_NUMBER_VALUE, CHILDREN_KEY, testChildren()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        assertThat(callbackResponse.getData().get("pageShow")).isEqualTo("Yes");
     }
 
     @Test
