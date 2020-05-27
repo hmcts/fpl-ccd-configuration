@@ -260,10 +260,10 @@ public class GeneratedOrderService {
         Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
             .stream().reduce((first, last) -> last);
 
-        if (generatedOrder.isPresent()) {
-            return generatedOrder.get().getValue().getJudgeAndLegalAdvisor();
-        }
-        return JudgeAndLegalAdvisor.builder().build();
+        return generatedOrder
+            .map(Element::getValue)
+            .map(GeneratedOrder::getJudgeAndLegalAdvisor)
+            .orElse(JudgeAndLegalAdvisor.builder().build());
     }
 
     private String getSupervisionOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -67,7 +69,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -335,21 +336,48 @@ class GeneratedOrderServiceTest {
 
     @Test
     void shouldGetAllocatedJudgeFromMostRecentOrderWhenOrderExists() {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeLastName("Moley")
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeLastName("Byrne")
             .judgeTitle(DEPUTY_DISTRICT_JUDGE)
             .judgeEmailAddress("judge@gmail.com")
             .build();
 
         CaseData caseData = CaseData.builder()
-            .orderCollection(wrapElements(GeneratedOrder.builder()
-                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-                .build()))
+            .orderCollection(getGeneratedOrdersList())
             .build();
 
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(caseData);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(caseData);
 
-        assertThat(judgeAndLegalAdvisor).isEqualTo(expectedJudgeAndLegalAdvisor);
+        assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(judgeAndLegalAdvisor);
+    }
+
+    private ArrayList<Element<GeneratedOrder>> getGeneratedOrdersList() {
+        JudgeAndLegalAdvisor firstJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeLastName("Moley")
+            .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+            .judgeEmailAddress("judge@gmail.com")
+            .build();
+
+        JudgeAndLegalAdvisor secondJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeLastName("Byrne")
+            .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+            .judgeEmailAddress("judge@gmail.com")
+            .build();
+
+        ArrayList<Element<GeneratedOrder>> generatedOrders = new ArrayList<>();
+
+        GeneratedOrder firstGeneratedOrder = GeneratedOrder.builder()
+            .judgeAndLegalAdvisor(firstJudgeAndLegalAdvisor)
+            .build();
+
+        GeneratedOrder secondGeneratedOrder = GeneratedOrder.builder()
+            .judgeAndLegalAdvisor(secondJudgeAndLegalAdvisor)
+            .build();
+
+        generatedOrders.add(element(firstGeneratedOrder));
+        generatedOrders.add(element(secondGeneratedOrder));
+
+        return generatedOrders;
     }
 
     @Test
