@@ -55,6 +55,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, FixedTimeConfiguration.class})
@@ -218,6 +220,18 @@ class CaseDataTest {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(caseData.findApplicant(0)).isEqualTo(Optional.empty());
+    }
+
+    @Test
+    void shouldGetOrderAppliesToAllChildrenWithValueAsYesWhenOnlyOneChildOnCase() {
+        CaseData caseData = CaseData.builder().children1(List.of(testChild())).build();
+        assertThat(caseData.getOrderAppliesToAllChildren()).isEqualTo("Yes");
+    }
+
+    @Test
+    void shouldGetOrderAppliesToAllChildrenWithCustomValueWhenMultipleChildrenOnCase() {
+        CaseData caseData = CaseData.builder().children1(testChildren()).orderAppliesToAllChildren("No").build();
+        assertThat(caseData.getOrderAppliesToAllChildren()).isEqualTo("No");
     }
 
     private CaseData caseData(Others.OthersBuilder othersBuilder) {
