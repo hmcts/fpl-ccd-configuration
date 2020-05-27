@@ -521,8 +521,13 @@
         "useAllocatedJudge": null,
         "allocatedJudgeLabel": null
       }
+    },
+    "amountToPay": "2055.0",
+    "returnApplication": {
+      "note": "Missing children details",
+      "reason": [
+        "INCOMPLETE", "CLARIFICATION_NEEDED"
+      ]
     }
-  }
-}
   }
 }
