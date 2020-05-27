@@ -29,9 +29,9 @@ import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
-import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -40,9 +40,9 @@ import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -65,7 +65,6 @@ public class DraftOrdersController {
     private final DocumentService documentService;
     private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
     private final CommonDirectionService commonDirectionService;
-    private final OrdersLookupService ordersLookupService;
     private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
@@ -74,6 +73,7 @@ public class DraftOrdersController {
     private final Time time;
     private final RequestData requestData;
     private final ValidateGroupService validateGroupService;
+    private final StandardDirectionsService standardDirectionsService;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
@@ -147,13 +147,14 @@ public class DraftOrdersController {
                 .build())
             .build();
 
-        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
-            getConfigDirections(), updated.getStandardDirectionOrder().getDirections());
+        Order standardDirectionOrder = updated.getStandardDirectionOrder();
+
+        persistHiddenValues(getFirstHearing(caseData.getHearingDetails()), standardDirectionOrder.getDirections());
 
         DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
-        Order order = updated.getStandardDirectionOrder().toBuilder()
+        Order order = standardDirectionOrder.toBuilder()
             .directions(List.of())
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
@@ -190,14 +191,12 @@ public class DraftOrdersController {
         //combine all directions from collections
         List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
 
-        //add hidden values to directions
-        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(getConfigDirections(), combinedDirections);
+        persistHiddenValues(getFirstHearing(caseData.getHearingDetails()), combinedDirections);
 
         //place directions with hidden values back into case details
         Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(combinedDirections);
         directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-        //build order
         Order order = Order.builder()
             .directions(commonDirectionService.removeUnnecessaryDirections(combinedDirections))
             .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
@@ -274,9 +273,13 @@ public class DraftOrdersController {
     }
 
     private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
-        return hearingBookingService.getFirstHearing(hearings)
+        return ofNullable(getFirstHearing(hearings))
             .map(hearing -> formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME))
             .orElse("Please enter a hearing date");
+    }
+
+    private HearingBooking getFirstHearing(List<Element<HearingBooking>> hearingBookings) {
+        return hearingBookingService.getFirstHearing(hearingBookings).orElse(null);
     }
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> list) {
@@ -285,11 +288,10 @@ public class DraftOrdersController {
         return commonDirectionService.sortDirectionsByAssignee(nonCustomDirections);
     }
 
-    private List<Element<Direction>> getConfigDirections() {
-        // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
-        return ordersLookupService.getStandardDirectionOrder().getDirections()
-            .stream()
-            .map(direction -> commonDirectionService.constructDirectionForCCD(direction, time.now()))
-            .collect(Collectors.toList());
+    private void persistHiddenValues(HearingBooking firstHearing,
+                                     List<Element<Direction>> directions) {
+        List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(firstHearing);
+
+        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(standardDirections, directions);
     }
 }

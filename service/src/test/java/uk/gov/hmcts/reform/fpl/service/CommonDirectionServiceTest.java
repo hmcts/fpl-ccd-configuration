@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -123,42 +122,6 @@ class CommonDirectionServiceTest {
             .collect(toList());
 
         assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionsTypes);
-    }
-
-    @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsRealDate() {
-        LocalDateTime today = LocalDateTime.now();
-
-        DirectionConfiguration directionConfig = getDirectionConfig();
-
-        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, today);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(today)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
-    }
-
-    @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsNull() {
-        DirectionConfiguration directionConfig = getDirectionConfig();
-
-        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, null);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(null)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
     }
 
     //TODO FPLA-1481 will probably remove that test, but now it counts even if the directions as

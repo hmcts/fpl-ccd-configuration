@@ -25,12 +25,13 @@ import java.util.stream.Stream;
 import static java.lang.Integer.parseInt;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StandardDirectionsService {
     private final CalendarService calendarService;
-    private final CommonDirectionService commonDirectionService;
     private final OrdersLookupService ordersLookupService;
     private final ObjectMapper mapper;
 
@@ -61,7 +62,15 @@ public class StandardDirectionsService {
             .map(date -> getCompleteByDate(date, direction.getDisplay()))
             .orElse(null);
 
-        return commonDirectionService.constructDirectionForCCD(direction, dateToBeCompletedBy);
+        return element(Direction.builder()
+            .directionType(direction.getTitle())
+            .directionText(direction.getText())
+            .assignee(direction.getAssignee())
+            .directionNeeded(YES.getValue())
+            .directionRemovable(booleanToYesOrNo(direction.getDisplay().isDirectionRemovable()))
+            .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
+            .dateToBeCompletedBy(dateToBeCompletedBy)
+            .build());
     }
 
     private LocalDateTime getCompleteByDate(LocalDateTime startDate, Display display) {
@@ -80,5 +89,9 @@ public class StandardDirectionsService {
             return date.toLocalDate();
         }
         return calendarService.getWorkingDayFrom(date.toLocalDate(), delta);
+    }
+
+    private String booleanToYesOrNo(boolean value) {
+        return value ? "Yes" : "No";
     }
 }
