@@ -166,7 +166,7 @@ repositories {
     url "https://dl.bintray.com/hmcts/hmcts-maven"
   }
   maven {
-    url  "http://repo.spring.io/milestone"
+    url  "https://repo.spring.io/milestone"
   }
   mavenLocal()
 }
@@ -184,8 +184,8 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
-  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
-  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: versions.springBoot
@@ -193,21 +193,21 @@ dependencies {
   compile group: 'org.springframework.security', name: 'spring-security-config'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
-  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.17' // override to fix vulnerability issue (CVE-2019-17195)
-  compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.17' // override to fix vulnerability issue (CVE-2019-17195)
+  implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
   compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.11.0'
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.14.0', classifier: 'thin'
-  compile group: 'io.github.openfeign', name: 'feign-core', version: '10.4.0'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '6.3.2'
+  implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.4.0'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.3.2'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
 
-  compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-  compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
-  
+  implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+  implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
@@ -221,10 +221,10 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.5.0'
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
 
-  compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
-  compile group: 'commons-io', name: 'commons-io', version: '2.6'
+  implementation group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.6'
 
-  compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+  implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
@@ -237,7 +237,7 @@ dependencies {
   testCompile group: 'org.junit.jupiter', name :'junit-jupiter', version: '5.5.2'
 
   testCompile group: 'org.mockito', name :'mockito-core', version: '3.0.0'
-  testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
 
   testCompile group: 'org.springframework.security', name: 'spring-security-test'
 
@@ -254,7 +254,7 @@ dependencies {
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
 
 bootJar {
-  archiveName = 'service.jar'
+  archiveFileName = 'service.jar'
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
