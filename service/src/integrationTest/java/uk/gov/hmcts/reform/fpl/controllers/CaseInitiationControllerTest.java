@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -23,19 +24,28 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.assertions.ExceptionAssertion.assertException;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseInitiationControllerTest extends AbstractControllerTest {
 
-    private static final String[] USER_IDS = {"1", "2", "3"};
+    private static final String LA_CALLER_ID = USER_ID;
+    private static final String LA_USER_2_ID = "2";
+    private static final String LA_USER_3_ID = "3";
+    private static final String[] LA_USER_IDS = {LA_CALLER_ID, LA_USER_2_ID, LA_USER_3_ID};
     private static final String CASE_ID = "12345";
     private static final Set<String> CASE_ROLES = Set.of("[LASOLICITOR]", "[CREATOR]");
 
@@ -103,35 +113,46 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void updateCaseRolesShouldBeCalledOnceForEachUser() throws Exception {
+    void updateCaseRolesShouldBeCalledOnceForEachUser() {
         postSubmittedEvent(callbackRequest());
-
-        Thread.sleep(3000);
 
         verifyUpdateCaseRolesWasCalledOnceForEachUser();
     }
 
     @Test
-    void shouldContinueAddingCaseRolesToUsersAfterGrantAccessFailure() throws Exception {
-        doThrow(RuntimeException.class).when(caseUserApi).updateCaseRolesForUser(
-            any(), any(), any(), any(), any());
+    void shouldGrantCaseAccessToOtherUsersAndThrowExceptionWhenCallerAccessNotGranted() {
+        doThrow(RuntimeException.class)
+            .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(LA_CALLER_ID), any());
+
+        final Exception exception = assertThrows(Exception.class, () -> postSubmittedEvent(callbackRequest()));
+
+        assertException(exception)
+            .isCausedBy(new GrantCaseAccessException(CASE_ID, Set.of(USER_ID), Set.of(CREATOR, LASOLICITOR)));
+
+        verifyUpdateCaseRolesWasCalledOnceForEachUser();
+    }
+
+    @Test
+    void shouldAttemptGrantAccessToAllLocalAuthorityUsersWhenGrantAccessFailsForSomeOfThem() {
+        doThrow(RuntimeException.class)
+            .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(LA_USER_2_ID), any());
 
         postSubmittedEvent(callbackRequest());
-
-        Thread.sleep(3000);
 
         verifyUpdateCaseRolesWasCalledOnceForEachUser();
     }
 
     private void verifyUpdateCaseRolesWasCalledOnceForEachUser() {
         verify(caseUserApi).updateCaseRolesForUser(
-            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[0],
-            new CaseUser(USER_IDS[0], CASE_ROLES));
-        verify(caseUserApi).updateCaseRolesForUser(
-            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[1],
-            new CaseUser(USER_IDS[1], CASE_ROLES));
-        verify(caseUserApi).updateCaseRolesForUser(
-            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, USER_IDS[2],
-            new CaseUser(USER_IDS[2], CASE_ROLES));
+            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, LA_USER_IDS[0],
+            new CaseUser(LA_USER_IDS[0], CASE_ROLES));
+
+        verify(caseUserApi, timeout(1000)).updateCaseRolesForUser(
+            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, LA_USER_IDS[1],
+            new CaseUser(LA_USER_IDS[1], CASE_ROLES));
+
+        verify(caseUserApi, timeout(1000)).updateCaseRolesForUser(
+            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, LA_USER_IDS[2],
+            new CaseUser(LA_USER_IDS[2], CASE_ROLES));
     }
 }
