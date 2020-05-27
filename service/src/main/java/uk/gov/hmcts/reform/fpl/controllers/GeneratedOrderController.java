@@ -133,12 +133,14 @@ public class GeneratedOrderController {
             .build();
     }
 
+    /*
+     This mid event is called after:
+      • Inputting Judge + LA
+      • Adding further directions
+      • Close case page
+    */
     @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        // This mid event is called after:
-        //  • Inputting Judge + LA
-        //  • Adding further directions
-        //  • Close case page
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 

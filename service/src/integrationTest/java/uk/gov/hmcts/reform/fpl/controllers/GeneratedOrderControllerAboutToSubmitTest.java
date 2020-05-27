@@ -20,8 +20,6 @@ import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
@@ -60,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -139,7 +137,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
+                .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .closeCaseFromOrder("Yes"));
 
@@ -164,7 +162,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
+                .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .closeCaseFromOrder("No"));
 
@@ -269,7 +267,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
+                .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
         );
 
@@ -288,7 +286,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, INTERIM, judgeAndLegalAdvisor)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
+                .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
         );
@@ -364,17 +362,5 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
             new TypeReference<>() {});
 
         assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
-    }
-
-    private List<Element<Child>> createChildren(String... firstNames) {
-        Child[] children = new Child[firstNames.length];
-        for (int i = 0; i < firstNames.length; i++) {
-            children[i] = Child.builder()
-                .party(ChildParty.builder()
-                    .firstName(firstNames[i])
-                    .build())
-                .build();
-        }
-        return wrapElements(children);
     }
 }
