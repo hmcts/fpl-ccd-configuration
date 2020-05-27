@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateC2;
+import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -34,9 +34,9 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
             .build();
     }
 
-    public AllocatedJudgeTemplateC2 buildC2UploadNotificationForAllocatedJudge(final CaseDetails caseDetails) {
+    public AllocatedJudgeTemplateForC2 buildC2UploadNotificationForAllocatedJudge(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        AllocatedJudgeTemplateC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateC2();
+        AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
 
         allocatedJudgeTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
         allocatedJudgeTemplateForC2.setCallout(emailNotificationHelper

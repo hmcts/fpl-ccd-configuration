@@ -1,17 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateForNoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import java.time.format.FormatStyle;
-import java.util.Map;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
@@ -23,22 +22,26 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
     private final ObjectMapper mapper;
     private final HearingBookingService hearingBookingService;
 
-    public Map<String, Object> buildAllocatedJudgeNotification(CaseDetails caseDetails) {
+    public AllocatedJudgeTemplateForNoticeOfProceedings buildAllocatedJudgeNotification(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? ""
-                : caseData.getFamilyManCaseNumber() + ",")
-            .put("leadRespondentsName", capitalize(caseData.getRespondents1()
+        AllocatedJudgeTemplateForNoticeOfProceedings allocatedJudgeTemplate
+            = new AllocatedJudgeTemplateForNoticeOfProceedings();
+
+        allocatedJudgeTemplate.setFamilyManCaseNumber(isNull(caseData.getFamilyManCaseNumber()) ? ""
+                : caseData.getFamilyManCaseNumber() + ",");
+        allocatedJudgeTemplate.setLeadRespondentsName(capitalize(caseData.getRespondents1()
                 .get(0)
                 .getValue()
                 .getParty()
-                .getLastName()))
-            .put("hearingDate", getHearingBookingStartDate(caseData))
-            .put("caseUrl", getCaseUrl(caseDetails.getId()))
-            .put("judgeTitle", caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeOrMagistrateTitle())
-            .put("judgeName", caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName())
-            .build();
+                .getLastName()));
+        allocatedJudgeTemplate.setHearingDate(getHearingBookingStartDate(caseData));
+        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        allocatedJudgeTemplate.setJudgeTitle(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()
+            .getJudgeOrMagistrateTitle());
+        allocatedJudgeTemplate.setJudgeName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName());
+
+        return allocatedJudgeTemplate;
     }
 
     private String getHearingBookingStartDate(CaseData caseData) {

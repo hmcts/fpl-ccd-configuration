@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
-import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateC2;
+import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
@@ -53,7 +53,7 @@ public class C2UploadedEventHandler {
 
         if (caseData.getAllocatedJudge() != null) {
 
-            AllocatedJudgeTemplateC2 parameters = c2UploadedEmailContentProvider
+            AllocatedJudgeTemplateForC2 parameters = c2UploadedEmailContentProvider
                 .buildC2UploadNotificationForAllocatedJudge(eventData.getCaseDetails());
 
             String email = caseData.getAllocatedJudge().getJudgeEmailAddress();

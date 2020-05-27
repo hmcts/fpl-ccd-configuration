@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +9,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
+import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateForNoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfProceedingsEmailContentProvider;
-
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -52,7 +50,8 @@ public class NoticeOfProceedingsIssuedEventHandlerTest {
 
     @Test
     void shouldNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenNotificationEnabled() {
-        final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+        final AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters
+            = getAllocatedJudgeSDOTemplateParameters();
 
         given(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).willReturn(true);
 
@@ -69,7 +68,7 @@ public class NoticeOfProceedingsIssuedEventHandlerTest {
 
     @Test
     void shouldNotNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenNotificationDisabled() {
-        final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+        AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
         given(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).willReturn(false);
 
@@ -82,14 +81,16 @@ public class NoticeOfProceedingsIssuedEventHandlerTest {
         verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }
 
-    private Map<String, Object> getAllocatedJudgeSDOTemplateParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", "6789")
-            .put("leadRespondentsName", "Moley")
-            .put("hearingDate", "21 October 2020")
-            .put("judgeTitle", "Her Honour Judge")
-            .put("judgeName", "Byrne")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+    private AllocatedJudgeTemplateForNoticeOfProceedings getAllocatedJudgeSDOTemplateParameters() {
+        AllocatedJudgeTemplateForNoticeOfProceedings allocatedJudgeTemplate
+            = new AllocatedJudgeTemplateForNoticeOfProceedings();
+        allocatedJudgeTemplate.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+        allocatedJudgeTemplate.setFamilyManCaseNumber("6789");
+        allocatedJudgeTemplate.setHearingDate("21 October 2020");
+        allocatedJudgeTemplate.setJudgeName("Byrne");
+        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
+        allocatedJudgeTemplate.setLeadRespondentsName("Moley");
+
+        return allocatedJudgeTemplate;
     }
 }

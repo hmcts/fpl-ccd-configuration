@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateC2;
+import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -152,7 +152,7 @@ public class C2UploadedEventHandlerTest {
         void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExists() {
             CallbackRequest callbackRequest = callbackRequest();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
-            AllocatedJudgeTemplateC2 allocatedJudgeParametersForC2 = getAllocatedJudgeParametersForC2();
+            AllocatedJudgeTemplateForC2 allocatedJudgeParametersForC2 = getAllocatedJudgeParametersForC2();
 
             given(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(caseDetails))
                 .willReturn(allocatedJudgeParametersForC2);
@@ -185,8 +185,8 @@ public class C2UploadedEventHandlerTest {
             verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
         }
 
-        private AllocatedJudgeTemplateC2 getAllocatedJudgeParametersForC2() {
-            AllocatedJudgeTemplateC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateC2();
+        private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
+            AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
 
             allocatedJudgeTemplateForC2.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
             allocatedJudgeTemplateForC2.setCallout(subjectLine);

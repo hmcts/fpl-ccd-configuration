@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public final class AllocatedJudgeTemplateC2 extends SharedAllocatedJudgeTemplate {
+public final class AllocatedJudgeTemplateForC2 extends SharedAllocatedJudgeTemplate {
     private String callout;
     private String respondentLastName;
 

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateC2;
+import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -48,14 +48,14 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
     @Test
     void shouldReturnExpectedMapWithAllocatedJudgeDetails() {
-        AllocatedJudgeTemplateC2 expectedMap = getAllocatedJudgeParametersForC2();
+        AllocatedJudgeTemplateForC2 expectedMap = getAllocatedJudgeParametersForC2();
 
         assertThat(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(populatedCaseDetails()))
             .isEqualToComparingFieldByField(expectedMap);
     }
 
-    private AllocatedJudgeTemplateC2 getAllocatedJudgeParametersForC2() {
-        AllocatedJudgeTemplateC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateC2();
+    private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
+        AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
 
         allocatedJudgeTemplateForC2.setCaseUrl("http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
         allocatedJudgeTemplateForC2.setCallout(format("Smith, %s", CASE_REFERENCE));
