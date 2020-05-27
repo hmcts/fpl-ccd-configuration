@@ -49,6 +49,7 @@ module.exports = [
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Judy',
+      judgeEmailAddress: 'test@test.com',
       legalAdvisorName: 'Fred Frederickson',
     },
     children: 'All',
@@ -74,6 +75,7 @@ module.exports = [
     judgeAndLegalAdvisor: {
       judgeTitle: 'His Honour Judge',
       judgeLastName: 'Dredd',
+      judgeEmailAddress: 'test@test.com',
       legalAdvisorName: 'Frank N. Stein',
     },
     directionText: 'Example direction',
@@ -93,6 +95,7 @@ module.exports = [
     judgeAndLegalAdvisor: {
       judgeTitle: 'His Honour Judge',
       judgeLastName: 'Dredd',
+      judgeEmailAddress: 'test@test.com',
       legalAdvisorName: 'Frank N. Stein',
     },
     directionText: 'Example direction',
@@ -110,6 +113,7 @@ module.exports = [
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Judy',
+      judgeEmailAddress: 'test@test.com',
       legalAdvisorName: 'Fred Frederickson',
     },
     childrenDescription: 'description',
