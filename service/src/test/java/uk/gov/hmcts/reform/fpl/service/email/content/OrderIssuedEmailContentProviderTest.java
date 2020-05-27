@@ -1,13 +1,18 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -17,10 +22,12 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
@@ -29,14 +36,20 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, HearingBookingService.class, FixedTimeConfiguration.class
+    EmailNotificationHelper.class, HearingBookingService.class, FixedTimeConfiguration.class,
 })
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] documentContents = {1, 2, 3, 4, 5};
 
+    @MockBean
+    private GeneratedOrderService generatedOrderService;
+
     @Autowired
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
@@ -77,8 +90,18 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @Test
     void shouldBuildGeneratedOrderParametersForAllocatedJudge() {
+        CaseDetails caseDetails = createCase();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeLastName("Scott")
+            .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+            .build();
+
+        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
+            .willReturn(expectedJudgeAndLegalAdvisor);
+
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider
-            .buildAllocatedJudgeOrderIssuedNotification(createCase());
+            .buildAllocatedJudgeOrderIssuedNotification(caseDetails);
 
         Map<String, Object> expectedParameters = getExpectedAllocatedJudgeParameters();
 

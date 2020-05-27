@@ -9,16 +9,14 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE;
@@ -37,6 +35,7 @@ public class GeneratedOrderEventHandler {
     private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final ObjectMapper mapper;
+    private final GeneratedOrderService generatedOrderService;
 
     @EventListener
     public void sendEmailsForOrder(final GeneratedOrderEvent orderEvent) {
@@ -69,9 +68,7 @@ public class GeneratedOrderEventHandler {
     }
 
     private String getAllocatedJudgeEmail(CaseData caseData) {
-        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
-            .stream().reduce((first, last) -> last);
-        return generatedOrder.get().getValue().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+        return generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData).getJudgeEmailAddress();
     }
 
     private void sendNotificationToEmailServedRepresentatives(final EventData eventData,

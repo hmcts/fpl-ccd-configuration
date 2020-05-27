@@ -15,8 +15,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -62,6 +64,9 @@ class GeneratedOrderEventHandlerTest {
 
     final String mostRecentUploadedDocumentUrl =
         "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+
+    @MockBean
+    private GeneratedOrderService generatedOrderService;
 
     @MockBean
     private RequestData requestData;
@@ -145,10 +150,19 @@ class GeneratedOrderEventHandlerTest {
 
     @Test
     void shouldNotifyAllocatedJudgeOnOrderIssued() {
+        CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeEmailAddress("judge@gmail.com")
+            .build();
+
+        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
+            .willReturn(expectedJudgeAndLegalAdvisor);
+
         final Map<String, Object> expectedParameters = getOrderIssuedAllocatedJudgeParameters();
 
         given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
-            callbackRequest().getCaseDetails())).willReturn(expectedParameters);
+            caseDetails)).willReturn(expectedParameters);
 
         generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
             requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));

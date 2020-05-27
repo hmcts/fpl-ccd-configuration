@@ -256,6 +256,16 @@ public class GeneratedOrderService {
         Arrays.stream(InterimOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
     }
 
+    public JudgeAndLegalAdvisor getAllocatedJudgeFromMostRecentOrder(CaseData caseData) {
+        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
+            .stream().reduce((first, last) -> last);
+
+        if (generatedOrder.isPresent()) {
+            return generatedOrder.get().getValue().getJudgeAndLegalAdvisor();
+        }
+        return JudgeAndLegalAdvisor.builder().build();
+    }
+
     private String getSupervisionOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,
                                                  InterimEndDate interimEndDate) {
         switch (typeAndDocument.getSubtype()) {

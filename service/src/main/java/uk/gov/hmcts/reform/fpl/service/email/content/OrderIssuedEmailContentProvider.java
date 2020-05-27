@@ -11,14 +11,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
@@ -32,6 +30,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private final HmctsCourtLookupConfiguration config;
     private final EmailNotificationHelper emailNotificationHelper;
     private final ObjectMapper mapper;
+    private final GeneratedOrderService generatedOrderService;
 
     public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
                                                              final String localAuthorityCode,
@@ -63,6 +62,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         JudgeAndLegalAdvisor judge = getAllocatedJudge(caseData);
+        System.out.println("Judge is " + judge);
 
         return ImmutableMap.<String, Object>builder()
             .put("orderType", getTypeOfOrder(caseData, GENERATED_ORDER))
@@ -75,9 +75,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     }
 
     private JudgeAndLegalAdvisor getAllocatedJudge(CaseData caseData) {
-        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
-            .stream().reduce((first, last) -> last);
-        return generatedOrder.get().getValue().getJudgeAndLegalAdvisor();
+        return generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
     }
 
     private String buildCallout(CaseData caseData) {
