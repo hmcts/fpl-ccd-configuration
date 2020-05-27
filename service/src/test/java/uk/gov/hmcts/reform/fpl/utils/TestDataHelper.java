@@ -77,6 +77,10 @@ public class TestDataHelper {
             .build());
     }
 
+    public static List<Element<Child>> testChildren() {
+        return List.of(testChild(), testChild(), testChild());
+    }
+
     public static Representative testRepresentative() {
         return testRepresentative(RepresentativeServingPreferences.POST);
     }
