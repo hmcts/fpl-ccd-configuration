@@ -211,8 +211,4 @@ public class CommonDirectionService {
     private boolean removeDirection(Element<Direction> element) {
         return "Yes".equals(element.getValue().getDirectionNeeded()) || "Yes".equals(element.getValue().getCustom());
     }
-
-    private String booleanToYesOrNo(boolean value) {
-        return value ? "Yes" : "No";
-    }
 }

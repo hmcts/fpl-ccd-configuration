@@ -16,8 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
-import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,42 +104,6 @@ class CommonDirectionServiceTest {
     }
 
     @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsRealDate() {
-        LocalDateTime today = LocalDateTime.now();
-
-        DirectionConfiguration directionConfig = getDirectionConfig();
-
-        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, today);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(today)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
-    }
-
-    @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsNull() {
-        DirectionConfiguration directionConfig = getDirectionConfig();
-
-        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, null);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(null)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
-    }
-
-    @Test
     void removeUnnecessaryDirections_shouldRemoveDirectionsWhenDirectionsAreMarkedAsNotNeeded() {
         List<Direction> directions = unwrapElements(service.removeUnnecessaryDirections(directionsMarkedAsRemoved()));
 
@@ -161,20 +123,6 @@ class CommonDirectionServiceTest {
         List<Direction> expectedDirections = unwrapElements(buildCustomDirections());
 
         assertThat(directions).isEqualTo(expectedDirections);
-    }
-
-    private DirectionConfiguration getDirectionConfig() {
-        return DirectionConfiguration.builder()
-            .assignee(LOCAL_AUTHORITY)
-            .title("direction title")
-            .text("direction text")
-            .display(Display.builder()
-                .due(Display.Due.BY)
-                .templateDateFormat("h:mma, d MMMM yyyy")
-                .directionRemovable(false)
-                .showDateOnly(false)
-                .build())
-            .build();
     }
 
     @Nested
