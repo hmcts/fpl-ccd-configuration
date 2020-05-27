@@ -162,8 +162,10 @@ public class CaseSubmissionController {
     public void handleSubmittedEvent(
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        if (featureToggleService.isPaymentsEnabled() && isOpenedState(caseDetails.getState())) {
+
+        if (featureToggleService.isPaymentsEnabled() && isOpenedState(caseDetailsBefore.getState())) {
 
             if (displayAmountToPay(caseDetails)) {
                 try {
@@ -180,7 +182,8 @@ public class CaseSubmissionController {
             }
         }
 
-        if (isReturnedState(caseDetails.getState())) {
+        if (isReturnedState(caseDetailsBefore.getState())) {
+
             applicationEventPublisher.publishEvent(new AmendedReturnedCaseEvent(callbackRequest, requestData));
         }
 
