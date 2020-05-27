@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplateC2;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -79,15 +80,6 @@ public class C2UploadedEventHandlerTest {
             .put("hearingDetailsCallout", subjectLine)
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        final Map<String, Object> c2ParametersForAllocatedJudge = ImmutableMap.<String, Object>builder()
-            .put("subjectLine", subjectLine)
-            .put("hearingDetailsCallout", subjectLine)
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .put("judgeTitle", "Her Honour Judge")
-            .put("judgeName", "Byrne")
             .build();
 
         @BeforeEach
@@ -158,11 +150,12 @@ public class C2UploadedEventHandlerTest {
 
         @Test
         void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExists() {
-            CallbackRequest callbackRequest = appendSendToCtscOnCallback();
+            CallbackRequest callbackRequest = callbackRequest();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
+            AllocatedJudgeTemplateC2 allocatedJudgeParametersForC2 = getAllocatedJudgeParametersForC2();
 
             given(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(caseDetails))
-                .willReturn(c2ParametersForAllocatedJudge);
+                .willReturn(allocatedJudgeParametersForC2);
 
             c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
                 new C2UploadedEvent(callbackRequest, requestData));
@@ -170,7 +163,7 @@ public class C2UploadedEventHandlerTest {
             verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE,
                 ALLOCATED_JUDGE_EMAIL_ADDRESS,
-                c2ParametersForAllocatedJudge,
+                allocatedJudgeParametersForC2,
                 "12345");
         }
 
@@ -184,12 +177,24 @@ public class C2UploadedEventHandlerTest {
                 caseDetails).build();
 
             given(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(caseDetails))
-                .willReturn(c2ParametersForAllocatedJudge);
+                .willReturn(getAllocatedJudgeParametersForC2());
 
             c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
                 new C2UploadedEvent(callbackRequest, requestData));
 
             verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        }
+
+        private AllocatedJudgeTemplateC2 getAllocatedJudgeParametersForC2() {
+            AllocatedJudgeTemplateC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateC2();
+
+            allocatedJudgeTemplateForC2.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+            allocatedJudgeTemplateForC2.setCallout(subjectLine);
+            allocatedJudgeTemplateForC2.setJudgeTitle("Her Honour Judge");
+            allocatedJudgeTemplateForC2.setJudgeName("Byrne");
+            allocatedJudgeTemplateForC2.setRespondentLastName("Smith");
+
+            return allocatedJudgeTemplateForC2;
         }
     }
 }
