@@ -58,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @ActiveProfiles("integration-test")
@@ -135,7 +135,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .closeCaseFromOrder("Yes"));
@@ -160,7 +159,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .closeCaseFromOrder("No"));
@@ -261,7 +259,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
-                .children1(createChildren("Fred"))
+                .children1(List.of(testChild()))
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
