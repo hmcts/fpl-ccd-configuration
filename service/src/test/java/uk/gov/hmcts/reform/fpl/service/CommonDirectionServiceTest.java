@@ -235,8 +235,10 @@ class CommonDirectionServiceTest {
             service.addEmptyDirectionsForAssigneeNotInMap(map);
 
             assertThat(map).containsOnlyKeys(DirectionAssignee.values());
-            assertThat(map).extracting(ALL_PARTIES, PARENTS_AND_RESPONDENTS, COURT, OTHERS).containsOnly(emptyList());
-            assertThat(map).extracting(LOCAL_AUTHORITY, CAFCASS).containsOnly(emptyListOfElement());
+            assertThat(map).extractingByKeys(ALL_PARTIES, PARENTS_AND_RESPONDENTS, COURT, OTHERS)
+                .allMatch(List::isEmpty);
+            assertThat(map).extractingByKeys(LOCAL_AUTHORITY, CAFCASS)
+                .allMatch(list -> list.equals(emptyListOfElement()));
         }
 
         private List<Element<Direction>> emptyListOfElement() {
