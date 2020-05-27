@@ -44,14 +44,14 @@ public class PopulateStandardDirectionsOrderDatesHandler {
             caseDetails.getCaseTypeId(),
             caseDetails.getId(),
             "populateSDO",
-            populateDates(getFirstHearing(hearingDetails), caseDetails.getData()));
+            getDataWithDates(getFirstHearing(hearingDetails), caseDetails.getData()));
     }
 
     private HearingBooking getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
         return hearingBookingService.getFirstHearing(hearingDetails).orElseThrow(NoHearingBookingException::new);
     }
 
-    private Map<String, Object> populateDates(HearingBooking hearingBooking, Map<String, Object> data) {
+    private Map<String, Object> getDataWithDates(HearingBooking hearingBooking, Map<String, Object> data) {
         List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(hearingBooking);
 
         commonDirectionService.sortDirectionsByAssignee(standardDirections).forEach(
