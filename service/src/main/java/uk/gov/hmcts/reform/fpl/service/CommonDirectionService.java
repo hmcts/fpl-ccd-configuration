@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
@@ -167,25 +166,6 @@ public class CommonDirectionService {
             .collect(toList());
     }
 
-    //TODO: numbering done for SDO in formatTitle method. CMO to do the same? FPLA-1481
-
-    /**
-     * Iterates over a list of directions and adds numbers to the directionType starting from 2.
-     *
-     * @param directions a list of directions.
-     * @return a list of directions with numbered directionType.
-     */
-    public List<Element<Direction>> numberDirections(List<Element<Direction>> directions) {
-        AtomicInteger at = new AtomicInteger(2);
-
-        return directions.stream()
-            //TODO FPLA-1481 can deal with that but as this is only used by CMO the line below doesn't make sense
-            .map(direction -> element(direction.getId(), direction.getValue().toBuilder()
-                .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
-                .build()))
-            .collect(toList());
-    }
-
     /**
      * Returns a list of directions to comply with.
      *
@@ -230,9 +210,5 @@ public class CommonDirectionService {
 
     private boolean removeDirection(Element<Direction> element) {
         return "Yes".equals(element.getValue().getDirectionNeeded()) || "Yes".equals(element.getValue().getCustom());
-    }
-
-    private String booleanToYesOrNo(boolean value) {
-        return value ? "Yes" : "No";
     }
 }
