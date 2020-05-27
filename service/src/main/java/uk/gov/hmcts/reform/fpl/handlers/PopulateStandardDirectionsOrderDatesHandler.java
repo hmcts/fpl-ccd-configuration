@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.events.PopulateSDODatesEvent;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -27,7 +27,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
-public class PopulateSDODatesHandler {
+public class PopulateStandardDirectionsOrderDatesHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final StandardDirectionsService standardDirectionsService;
     private final CommonDirectionService commonDirectionService;
@@ -36,21 +36,19 @@ public class PopulateSDODatesHandler {
 
     @Async
     @EventListener
-    public void populateSDODates(PopulateSDODatesEvent event) {
+    public void populateStandardDirectionsDates(PopulateStandardDirectionsOrderDatesEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        var hearingDetails = mapper.convertValue(caseDetails.getData(), CaseData.class).getHearingDetails();
 
         coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
             caseDetails.getCaseTypeId(),
             caseDetails.getId(),
             "populateSDO",
-            populateDates(getFirstHearing(caseDetails), caseDetails.getData()));
+            populateDates(getFirstHearing(hearingDetails), caseDetails.getData()));
     }
 
-    private HearingBooking getFirstHearing(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        return hearingBookingService.getFirstHearing(caseData.getHearingDetails())
-            .orElseThrow(NoHearingBookingException::new);
+    private HearingBooking getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
+        return hearingBookingService.getFirstHearing(hearingDetails).orElseThrow(NoHearingBookingException::new);
     }
 
     private Map<String, Object> populateDates(HearingBooking hearingBooking, Map<String, Object> data) {

@@ -81,8 +81,4 @@ public class StandardDirectionsService {
         }
         return calendarService.getWorkingDayFrom(date.toLocalDate(), delta);
     }
-
-    private String booleanToYesOrNo(boolean value) {
-        return value ? "Yes" : "No";
-    }
 }

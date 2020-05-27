@@ -13,7 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.events.PopulateSDODatesEvent;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -42,8 +42,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, PopulateSDODatesHandler.class})
-class PopulateSDODatesHandlerTest {
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, PopulateStandardDirectionsOrderDatesHandler.class})
+class PopulateStandardDirectionsOrderDatesHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
     private static final Long CASE_ID = 12345L;
     private static final List<Element<HearingBooking>> HEARING_DETAILS = wrapElements(HearingBooking.builder()
@@ -71,7 +71,7 @@ class PopulateSDODatesHandlerTest {
     );
 
     @Autowired
-    private PopulateSDODatesHandler handler;
+    private PopulateStandardDirectionsOrderDatesHandler handler;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
@@ -104,7 +104,8 @@ class PopulateSDODatesHandlerTest {
 
     @Test
     void shouldTriggerEventWithCaseDataFilledWithDates() {
-        handler.populateSDODates(new PopulateSDODatesEvent(callbackRequest, requestData));
+        handler.populateStandardDirectionsDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
+            requestData));
 
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(FIRST_HEARING);
@@ -121,7 +122,8 @@ class PopulateSDODatesHandlerTest {
     @Test
     void shouldFillCaseDataWithMissingDatesOnly() {
         callbackRequest.getCaseDetails().setData(getDataWithSomeDatesFilled());
-        handler.populateSDODates(new PopulateSDODatesEvent(callbackRequest, requestData));
+        handler.populateStandardDirectionsDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
+            requestData));
 
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(FIRST_HEARING);
