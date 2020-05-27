@@ -36,7 +36,7 @@ public class PopulateStandardDirectionsOrderDatesHandler {
 
     @Async
     @EventListener
-    public void populateStandardDirectionsDates(PopulateStandardDirectionsOrderDatesEvent event) {
+    public void populateDates(PopulateStandardDirectionsOrderDatesEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         var hearingDetails = mapper.convertValue(caseDetails.getData(), CaseData.class).getHearingDetails();
 

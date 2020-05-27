@@ -104,7 +104,7 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
 
     @Test
     void shouldTriggerEventWithCaseDataFilledWithDates() {
-        handler.populateStandardDirectionsDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
+        handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
             requestData));
 
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
@@ -122,7 +122,7 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     @Test
     void shouldFillCaseDataWithMissingDatesOnly() {
         callbackRequest.getCaseDetails().setData(getDataWithSomeDatesFilled());
-        handler.populateStandardDirectionsDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
+        handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
             requestData));
 
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
