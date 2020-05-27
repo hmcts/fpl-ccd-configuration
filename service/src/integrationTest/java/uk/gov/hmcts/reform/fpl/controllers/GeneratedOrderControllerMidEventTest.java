@@ -116,19 +116,61 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
 
             assertThat(callbackResponse.getData().get("children_label")).isNull();
             assertThat(caseData.getChildSelector()).isNull();
+            assertThat(callbackResponse.getData().get("remainingChildIndex")).isNull();
+            assertThat(callbackResponse.getData().get("remainingChild")).isNull();
+            assertThat(callbackResponse.getData().get("otherFinalOrderChildren")).isNull();
         }
 
         @Test
         void shouldPopulateChildSelectorAndLabelWhenNoIsSelectedAndFinalOrderIssuedOnChildren() {
+
+            List<Element<Child>> children = wrapElements(createChild("Fred", false),
+                createChild("Jane", true),
+                createChild("Paul", true),
+                createChild("Bill", false));
+
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseDetails("No", true), "populate-selector");
+                buildCaseDetails("No", children), "populate-selector");
 
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            assertThat(callbackResponse.getData().get("children_label"))
-                .isEqualTo("Child 1: Wallace - Care order issued\nChild 2: Gromit - Care order issued\n");
+            assertThat(callbackResponse.getData().get("remainingChildIndex"))
+                .isNull();
 
-            assertThat(caseData.getChildSelector()).isEqualTo(getExpectedChildSelector());
+            assertThat(callbackResponse.getData().get("children_label"))
+                .isEqualTo("Child 1: Fred\nChild 2: Jane - Care order issued\nChild 3: Paul - Care order issued\n"
+                    + "Child 4: Bill\n");
+
+            ChildSelector expected = ChildSelector.builder()
+                .childCount("1234")
+                .build();
+            assertThat(caseData.getChildSelector()).isEqualTo(expected);
+        }
+
+        @Test
+        void shouldPopulateChildSelectorAndLabelWhenNoIsSelectedAndFinalOrderRemainingChild() {
+
+            List<Element<Child>> children = wrapElements(createChild("Fred", true),
+                createChild("Jane", false), // final order remaining child
+                createChild("Paul", true),
+                createChild("Bill", true));
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseDetails("No", children), "populate-selector");
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(callbackResponse.getData().get("remainingChildIndex"))
+                .isEqualTo("1");
+
+            assertThat(callbackResponse.getData().get("remainingChild"))
+                .isEqualTo("Jane");
+
+            assertThat(callbackResponse.getData().get("otherFinalOrderChildren"))
+                .isEqualTo("Fred - Care order issued\nPaul - Care order issued\nBill - Care order issued");
+
+            assertThat(callbackResponse.getData().get("children_label")).isNull();
+            assertThat(caseData.getChildSelector()).isNull();
         }
 
         private ChildSelector getExpectedChildSelector() {
@@ -138,12 +180,12 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         }
 
         private CaseDetails buildCaseDetails(String choice) {
-            return buildCaseDetails(choice, false);
+            return buildCaseDetails(choice, createChildren("Wallace", "Gromit"));
         }
 
-        private CaseDetails buildCaseDetails(String choice, boolean finalOrderIssued) {
+        private CaseDetails buildCaseDetails(String choice, List<Element<Child>> children) {
             CaseData caseData = CaseData.builder()
-                .children1(createChildren(finalOrderIssued, "Wallace", "Gromit"))
+                .children1(children)
                 .orderAppliesToAllChildren(choice)
                 .build();
 
@@ -152,7 +194,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 .build();
         }
 
-        private List<Element<Child>> createChildren(boolean finalOrderIssued, String... firstNames) {
+        private List<Element<Child>> createChildren(String... firstNames) {
             Child[] children = new Child[firstNames.length];
             for (int i = 0; i < firstNames.length; i++) {
                 children[i] = Child.builder()
@@ -160,12 +202,21 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                         .firstName(firstNames[i])
                         .build())
                     .build();
-                if (finalOrderIssued) {
-                    children[i].setFinalOrderIssued(YesNo.YES.getValue());
-                    children[i].setFinalOrderIssuedType(CARE_ORDER.getLabel());
-                }
             }
             return wrapElements(children);
+        }
+
+        private Child createChild(String name, boolean finalOrderIssued) {
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName(name)
+                    .build())
+                .build();
+            if (finalOrderIssued) {
+                child.setFinalOrderIssued(YesNo.YES.getValue());
+                child.setFinalOrderIssuedType(CARE_ORDER.getLabel());
+            }
+            return child;
         }
     }
 

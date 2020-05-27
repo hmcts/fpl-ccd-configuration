@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -51,14 +52,21 @@ public class ChildrenService {
     }
 
     public List<Element<Child>> updateFinalOrderIssued(GeneratedOrderType orderType, List<Element<Child>> children,
-        String orderAppliesToAllChildren, ChildSelector childSelector) {
+        String orderAppliesToAllChildren, ChildSelector childSelector, String remainingChildIndex) {
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
             children.forEach(child -> {
                 child.getValue().setFinalOrderIssued(YES.getValue());
                 child.getValue().setFinalOrderIssuedType(orderType.getLabel());
             });
         } else {
-            List<Integer> selectedChildren = childSelector != null ? childSelector.getSelected() : new ArrayList<>();
+            List<Integer> selectedChildren;
+            if (StringUtils.isNotBlank(remainingChildIndex)) {
+                selectedChildren = List.of(Integer.parseInt(remainingChildIndex));
+            } else if (childSelector != null) {
+                selectedChildren = childSelector.getSelected();
+            } else {
+                selectedChildren =  new ArrayList<>();
+            }
             for (int i = 0; i < children.size(); i++) {
                 Child child = children.get(i).getValue();
                 if (!selectedChildren.isEmpty() && selectedChildren.contains(i)) {
@@ -72,18 +80,19 @@ public class ChildrenService {
         return children;
     }
 
-    public String getRemainingChildCount(List<Element<Child>> allChildren) {
-        List<String> remainingChildIndex = new ArrayList<>();
+    public Optional<Integer> getRemainingChildIndex(List<Element<Child>> allChildren) {
+        Optional<Integer> remainingChildIndex = Optional.empty();
         for (int i = 0; i < allChildren.size(); i++) {
             if (!YES.getValue().equals(allChildren.get(i).getValue().getFinalOrderIssued())) {
-                remainingChildIndex.add(String.valueOf(i));
-            }
-            if (remainingChildIndex.size() > 2) {
-                return "";
+                if (remainingChildIndex.isEmpty()) {
+                    remainingChildIndex = Optional.of(i);
+                } else {
+                    return Optional.empty();
+                }
             }
         }
 
-        return (remainingChildIndex.size() == 1) ? remainingChildIndex.get(0) : "";
+        return remainingChildIndex;
     }
 
     public String getRemainingChildren(List<Element<Child>> allChildren) {

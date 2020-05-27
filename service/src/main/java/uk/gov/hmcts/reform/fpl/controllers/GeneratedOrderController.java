@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector.ChildSelectorBuilder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -48,6 +46,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
@@ -119,9 +118,9 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
-            String remainingChildCount = childrenService.getRemainingChildCount(caseData.getAllChildren());
-            caseDetails.getData().put("remainingChildCount", remainingChildCount);
-            if (StringUtils.isNotBlank(remainingChildCount)) {
+            Optional<Integer> remainingChildIndex = childrenService.getRemainingChildIndex(caseData.getAllChildren());
+            if (remainingChildIndex.isPresent()) {
+                caseDetails.getData().put("remainingChildIndex", String.valueOf(remainingChildIndex.get()));
                 caseDetails.getData()
                     .put("remainingChild", childrenService.getRemainingChildren(caseData.getAllChildren()));
                 caseDetails.getData().put("otherFinalOrderChildren",
@@ -196,7 +195,8 @@ public class GeneratedOrderController {
                 caseData.getOrderTypeAndDocument().getType(),
                 caseData.getAllChildren(),
                 caseData.getOrderAppliesToAllChildren(),
-                caseData.getChildSelector());
+                caseData.getChildSelector(),
+                caseData.getRemainingChildIndex());
             caseDetails.getData().put("children1", updatedChildren);
         }
 

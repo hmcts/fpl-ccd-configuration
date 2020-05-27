@@ -18,8 +18,6 @@ public class ChildSelector {
     @Builder.Default
     private String childCount = "";
     @Builder.Default
-    private Integer remainingChildCount = 0;
-    @Builder.Default
     private List<Integer> selected = new ArrayList<>();
     @Builder.Default
     private List<Integer> hidden = new ArrayList<>();

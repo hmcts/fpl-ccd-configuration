@@ -225,7 +225,7 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final ChildSelector childSelector;
     private final String orderAppliesToAllChildren;
-    private String remainingChildCount;
+    private String remainingChildIndex;
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
     private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;

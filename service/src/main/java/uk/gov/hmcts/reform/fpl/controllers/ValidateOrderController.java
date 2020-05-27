@@ -74,7 +74,8 @@ public class ValidateOrderController {
 
         List<String> errors = new ArrayList<>();
 
-        if (StringUtils.isBlank(caseData.getRemainingChildCount()) && caseData.getChildSelector().getSelected().isEmpty()) {
+        if (StringUtils.isEmpty(caseData.getRemainingChildIndex())
+            && caseData.getChildSelector().getSelected().isEmpty()) {
             errors.add("Select the children included in the order.");
         }
 

@@ -15,7 +15,10 @@ public enum GeneratedOrderKey {
     PAGE_SHOW("pageShow"),
     CHILDREN_LABEL("children_label"),
     CHILD_SELECTOR("childSelector"),
-    ORDER_APPLIES_TO_ALL_CHILDREN("orderAppliesToAllChildren");
+    ORDER_APPLIES_TO_ALL_CHILDREN("orderAppliesToAllChildren"),
+    REMAINING_CHILD_INDEX("remainingChildIndex"),
+    REMAINING_CHILD("remainingChild"),
+    OTHER_FINAL_ORDER_CHILDREN("otherFinalOrderChildren");
 
     private final String key;
 }
