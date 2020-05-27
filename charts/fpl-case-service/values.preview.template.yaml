@@ -36,7 +36,6 @@ java:
         - robotics-notification-recipient
         - ld-sdk-key
         - ctsc-inbox
-        - AppInsightsInstrumentationKey
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
