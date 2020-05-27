@@ -62,7 +62,6 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         JudgeAndLegalAdvisor judge = getAllocatedJudge(caseData);
-        System.out.println("Judge is " + judge);
 
         return ImmutableMap.<String, Object>builder()
             .put("orderType", getTypeOfOrder(caseData, GENERATED_ORDER))
