@@ -6,9 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 /**
@@ -187,25 +184,6 @@ public class CommonDirectionService {
                 .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
                 .build()))
             .collect(toList());
-    }
-
-    /**
-     * Takes a direction from a configuration file and builds a CCD direction.
-     *
-     * @param direction  the direction taken from json config.
-     * @param completeBy the date to be completed by. Can be null.
-     * @return Direction to be stored in CCD.
-     */
-    public Element<Direction> constructDirectionForCCD(DirectionConfiguration direction, LocalDateTime completeBy) {
-        return element(Direction.builder()
-            .directionType(direction.getTitle())
-            .directionText(direction.getText())
-            .assignee(direction.getAssignee())
-            .directionNeeded(YES.getValue())
-            .directionRemovable(booleanToYesOrNo(direction.getDisplay().isDirectionRemovable()))
-            .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
-            .dateToBeCompletedBy(completeBy)
-            .build());
     }
 
     /**
