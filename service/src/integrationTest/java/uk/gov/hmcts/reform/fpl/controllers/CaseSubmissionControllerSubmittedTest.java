@@ -205,7 +205,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
-        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED );
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
 
         postSubmittedEvent(callbackRequest);
 
