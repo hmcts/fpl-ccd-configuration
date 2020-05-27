@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -63,7 +64,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
         if (featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()) {
             EventData eventData = new EventData(event);
             CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-            Map<String, Object> parameters = standardDirectionOrderIssuedEmailContentProvider
+            AllocatedJudgeTemplateForSDO parameters = standardDirectionOrderIssuedEmailContentProvider
                 .buildNotificationParametersForAllocatedJudge(eventData.getCaseDetails());
 
             String email = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress();

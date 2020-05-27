@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -114,7 +115,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
 
     @Test
     void shouldNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationEnabled() {
-        final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+        final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
         given(featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()).willReturn(true);
 
@@ -131,7 +132,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
 
     @Test
     void shouldNotNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationDisabled() {
-        final Map<String, Object> expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+        final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
         given(featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()).willReturn(false);
 
@@ -154,15 +155,15 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
             .build();
     }
 
-    private Map<String, Object> getAllocatedJudgeSDOTemplateParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", "6789")
-            .put("leadRespondentsName", "Moley")
-            .put("hearingDate", "21 October 2020")
-            .put("reference", "12345")
-            .put("judgeTitle", "Her Honour Judge")
-            .put("judgeName", "Byrne")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+    private AllocatedJudgeTemplateForSDO getAllocatedJudgeSDOTemplateParameters() {
+        AllocatedJudgeTemplateForSDO allocatedJudgeTemplate = new AllocatedJudgeTemplateForSDO();
+        allocatedJudgeTemplate.setFamilyManCaseNumber("6789");
+        allocatedJudgeTemplate.setLeadRespondentsName("Moley");
+        allocatedJudgeTemplate.setHearingDate("21 October 2020");
+        allocatedJudgeTemplate.setCaseUrl("null/case/\" + JURISDICTION + \"/\" + CASE_TYPE + \"/12345");
+        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
+        allocatedJudgeTemplate.setJudgeName("Byrne");
+
+        return allocatedJudgeTemplate;
     }
 }
