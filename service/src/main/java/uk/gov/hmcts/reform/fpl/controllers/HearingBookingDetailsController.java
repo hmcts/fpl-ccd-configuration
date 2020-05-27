@@ -104,7 +104,8 @@ public class HearingBookingDetailsController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        if (standardDirectionsService.hasEmptyDates(callbackRequest.getCaseDetails().getData())) {
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        if (standardDirectionsService.hasEmptyDates(caseData)) {
             applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
                 requestData));
         }

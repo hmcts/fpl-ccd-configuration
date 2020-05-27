@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -15,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -66,28 +66,30 @@ class StandardDirectionsServiceTest {
 
     @Test
     void shouldReturnTrueWhenThereAreEmptyDates() {
-        Map<String, Object> data = Map.of(
-            "allParties", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
-            "localAuthorityDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
-            "respondentDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
-            "cafcassDirections", wrapElements(buildDirectionWithDate(), Direction.builder().build()),
-            "otherPartiesDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
-            "courtDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()));
+        CaseData caseData = CaseData.builder()
+            .allParties(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .localAuthorityDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .respondentDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .cafcassDirections(wrapElements(buildDirectionWithDate(), Direction.builder().build()))
+            .otherPartiesDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .courtDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .build();
 
-        assertThat(service.hasEmptyDates(data)).isTrue();
+        assertThat(service.hasEmptyDates(caseData)).isTrue();
     }
 
     @Test
     void shouldReturnFalseWhenThereAreNoEmptyDates() {
-        Map<String, Object> data = Map.of(
-            "allParties", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
-            "localAuthorityDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
-            "respondentDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
-            "cafcassDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
-            "otherPartiesDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()),
-            "courtDirections", wrapElements(buildDirectionWithDate(), buildDirectionWithDate()));
+        CaseData caseData = CaseData.builder()
+            .allParties(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .localAuthorityDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .respondentDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .cafcassDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .otherPartiesDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .courtDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .build();
 
-        assertThat(service.hasEmptyDates(data)).isFalse();
+        assertThat(service.hasEmptyDates(caseData)).isFalse();
     }
 
     private Direction buildDirectionWithDate() {

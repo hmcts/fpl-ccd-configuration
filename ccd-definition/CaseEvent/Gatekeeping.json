@@ -29,6 +29,7 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/submitted",
+    "Comment": "Submitted callback should be triggered only in gatekeeping state (to populate SDO with dates)",
     "ShowSummary": "Y",
     "EndButtonLabel": "Save and continue"
   },
