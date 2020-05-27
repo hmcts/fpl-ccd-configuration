@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -38,10 +37,6 @@ public class ChildrenService {
         }
 
         return builder.toString();
-    }
-
-    public void addPageShowToCaseDetails(CaseDetails caseDetails, List<Element<Child>> children) {
-        caseDetails.getData().put("pageShow", children.size() <= 1 ? "No" : "Yes");
     }
 
     public boolean allChildrenHaveFinalOrder(List<Element<Child>> children) {

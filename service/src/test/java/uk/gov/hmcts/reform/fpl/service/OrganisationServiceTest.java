@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.rd.model.Status;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -66,7 +67,7 @@ class OrganisationServiceTest {
 
     @Test
     void shouldReturnUsersFromLocalAuthorityMappingWhenTheyExist() {
-        List<String> usersIdsWithinSaLa = organisationService
+        Set<String> usersIdsWithinSaLa = organisationService
             .findUserIdsInSameOrganisation("SA");
 
         assertThat(usersIdsWithinSaLa)
@@ -79,11 +80,11 @@ class OrganisationServiceTest {
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE))
             .thenReturn(usersInAnOrganisation);
 
-        List<String> userIds = organisationService
+        Set<String> userIds = organisationService
             .findUserIdsInSameOrganisation("AN");
 
         assertThat(userIds)
-            .containsExactly("40", "41");
+            .containsExactlyInAnyOrder("40", "41");
     }
 
     @Test
