@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public final class AllocatedJudgeTemplateForCMO extends SharedAllocatedJudgeTemplate {
-    private String subjectLineWithHearingDate;
+public final class AllocatedJudgeTemplateForGeneratedOrder extends SharedAllocatedJudgeTemplate {
+    private String callout;
     private String respondentLastName;
-    private String reference;
+    private String orderType;
 
 }

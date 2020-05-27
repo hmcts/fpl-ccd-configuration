@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -58,19 +59,20 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
-    public Map<String, Object> buildAllocatedJudgeOrderIssuedNotification(CaseDetails caseDetails) {
+    public AllocatedJudgeTemplateForGeneratedOrder buildAllocatedJudgeOrderIssuedNotification(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         JudgeAndLegalAdvisor judge = getAllocatedJudge(caseData);
 
-        return ImmutableMap.<String, Object>builder()
-            .put("orderType", getTypeOfOrder(caseData, GENERATED_ORDER))
-            .put("callout", buildCallout(caseData))
-            .put("caseUrl", getCaseUrl(caseDetails.getId()))
-            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
-            .put("judgeTitle", judge.getJudgeOrMagistrateTitle())
-            .put("judgeName", judge.getJudgeName())
-            .build();
+        AllocatedJudgeTemplateForGeneratedOrder judgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
+        judgeTemplate.setOrderType(getTypeOfOrder(caseData, GENERATED_ORDER));
+        judgeTemplate.setCallout(buildCallout(caseData));
+        judgeTemplate.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        judgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        judgeTemplate.setJudgeTitle(judge.getJudgeOrMagistrateTitle());
+        judgeTemplate.setJudgeName(judge.getJudgeName());
+
+        return judgeTemplate;
     }
 
     private JudgeAndLegalAdvisor getAllocatedJudge(CaseData caseData) {

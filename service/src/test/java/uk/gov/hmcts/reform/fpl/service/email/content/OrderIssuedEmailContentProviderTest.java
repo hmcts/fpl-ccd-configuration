@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
@@ -100,12 +102,12 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
             .willReturn(expectedJudgeAndLegalAdvisor);
 
-        Map<String, Object> actualParameters = orderIssuedEmailContentProvider
+        AllocatedJudgeTemplateForGeneratedOrder actualParameters = orderIssuedEmailContentProvider
             .buildAllocatedJudgeOrderIssuedNotification(caseDetails);
 
         Map<String, Object> expectedParameters = getExpectedAllocatedJudgeParameters();
 
-        assertEquals(actualParameters, expectedParameters);
+        assertThat(actualParameters).isEqualToComparingFieldByField(expectedParameters);
     }
 
     private Map<String, Object> getExpectedAllocatedJudgeParameters() {

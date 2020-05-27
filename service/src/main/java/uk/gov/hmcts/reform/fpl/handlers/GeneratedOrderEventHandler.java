@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -58,7 +59,7 @@ public class GeneratedOrderEventHandler {
         final EventData eventData = new EventData(orderEvent);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        Map<String, Object> parameters = orderIssuedEmailContentProvider
+        AllocatedJudgeTemplateForGeneratedOrder parameters = orderIssuedEmailContentProvider
             .buildAllocatedJudgeOrderIssuedNotification(eventData.getCaseDetails());
 
         String email = getAllocatedJudgeEmail(caseData);
