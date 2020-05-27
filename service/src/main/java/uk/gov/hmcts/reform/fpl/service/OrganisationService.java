@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,7 @@ import uk.gov.hmcts.reform.rd.model.Status;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -31,16 +31,14 @@ public class OrganisationService {
     private final AuthTokenGenerator authTokenGenerator;
     private final RequestData requestData;
 
-    public List<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
+    public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
 
         try {
-            return ImmutableList
-                .copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
+            return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
         } catch (UnknownLocalAuthorityCodeException ex) {
             try {
                 return
-                    ImmutableList
-                        .copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
+                    Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
             } catch (Exception e) {
                 throw new UserOrganisationLookupException(
                     format("Can't find users for %s local authority", localAuthorityCode), e

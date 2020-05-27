@@ -141,7 +141,7 @@ public class CaseData {
     private final Order standardDirectionOrder;
 
     @NotNull(message = "You need to enter the allocated judge.",
-             groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
+        groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
     private final Judge allocatedJudge;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
@@ -228,6 +228,11 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final ChildSelector childSelector;
     private final String orderAppliesToAllChildren;
+
+    public String getOrderAppliesToAllChildren() {
+        return getAllChildren().size() == 1 ? YES.getValue() : orderAppliesToAllChildren;
+    }
+
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
     private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;
