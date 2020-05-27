@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
@@ -32,7 +32,7 @@ public class StandardDirectionOrderGenerationService extends
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
-        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         HearingBooking firstHearing = hearingBookingService.getFirstHearing(caseData.getHearingDetails())
             .orElse(null);

@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;

@@ -1,49 +1,40 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import uk.gov.hmcts.reform.document.domain.Document;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
 @Data
-@Builder(toBuilder = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class CaseManagementOrder implements IssuableOrder {
-    private final String hearingDate;
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(callSuper = true)
+public class CaseManagementOrder extends OrderForHearing implements IssuableOrder {
     private final UUID id;
-    private final List<Element<Direction>> directions;
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;
     private final CMOStatus status;
-    private final String dateOfIssue;
 
     private OrderAction action;
     private NextHearing nextHearing;
-    private DocumentReference orderDoc;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -53,13 +44,6 @@ public class CaseManagementOrder implements IssuableOrder {
     @JsonIgnore
     public boolean isInJudgeReview() {
         return status == SEND_TO_JUDGE;
-    }
-
-    @JsonIgnore
-    public void setOrderDocReferenceFromDocument(Document document) {
-        if (document != null) {
-            this.orderDoc = buildFromDocument(document);
-        }
     }
 
     @JsonIgnore
@@ -77,13 +61,6 @@ public class CaseManagementOrder implements IssuableOrder {
                 .date(nextHearing.getLabel())
                 .build();
         }
-    }
-
-    @JsonIgnore
-    public LocalDate getDateOfIssueAsDate() {
-        return ofNullable(dateOfIssue)
-            .map(date -> parseLocalDateFromStringUsingFormat(date, DATE))
-            .orElse(LocalDate.now());
     }
 
     @JsonIgnore

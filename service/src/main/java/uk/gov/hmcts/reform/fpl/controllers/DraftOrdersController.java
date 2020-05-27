@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -83,7 +83,7 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         LocalDate dateOfIssue = time.now().toLocalDate();
-        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         if (standardDirectionOrder != null && standardDirectionOrder.getDateOfIssue() != null) {
             dateOfIssue = parseLocalDateFromStringUsingFormat(standardDirectionOrder.getDateOfIssue(), DATE);
@@ -117,7 +117,7 @@ public class DraftOrdersController {
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
 
-        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         if (standardDirectionOrder != null) {
             caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, standardDirectionOrder.getJudgeAndLegalAdvisor());
@@ -142,7 +142,7 @@ public class DraftOrdersController {
             caseData.getAllocatedJudge());
 
         CaseData updated = caseData.toBuilder()
-            .standardDirectionOrder(Order.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder()
                 .directions(commonDirectionService.combineAllDirections(caseData))
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
@@ -155,7 +155,7 @@ public class DraftOrdersController {
         DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
-        Order order = updated.getStandardDirectionOrder().toBuilder()
+        StandardDirectionOrder order = updated.getStandardDirectionOrder().toBuilder()
             .directions(List.of())
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
@@ -201,7 +201,7 @@ public class DraftOrdersController {
         directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
         //build order
-        Order order = Order.builder()
+        StandardDirectionOrder order = StandardDirectionOrder.builder()
             .directions(commonDirectionService.removeUnnecessaryDirections(combinedDirections))
             .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
@@ -216,7 +216,7 @@ public class DraftOrdersController {
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
         //add document to order
-        Order orderWithDocument = order.toBuilder()
+        StandardDirectionOrder orderWithDocument = order.toBuilder()
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
@@ -238,7 +238,7 @@ public class DraftOrdersController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
         if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
             return;
         }

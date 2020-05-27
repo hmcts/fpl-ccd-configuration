@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -106,7 +106,7 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
                 "allocatedJudge", testJudge(),
-                "standardDirectionOrder", Order.builder()
+                "standardDirectionOrder", StandardDirectionOrder.builder()
                     .directions(buildDirections(directions))
                     .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                         .judgeTitle(HIS_HONOUR_JUDGE)
@@ -170,7 +170,7 @@ class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTes
         return CaseDetails.builder()
             .data(Map.of(
                 "allocatedJudge", judge,
-                "standardDirectionOrder", Order.builder()
+                "standardDirectionOrder", StandardDirectionOrder.builder()
                     .directions(buildDirections(createDirections()))
                     .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                         .judgeTitle(judge.getJudgeTitle())

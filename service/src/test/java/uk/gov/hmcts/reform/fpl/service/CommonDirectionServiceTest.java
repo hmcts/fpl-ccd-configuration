@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
@@ -421,7 +421,7 @@ class CommonDirectionServiceTest {
         private CaseData.CaseDataBuilder caseDataWithSdo(List<Element<Direction>> sdoDirections) {
             return CaseData.builder()
                 .standardDirectionOrder(
-                    Order.builder()
+                    StandardDirectionOrder.builder()
                         .directions(sdoDirections)
                         .build());
         }

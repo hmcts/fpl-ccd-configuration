@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Directions;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
-import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -161,8 +161,8 @@ public class CaseDataGeneratorHelper {
         );
     }
 
-    public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
-        return Order.builder()
+    public static StandardDirectionOrder createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
+        return StandardDirectionOrder.builder()
             .dateOfIssue("29 November 2019")
             .directions(wrapElements(Direction.builder()
                     .directionType("Test SDO type 1")

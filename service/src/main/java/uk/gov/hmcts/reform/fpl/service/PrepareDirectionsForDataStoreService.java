@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -93,7 +94,7 @@ public class PrepareDirectionsForDataStoreService {
     }
 
     /**
-     * Adds responses to directions in standard direction order {@link uk.gov.hmcts.reform.fpl.model.Order}.
+     * Adds responses to directions in standard direction order {@link StandardDirectionOrder}.
      *
      * @param caseData caseData containing custom role collections and standard directions order.
      */
