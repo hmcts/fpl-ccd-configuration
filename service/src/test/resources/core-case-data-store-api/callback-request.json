@@ -381,11 +381,6 @@
         "proposal": "Section 9 circuit judge",
         "proposalReason": "allocation proposal reason"
       },
-      "allocatedJudge": {
-        "judgeTitle": "HER_HONOUR_JUDGE",
-        "judgeLastName": "McBerry",
-        "judgeEmailAddress": "test@test.com"
-      },
       "hearingPreferences": {
         "welsh": "Yes",
         "litigation": "Yes",

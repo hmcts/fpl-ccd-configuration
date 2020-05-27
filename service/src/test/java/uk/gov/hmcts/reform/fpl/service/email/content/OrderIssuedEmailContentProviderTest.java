@@ -80,8 +80,6 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider
             .buildAllocatedJudgeOrderIssuedNotification(createCase());
 
-        System.out.println("actual" + actualParameters);
-
         Map<String, Object> expectedParameters = getExpectedAllocatedJudgeParameters();
 
         assertEquals(actualParameters, expectedParameters);
@@ -90,7 +88,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     private Map<String, Object> getExpectedAllocatedJudgeParameters() {
         return ImmutableMap.<String, Object>builder()
             .put("orderType", "blank order (c21)")
-            .put("callout", "^Jones, SACCCCCCCC5676576567, hearing 26 Aug 2020")
+            .put("callout", "^Jones, SACCCCCCCC5676576567, hearing 27 Aug 2020")
             .put("respondentLastName", "Jones")
             .put("judgeTitle", "Deputy District Judge")
             .put("judgeName", "Scott")

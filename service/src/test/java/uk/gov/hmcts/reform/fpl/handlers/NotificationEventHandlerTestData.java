@@ -65,7 +65,7 @@ public class NotificationEventHandlerTestData {
     public static AllocatedJudgeTemplate getExpectedAllocatedJudgeNotificationParameters() {
         AllocatedJudgeTemplate allocatedJudgeTemplate = new AllocatedJudgeTemplate();
         allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setJudgeName("McBerry");
+        allocatedJudgeTemplate.setJudgeName("Moley");
         allocatedJudgeTemplate.setCaseName("test");
         allocatedJudgeTemplate.setCaseUrl("http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
 
