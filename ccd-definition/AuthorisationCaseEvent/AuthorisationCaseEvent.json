@@ -485,6 +485,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
@@ -1041,13 +1048,6 @@
     "CaseEventID": "amendAttendingHearing-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
