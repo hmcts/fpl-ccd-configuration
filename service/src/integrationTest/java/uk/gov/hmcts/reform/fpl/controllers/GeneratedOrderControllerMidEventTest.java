@@ -148,7 +148,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         }
 
         @Test
-        void shouldPopulateChildSelectorAndLabelWhenNoIsSelectedAndFinalOrderRemainingChild() {
+        void shouldNotPopulateChildSelectorAndLabelWhenNoIsSelectedAndFinalOrderRemainingChild() {
 
             List<Element<Child>> children = wrapElements(createChild("Fred", true),
                 createChild("Jane", false), // final order remaining child
@@ -159,6 +159,9 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 buildCaseDetails("No", children), "populate-selector");
 
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(callbackResponse.getData().get("children_label")).isNull();
+            assertThat(caseData.getChildSelector()).isNull();
 
             assertThat(callbackResponse.getData().get("remainingChildIndex"))
                 .isEqualTo("1");
