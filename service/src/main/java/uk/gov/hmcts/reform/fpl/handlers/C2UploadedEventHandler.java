@@ -51,8 +51,7 @@ public class C2UploadedEventHandler {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        if (caseData.getAllocatedJudge() != null) {
-
+        if (caseData.allocatedJudgeExists()) {
             AllocatedJudgeTemplateForC2 parameters = c2UploadedEmailContentProvider
                 .buildC2UploadNotificationForAllocatedJudge(eventData.getCaseDetails());
 
