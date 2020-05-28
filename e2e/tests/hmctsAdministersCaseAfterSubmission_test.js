@@ -274,6 +274,8 @@ Scenario('HMCTS admin update FamilyMan reference number after sending case to ga
   enterFamilyManCaseNumberEventPage.enterCaseID('updatedmockcaseID');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
+  caseViewPage.seeInCaseTitle('updatedmockcaseID');
+  caseViewPage.seeInCaseTitle(caseId);
 });
 
 Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage, addExpertReportEventPage) => {

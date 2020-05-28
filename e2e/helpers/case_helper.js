@@ -1,7 +1,6 @@
 const axios = require('axios');
 const config = require('../config');
 
-const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
 const documentData = filename => {
   return {
     document_url: `${config.dmStoreUrl}/documents/fakeUrl`,
@@ -15,7 +14,7 @@ const populateWithData = async (caseId, data) => {
   updateCaseDataWithDocuments(data.caseData);
 
   const authToken = await getAuthToken();
-  await axios.post(`${config.fplServiceUrl}/testing-support/case/populate/${normalizeCaseId(caseId)}`, data,
+  await axios.post(`${config.fplServiceUrl}/testing-support/case/populate/${caseId}`, data,
     {
       headers: {
         'Authorization': `Bearer ${authToken}`,
