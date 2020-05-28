@@ -104,7 +104,7 @@ public class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForAllocatedJudgeNotificationSDO(Boolean toggleState) {
+    void shouldMakeCorrectCallForAllocatedJudgeNotificationSDO(Boolean toggleState) {
         givenToggle(toggleState);
 
         assertThat(featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()).isEqualTo(toggleState);
@@ -114,7 +114,7 @@ public class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForAllocatedJudgeNotificationNoticeOfProceedings(Boolean toggleState) {
+    void shouldMakeCorrectCallForAllocatedJudgeNotificationNoticeOfProceedings(Boolean toggleState) {
         givenToggle(toggleState);
 
         assertThat(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled())

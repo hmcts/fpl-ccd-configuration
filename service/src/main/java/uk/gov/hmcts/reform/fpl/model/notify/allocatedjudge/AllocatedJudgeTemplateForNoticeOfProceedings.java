@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class AllocatedJudgeTemplateForNoticeOfProceedings extends SharedAllocatedJudgeTemplate {
-    private String leadRespondentsName;
+    private String respondentLastName;
     private String familyManCaseNumber;
     private String hearingDate;
 }

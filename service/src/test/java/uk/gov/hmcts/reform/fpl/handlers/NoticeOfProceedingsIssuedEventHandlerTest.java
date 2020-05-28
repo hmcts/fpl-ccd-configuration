@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NoticeOfProceedingsIssuedEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class})
-public class NoticeOfProceedingsIssuedEventHandlerTest {
+class NoticeOfProceedingsIssuedEventHandlerTest {
     private static CallbackRequest callbackRequest = callbackRequest();
 
     @MockBean
@@ -89,7 +89,7 @@ public class NoticeOfProceedingsIssuedEventHandlerTest {
         allocatedJudgeTemplate.setHearingDate("21 October 2020");
         allocatedJudgeTemplate.setJudgeName("Byrne");
         allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setLeadRespondentsName("Moley");
+        allocatedJudgeTemplate.setRespondentLastName("Moley");
 
         return allocatedJudgeTemplate;
     }

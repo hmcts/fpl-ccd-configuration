@@ -27,6 +27,9 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     private final EmailNotificationHelper emailNotificationHelper;
     private final ObjectMapper mapper;
 
+    private static final String CASE_URL = "caseUrl";
+    private static final String SUBJECT_LINE = "subjectLineWithHearingDate";
+
     public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
                                                                             final String recipientName) {
         return ImmutableMap.<String, Object>builder()
@@ -61,12 +64,12 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
-            .put("subjectLineWithHearingDate", emailNotificationHelper
+            .put(SUBJECT_LINE, emailNotificationHelper
                 .buildSubjectLineWithHearingBookingDateSuffix(caseData,
                     caseData.getHearingDetails()))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
-            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
+            .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
             .putAll(linkToAttachedDocument(documentContents))
             .build();
     }
@@ -79,9 +82,9 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         AllocatedJudgeTemplateForCMO allocatedJudgeTemplate
             = new AllocatedJudgeTemplateForCMO();
         allocatedJudgeTemplate.setSubjectLineWithHearingDate(commonCMONotificationParameters
-            .get("subjectLineWithHearingDate")
+            .get(SUBJECT_LINE)
             .toString());
-        allocatedJudgeTemplate.setCaseUrl(commonCMONotificationParameters.get("caseUrl").toString());
+        allocatedJudgeTemplate.setCaseUrl(commonCMONotificationParameters.get(CASE_URL).toString());
         allocatedJudgeTemplate.setReference(commonCMONotificationParameters.get("reference").toString());
         allocatedJudgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         allocatedJudgeTemplate.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
@@ -94,11 +97,11 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.of(
-            "subjectLineWithHearingDate", emailNotificationHelper
+            SUBJECT_LINE, emailNotificationHelper
                 .buildSubjectLineWithHearingBookingDateSuffix(caseData,
                     caseData.getHearingDetails()),
             "reference", String.valueOf(caseDetails.getId()),
-            "caseUrl", getCaseUrl(caseDetails.getId())
+            CASE_URL, getCaseUrl(caseDetails.getId())
         );
     }
 

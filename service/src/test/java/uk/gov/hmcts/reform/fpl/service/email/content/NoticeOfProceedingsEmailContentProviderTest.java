@@ -30,11 +30,11 @@ class NoticeOfProceedingsEmailContentProviderTest extends AbstractEmailContentPr
         AllocatedJudgeTemplateForNoticeOfProceedings allocatedJudgeTemplate
             = new AllocatedJudgeTemplateForNoticeOfProceedings();
         allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
-        allocatedJudgeTemplate.setFamilyManCaseNumber("12345,");
+        allocatedJudgeTemplate.setFamilyManCaseNumber("12345");
         allocatedJudgeTemplate.setHearingDate("1 January 2020");
         allocatedJudgeTemplate.setJudgeName("Moley");
         allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setLeadRespondentsName("Smith");
+        allocatedJudgeTemplate.setRespondentLastName("Smith");
 
         return allocatedJudgeTemplate;
     }

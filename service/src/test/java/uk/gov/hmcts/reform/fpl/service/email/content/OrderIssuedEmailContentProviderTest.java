@@ -105,7 +105,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         AllocatedJudgeTemplateForGeneratedOrder actualParameters = orderIssuedEmailContentProvider
             .buildAllocatedJudgeOrderIssuedNotification(caseDetails);
 
-        Map<String, Object> expectedParameters = getExpectedAllocatedJudgeParameters();
+        AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getExpectedAllocatedJudgeParameters();
 
         assertThat(actualParameters).isEqualToComparingFieldByField(expectedParameters);
     }

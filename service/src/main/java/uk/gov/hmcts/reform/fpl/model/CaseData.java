@@ -451,7 +451,7 @@ public class CaseData {
 
     public boolean allocatedJudgeExists() {
         {
-            return allocatedJudge != null ? true : false;
+            return allocatedJudge != null;
         }
     }
 }
