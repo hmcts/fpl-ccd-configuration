@@ -202,6 +202,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
             .directionRemovable("Yes")
             .directionNeeded("Yes")
             .readOnly("Yes")
+            .dateToBeCompletedBy(HEARING_START_DATE.toLocalDate().atStartOfDay())
             .build();
     }
 

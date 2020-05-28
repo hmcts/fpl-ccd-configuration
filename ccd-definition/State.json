@@ -5,7 +5,8 @@
     "ID": "Open",
     "Name": "Open",
     "Description": "Initial case state – create title as a minimum; add documents, etc.",
-    "DisplayOrder": 1
+    "DisplayOrder": 1,
+    "TitleDisplay": "# ${caseName}\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ID": "Submitted",
     "Name": "Submitted",
     "Description": "Submitted case state - LA can no longer edit",
-    "DisplayOrder": 2
+    "DisplayOrder": 2,
+    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +23,8 @@
     "ID": "Gatekeeping",
     "Name": "Gatekeeping",
     "Description": "Gatekeeping case state - when send to gatekeeper event is triggered",
-    "DisplayOrder": 3
+    "DisplayOrder": 3,
+    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,7 +32,8 @@
     "ID": "PREPARE_FOR_HEARING",
     "Name": "Prepare for hearing",
     "Description": "State indicating that SDO is ready to send - triggered when SDO is issued",
-    "DisplayOrder": 4
+    "DisplayOrder": 4,
+    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -37,7 +41,8 @@
     "ID": "CLOSED",
     "Name": "Closed",
     "Description": "Final case state, no longer allowed to create orders apart from C21",
-    "DisplayOrder": 5
+    "DisplayOrder": 5,
+    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -45,6 +50,16 @@
     "ID": "Deleted",
     "Name": "Deleted",
     "Description": "Deleted case state - all data is removed",
-    "DisplayOrder": 6
+    "DisplayOrder": 6,
+    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "RETURNED",
+    "Name": "Returned",
+    "Description": "Returned case state - LA to make changes to previously submitted application",
+    "DisplayOrder": 7,
+    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   }
 ]
