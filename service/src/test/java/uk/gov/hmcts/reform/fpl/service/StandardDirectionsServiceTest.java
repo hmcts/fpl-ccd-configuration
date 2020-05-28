@@ -7,13 +7,14 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 
-import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -45,7 +47,7 @@ class StandardDirectionsServiceTest {
     private StandardDirectionsService service;
 
     @Test
-    void shouldReturnExpectedListOfDirectionsWithPopulatedDatesWhenThereIsHearingDate() throws IOException {
+    void shouldReturnExpectedListOfDirectionsWithPopulatedDatesWhenThereIsHearingDate() {
         LocalDate date = LocalDate.of(2099, 6, 1);
         given(calendarService.getWorkingDayFrom(eq(date), eq(-2))).willReturn(date.minusDays(2));
         given(calendarService.getWorkingDayFrom(eq(date), eq(-3))).willReturn(date.minusDays(3));
@@ -56,10 +58,42 @@ class StandardDirectionsServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedListOfDirectionsWithNullDatesWhenThereIsNoHearingDate() throws IOException {
+    void shouldReturnExpectedListOfDirectionsWithNullDatesWhenThereIsNoHearingDate() {
         List<Element<Direction>> directions = service.getDirections(null);
 
         assertThat(unwrapElements(directions)).containsOnly(expectedDirections(null));
+    }
+
+    @Test
+    void shouldReturnTrueWhenThereAreEmptyDates() {
+        CaseData caseData = CaseData.builder()
+            .allParties(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .localAuthorityDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .respondentDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .cafcassDirections(wrapElements(buildDirectionWithDate(), Direction.builder().build()))
+            .otherPartiesDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .courtDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .build();
+
+        assertThat(service.hasEmptyDates(caseData)).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenThereAreNoEmptyDates() {
+        CaseData caseData = CaseData.builder()
+            .allParties(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .localAuthorityDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .respondentDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .cafcassDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .otherPartiesDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .courtDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
+            .build();
+
+        assertThat(service.hasEmptyDates(caseData)).isFalse();
+    }
+
+    private Direction buildDirectionWithDate() {
+        return Direction.builder().dateToBeCompletedBy(LocalDateTime.now()).build();
     }
 
     private HearingBooking hearingOnDateAtMidday(LocalDate hearingDate) {
