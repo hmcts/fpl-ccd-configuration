@@ -22,7 +22,7 @@
     "ListElementCode": "finalOrderIssuedType",
     "FieldType": "Text",
     "ElementLabel": "Final Order Issued Type",
-    "FieldShowCondition": "finalOrderIssued=\"HIDDEN FIELD FOR FINAL ORDER TYPE\"",
+    "DisplayContext": "READONLY",
     "SecurityClassification": "Public"
   }
 

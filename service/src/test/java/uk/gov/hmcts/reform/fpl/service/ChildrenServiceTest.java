@@ -80,7 +80,7 @@ class ChildrenServiceTest {
 
     @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
-        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER, testChildren(),"Yes", null, "");
+        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER, testChildren(),"Yes", null, null);
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("Yes", "Yes", "Yes");
@@ -99,7 +99,7 @@ class ChildrenServiceTest {
             .build();
 
         List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER,
-            children, "No", childSelector, "");
+            children, "No", childSelector, null);
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("No", "Yes", "No");
@@ -120,25 +120,13 @@ class ChildrenServiceTest {
             .build();
 
         List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER,
-            children, "No", childSelector, "");
+            children, "No", childSelector, null);
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("Yes", "Yes", "Yes", "No", "No");
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
             .containsExactly("Care order", "Care order", "Care order", null, null);
-    }
-
-    @Test
-    void shouldGetRemainingChildIndexWhenOneRemainingChild() {
-        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(),
-            childWithFinalOrderIssuedNo(),
-            childWithFinalOrderIssuedYes());
-
-        Optional<Integer> result = service.getRemainingChildIndex(children);
-
-        assertThat(result.isPresent()).isTrue();
-        assertThat(result.get()).isEqualTo(1);
     }
 
     @Test
@@ -155,6 +143,38 @@ class ChildrenServiceTest {
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
             .containsExactly("Care order", "Supervision order", "Care order");
+    }
+
+    @Test
+    void shouldGetRemainingChildIndexWhenOneRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(),
+            childWithFinalOrderIssuedNo(),
+            childWithFinalOrderIssuedYes());
+
+        Optional<Integer> result = service.getRemainingChildIndex(children);
+
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get()).isEqualTo(1);
+    }
+
+    @Test
+    void shouldNotGetRemainingChildIndexWhenNoRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(),
+            childWithFinalOrderIssuedYes());
+
+        Optional<Integer> result = service.getRemainingChildIndex(children);
+
+        assertThat(result.isPresent()).isFalse();
+    }
+
+    @Test
+    void shouldNotGetRemainingChildIndexWhenMoreThanOneRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(), childWithFinalOrderIssuedNo(),
+            childWithFinalOrderIssuedYes(), childWithFinalOrderIssuedNo());
+
+        Optional<Integer> result = service.getRemainingChildIndex(children);
+
+        assertThat(result.isPresent()).isFalse();
     }
 
     private Element<Child> childWithConfidentialFields(UUID id) {

@@ -87,9 +87,9 @@ public class GeneratedOrderService {
     }
 
     /**
-     * Method to populate the order based on type of order selected Adds/formats the order title/details for C21 and the
-     * expiry date for supervision order Always adds order type, document, {@link JudgeAndLegalAdvisor} object and a
-     * formatted order date.
+     * Method to populate the order based on type of order selected
+     * Adds/formats the order title/details for C21 and the expiry date for supervision order
+     * Always adds order type, document, {@link JudgeAndLegalAdvisor} object and a formatted order date.
      *
      * @param typeAndDocument      the type of the order and the order document (document only shown in check answers)
      * @param order                this value will contain fixed details and document values as well as customisable
@@ -100,11 +100,11 @@ public class GeneratedOrderService {
      * @return Element containing randomUUID and a fully populated order, ready to be added to orderCollection.
      */
     public Element<GeneratedOrder> buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
-        GeneratedOrder order,
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor,
-        LocalDate dateOfIssue,
-        Integer orderMonths,
-        InterimEndDate interimEndDate) {
+                                                      GeneratedOrder order,
+                                                      JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                      LocalDate dateOfIssue,
+                                                      Integer orderMonths,
+                                                      InterimEndDate interimEndDate) {
         GeneratedOrder generatedOrder = defaultIfNull(order, GeneratedOrder.builder().build());
         GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
 
@@ -145,8 +145,8 @@ public class GeneratedOrderService {
     }
 
     public Map<String, Object> getOrderTemplateData(CaseData caseData,
-        OrderStatus orderStatus,
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+                                                    OrderStatus orderStatus,
+                                                    JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
 
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
@@ -259,7 +259,7 @@ public class GeneratedOrderService {
     }
 
     private String getSupervisionOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,
-        InterimEndDate interimEndDate) {
+                                                 InterimEndDate interimEndDate) {
         switch (typeAndDocument.getSubtype()) {
             case INTERIM:
                 requireNonNull(interimEndDate);
@@ -287,9 +287,9 @@ public class GeneratedOrderService {
     }
 
     private String getFormattedCareOrderDetails(int numOfChildren,
-        String caseLocalAuthority,
-        boolean isInterim,
-        InterimEndDate interimEndDate) {
+                                                String caseLocalAuthority,
+                                                boolean isInterim,
+                                                InterimEndDate interimEndDate) {
         String childOrChildren = (numOfChildren == 1 ? "child is" : "children are");
         return String.format("It is ordered that the %s placed in the care of %s%s.",
             childOrChildren, getLocalAuthorityName(caseLocalAuthority),
@@ -297,7 +297,7 @@ public class GeneratedOrderService {
     }
 
     private String getFormattedInterimSupervisionOrderDetails(int numOfChildren, String caseLocalAuthority,
-        InterimEndDate interimEndDate) {
+                                                              InterimEndDate interimEndDate) {
         return String.format("It is ordered that %s supervises the %s until %s.",
             getLocalAuthorityName(caseLocalAuthority),
             (numOfChildren == 1) ? "child" : CHILDREN,
@@ -315,8 +315,8 @@ public class GeneratedOrderService {
     }
 
     private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,
-        String caseLocalAuthority,
-        int numOfMonths) {
+                                                            String caseLocalAuthority,
+                                                            int numOfMonths) {
         final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
         final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
         return String.format(
