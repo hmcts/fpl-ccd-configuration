@@ -191,7 +191,8 @@ public class GeneratedOrderController {
 
         caseDetails.getData().put("orderCollection", orders);
 
-        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
+        if (featureToggleService.isCloseCaseEnabled() && orderTypeAndDocument.getType() != BLANK_ORDER
+            && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
             List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(
                 caseData.getOrderTypeAndDocument().getType(),
                 caseData.getAllChildren(),
