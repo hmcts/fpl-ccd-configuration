@@ -16,7 +16,13 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
@@ -104,5 +110,31 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             ALLOCATED_JUDGE_EMAIL_ADDRESS,
             cmoJudgeReviewParameters,
             CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldNotNotifyAllocatedJudgeWhenCMOReadyForJudgeReviewButNoAllocatedJudgeExists() {
+        CaseDetails caseDetails =  CaseDetails.builder().id(1L)
+            .data(Map.of("caseLocalAuthority", "SA"))
+            .build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(
+            caseDetails).build();
+
+        AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
+
+        given(caseManagementOrderEmailContentProvider
+            .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+            .willReturn(cmoJudgeReviewParameters);
+
+        caseManagementOrderReadyForJudgeReviewEventHandler
+            .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
+                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+
+        verify(notificationService, never()).sendEmail(
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),
+            any(),
+            anyMap(),
+            any());
     }
 }
