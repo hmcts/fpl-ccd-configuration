@@ -596,7 +596,11 @@ class GeneratedOrderServiceTest {
         void shouldReturnTrueWhenOrderIsBlankOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
 
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument, null, someChildren, null, true);
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                null,
+                someChildren,
+                null,
+                true);
 
             assertThat(shouldGenerateDocument).isTrue();
         }
