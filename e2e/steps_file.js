@@ -42,8 +42,8 @@ module.exports = function () {
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm(caseName);
       await this.completeEvent('Save and continue');
-      const caseId = await this.grabTextFrom('.heading-h1');
-      console.log(`Case created ${caseId}`);
+      const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
+      console.log(`Case created #${caseId}`);
       return caseId;
     },
 
@@ -125,12 +125,10 @@ module.exports = function () {
     },
 
     async navigateToCaseDetails(caseId) {
-      const normalisedCaseId = normalizeCaseId(caseId);
-
       const currentUrl = await this.grabCurrentUrl();
-      if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
+      if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
         await this.retryUntilExists(() => {
-          this.amOnPage(`${baseUrl}/cases/case-details/${normalisedCaseId}`);
+          this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
         }, signedInSelector);
       }
     },
@@ -188,7 +186,7 @@ module.exports = function () {
     async submitNewCaseWithData(data = mandatorySubmissionFields) {
       const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
       await caseHelper.populateWithData(caseId, data);
-      console.log(`Case ${caseId} has been populated with data`);
+      console.log(`Case #${caseId} has been populated with data`);
 
       return caseId;
     },

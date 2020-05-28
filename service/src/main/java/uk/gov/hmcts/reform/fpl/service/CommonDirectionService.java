@@ -6,14 +6,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
@@ -26,7 +23,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 /**
@@ -145,44 +141,6 @@ public class CommonDirectionService {
             .collect(toList());
     }
 
-    //TODO: numbering done for SDO in formatTitle method. CMO to do the same? FPLA-1481
-
-    /**
-     * Iterates over a list of directions and adds numbers to the directionType starting from 2.
-     *
-     * @param directions a list of directions.
-     * @return a list of directions with numbered directionType.
-     */
-    public List<Element<Direction>> numberDirections(List<Element<Direction>> directions) {
-        AtomicInteger at = new AtomicInteger(2);
-
-        return directions.stream()
-            //TODO FPLA-1481 can deal with that but as this is only used by CMO the line below doesn't make sense
-            .map(direction -> element(direction.getId(), direction.getValue().toBuilder()
-                .directionType(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
-                .build()))
-            .collect(toList());
-    }
-
-    /**
-     * Takes a direction from a configuration file and builds a CCD direction.
-     *
-     * @param direction  the direction taken from json config.
-     * @param completeBy the date to be completed by. Can be null.
-     * @return Direction to be stored in CCD.
-     */
-    public Element<Direction> constructDirectionForCCD(DirectionConfiguration direction, LocalDateTime completeBy) {
-        return element(Direction.builder()
-            .directionType(direction.getTitle())
-            .directionText(direction.getText())
-            .assignee(direction.getAssignee())
-            .directionNeeded(YES.getValue())
-            .directionRemovable(booleanToYesOrNo(direction.getDisplay().isDirectionRemovable()))
-            .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
-            .dateToBeCompletedBy(completeBy)
-            .build());
-    }
-
     /**
      * Returns a list of directions to comply with.
      *
@@ -227,9 +185,5 @@ public class CommonDirectionService {
 
     private boolean removeDirection(Element<Direction> element) {
         return "Yes".equals(element.getValue().getDirectionNeeded()) || "Yes".equals(element.getValue().getCustom());
-    }
-
-    private String booleanToYesOrNo(boolean value) {
-        return value ? "Yes" : "No";
     }
 }

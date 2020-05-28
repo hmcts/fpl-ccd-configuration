@@ -50,6 +50,7 @@ class JsonOrdersLookUpServiceTest {
                         .templateDateFormat("d MMMM yyyy 'at' h:mma")
                         .directionRemovable(false)
                         .showDateOnly(true)
+                        .delta("0")
                         .build())
                     .build(),
                 DirectionConfiguration.builder()
@@ -61,6 +62,8 @@ class JsonOrdersLookUpServiceTest {
                         .templateDateFormat("h:mma, d MMMM yyyy")
                         .directionRemovable(false)
                         .showDateOnly(false)
+                        .delta("-3")
+                        .time("12:00:00")
                         .build())
                     .build(),
                 DirectionConfiguration.builder()
@@ -72,6 +75,8 @@ class JsonOrdersLookUpServiceTest {
                         .templateDateFormat("h:mma, d MMMM yyyy")
                         .directionRemovable(true)
                         .showDateOnly(false)
+                        .delta("-2")
+                        .time("16:00:00")
                         .build())
                     .build()))
             .build();

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -14,8 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +20,7 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @ExtendWith(SpringExtension.class)
 class ChildrenServiceTest {
@@ -40,29 +37,6 @@ class ChildrenServiceTest {
     void shouldBuildExpectedLabelWhenPopulatedList() {
         String label = service.getChildrenLabel(List.of(childWithConfidentialFields(randomUUID())));
         assertThat(label).isEqualTo("Child 1: James\n");
-    }
-
-    @Test
-    void shouldPopulateCaseDataMapWithYesWhenThereAre2OrMoreChildren() {
-        List<Element<Child>> children = new ArrayList<>();
-        children.add(childWithConfidentialFields(randomUUID()));
-        children.add(childWithConfidentialFields(randomUUID()));
-
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.addPageShowToCaseDetails(caseDetails, children);
-
-        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("Yes");
-    }
-
-    @Test
-    void shouldPopulateCaseDataMapWithNoWhenThereIsOneChild() {
-        List<Element<Child>> children = new ArrayList<>();
-        children.add(childWithConfidentialFields(randomUUID()));
-
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.addPageShowToCaseDetails(caseDetails, children);
-
-        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
     }
 
     @ParameterizedTest
@@ -92,27 +66,16 @@ class ChildrenServiceTest {
     }
 
     @Test
-    void shouldPopulateCaseDataMapWithNoWhenThereIsEmptyList() {
-        List<Element<Child>> children = new ArrayList<>();
-
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.addPageShowToCaseDetails(caseDetails, children);
-
-        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
-    }
-
-    @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
-        List<Element<Child>> result = service.updateFinalOrderIssued(List.of(testChild(), testChild()),
-            "Yes", null);
+        List<Element<Child>> result = service.updateFinalOrderIssued(testChildren(), "Yes", null);
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsExactly("Yes", "Yes");
+            .containsExactly("Yes", "Yes", "Yes");
     }
 
     @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildren() {
-        List<Element<Child>> children = List.of(testChild(), testChild(), testChild());
+        List<Element<Child>> children = testChildren();
 
         ChildSelector childSelector = ChildSelector.builder()
             .childCount("1")
@@ -140,7 +103,6 @@ class ChildrenServiceTest {
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("Yes", "Yes", "Yes", "No");
     }
-
 
     private Element<Child> childWithConfidentialFields(UUID id) {
         return element(id, Child.builder()

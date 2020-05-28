@@ -69,6 +69,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -138,7 +139,7 @@ public class CaseData {
     private final StandardDirectionOrder standardDirectionOrder;
 
     @NotNull(message = "You need to enter the allocated judge.",
-             groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
+        groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
     private final Judge allocatedJudge;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
@@ -225,6 +226,11 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final ChildSelector childSelector;
     private final String orderAppliesToAllChildren;
+
+    public String getOrderAppliesToAllChildren() {
+        return getAllChildren().size() == 1 ? YES.getValue() : orderAppliesToAllChildren;
+    }
+
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
     private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;
