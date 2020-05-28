@@ -20,6 +20,7 @@ module.exports = {
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
+  caseTitle: '.case-title .markdown',
 
   async goToNewActions(actionSelected) {
     I.waitForElement(this.actionsDropdown);
@@ -49,5 +50,9 @@ module.exports = {
 
   selectTab(tab) {
     I.click(tab, '.tabs .tabs-list');
+  },
+
+  seeInCaseTitle(titleValue) {
+    I.seeElement(locate(this.caseTitle).withText(titleValue));
   },
 };
