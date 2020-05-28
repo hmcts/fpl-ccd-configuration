@@ -440,6 +440,22 @@ class CaseDataTest {
             .forEach(assignee -> JSONAssert.assertEquals(getExpectedString(assignee, id), serialised, false));
     }
 
+    @Test
+    void shouldReturnTrueWhenAllocatedJudgeExists() {
+        CaseData caseData = CaseData.builder().allocatedJudge(Judge.builder()
+            .judgeFullName("Test Judge")
+            .build()).build();
+
+        assertThat(caseData.allocatedJudgeExists()).isEqualTo(true);
+    }
+
+    @Test
+    void shouldReturnFalseWhenAllocatedJudgeDoesNotExist() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(caseData.allocatedJudgeExists()).isEqualTo(false);
+    }
+
     private String buildJsonDirections(UUID id) throws JsonProcessingException {
         List<Element<Direction>> directions = List.of(element(id, Direction.builder().directionType("title").build()));
         String directionString = mapper.writeValueAsString(directions);

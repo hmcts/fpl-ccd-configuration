@@ -64,7 +64,7 @@ class JudgeAndLegalAdvisorTest {
 
         String title = judgeAndLegalAdvisor.getJudgeOrMagistrateTitle();
 
-       assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
+        assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
     }
 
     @Test
