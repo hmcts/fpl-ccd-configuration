@@ -168,7 +168,7 @@ public class GeneratedOrderController {
         }
 
         if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections, children,
-            closeCaseFromOrder)) {
+            closeCaseFromOrder, featureToggleService.isCloseCaseEnabled())) {
 
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
                 caseData.getAllocatedJudge());

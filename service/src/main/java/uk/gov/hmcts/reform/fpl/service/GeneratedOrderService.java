@@ -382,6 +382,7 @@ public class GeneratedOrderService {
      *     <li>further directions is not null and one of the following is met:<ul>
      *         <li>not all children have a final order (can't close the case)</li>
      *         <li>closeCaseFromOrder is not null (close case decision has been made)</li>
+     *         <li>close case is not enabled</li>
      *     </ul></li>
      * </ul>
      *
@@ -389,14 +390,17 @@ public class GeneratedOrderService {
      * @param furtherDirections  further directions for the order
      * @param children           children in the case
      * @param closeCaseFromOrder YesOrNo field for close case from order
+     * @param closeCaseEnabled   feature toggle flag for close case
      */
     public boolean shouldGenerateDocument(OrderTypeAndDocument orderType,
                                           FurtherDirections furtherDirections,
                                           List<Element<Child>> children,
-                                          String closeCaseFromOrder) {
+                                          String closeCaseFromOrder,
+                                          boolean closeCaseEnabled) {
         return BLANK_ORDER == orderType.getType()
-            || (furtherDirections != null
-            && (!childrenService.allChildrenHaveFinalOrder(children) || closeCaseFromOrder != null));
+            || furtherDirections != null
+            && (!childrenService.allChildrenHaveFinalOrder(children) || closeCaseFromOrder != null
+            || !closeCaseEnabled);
     }
 
 

@@ -596,7 +596,7 @@ class GeneratedOrderServiceTest {
         void shouldReturnTrueWhenOrderIsBlankOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
 
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument, null, someChildren, null);
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument, null, someChildren, null, true);
 
             assertThat(shouldGenerateDocument).isTrue();
         }
@@ -612,7 +612,8 @@ class GeneratedOrderServiceTest {
             boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
                 directions,
                 allChildren,
-                "Yes");
+                "Yes",
+                true);
 
             assertThat(shouldGenerateDocument).isTrue();
         }
@@ -629,7 +630,8 @@ class GeneratedOrderServiceTest {
             boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
                 directions,
                 someChildren,
-                null);
+                null,
+                true);
 
             assertThat(shouldGenerateDocument).isTrue();
         }
@@ -646,7 +648,8 @@ class GeneratedOrderServiceTest {
             boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
                 directions,
                 allChildren,
-                null);
+                null,
+                true);
 
             assertThat(shouldGenerateDocument).isFalse();
         }
@@ -659,9 +662,46 @@ class GeneratedOrderServiceTest {
             boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
                 null,
                 someChildren,
-                null);
+                null,
+                true);
 
             assertThat(shouldGenerateDocument).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should generate if close case is disabled and all children don't have final order")
+        void shouldReturnTrueWhenCloseCaseIsDisabledAndNotAllChildrenHaveFinalOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            FurtherDirections directions = FurtherDirections.builder()
+                .directions("I'd be a heavenly person today")
+                .build();
+
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                directions,
+                someChildren,
+                null,
+                false);
+
+            assertThat(shouldGenerateDocument).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should generate if close case is disabled and all children have final order")
+        void shouldReturnTrueWhenCloseCaseIsDisabledAndAllChildrenHaveFinalOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            FurtherDirections directions = FurtherDirections.builder()
+                .directions("And I thought I was mistaken")
+                .build();
+
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                directions,
+                allChildren,
+                null,
+                false);
+
+            assertThat(shouldGenerateDocument).isTrue();
         }
     }
 
