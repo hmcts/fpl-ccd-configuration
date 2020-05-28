@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.formatRepresentativesForPostNotification;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstApplicantName;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentFullName;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 class PeopleInCaseHelperTest {
@@ -79,6 +80,12 @@ class PeopleInCaseHelperTest {
 
         String respondentName = getFirstRespondentLastName(respondents);
         assertThat(respondentName).isEmpty();
+    }
+
+    @Test
+    void shouldReturnFirstRespondentFullNameWhenFirstRespondentWithNamePresent() {
+        String respondentName = getFirstRespondentFullName(createRespondents());
+        assertThat(respondentName).isEqualTo("Timothy Jones");
     }
 
     @Test
