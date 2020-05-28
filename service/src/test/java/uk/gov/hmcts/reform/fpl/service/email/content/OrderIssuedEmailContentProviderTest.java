@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedAllocatedJudgeParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
@@ -108,17 +108,6 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         Map<String, Object> expectedParameters = getExpectedAllocatedJudgeParameters();
 
         assertThat(actualParameters).isEqualToComparingFieldByField(expectedParameters);
-    }
-
-    private Map<String, Object> getExpectedAllocatedJudgeParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("orderType", "blank order (c21)")
-            .put("callout", "^Jones, SACCCCCCCC5676576567, hearing 27 Aug 2020")
-            .put("respondentLastName", "Jones")
-            .put("judgeTitle", "Deputy District Judge")
-            .put("judgeName", "Scott")
-            .put("caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
-            .build();
     }
 
     private static CaseDetails createCase() {

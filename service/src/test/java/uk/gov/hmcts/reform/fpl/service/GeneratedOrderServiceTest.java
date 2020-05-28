@@ -351,7 +351,7 @@ class GeneratedOrderServiceTest {
         assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(judgeAndLegalAdvisor);
     }
 
-    private ArrayList<Element<GeneratedOrder>> getGeneratedOrdersList() {
+    private List<Element<GeneratedOrder>> getGeneratedOrdersList() {
         JudgeAndLegalAdvisor firstJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeLastName("Moley")
             .judgeTitle(DEPUTY_DISTRICT_JUDGE)
@@ -364,7 +364,7 @@ class GeneratedOrderServiceTest {
             .judgeEmailAddress("judge@gmail.com")
             .build();
 
-        ArrayList<Element<GeneratedOrder>> generatedOrders = new ArrayList<>();
+        List<Element<GeneratedOrder>> generatedOrders = new ArrayList<>();
 
         GeneratedOrder firstGeneratedOrder = GeneratedOrder.builder()
             .judgeAndLegalAdvisor(firstJudgeAndLegalAdvisor)

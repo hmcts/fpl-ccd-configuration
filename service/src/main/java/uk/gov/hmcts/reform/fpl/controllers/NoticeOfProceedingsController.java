@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
@@ -62,6 +63,7 @@ public class NoticeOfProceedingsController {
     private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
     private final RequestData requestData;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -133,7 +135,9 @@ public class NoticeOfProceedingsController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new NoticeOfProceedingsIssuedEvent(callbackRequest, requestData));
+        if (featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()) {
+            applicationEventPublisher.publishEvent(new NoticeOfProceedingsIssuedEvent(callbackRequest, requestData));
+        }
     }
 
     private String buildProceedingLabel(HearingBooking hearingBooking) {

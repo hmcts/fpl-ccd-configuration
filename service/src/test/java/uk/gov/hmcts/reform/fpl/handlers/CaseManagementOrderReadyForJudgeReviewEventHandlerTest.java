@@ -31,6 +31,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {CaseManagementOrderReadyForJudgeReviewEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, HmctsAdminNotificationHandler.class})
 public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
+    private static final String CASE_REFERENCE = "12345";
+
     @MockBean
     private RequestData requestData;
 
@@ -60,7 +62,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             COURT_EMAIL_ADDRESS,
             cmoJudgeReviewParameters,
-            "12345");
+            CASE_REFERENCE);
     }
 
     @Test
@@ -80,7 +82,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             CTSC_INBOX,
             cmoJudgeReviewParameters,
-            "12345");
+            CASE_REFERENCE);
     }
 
     @Test
@@ -101,6 +103,6 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
             ALLOCATED_JUDGE_EMAIL_ADDRESS,
             cmoJudgeReviewParameters,
-            "12345");
+            CASE_REFERENCE);
     }
 }

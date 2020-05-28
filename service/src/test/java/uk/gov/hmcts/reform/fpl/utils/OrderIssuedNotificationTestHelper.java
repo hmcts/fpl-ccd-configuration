@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -51,6 +52,17 @@ public class OrderIssuedNotificationTestHelper {
             "courtName", EXAMPLE_COURT,
             "callout", withCallout ? callout : "",
             "documentLink", jsonFileObject);
+    }
+
+    public static Map<String, Object> getExpectedAllocatedJudgeParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .put("orderType", "blank order (c21)")
+            .put("callout", callout)
+            .put("respondentLastName", "Jones")
+            .put("judgeTitle", "Deputy District Judge")
+            .put("judgeName", "Scott")
+            .put("caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
+            .build();
     }
 
     public static List<Element<Representative>> buildRepresentatives() {

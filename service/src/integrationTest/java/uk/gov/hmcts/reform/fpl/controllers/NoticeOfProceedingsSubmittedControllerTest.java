@@ -16,7 +16,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(NoticeOfProceedingsController.class)
@@ -52,7 +51,7 @@ class NoticeOfProceedingsSubmittedControllerTest extends AbstractControllerTest 
 
     private Map<String, Object> expectedNoticeOfProceedingsNotificationParams() {
         return ImmutableMap.<String, Object>builder()
-                .put("caseUrl", formatCaseUrl(UI_URL, Long.valueOf("12345")))
+                .put("caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345")
                 .put("familyManCaseNumber", "12345L,")
                 .put("hearingDate", "1 January 2020")
                 .put("judgeName", "Moley")
