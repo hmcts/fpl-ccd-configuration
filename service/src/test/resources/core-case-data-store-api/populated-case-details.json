@@ -489,6 +489,12 @@
       }
     }],
     "familyManCaseNumber": "12345",
-    "amountToPay": "2055.0"
+    "amountToPay": "2055.0",
+    "returnApplication": {
+      "note": "Missing children details",
+      "reason": [
+        "INCOMPLETE", "CLARIFICATION_NEEDED"
+      ]
+    }
   }
 }
