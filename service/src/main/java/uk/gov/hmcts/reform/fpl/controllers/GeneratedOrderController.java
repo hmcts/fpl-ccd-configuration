@@ -50,7 +50,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -150,7 +149,7 @@ public class GeneratedOrderController {
         String closeCaseFromOrder = caseData.getCloseCaseFromOrder();
         List<Element<Child>> children;
 
-        if (FINAL == orderTypeAndDocument.getSubtype()) {
+        if (orderTypeAndDocument.isClosable()) {
             children = getUpdatedChildren(caseData);
         } else {
             children = caseData.getAllChildren();
