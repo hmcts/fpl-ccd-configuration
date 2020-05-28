@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -17,10 +16,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -112,7 +109,7 @@ public class CommonDirectionService {
      * @param caseData data from case.
      * @return Map of roles and directions.
      */
-    Map<DirectionAssignee, List<Element<Direction>>> collectCustomDirectionsToMap(CaseData caseData) {
+    public Map<DirectionAssignee, List<Element<Direction>>> collectCustomDirectionsToMap(CaseData caseData) {
         return Map.of(
             ALL_PARTIES, defaultIfNull(caseData.getAllPartiesCustom(), emptyList()),
             LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirectionsCustom(), emptyList()),
@@ -120,28 +117,6 @@ public class CommonDirectionService {
             COURT, defaultIfNull(caseData.getCourtDirectionsCustom(), emptyList()),
             PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getRespondentDirectionsCustom(), emptyList()),
             OTHERS, defaultIfNull(caseData.getOtherPartiesDirectionsCustom(), emptyList()));
-    }
-
-    /**
-     * Splits a list of directions into a map where the key is the role of the direction assignee and the value is the
-     * list of directions belonging to the role.
-     *
-     * @param directions a list of directions with various assignees.
-     * @return Map of role name, list of directions.
-     */
-    public Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(
-        List<Element<Direction>> directions) {
-        return directions.stream()
-            .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee()));
-    }
-
-    /**
-     * Adds any {@link DirectionAssignee} not present to a map with an empty list of directions.
-     *
-     * @param map assignee, directions key value pairs.
-     */
-    public void addEmptyDirectionsForAssigneeNotInMap(Map<DirectionAssignee, List<Element<Direction>>> map) {
-        stream(DirectionAssignee.values()).forEach(assignee -> map.putIfAbsent(assignee, new ArrayList<>()));
     }
 
     /**

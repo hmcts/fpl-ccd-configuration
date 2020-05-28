@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -9,7 +10,10 @@ import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -23,11 +27,43 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_3;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_5;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class DirectionsTest {
+
+    @Nested
+    class SortDirectionsByAssignee {
+
+        @Test
+        void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
+            List<Element<Direction>> directions = wrapElements(getDirection(LOCAL_AUTHORITY), getDirection(COURT));
+
+            Map<DirectionAssignee, List<Element<Direction>>> mapping = getMapping(directions);
+
+            assertKeyContainsCorrectDirection(LOCAL_AUTHORITY, mapping);
+            assertKeyContainsCorrectDirection(COURT, mapping);
+
+            Stream.of(DirectionAssignee.values())
+                .filter(assignee -> assignee != LOCAL_AUTHORITY && assignee != COURT)
+                .forEach(assignee -> assertThat(mapping.get(assignee)).isEqualTo(emptyList()));
+        }
+
+        @Test
+        void shouldAddEmptyListValueWhenKeyNotPresentInMap() {
+            Map<DirectionAssignee, List<Element<Direction>>> mapping = getMapping(emptyList());
+
+            Stream.of(DirectionAssignee.values())
+                .forEach(assignee -> assertThat(mapping.get(assignee)).isEqualTo(emptyList()));
+        }
+
+        private void assertKeyContainsCorrectDirection(DirectionAssignee court,
+                                                       Map<DirectionAssignee, List<Element<Direction>>> mapping) {
+            assertThat(unwrapElements(mapping.get(court))).containsOnly(getDirection(court));
+        }
+    }
 
     @Test
     void shouldGetListOfDirectionsWithPopulatedCCDFieldsFromIndividualDirectionFields() {

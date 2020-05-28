@@ -36,6 +36,7 @@ import java.util.Map;
 import static java.lang.Integer.parseInt;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -97,8 +98,7 @@ public class PopulateStandardDirectionsHandler {
             .map(configuration -> getDirectionElement(hearingStartDate, configuration))
             .collect(toList());
 
-        commonDirectionService.sortDirectionsByAssignee(directions)
-            .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
+        getMapping(directions).forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
         return caseDetails.getData();
     }

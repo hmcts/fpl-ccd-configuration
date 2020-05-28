@@ -28,6 +28,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
 
 @Api
 @RestController
@@ -51,10 +52,7 @@ public class ComplyOnBehalfController {
 
         List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
 
-        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
-            commonDirectionService.sortDirectionsByAssignee(directionsToComplyWith);
-
-        commonDirectionService.addEmptyDirectionsForAssigneeNotInMap(sortedDirections);
+        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = getMapping(directionsToComplyWith);
 
         prepareDirectionsForUsersService.addDirectionsToCaseDetails(
             caseDetails, sortedDirections, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
@@ -76,7 +74,6 @@ public class ComplyOnBehalfController {
         prepareDirectionsForDataStoreService.addComplyOnBehalfResponsesToDirectionsInOrder(
             caseData, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
 
-        //TODO: new service for sdo vs cmo in placing directions FPLA-1470
         if (caseData.getServedCaseManagementOrders().isEmpty()) {
             caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
         } else {

@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
@@ -47,6 +46,7 @@ import java.util.stream.Stream;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -97,9 +97,7 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/date-of-issue/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEventDateOfIssue(
-        @RequestBody CallbackRequest callbackRequest) {
-
+    public AboutToStartOrSubmitCallbackResponse handleMidEventIssueDate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -141,28 +139,21 @@ public class DraftOrdersController {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
             caseData.getAllocatedJudge());
 
-        CaseData updated = caseData.toBuilder()
-            .standardDirectionOrder(StandardDirectionOrder.builder()
-                .directions(commonDirectionService.combineAllDirections(caseData))
-                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-                .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
-                .build())
+        StandardDirectionOrder order = StandardDirectionOrder.builder()
+            .directions(commonDirectionService.combineAllDirections(caseData))
+            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .build();
 
-        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
-            getConfigDirections(), updated.getStandardDirectionOrder().getDirections());
+        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(getConfigDirections(), order.getDirections());
+
+        CaseData updated = caseData.toBuilder().standardDirectionOrder(order).build();
 
         DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
-        StandardDirectionOrder order = updated.getStandardDirectionOrder().toBuilder()
-            .directions(List.of())
-            .orderDoc(DocumentReference.builder()
-                .url(document.links.self.href)
-                .binaryUrl(document.links.binary.href)
-                .filename(document.originalDocumentName)
-                .build())
-            .build();
+        order.setDirectionsToEmptyList();
+        order.setOrderDocReferenceFromDocument(document);
 
         caseDetails.getData().put("standardDirectionOrder", order);
 
@@ -216,15 +207,9 @@ public class DraftOrdersController {
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
         //add document to order
-        StandardDirectionOrder orderWithDocument = order.toBuilder()
-            .orderDoc(DocumentReference.builder()
-                .url(document.links.self.href)
-                .binaryUrl(document.links.binary.href)
-                .filename(updated.getStandardDirectionOrder().getOrderStatus().getDocumentTitle())
-                .build())
-            .build();
+        order.setOrderDocReferenceFromDocument(document);
 
-        caseDetails.getData().put("standardDirectionOrder", orderWithDocument);
+        caseDetails.getData().put("standardDirectionOrder", order);
         caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
         caseDetails.getData().remove("dateOfIssue");
 
@@ -286,7 +271,7 @@ public class DraftOrdersController {
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> list) {
         List<Element<Direction>> nonCustomDirections = commonDirectionService.removeCustomDirections(list);
 
-        return commonDirectionService.sortDirectionsByAssignee(nonCustomDirections);
+        return getMapping(nonCustomDirections);
     }
 
     private List<Element<Direction>> getConfigDirections() throws IOException {

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -17,14 +16,13 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
 @Data
-@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 public class OrderForHearing {
-    private final String hearingDate;
-    private final String dateOfIssue;
-    private final List<Element<Direction>> directions;
+    public final String hearingDate;
+    public final String dateOfIssue;
 
-    private DocumentReference orderDoc;
+    public List<Element<Direction>> directions;
+    public DocumentReference orderDoc;
 
     @JsonIgnore
     public void setOrderDocReferenceFromDocument(Document document) {
