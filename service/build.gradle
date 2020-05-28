@@ -9,6 +9,8 @@ plugins {
   id 'project-report'
 }
 
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'info.solidsoft.pitest'
 apply plugin: 'org.owasp.dependencycheck'
 
@@ -186,13 +188,13 @@ dependencies {
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: versions.springBoot
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: versions.springBoot
 
-  compile group: 'org.springframework.security', name: 'spring-security-config'
-  compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
-  compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
+  implementation group: 'org.springframework.security', name: 'spring-security-config'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.17' // override to fix vulnerability issue (CVE-2019-17195)
   implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
   compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.11.0'
@@ -201,7 +203,7 @@ dependencies {
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.3.2'
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
 
