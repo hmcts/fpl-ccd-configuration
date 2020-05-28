@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
@@ -54,7 +53,7 @@ class JudgeAndLegalAdvisorTest {
 
         String title = judgeAndLegalAdvisor.getJudgeOrMagistrateTitle();
 
-        Assertions.assertThat(title).isEqualTo("Other title");
+        assertThat(title).isEqualTo("Other title");
     }
 
     @Test
@@ -65,7 +64,7 @@ class JudgeAndLegalAdvisorTest {
 
         String title = judgeAndLegalAdvisor.getJudgeOrMagistrateTitle();
 
-        Assertions.assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
+       assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
     }
 
     @Test
@@ -77,7 +76,7 @@ class JudgeAndLegalAdvisorTest {
 
         String fullName = judgeAndLegalAdvisor.getJudgeName();
 
-        Assertions.assertThat(fullName).isEqualTo("Judge Full Name");
+        assertThat(fullName).isEqualTo("Judge Full Name");
     }
 
     @Test
@@ -89,6 +88,6 @@ class JudgeAndLegalAdvisorTest {
 
         String lastName = judgeAndLegalAdvisor.getJudgeName();
 
-        Assertions.assertThat(lastName).isEqualTo("Judge Last Name");
+        assertThat(lastName).isEqualTo("Judge Last Name");
     }
 }

@@ -43,12 +43,14 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandler {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        AllocatedJudgeTemplateForCMO parameters = caseManagementOrderEmailContentProvider
-            .buildCMOReadyForJudgeReviewNotificationParameters(eventData.getCaseDetails());
+        if (caseData.allocatedJudgeExists()) {
+            AllocatedJudgeTemplateForCMO parameters = caseManagementOrderEmailContentProvider
+                .buildCMOReadyForJudgeReviewNotificationParameters(eventData.getCaseDetails());
 
-        String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
+            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-        notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
-            eventData.getReference());
+            notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
+                eventData.getReference());
+        }
     }
 }

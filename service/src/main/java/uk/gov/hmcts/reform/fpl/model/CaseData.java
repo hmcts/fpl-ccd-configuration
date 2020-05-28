@@ -448,4 +448,10 @@ public class CaseData {
     private final String deprivationOfLiberty;
 
     private final ReturnApplication returnApplication;
+
+    public boolean allocatedJudgeExists() {
+        {
+            return allocatedJudge != null ? true : false;
+        }
+    }
 }
