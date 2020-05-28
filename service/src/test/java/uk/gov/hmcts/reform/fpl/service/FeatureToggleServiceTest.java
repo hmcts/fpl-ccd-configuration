@@ -117,7 +117,8 @@ public class FeatureToggleServiceTest {
     public void shouldMakeCorrectCallForAllocatedJudgeNotificationNoticeOfProceedings(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).isEqualTo(toggleState);
+        assertThat(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled())
+            .isEqualTo(toggleState);
 
         verify(ldClient).boolVariation(eq("judge-notification-notice-of-proceedings"), any(LDUser.class), eq(false));
     }
