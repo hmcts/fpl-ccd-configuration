@@ -36,8 +36,8 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
     public AllocatedJudgeTemplateForC2 buildC2UploadNotificationForAllocatedJudge(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
 
+        AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
         allocatedJudgeTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
         allocatedJudgeTemplateForC2.setCallout(emailNotificationHelper
             .buildSubjectLineWithHearingBookingDateSuffix(caseData,

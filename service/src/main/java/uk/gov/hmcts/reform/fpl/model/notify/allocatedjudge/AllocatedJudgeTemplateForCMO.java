@@ -9,5 +9,4 @@ public final class AllocatedJudgeTemplateForCMO extends SharedAllocatedJudgeTemp
     private String subjectLineWithHearingDate;
     private String respondentLastName;
     private String reference;
-
 }

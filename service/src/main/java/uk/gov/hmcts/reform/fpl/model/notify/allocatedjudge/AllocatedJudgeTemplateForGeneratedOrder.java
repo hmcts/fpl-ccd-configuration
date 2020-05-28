@@ -9,5 +9,4 @@ public final class AllocatedJudgeTemplateForGeneratedOrder extends SharedAllocat
     private String callout;
     private String respondentLastName;
     private String orderType;
-
 }

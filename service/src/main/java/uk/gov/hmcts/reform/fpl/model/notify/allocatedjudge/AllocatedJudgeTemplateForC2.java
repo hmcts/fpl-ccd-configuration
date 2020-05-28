@@ -8,5 +8,4 @@ import lombok.Setter;
 public final class AllocatedJudgeTemplateForC2 extends SharedAllocatedJudgeTemplate {
     private String callout;
     private String respondentLastName;
-
 }

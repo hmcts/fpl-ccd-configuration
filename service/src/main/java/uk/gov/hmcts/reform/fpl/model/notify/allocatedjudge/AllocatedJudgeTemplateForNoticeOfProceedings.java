@@ -9,5 +9,4 @@ public final class AllocatedJudgeTemplateForNoticeOfProceedings extends SharedAl
     private String leadRespondentsName;
     private String familyManCaseNumber;
     private String hearingDate;
-
 }
