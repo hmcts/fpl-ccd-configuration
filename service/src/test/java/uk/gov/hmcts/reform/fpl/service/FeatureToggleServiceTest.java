@@ -102,6 +102,26 @@ public class FeatureToggleServiceTest {
         verify(ldClient).boolVariation(eq("close-case"), any(LDUser.class), eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void shouldMakeCorrectCallForAllocatedJudgeNotificationSDO(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()).isEqualTo(toggleState);
+
+        verify(ldClient).boolVariation(eq("judge-notification-sdo"), any(LDUser.class), eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    public void shouldMakeCorrectCallForAllocatedJudgeNotificationNoticeOfProceedings(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).isEqualTo(toggleState);
+
+        verify(ldClient).boolVariation(eq("judge-notification-notice-of-proceedings"), any(LDUser.class), eq(false));
+    }
+
     private void givenToggle(boolean state) {
         when(ldClient.boolVariation(anyString(), any(), anyBoolean())).thenReturn(state);
     }
