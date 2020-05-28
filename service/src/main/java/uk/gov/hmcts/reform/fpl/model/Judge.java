@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import java.util.Objects;
 
 @Data
-@Builder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class Judge extends AbstractJudge {
     private final JudgeOrMagistrateTitle judgeTitle;
@@ -20,7 +19,8 @@ public class Judge extends AbstractJudge {
     private final String judgeFullName;
     private final String judgeEmailAddress;
 
-    public Judge(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
+    @Builder(toBuilder = true)
+    private Judge(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
                  String judgeFullName, String judgeEmailAddress) {
         super(judgeTitle, otherTitle, judgeLastName, judgeFullName);
         this.judgeTitle = judgeTitle;

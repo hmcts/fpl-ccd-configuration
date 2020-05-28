@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
-@Builder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class JudgeAndLegalAdvisor extends AbstractJudge {
     private final JudgeOrMagistrateTitle judgeTitle;
@@ -22,7 +21,8 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     private String useAllocatedJudge;
     private String judgeEmailAddress;
 
-    public JudgeAndLegalAdvisor(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
+    @Builder(toBuilder = true)
+    private JudgeAndLegalAdvisor(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
                                 String judgeFullName, String legalAdvisorName, String allocatedJudgeLabel,
         String useAllocatedJudge, String judgeEmailAddress) {
         super(judgeTitle, otherTitle, judgeLastName, judgeFullName);

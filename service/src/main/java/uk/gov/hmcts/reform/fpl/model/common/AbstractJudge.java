@@ -1,24 +1,23 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor(force = true)
 public abstract class AbstractJudge {
 
     private JudgeOrMagistrateTitle judgeTitle;
     private String otherTitle;
     private final String judgeLastName;
     private final String judgeFullName;
-
-    public AbstractJudge(JudgeOrMagistrateTitle title, String otherTitle, String judgeLastName, String judgeFullName) {
-        this.judgeTitle = title;
-        this.otherTitle = otherTitle;
-        this.judgeLastName = judgeLastName;
-        this.judgeFullName = judgeFullName;
-    }
 
     @JsonIgnore
     public String getJudgeOrMagistrateTitle() {
