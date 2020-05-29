@@ -66,7 +66,7 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
         final CallbackRequest caseData = callbackRequest();
         final CaseDetails caseDetails = caseData.getCaseDetails();
         final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
-            caseData, requestData, DOCUMENT_CONTENTS);
+            caseData, DOCUMENT_CONTENTS);
         final EventData eventData = new EventData(event);
 
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))

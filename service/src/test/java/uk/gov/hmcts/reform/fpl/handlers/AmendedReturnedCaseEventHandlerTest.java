@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.ReturnedCaseContentProvider;
 
@@ -22,9 +21,6 @@ import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.asser
 
 @ExtendWith(SpringExtension.class)
 class AmendedReturnedCaseEventHandlerTest {
-
-    @Mock
-    private RequestData requestData;
 
     @Mock
     private NotificationService notificationService;
@@ -48,7 +44,7 @@ class AmendedReturnedCaseEventHandlerTest {
         final String expectedEmail = "test@test.com";
         final CallbackRequest request = callbackRequest();
         final ReturnedCaseTemplate expectedTemplate = new ReturnedCaseTemplate();
-        final AmendedReturnedCaseEvent amendedReturnedCaseEvent = new AmendedReturnedCaseEvent(request, requestData);
+        final AmendedReturnedCaseEvent amendedReturnedCaseEvent = new AmendedReturnedCaseEvent(request);
 
         when(adminNotificationHandler.getHmctsAdminEmail(new EventData(amendedReturnedCaseEvent)))
             .thenReturn(expectedEmail);

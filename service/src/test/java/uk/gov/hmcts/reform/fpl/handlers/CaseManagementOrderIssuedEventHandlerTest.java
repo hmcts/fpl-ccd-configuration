@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -52,8 +51,6 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
     CaseManagementOrderDocumentLinkNotificationHandler.class, IssuedOrderAdminNotificationHandler.class,
     HmctsAdminNotificationHandler.class, HearingBookingService.class, FixedTimeConfiguration.class})
 public class CaseManagementOrderIssuedEventHandlerTest {
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private InboxLookupService inboxLookupService;
@@ -93,7 +90,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(getExpectedCaseUrlParameters(CMO.getLabel(), true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
+            new CaseManagementOrderIssuedEvent(callbackRequest, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
@@ -122,7 +119,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(getExpectedCaseUrlParameters(CMO.getLabel(), true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
+            new CaseManagementOrderIssuedEvent(callbackRequest, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
@@ -147,7 +144,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative());
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
+            new CaseManagementOrderIssuedEvent(callbackRequest, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,

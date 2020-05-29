@@ -10,7 +10,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -45,9 +44,6 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
     private IdamApi idamApi;
 
     @MockBean
-    private RequestData requestData;
-
-    @MockBean
     private InboxLookupService inboxLookupService;
 
     @MockBean
@@ -66,8 +62,7 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
         given(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(caseDetails))
             .willReturn(c2PaymentNotTakenParameters);
 
-        c2PbaPaymentNotTakenEventHandler.sendEmail(
-            new C2PbaPaymentNotTakenEvent(callbackRequest(), requestData));
+        c2PbaPaymentNotTakenEventHandler.sendEmail(new C2PbaPaymentNotTakenEvent(callbackRequest()));
 
         verify(notificationService).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE, "admin@family-court.com", c2PaymentNotTakenParameters,
@@ -88,8 +83,7 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
         given(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(caseDetails))
             .willReturn(c2PaymentNotTakenParameters);
 
-        c2PbaPaymentNotTakenEventHandler.sendEmail(
-            new C2PbaPaymentNotTakenEvent(callbackRequest, requestData));
+        c2PbaPaymentNotTakenEventHandler.sendEmail(new C2PbaPaymentNotTakenEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE, CTSC_INBOX, c2PaymentNotTakenParameters, "12345");
