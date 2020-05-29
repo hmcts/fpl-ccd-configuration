@@ -41,11 +41,6 @@ public class OrderTypeAndDocument {
 
     @JsonIgnore
     public boolean isClosable() {
-        return isFinal() || type == EMERGENCY_PROTECTION_ORDER;
-    }
-
-    @JsonIgnore
-    public boolean isClosable() {
-        return FINAL == subtype || EMERGENCY_PROTECTION_ORDER == type;
+        return isFinal() || EMERGENCY_PROTECTION_ORDER == type;
     }
 }
