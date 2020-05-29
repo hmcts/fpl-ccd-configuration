@@ -68,6 +68,50 @@ class CaseDataTest {
     @Autowired
     private Time time;
 
+    @Nested
+    class GetDirectionsToComplyWith {
+
+        @Test
+        void shouldReturnStandardDirectionOrderDirectionsWhenServedCaseManagementOrdersIsEmpty() {
+            List<Element<Direction>> sdoDirections = wrapElements(directionForParty(LOCAL_AUTHORITY));
+
+            CaseData caseData = CaseData.builder()
+                .standardDirectionOrder(standardDirectionOrder(sdoDirections))
+                .servedCaseManagementOrders(emptyList())
+                .build();
+
+            assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(sdoDirections);
+        }
+
+        @Test
+        void shouldReturnCaseManagementOrderDirectionsWhenServedCaseManagementOrdersIsNotEmpty() {
+            List<Element<Direction>> cmoDirections = wrapElements(directionForParty(LOCAL_AUTHORITY));
+            List<Element<Direction>> sdoDirections = wrapElements(directionForParty(CAFCASS));
+
+            CaseData caseData = CaseData.builder()
+                .standardDirectionOrder(standardDirectionOrder(sdoDirections))
+                .servedCaseManagementOrders(servedCaseManagementOrder(cmoDirections))
+                .build();
+
+            assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(cmoDirections);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoDirections() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(emptyList());
+        }
+
+        private StandardDirectionOrder standardDirectionOrder(List<Element<Direction>> sdoDirections) {
+            return StandardDirectionOrder.builder().directions(sdoDirections).build();
+        }
+
+        private List<Element<CaseManagementOrder>> servedCaseManagementOrder(List<Element<Direction>> cmoDirections) {
+            return wrapElements(CaseManagementOrder.builder().directions(cmoDirections).build());
+        }
+    }
+
     @Test
     void shouldSerialiseCaseManagementOrderToCorrectStringValueWhenInSelfReview() throws JsonProcessingException {
         String serialised = mapper.writeValueAsString(CaseData.builder()

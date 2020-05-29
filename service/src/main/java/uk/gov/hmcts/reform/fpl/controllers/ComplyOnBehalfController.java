@@ -50,12 +50,10 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
-
-        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = getMapping(directionsToComplyWith);
+        Map<DirectionAssignee, List<Element<Direction>>> assigneeMap = getMapping(caseData.getDirectionsToComplyWith());
 
         prepareDirectionsForUsersService.addDirectionsToCaseDetails(
-            caseDetails, sortedDirections, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
+            caseDetails, assigneeMap, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));

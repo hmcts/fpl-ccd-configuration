@@ -124,6 +124,19 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
 
+    @JsonIgnore
+    public List<Element<Direction>> getDirectionsToComplyWith() {
+        if (getServedCaseManagementOrders().isEmpty() && standardDirectionOrder == null) {
+            return emptyList();
+        }
+
+        if (getServedCaseManagementOrders().isEmpty()) {
+            return standardDirectionOrder.getDirections();
+        }
+
+        return servedCaseManagementOrders.get(0).getValue().getDirections();
+    }
+
     @JsonUnwrapped
     private Directions directionsForCaseManagementOrder;
 
