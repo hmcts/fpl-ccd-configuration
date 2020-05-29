@@ -41,7 +41,7 @@
     "Name": "Populate standard directions",
     "Description": "Populate standard directions",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "Submitted",
+    "PreConditionState(s)": "*",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
     "EndButtonLabel": "Save and continue"
@@ -60,6 +60,8 @@
     "RetriesTimeoutAboutToStartEvent": "1,2,3,4,5",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/return-application/about-to-submit",
     "RetriesTimeoutURLAboutToSubmitEvent": "1,2,3,4,5",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/return-application/submitted",
+    "RetriesTimeoutURLSubmittedEvent": "1,2,3,4,5",
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"

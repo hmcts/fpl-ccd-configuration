@@ -193,7 +193,7 @@ dependencies {
   compile group: 'org.springframework.security', name: 'spring-security-config'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
-  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.17' // override to fix vulnerability issue (CVE-2019-17195)
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.17.1' // override to fix vulnerability issue (CVE-2019-17195)
   compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
   compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.11.0'
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.14.0', classifier: 'thin'
@@ -213,7 +213,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
-  compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.4.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.5.2'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '6.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.6.4'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
@@ -222,7 +222,7 @@ dependencies {
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
 
   compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
-  compile group: 'commons-io', name: 'commons-io', version: '2.6'
+  compile group: 'commons-io', name: 'commons-io', version: '2.7'
 
   compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
@@ -238,8 +238,9 @@ dependencies {
 
   testCompile group: 'org.mockito', name :'mockito-core', version: '3.0.0'
   testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
+  testCompile group: 'org.apache.commons', name: 'commons-text', version: '1.8'
 
-  testCompile group:  'org.springframework.security', name: 'spring-security-test'
+  testCompile group: 'org.springframework.security', name: 'spring-security-test'
 
   integrationTestCompile configurations.testRuntime {
     exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'

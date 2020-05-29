@@ -6,12 +6,14 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
@@ -35,16 +37,20 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.CONTACT_WITH_NAMED_PERSON;
+import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons.INCOMPLETE;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -85,7 +91,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         Map<String, Object> expectedHmctsParameters = getExpectedHmctsParameters(true);
         Map<String, Object> completeCafcassParameters = getExpectedCafcassParameters(true);
 
-        postSubmittedEvent("core-case-data-store-api/callback-request.json");
+        postSubmittedEvent(callbackRequest());
 
         verify(notificationClient).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
@@ -108,8 +114,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() throws Exception {
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO, OPEN);
-        postSubmittedEvent(caseDetails);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
+
+        postSubmittedEvent(callbackRequest);
+
         Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
 
         verify(notificationClient).sendEmail(
@@ -133,8 +142,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldSendNotificationToCtscAdminWhenCtscIsEnabledWithinCaseDetails() throws Exception {
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
-        postSubmittedEvent(caseDetails);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
+
+        postSubmittedEvent(callbackRequest);
+
         Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
 
         verify(notificationClient, never()).sendEmail(
@@ -155,10 +167,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldMakePaymentOfAnOpenCaseWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
 
-        postSubmittedEvent(caseDetails);
+        postSubmittedEvent(callbackRequest);
 
         verify(paymentService).makePaymentForCaseOrders(CASE_REFERENCE,
             mapper.convertValue(caseDetails.getData(), CaseData.class));
@@ -167,10 +180,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotMakePaymentOfAnOpenCaseWhenFeatureToggleIsFalse() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
 
-        postSubmittedEvent(caseDetails);
+        postSubmittedEvent(callbackRequest);
 
         verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
     }
@@ -178,10 +192,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotMakePaymentOfAnOpenCaseWhenAmountToPayWasNotDisplayed() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", NO.getValue());
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
 
-        postSubmittedEvent(caseDetails);
+        postSubmittedEvent(callbackRequest);
 
         verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
     }
@@ -189,10 +204,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotMakePaymentOnAReturnedCaseWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, RETURNED);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
 
-        postSubmittedEvent(caseDetails);
+        postSubmittedEvent(callbackRequest);
 
         verify(paymentService, never()).makePaymentForCaseOrders(any(), any());
     }
@@ -200,13 +216,14 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
 
         doThrow(new PaymentsApiException("", new Throwable())).when(paymentService)
             .makePaymentForCaseOrders(any(), any());
 
-        postSubmittedEvent(caseDetails);
+        postSubmittedEvent(callbackRequest);
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
@@ -224,9 +241,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
 
-        postSubmittedEvent(caseDetails);
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
+        postSubmittedEvent(callbackRequest);
 
         verify(notificationClient, never()).sendEmail(
             eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA),
@@ -244,10 +262,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES, OPEN);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", NO.getValue());
 
-        postSubmittedEvent(caseDetails);
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
+        postSubmittedEvent(callbackRequest);
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
@@ -262,16 +281,85 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             "12345");
     }
 
+    @Test
+    void shouldNotifyHmctsAdminWhenTheLocalAuthorityHasSubmittedAReturnedCase() throws Exception {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
+        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient).sendEmail(
+            eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
+            eq(HMCTS_ADMIN_EMAIL),
+            anyMap(),
+            eq("12345"));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
+            eq(CTSC_EMAIL),
+            anyMap(),
+            eq("12345"));
+    }
+
+    @Test
+    void shouldNotifyCtscAdminWhenTheLocalAuthorityHasSubmittedAReturnedCase() throws Exception {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient, never()).sendEmail(
+            eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
+            eq(HMCTS_ADMIN_EMAIL),
+            anyMap(),
+            eq("12345"));
+
+        verify(notificationClient).sendEmail(
+            eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
+            eq(CTSC_EMAIL),
+            anyMap(),
+            eq("12345"));
+    }
+
+    @Test
+    void shouldNotNotifyAdminOfAReturnedCaseWhenTheCaseIsSubmittedFromOpenState() throws Exception {
+        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient, never()).sendEmail(
+            eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
+            eq(HMCTS_ADMIN_EMAIL),
+            anyMap(),
+            eq("12345"));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
+            eq(CTSC_EMAIL),
+            anyMap(),
+            eq("12345"));
+    }
+
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C110a",
             "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
     }
 
-    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc, State state) {
+    private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
         return CaseDetails.builder()
             .id(CASE_REFERENCE)
-            .state(state.getValue())
             .data(new HashMap<>(Map.of(
+                RETURN_APPLICATION, ReturnApplication.builder()
+                    .note("Some note")
+                    .reason(List.of(INCOMPLETE))
+                    .build(),
                 "orders", Orders.builder()
                         .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
                         .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
@@ -338,5 +426,14 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
+    }
+
+    private CallbackRequest buildCallbackRequest(CaseDetails caseDetails, State stateBefore) {
+        return CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(CaseDetails.builder()
+                .state(stateBefore.getValue())
+                .build())
+            .build();
     }
 }
