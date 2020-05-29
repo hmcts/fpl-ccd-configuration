@@ -67,7 +67,7 @@ class CaseRoleServiceTest {
 
     @BeforeEach
     void setup() {
-        given(idam.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
+        given(idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
@@ -157,7 +157,7 @@ class CaseRoleServiceTest {
             when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY))
                 .thenReturn(Set.of(USER_1_ID, USER_2_ID));
 
-            doThrow(new RuntimeException()).when(idam).authenticateUser(any(), any());
+            doThrow(new RuntimeException()).when(idam).getAccessToken(any(), any());
 
             GrantCaseAccessException expectedException =
                 new GrantCaseAccessException(CASE_ID, Set.of(USER_1_ID, USER_2_ID), CASE_ROLES);
