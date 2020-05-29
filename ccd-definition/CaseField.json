@@ -1502,5 +1502,14 @@
     "Label": "Return details",
     "FieldType": "ReturnApplication",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "state",
+    "FieldType": "Text",
+    "Label": "End State",
+    "SecurityClassification": "Public",
+    "Comment": "Field required for changing state in a controller"
   }
 ]

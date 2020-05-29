@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -34,8 +35,9 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -46,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -60,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
+    private static final String DRAFT_SEALED_ORDER_FILE_NAME = "draft-standard-directions-order.pdf";
     private static final Document DOCUMENT = document();
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2020, 1, 20, 11, 11, 11);
     private static final LocalDateTime HEARING_END_DATE = LocalDateTime.of(2020, 2, 20, 11, 11, 11);
@@ -82,40 +86,31 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
 
         given(docmosisService.generateDocmosisDocument(any(DocmosisData.class), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME)).willReturn(DOCUMENT);
+        given(uploadDocumentService.uploadPDF(eq(PDF), any())).willReturn(DOCUMENT);
     }
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-        JudgeAndLegalAdvisor legalAdvisorWithAllocatedJudge = JudgeAndLegalAdvisor.builder()
-            .useAllocatedJudge("Yes")
-            .legalAdvisorName("Chris Newport")
-            .build();
-
-        Judge allocatedJudge = Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build();
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(directionsWithShowHideValuesRemoved()
-                .put("dateOfIssue", dateNow())
-                .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
-                .put("judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge)
-                .put("allocatedJudge", allocatedJudge)
-                .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                    .startDate(HEARING_START_DATE)
-                    .endDate(HEARING_END_DATE)
-                    .venue("EXAMPLE")
-                    .build()))
-                .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", dateNow())
-                .put("applicants", getApplicant())
-                .build())
-            .build();
+        CaseDetails caseDetails = getCaseDetailsWithSdoStatus(SEALED);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getStandardDirectionOrder()).isEqualToComparingFieldByField(expectedOrder());
+        assertThat(callbackResponse.getData()).extractingByKey("state").isEqualTo("PREPARE_FOR_HEARING");
+        assertThat(caseData.getStandardDirectionOrder()).isEqualToComparingFieldByField(expectedOrder(SEALED));
+        assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
+        assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
+    }
+
+    @Test
+    void shouldNotUpdateStateWhenDraftOrder() {
+        CaseDetails caseDetails = getCaseDetailsWithSdoStatus(DRAFT);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(callbackResponse.getData()).extractingByKey("state").isNull();
+        assertThat(caseData.getStandardDirectionOrder()).isEqualToComparingFieldByField(expectedOrder(DRAFT));
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
     }
@@ -142,6 +137,28 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(response.getErrors()).containsOnly("You need to enter the allocated judge.");
     }
 
+    private CaseDetails getCaseDetailsWithSdoStatus(OrderStatus status) {
+        JudgeAndLegalAdvisor legalAdvisorWithAllocatedJudge = JudgeAndLegalAdvisor.builder()
+            .useAllocatedJudge("Yes")
+            .legalAdvisorName("Chris Newport")
+            .build();
+
+        Judge allocatedJudge = Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build();
+
+        return CaseDetails.builder()
+            .data(directionsWithShowHideValuesRemoved()
+                .put("dateOfIssue", dateNow())
+                .put("standardDirectionOrder", Order.builder().orderStatus(status).build())
+                .put("judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge)
+                .put("allocatedJudge", allocatedJudge)
+                .put(HEARING_DETAILS_KEY, hearingDetails())
+                .put("caseLocalAuthority", "example")
+                .put("dateSubmitted", dateNow())
+                .put("applicants", getApplicant())
+                .build())
+            .build();
+    }
+
     private ImmutableMap.Builder<String, Object> directionsWithShowHideValuesRemoved() {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
@@ -162,14 +179,22 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
             .build());
     }
 
-    private Order expectedOrder() {
+    private Order expectedOrder(OrderStatus status) {
+        String fileName;
+
+        if (status == SEALED) {
+            fileName = SEALED_ORDER_FILE_NAME;
+        } else {
+            fileName = DRAFT_SEALED_ORDER_FILE_NAME;
+        }
+
         return Order.builder()
             .directions(fullyPopulatedDirections())
-            .orderStatus(SEALED)
+            .orderStatus(status)
             .orderDoc(DocumentReference.builder()
                 .url(DOCUMENT.links.self.href)
                 .binaryUrl(DOCUMENT.links.binary.href)
-                .filename("standard-directions-order.pdf")
+                .filename(fileName)
                 .build())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(MAGISTRATES)
@@ -258,5 +283,13 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
     private List<Element<Applicant>> getApplicant() {
         return wrapElements(Applicant.builder().party(ApplicantParty.builder().organisationName("").build()).build());
+    }
+
+    private List<Element<HearingBooking>> hearingDetails() {
+        return wrapElements(HearingBooking.builder()
+            .startDate(HEARING_START_DATE)
+            .endDate(HEARING_END_DATE)
+            .venue("EXAMPLE")
+            .build());
     }
 }
