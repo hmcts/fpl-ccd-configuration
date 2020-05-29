@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.events;
 
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
+@EqualsAndHashCode
 public class CallbackEvent {
 
     private final CallbackRequest callbackRequest;
@@ -13,6 +15,12 @@ public class CallbackEvent {
         this.callbackRequest = callbackRequest;
         this.authorisation = requestData.authorisation();
         this.userId = requestData.userId();
+    }
+
+    CallbackEvent(CallbackEvent callbackEvent) {
+        this.callbackRequest = callbackEvent.callbackRequest;
+        this.authorisation = callbackEvent.authorisation;
+        this.userId = callbackEvent.userId;
     }
 
     public CallbackRequest getCallbackRequest() {
