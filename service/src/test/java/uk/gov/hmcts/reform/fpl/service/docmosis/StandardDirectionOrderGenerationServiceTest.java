@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,7 +86,7 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
+    void shouldMapEmptyCaseDataForDraftSDO() {
         Order order = Order.builder().dateOfIssue("29 November 2019").build();
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(getCaseData(order));
@@ -96,7 +95,7 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapDirectionsForDraftSDOWhenAllAssignees() throws IOException {
+    void shouldMapDirectionsForDraftSDOWhenAllAssignees() {
         Order order = Order.builder().directions(getDirections()).build();
         DocmosisStandardDirectionOrder templateData = service.getTemplateData(getCaseData(order));
 
@@ -104,7 +103,7 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() throws IOException {
+    void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() {
         Direction notNeededDirection = Direction.builder().directionNeeded("No").build();
         Order order = Order.builder().directions(wrapElements(notNeededDirection)).build();
 
@@ -114,7 +113,7 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapCaseDataWhenEmptyListValues() throws IOException {
+    void shouldMapCaseDataWhenEmptyListValues() {
         CaseData caseData = caseDataWithEmptyListValues();
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(caseData);
@@ -129,7 +128,7 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapCompleteCaseDataForSDOTemplate() throws IOException {
+    void shouldMapCompleteCaseDataForSDOTemplate() {
         DocmosisStandardDirectionOrder template = service.getTemplateData(fullCaseData());
 
         assertThat(template).isEqualToComparingFieldByField(fullDocmosisOrder());

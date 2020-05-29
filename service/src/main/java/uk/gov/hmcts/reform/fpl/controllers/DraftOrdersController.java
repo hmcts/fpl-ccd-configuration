@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGeneration
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -133,8 +132,7 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -173,8 +171,7 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -233,8 +230,7 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
@@ -293,7 +289,7 @@ public class DraftOrdersController {
     }
 
     private void persistHiddenValues(HearingBooking firstHearing,
-                                     List<Element<Direction>> directions) throws IOException {
+                                     List<Element<Direction>> directions) {
         List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(firstHearing);
 
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(standardDirections, directions);

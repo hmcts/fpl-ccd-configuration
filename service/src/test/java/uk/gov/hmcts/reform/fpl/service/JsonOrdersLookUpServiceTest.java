@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
-import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
@@ -35,7 +33,7 @@ class JsonOrdersLookUpServiceTest {
     }
 
     @Test
-    void shouldPopulateOrderDefinitionForStandardDirectionOrder() throws IOException {
+    void shouldPopulateOrderDefinitionForStandardDirectionOrder() {
         OrderDefinition expectedOrderDefinition = OrderDefinition.builder()
             .type("standardDirectionOrder")
             .language(ENGLISH)
