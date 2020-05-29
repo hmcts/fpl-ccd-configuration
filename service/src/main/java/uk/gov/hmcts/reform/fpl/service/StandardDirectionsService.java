@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -10,11 +11,13 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Optional.ofNullable;
@@ -28,13 +31,26 @@ public class StandardDirectionsService {
     private final CalendarService calendarService;
     private final OrdersLookupService ordersLookupService;
 
-    public List<Element<Direction>> getDirections(HearingBooking hearingBooking) throws IOException {
+    public List<Element<Direction>> getDirections(HearingBooking hearingBooking) {
         LocalDateTime hearingStartDate = ofNullable(hearingBooking).map(HearingBooking::getStartDate).orElse(null);
 
         return ordersLookupService.getStandardDirectionOrder().getDirections()
             .stream()
             .map(configuration -> constructDirectionForCCD(hearingStartDate, configuration))
             .collect(toList());
+    }
+
+    public boolean hasEmptyDates(CaseData caseData) {
+        return Stream.of(caseData.getAllParties(),
+                caseData.getLocalAuthorityDirections(),
+                caseData.getRespondentDirections(),
+                caseData.getCafcassDirections(),
+                caseData.getOtherPartiesDirections(),
+                caseData.getCourtDirections())
+            .flatMap(Collection::stream)
+            .map(Element::getValue)
+            .map(Direction::getDateToBeCompletedBy)
+            .anyMatch(Objects::isNull);
     }
 
     private Element<Direction> constructDirectionForCCD(LocalDateTime hearingDate, DirectionConfiguration direction) {
