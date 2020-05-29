@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -43,7 +44,7 @@ public class HearingBookingService {
         return unwrapElements(hearingDetails).stream()
             .filter(hearing -> hearing.getStartDate().isAfter(time.now()))
             .min(comparing(HearingBooking::getStartDate))
-            .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
+            .orElseThrow(NoHearingBookingException::new);
     }
 
     public Optional<HearingBooking> getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
