@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -27,7 +26,6 @@ import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Slf4j
 public class PopulateStandardDirectionsOrderDatesHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final StandardDirectionsService standardDirectionsService;
@@ -52,20 +50,26 @@ public class PopulateStandardDirectionsOrderDatesHandler {
     }
 
     private Map<String, Object> getDataWithDates(HearingBooking hearingBooking, Map<String, Object> data) {
-        getMapping(standardDirectionsService.getDirections(hearingBooking))
-            .forEach((assignee, directionElements) -> populateEmptyDates(data, assignee, directionElements));
+        List<Element<Direction>> directions = standardDirectionsService.getDirections(hearingBooking);
+        getMapping(directions).forEach((assignee, directionElements) -> {
+            if (!directionElements.isEmpty()) {
+                populateEmptyDates(data, assignee, directionElements);
+            }
+        });
 
         return data;
     }
 
     private void populateEmptyDates(Map<String, Object> data, DirectionAssignee assignee,
-                                    List<Element<Direction>> directionsConfigForAssignee) {
+                                    List<Element<Direction>> configDirectionsForAssignee) {
         List<Element<Direction>> directionsForAssignee = mapper.convertValue(data.get(assignee.getValue()),
-            new TypeReference<>() {});
+            new TypeReference<>() {
+            });
+
         for (int i = 0; i < directionsForAssignee.size(); i++) {
             var direction = directionsForAssignee.get(i).getValue();
             if (direction.getDateToBeCompletedBy() == null) {
-                direction.setDateToBeCompletedBy(directionsConfigForAssignee.get(i)
+                direction.setDateToBeCompletedBy(configDirectionsForAssignee.get(i)
                     .getValue()
                     .getDateToBeCompletedBy());
             }
