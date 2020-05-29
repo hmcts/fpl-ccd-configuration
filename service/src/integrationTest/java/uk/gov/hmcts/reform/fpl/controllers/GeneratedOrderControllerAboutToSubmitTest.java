@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
@@ -317,7 +318,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
+                .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .order(GeneratedOrder.builder()
                     .title("Example Order")
@@ -340,7 +341,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(EMERGENCY_PROTECTION_ORDER, null, judgeAndLegalAdvisor)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
+                .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .epoChildren(EPOChildren.builder().descriptionNeeded("No").build())
                 .epoType(EPOType.PREVENT_REMOVAL)
@@ -361,18 +362,18 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         given(featureToggleService.isCloseCaseEnabled()).willReturn(false);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+        List<Element<Child>> children = testChildren();
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
+                .children1(children)
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
         final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getAllChildren()).isEqualTo(createChildren("Fred", "John"));
+        assertThat(caseData.getAllChildren()).isEqualTo(children);
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
