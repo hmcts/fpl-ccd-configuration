@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +47,7 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
@@ -72,97 +74,56 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    FixedTimeConfiguration.class, LookupTestConfig.class, GeneratedOrderService.class
+    FixedTimeConfiguration.class, LookupTestConfig.class, GeneratedOrderService.class, ChildrenService.class
 })
 class GeneratedOrderServiceTest {
+    private static final List<Element<Child>> someChildren = List.of(
+        childWithFinalOrderIssued("Yes"),
+        childWithFinalOrderIssued("No")
+    );
+    private static final List<Element<Child>> allChildren = List.of(
+        childWithFinalOrderIssued("Yes"),
+        childWithFinalOrderIssued("Yes")
+    );
+    private OrderTypeAndDocument typeAndDocument;
+
     @Autowired
     private Time time;
-
     @Autowired
     private GeneratedOrderService service;
 
-    @Nested
-    class C21Tests {
+    private static Stream<Arguments> fileNameSource() {
+        return Stream.of(
+            Arguments.of(BLANK_ORDER, null, "blank_order_c21.pdf"),
+            Arguments.of(CARE_ORDER, INTERIM, "interim_care_order.pdf"),
+            Arguments.of(CARE_ORDER, FINAL, "final_care_order.pdf"),
+            Arguments.of(SUPERVISION_ORDER, INTERIM, "interim_supervision_order.pdf"),
+            Arguments.of(SUPERVISION_ORDER, FINAL, "final_supervision_order.pdf"),
+            Arguments.of(EMERGENCY_PROTECTION_ORDER, null, "emergency_protection_order.pdf"),
+            Arguments.of(SUPERVISION_ORDER, null, "supervision_order.pdf"),
+            Arguments.of(CARE_ORDER, null, "care_order.pdf")
+        );
+    }
 
-        @Test
-        void shouldReturnExpectedC21OrderWhenOrderTitleIsNull() {
-            GeneratedOrder order = GeneratedOrder.builder()
-                .title(null)
-                .details("Some details")
-                .document(DocumentReference.builder().build())
-                .build();
+    private static Stream<Arguments> docmosisDataGenerationSource() {
+        return Stream.of(
+            Arguments.of(BLANK_ORDER, null),
+            Arguments.of(CARE_ORDER, INTERIM),
+            Arguments.of(CARE_ORDER, FINAL),
+            Arguments.of(SUPERVISION_ORDER, INTERIM),
+            Arguments.of(SUPERVISION_ORDER, FINAL),
+            Arguments.of(EMERGENCY_PROTECTION_ORDER, null)
+        );
+    }
 
-            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                    .type(BLANK_ORDER)
-                    .document(DocumentReference.builder().build())
-                    .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
-
-            assertCommonC21Fields(builtOrder);
-            assertThat(builtOrder.getTitle()).isEqualTo("Order");
-        }
-
-        @Test
-        void shouldReturnExpectedOrderWhenC21OrderTitleIsEmptyString() {
-            GeneratedOrder order = GeneratedOrder.builder()
-                .title("")
-                .details("Some details")
-                .document(DocumentReference.builder().build())
-                .build();
-
-            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                    .type(BLANK_ORDER)
-                    .document(DocumentReference.builder().build())
-                    .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
-
-            assertCommonC21Fields(builtOrder);
-            assertThat(builtOrder.getTitle()).isEqualTo("Order");
-        }
-
-        @Test
-        void shouldReturnExpectedOrderWhenOrderTitleIsStringWithSpaceCharacter() {
-            GeneratedOrder order = GeneratedOrder.builder()
-                .title(" ")
-                .details("Some details")
-                .document(DocumentReference.builder().build())
-                .build();
-
-            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                    .type(BLANK_ORDER)
-                    .document(DocumentReference.builder().build())
-                    .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
-
-            assertCommonC21Fields(builtOrder);
-            assertThat(builtOrder.getTitle()).isEqualTo("Order");
-        }
-
-        @Test
-        void shouldReturnExpectedOrderWhenOrderTitlePresent() {
-            GeneratedOrder order = GeneratedOrder.builder()
-                .title("Example Title")
-                .details("Some details")
-                .document(DocumentReference.builder().build())
-                .build();
-
-            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                    .type(BLANK_ORDER)
-                    .document(DocumentReference.builder().build())
-                    .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
-
-            assertCommonC21Fields(builtOrder);
-            assertThat(builtOrder.getTitle()).isEqualTo("Example Title");
-        }
-
-        private void assertCommonC21Fields(GeneratedOrder order) {
-            assertThat(order.getType()).isEqualTo(BLANK_ORDER.getLabel());
-            assertThat(order.getDocument()).isEqualTo(DocumentReference.builder().build());
-            assertThat(order.getDetails()).isEqualTo("Some details");
-            assertThat(order.getDate()).isNotNull();
-            assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
-        }
+    private static Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
+        return element(Child.builder()
+            .finalOrderIssued(finalOrderIssued)
+            .party(ChildParty.builder()
+                .firstName(randomAlphanumeric(10))
+                .lastName(randomAlphanumeric(10))
+                .build())
+            .build());
     }
 
     @Test
@@ -334,84 +295,6 @@ class GeneratedOrderServiceTest {
         assertThat(data).containsOnlyKeys("DO NOT REMOVE");
     }
 
-    @Test
-    void shouldGetAllocatedJudgeFromMostRecentOrderWhenOrderExists() {
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeLastName("Byrne")
-            .judgeTitle(DEPUTY_DISTRICT_JUDGE)
-            .judgeEmailAddress("judge@gmail.com")
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .orderCollection(getGeneratedOrdersList())
-            .build();
-
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(caseData);
-
-        assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(judgeAndLegalAdvisor);
-    }
-
-    private List<Element<GeneratedOrder>> getGeneratedOrdersList() {
-        JudgeAndLegalAdvisor firstJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeLastName("Moley")
-            .judgeTitle(DEPUTY_DISTRICT_JUDGE)
-            .judgeEmailAddress("judge@gmail.com")
-            .build();
-
-        JudgeAndLegalAdvisor secondJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeLastName("Byrne")
-            .judgeTitle(DEPUTY_DISTRICT_JUDGE)
-            .judgeEmailAddress("judge@gmail.com")
-            .build();
-
-        List<Element<GeneratedOrder>> generatedOrders = new ArrayList<>();
-
-        GeneratedOrder firstGeneratedOrder = GeneratedOrder.builder()
-            .judgeAndLegalAdvisor(firstJudgeAndLegalAdvisor)
-            .build();
-
-        GeneratedOrder secondGeneratedOrder = GeneratedOrder.builder()
-            .judgeAndLegalAdvisor(secondJudgeAndLegalAdvisor)
-            .build();
-
-        generatedOrders.add(element(firstGeneratedOrder));
-        generatedOrders.add(element(secondGeneratedOrder));
-
-        return generatedOrders;
-    }
-
-    @Test
-    void shouldGetEmptyAllocatedJudgeFromMostRecentOrderWhenNoOrderExists() {
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(CaseData
-            .builder().build());
-
-        assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(JudgeAndLegalAdvisor.builder().build());
-    }
-
-    private static Stream<Arguments> fileNameSource() {
-        return Stream.of(
-            Arguments.of(BLANK_ORDER, null, "blank_order_c21.pdf"),
-            Arguments.of(CARE_ORDER, INTERIM, "interim_care_order.pdf"),
-            Arguments.of(CARE_ORDER, FINAL, "final_care_order.pdf"),
-            Arguments.of(SUPERVISION_ORDER, INTERIM, "interim_supervision_order.pdf"),
-            Arguments.of(SUPERVISION_ORDER, FINAL, "final_supervision_order.pdf"),
-            Arguments.of(EMERGENCY_PROTECTION_ORDER, null, "emergency_protection_order.pdf"),
-            Arguments.of(SUPERVISION_ORDER, null, "supervision_order.pdf"),
-            Arguments.of(CARE_ORDER, null, "care_order.pdf")
-        );
-    }
-
-    private static Stream<Arguments> docmosisDataGenerationSource() {
-        return Stream.of(
-            Arguments.of(BLANK_ORDER, null),
-            Arguments.of(CARE_ORDER, INTERIM),
-            Arguments.of(CARE_ORDER, FINAL),
-            Arguments.of(SUPERVISION_ORDER, INTERIM),
-            Arguments.of(SUPERVISION_ORDER, FINAL),
-            Arguments.of(EMERGENCY_PROTECTION_ORDER, null)
-        );
-    }
-
     private Map<String, Object> createExpectedDocmosisData(GeneratedOrderType type,
                                                            GeneratedOrderSubtype subtype,
                                                            LocalDateTime dateTime) {
@@ -482,7 +365,7 @@ class GeneratedOrderServiceTest {
                     LocalDateTime expiryDate = dateTime.plusMonths(5);
                     final String suffix = getDayOfMonthSuffix(expiryDate.getDayOfMonth());
                     final String formattedDateTime = formatLocalDateTimeBaseUsingFormat(expiryDate,
-                            "h:mma 'on the' d'" + suffix + "' MMMM y");
+                        "h:mma 'on the' d'" + suffix + "' MMMM y");
                     expectedMap
                         .put("orderTitle", "Supervision order")
                         .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
@@ -638,5 +521,331 @@ class GeneratedOrderServiceTest {
             .build();
 
         return caseDataBuilder.build();
+    }
+
+    @Nested
+    class ShowCloseCasePage {
+
+        @Test
+        void shouldReturnFalseWhenNotAllChildrenHaveFinalOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, someChildren, true);
+
+            assertThat(showCloseCase).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseWhenCloseCaseIsNotEnabled() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, false);
+
+            assertThat(showCloseCase).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseWhenCloseCaseFromFinalOrderIsSet() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, "Yes", allChildren, true);
+
+            assertThat(showCloseCase).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseWhenTheOrderTypeIsABlankOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
+
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, true);
+
+            assertThat(showCloseCase).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseWhenTheOrderTypeIsInterim() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(INTERIM).build();
+
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, true);
+
+            assertThat(showCloseCase).isFalse();
+        }
+
+        @Test
+        void shouldReturnTrueWhenOrderIsEmergencyProtectionOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build();
+
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, true);
+
+            assertThat(showCloseCase).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueWhenOrderIsAFinalOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, true);
+
+            assertThat(showCloseCase).isTrue();
+        }
+
+    }
+
+    @Nested
+    class ShouldGenerateDocument {
+        @Test
+        @DisplayName("Should generate a document when generating a C21")
+        void shouldReturnTrueWhenOrderIsBlankOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                null,
+                someChildren,
+                null,
+                true);
+
+            assertThat(shouldGenerateDocument).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should generate if the order is case closeable and after the close case page")
+        void shouldReturnTrueWhenFurtherDirectionsIsPopulatedAndCloseCaseFromOrderIsPopulated() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            FurtherDirections directions = FurtherDirections.builder()
+                .directions("I see a ship in the harbor")
+                .build();
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                directions,
+                allChildren,
+                "Yes",
+                true);
+
+            assertThat(shouldGenerateDocument).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should generate if the order is case closable but not all children have a final "
+            + "order ")
+        void shouldReturnTrueWhenFurtherDirectionsIsPopulatedAndNotAllChildrenHaveFinalOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            FurtherDirections directions = FurtherDirections.builder()
+                .directions("I can and shall obey")
+                .build();
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                directions,
+                someChildren,
+                null,
+                true);
+
+            assertThat(shouldGenerateDocument).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should not generate if all children have final order but case has not been selected to be "
+            + "closed or not")
+        void shouldReturnFalseWhenAllChildrenHaveFinalOrderButCloseCaseFromFinalOrderIsNull() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            FurtherDirections directions = FurtherDirections.builder()
+                .directions("But if it wasn't for your misfortune")
+                .build();
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                directions,
+                allChildren,
+                null,
+                true);
+
+            assertThat(shouldGenerateDocument).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should not generate if C21 is not selected and haven't progressed past further directions")
+        void shouldReturnFalseWhenOrderTypeIsNotBlankOrderAndFurtherDirectionsIsNull() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                null,
+                someChildren,
+                null,
+                true);
+
+            assertThat(shouldGenerateDocument).isFalse();
+        }
+
+        @Test
+        @DisplayName("Should generate if close case is disabled and all children don't have final order")
+        void shouldReturnTrueWhenCloseCaseIsDisabledAndNotAllChildrenHaveFinalOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            FurtherDirections directions = FurtherDirections.builder()
+                .directions("I'd be a heavenly person today")
+                .build();
+
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                directions,
+                someChildren,
+                null,
+                false);
+
+            assertThat(shouldGenerateDocument).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should generate if close case is disabled and all children have final order")
+        void shouldReturnTrueWhenCloseCaseIsDisabledAndAllChildrenHaveFinalOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            FurtherDirections directions = FurtherDirections.builder()
+                .directions("And I thought I was mistaken")
+                .build();
+
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                directions,
+                allChildren,
+                null,
+                false);
+
+            assertThat(shouldGenerateDocument).isTrue();
+        }
+    }
+
+    @Nested
+    class C21Tests {
+
+        @Test
+        void shouldReturnExpectedC21OrderWhenOrderTitleIsNull() {
+            GeneratedOrder order = GeneratedOrder.builder()
+                .title(null)
+                .details("Some details")
+                .document(DocumentReference.builder().build())
+                .build();
+
+            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                    .type(BLANK_ORDER)
+                    .document(DocumentReference.builder().build())
+                    .build(),
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
+
+            assertCommonC21Fields(builtOrder);
+            assertThat(builtOrder.getTitle()).isEqualTo("Order");
+        }
+
+        @Test
+        void shouldReturnExpectedOrderWhenC21OrderTitleIsEmptyString() {
+            GeneratedOrder order = GeneratedOrder.builder()
+                .title("")
+                .details("Some details")
+                .document(DocumentReference.builder().build())
+                .build();
+
+            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                    .type(BLANK_ORDER)
+                    .document(DocumentReference.builder().build())
+                    .build(),
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
+
+            assertCommonC21Fields(builtOrder);
+            assertThat(builtOrder.getTitle()).isEqualTo("Order");
+        }
+
+        @Test
+        void shouldReturnExpectedOrderWhenOrderTitleIsStringWithSpaceCharacter() {
+            GeneratedOrder order = GeneratedOrder.builder()
+                .title(" ")
+                .details("Some details")
+                .document(DocumentReference.builder().build())
+                .build();
+
+            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                    .type(BLANK_ORDER)
+                    .document(DocumentReference.builder().build())
+                    .build(),
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
+
+            assertCommonC21Fields(builtOrder);
+            assertThat(builtOrder.getTitle()).isEqualTo("Order");
+        }
+
+        @Test
+        void shouldReturnExpectedOrderWhenOrderTitlePresent() {
+            GeneratedOrder order = GeneratedOrder.builder()
+                .title("Example Title")
+                .details("Some details")
+                .document(DocumentReference.builder().build())
+                .build();
+
+            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                    .type(BLANK_ORDER)
+                    .document(DocumentReference.builder().build())
+                    .build(),
+                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
+
+            assertCommonC21Fields(builtOrder);
+            assertThat(builtOrder.getTitle()).isEqualTo("Example Title");
+        }
+
+        @Test
+        void shouldGetAllocatedJudgeFromMostRecentOrderWhenOrderExists() {
+            JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+                .judgeLastName("Byrne")
+                .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+                .judgeEmailAddress("judge@gmail.com")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .orderCollection(getGeneratedOrdersList())
+                .build();
+
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(caseData);
+
+            assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(judgeAndLegalAdvisor);
+        }
+
+        private List<Element<GeneratedOrder>> getGeneratedOrdersList() {
+            JudgeAndLegalAdvisor firstJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+                .judgeLastName("Moley")
+                .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+                .judgeEmailAddress("judge@gmail.com")
+                .build();
+
+            JudgeAndLegalAdvisor secondJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+                .judgeLastName("Byrne")
+                .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+                .judgeEmailAddress("judge@gmail.com")
+                .build();
+
+            List<Element<GeneratedOrder>> generatedOrders = new ArrayList<>();
+
+            GeneratedOrder firstGeneratedOrder = GeneratedOrder.builder()
+                .judgeAndLegalAdvisor(firstJudgeAndLegalAdvisor)
+                .build();
+
+            GeneratedOrder secondGeneratedOrder = GeneratedOrder.builder()
+                .judgeAndLegalAdvisor(secondJudgeAndLegalAdvisor)
+                .build();
+
+            generatedOrders.add(element(firstGeneratedOrder));
+            generatedOrders.add(element(secondGeneratedOrder));
+
+            return generatedOrders;
+        }
+
+        @Test
+        void shouldGetEmptyAllocatedJudgeFromMostRecentOrderWhenNoOrderExists() {
+            JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(CaseData
+                .builder().build());
+
+            assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(JudgeAndLegalAdvisor.builder().build());
+        }
+
+        private void assertCommonC21Fields(GeneratedOrder order) {
+            assertThat(order.getType()).isEqualTo(BLANK_ORDER.getLabel());
+            assertThat(order.getDocument()).isEqualTo(DocumentReference.builder().build());
+            assertThat(order.getDetails()).isEqualTo("Some details");
+            assertThat(order.getDate()).isNotNull();
+            assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
+        }
     }
 }

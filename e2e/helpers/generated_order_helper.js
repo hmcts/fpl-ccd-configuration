@@ -16,6 +16,7 @@ const createCareOrder = async (I, createOrderEventPage, order, hasAllocatedJudge
   await createOrderEventPage.selectType(order.type, order.subtype);
   await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
+
   if (order.subtype === 'Interim') {
     await fillInterimEndDate(I, createOrderEventPage, order);
   }
@@ -24,6 +25,12 @@ const createCareOrder = async (I, createOrderEventPage, order, hasAllocatedJudge
   await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
+
+  if (order.closeCase !== undefined) {
+    await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.closeCase.id);
+    await createOrderEventPage.closeCaseFromOrder(order.closeCase);
+  }
+
   await I.completeEvent('Save and continue');
 };
 
@@ -31,16 +38,24 @@ const createSupervisionOrder = async (I, createOrderEventPage, order, hasAllocat
   await createOrderEventPage.selectType(order.type, order.subtype);
   await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
+
   if (order.subtype === 'Final') {
     await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.months);
     await createOrderEventPage.enterNumberOfMonths(order.months);
   } else {
     await fillInterimEndDate(I, createOrderEventPage, order);
   }
+
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
+
+  if (order.closeCase !== undefined) {
+    await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.closeCase.id);
+    await createOrderEventPage.closeCaseFromOrder(order.closeCase);
+  }
+
   await I.completeEvent('Save and continue');
 };
 
@@ -63,6 +78,12 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order, ha
   await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
+
+  if (order.closeCase !== undefined) {
+    await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.closeCase.id);
+    await createOrderEventPage.closeCaseFromOrder(order.closeCase);
+  }
+
   await I.completeEvent('Save and continue');
 };
 

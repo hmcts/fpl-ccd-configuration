@@ -53,6 +53,7 @@ module.exports = [
       legalAdvisorName: 'Fred Frederickson',
     },
     children: 'All',
+    closeCase: false,
   },
   {
     type: 'Supervision order',
@@ -100,6 +101,7 @@ module.exports = [
     },
     directionText: 'Example direction',
     children: [1],
+    closeCase: false,
   },
   {
     type: 'Emergency protection order',
@@ -132,5 +134,6 @@ module.exports = [
     directionText: 'Example direction',
     includePhrase: 'Yes',
     children: [0,1],
+    closeCase: false,
   },
 ];
