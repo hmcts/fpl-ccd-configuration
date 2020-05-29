@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -45,7 +44,7 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.State.PREPARE_FOR_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -207,7 +206,12 @@ public class DraftOrdersController {
         //add document to order
         order.setOrderDocReferenceFromDocument(document);
 
+        if (order.isSealed()) {
+            caseDetails.getData().put("state", PREPARE_FOR_HEARING.getValue());
+        }
+
         caseDetails.getData().put("standardDirectionOrder", order);
+
         caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
         caseDetails.getData().remove("dateOfIssue");
 
@@ -220,9 +224,9 @@ public class DraftOrdersController {
     public void handleSubmittedEvent(
         @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
-        if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
+
+        if (standardDirectionOrder.isDraft()) {
             return;
         }
 
@@ -230,20 +234,11 @@ public class DraftOrdersController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
-            "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
+            "internal-change:SEND_DOCUMENT",
+            Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
         );
 
-        if (standardDirectionOrder.getOrderStatus() == SEALED) {
-            coreCaseDataService.triggerEvent(
-                callbackRequest.getCaseDetails().getJurisdiction(),
-                callbackRequest.getCaseDetails().getCaseTypeId(),
-                callbackRequest.getCaseDetails().getId(),
-                "internal-change:SEND_DOCUMENT",
-                Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
-            );
-            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
-                requestData));
-        }
+        applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest, requestData));
     }
 
     private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
