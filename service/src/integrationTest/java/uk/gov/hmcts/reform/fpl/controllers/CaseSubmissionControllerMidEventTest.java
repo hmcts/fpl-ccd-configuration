@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -51,8 +52,7 @@ class CaseSubmissionControllerMidEventTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnNoErrorsWhenMandatoryFieldsAreProvidedInCaseData() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-            "core-case-data-store-api/callback-request.json");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest());
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
