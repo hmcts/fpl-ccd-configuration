@@ -133,7 +133,7 @@ public class GeneratedOrderController {
                 caseDetails.getData()
                     .put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
                 ChildSelector childSelector = ChildSelector.builder()
-                    .childCount(ChildSelector.generateChildCount(caseData.getAllChildren().size()))
+                    .childCount(ChildSelector.setChildCountFromInt(caseData.getAllChildren().size()))
                     .hidden(ChildSelector.generatedHiddenList(caseData.getAllChildren()))
                     .build();
                 caseDetails.getData().put("childSelector", childSelector);

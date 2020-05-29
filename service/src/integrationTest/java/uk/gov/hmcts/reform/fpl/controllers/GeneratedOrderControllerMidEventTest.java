@@ -120,11 +120,9 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
 
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            assertThat(callbackResponse.getData().get("children_label")).isNull();
+            assertThat(callbackResponse.getData()).extracting("children_label", "remainingChildIndex",
+                "remainingChild", "otherFinalOrderChildren").containsOnlyNulls();
             assertThat(caseData.getChildSelector()).isNull();
-            assertThat(callbackResponse.getData().get("remainingChildIndex")).isNull();
-            assertThat(callbackResponse.getData().get("remainingChild")).isNull();
-            assertThat(callbackResponse.getData().get("otherFinalOrderChildren")).isNull();
         }
 
         @Test

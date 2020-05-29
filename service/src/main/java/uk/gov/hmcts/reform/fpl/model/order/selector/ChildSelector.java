@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.order.selector;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +23,8 @@ public class ChildSelector {
     @Builder.Default
     private List<Integer> hidden = new ArrayList<>();
 
-    public static String generateChildCount(int max) {
+    @JsonIgnore
+    public static String setChildCountFromInt(int max) {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 1; i <= max; i++) {
@@ -31,6 +33,7 @@ public class ChildSelector {
         return builder.toString();
     }
 
+    @JsonIgnore
     public static List<Integer> generatedHiddenList(List<Element<Child>> allChildren) {
         List<Integer> hiddenList = new ArrayList<>();
         for (int i = 0; i < allChildren.size(); i++) {

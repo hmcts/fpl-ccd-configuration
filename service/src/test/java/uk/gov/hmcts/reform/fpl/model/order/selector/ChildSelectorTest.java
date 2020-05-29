@@ -12,18 +12,19 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 class ChildSelectorTest {
 
     @Test
     void shouldSetAnEmptyStringWhenTheValueIsLessThan1() {
-        String result = ChildSelector.generateChildCount(0);
+        String result = ChildSelector.setChildCountFromInt(0);
         assertThat(result).isEmpty();
     }
 
     @Test
     void shouldSetAStringWithNumbersInAscendingOrderWhenTheValueIsGreaterThan0() {
-        String result = ChildSelector.generateChildCount(6);
+        String result = ChildSelector.setChildCountFromInt(6);
         assertThat(result).isEqualTo("123456");
     }
 
@@ -37,17 +38,13 @@ class ChildSelectorTest {
     }
 
     private Element<Child> buildChild(boolean finalOrderIssued) {
-        ChildBuilder builder = Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Child")
-                .build());
-
+        Element<Child> child = testChild();
         if (finalOrderIssued) {
-            builder.finalOrderIssued(YesNo.YES.getValue())
-                .finalOrderIssuedType(GeneratedOrderType.CARE_ORDER.getLabel());
+            child.getValue().setFinalOrderIssued(YesNo.YES.getValue());
+            child.getValue().setFinalOrderIssuedType(GeneratedOrderType.CARE_ORDER.getLabel());
         }
 
-        return element(builder.build());
+        return child;
     }
 
 }

@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildSelectorType.SEL
 @JsonComponent
 public class ChildSelectorSerializer extends JsonSerializer<ChildSelector> {
 
-
     @Override
     public void serialize(ChildSelector value, JsonGenerator gen,
                           SerializerProvider serializers) throws IOException {
