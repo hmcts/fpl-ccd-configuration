@@ -138,7 +138,7 @@ public class CaseData {
     }
 
     private final List<Element<Placement>> placements;
-    private final StandardDirectionOrder standardDirectionOrder;
+    private final Order standardDirectionOrder;
 
     @NotNull(message = "You need to enter the allocated judge.",
         groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})

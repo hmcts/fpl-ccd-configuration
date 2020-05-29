@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
@@ -83,7 +83,7 @@ class StandardDirectionOrderGenerationServiceTest {
 
     @Test
     void shouldMapEmptyCaseDataForDraftSDO() {
-        StandardDirectionOrder order = StandardDirectionOrder.builder().dateOfIssue("29 November 2019").build();
+        Order order = Order.builder().dateOfIssue("29 November 2019").build();
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(getCaseData(order));
 
@@ -92,7 +92,7 @@ class StandardDirectionOrderGenerationServiceTest {
 
     @Test
     void shouldMapDirectionsForDraftSDOWhenAllAssignees() {
-        StandardDirectionOrder order = StandardDirectionOrder.builder().directions(getDirections()).build();
+        Order order = Order.builder().directions(getDirections()).build();
         DocmosisStandardDirectionOrder templateData = service.getTemplateData(getCaseData(order));
 
         assertThat(templateData.getDirections()).containsAll(expectedDirections());
@@ -101,7 +101,7 @@ class StandardDirectionOrderGenerationServiceTest {
     @Test
     void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() {
         Direction notNeededDirection = Direction.builder().directionNeeded("No").build();
-        StandardDirectionOrder order = StandardDirectionOrder.builder()
+        Order order = Order.builder()
             .directions(wrapElements(notNeededDirection))
             .build();
 
@@ -132,7 +132,7 @@ class StandardDirectionOrderGenerationServiceTest {
         assertThat(template).isEqualToComparingFieldByField(fullDocmosisOrder());
     }
 
-    private CaseData getCaseData(StandardDirectionOrder order) {
+    private CaseData getCaseData(Order order) {
         LocalDate today = time.now().toLocalDate();
 
         return CaseData.builder()
@@ -149,7 +149,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .build());
     }
 
-    private DocmosisStandardDirectionOrder emptyDocmosisOrder(StandardDirectionOrder order) {
+    private DocmosisStandardDirectionOrder emptyDocmosisOrder(Order order) {
         return docmosisOrder("", "", null, order.getDateOfIssue(), emptyList());
     }
 

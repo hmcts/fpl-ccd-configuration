@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
@@ -322,7 +322,7 @@ class PrepareDirectionsForDataStoreServiceTest {
 
         @Test
         void shouldAddCafcassResponseWhenValidResponseMadeByCourt() {
-            StandardDirectionOrder sdo = orderWithCafcassDirection();
+            Order sdo = orderWithCafcassDirection();
             List<Element<Direction>> directionWithResponse = directionWithCafcassResponse();
 
             CaseData caseData = CaseData.builder()
@@ -418,8 +418,8 @@ class PrepareDirectionsForDataStoreServiceTest {
                 .build()));
         }
 
-        private StandardDirectionOrder orderWithCafcassDirection() {
-            return StandardDirectionOrder.builder()
+        private Order orderWithCafcassDirection() {
+            return Order.builder()
                 .directions(List.of(element(directionId, Direction.builder()
                     .directionType("example direction")
                     .assignee(CAFCASS)
@@ -431,7 +431,7 @@ class PrepareDirectionsForDataStoreServiceTest {
         private CaseData prepareCaseData(Direction.DirectionBuilder direction,
                                          List<Element<DirectionResponse>> responses) {
             return CaseData.builder()
-                .standardDirectionOrder(StandardDirectionOrder.builder()
+                .standardDirectionOrder(Order.builder()
                     .directions(List.of(element(directionId, direction.build())))
                     .build())
                 .otherPartiesDirectionsCustom(
