@@ -66,6 +66,13 @@ module.exports = {
       },
     },
     judgeAndLegalAdvisorTitleId: '#judgeAndLegalAdvisor_judgeTitle',
+    closeCase: {
+      id: '#closeCaseFromOrder',
+      options: {
+        yes: '#closeCaseFromOrder-Yes',
+        no: '#closeCaseFromOrder-No',
+      },
+    },
   },
 
   selectType(type, subtype) {
@@ -180,5 +187,13 @@ module.exports = {
     within(this.fields.allChildren.id, () => {
       I.click(locate('label').withText(this.fields.allChildren.options.no));
     });
+  },
+
+  closeCaseFromOrder(closeCase) {
+    if (closeCase) {
+      I.click(this.fields.closeCase.options.yes);
+    } else {
+      I.click(this.fields.closeCase.options.no);
+    }
   },
 };
