@@ -41,7 +41,7 @@
     "Name": "Populate standard directions",
     "Description": "Populate standard directions",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "Submitted",
+    "PreConditionState(s)": "*",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
     "EndButtonLabel": "Save and continue"
