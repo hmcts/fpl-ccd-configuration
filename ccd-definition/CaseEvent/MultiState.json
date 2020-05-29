@@ -476,7 +476,7 @@
     "Name": "Documents",
     "Description": "Upload standard directions",
     "DisplayOrder": 3,
-    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING",
+    "PreConditionState(s)": "Submitted;Gatekeeping",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
