@@ -39,6 +39,7 @@ public class OrderTypeAndDocument {
         return INTERIM == subtype;
     }
 
+    @JsonIgnore
     public boolean isClosable() {
         return isFinal() || type == EMERGENCY_PROTECTION_ORDER;
     }
