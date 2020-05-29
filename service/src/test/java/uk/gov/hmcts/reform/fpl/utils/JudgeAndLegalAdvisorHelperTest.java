@@ -86,7 +86,7 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    private void shouldExtractOtherTitleDescriptionWhenOtherTitleSelected() {
+    void shouldExtractOtherTitleDescriptionWhenOtherTitleSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(OTHER)
             .otherTitle("His Excellency")

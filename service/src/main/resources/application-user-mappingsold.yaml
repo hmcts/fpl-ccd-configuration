@@ -1,0 +1,6 @@
+spring:
+  profiles: user-mappings
+
+fpl:
+  local_authority_user:
+    mapping: 'FPLA=>0;HN=>8f6cf86d-9610-429b-a070-9e0d4694f0a6,67465596-4433-4fc3-8448-e5e5ad2d55d7;SN=>ba29cd70-0062-418f-9cdf-0e4418d7166c,b4221289-bd9b-4fb2-b415-045b7e67408b;SNW=>89fc1b8a-735f-47d7-95a7-106c09265d58,b1a7b651-f594-4bad-a274-407d4d0ba035'
