@@ -175,9 +175,6 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
 
             assertThat(callbackResponse.getData().get("otherFinalOrderChildren"))
                 .isEqualTo("Fred - Care order issued\nPaul - Care order issued\nBill - Care order issued");
-
-            assertThat(callbackResponse.getData().get("children_label")).isNull();
-            assertThat(caseData.getChildSelector()).isNull();
         }
 
         private ChildSelector getExpectedChildSelector() {
