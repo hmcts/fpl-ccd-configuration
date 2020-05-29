@@ -1,6 +1,6 @@
 {
   "case_details": {
-    "id": 12345,
+    "id": "${id:-12345}",
     "jurisdiction": "PUBLICLAW",
     "state": "Open",
     "case_type_id": "CARE_SUPERVISION_EPO",
@@ -26,7 +26,7 @@
           }
         }
       ],
-      "caseLocalAuthority": "example",
+      "caseLocalAuthority": "${localAuthority:-example}",
       "risks": {
         "neglect": "Yes",
         "sexualAbuse": "Yes",
