@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 
 @Data
 @Builder(toBuilder = true)
@@ -36,5 +37,9 @@ public class OrderTypeAndDocument {
     @JsonIgnore
     public boolean isInterim() {
         return INTERIM == subtype;
+    }
+
+    public boolean isClosable() {
+        return isFinal() || type == EMERGENCY_PROTECTION_ORDER;
     }
 }

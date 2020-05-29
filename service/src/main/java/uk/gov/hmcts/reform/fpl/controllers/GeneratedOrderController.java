@@ -177,7 +177,7 @@ public class GeneratedOrderController {
 
         caseDetails.getData().put("orderCollection", orders);
 
-        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().isFinal()) {
+        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().isClosable()) {
             List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
                 caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
             caseDetails.getData().put("children1", updatedChildren);

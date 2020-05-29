@@ -292,7 +292,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void shouldNotSetFinalOrderIssuedForEmergencyProtectionOrder() {
+    void shouldSetFinalOrderIssuedForEmergencyProtectionOrder() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
@@ -311,7 +311,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsOnlyNulls();
+            .containsOnly("Yes");
     }
 
     @Test
