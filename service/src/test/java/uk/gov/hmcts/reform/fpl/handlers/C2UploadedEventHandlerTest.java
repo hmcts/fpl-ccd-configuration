@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -112,7 +111,7 @@ public class C2UploadedEventHandlerTest {
         }
 
         @Test
-        void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() throws IOException {
+        void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() {
             CallbackRequest callbackRequest = appendSendToCtscOnCallback();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
