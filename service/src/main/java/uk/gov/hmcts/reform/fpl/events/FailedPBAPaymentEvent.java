@@ -17,4 +17,9 @@ public class FailedPBAPaymentEvent extends CallbackEvent {
         super(callbackRequest, requestData);
         this.applicationType = applicationType;
     }
+
+    public FailedPBAPaymentEvent(CallbackEvent originalEvent, ApplicationType applicationType) {
+        super(originalEvent);
+        this.applicationType = applicationType;
+    }
 }
