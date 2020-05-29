@@ -241,6 +241,7 @@ dependencies {
   testCompile group: 'org.mockito', name :'mockito-core', version: '3.0.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
   testCompile group: 'org.apache.commons', name: 'commons-text', version: '1.8'
+  testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
   testCompile group: 'org.springframework.security', name: 'spring-security-test'
 

@@ -38,10 +38,10 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.ExceptionAssertion.assertException;
 
@@ -95,7 +95,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(client.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(USER_AUTH_TOKEN);
+        given(client.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(USER_AUTH_TOKEN);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
@@ -180,18 +180,19 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         verifyCaseRoleGrantedToEachUser(LA_1_USER_IDS);
     }
 
-
     private void verifyCaseRoleGrantedToEachUser(List<String> users) {
         verify(caseUserApi).updateCaseRolesForUser(
             USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, CALLER_ID,
             new CaseUser(CALLER_ID, CASE_ROLES));
 
-        users.stream()
-            .filter(userId -> !CALLER_ID.equals(userId))
-            .forEach(userId ->
-                verify(caseUserApi, timeout(1000)).updateCaseRolesForUser(
-                    USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, userId,
-                    new CaseUser(userId, CASE_ROLES)));
+        checkUntil(() -> {
+            users.stream()
+                .filter(userId -> !CALLER_ID.equals(userId))
+                .forEach(userId ->
+                    verify(caseUserApi).updateCaseRolesForUser(
+                        USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, userId,
+                        new CaseUser(userId, CASE_ROLES)));
+        });
     }
 
     private static OrganisationUsers organisation(List<String> userIds) {

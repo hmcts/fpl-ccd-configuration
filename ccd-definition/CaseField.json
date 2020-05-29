@@ -1472,6 +1472,32 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "closeCaseFromOrder",
+    "FieldType": "YesOrNo",
+    "Label": "Do you want to close the case?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "showCloseCaseFromOrderPage",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Field to contain condition for hiding the close case page in the create order flow"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "state",
+    "FieldType": "Text",
+    "Label": "End State",
+    "SecurityClassification": "Public",
+    "Comment": "Field required for changing state in a controller"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "returnApplication",
     "Label": "Return details",
     "FieldType": "ReturnApplication",
