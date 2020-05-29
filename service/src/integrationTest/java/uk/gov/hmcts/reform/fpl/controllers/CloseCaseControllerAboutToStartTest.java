@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 public class CloseCaseControllerAboutToStartTest extends AbstractControllerTest {
 
-    private static final String EXPECTED_LABEL_TEXT = "The case will remain open for 21 days to allow for appeal.\n\n"
+    public static final String EXPECTED_LABEL_TEXT = "The case will remain open for 21 days to allow for appeal.\n\n"
         + "In a closed case, you can still:\n"
         + "   •  add a case note\n"
         + "   •  upload a document\n"
