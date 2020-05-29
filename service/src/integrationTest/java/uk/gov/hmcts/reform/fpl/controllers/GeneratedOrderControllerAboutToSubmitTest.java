@@ -317,7 +317,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .order(GeneratedOrder.builder()
@@ -340,7 +339,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(EMERGENCY_PROTECTION_ORDER, null, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .epoChildren(EPOChildren.builder().descriptionNeeded("No").build())
