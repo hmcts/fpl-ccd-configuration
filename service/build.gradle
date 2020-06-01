@@ -208,7 +208,6 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
 
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.17' // override to fix vulnerability issue (CVE-2019-17195)
   implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
 
   compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.11.0'
