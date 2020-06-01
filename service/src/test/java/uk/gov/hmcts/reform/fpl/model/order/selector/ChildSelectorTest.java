@@ -13,25 +13,27 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 class ChildSelectorTest {
 
+    ChildSelector childSelector = ChildSelector.builder().build();
+
     @Test
     void shouldSetAnEmptyStringWhenTheValueIsLessThan1() {
-        String result = ChildSelector.setChildCountFromInt(0);
-        assertThat(result).isEmpty();
+        childSelector.setChildCountFromInt(0);
+        assertThat(childSelector.getChildCount()).isEmpty();
     }
 
     @Test
     void shouldSetAStringWithNumbersInAscendingOrderWhenTheValueIsGreaterThan0() {
-        String result = ChildSelector.setChildCountFromInt(6);
-        assertThat(result).isEqualTo("123456");
+        childSelector.setChildCountFromInt(6);
+        assertThat(childSelector.getChildCount()).isEqualTo("123456");
     }
 
     @Test
     void shouldGenerateHiddenListWhenFinalOrderIssuedOnSomeChildren() {
         List<Element<Child>> children = List.of(buildChild(false), buildChild(true),
             buildChild(true));
-        List<Integer> result = ChildSelector.generatedHiddenList(children);
+        childSelector.setHiddenFromChildList(children);
 
-        assertThat(result).containsExactly(1,2);
+        assertThat(childSelector.getHidden()).containsExactly(1,2);
     }
 
     private Element<Child> buildChild(boolean finalOrderIssued) {
@@ -43,5 +45,4 @@ class ChildSelectorTest {
 
         return child;
     }
-
 }
