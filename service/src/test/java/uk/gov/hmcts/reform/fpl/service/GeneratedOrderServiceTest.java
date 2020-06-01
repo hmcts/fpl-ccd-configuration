@@ -591,6 +591,9 @@ class GeneratedOrderServiceTest {
 
     @Nested
     class ShouldGenerateDocument {
+
+        private FurtherDirections directions;
+
         @Test
         @DisplayName("Should generate a document when generating a C21")
         void shouldReturnTrueWhenOrderIsBlankOrder() {
@@ -609,7 +612,7 @@ class GeneratedOrderServiceTest {
         @DisplayName("Should generate if the order is case closeable and after the close case page")
         void shouldReturnTrueWhenFurtherDirectionsIsPopulatedAndCloseCaseFromOrderIsPopulated() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
+            directions = FurtherDirections.builder()
                 .directions("I see a ship in the harbor")
                 .build();
 
@@ -627,7 +630,7 @@ class GeneratedOrderServiceTest {
             + "order ")
         void shouldReturnTrueWhenFurtherDirectionsIsPopulatedAndNotAllChildrenHaveFinalOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
+            directions = FurtherDirections.builder()
                 .directions("I can and shall obey")
                 .build();
 
@@ -645,7 +648,7 @@ class GeneratedOrderServiceTest {
             + "closed or not")
         void shouldReturnFalseWhenAllChildrenHaveFinalOrderButCloseCaseFromFinalOrderIsNull() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
+            directions = FurtherDirections.builder()
                 .directions("But if it wasn't for your misfortune")
                 .build();
 
@@ -676,7 +679,7 @@ class GeneratedOrderServiceTest {
         @DisplayName("Should generate if close case is disabled and all children don't have final order")
         void shouldReturnTrueWhenCloseCaseIsDisabledAndNotAllChildrenHaveFinalOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
+            directions = FurtherDirections.builder()
                 .directions("I'd be a heavenly person today")
                 .build();
 
@@ -694,7 +697,7 @@ class GeneratedOrderServiceTest {
         @DisplayName("Should generate if close case is disabled and all children have final order")
         void shouldReturnTrueWhenCloseCaseIsDisabledAndAllChildrenHaveFinalOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
+            directions = FurtherDirections.builder()
                 .directions("And I thought I was mistaken")
                 .build();
 
@@ -713,7 +716,7 @@ class GeneratedOrderServiceTest {
             + " selected and all children have had a final order made against them")
         void shouldReturnTrueWhenInterimOrderWithAllChildrenHavingFinalOrderAndFurtherDirectionsSelected() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(INTERIM).build();
-            FurtherDirections directions = FurtherDirections.builder()
+            directions = FurtherDirections.builder()
                 .directions("And I thought I heard you speak")
                 .build();
 
@@ -723,6 +726,25 @@ class GeneratedOrderServiceTest {
                 allChildren,
                 null,
                 false);
+
+            assertThat(shouldGenerateDocument).isTrue();
+        }
+
+        @Test
+        @DisplayName("Should generate if the order is non-closable (e.g. interim) and further directions have been"
+            + " selected and all children have had a final order made against them")
+        void shouldReturnTrueWhenInterimOrder_AllChildren_FurtherDirectionsSelected_CloseCaseEnabled() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(INTERIM).build();
+            directions = FurtherDirections.builder()
+                .directions("Tell me, how do I feel?")
+                .build();
+
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                directions,
+                allChildren,
+                null,
+                true);
 
             assertThat(shouldGenerateDocument).isTrue();
         }
