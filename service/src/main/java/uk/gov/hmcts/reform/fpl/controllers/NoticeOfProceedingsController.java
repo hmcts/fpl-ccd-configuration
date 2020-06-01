@@ -135,7 +135,7 @@ public class NoticeOfProceedingsController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        if (featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()) {
+        if (featureToggleService.isAllocatedJudgeNotificationEnabled("c2")) {
             applicationEventPublisher.publishEvent(new NoticeOfProceedingsIssuedEvent(callbackRequest, requestData));
         }
     }

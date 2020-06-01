@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_NAME;
@@ -117,7 +118,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationEnabled() {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
-        given(featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()).willReturn(true);
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)).willReturn(true);
 
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);
@@ -134,7 +135,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationDisabled() {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
-        given(featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()).willReturn(false);
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)).willReturn(false);
 
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);

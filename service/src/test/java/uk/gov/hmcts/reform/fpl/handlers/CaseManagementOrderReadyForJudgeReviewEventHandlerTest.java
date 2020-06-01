@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -47,6 +49,9 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
 
     @MockBean
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Autowired
     private CaseManagementOrderReadyForJudgeReviewEventHandler caseManagementOrderReadyForJudgeReviewEventHandler;
@@ -92,10 +97,12 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyAllocatedJudgeWhenCMOReadyForJudgeReview() {
+    void shouldNotifyAllocatedJudgeWhenCMOReadyForJudgeReviewAndEnabled() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
+
+        given(featureToggleService.isCmoAllocatedJudgeNotificationsEnabled()).willReturn(true);
 
         given(caseManagementOrderEmailContentProvider
             .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
@@ -110,6 +117,29 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             ALLOCATED_JUDGE_EMAIL_ADDRESS,
             cmoJudgeReviewParameters,
             CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldNotNotifyAllocatedJudgeWhenCMOReadyForJudgeReviewAndDisabled() {
+        CallbackRequest callbackRequest = callbackRequest();
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
+
+        given(featureToggleService.isCmoAllocatedJudgeNotificationsEnabled()).willReturn(false);
+
+        given(caseManagementOrderEmailContentProvider
+            .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+            .willReturn(cmoJudgeReviewParameters);
+
+        caseManagementOrderReadyForJudgeReviewEventHandler
+            .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
+                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+
+        verify(notificationService, never()).sendEmail(
+            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),
+            anyString(),
+            anyMap(),
+            anyString());
     }
 
     @Test

@@ -21,6 +21,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -61,7 +62,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
 
     @EventListener
     public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
-        if (featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()) {
+        if (featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)) {
             EventData eventData = new EventData(event);
             CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
             AllocatedJudgeTemplateForSDO parameters = standardDirectionOrderIssuedEmailContentProvider

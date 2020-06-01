@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -31,8 +33,11 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -88,6 +93,9 @@ class GeneratedOrderEventHandlerTest {
 
     @Autowired
     private GeneratedOrderEventHandler generatedOrderEventHandler;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     private CaseData caseData;
 
@@ -146,12 +154,14 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyAllocatedJudgeOnOrderIssued() {
+    void shouldNotifyAllocatedJudgeOnOrderIssuedAndEnabled() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeEmailAddress("judge@gmail.com")
             .build();
+
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER)).willReturn(true);
 
         given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
             .willReturn(expectedJudgeAndLegalAdvisor);
@@ -169,6 +179,34 @@ class GeneratedOrderEventHandlerTest {
             eq(ALLOCATED_JUDGE_EMAIL_ADDRESS),
             eq(expectedParameters),
             eq("12345"));
+    }
+
+    @Test
+    void shouldNotNotifyAllocatedJudgeOnOrderIssuedAndDisabled() {
+        CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeEmailAddress("judge@gmail.com")
+            .build();
+
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER)).willReturn(false);
+
+        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
+            .willReturn(expectedJudgeAndLegalAdvisor);
+
+        final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
+
+        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
+            caseDetails)).willReturn(expectedParameters);
+
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
+            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+
+        verify(notificationService, never()).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),
+            anyString(),
+            anyMap(),
+            anyString());
     }
 
     private AllocatedJudgeTemplateForGeneratedOrder getOrderIssuedAllocatedJudgeParameters() {

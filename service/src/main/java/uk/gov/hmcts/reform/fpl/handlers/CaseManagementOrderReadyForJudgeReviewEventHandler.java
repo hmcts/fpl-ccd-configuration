@@ -9,11 +9,13 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEven
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.CMO;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -22,6 +24,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandler {
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final ObjectMapper mapper;
+    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void sendEmailForCaseManagementOrderReadyForJudgeReview(
@@ -42,15 +45,16 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandler {
         final CaseManagementOrderReadyForJudgeReviewEvent event) {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        if (featureToggleService.isAllocatedJudgeNotificationEnabled(CMO)) {
+            if (caseData.allocatedJudgeExists()) {
+                AllocatedJudgeTemplateForCMO parameters = caseManagementOrderEmailContentProvider
+                    .buildCMOReadyForJudgeReviewNotificationParameters(eventData.getCaseDetails());
 
-        if (caseData.allocatedJudgeExists()) {
-            AllocatedJudgeTemplateForCMO parameters = caseManagementOrderEmailContentProvider
-                .buildCMOReadyForJudgeReviewNotificationParameters(eventData.getCaseDetails());
+                String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
-
-            notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
-                eventData.getReference());
+                notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
+                    eventData.getReference());
+            }
         }
     }
 }

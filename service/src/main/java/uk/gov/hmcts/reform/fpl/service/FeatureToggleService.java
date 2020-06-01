@@ -5,6 +5,7 @@ import com.launchdarkly.client.LDUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 
 @Service
 public class FeatureToggleService {
@@ -38,12 +39,10 @@ public class FeatureToggleService {
             false);
     }
 
-    public boolean isSdoAllocatedJudgeNotificationsEnabled() {
-        return ldClient.boolVariation("judge-notification-sdo", ldUser, false);
-    }
-
-    public boolean isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled() {
-        return ldClient.boolVariation("judge-notification-notice-of-proceedings", ldUser, false);
+    public boolean isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType allocatedJudgeNotificationType) {
+        return ldClient.boolVariation("judge-notification",
+            ldUserBuilder.custom("allocatedJudgeNotificationType", allocatedJudgeNotificationType.getValue()).build(),
+            false);
     }
 
     public boolean isFeesEnabled() {

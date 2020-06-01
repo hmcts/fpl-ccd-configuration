@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.CMO;
 
 @ExtendWith(SpringExtension.class)
 public class FeatureToggleServiceTest {
@@ -104,23 +105,12 @@ public class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationSDO(Boolean toggleState) {
+    public void shouldMakeCorrectCallForAllocatedJudgeNotification(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isSdoAllocatedJudgeNotificationsEnabled()).isEqualTo(toggleState);
+        assertThat(featureToggleService.isAllocatedJudgeNotificationEnabled(CMO)).isEqualTo(toggleState);
 
-        verify(ldClient).boolVariation(eq("judge-notification-sdo"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationNoticeOfProceedings(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled())
-            .isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("judge-notification-notice-of-proceedings"), any(LDUser.class), eq(false));
+        verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     private void givenToggle(boolean state) {
