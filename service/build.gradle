@@ -244,8 +244,10 @@ dependencies {
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     exclude group: "com.vaadin.external.google", module:"android-json"
   }
+  testCompile group: 'org.junit.jupiter', name :'junit-jupiter', version: '5.5.2'
 
   testCompile group: 'org.apache.commons', name: 'commons-text', version: '1.8'
   testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
