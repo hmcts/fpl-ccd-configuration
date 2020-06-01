@@ -44,7 +44,7 @@ public class CaseRoleService {
         final Set<String> usersGrantedAccess = Sets.newConcurrentHashSet();
 
         try {
-            final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+            final String userToken = idam.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
             final String serviceToken = authTokenGenerator.generate();
             final Set<String> caseRoles = roles.stream()
                 .map(CaseRole::formattedName)
