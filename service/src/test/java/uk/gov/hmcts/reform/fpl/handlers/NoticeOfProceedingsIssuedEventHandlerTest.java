@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
@@ -53,7 +54,7 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
         final AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters
             = getAllocatedJudgeSDOTemplateParameters();
 
-        given(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).willReturn(true);
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(true);
 
         given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);
@@ -70,7 +71,7 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
     void shouldNotNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenNotificationDisabled() {
         AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
-        given(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).willReturn(false);
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(false);
 
         given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);

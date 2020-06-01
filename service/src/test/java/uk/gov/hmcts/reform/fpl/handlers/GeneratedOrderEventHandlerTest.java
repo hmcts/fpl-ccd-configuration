@@ -161,7 +161,8 @@ class GeneratedOrderEventHandlerTest {
             .judgeEmailAddress("judge@gmail.com")
             .build();
 
-        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER)).willReturn(true);
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER))
+            .willReturn(true);
 
         given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
             .willReturn(expectedJudgeAndLegalAdvisor);
@@ -189,7 +190,8 @@ class GeneratedOrderEventHandlerTest {
             .judgeEmailAddress("judge@gmail.com")
             .build();
 
-        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER)).willReturn(false);
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER))
+            .willReturn(false);
 
         given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
             .willReturn(expectedJudgeAndLegalAdvisor);

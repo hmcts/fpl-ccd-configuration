@@ -16,6 +16,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
@@ -38,7 +39,7 @@ class NoticeOfProceedingsSubmittedControllerTest extends AbstractControllerTest 
     @Test
     void shouldSendAllocatedJudgeNotificationWhenNoticeOfProceedingsIssuedAndEnabled()
         throws NotificationClientException {
-        given(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).willReturn(true);
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(true);
 
         postSubmittedEvent(callbackRequest().getCaseDetails());
 
@@ -52,7 +53,7 @@ class NoticeOfProceedingsSubmittedControllerTest extends AbstractControllerTest 
     @Test
     void shouldNotSendAllocatedJudgeNotificationWhenNoticeOfProceedingsIssuedAndDisabled()
         throws NotificationClientException {
-        given(featureToggleService.isNoticeOfProceedingsAllocatedJudgeNotificationsEnabled()).willReturn(false);
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(false);
 
         postSubmittedEvent(callbackRequest().getCaseDetails());
 
