@@ -39,7 +39,7 @@ java:
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
-  enabled: true
+  enabled: false
   redirect_uris:
     XUI:
       - https://xui-${SERVICE_FQDN}/oauth2/callback
@@ -96,7 +96,7 @@ ccd:
     idam-pr:
       cpuLimits: 50m
       cpuRequests: 25m
-      enabled: true
+      enabled: false
       memoryLimits: 16Mi
       memoryRequests: 8Mi
       releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
