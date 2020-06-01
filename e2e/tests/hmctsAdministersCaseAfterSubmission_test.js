@@ -28,7 +28,7 @@ Scenario('HMCTS admin confirms payment', async (I, caseViewPage) => {
   I.see('Processed payments'); // Test to pass AAT, to make better
 });
 
-Scenario('HMCTS admin enters FamilyMan reference number @f', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
+Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();
   await I.completeEvent('Save and continue');
@@ -156,7 +156,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('HMCTS admin share case with representatives @f', async (I, caseViewPage, enterRepresentativesEventPage) => {
+Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
   const representative1 = representatives.servedByDigitalService;
   const representative2 = representatives.servedByPost;
 
@@ -201,7 +201,7 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
   I.see('No cases found.');
 });
 
-Scenario('HMCTS admin creates multiple orders for the case @f', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
   for (let i = 0; i < orders.length; i++) {
     const order = orders[i];
     await caseViewPage.goToNewActions(config.administrationActions.createOrder);
