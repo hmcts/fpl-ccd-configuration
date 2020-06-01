@@ -81,4 +81,13 @@ public class Child implements ConfidentialParty<Child> {
             .build();
     }
 
+    public String asLabel() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(this.getParty().getFullName());
+        if (this.getFinalOrderIssuedType() != null) {
+            builder.append(String.format(" - %s issued", this.getFinalOrderIssuedType()));
+
+        }
+        return builder.toString();
+    }
 }

@@ -28,11 +28,7 @@ public class ChildrenService {
 
         for (int i = 0; i < children.size(); i++) {
             Child child = children.get(i).getValue();
-            final String name = child.getParty().getFullName();
-            builder.append(String.format("Child %d: %s", i + 1, name));
-            if (YES.getValue().equals(child.getFinalOrderIssued()) && child.getFinalOrderIssuedType() != null) {
-                builder.append(String.format(" - %s issued", child.getFinalOrderIssuedType()));
-            }
+            builder.append(String.format("Child %d: %s", i + 1, child.asLabel()));
             builder.append("\n");
         }
 
@@ -90,25 +86,17 @@ public class ChildrenService {
         return remainingChildIndex;
     }
 
-    public String getRemainingChildren(List<Element<Child>> allChildren) {
-        return allChildren.stream()
+    public String getRemainingChildrenNames(List<Element<Child>> children) {
+        return children.stream()
             .filter(child -> !YES.getValue().equals(child.getValue().getFinalOrderIssued()))
             .map(child -> child.getValue().getParty().getFullName())
             .collect(Collectors.joining("\n"));
     }
 
-    public String getFinalOrderIssuedChildren(List<Element<Child>> allChildren) {
-        return allChildren.stream()
+    public String getFinalOrderIssuedChildrenNames(List<Element<Child>> children) {
+        return children.stream()
             .filter(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()))
-            .map(child -> {
-                StringBuilder builder = new StringBuilder();
-                builder.append(child.getValue().getParty().getFullName());
-                if (child.getValue().getFinalOrderIssuedType() != null) {
-                    builder.append(String.format(" - %s issued", child.getValue().getFinalOrderIssuedType()));
-
-                }
-                return builder.toString();
-            })
+            .map(child -> child.getValue().asLabel())
             .collect(Collectors.joining("\n"));
     }
 }

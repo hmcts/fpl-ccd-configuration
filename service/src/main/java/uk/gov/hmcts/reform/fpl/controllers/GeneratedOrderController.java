@@ -126,9 +126,9 @@ public class GeneratedOrderController {
             if (remainingChildIndex.isPresent()) {
                 caseDetails.getData().put("remainingChildIndex", String.valueOf(remainingChildIndex.get()));
                 caseDetails.getData()
-                    .put("remainingChild", childrenService.getRemainingChildren(caseData.getAllChildren()));
+                    .put("remainingChild", childrenService.getRemainingChildrenNames(caseData.getAllChildren()));
                 caseDetails.getData().put("otherFinalOrderChildren",
-                    childrenService.getFinalOrderIssuedChildren(caseData.getAllChildren()));
+                    childrenService.getFinalOrderIssuedChildrenNames(caseData.getAllChildren()));
             } else {
                 caseDetails.getData()
                     .put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));

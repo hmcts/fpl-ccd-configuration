@@ -44,7 +44,7 @@ class ChildrenServiceTest {
     @Test
     void shouldBuildExpectedLabelWhenPopulatedListAndFinalOrderIssuedOnChild() {
         List<Element<Child>> children = List.of(childWithConfidentialFields(randomUUID()),
-            childWithFinalOrderIssued("Jack","Hill"));
+            childWithFinalOrderIssued("Jack", "Hill"));
         String label = service.getChildrenLabel(children);
         assertThat(label).isEqualTo("Child 1: James\nChild 2: Jack Hill - Care order issued\n");
     }
@@ -77,7 +77,7 @@ class ChildrenServiceTest {
 
     @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
-        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER, testChildren(),"Yes", null, null);
+        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER, testChildren(), "Yes", null, null);
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("Yes", "Yes", "Yes");
@@ -174,6 +174,47 @@ class ChildrenServiceTest {
         assertThat(result.isPresent()).isFalse();
     }
 
+    @Test
+    void shouldReturnNameOfChildWhenAChildDoesNotHaveFinalOrderIssued() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Paul", "Chuckle"),
+            childWithFinalOrderIssued("Barry", "Chuckle", NO.getValue(), null));
+
+        String childrenNames = service.getRemainingChildrenNames(children);
+
+        assertThat(childrenNames).isEqualTo("Barry Chuckle");
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenAllChildrenHaveFinalOrderIssued() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Paul", "Chuckle"),
+            childWithFinalOrderIssued("Barry", "Chuckle"));
+
+        String childrenNames = service.getRemainingChildrenNames(children);
+
+        assertThat(childrenNames).isEmpty();
+    }
+
+    @Test
+    void shouldReturnChildNameWhenChildHasFinalOrderIssued() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Paul", "Chuckle"),
+            childWithFinalOrderIssued("Barry", "Chuckle", NO.getValue(), null));
+
+        String childrenNames = service.getFinalOrderIssuedChildrenNames(children);
+
+        assertThat(childrenNames).isEqualTo("Paul Chuckle - Care order issued");
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenNoChildrenHaveFinalOrderIssued() {
+        List<Element<Child>> children = List.of(
+            childWithFinalOrderIssued("Paul", "Chuckle", NO.getValue(), null),
+            childWithFinalOrderIssued("Barry", "Chuckle", NO.getValue(), null));
+
+        String childrenNames = service.getFinalOrderIssuedChildrenNames(children);
+
+        assertThat(childrenNames).isEmpty();
+    }
+
     private Element<Child> childWithConfidentialFields(UUID id) {
         return element(id, Child.builder()
             .party(ChildParty.builder()
@@ -201,7 +242,7 @@ class ChildrenServiceTest {
     }
 
     private Element<Child> childWithFinalOrderIssued(String firstName, String lastName,
-        String finalOrderIssued, String orderType) {
+                                                     String finalOrderIssued, String orderType) {
         return element(Child.builder()
             .party(ChildParty.builder()
                 .firstName(firstName)
