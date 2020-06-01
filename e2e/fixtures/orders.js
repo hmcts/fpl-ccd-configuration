@@ -58,7 +58,6 @@ module.exports = [
     },
     directionText: 'Example direction',
     children: [1],
-    closeCase: false,
   },
   {
     type: 'Emergency protection order',
@@ -90,7 +89,6 @@ module.exports = [
     directionText: 'Example direction',
     includePhrase: 'Yes',
     children: [2,3],
-    closeCase: false,
   },
   {
     type: 'Care order',
