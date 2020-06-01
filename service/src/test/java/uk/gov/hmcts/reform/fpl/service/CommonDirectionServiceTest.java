@@ -238,7 +238,7 @@ class CommonDirectionServiceTest {
             assertThat(map).extractingByKeys(ALL_PARTIES, PARENTS_AND_RESPONDENTS, COURT, OTHERS)
                 .allMatch(List::isEmpty);
             assertThat(map).extractingByKeys(LOCAL_AUTHORITY, CAFCASS)
-                .allMatch(elemenList -> elemenList.equals(emptyListOfElement()));
+                .allMatch(list -> list.equals(emptyListOfElement()));
         }
 
         private List<Element<Direction>> emptyListOfElement() {
