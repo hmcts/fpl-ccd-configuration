@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
+import lombok.Builder;
+import lombok.Getter;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -22,9 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 
-@Data
-@SuperBuilder(toBuilder = true)
-@EqualsAndHashCode(callSuper = true)
+@Getter
 public class CaseManagementOrder extends OrderForHearing implements IssuableOrder {
     private final UUID id;
     private final Schedule schedule;
@@ -32,6 +30,26 @@ public class CaseManagementOrder extends OrderForHearing implements IssuableOrde
     private final CMOStatus status;
     private OrderAction action;
     private NextHearing nextHearing;
+
+    @Builder(toBuilder = true)
+    public CaseManagementOrder(String hearingDate,
+                               String dateOfIssue,
+                               List<Element<Direction>> directions,
+                               DocumentReference orderDoc,
+                               UUID id,
+                               Schedule schedule,
+                               List<Element<Recital>> recitals,
+                               CMOStatus status,
+                               OrderAction action,
+                               NextHearing nextHearing) {
+        super(hearingDate, dateOfIssue, directions, orderDoc);
+        this.id = id;
+        this.schedule = schedule;
+        this.recitals = recitals;
+        this.status = status;
+        this.action = action;
+        this.nextHearing = nextHearing;
+    }
 
     @JsonIgnore
     public boolean isSealed() {
