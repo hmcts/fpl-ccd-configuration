@@ -707,6 +707,25 @@ class GeneratedOrderServiceTest {
 
             assertThat(shouldGenerateDocument).isTrue();
         }
+
+        @Test
+        @DisplayName("Should generate if the order is non-closable (e.g. interim) and further directions have been"
+            + " selected and all children have had a final order made against them")
+        void shouldReturnTrueWhenInterimOrderWithAllChildrenHavingFinalOrderAndFurtherDirectionsSelected() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(INTERIM).build();
+            FurtherDirections directions = FurtherDirections.builder()
+                .directions("And I thought I heard you speak")
+                .build();
+
+
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+                directions,
+                allChildren,
+                null,
+                false);
+
+            assertThat(shouldGenerateDocument).isTrue();
+        }
     }
 
     @Nested

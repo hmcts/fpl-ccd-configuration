@@ -383,6 +383,7 @@ public class GeneratedOrderService {
      *         <li>not all children have a final order (can't close the case)</li>
      *         <li>closeCaseFromOrder is not null (close case decision has been made)</li>
      *         <li>close case is not enabled</li>
+     *         <li>the order is not closable</li>
      *     </ul></li>
      * </ul>
      *
@@ -400,7 +401,7 @@ public class GeneratedOrderService {
         return BLANK_ORDER == orderType.getType()
             || furtherDirections != null
             && (!childrenService.allChildrenHaveFinalOrder(children) || closeCaseFromOrder != null
-            || !closeCaseEnabled);
+            || !closeCaseEnabled || !orderType.isClosable());
     }
 
 
