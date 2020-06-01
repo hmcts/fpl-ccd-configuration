@@ -316,7 +316,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "CloseCase",
     "PageLabel": " ",
-    "PageDisplayOrder": 12,
+    "PageDisplayOrder": 13,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "showCloseCaseFromOrderPage=\"YES\"",
@@ -331,7 +331,7 @@
     "DisplayContext": "READONLY",
     "PageID": "CloseCase",
     "PageLabel": " ",
-    "PageDisplayOrder": 12,
+    "PageDisplayOrder": 13,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "closeCaseFromOrder=\"Yes\""
@@ -345,7 +345,7 @@
     "DisplayContext": "READONLY",
     "PageID": "CloseCase",
     "PageLabel": " ",
-    "PageDisplayOrder": 12,
+    "PageDisplayOrder": 13,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "closeCaseFromOrder=\"DO_NOT_SHOW\""
