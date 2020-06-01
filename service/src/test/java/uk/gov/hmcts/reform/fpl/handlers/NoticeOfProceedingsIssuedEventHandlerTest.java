@@ -52,7 +52,7 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
     @Test
     void shouldNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenNotificationEnabled() {
         final AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters
-            = getAllocatedJudgeSDOTemplateParameters();
+            = getAllocatedJudgeTemplateParameters();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(true);
 
@@ -69,7 +69,7 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
 
     @Test
     void shouldNotNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenNotificationDisabled() {
-        AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+        AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters = getAllocatedJudgeTemplateParameters();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(false);
 
@@ -82,7 +82,7 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
         verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }
 
-    private AllocatedJudgeTemplateForNoticeOfProceedings getAllocatedJudgeSDOTemplateParameters() {
+    private AllocatedJudgeTemplateForNoticeOfProceedings getAllocatedJudgeTemplateParameters() {
         AllocatedJudgeTemplateForNoticeOfProceedings allocatedJudgeTemplate
             = new AllocatedJudgeTemplateForNoticeOfProceedings();
         allocatedJudgeTemplate.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
