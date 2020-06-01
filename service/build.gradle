@@ -111,7 +111,7 @@ checkstyle {
   maxWarnings = 0
   toolVersion = "8.25"
   // need to set configDirectory to rootDir otherwise submodule will use submodule/config/checkstyle
-  configDirectory = file("$rootDir/config/checkstyle")
+  configDirectory.set(file("$rootDir/config/checkstyle"))
 }
 
 jacocoTestReport {
@@ -211,8 +211,8 @@ dependencies {
 
   implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
 
-  implementation group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.11.0'
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.14.0', classifier: 'thin'
+  compile group: 'com.launchdarkly', name: 'okhttp-eventsource', version: '1.11.0'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.14.0', classifier: 'thin'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.4.0'
 
