@@ -62,7 +62,7 @@ class ReturnApplicationAboutToSubmitTest extends AbstractControllerTest {
     }
 
     private String getFormattedDate() {
-        return formatLocalDateToString(time.now().toLocalDate(), "dd MMM YYYY");
+        return formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy");
     }
 
     private DocumentReference buildDocumentReference() {
