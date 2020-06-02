@@ -83,29 +83,53 @@ public class GeneratedOrderController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        final List<String> errors = validateGroupService.validateGroup(caseData,
-            ValidateFamilyManCaseNumberGroup.class);
+        List<String> errors = validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class);
 
         if (errors.isEmpty()) {
-            caseDetails.getData().put("pageShow", caseData.getAllChildren().size() <= 1 ? "No" : "Yes");
+            data.put("pageShow", caseData.getAllChildren().size() <= 1 ? "No" : "Yes");
 
-            caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
+            data.put("dateOfIssue", time.now().toLocalDate());
 
             if (caseData.getAllocatedJudge() != null) {
-                caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+                data.put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
             }
 
             if (CLOSED.getValue().equals(caseDetails.getState())) {
-                caseDetails.getData()
+                data
                     .put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
             }
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(data)
             .errors(errors)
+            .build();
+    }
+
+    @PostMapping("/add-final-order-flags/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleFinalOrderFlagsMidEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        if (caseData.getOrderTypeAndDocument().isClosable()) {
+            Optional<Integer> remainingChildIndex = childrenService.getRemainingChildIndex(caseData.getAllChildren());
+            if (remainingChildIndex.isPresent()) {
+                data.put("remainingChildIndex", String.valueOf(remainingChildIndex.get()));
+                data.put("remainingChild",
+                    childrenService.getRemainingChildrenNames(caseData.getAllChildren()));
+                data.put("otherFinalOrderChildren",
+                    childrenService.getFinalOrderIssuedChildrenNames(caseData.getAllChildren()));
+                data.put("showFinalOrderSingleChildPage", "Yes");
+            }
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
             .build();
     }
 
@@ -117,24 +141,15 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
-            Optional<Integer> remainingChildIndex = childrenService.getRemainingChildIndex(caseData.getAllChildren());
-            if (remainingChildIndex.isPresent()) {
-                caseDetails.getData().put("remainingChildIndex", String.valueOf(remainingChildIndex.get()));
-                caseDetails.getData().put("remainingChild",
-                    childrenService.getRemainingChildrenNames(caseData.getAllChildren()));
-                caseDetails.getData().put("otherFinalOrderChildren",
-                    childrenService.getFinalOrderIssuedChildrenNames(caseData.getAllChildren()));
-            } else {
-                ChildSelector childSelector = ChildSelector.builder().build();
-                childSelector.setChildCountFromInt(caseData.getAllChildren().size());
-                boolean closable = caseData.getOrderTypeAndDocument().isClosable();
-                if (closable) {
-                    childSelector.setHiddenFromChildList(caseData.getAllChildren());
-                }
-                caseDetails.getData().put("childSelector", childSelector);
-                caseDetails.getData().put("children_label",
-                    childrenService.getChildrenLabel(caseData.getAllChildren(), closable));
+            ChildSelector childSelector = ChildSelector.builder().build();
+            childSelector.setChildCountFromInt(caseData.getAllChildren().size());
+            boolean closable = caseData.getOrderTypeAndDocument().isClosable();
+            if (closable) {
+                childSelector.setHiddenFromChildList(caseData.getAllChildren());
             }
+            caseDetails.getData().put("childSelector", childSelector);
+            caseDetails.getData().put("children_label",
+                childrenService.getChildrenLabel(caseData.getAllChildren(), closable));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

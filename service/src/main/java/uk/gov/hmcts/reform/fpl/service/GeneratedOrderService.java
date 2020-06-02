@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -43,6 +42,7 @@ import static com.google.common.collect.Iterables.getLast;
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
@@ -332,12 +332,12 @@ public class GeneratedOrderService {
     }
 
     private List<Child> getSelectedChildren(List<Child> allChildren, ChildSelector selector, String choice,
-        String remainingChild) {
+                                            String remainingChildIndex) {
+        if (isNotBlank(remainingChildIndex)) {
+            return List.of(allChildren.get(Integer.parseInt(remainingChildIndex)));
+        }
         if (useAllChildren(choice)) {
             return allChildren;
-        }
-        if (StringUtils.isNotBlank(remainingChild)) {
-            return List.of(allChildren.get(Integer.parseInt(remainingChild)));
         }
         return selector.getSelected().stream()
             .map(allChildren::get)
