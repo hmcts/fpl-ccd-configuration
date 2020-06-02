@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -51,7 +51,7 @@ public class PopulateStandardDirectionsOrderDatesHandler {
 
     private Map<String, Object> getDataWithDates(HearingBooking hearingBooking, Map<String, Object> data) {
         List<Element<Direction>> directions = standardDirectionsService.getDirections(hearingBooking);
-        getMapping(directions).forEach((assignee, directionElements) -> {
+        getAssigneeToDirectionMapping(directions).forEach((assignee, directionElements) -> {
             if (!directionElements.isEmpty()) {
                 populateEmptyDates(data, assignee, directionElements);
             }

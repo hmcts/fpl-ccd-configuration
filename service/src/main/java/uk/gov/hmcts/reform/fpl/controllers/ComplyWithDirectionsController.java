@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Api
 @RestController
@@ -44,7 +44,8 @@ public class ComplyWithDirectionsController {
         //TODO: could exist in sdo vs cmo service. FPLA-1470
         List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
 
-        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = getMapping(directionsToComplyWith);
+        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections
+            = getAssigneeToDirectionMapping(directionsToComplyWith);
 
         sortedDirections.forEach((assignee, directions) -> {
             if (!assignee.equals(ALL_PARTIES)) {

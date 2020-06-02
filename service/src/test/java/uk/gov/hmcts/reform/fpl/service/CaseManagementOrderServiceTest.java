@@ -228,7 +228,8 @@ class CaseManagementOrderServiceTest {
         service.prepareCustomDirections(caseDetails, order);
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Map<DirectionAssignee, List<Element<Direction>>> map = Directions.getMapping(createCmoDirections());
+        Map<DirectionAssignee, List<Element<Direction>>> map = Directions
+            .getAssigneeToDirectionMapping(createCmoDirections());
 
         assertThat(data).containsKeys("allPartiesCustomCMO", "localAuthorityDirectionsCustomCMO",
             "cafcassDirectionsCustomCMO", "courtDirectionsCustomCMO", "otherPartiesDirectionsCustomCMO",

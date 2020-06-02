@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -42,7 +42,7 @@ public class PopulateStandardDirectionsHandler {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         HearingBooking hearingBooking = hearingService.getFirstHearing(caseData.getHearingDetails()).orElse(null);
 
-        getMapping(standardDirectionsService.getDirections(hearingBooking))
+        getAssigneeToDirectionMapping(standardDirectionsService.getDirections(hearingBooking))
             .forEach((assignee, directionsElements) -> data.put(assignee.getValue(), directionsElements));
 
         return data;

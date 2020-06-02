@@ -45,7 +45,7 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -269,7 +269,7 @@ public class DraftOrdersController {
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> list) {
         List<Element<Direction>> nonCustomDirections = commonDirectionService.removeCustomDirections(list);
 
-        return getMapping(nonCustomDirections);
+        return getAssigneeToDirectionMapping(nonCustomDirections);
     }
 
     private void persistHiddenValues(HearingBooking firstHearing,

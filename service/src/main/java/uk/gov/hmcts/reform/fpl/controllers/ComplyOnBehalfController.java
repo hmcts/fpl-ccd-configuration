@@ -28,7 +28,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Api
 @RestController
@@ -52,7 +52,8 @@ public class ComplyOnBehalfController {
 
         List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
 
-        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = getMapping(directionsToComplyWith);
+        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections
+            = getAssigneeToDirectionMapping(directionsToComplyWith);
 
         prepareDirectionsForUsersService.addDirectionsToCaseDetails(
             caseDetails, sortedDirections, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
