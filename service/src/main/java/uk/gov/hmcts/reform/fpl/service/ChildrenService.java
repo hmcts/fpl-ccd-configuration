@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @Service
 public class ChildrenService {
 
-    public String getChildrenLabel(List<Element<Child>> children) {
+    public String getChildrenLabel(List<Element<Child>> children, boolean closable) {
         if (isEmpty(children)) {
             return "No children in the case";
         }
@@ -28,7 +28,11 @@ public class ChildrenService {
 
         for (int i = 0; i < children.size(); i++) {
             Child child = children.get(i).getValue();
+
             builder.append(String.format("Child %d: %s", i + 1, child.asLabel()));
+            if (closable && child.getFinalOrderIssuedType() != null) {
+                builder.append(String.format(" - %s issued", child.getFinalOrderIssuedType()));
+            }
             builder.append("\n");
         }
 
@@ -43,7 +47,8 @@ public class ChildrenService {
     }
 
     public List<Element<Child>> updateFinalOrderIssued(GeneratedOrderType orderType, List<Element<Child>> children,
-        String orderAppliesToAllChildren, ChildSelector childSelector, String remainingChildIndex) {
+                                                       String orderAppliesToAllChildren, ChildSelector childSelector,
+                                                       String remainingChildIndex) {
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
             children.forEach(child -> {
                 child.getValue().setFinalOrderIssued(YES.getValue());
@@ -56,7 +61,7 @@ public class ChildrenService {
             } else if (childSelector != null) {
                 selectedChildren = childSelector.getSelected();
             } else {
-                selectedChildren =  new ArrayList<>();
+                selectedChildren = new ArrayList<>();
             }
             for (int i = 0; i < children.size(); i++) {
                 Child child = children.get(i).getValue();
@@ -71,10 +76,18 @@ public class ChildrenService {
         return children;
     }
 
-    public Optional<Integer> getRemainingChildIndex(List<Element<Child>> allChildren) {
+    /**
+     * Returns the index of the only child without a final order issued against them.
+     * If there are multiple children then an empty optional is returned instead.
+     * If there are no children then an empty optional is returned.
+     *
+     * @param children List of {@link Child} to search
+     * @return index of remaining child wrapped in an optional
+     */
+    public Optional<Integer> getRemainingChildIndex(List<Element<Child>> children) {
         Optional<Integer> remainingChildIndex = Optional.empty();
-        for (int i = 0; i < allChildren.size(); i++) {
-            if (!YES.getValue().equals(allChildren.get(i).getValue().getFinalOrderIssued())) {
+        for (int i = 0; i < children.size(); i++) {
+            if (!YES.getValue().equals(children.get(i).getValue().getFinalOrderIssued())) {
                 if (remainingChildIndex.isEmpty()) {
                     remainingChildIndex = Optional.of(i);
                 } else {
@@ -96,7 +109,15 @@ public class ChildrenService {
     public String getFinalOrderIssuedChildrenNames(List<Element<Child>> children) {
         return children.stream()
             .filter(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()))
-            .map(child -> child.getValue().asLabel())
+            .map(child -> {
+                StringBuilder builder = new StringBuilder();
+                builder.append(child.getValue().getParty().getFullName());
+                if (child.getValue().getFinalOrderIssuedType() != null) {
+                    builder.append(String.format(" - %s issued", child.getValue().getFinalOrderIssuedType()));
+
+                }
+                return builder.toString();
+            })
             .collect(Collectors.joining("\n"));
     }
 }

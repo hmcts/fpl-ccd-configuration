@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -49,11 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
@@ -125,19 +120,21 @@ public class GeneratedOrderController {
             Optional<Integer> remainingChildIndex = childrenService.getRemainingChildIndex(caseData.getAllChildren());
             if (remainingChildIndex.isPresent()) {
                 caseDetails.getData().put("remainingChildIndex", String.valueOf(remainingChildIndex.get()));
-                caseDetails.getData()
-                    .put("remainingChild", childrenService.getRemainingChildrenNames(caseData.getAllChildren()));
+                caseDetails.getData().put("remainingChild",
+                    childrenService.getRemainingChildrenNames(caseData.getAllChildren()));
                 caseDetails.getData().put("otherFinalOrderChildren",
                     childrenService.getFinalOrderIssuedChildrenNames(caseData.getAllChildren()));
             } else {
-                caseDetails.getData()
-                    .put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
                 ChildSelector childSelector = ChildSelector.builder().build();
                 childSelector.setChildCountFromInt(caseData.getAllChildren().size());
-                childSelector.setHiddenFromChildList(caseData.getAllChildren());
+                boolean closable = caseData.getOrderTypeAndDocument().isClosable();
+                if (closable) {
+                    childSelector.setHiddenFromChildList(caseData.getAllChildren());
+                }
                 caseDetails.getData().put("childSelector", childSelector);
+                caseDetails.getData().put("children_label",
+                    childrenService.getChildrenLabel(caseData.getAllChildren(), closable));
             }
-
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -279,12 +276,12 @@ public class GeneratedOrderController {
                                  OrderStatus orderStatus,
                                  JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
 
-        DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
+        OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            service.getOrderTemplateData(caseData, orderStatus, judgeAndLegalAdvisor), templateType);
+            service.getOrderTemplateData(caseData, orderStatus, judgeAndLegalAdvisor),
+            typeAndDoc.getDocmosisTemplate());
 
-        OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 
         Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
@@ -307,10 +304,6 @@ public class GeneratedOrderController {
             log.error(mostRecentUploadedOrderDocumentUrl + " url incorrect.", e);
         }
         return "";
-    }
-
-    private DocmosisTemplates getDocmosisTemplateType(GeneratedOrderType type) {
-        return type == EMERGENCY_PROTECTION_ORDER ? EPO : ORDER;
     }
 
     private List<Element<Child>> getUpdatedChildren(CaseData caseData) {

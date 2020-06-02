@@ -31,13 +31,13 @@ class ChildrenServiceTest {
 
     @Test
     void shouldBuildExpectedLabelWhenEmptyList() {
-        String label = service.getChildrenLabel(List.of());
+        String label = service.getChildrenLabel(List.of(), false);
         assertThat(label).isEqualTo("No children in the case");
     }
 
     @Test
     void shouldBuildExpectedLabelWhenPopulatedList() {
-        String label = service.getChildrenLabel(List.of(childWithConfidentialFields(randomUUID())));
+        String label = service.getChildrenLabel(List.of(childWithConfidentialFields(randomUUID())), false);
         assertThat(label).isEqualTo("Child 1: James\n");
     }
 
@@ -45,7 +45,7 @@ class ChildrenServiceTest {
     void shouldBuildExpectedLabelWhenPopulatedListAndFinalOrderIssuedOnChild() {
         List<Element<Child>> children = List.of(childWithConfidentialFields(randomUUID()),
             childWithFinalOrderIssued("Jack", "Hill"));
-        String label = service.getChildrenLabel(children);
+        String label = service.getChildrenLabel(children, true);
         assertThat(label).isEqualTo("Child 1: James\nChild 2: Jack Hill - Care order issued\n");
     }
 
