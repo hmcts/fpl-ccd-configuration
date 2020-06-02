@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -46,8 +45,6 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
     LookupTestConfig.class, RepresentativeNotificationService.class, HearingBookingService.class,
     FixedTimeConfiguration.class})
 class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private NotificationService notificationService;
@@ -87,7 +84,7 @@ class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
             .willReturn((getCMOReadyforReviewByPartiesNotificationParameters(EMAIL)));
 
         orderReadyForPartyReviewEventHandler.sendEmailForCaseManagementOrderReadyForPartyReview(
-            new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest, requestData, DOCUMENT_CONTENTS));
+            new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
