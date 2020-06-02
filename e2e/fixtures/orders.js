@@ -125,7 +125,6 @@ module.exports = [
       judgeLastName: 'Judy',
       legalAdvisorName: 'Fred Frederickson',
     },
-    children: 'All',
     closeCase: false,
   },
 ];

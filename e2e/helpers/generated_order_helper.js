@@ -102,6 +102,9 @@ const fillDateOfIssue = async (I, createOrderEventPage, order) => {
 };
 
 const selectChildren = async (I, createOrderEventPage, order) => {
+  if (order.children === undefined) {
+    return;
+  }
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.allChildren.id);
   if (order.children === 'All') {
     await createOrderEventPage.useAllChildren();
