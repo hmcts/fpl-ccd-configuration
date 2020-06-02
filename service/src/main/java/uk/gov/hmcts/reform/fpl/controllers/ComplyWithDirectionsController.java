@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Api
 @RestController
@@ -40,7 +40,8 @@ public class ComplyWithDirectionsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<DirectionAssignee, List<Element<Direction>>> assigneeMap = getMapping(caseData.getDirectionsToComplyWith());
+        Map<DirectionAssignee, List<Element<Direction>>> assigneeMap
+            = getAssigneeToDirectionMapping(caseData.getDirectionsToComplyWith());
 
         assigneeMap.forEach((assignee, directions) -> {
             if (!assignee.equals(ALL_PARTIES)) {

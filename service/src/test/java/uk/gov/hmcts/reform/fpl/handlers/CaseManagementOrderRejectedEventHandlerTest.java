@@ -8,7 +8,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
@@ -23,9 +22,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 
 @ExtendWith(SpringExtension.class)
 public class CaseManagementOrderRejectedEventHandlerTest {
-
-    @Mock
-    private RequestData requestData;
 
     @Mock
     private InboxLookupService inboxLookupService;
@@ -51,7 +47,7 @@ public class CaseManagementOrderRejectedEventHandlerTest {
             .willReturn(getCMORejectedCaseLinkNotificationParameters());
 
         caseManagementOrderRejectedEventHandler.notifyLocalAuthorityOfRejectedCaseManagementOrder(
-            new CaseManagementOrderRejectedEvent(callbackRequest, requestData));
+            new CaseManagementOrderRejectedEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE,

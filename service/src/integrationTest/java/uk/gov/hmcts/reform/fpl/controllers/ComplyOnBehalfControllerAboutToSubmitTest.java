@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -123,8 +123,8 @@ class ComplyOnBehalfControllerAboutToSubmitTest extends AbstractControllerTest {
             .build());
     }
 
-    private StandardDirectionOrder orderWithAllPartiesDirection() {
-        return StandardDirectionOrder.builder()
+    private Order orderWithAllPartiesDirection() {
+        return Order.builder()
             .directions(List.of(Element.<Direction>builder()
                 .id(DIRECTION_ID)
                 .value(Direction.builder()

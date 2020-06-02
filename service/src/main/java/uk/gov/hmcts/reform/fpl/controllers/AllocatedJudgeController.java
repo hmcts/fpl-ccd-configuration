@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.NotifyAllocatedJudgeEvent;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 @Api
 @RestController
@@ -18,10 +17,9 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AllocatedJudgeController {
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final RequestData requestData;
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new NotifyAllocatedJudgeEvent(callbackRequest, requestData));
+        applicationEventPublisher.publishEvent(new NotifyAllocatedJudgeEvent(callbackRequest));
     }
 }

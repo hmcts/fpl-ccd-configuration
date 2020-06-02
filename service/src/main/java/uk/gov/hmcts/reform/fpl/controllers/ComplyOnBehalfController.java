@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForUsersService;
@@ -28,7 +27,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Api
 @RestController
@@ -36,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ComplyOnBehalfController {
     private final ObjectMapper mapper;
-    private final CommonDirectionService commonDirectionService;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
     private final RespondentService respondentService;
@@ -50,7 +48,8 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<DirectionAssignee, List<Element<Direction>>> assigneeMap = getMapping(caseData.getDirectionsToComplyWith());
+        Map<DirectionAssignee, List<Element<Direction>>> assigneeMap
+            = getAssigneeToDirectionMapping(caseData.getDirectionsToComplyWith());
 
         prepareDirectionsForUsersService.addDirectionsToCaseDetails(
             caseDetails, assigneeMap, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));

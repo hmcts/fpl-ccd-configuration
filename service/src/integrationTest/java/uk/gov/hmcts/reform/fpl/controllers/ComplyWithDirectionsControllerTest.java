@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -59,7 +59,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .build()));
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("standardDirectionOrder", StandardDirectionOrder.builder().directions(directions).build()))
+            .data(Map.of("standardDirectionOrder", Order.builder().directions(directions).build()))
             .build();
 
         CaseData caseData = getCaseData(postAboutToStartEvent(caseDetails));
@@ -80,7 +80,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldAddAllPartiesDirectionsIntoSeparateRoleCollections() {
         List<Direction> directions = directionsForAllRoles();
-        StandardDirectionOrder sdo = StandardDirectionOrder.builder().directions(buildDirections(directions)).build();
+        Order sdo = Order.builder().directions(buildDirections(directions)).build();
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -96,7 +96,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldReturnAllPartiesDirectionsWhenNoSpecificRoleDirections() {
         Direction direction = Direction.builder().assignee(ALL_PARTIES).build();
-        StandardDirectionOrder sdo = StandardDirectionOrder.builder().directions(buildDirections(direction)).build();
+        Order sdo = Order.builder().directions(buildDirections(direction)).build();
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -114,12 +114,11 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
         assertThat(caseData.getCourtDirectionsCustom()).containsAll(sdo.getDirections());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void aboutToSubmitShouldAddResponseToStandardDirectionOrderWhenEmptyServedCaseManagementOrders() {
         UUID uuid = randomUUID();
         List<Element<Direction>> directions = directions(uuid);
-        StandardDirectionOrder sdo = order(uuid);
+        Order sdo = order(uuid);
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -134,12 +133,11 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
         assertThat(caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses()).isNotEmpty();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void aboutToSubmitShouldAddResponseToCaseManagementOrderWhenPopulatedServedCaseManagementOrders() {
         UUID uuid = randomUUID();
         List<Element<Direction>> directions = directions(uuid);
-        StandardDirectionOrder sdo = order(uuid);
+        Order sdo = order(uuid);
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -165,8 +163,8 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .build());
     }
 
-    private StandardDirectionOrder order(UUID uuid) {
-        return StandardDirectionOrder.builder()
+    private Order order(UUID uuid) {
+        return Order.builder()
             .directions(List.of(element(uuid, Direction.builder()
                 .directionType("example direction")
                 .build())))
@@ -220,9 +218,8 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .anyMatch(x -> x.equals(allPartiesDirection) && x.equals(directions));
     }
 
-    @SuppressWarnings("unchecked")
-    private ImmutableMap.Builder createCaseDataMap(List<Element<Direction>> directions) {
-        ImmutableMap.Builder builder = ImmutableMap.<String, List<Element<Direction>>>builder();
+    private ImmutableMap.Builder<String, Object> createCaseDataMap(List<Element<Direction>> directions) {
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
         return builder
             .put(LOCAL_AUTHORITY.getValue(), directions)

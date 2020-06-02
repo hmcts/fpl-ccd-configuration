@@ -28,7 +28,6 @@ public class CaseManagementOrder extends OrderForHearing implements IssuableOrde
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;
     private final CMOStatus status;
-
     private OrderAction action;
     private NextHearing nextHearing;
 
@@ -82,19 +81,15 @@ public class CaseManagementOrder extends OrderForHearing implements IssuableOrde
     @JsonIgnore
     public Map<String, Object> getCCDFields() {
         Map<String, Object> data = new HashMap<>();
-
         if (schedule != null) {
             data.put(SCHEDULE.getKey(), schedule);
         }
-
         if (recitals != null) {
             data.put(RECITALS.getKey(), recitals);
         }
-
         if (action != null) {
             data.put(ORDER_ACTION.getKey(), action);
         }
-
         return data;
     }
 }

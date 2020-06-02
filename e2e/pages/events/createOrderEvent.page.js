@@ -66,6 +66,13 @@ module.exports = {
       },
     },
     judgeAndLegalAdvisorTitleId: '#judgeAndLegalAdvisor_judgeTitle',
+    closeCase: {
+      id: '#closeCaseFromOrder',
+      options: {
+        yes: '#closeCaseFromOrder-Yes',
+        no: '#closeCaseFromOrder-No',
+      },
+    },
   },
 
   selectType(type, subtype) {
@@ -83,9 +90,11 @@ module.exports = {
     I.fillField(this.fields.details, orders[0].details);
   },
 
-  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge) {
+  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge,
+    judgeEmailAddress) {
     judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+    judgeAndLegalAdvisor.enterJudgeEmailAddress(judgeEmailAddress);
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
@@ -180,5 +189,13 @@ module.exports = {
     within(this.fields.allChildren.id, () => {
       I.click(locate('label').withText(this.fields.allChildren.options.no));
     });
+  },
+
+  closeCaseFromOrder(closeCase) {
+    if (closeCase) {
+      I.click(this.fields.closeCase.options.yes);
+    } else {
+      I.click(this.fields.closeCase.options.no);
+    }
   },
 };

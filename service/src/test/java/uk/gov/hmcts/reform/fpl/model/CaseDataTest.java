@@ -76,7 +76,7 @@ class CaseDataTest {
             List<Element<Direction>> sdoDirections = wrapElements(directionForParty(LOCAL_AUTHORITY));
 
             CaseData caseData = CaseData.builder()
-                .standardDirectionOrder(standardDirectionOrder(sdoDirections))
+                .standardDirectionOrder(Order.builder().directions(sdoDirections).build())
                 .servedCaseManagementOrders(emptyList())
                 .build();
 
@@ -89,7 +89,7 @@ class CaseDataTest {
             List<Element<Direction>> sdoDirections = wrapElements(directionForParty(CAFCASS));
 
             CaseData caseData = CaseData.builder()
-                .standardDirectionOrder(standardDirectionOrder(sdoDirections))
+                .standardDirectionOrder(Order.builder().directions(sdoDirections).build())
                 .servedCaseManagementOrders(servedCaseManagementOrder(cmoDirections))
                 .build();
 
@@ -101,10 +101,6 @@ class CaseDataTest {
             CaseData caseData = CaseData.builder().build();
 
             assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(emptyList());
-        }
-
-        private StandardDirectionOrder standardDirectionOrder(List<Element<Direction>> sdoDirections) {
-            return StandardDirectionOrder.builder().directions(sdoDirections).build();
         }
 
         private List<Element<CaseManagementOrder>> servedCaseManagementOrder(List<Element<Direction>> cmoDirections) {
@@ -483,6 +479,22 @@ class CaseDataTest {
 
         Stream.of(DirectionAssignee.values())
             .forEach(assignee -> JSONAssert.assertEquals(getExpectedString(assignee, id), serialised, false));
+    }
+
+    @Test
+    void shouldReturnTrueWhenAllocatedJudgeExists() {
+        CaseData caseData = CaseData.builder().allocatedJudge(Judge.builder()
+            .judgeFullName("Test Judge")
+            .build()).build();
+
+        assertThat(caseData.allocatedJudgeExists()).isEqualTo(true);
+    }
+
+    @Test
+    void shouldReturnFalseWhenAllocatedJudgeDoesNotExist() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(caseData.allocatedJudgeExists()).isEqualTo(false);
     }
 
     private String buildJsonDirections(UUID id) throws JsonProcessingException {

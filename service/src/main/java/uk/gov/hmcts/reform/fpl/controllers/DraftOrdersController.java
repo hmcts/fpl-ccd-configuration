@@ -19,11 +19,10 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -36,7 +35,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +44,7 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -72,7 +70,6 @@ public class DraftOrdersController {
     private final OrderValidationService orderValidationService;
     private final HearingBookingService hearingBookingService;
     private final Time time;
-    private final RequestData requestData;
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
 
@@ -83,7 +80,7 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         LocalDate dateOfIssue = time.now().toLocalDate();
-        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         if (standardDirectionOrder != null && standardDirectionOrder.getDateOfIssue() != null) {
             dateOfIssue = parseLocalDateFromStringUsingFormat(standardDirectionOrder.getDateOfIssue(), DATE);
@@ -115,7 +112,7 @@ public class DraftOrdersController {
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
 
-        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         if (standardDirectionOrder != null) {
             caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, standardDirectionOrder.getJudgeAndLegalAdvisor());
@@ -131,15 +128,14 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
             caseData.getAllocatedJudge());
 
-        StandardDirectionOrder order = StandardDirectionOrder.builder()
+        Order order = Order.builder()
             .directions(commonDirectionService.combineAllDirections(caseData))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
@@ -163,8 +159,7 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -190,7 +185,7 @@ public class DraftOrdersController {
         Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(combinedDirections);
         directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-        StandardDirectionOrder order = StandardDirectionOrder.builder()
+        Order order = Order.builder()
             .directions(commonDirectionService.removeUnnecessaryDirections(combinedDirections))
             .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
@@ -217,11 +212,10 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
         if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
             return;
         }
@@ -241,8 +235,7 @@ public class DraftOrdersController {
                 "internal-change:SEND_DOCUMENT",
                 Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
             );
-            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
-                requestData));
+            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest));
         }
     }
 
@@ -273,11 +266,11 @@ public class DraftOrdersController {
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> list) {
         List<Element<Direction>> nonCustomDirections = commonDirectionService.removeCustomDirections(list);
 
-        return getMapping(nonCustomDirections);
+        return getAssigneeToDirectionMapping(nonCustomDirections);
     }
 
     private void persistHiddenValues(HearingBooking firstHearing,
-                                     List<Element<Direction>> directions) throws IOException {
+                                     List<Element<Direction>> directions) {
         List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(firstHearing);
 
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(standardDirections, directions);

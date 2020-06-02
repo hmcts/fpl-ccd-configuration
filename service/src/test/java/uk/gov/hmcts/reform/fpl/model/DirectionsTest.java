@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_3;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_5;
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -41,7 +41,7 @@ class DirectionsTest {
         void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
             List<Element<Direction>> directions = wrapElements(getDirection(LOCAL_AUTHORITY), getDirection(COURT));
 
-            Map<DirectionAssignee, List<Element<Direction>>> mapping = getMapping(directions);
+            Map<DirectionAssignee, List<Element<Direction>>> mapping = getAssigneeToDirectionMapping(directions);
 
             assertKeyContainsCorrectDirection(LOCAL_AUTHORITY, mapping);
             assertKeyContainsCorrectDirection(COURT, mapping);
@@ -53,7 +53,7 @@ class DirectionsTest {
 
         @Test
         void shouldAddEmptyListValueWhenKeyNotPresentInMap() {
-            Map<DirectionAssignee, List<Element<Direction>>> mapping = getMapping(emptyList());
+            Map<DirectionAssignee, List<Element<Direction>>> mapping = getAssigneeToDirectionMapping(emptyList());
 
             Stream.of(DirectionAssignee.values())
                 .forEach(assignee -> assertThat(mapping.get(assignee)).isEqualTo(emptyList()));

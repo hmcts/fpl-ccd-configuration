@@ -50,7 +50,8 @@ public class Directions {
     }
 
     @JsonIgnore
-    public static Map<DirectionAssignee, List<Element<Direction>>> getMapping(List<Element<Direction>> directions) {
+    public static Map<DirectionAssignee, List<Element<Direction>>> getAssigneeToDirectionMapping(
+        List<Element<Direction>> directions) {
         Map<DirectionAssignee, List<Element<Direction>>> map = directions.stream()
             .collect(groupingBy(element -> element.getValue().getAssignee()));
 

@@ -10,8 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NotifyAllocatedJudgeEvent;
-import uk.gov.hmcts.reform.fpl.model.notify.AllocatedJudgeTemplate;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AllocatedJudgeContentProvider;
 
@@ -24,10 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NotifyAllocatedJudgeEventHandler.class, JacksonAutoConfiguration.class})
 class NotifyAllocatedJudgeEventHandlerTest {
-    private final String allocatedJudgeEmailAddress = "test@test.com";
-
-    @MockBean
-    private RequestData requestData;
+    private static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "judge@gmail.com";
 
     @MockBean
     private NotificationService notificationService;
@@ -48,12 +44,11 @@ class NotifyAllocatedJudgeEventHandlerTest {
         given(allocatedJudgeContentProvider.buildNotificationParameters(caseDetails))
             .willReturn(expectedParameters);
 
-        notifyAllocatedJudgeEventHandler.notifyAllocatedJudge(new NotifyAllocatedJudgeEvent(callbackRequest,
-            requestData));
+        notifyAllocatedJudgeEventHandler.notifyAllocatedJudge(new NotifyAllocatedJudgeEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             ALLOCATED_JUDGE_TEMPLATE,
-            allocatedJudgeEmailAddress,
+            ALLOCATED_JUDGE_EMAIL_ADDRESS,
             expectedParameters,
             "12345");
     }

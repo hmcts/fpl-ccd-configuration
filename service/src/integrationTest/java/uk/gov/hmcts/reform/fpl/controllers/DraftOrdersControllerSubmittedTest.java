@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -112,7 +112,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
         return ImmutableMap.<String, Object>builder()
             .put("title", "cafcass")
             .put("familyManCaseNumber", "")
-            .put("leadRespondentsName", "Moley,")
+            .put("leadRespondentsName", "Moley")
             .put("hearingDate", "20 October 2020")
             .put("reference", String.valueOf(CASE_ID))
             .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_ID))
@@ -120,7 +120,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private CallbackRequest buildCallbackRequest(OrderStatus status) {
-        StandardDirectionOrder order = StandardDirectionOrder.builder()
+        Order order = Order.builder()
             .orderStatus(status)
             .orderDoc(DOCUMENT_REFERENCE)
             .build();

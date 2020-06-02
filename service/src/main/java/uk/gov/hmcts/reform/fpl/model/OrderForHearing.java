@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFr
 public class OrderForHearing {
     public final String hearingDate;
     public final String dateOfIssue;
-
     public List<Element<Direction>> directions;
     public DocumentReference orderDoc;
 

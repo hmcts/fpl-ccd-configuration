@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,8 +82,8 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
-        StandardDirectionOrder order = StandardDirectionOrder.builder().dateOfIssue("29 November 2019").build();
+    void shouldMapEmptyCaseDataForDraftSDO() {
+        Order order = Order.builder().dateOfIssue("29 November 2019").build();
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(getCaseData(order));
 
@@ -92,17 +91,17 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapDirectionsForDraftSDOWhenAllAssignees() throws IOException {
-        StandardDirectionOrder order = StandardDirectionOrder.builder().directions(getDirections()).build();
+    void shouldMapDirectionsForDraftSDOWhenAllAssignees() {
+        Order order = Order.builder().directions(getDirections()).build();
         DocmosisStandardDirectionOrder templateData = service.getTemplateData(getCaseData(order));
 
         assertThat(templateData.getDirections()).containsAll(expectedDirections());
     }
 
     @Test
-    void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() throws IOException {
+    void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() {
         Direction notNeededDirection = Direction.builder().directionNeeded("No").build();
-        StandardDirectionOrder order = StandardDirectionOrder.builder()
+        Order order = Order.builder()
             .directions(wrapElements(notNeededDirection))
             .build();
 
@@ -112,7 +111,7 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapCaseDataWhenEmptyListValues() throws IOException {
+    void shouldMapCaseDataWhenEmptyListValues() {
         CaseData caseData = caseDataWithEmptyListValues();
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(caseData);
@@ -127,13 +126,13 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapCompleteCaseDataForSDOTemplate() throws IOException {
+    void shouldMapCompleteCaseDataForSDOTemplate() {
         DocmosisStandardDirectionOrder template = service.getTemplateData(fullCaseData());
 
         assertThat(template).isEqualToComparingFieldByField(fullDocmosisOrder());
     }
 
-    private CaseData getCaseData(StandardDirectionOrder order) {
+    private CaseData getCaseData(Order order) {
         LocalDate today = time.now().toLocalDate();
 
         return CaseData.builder()
@@ -150,7 +149,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .build());
     }
 
-    private DocmosisStandardDirectionOrder emptyDocmosisOrder(StandardDirectionOrder order) {
+    private DocmosisStandardDirectionOrder emptyDocmosisOrder(Order order) {
         return docmosisOrder("", "", null, order.getDateOfIssue(), emptyList());
     }
 

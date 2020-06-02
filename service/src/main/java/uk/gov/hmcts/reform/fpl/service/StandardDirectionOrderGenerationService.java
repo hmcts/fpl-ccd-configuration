@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +30,8 @@ public class StandardDirectionOrderGenerationService extends
 
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
-    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) throws IOException {
-        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
+        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         HearingBooking firstHearing = hearingBookingService.getFirstHearing(caseData.getHearingDetails())
             .orElse(null);
@@ -65,7 +64,7 @@ public class StandardDirectionOrderGenerationService extends
         return dataService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
     }
 
-    private List<DocmosisDirection> buildDirections(List<Element<Direction>> elements) throws IOException {
+    private List<DocmosisDirection> buildDirections(List<Element<Direction>> elements) {
         List<Direction> directions = unwrapElements(elements);
         List<DirectionConfiguration> config = ordersLookupService.getStandardDirectionOrder().getDirections();
         List<DocmosisDirection> formattedDirections = new ArrayList<>();

@@ -15,17 +15,17 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 @Getter
-public class StandardDirectionOrder extends OrderForHearing implements IssuableOrder {
+public class Order extends OrderForHearing implements IssuableOrder {
     private final OrderStatus orderStatus;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
 
     @Builder
-    public StandardDirectionOrder(String hearingDate,
-                                  String dateOfIssue,
-                                  List<Element<Direction>> directions,
-                                  DocumentReference orderDoc,
-                                  OrderStatus orderStatus,
-                                  JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+    public Order(String hearingDate,
+                 String dateOfIssue,
+                 List<Element<Direction>> directions,
+                 DocumentReference orderDoc,
+                 OrderStatus orderStatus,
+                 JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         super(hearingDate, dateOfIssue, directions, orderDoc);
         this.orderStatus = orderStatus;
         this.judgeAndLegalAdvisor = judgeAndLegalAdvisor;
