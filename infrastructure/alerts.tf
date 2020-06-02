@@ -19,7 +19,7 @@ module "fpl-performance-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-performance-alert"
   alert_desc                 = "Requests that took longer than 1 seconds to complete"
-  app_insights_query         = "requests | where url !contains '/health' and success == 'True' and duration > 1000 | project timestamp, name, operation_Id, duration | sort by duration nulls last"
+  app_insights_query         = "requests | where url !contains '/health' and success == 'True' and duration > 1000 | project timestamp, operation_Id, name, duration | sort by duration nulls last"
   custom_email_subject       = "Alert: Performance errors"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
@@ -37,7 +37,7 @@ module "fpl-grant-case-access-failure-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-grant-case-access-failure"
   alert_desc                 = "Grant case access failure"
-  app_insights_query         = "exceptions | where type contains 'GrantCaseAccessException' | project operation_Id, timestamp , outerMessage"
+  app_insights_query         = "exceptions | where type contains 'GrantCaseAccessException' | project timestamp, operation_Id, outerMessage"
   custom_email_subject       = "Alert: Grant case access failed"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
@@ -73,7 +73,7 @@ module "fpl-health-failure-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-health-failure-alert"
   alert_desc                 = "Failed health requests"
-  app_insights_query         = "requests | where url contains "health" | where resultCode != "200" | project timestamp, resultCode"
+  app_insights_query         = "requests | where url contains "health" | where resultCode != "200" | project timestamp, operation_Id, resultCode"
   custom_email_subject       = "Alert: Health failure"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
