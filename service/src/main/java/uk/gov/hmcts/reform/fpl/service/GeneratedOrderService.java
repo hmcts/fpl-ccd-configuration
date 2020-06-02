@@ -180,7 +180,7 @@ public class GeneratedOrderService {
                 orderTemplateBuilder
                     .put("localAuthorityName", getLocalAuthorityName(caseData.getCaseLocalAuthority()))
                     .put(ORDER_DETAILS, getFormattedCareOrderDetails(childrenCount,
-                        caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
+                        caseData.getCaseLocalAuthority(), orderTypeAndDocument.isInterim(), interimEndDate));
                 break;
             case SUPERVISION_ORDER:
                 if (subtype == INTERIM) {
