@@ -97,7 +97,7 @@ class PopulateStandardDirectionsHandlerTest {
 
     @Test
     void shouldTriggerEventWithCorrectData() {
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest));
 
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
@@ -114,7 +114,7 @@ class PopulateStandardDirectionsHandlerTest {
     void shouldCallStandardDirectionsServiceWithNullIfNoFirstHearing() {
         given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.empty());
 
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest));
 
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),

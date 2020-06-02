@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -71,7 +70,6 @@ public class DraftOrdersController {
     private final OrderValidationService orderValidationService;
     private final HearingBookingService hearingBookingService;
     private final Time time;
-    private final RequestData requestData;
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
 
@@ -237,8 +235,7 @@ public class DraftOrdersController {
                 "internal-change:SEND_DOCUMENT",
                 Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
             );
-            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
-                requestData));
+            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest));
         }
     }
 

@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
@@ -52,9 +51,6 @@ class SubmittedCaseEventHandlerTest {
 
     @Mock
     private ObjectMapper mapper;
-
-    @Mock
-    private RequestData requestData;
 
     @Mock
     private NotificationService notificationService;
@@ -88,7 +84,7 @@ class SubmittedCaseEventHandlerTest {
         final String expectedEmail = "test@test.com";
         final CallbackRequest request = callbackRequest(OPEN);
         final SubmitCaseHmctsTemplate expectedTemplate = new SubmitCaseHmctsTemplate();
-        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request, requestData);
+        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
         when(adminNotificationHandler.getHmctsAdminEmail(new EventData(submittedCaseEvent))).thenReturn(expectedEmail);
         when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(request.getCaseDetails(), LOCAL_AUTHORITY_CODE))
@@ -110,7 +106,7 @@ class SubmittedCaseEventHandlerTest {
         final CafcassLookupConfiguration.Cafcass cafcass =
             new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, expectedEmail);
         final SubmitCaseCafcassTemplate expectedTemplate = new SubmitCaseCafcassTemplate();
-        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request, requestData);
+        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
         when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).thenReturn(cafcass);
         when(cafcassEmailContentProvider.buildCafcassSubmissionNotification(request.getCaseDetails(),
@@ -139,7 +135,7 @@ class SubmittedCaseEventHandlerTest {
         void shouldNotPayIfPaymentIsToggledOff() {
             final CallbackRequest request = callbackRequest(OPEN);
 
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request, requestData);
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
             when(featureToggleService.isPaymentsEnabled()).thenReturn(false);
 
@@ -152,7 +148,7 @@ class SubmittedCaseEventHandlerTest {
         @EnumSource(value = State.class, mode = EXCLUDE, names = {"OPEN"})
         void shouldNotPayIfCaseStateIsDifferentThanOpen(State state) {
             final CallbackRequest request = callbackRequest(state);
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request, requestData);
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
             when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 
@@ -164,7 +160,7 @@ class SubmittedCaseEventHandlerTest {
         @Test
         void shouldNotPayAndNotEmitFailureEventIfPaymentDecisionIsNotPresent() {
             final CallbackRequest request = callbackRequest(OPEN, emptyMap());
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request, requestData);
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
             when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 
@@ -176,7 +172,7 @@ class SubmittedCaseEventHandlerTest {
         @Test
         void shouldNotPayAndEmitFailureEventIfPaymentDecisionsIsNo() {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "No"));
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request, requestData);
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
             when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 
@@ -190,7 +186,7 @@ class SubmittedCaseEventHandlerTest {
         @Test
         void shouldEmitFailureEventWhenPaymentFailed() {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "Yes"));
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request, requestData);
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
             final Exception exception = new PaymentsApiException("", new RuntimeException());
             when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
             doThrow(exception).when(paymentService).makePaymentForCaseOrders(1L, caseData);
@@ -204,7 +200,7 @@ class SubmittedCaseEventHandlerTest {
         @Test
         void shouldPayWhenPaymentIsToggledOnAndCaseIsOpenedAndPaymentDesicionIsYes() {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "Yes"));
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request, requestData);
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
             when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 

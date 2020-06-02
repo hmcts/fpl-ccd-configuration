@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -56,9 +55,6 @@ class GeneratedOrderEventHandlerTest {
 
     final String mostRecentUploadedDocumentUrl =
         "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
-
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
@@ -110,7 +106,7 @@ class GeneratedOrderEventHandlerTest {
             .willReturn(getExpectedDigitalServedRepresentativesForAddingPartiesToCase());
 
         generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
-            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
