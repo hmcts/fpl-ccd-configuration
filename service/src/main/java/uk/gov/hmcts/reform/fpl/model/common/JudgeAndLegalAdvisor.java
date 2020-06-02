@@ -3,14 +3,15 @@ package uk.gov.hmcts.reform.fpl.model.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
-@Builder(toBuilder = true)
-public class JudgeAndLegalAdvisor {
+@EqualsAndHashCode(callSuper = true)
+public class JudgeAndLegalAdvisor extends AbstractJudge {
     private final JudgeOrMagistrateTitle judgeTitle;
     private final String otherTitle;
     private final String judgeLastName;
@@ -18,6 +19,22 @@ public class JudgeAndLegalAdvisor {
     private final String legalAdvisorName;
     private String allocatedJudgeLabel;
     private String useAllocatedJudge;
+    private String judgeEmailAddress;
+
+    @Builder(toBuilder = true)
+    private JudgeAndLegalAdvisor(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
+                                String judgeFullName, String legalAdvisorName, String allocatedJudgeLabel,
+        String useAllocatedJudge, String judgeEmailAddress) {
+        super(judgeTitle, otherTitle, judgeLastName, judgeFullName);
+        this.judgeTitle = judgeTitle;
+        this.otherTitle = otherTitle;
+        this.judgeLastName = judgeLastName;
+        this.judgeFullName = judgeFullName;
+        this.legalAdvisorName = legalAdvisorName;
+        this.allocatedJudgeLabel = allocatedJudgeLabel;
+        this.useAllocatedJudge = useAllocatedJudge;
+        this.judgeEmailAddress = judgeEmailAddress;
+    }
 
     @JsonIgnore
     public boolean isUsingAllocatedJudge() {
@@ -31,7 +48,8 @@ public class JudgeAndLegalAdvisor {
                 .judgeTitle(allocatedJudge.getJudgeTitle())
                 .otherTitle(allocatedJudge.getOtherTitle())
                 .judgeLastName(allocatedJudge.getJudgeLastName())
-                .judgeFullName(allocatedJudge.getJudgeFullName());
+                .judgeFullName(allocatedJudge.getJudgeFullName())
+                .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress());
         }
         return judgeAndLegalAdvisorBuilder.build();
     }
