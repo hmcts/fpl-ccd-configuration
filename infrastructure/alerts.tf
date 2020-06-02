@@ -37,7 +37,7 @@ module "fpl-grant-case-access-failure-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-grant-case-access-failure"
   alert_desc                 = "Grant case access failure"
-  app_insights_query         = "exceptions | where type contains 'GrantCaseAccessException' | project timestamp , outerMessage"
+  app_insights_query         = "exceptions | where type contains 'GrantCaseAccessException' | project operation_Id, timestamp , outerMessage"
   custom_email_subject       = "Alert: Grant case access failed"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
@@ -55,7 +55,7 @@ module "fpl-exceptions-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-exceptions-alert"
   alert_desc                 = "All exceptions within FPL"
-  app_insights_query         = "exceptions | where operation_Name !contains "health" | project timestamp, severityLevel, operation_Name, outerMessage, ['details'] | sort by severityLevel"
+  app_insights_query         = "exceptions | where operation_Name !contains "health" | project timestamp, operation_Id, operation_Name, outerMessage"
   custom_email_subject       = "Alert: FPL all exceptions"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
@@ -73,7 +73,7 @@ module "fpl-health-failure-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-health-failure-alert"
   alert_desc                 = "Failed health requests"
-  app_insights_query         = "requests | where url contains "health" | where resultCode != "200" | project timestamp, resultCode, duration"
+  app_insights_query         = "requests | where url contains "health" | where resultCode != "200" | project timestamp, resultCode"
   custom_email_subject       = "Alert: Health failure"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
