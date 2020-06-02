@@ -459,4 +459,8 @@ public class CaseData {
     }
 
     private final ReturnApplication returnApplication;
+
+    public boolean allocatedJudgeExists() {
+        return allocatedJudge != null;
+    }
 }

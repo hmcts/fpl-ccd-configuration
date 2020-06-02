@@ -24,7 +24,7 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
                 .get(0)
                 .getValue()
                 .getParty()
-                .getLastName()) + ",")
+                .getLastName()))
             .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseId))
             .put("caseUrl", getCaseUrl(caseId));
