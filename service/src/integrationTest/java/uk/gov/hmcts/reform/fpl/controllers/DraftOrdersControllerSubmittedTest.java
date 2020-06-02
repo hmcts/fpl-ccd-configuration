@@ -112,7 +112,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
         return ImmutableMap.<String, Object>builder()
             .put("title", "cafcass")
             .put("familyManCaseNumber", "")
-            .put("leadRespondentsName", "Moley,")
+            .put("leadRespondentsName", "Moley")
             .put("hearingDate", "20 October 2020")
             .put("reference", String.valueOf(CASE_ID))
             .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_ID))

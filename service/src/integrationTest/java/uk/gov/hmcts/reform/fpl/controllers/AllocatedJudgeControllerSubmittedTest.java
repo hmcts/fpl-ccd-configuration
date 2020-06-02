@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @WebMvcTest(AllocatedJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class AllocatedJudgeControllerSubmittedTest extends AbstractControllerTest {
-    private static final String ALLOCATED_JUDGE_EMAIL = "test@test.com";
+    private static final String ALLOCATED_JUDGE_EMAIL = "judge@gmail.com";
 
     @MockBean
     private NotificationClient notificationClient;
