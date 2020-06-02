@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,9 +57,6 @@ class CaseManagementOrderProgressionServiceTest {
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
 
-    @Mock
-    private RequestData requestData;
-
     private CaseManagementOrderProgressionService service;
 
     @MockBean
@@ -68,8 +64,7 @@ class CaseManagementOrderProgressionServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new CaseManagementOrderProgressionService(mapper, applicationEventPublisher, requestData,
-            documentDownloadService);
+        service = new CaseManagementOrderProgressionService(mapper, applicationEventPublisher, documentDownloadService);
     }
 
     @Test
