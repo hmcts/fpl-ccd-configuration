@@ -47,6 +47,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -230,8 +232,7 @@ public class GeneratedOrderController {
 
         data.put("orderCollection", orders);
 
-        if (featureToggleService.isCloseCaseEnabled() && orderTypeAndDocument.getType() != BLANK_ORDER
-            && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
+        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().isClosable()) {
             List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(
                 caseData.getOrderTypeAndDocument().getType(),
                 caseData.getAllChildren(),
