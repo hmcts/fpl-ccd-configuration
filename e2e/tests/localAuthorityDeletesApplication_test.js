@@ -11,8 +11,8 @@ BeforeSuite(async I => {
 });
 
 Before(async I => await I.navigateToCaseDetails(caseId));
-
-Scenario('local authority tries to submit incomplete case', async (I, caseViewPage, submitApplicationEventPage) => {
+//EUI-2060
+xScenario('local authority tries to submit incomplete case', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.click('Continue');
