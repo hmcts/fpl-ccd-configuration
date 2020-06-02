@@ -114,7 +114,6 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
         assertThat(caseData.getCourtDirectionsCustom()).containsAll(sdo.getDirections());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void aboutToSubmitShouldAddResponseToStandardDirectionOrderWhenEmptyServedCaseManagementOrders() {
         UUID uuid = randomUUID();
@@ -134,7 +133,6 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
         assertThat(caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses()).isNotEmpty();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void aboutToSubmitShouldAddResponseToCaseManagementOrderWhenPopulatedServedCaseManagementOrders() {
         UUID uuid = randomUUID();
@@ -220,9 +218,8 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .anyMatch(x -> x.equals(allPartiesDirection) && x.equals(directions));
     }
 
-    @SuppressWarnings("unchecked")
-    private ImmutableMap.Builder createCaseDataMap(List<Element<Direction>> directions) {
-        ImmutableMap.Builder builder = ImmutableMap.<String, List<Element<Direction>>>builder();
+    private ImmutableMap.Builder<String, Object> createCaseDataMap(List<Element<Direction>> directions) {
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
         return builder
             .put(LOCAL_AUTHORITY.getValue(), directions)

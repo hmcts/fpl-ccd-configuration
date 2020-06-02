@@ -11,7 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
@@ -32,8 +31,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {PlacementApplicationEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, HmctsAdminNotificationHandler.class})
 public class PlacementApplicationEventHandlerTest {
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private NotificationService notificationService;
@@ -55,7 +52,7 @@ public class PlacementApplicationEventHandlerTest {
             .willReturn(expectedParameters);
 
         placementApplicationEventHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(callbackRequest, requestData));
+            new PlacementApplicationEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
@@ -75,7 +72,7 @@ public class PlacementApplicationEventHandlerTest {
             .willReturn(expectedParameters);
 
         placementApplicationEventHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(callbackRequest, requestData));
+            new PlacementApplicationEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,

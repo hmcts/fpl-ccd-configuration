@@ -111,6 +111,7 @@ Scenario('Judiciary creates notice of proceedings documents with allocated judge
   await createNoticeOfProceedingsEventPage.useAlternateJudge();
   await createNoticeOfProceedingsEventPage.selectJudgeTitle();
   await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  await createNoticeOfProceedingsEventPage.enterJudgeEmailAddress('test@test.com');
   await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);

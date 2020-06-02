@@ -220,6 +220,7 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   createNoticeOfProceedingsEventPage.useAlternateJudge();
   createNoticeOfProceedingsEventPage.selectJudgeTitle();
   createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  createNoticeOfProceedingsEventPage.enterJudgeEmailAddress('test@test.com');
   createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);

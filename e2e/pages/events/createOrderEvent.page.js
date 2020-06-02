@@ -90,9 +90,11 @@ module.exports = {
     I.fillField(this.fields.details, orders[0].details);
   },
 
-  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge) {
+  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge,
+    judgeEmailAddress) {
     judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+    judgeAndLegalAdvisor.enterJudgeEmailAddress(judgeEmailAddress);
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 

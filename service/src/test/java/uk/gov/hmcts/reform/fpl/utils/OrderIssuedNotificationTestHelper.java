@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -51,6 +52,18 @@ public class OrderIssuedNotificationTestHelper {
             "courtName", EXAMPLE_COURT,
             "callout", withCallout ? callout : "",
             "documentLink", jsonFileObject);
+    }
+
+    public static AllocatedJudgeTemplateForGeneratedOrder getExpectedAllocatedJudgeParameters() {
+        AllocatedJudgeTemplateForGeneratedOrder allocatedJudgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
+        allocatedJudgeTemplate.setOrderType("blank order (c21)");
+        allocatedJudgeTemplate.setCallout(callout);
+        allocatedJudgeTemplate.setRespondentLastName("Jones");
+        allocatedJudgeTemplate.setJudgeTitle("Deputy District Judge");
+        allocatedJudgeTemplate.setJudgeName("Scott");
+        allocatedJudgeTemplate.setCaseUrl("http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
+
+        return allocatedJudgeTemplate;
     }
 
     public static List<Element<Representative>> buildRepresentatives() {
