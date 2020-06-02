@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.ReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ReturnApplicationService;
 
 @Api
@@ -27,7 +26,6 @@ public class ReturnApplicationController {
     private final ObjectMapper mapper;
     private final ReturnApplicationService returnApplicationService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -62,6 +60,6 @@ public class ReturnApplicationController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new ReturnedCaseEvent(callbackRequest, requestData));
+        applicationEventPublisher.publishEvent(new ReturnedCaseEvent(callbackRequest));
     }
 }

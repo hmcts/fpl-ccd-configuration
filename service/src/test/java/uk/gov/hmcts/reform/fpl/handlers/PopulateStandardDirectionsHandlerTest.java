@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -75,9 +74,6 @@ class PopulateStandardDirectionsHandlerTest {
     @MockBean
     private StandardDirectionsService standardDirectionsService;
 
-    @MockBean
-    private RequestData requestData;
-
     @Captor
     private ArgumentCaptor<Map<String, Object>> data;
 
@@ -94,7 +90,7 @@ class PopulateStandardDirectionsHandlerTest {
 
     @Test
     void shouldTriggerEventWithCorrectData() {
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest));
 
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
@@ -112,7 +108,7 @@ class PopulateStandardDirectionsHandlerTest {
     void shouldCallStandardDirectionsServiceWithNullIfNoFirstHearing() {
         given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.empty());
 
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest, requestData));
+        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest));
 
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),

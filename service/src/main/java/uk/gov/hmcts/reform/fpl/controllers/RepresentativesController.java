@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -35,7 +34,6 @@ public class RepresentativesController {
     private final RespondentService respondentService;
     private final OthersService othersService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -84,8 +82,7 @@ public class RepresentativesController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(
-            callbackRequest, requestData));
+        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(callbackRequest));
     }
 
     private String getRespondentsLabel(CaseData caseData) {
