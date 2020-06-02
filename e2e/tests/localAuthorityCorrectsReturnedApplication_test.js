@@ -21,7 +21,7 @@ Scenario('Admin returns application to the LA', async (I, caseViewPage, returnAp
 
 Scenario('LA makes corrections to the application', async (I, caseViewPage, enterApplicantEventPage, submitApplicationEventPage) => {
   const now = new Date();
-  const formattedDate = dateFormat(now, 'dd mmmm yyyy');
+  const formattedDate = dateFormat(now, 'd mmmm yyyy');
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.dontSee('mockSubmittedForm.pdf');
