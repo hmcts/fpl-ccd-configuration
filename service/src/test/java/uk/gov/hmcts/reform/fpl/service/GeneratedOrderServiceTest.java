@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -55,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -823,6 +825,60 @@ class GeneratedOrderServiceTest {
 
             assertCommonC21Fields(builtOrder);
             assertThat(builtOrder.getTitle()).isEqualTo("Example Title");
+        }
+
+        @Test
+        void shouldGetAllocatedJudgeFromMostRecentOrderWhenOrderExists() {
+            JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+                .judgeLastName("Byrne")
+                .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+                .judgeEmailAddress("judge@gmail.com")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .orderCollection(getGeneratedOrdersList())
+                .build();
+
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(caseData);
+
+            assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(judgeAndLegalAdvisor);
+        }
+
+        private List<Element<GeneratedOrder>> getGeneratedOrdersList() {
+            JudgeAndLegalAdvisor firstJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+                .judgeLastName("Moley")
+                .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+                .judgeEmailAddress("judge@gmail.com")
+                .build();
+
+            JudgeAndLegalAdvisor secondJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+                .judgeLastName("Byrne")
+                .judgeTitle(DEPUTY_DISTRICT_JUDGE)
+                .judgeEmailAddress("judge@gmail.com")
+                .build();
+
+            List<Element<GeneratedOrder>> generatedOrders = new ArrayList<>();
+
+            GeneratedOrder firstGeneratedOrder = GeneratedOrder.builder()
+                .judgeAndLegalAdvisor(firstJudgeAndLegalAdvisor)
+                .build();
+
+            GeneratedOrder secondGeneratedOrder = GeneratedOrder.builder()
+                .judgeAndLegalAdvisor(secondJudgeAndLegalAdvisor)
+                .build();
+
+            generatedOrders.add(element(firstGeneratedOrder));
+            generatedOrders.add(element(secondGeneratedOrder));
+
+            return generatedOrders;
+        }
+
+        @Test
+        void shouldGetEmptyAllocatedJudgeFromMostRecentOrderWhenNoOrderExists() {
+            JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(CaseData
+                .builder().build());
+
+            assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(JudgeAndLegalAdvisor.builder().build());
         }
 
         private void assertCommonC21Fields(GeneratedOrder order) {

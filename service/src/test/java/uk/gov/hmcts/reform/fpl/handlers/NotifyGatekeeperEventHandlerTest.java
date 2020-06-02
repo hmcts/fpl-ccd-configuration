@@ -13,7 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -42,8 +41,6 @@ public class NotifyGatekeeperEventHandlerTest {
     @Captor
     private ArgumentCaptor<NotifyGatekeeperTemplate> captor;
     @MockBean
-    private RequestData requestData;
-    @MockBean
     private NotificationService notificationService;
     @Autowired
     private NotifyGatekeeperEventHandler notifyGatekeeperEventHandler;
@@ -59,7 +56,7 @@ public class NotifyGatekeeperEventHandlerTest {
     void shouldSendEmailToMultipleGatekeepers() {
         CallbackRequest request = callbackRequest();
 
-        notifyGatekeeperEventHandler.sendEmailToGatekeeper(new NotifyGatekeepersEvent(request, requestData));
+        notifyGatekeeperEventHandler.sendEmailToGatekeeper(new NotifyGatekeepersEvent(request));
 
         verify(notificationService).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS),

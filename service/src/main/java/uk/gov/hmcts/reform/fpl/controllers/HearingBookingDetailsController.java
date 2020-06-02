@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -37,7 +36,6 @@ public class HearingBookingDetailsController {
     private final HearingBookingValidatorService validationService;
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final RequestData requestData;
     private final StandardDirectionsService standardDirectionsService;
 
     @PostMapping("/about-to-start")
@@ -106,8 +104,7 @@ public class HearingBookingDetailsController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         if (standardDirectionsService.hasEmptyDates(caseData)) {
-            applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
-                requestData));
+            applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
     }
 }

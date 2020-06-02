@@ -19,6 +19,7 @@ module.exports = {
     },
     otherTitle: 'judgeAndLegalAdvisor_otherTitle',
     judgeLastName: 'judgeAndLegalAdvisor_judgeLastName',
+    judgeEmailAddress: 'judgeAndLegalAdvisor_judgeEmailAddress',
     legalAdvisorName: 'judgeAndLegalAdvisor_legalAdvisorName',
   },
 
@@ -46,6 +47,10 @@ module.exports = {
 
   enterJudgeLastName(judgeLastName, complexTypeAppender = '') {
     I.fillField('#' + complexTypeAppender + this.fields.judgeLastName, judgeLastName);
+  },
+
+  enterJudgeEmailAddress(judgeEmailAddress, complexTypeAppender = '') {
+    I.fillField('#' + complexTypeAppender + this.fields.judgeEmailAddress, judgeEmailAddress);
   },
 
   enterLegalAdvisorName(legalAdvisorName, complexTypeAppender = '') {
