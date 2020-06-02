@@ -11,10 +11,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -27,16 +32,21 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -55,6 +65,9 @@ class GeneratedOrderEventHandlerTest {
 
     final String mostRecentUploadedDocumentUrl =
         "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+
+    @MockBean
+    private GeneratedOrderService generatedOrderService;
 
     @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
@@ -76,6 +89,9 @@ class GeneratedOrderEventHandlerTest {
 
     @Autowired
     private GeneratedOrderEventHandler generatedOrderEventHandler;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     private CaseData caseData;
 
@@ -131,6 +147,76 @@ class GeneratedOrderEventHandlerTest {
             eq("fred@flinstone.com"),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq("12345"));
+    }
+
+    @Test
+    void shouldNotifyAllocatedJudgeOnOrderIssuedAndEnabled() {
+        CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeEmailAddress("judge@gmail.com")
+            .build();
+
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER))
+            .willReturn(true);
+
+        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
+            .willReturn(expectedJudgeAndLegalAdvisor);
+
+        final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
+
+        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
+            caseDetails)).willReturn(expectedParameters);
+
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
+            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+
+        verify(notificationService).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),
+            eq(ALLOCATED_JUDGE_EMAIL_ADDRESS),
+            eq(expectedParameters),
+            eq("12345"));
+    }
+
+    @Test
+    void shouldNotNotifyAllocatedJudgeOnOrderIssuedAndDisabled() {
+        CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeEmailAddress("judge@gmail.com")
+            .build();
+
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER))
+            .willReturn(false);
+
+        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
+            .willReturn(expectedJudgeAndLegalAdvisor);
+
+        final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
+
+        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
+            caseDetails)).willReturn(expectedParameters);
+
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
+            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+
+        verify(notificationService, never()).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),
+            anyString(),
+            anyMap(),
+            anyString());
+    }
+
+    private AllocatedJudgeTemplateForGeneratedOrder getOrderIssuedAllocatedJudgeParameters() {
+        AllocatedJudgeTemplateForGeneratedOrder judgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
+        judgeTemplate.setOrderType("blank order (c21)");
+        judgeTemplate.setCallout("^Jones, SACCCCCCCC5676576567, hearing 26 Aug 2020");
+        judgeTemplate.setCaseUrl("null/case/\" + JURISDICTION + \"/\" + CASE_TYPE + \"/12345");
+        judgeTemplate.setRespondentLastName("Smith");
+        judgeTemplate.setJudgeTitle("Her Honour Judge");
+        judgeTemplate.setJudgeName("Byrne");
+
+        return judgeTemplate;
     }
 
     private List<Representative> getExpectedEmailRepresentativesForAddingPartiesToCase() {

@@ -11,6 +11,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -28,6 +31,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private final HmctsCourtLookupConfiguration config;
     private final EmailNotificationHelper emailNotificationHelper;
     private final ObjectMapper mapper;
+    private final GeneratedOrderService generatedOrderService;
 
     public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
                                                              final String localAuthorityCode,
@@ -53,6 +57,26 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
                 issuedOrderType))
             .put("caseUrl", getCaseUrl(caseDetails.getId()))
             .build();
+    }
+
+    public AllocatedJudgeTemplateForGeneratedOrder buildAllocatedJudgeOrderIssuedNotification(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        JudgeAndLegalAdvisor judge = getAllocatedJudge(caseData);
+
+        AllocatedJudgeTemplateForGeneratedOrder judgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
+        judgeTemplate.setOrderType(getTypeOfOrder(caseData, GENERATED_ORDER));
+        judgeTemplate.setCallout(buildCallout(caseData));
+        judgeTemplate.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        judgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        judgeTemplate.setJudgeTitle(judge.getJudgeOrMagistrateTitle());
+        judgeTemplate.setJudgeName(judge.getJudgeName());
+
+        return judgeTemplate;
+    }
+
+    private JudgeAndLegalAdvisor getAllocatedJudge(CaseData caseData) {
+        return generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
     }
 
     private String buildCallout(CaseData caseData) {
