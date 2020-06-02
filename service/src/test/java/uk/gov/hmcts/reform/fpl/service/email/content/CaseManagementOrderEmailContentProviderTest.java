@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.utils.AssertionHelper;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -116,17 +117,24 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     @Test
     void shouldBuildCMOReadyForJudgeReviewNotificationExpectedParameters() {
-        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
-            .put("respondentLastName", "lastName")
-            .put("judgeName", "JudgeLastName")
-            .put("judgeTitle", "Deputy District Judge")
-            .put("subjectLineWithHearingDate", "lastName, 11")
-            .put("reference", CASE_REFERENCE)
-            .build();
+        AllocatedJudgeTemplateForCMO expectedParameters = getCMOReadyForJudgeReviewParameters();
 
         assertThat(caseManagementOrderEmailContentProvider
-            .buildCMOReadyForJudgeReviewNotificationParameters(createCase())).isEqualTo(expectedParameters);
+            .buildCMOReadyForJudgeReviewNotificationParameters(createCase()))
+            .isEqualToComparingFieldByField(expectedParameters);
+    }
+
+    private AllocatedJudgeTemplateForCMO getCMOReadyForJudgeReviewParameters() {
+        AllocatedJudgeTemplateForCMO allocatedJudgeTemplate = new AllocatedJudgeTemplateForCMO();
+        allocatedJudgeTemplate.setSubjectLineWithHearingDate("lastName, 11");
+        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        allocatedJudgeTemplate.setReference(CASE_REFERENCE);
+        allocatedJudgeTemplate.setRespondentLastName("lastName");
+        allocatedJudgeTemplate.setJudgeTitle("Deputy District Judge");
+        allocatedJudgeTemplate.setJudgeName("JudgeLastName");
+
+        return allocatedJudgeTemplate;
+
     }
 
     private CaseDetails createCase() {
