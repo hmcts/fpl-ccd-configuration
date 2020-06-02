@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -45,9 +44,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
     LookupTestConfig.class})
 public class StandardDirectionsOrderIssuedEventHandlerTest {
     private static CallbackRequest callbackRequest = callbackRequest();
-
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -85,7 +81,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
         standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest, requestData));
+            new StandardDirectionsOrderIssuedEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
@@ -107,7 +103,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
         standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest, requestData));
+            new StandardDirectionsOrderIssuedEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS, expectedParameters,
@@ -124,7 +120,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);
 
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest, requestData));
+            new StandardDirectionsOrderIssuedEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
@@ -141,7 +137,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);
 
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest, requestData));
+            new StandardDirectionsOrderIssuedEvent(callbackRequest));
 
         verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }

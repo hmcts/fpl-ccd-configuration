@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -43,9 +42,6 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
     private static final String CASE_REFERENCE = "12345";
 
     @MockBean
-    private RequestData requestData;
-
-    @MockBean
     private NotificationService notificationService;
 
     @MockBean
@@ -68,7 +64,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
-            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
@@ -88,7 +84,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
-            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
@@ -111,7 +107,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
 
         caseManagementOrderReadyForJudgeReviewEventHandler
             .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
-            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
@@ -134,7 +130,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
 
         caseManagementOrderReadyForJudgeReviewEventHandler
             .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
-                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
 
         verify(notificationService, never()).sendEmail(
             eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),
@@ -160,7 +156,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
 
         caseManagementOrderReadyForJudgeReviewEventHandler
             .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
-                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
 
         verify(notificationService, never()).sendEmail(
             eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),

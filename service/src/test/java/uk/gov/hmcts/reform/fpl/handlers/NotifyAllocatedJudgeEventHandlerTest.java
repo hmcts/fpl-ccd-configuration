@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NotifyAllocatedJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplate;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AllocatedJudgeContentProvider;
 
@@ -25,9 +24,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {NotifyAllocatedJudgeEventHandler.class, JacksonAutoConfiguration.class})
 class NotifyAllocatedJudgeEventHandlerTest {
     private static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "judge@gmail.com";
-
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private NotificationService notificationService;
@@ -48,8 +44,7 @@ class NotifyAllocatedJudgeEventHandlerTest {
         given(allocatedJudgeContentProvider.buildNotificationParameters(caseDetails))
             .willReturn(expectedParameters);
 
-        notifyAllocatedJudgeEventHandler.notifyAllocatedJudge(new NotifyAllocatedJudgeEvent(callbackRequest,
-            requestData));
+        notifyAllocatedJudgeEventHandler.notifyAllocatedJudge(new NotifyAllocatedJudgeEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             ALLOCATED_JUDGE_TEMPLATE,

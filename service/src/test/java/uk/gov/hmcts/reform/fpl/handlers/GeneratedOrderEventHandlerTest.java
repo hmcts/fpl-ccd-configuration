@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
@@ -69,9 +68,6 @@ class GeneratedOrderEventHandlerTest {
 
     @MockBean
     private GeneratedOrderService generatedOrderService;
-
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
@@ -126,7 +122,7 @@ class GeneratedOrderEventHandlerTest {
             .willReturn(getExpectedDigitalServedRepresentativesForAddingPartiesToCase());
 
         generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
-            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
@@ -173,7 +169,7 @@ class GeneratedOrderEventHandlerTest {
             caseDetails)).willReturn(expectedParameters);
 
         generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
-            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),
@@ -202,7 +198,7 @@ class GeneratedOrderEventHandlerTest {
             caseDetails)).willReturn(expectedParameters);
 
         generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
-            requestData, mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
 
         verify(notificationService, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),

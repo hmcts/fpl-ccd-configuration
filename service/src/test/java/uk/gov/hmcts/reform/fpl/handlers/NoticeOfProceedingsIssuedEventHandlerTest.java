@@ -60,7 +60,7 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);
 
         noticeOfProceedingsIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new NoticeOfProceedingsIssuedEvent(callbackRequest, requestData));
+            new NoticeOfProceedingsIssuedEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
@@ -77,7 +77,7 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);
 
         noticeOfProceedingsIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new NoticeOfProceedingsIssuedEvent(callbackRequest, requestData));
+            new NoticeOfProceedingsIssuedEvent(callbackRequest));
 
         verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }
