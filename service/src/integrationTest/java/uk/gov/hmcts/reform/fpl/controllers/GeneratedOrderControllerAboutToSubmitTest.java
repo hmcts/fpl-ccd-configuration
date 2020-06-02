@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,10 +38,6 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +58,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.EN
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -332,7 +332,7 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
                 .build())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .familyManCaseNumber("12345L")
-            .children1(createChildren("Paul"))
+            .children1(testChildren())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .dateOfIssue(dateNow());
     }
@@ -371,18 +371,5 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
             new TypeReference<>() {});
 
         assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
-    }
-
-    private List<Element<Child>> createChildren(String... firstNames) {
-        Child[] children = new Child[firstNames.length];
-        for (int i = 0; i < firstNames.length; i++) {
-            children[i] = Child.builder()
-                .party(ChildParty.builder()
-                    .firstName(firstNames[i])
-                    .dateOfBirth(dateNow().minusYears(1))
-                    .build())
-                .build();
-        }
-        return wrapElements(children);
     }
 }

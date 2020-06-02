@@ -1,5 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -25,12 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
@@ -39,8 +39,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -163,6 +161,63 @@ public class GeneratedOrderService {
         Arrays.stream(GeneratedEPOKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
         Arrays.stream(GeneratedOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
         Arrays.stream(InterimOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
+    }
+
+    /**
+     * Determine if the service should generate the draft order document.
+     *
+     * <p>Will return {@code true} if one of the following is met:
+     * <ul>
+     *     <li>the order is a blank order</li>
+     *     <li>further directions is not null and one of the following is met:<ul>
+     *         <li>not all children have a final order (can't close the case)</li>
+     *         <li>closeCaseFromOrder is not null (close case decision has been made)</li>
+     *         <li>close case is not enabled</li>
+     *     </ul></li>
+     * </ul>
+     *
+     * @param orderType          type of order
+     * @param furtherDirections  further directions for the order
+     * @param children           children in the case
+     * @param closeCaseFromOrder YesOrNo field for close case from order
+     * @param closeCaseEnabled   feature toggle flag for close case
+     */
+    public boolean shouldGenerateDocument(OrderTypeAndDocument orderType,
+                                          FurtherDirections furtherDirections,
+                                          List<Element<Child>> children,
+                                          String closeCaseFromOrder,
+                                          boolean closeCaseEnabled) {
+        return BLANK_ORDER == orderType.getType()
+            || furtherDirections != null
+            && (!childrenService.allChildrenHaveFinalOrder(children) || closeCaseFromOrder != null
+            || !closeCaseEnabled);
+    }
+
+
+    /**
+     * Determine if the user should see the close case page.
+     *
+     * <p>Will return {@code true} if all of the following are met:
+     * <ul>
+     *     <li>close case is enabled</li>
+     *     <li>the order type is final or epo</li>
+     *     <li>all children will be marked to have a final order issued against them</li>
+     *     <li>the flag hasn't already been set</li>
+     * </ul>
+     *
+     * @param orderType          type of order
+     * @param closeCaseFromOrder YesOrNo field for close case from order
+     * @param children           list of children in the case
+     * @param closeCaseEnabled   feature toggle flag for close case
+     */
+    public boolean showCloseCase(OrderTypeAndDocument orderType,
+                                 String closeCaseFromOrder,
+                                 List<Element<Child>> children,
+                                 boolean closeCaseEnabled) {
+        return closeCaseEnabled
+            && orderType.isClosable()
+            && childrenService.allChildrenHaveFinalOrder(children)
+            && closeCaseFromOrder == null;
     }
 
     private String getSupervisionOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,

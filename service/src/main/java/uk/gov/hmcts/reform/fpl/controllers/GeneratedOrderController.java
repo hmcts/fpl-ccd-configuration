@@ -170,9 +170,6 @@ public class GeneratedOrderController {
 
         if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections, children,
             closeCaseFromOrder, featureToggleService.isCloseCaseEnabled())) {
-
-        // Only generate a document if a blank order or further directions has been added
-        if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
             Document document = getDocument(caseData, DRAFT);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
