@@ -11,7 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -36,9 +35,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
     LookupTestConfig.class})
 public class StandardDirectionsOrderIssuedEventHandlerTest {
     private static CallbackRequest callbackRequest = callbackRequest();
-
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
@@ -70,7 +66,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
         standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest, requestData));
+            new StandardDirectionsOrderIssuedEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
@@ -92,7 +88,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
         standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest, requestData));
+            new StandardDirectionsOrderIssuedEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS, expectedParameters,

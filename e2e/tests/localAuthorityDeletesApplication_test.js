@@ -1,14 +1,18 @@
 const config = require('../config.js');
 
 let caseId;
+let caseName;
 
 Feature('Application draft (empty draft)');
 
-BeforeSuite(async I => caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne));
+BeforeSuite(async I => {
+  caseName = `Case ${new Date().toISOString()}`;
+  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
+});
 
 Before(async I => await I.navigateToCaseDetails(caseId));
-
-Scenario('local authority tries to submit incomplete case', async (I, caseViewPage, submitApplicationEventPage) => {
+//EUI-2060
+xScenario('local authority tries to submit incomplete case', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.click('Continue');
@@ -21,10 +25,10 @@ Scenario('local authority tries to submit incomplete case', async (I, caseViewPa
   I.see('You need to add details to grounds for the application');
 });
 
-Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage) => {
+Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage, caseListPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   deleteApplicationEventPage.tickDeletionConsent();
   await I.completeEvent('Delete application');
-  I.seeEventSubmissionConfirmation(config.applicationActions.deleteApplication);
-  I.dontSee(caseViewPage.actionsDropdown);
+  await caseListPage.searchForCasesWithName(caseName);
+  I.see('No cases found.');
 });

@@ -1,6 +1,6 @@
 {
   "case_details": {
-    "id": 12345,
+    "id": "${id:-12345}",
     "jurisdiction": "PUBLICLAW",
     "state": "Open",
     "case_type_id": "CARE_SUPERVISION_EPO",
@@ -26,7 +26,7 @@
           }
         }
       ],
-      "caseLocalAuthority": "example",
+      "caseLocalAuthority": "${localAuthority:-example}",
       "risks": {
         "neglect": "Yes",
         "sexualAbuse": "Yes",
@@ -380,6 +380,11 @@
       "allocationProposal": {
         "proposal": "Section 9 circuit judge",
         "proposalReason": "allocation proposal reason"
+      },
+      "allocatedJudge": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "McBerry",
+        "judgeEmailAddress": "test@test.com"
       },
       "hearingPreferences": {
         "welsh": "Yes",

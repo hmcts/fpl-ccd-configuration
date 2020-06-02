@@ -10,7 +10,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
@@ -28,8 +27,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {CaseManagementOrderReadyForJudgeReviewEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, HmctsAdminNotificationHandler.class})
 public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private NotificationService notificationService;
@@ -50,7 +47,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             .willReturn(getCMOReadyForJudgeNotificationParameters());
 
         caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
-            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
@@ -69,7 +66,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             .willReturn(getCMOReadyForJudgeNotificationParameters());
 
         caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
-            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest, requestData));
+            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,

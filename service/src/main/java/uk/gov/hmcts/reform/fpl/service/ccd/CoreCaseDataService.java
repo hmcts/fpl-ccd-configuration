@@ -36,7 +36,7 @@ public class CoreCaseDataService {
                              Long caseId,
                              String eventName,
                              Map<String, Object> eventData) {
-        String userToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
+        String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
         String systemUpdateUserId = idamClient.getUserInfo(userToken).getUid();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
@@ -72,7 +72,7 @@ public class CoreCaseDataService {
     }
 
     public List<CaseDetails> searchCases(String caseType, String query) {
-        String userToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
+        String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
 
         return coreCaseDataApi.searchCases(userToken, authTokenGenerator.generate(), caseType, query)
             .getCases();

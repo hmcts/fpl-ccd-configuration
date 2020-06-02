@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -48,7 +47,6 @@ public class ActionCaseManagementOrderController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CoreCaseDataService coreCaseDataService;
     private final DocumentDownloadService documentDownloadService;
-    private final RequestData requestData;
     private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
@@ -164,8 +162,8 @@ public class ActionCaseManagementOrderController {
             final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();
             byte[] documentContents = documentDownloadService.downloadDocument(actionCmoDocumentUrl);
 
-            applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, requestData,
-                documentContents));
+            applicationEventPublisher.publishEvent(
+                new CaseManagementOrderIssuedEvent(callbackRequest, documentContents));
         }
     }
 }

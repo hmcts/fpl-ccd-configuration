@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
@@ -100,14 +99,14 @@ public class C2UploadedEventHandlerTest {
                     COURT_CODE));
 
             c2UploadedEventHandler.sendNotifications(
-                new C2UploadedEvent(callbackRequest(), requestData));
+                new C2UploadedEvent(callbackRequest()));
 
             verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-non-admin@test.com", c2Parameters, "12345");
         }
 
         @Test
-        void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() throws IOException {
+        void shouldNotifyCtscAdminOnC2UploadWhenCtscIsEnabled() {
             CallbackRequest callbackRequest = appendSendToCtscOnCallback();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
@@ -121,7 +120,7 @@ public class C2UploadedEventHandlerTest {
                 .willReturn(c2Parameters);
 
             c2UploadedEventHandler.sendNotifications(
-                new C2UploadedEvent(callbackRequest, requestData));
+                new C2UploadedEvent(callbackRequest));
 
             verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -136,7 +135,7 @@ public class C2UploadedEventHandlerTest {
                 UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
 
             c2UploadedEventHandler.sendNotifications(
-                new C2UploadedEvent(callbackRequest(), requestData));
+                new C2UploadedEvent(callbackRequest()));
 
             verify(notificationService, never())
                 .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-admin@test.com",

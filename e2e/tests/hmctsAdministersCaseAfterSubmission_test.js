@@ -273,6 +273,8 @@ Scenario('HMCTS admin update FamilyMan reference number after sending case to ga
   enterFamilyManCaseNumberEventPage.enterCaseID('updatedmockcaseID');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
+  caseViewPage.seeInCaseTitle('updatedmockcaseID');
+  caseViewPage.seeInCaseTitle(caseId);
 });
 
 Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage, addExpertReportEventPage) => {
@@ -285,4 +287,14 @@ Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage
   I.seeInTab(['Report 1', 'Date requested'], '1 Mar 2020');
   I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
+});
+
+Scenario('HMCTS admin closes the case', async (I, caseViewPage, closeTheCaseEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
+  closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, true, closeTheCaseEventPage.fields.radioGroup.partialReason.options.deprivation);
+  await I.completeEvent('Submit');
+  I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
+  caseViewPage.selectTab(caseViewPage.tabs.overview);
+  I.seeInTab(['Close the case', 'Date'], '12 Mar 2020');
+  I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
 });

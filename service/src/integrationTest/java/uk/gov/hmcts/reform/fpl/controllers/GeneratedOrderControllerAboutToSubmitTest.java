@@ -17,10 +17,10 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -51,12 +51,15 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -91,16 +94,15 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+    void shouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .order(GeneratedOrder.builder()
-                .title("Example Order")
-                .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                .build()));
+                .order(GeneratedOrder.builder()
+                    .title("Example Order")
+                    .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                    .build()));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -113,12 +115,11 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldNotHaveDraftAppendedToFilename() {
+    void shouldNotHaveDraftAppendedToFilename() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -128,16 +129,54 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         assertThat(caseData.getOrderCollection().get(0).getValue().getDocument()).isEqualTo(expectedDocument());
     }
 
+    @Test
+    void shouldAddCloseCaseObjectToCaseDataWhenOptionWasSelectedAndChangeState() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
+                .children1(testChildren())
+                .orderAppliesToAllChildren("Yes")
+                .closeCaseFromOrder("Yes"));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        CloseCase closeCase = mapper.convertValue(response.getData().get("closeCaseTabField"), CloseCase.class);
+        State state = mapper.convertValue(response.getData().get("state"), State.class);
+
+        CloseCase expected = CloseCase.builder()
+            .date(dateNow())
+            .showFullReason(YES)
+            .reason(FINAL_ORDER)
+            .build();
+
+        assertThat(closeCase).isEqualTo(expected);
+        assertThat(state).isEqualTo(CLOSED);
+    }
+
+    @Test
+    void shouldAddCloseCaseObjectToCaseDataWhenOptionWasNotSelected() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
+                .children1(testChildren())
+                .orderAppliesToAllChildren("Yes")
+                .closeCaseFromOrder("No"));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+        assertThat(response.getData()).extracting("closeCaseTabField", "state").containsOnlyNulls();
+    }
+
     @ParameterizedTest
     @EnumSource(GeneratedOrderSubtype.class)
-    void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
+    void shouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields(
         GeneratedOrderSubtype subtype) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, subtype, judgeAndLegalAdvisor)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
         );
 
@@ -151,14 +190,13 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+    void shouldAddInterimSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(SUPERVISION_ORDER, INTERIM, judgeAndLegalAdvisor)
-            .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -170,14 +208,13 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+    void shouldAddFinalSupervisionOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
-            .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .orderMonths(14));
+                .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
+                .orderMonths(14));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -192,13 +229,12 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
+    void shouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(YES);
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(SUPERVISION_ORDER, FINAL, judgeAndLegalAdvisor)
                 .orderFurtherDirections(FurtherDirections.builder().directionsNeeded("No").build())
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .orderMonths(14)
                 .allocatedJudge(Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -218,13 +254,28 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldSetFinalOrderIssuedOnChildren() {
+    void shouldSetFinalOrderIssuedOnSingleChild() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
+                .children1(List.of(testChild()))
+        );
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsOnly("Yes");
+    }
+
+    @Test
+    void shouldSetFinalOrderIssuedOnChildren() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
+
+        final CaseDetails caseDetails = buildCaseDetails(
+            commonCaseDetailsComponents(CARE_ORDER, FINAL, judgeAndLegalAdvisor)
                 .orderAppliesToAllChildren("Yes")
         );
 
@@ -237,13 +288,12 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
     }
 
     @Test
-    void aboutToSubmitShouldNotSetFinalOrderIssuedForInterimOrder() {
+    void shouldNotSetFinalOrderIssuedForInterimOrder() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(CARE_ORDER, INTERIM, judgeAndLegalAdvisor)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .children1(createChildren("Fred", "John"))
+                .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build())
         );
@@ -282,6 +332,8 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
                 .build())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .familyManCaseNumber("12345L")
+            .children1(testChildren())
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .dateOfIssue(dateNow());
     }
 
@@ -319,17 +371,5 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
             new TypeReference<>() {});
 
         assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
-    }
-
-    private List<Element<Child>> createChildren(String... firstNames) {
-        Child[] children = new Child[firstNames.length];
-        for (int i = 0; i < firstNames.length; i++) {
-            children[i] = Child.builder()
-                .party(ChildParty.builder()
-                    .firstName(firstNames[i])
-                    .build())
-                .build();
-        }
-        return wrapElements(children);
     }
 }

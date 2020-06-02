@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
@@ -32,12 +31,15 @@ public class ChildrenService {
         return builder.toString();
     }
 
-    public void addPageShowToCaseDetails(CaseDetails caseDetails, List<Element<Child>> children) {
-        caseDetails.getData().put("pageShow", children.size() <= 1 ? "No" : "Yes");
+    public boolean allChildrenHaveFinalOrder(List<Element<Child>> children) {
+        if (children == null || children.isEmpty()) {
+            return false;
+        }
+        return children.stream().allMatch(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()));
     }
 
     public List<Element<Child>> updateFinalOrderIssued(List<Element<Child>> children,
-        String orderAppliesToAllChildren, ChildSelector childSelector) {
+                                                       String orderAppliesToAllChildren, ChildSelector childSelector) {
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
             children.forEach(child -> child.getValue().setFinalOrderIssued(YES.getValue()));
         } else {
