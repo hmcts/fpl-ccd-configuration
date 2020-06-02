@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -85,9 +84,6 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     @MockBean
     private HearingBookingService hearingBookingService;
 
-    @MockBean
-    private RequestData requestData;
-
     @Captor
     private ArgumentCaptor<Map<String, Object>> data;
 
@@ -104,8 +100,7 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
 
     @Test
     void shouldTriggerEventWithCaseDataFilledWithDates() {
-        handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
-            requestData));
+        handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
 
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(FIRST_HEARING);
@@ -122,8 +117,7 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     @Test
     void shouldFillCaseDataWithMissingDatesOnly() {
         callbackRequest.getCaseDetails().setData(getDataWithSomeDatesFilled());
-        handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest,
-            requestData));
+        handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
 
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(FIRST_HEARING);

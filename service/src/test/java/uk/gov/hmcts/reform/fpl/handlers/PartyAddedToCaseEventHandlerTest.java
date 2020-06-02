@@ -89,7 +89,7 @@ public class PartyAddedToCaseEventHandlerTest {
             callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).willReturn(expectedDigitalParameters);
 
         partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(
-            new PartyAddedToCaseEvent(callbackRequest(), requestData));
+            new PartyAddedToCaseEvent(callbackRequest()));
 
         verify(notificationService).sendEmail(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
