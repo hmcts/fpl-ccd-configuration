@@ -180,7 +180,7 @@ public class GeneratedOrderService {
                 orderTemplateBuilder
                     .put("localAuthorityName", getLocalAuthorityName(caseData.getCaseLocalAuthority()))
                     .put(ORDER_DETAILS, getFormattedCareOrderDetails(childrenCount,
-                        caseData.getCaseLocalAuthority(), orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
+                        caseData.getCaseLocalAuthority(), orderTypeAndDocument.isInterim(), interimEndDate));
                 break;
             case SUPERVISION_ORDER:
                 if (subtype == INTERIM) {
@@ -257,6 +257,16 @@ public class GeneratedOrderService {
         Arrays.stream(GeneratedEPOKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
         Arrays.stream(GeneratedOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
         Arrays.stream(InterimOrderKey.values()).forEach(ccdField -> caseData.remove(ccdField.getKey()));
+    }
+
+    public JudgeAndLegalAdvisor getAllocatedJudgeFromMostRecentOrder(CaseData caseData) {
+        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
+            .stream().reduce((first, last) -> last);
+
+        return generatedOrder
+            .map(Element::getValue)
+            .map(GeneratedOrder::getJudgeAndLegalAdvisor)
+            .orElse(JudgeAndLegalAdvisor.builder().build());
     }
 
     private String getSupervisionOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,

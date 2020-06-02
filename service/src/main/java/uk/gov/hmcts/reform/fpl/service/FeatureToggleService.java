@@ -5,6 +5,7 @@ import com.launchdarkly.client.LDUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 
 @Service
 public class FeatureToggleService {
@@ -35,6 +36,12 @@ public class FeatureToggleService {
     public boolean isCtscReportEnabled() {
         return ldClient.boolVariation("CTSC",
             ldUserBuilder.custom("report", true).build(),
+            false);
+    }
+
+    public boolean isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType allocatedJudgeNotificationType) {
+        return ldClient.boolVariation("judge-notification",
+            ldUserBuilder.custom("allocatedJudgeNotificationType", allocatedJudgeNotificationType.getValue()).build(),
             false);
     }
 

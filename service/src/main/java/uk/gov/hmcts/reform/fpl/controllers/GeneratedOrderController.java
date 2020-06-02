@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -50,7 +49,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -81,7 +79,6 @@ public class GeneratedOrderController {
     private final ChildrenService childrenService;
     private final DocumentDownloadService documentDownloadService;
     private final FeatureToggleService featureToggleService;
-    private final RequestData requestData;
     private final Time time;
 
     @PostMapping("/about-to-start")
@@ -208,8 +205,9 @@ public class GeneratedOrderController {
 
         data.put("orderCollection", orders);
 
-        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
-            List<Element<Child>> updatedChildren = getUpdatedChildren(caseData);
+        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().isClosable()) {
+            List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
+                caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
             data.put("children1", updatedChildren);
         }
 
@@ -243,7 +241,6 @@ public class GeneratedOrderController {
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
-            requestData,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
