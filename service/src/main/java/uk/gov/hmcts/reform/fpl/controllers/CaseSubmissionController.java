@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -63,7 +62,6 @@ public class CaseSubmissionController {
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -156,10 +154,10 @@ public class CaseSubmissionController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody @NotNull CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, requestData));
+        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest));
 
         if (isInReturnedState(callbackRequest.getCaseDetailsBefore())) {
-            applicationEventPublisher.publishEvent(new AmendedReturnedCaseEvent(callbackRequest, requestData));
+            applicationEventPublisher.publishEvent(new AmendedReturnedCaseEvent(callbackRequest));
         }
     }
 

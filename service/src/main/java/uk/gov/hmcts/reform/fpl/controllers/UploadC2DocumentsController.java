@@ -125,23 +125,21 @@ public class UploadC2DocumentsController {
                 try {
                     paymentService.makePaymentForC2(caseDetails.getId(), caseData);
                 } catch (FeeRegisterException | PaymentsApiException ignore) {
-                    applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest,
-                        requestData, C2_APPLICATION));
+                    applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
                 }
             }
 
             if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
-                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, requestData,
-                    C2_APPLICATION));
+                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
             }
         }
 
-        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, requestData));
+        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest));
 
         C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
 
         if (isNotPaidByPba(c2DocumentBundle)) {
-            applicationEventPublisher.publishEvent(new C2PbaPaymentNotTakenEvent(callbackRequest, requestData));
+            applicationEventPublisher.publishEvent(new C2PbaPaymentNotTakenEvent(callbackRequest));
         }
     }
 
