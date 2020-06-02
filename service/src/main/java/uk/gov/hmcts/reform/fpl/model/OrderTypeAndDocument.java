@@ -29,12 +29,18 @@ public class OrderTypeAndDocument {
         return (subtype != null) ? subtype.getLabel() + " " + this.type.getLabel().toLowerCase() : this.type.getLabel();
     }
 
-    public boolean hasInterimSubtype() {
-        return subtype == INTERIM;
+    @JsonIgnore
+    public boolean isFinal() {
+        return FINAL == subtype;
+    }
+
+    @JsonIgnore
+    public boolean isInterim() {
+        return INTERIM == subtype;
     }
 
     @JsonIgnore
     public boolean isClosable() {
-        return FINAL == subtype || EMERGENCY_PROTECTION_ORDER == type;
+        return isFinal() || EMERGENCY_PROTECTION_ORDER == type;
     }
 }
