@@ -45,7 +45,7 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
         return orderBuilder
             .localAuthorityName(getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .orderDetails(getFormattedCareOrderDetails(childrenCount, caseData.getCaseLocalAuthority(),
-                orderTypeAndDocument.hasInterimSubtype(), interimEndDate));
+                orderTypeAndDocument.isInterim(), interimEndDate));
     }
 
     private String getFormattedCareOrderDetails(int numOfChildren,
