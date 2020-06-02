@@ -55,7 +55,7 @@ module "fpl-exceptions-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-exceptions-alert"
   alert_desc                 = "All exceptions within FPL"
-  app_insights_query         = "exceptions | where operation_Name !contains "health" | project timestamp, problemId, type, outerMessage, severityLevel, ['details'], operation_Name | sort by severityLevel"
+  app_insights_query         = "exceptions | where operation_Name !contains "health" | project timestamp, severityLevel, operation_Name, outerMessage, ['details'] | sort by severityLevel"
   custom_email_subject       = "Alert: FPL all exceptions"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
@@ -63,6 +63,24 @@ module "fpl-exceptions-alert" {
   action_group_name          = "${var.product}-support"
   trigger_threshold_operator = "GreaterThan"
   trigger_threshold          = 0
+  resourcegroup_name         = "${local.alert_resource_group_name}"
+  enabled                    = "${var.enable_alerts}"
+}
+
+module "fpl-health-failure-alert" {
+  source                     = "git@github.com:hmcts/cnp-module-metric-alert"
+  location                   = "${var.appinsights_location}"
+  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  alert_name                 = "${var.product}-health-failure-alert"
+  alert_desc                 = "Failed health requests"
+  app_insights_query         = "requests | where url contains "health" | where resultCode != "200" | project timestamp, resultCode, duration"
+  custom_email_subject       = "Alert: Health failure"
+  frequency_in_minutes       = 5
+  time_window_in_minutes     = 5
+  severity_level             = "3"
+  action_group_name          = "${var.product}-support"
+  trigger_threshold_operator = "GreaterThan"
+  trigger_threshold          = 3
   resourcegroup_name         = "${local.alert_resource_group_name}"
   enabled                    = "${var.enable_alerts}"
 }
