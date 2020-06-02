@@ -5,12 +5,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Setter;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
 @Builder
@@ -33,10 +34,10 @@ public class ChildSelector {
     }
 
     @JsonIgnore
-    public void setHiddenFromChildList(List<Element<Child>> allChildren) {
+    public void setHiddenFromChildList(List<Element<Child>> children) {
         List<Integer> hiddenList = new ArrayList<>();
-        for (int i = 0; i < allChildren.size(); i++) {
-            if (YesNo.YES.getValue().equals(allChildren.get(i).getValue().getFinalOrderIssued())) {
+        for (int i = 0; i < children.size(); i++) {
+            if (YES.getValue().equals(children.get(i).getValue().getFinalOrderIssued())) {
                 hiddenList.add(i);
             }
         }

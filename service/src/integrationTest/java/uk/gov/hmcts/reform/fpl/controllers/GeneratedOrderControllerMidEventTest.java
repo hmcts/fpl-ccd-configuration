@@ -98,12 +98,64 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
     }
 
+    private List<Element<Child>> createChildren(String... firstNames) {
+        Child[] children = new Child[firstNames.length];
+        for (int i = 0; i < firstNames.length; i++) {
+            children[i] = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName(firstNames[i])
+                    .build())
+                .build();
+        }
+        return wrapElements(children);
+    }
+
+    private Child createChild(String name, boolean finalOrderIssued) {
+        Child child = Child.builder()
+            .party(ChildParty.builder()
+                .firstName(name)
+                .build())
+            .build();
+        if (finalOrderIssued) {
+            child.setFinalOrderIssued(YesNo.YES.getValue());
+            child.setFinalOrderIssuedType(CARE_ORDER.getLabel());
+        }
+        return child;
+    }
+
+    private CaseDetails buildCaseDetails(List<Element<Child>> children) {
+        return buildCaseDetails(null, children);
+    }
+
+    private CaseDetails buildCaseDetails(String choice, List<Element<Child>> children) {
+        return buildCaseDetails(choice, children, CARE_ORDER, FINAL);
+    }
+
+    private CaseDetails buildCaseDetails(String choice, GeneratedOrderType type, GeneratedOrderSubtype subType) {
+        return buildCaseDetails(choice, createChildren("Wallace", "Gromit"), type, subType);
+    }
+
+    private CaseDetails buildCaseDetails(String choice,
+                                         List<Element<Child>> children,
+                                         GeneratedOrderType type,
+                                         GeneratedOrderSubtype subType) {
+        CaseData caseData = CaseData.builder()
+            .children1(children)
+            .orderAppliesToAllChildren(choice)
+            .orderTypeAndDocument(OrderTypeAndDocument.builder().type(type).subtype(subType).build())
+            .build();
+
+        return CaseDetails.builder()
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .build();
+    }
+
     @Nested
     class PopulateChildSelectorMidEvent {
         @Test
-        void shouldPopulateChildSelectorAndLabelWhenNoIsSelected() {
+        void shouldPopulateChildSelectorAndLabelWithBasicInfoWhenNoIsSelectedAndOrderIsNotFinal() {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseDetails("No"), "populate-selector");
+                buildCaseDetails("No", SUPERVISION_ORDER, INTERIM), "populate-selector");
 
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -114,15 +166,24 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         }
 
         @Test
+        void shouldPopulateChildSelectorAndLabelWhenNoIsSelectedAndOrderIsFinalAndNoOneHasFinalOrderIssued() {
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+                buildCaseDetails("No", CARE_ORDER, FINAL), "populate-selector");
+
+            CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+            assertThat(response.getData().get("children_label"))
+                .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
+
+            assertThat(caseData.getChildSelector()).isEqualTo(getExpectedChildSelector());
+        }
+
+        @Test
         void shouldNotPopulateChildSelectorAndLabelWhenYesIsSelected() {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseDetails("Yes"), "populate-selector");
+                buildCaseDetails("Yes", CARE_ORDER, FINAL), "populate-selector");
 
-            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-            assertThat(callbackResponse.getData()).extracting("children_label", "remainingChildIndex",
-                "remainingChild", "otherFinalOrderChildren").containsOnlyNulls();
-            assertThat(caseData.getChildSelector()).isNull();
+            assertThat(callbackResponse.getData()).extracting("children_label", "childSelector").containsOnlyNulls();
         }
 
         @Test
@@ -138,9 +199,6 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
 
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            assertThat(callbackResponse.getData().get("remainingChildIndex"))
-                .isNull();
-
             assertThat(callbackResponse.getData().get("children_label"))
                 .isEqualTo("Child 1: Fred\nChild 2: Jane - Care order issued\nChild 3: Paul - Care order issued\n"
                     + "Child 4: Bill\n");
@@ -151,21 +209,24 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
             assertThat(caseData.getChildSelector()).isEqualTo(expected);
         }
 
-        @Test
-        void shouldNotPopulateChildSelectorAndLabelWhenNoIsSelectedAndFinalOrderRemainingChild() {
+        private ChildSelector getExpectedChildSelector() {
+            return ChildSelector.builder()
+                .childCount("12")
+                .build();
+        }
+    }
 
+    @Nested
+    class AddFinalOrderFlagsMidEvent {
+        @Test
+        void shouldPopulateLabelsWhenSingleChildHasFinalOrderRemaining() {
             List<Element<Child>> children = wrapElements(createChild("Fred", true),
-                createChild("Jane", false), // final order remaining child
+                createChild("Jane", false),
                 createChild("Paul", true),
                 createChild("Bill", true));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseDetails("No", children), "populate-selector");
-
-            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-            assertThat(callbackResponse.getData().get("children_label")).isNull();
-            assertThat(caseData.getChildSelector()).isNull();
+                buildCaseDetails(children), "add-final-order-flags");
 
             assertThat(callbackResponse.getData().get("remainingChildIndex"))
                 .isEqualTo("1");
@@ -177,50 +238,34 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 .isEqualTo("Fred - Care order issued\nPaul - Care order issued\nBill - Care order issued");
         }
 
-        private ChildSelector getExpectedChildSelector() {
-            return ChildSelector.builder()
-                .childCount("12")
-                .build();
+        @Test
+        void shouldNotPopulateLabelsWhenMultipleChildrenHaveFinalOrderRemaining() {
+            List<Element<Child>> children = wrapElements(createChild("Fred", false),
+                createChild("Jane", false),
+                createChild("Paul", true),
+                createChild("Bill", true));
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseDetails(children), "add-final-order-flags");
+
+            assertThat(callbackResponse.getData())
+                .extracting("remainingChildIndex", "remainingChild", "otherFinalOrderChildren")
+                .containsOnlyNulls();
         }
 
-        private CaseDetails buildCaseDetails(String choice) {
-            return buildCaseDetails(choice, createChildren("Wallace", "Gromit"));
-        }
+        @Test
+        void shouldNotPopulateLabelsWhenOrderTypeIsNotClosable() {
+            List<Element<Child>> children = wrapElements(createChild("Fred", true),
+                createChild("Jane", false),
+                createChild("Paul", true),
+                createChild("Bill", true));
 
-        private CaseDetails buildCaseDetails(String choice, List<Element<Child>> children) {
-            CaseData caseData = CaseData.builder()
-                .children1(children)
-                .orderAppliesToAllChildren(choice)
-                .build();
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseDetails(null, children, SUPERVISION_ORDER, INTERIM), "add-final-order-flags");
 
-            return CaseDetails.builder()
-                .data(mapper.convertValue(caseData, new TypeReference<>() {}))
-                .build();
-        }
-
-        private List<Element<Child>> createChildren(String... firstNames) {
-            Child[] children = new Child[firstNames.length];
-            for (int i = 0; i < firstNames.length; i++) {
-                children[i] = Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName(firstNames[i])
-                        .build())
-                    .build();
-            }
-            return wrapElements(children);
-        }
-
-        private Child createChild(String name, boolean finalOrderIssued) {
-            Child child = Child.builder()
-                .party(ChildParty.builder()
-                    .firstName(name)
-                    .build())
-                .build();
-            if (finalOrderIssued) {
-                child.setFinalOrderIssued(YesNo.YES.getValue());
-                child.setFinalOrderIssuedType(CARE_ORDER.getLabel());
-            }
-            return child;
+            assertThat(callbackResponse.getData())
+                .extracting("remainingChildIndex", "remainingChild", "otherFinalOrderChildren")
+                .containsOnlyNulls();
         }
     }
 
