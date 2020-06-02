@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import java.time.LocalDate;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 
 import java.util.List;
 
+import static java.time.LocalDate.now;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
@@ -73,6 +75,7 @@ public class TestDataHelper {
             .party(ChildParty.builder()
                 .firstName(randomAlphanumeric(10))
                 .lastName(randomAlphanumeric(10))
+                .dateOfBirth(now())
                 .build())
             .build());
     }
