@@ -323,28 +323,6 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         final CaseDetails caseDetails = buildCaseDetails(
             commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
-                .order(GeneratedOrder.builder()
-                    .title("Example Order")
-                    .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                    .build()));
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-
-        final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsOnlyNulls();
-
-        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssuedType())
-            .containsOnlyNulls();
-    }
-
-    @Test
-    void shouldNotSetFinalOrderIssuedForBlankOrder() {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(NO);
-
-        final CaseDetails caseDetails = buildCaseDetails(
-            commonCaseDetailsComponents(BLANK_ORDER, null, judgeAndLegalAdvisor)
                 .children1(testChildren())
                 .orderAppliesToAllChildren("Yes")
                 .order(GeneratedOrder.builder()
