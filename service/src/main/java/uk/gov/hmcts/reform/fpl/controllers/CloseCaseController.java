@@ -26,7 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CloseCaseController {
 
-    private static final String LABEL = "The case will remain open for 21 days to allow for appeal.\n\n"
+    public static final String LABEL = "The case will remain open for 21 days to allow for appeal.\n\n"
         + "In a closed case, you can still:\n"
         + "   •  add a case note\n"
         + "   •  upload a document\n"

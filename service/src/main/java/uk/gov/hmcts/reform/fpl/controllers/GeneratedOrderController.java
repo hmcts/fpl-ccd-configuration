@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -57,6 +58,8 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
@@ -131,31 +134,61 @@ public class GeneratedOrderController {
             .build();
     }
 
+    /*
+     This mid event is called after:
+      • Inputting Judge + LA
+      • Adding further directions
+      • Close case page
+    */
     @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
+        String closeCaseFromOrder = caseData.getCloseCaseFromOrder();
+        List<Element<Child>> children;
+
+        if (orderTypeAndDocument.isClosable()) {
+            children = getUpdatedChildren(caseData);
+        } else {
+            children = caseData.getAllChildren();
+        }
+
+        // If can display close case, set the flag and return
+        if (service.showCloseCase(orderTypeAndDocument, closeCaseFromOrder, children,
+            featureToggleService.isCloseCaseEnabled())) {
+
+            data.put("showCloseCaseFromOrderPage", YES);
+            data.put("close_case_label", CloseCaseController.LABEL);
+
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(data)
+                .build();
+        }
+
+        if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections, children,
+            closeCaseFromOrder, featureToggleService.isCloseCaseEnabled())) {
 
         // Only generate a document if a blank order or further directions has been added
         if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
             Document document = getDocument(caseData, DRAFT);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
-            caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
+            data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
                 orderTypeAndDocument, document));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(data)
             .build();
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
             caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
@@ -174,18 +207,26 @@ public class GeneratedOrderController {
             judgeAndLegalAdvisor, caseData.getDateOfIssue(), caseData.getOrderMonths(),
             caseData.getInterimEndDate()));
 
-        caseDetails.getData().put("orderCollection", orders);
+        data.put("orderCollection", orders);
 
         if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().getSubtype() != INTERIM) {
-            List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
-                caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
-            caseDetails.getData().put("children1", updatedChildren);
+            List<Element<Child>> updatedChildren = getUpdatedChildren(caseData);
+            data.put("children1", updatedChildren);
         }
 
-        service.removeOrderProperties(caseDetails.getData());
+        if (caseData.isClosedFromOrder()) {
+            data.put("state", CLOSED);
+            data.put("closeCaseTabField", CloseCase.builder()
+                .date(time.now().toLocalDate())
+                .showFullReason(YES)
+                .reason(FINAL_ORDER)
+                .build());
+        }
+
+        service.removeOrderProperties(data);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(data)
             .build();
     }
 
@@ -257,4 +298,8 @@ public class GeneratedOrderController {
         return type == EMERGENCY_PROTECTION_ORDER ? EPO : ORDER;
     }
 
+    private List<Element<Child>> getUpdatedChildren(CaseData caseData) {
+        return childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
+            caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
+    }
 }

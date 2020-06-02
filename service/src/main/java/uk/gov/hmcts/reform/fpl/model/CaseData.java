@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -79,6 +80,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 public class CaseData {
+    private final State state;
     @NotBlank(message = "Enter a case name")
     private final String caseName;
     private final String caseLocalAuthority;
@@ -449,6 +451,12 @@ public class CaseData {
 
     private final CloseCase closeCase;
     private final String deprivationOfLiberty;
+    private final String closeCaseFromOrder;
+
+    @JsonIgnore
+    public boolean isClosedFromOrder() {
+        return YES.getValue().equals(closeCaseFromOrder);
+    }
 
     private final ReturnApplication returnApplication;
 }

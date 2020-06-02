@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
@@ -49,6 +50,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.controllers.CloseCaseControllerAboutToStartTest.EXPECTED_LABEL_TEXT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
@@ -61,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
@@ -74,6 +77,9 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @MockBean
+    private FeatureToggleService toggleService;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -151,6 +157,36 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
     @TestInstance(PER_CLASS)
     @Nested
     class GenerateDocumentMidEvent {
+
+        @Test
+        void shouldAddCloseCaseLabelAndSetFlagWhenCloseCasePageCanBeShown() {
+            given(toggleService.isCloseCaseEnabled()).willReturn(true);
+
+            CaseDetails caseDetails = generateFinalCareOrderWithChildren("Yes");
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "generate-document");
+
+            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
+
+            assertThat(response.getData()).extracting("showCloseCaseFromOrderPage", "close_case_label")
+                .containsOnly("YES", EXPECTED_LABEL_TEXT);
+        }
+
+        @Test
+        void shouldNotAddCloseCaseLabelAndFlagWhenCloseCasePageCanNotBeShown() {
+            given(toggleService.isCloseCaseEnabled()).willReturn(true);
+
+            CaseDetails caseDetails = generateFinalCareOrderWithChildren("No");
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "generate-document");
+
+            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
+
+            assertThat(response.getData()).extracting("showCloseCaseFromOrderPage", "close_case_label")
+                .containsOnlyNulls();
+
+        }
+
         @ParameterizedTest
         @MethodSource("generateDocumentMidEventArgumentSource")
         void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails,
@@ -259,6 +295,19 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 .build();
         }
 
+        private CaseDetails generateFinalCareOrderWithChildren(String finalOrderIssued) {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(CARE_ORDER, FINAL);
+
+            dataBuilder.children1(List.of(
+                childWithFinalOrderIssued("Yes"),
+                childWithFinalOrderIssued(finalOrderIssued)
+            ));
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .build();
+        }
+
         private CaseData.CaseDataBuilder generateCommonOrderDetails(GeneratedOrderType type,
                                                                     GeneratedOrderSubtype subtype) {
             final CaseData.CaseDataBuilder builder = CaseData.builder()
@@ -315,6 +364,12 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 .filename(document.originalDocumentName)
                 .url(document.links.self.href)
                 .build();
+        }
+
+        private Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
+            Element<Child> childElement = testChild();
+            childElement.getValue().setFinalOrderIssued(finalOrderIssued);
+            return childElement;
         }
     }
 }

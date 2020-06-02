@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -39,6 +40,7 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
@@ -77,90 +79,6 @@ class GeneratedOrderServiceTest {
     @Autowired
     @InjectMocks
     private GeneratedOrderService service;
-
-    @Nested
-    class C21Tests {
-
-        @Test
-        void shouldReturnExpectedC21OrderWhenOrderTitleIsNull() {
-            GeneratedOrder order = GeneratedOrder.builder()
-                .title(null)
-                .details("Some details")
-                .document(DocumentReference.builder().build())
-                .build();
-
-            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                    .type(BLANK_ORDER)
-                    .document(DocumentReference.builder().build())
-                    .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
-
-            assertCommonC21Fields(builtOrder);
-            assertThat(builtOrder.getTitle()).isEqualTo("Order");
-        }
-
-        @Test
-        void shouldReturnExpectedOrderWhenC21OrderTitleIsEmptyString() {
-            GeneratedOrder order = GeneratedOrder.builder()
-                .title("")
-                .details("Some details")
-                .document(DocumentReference.builder().build())
-                .build();
-
-            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                    .type(BLANK_ORDER)
-                    .document(DocumentReference.builder().build())
-                    .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
-
-            assertCommonC21Fields(builtOrder);
-            assertThat(builtOrder.getTitle()).isEqualTo("Order");
-        }
-
-        @Test
-        void shouldReturnExpectedOrderWhenOrderTitleIsStringWithSpaceCharacter() {
-            GeneratedOrder order = GeneratedOrder.builder()
-                .title(" ")
-                .details("Some details")
-                .document(DocumentReference.builder().build())
-                .build();
-
-            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                    .type(BLANK_ORDER)
-                    .document(DocumentReference.builder().build())
-                    .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
-
-            assertCommonC21Fields(builtOrder);
-            assertThat(builtOrder.getTitle()).isEqualTo("Order");
-        }
-
-        @Test
-        void shouldReturnExpectedOrderWhenOrderTitlePresent() {
-            GeneratedOrder order = GeneratedOrder.builder()
-                .title("Example Title")
-                .details("Some details")
-                .document(DocumentReference.builder().build())
-                .build();
-
-            GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                    .type(BLANK_ORDER)
-                    .document(DocumentReference.builder().build())
-                    .build(),
-                order, JudgeAndLegalAdvisor.builder().build(), time.now().toLocalDate(), null, null).getValue();
-
-            assertCommonC21Fields(builtOrder);
-            assertThat(builtOrder.getTitle()).isEqualTo("Example Title");
-        }
-
-        private void assertCommonC21Fields(GeneratedOrder order) {
-            assertThat(order.getType()).isEqualTo(BLANK_ORDER.getLabel());
-            assertThat(order.getDocument()).isEqualTo(DocumentReference.builder().build());
-            assertThat(order.getDetails()).isEqualTo("Some details");
-            assertThat(order.getDate()).isNotNull();
-            assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
-        }
-    }
 
     @Test
     void shouldReturnExpectedOrderWhenJudgeAndLegalAdvisorFullyPopulated() {

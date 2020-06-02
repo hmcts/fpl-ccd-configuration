@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
@@ -19,6 +20,7 @@ public class AmendedReturnedCaseEventHandler {
     private final ReturnedCaseContentProvider returnedCaseContentProvider;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
 
+    @Async
     @EventListener
     public void notifyAdmin(AmendedReturnedCaseEvent event) {
         EventData eventData = new EventData(event);
