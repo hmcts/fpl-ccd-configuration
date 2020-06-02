@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.selector.CareOrderSelector;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
@@ -243,6 +244,7 @@ public class CaseData {
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
     private final ChildSelector childSelector;
+    private final CareOrderSelector careOrderSelector;
     private final String orderAppliesToAllChildren;
 
     public String getOrderAppliesToAllChildren() {

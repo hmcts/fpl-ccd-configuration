@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -15,14 +16,18 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static java.time.LocalDate.now;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -70,11 +75,16 @@ public class TestDataHelper {
     }
 
     public static Element<Child> testChild() {
+        return testChild(randomAlphanumeric(10), randomAlphanumeric(10), null, now());
+    }
+
+    public static Element<Child> testChild(String firstName, String lastName, ChildGender gender, LocalDate dob) {
         return element(Child.builder()
             .party(ChildParty.builder()
-                .firstName(randomAlphanumeric(10))
-                .lastName(randomAlphanumeric(10))
-                .dateOfBirth(now())
+                .firstName(firstName)
+                .lastName(lastName)
+                .gender(ofNullable(gender).map(ChildGender::getLabel).orElse(null))
+                .dateOfBirth(dob)
                 .build())
             .build());
     }
@@ -175,6 +185,14 @@ public class TestDataHelper {
             .judgeTitle(MAGISTRATES)
             .judgeLastName("Stark")
             .judgeFullName("Brandon Stark")
+            .build();
+    }
+
+    public static JudgeAndLegalAdvisor testJudgeAndLegalAdviser() {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HER_HONOUR_JUDGE)
+            .judgeLastName("Judy")
+            .legalAdvisorName("Peter Parker")
             .build();
     }
 

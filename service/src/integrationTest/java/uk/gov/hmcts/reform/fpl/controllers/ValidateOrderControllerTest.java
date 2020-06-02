@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.selector.CareOrderSelector;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -118,7 +119,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenAChildIsSelected() {
+    void shouldReturnErrorsWhenNoChildIsSelected() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("childSelector", ChildSelector.builder().build()))
             .build();
@@ -137,6 +138,28 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorWhenNoCareOrderIsSelected() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("careOrderSelector", CareOrderSelector.builder().build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "care-orders-selection");
+
+        assertThat(response.getErrors()).containsExactly("Select care orders to be discharged.");
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenCareOrderIsSelected() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("careOrderSelector", CareOrderSelector.builder().selected(List.of(0)).build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "care-orders-selection");
+
+        assertThat(response.getErrors()).isEmpty();
     }
 
     private CaseDetails createCaseDetails(EPOType preventRemoval, LocalDateTime now) {

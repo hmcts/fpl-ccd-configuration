@@ -1,27 +1,21 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CareOrderGenerationService extends GeneratedOrderTemplateDataGeneration {
-
-    @Autowired
-    public CareOrderGenerationService(CaseDataExtractionService caseDataExtractionService,
-                                      LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
-        super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
-    }
 
     @SuppressWarnings("rawtypes")
     @Override

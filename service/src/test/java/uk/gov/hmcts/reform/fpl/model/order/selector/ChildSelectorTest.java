@@ -17,13 +17,13 @@ class ChildSelectorTest {
 
     @Test
     void shouldSetAnEmptyStringWhenTheValueIsLessThan1() {
-        childSelector.setChildCountFromInt(0);
-        assertThat(childSelector.getChildCount()).isEmpty();
+        childSelector.setCount(0);
+        assertThat(childSelector.getCount()).isEmpty();
     }
 
     @Test
     void shouldSetAStringWithNumbersInAscendingOrderWhenTheValueIsGreaterThan0() {
-        childSelector.setChildCountFromInt(6);
+        childSelector.setCount(6);
         assertThat(childSelector.getChildCount()).isEqualTo("123456");
     }
 
@@ -31,7 +31,7 @@ class ChildSelectorTest {
     void shouldGenerateHiddenListWhenFinalOrderIssuedOnSomeChildren() {
         List<Element<Child>> children = List.of(buildChild(false), buildChild(true),
             buildChild(true));
-        childSelector.setHiddenFromChildList(children);
+        childSelector.updateHidden(children);
 
         assertThat(childSelector.getHidden()).containsExactly(1,2);
     }

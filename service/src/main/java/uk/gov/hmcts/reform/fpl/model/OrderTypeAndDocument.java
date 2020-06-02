@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 
 @Data
@@ -44,7 +45,7 @@ public class OrderTypeAndDocument {
 
     @JsonIgnore
     public boolean isClosable() {
-        return isFinal() || EMERGENCY_PROTECTION_ORDER == type;
+        return isFinal() || EMERGENCY_PROTECTION_ORDER == type || DISCHARGE_OF_CARE_ORDER == type;
     }
 
     @JsonIgnore

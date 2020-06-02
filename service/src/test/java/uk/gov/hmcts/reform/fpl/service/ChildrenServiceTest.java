@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 class ChildrenServiceTest {
@@ -213,6 +217,61 @@ class ChildrenServiceTest {
         String childrenNames = service.getFinalOrderIssuedChildrenNames(children);
 
         assertThat(childrenNames).isEmpty();
+    }
+
+    @Nested
+    class SelectedChildren {
+
+        @Test
+        void shouldReturnAllChildrenWhenOrderAppliesToAllChildren() {
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(testChild(), testChild()))
+                .orderAppliesToAllChildren("Yes")
+                .build();
+
+            List<Element<Child>> selectedChildren = service.getSelectedChildren(caseData);
+
+            assertThat(selectedChildren).isEqualTo(caseData.getAllChildren());
+        }
+
+        @Test
+        void shouldReturnAllChildrenWhenNoSpecifiedIfOrderApplyToAllChildren() {
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(testChild(), testChild()))
+                .orderAppliesToAllChildren(null)
+                .build();
+
+            List<Element<Child>> selectedChildren = service.getSelectedChildren(caseData);
+
+            assertThat(selectedChildren).isEqualTo(caseData.getAllChildren());
+        }
+
+        @Test
+        void shouldReturnSelectedChildrenOnly() {
+            Integer selectedChild = 1;
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(testChild(), testChild(), testChild()))
+                .childSelector(ChildSelector.builder().selected(List.of(selectedChild)).build())
+                .orderAppliesToAllChildren("No")
+                .build();
+
+            List<Element<Child>> selectedChildren = service.getSelectedChildren(caseData);
+
+            assertThat(selectedChildren).containsExactly(caseData.getAllChildren().get(selectedChild));
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoChildrenSelected() {
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(testChild(), testChild()))
+                .childSelector(ChildSelector.builder().selected(emptyList()).build())
+                .orderAppliesToAllChildren("No")
+                .build();
+
+            List<Element<Child>> selectedChildren = service.getSelectedChildren(caseData);
+
+            assertThat(selectedChildren).isEmpty();
+        }
     }
 
     private Element<Child> childWithConfidentialFields(UUID id) {

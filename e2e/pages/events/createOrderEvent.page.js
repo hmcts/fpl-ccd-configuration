@@ -39,6 +39,13 @@ module.exports = {
       },
       selectorText: 'Yes',
     },
+    careOrderSelector: {
+      id: '#careOrderSelector_careOrderSelector',
+      selector: function (index) {
+        return `#careOrderSelector_careOrder${index}`;
+      },
+      selectorText: 'Discharge order',
+    },
     allChildren: {
       id: '#orderAppliesToAllChildren',
       options: {
@@ -175,6 +182,14 @@ module.exports = {
     for (let child of children) {
       within(this.fields.childSelector.selector(child), () => {
         I.click(locate('label').withText(this.fields.childSelector.selectorText));
+      });
+    }
+  },
+
+  async selectCareOrder(careOrders = []) {
+    for (let order of careOrders) {
+      within(this.fields.careOrderSelector.selector(order), () => {
+        I.click(locate('label').withText(this.fields.careOrderSelector.selectorText));
       });
     }
   },
