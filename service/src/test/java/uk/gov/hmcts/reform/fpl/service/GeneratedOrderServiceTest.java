@@ -40,9 +40,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -57,7 +54,6 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
@@ -539,67 +535,32 @@ class GeneratedOrderServiceTest {
         assertThat(result).isEqualTo(docmosisGeneratedOrder);
     }
 
-        @Test
-        void shouldGetAllocatedJudgeFromMostRecentOrderWhenOrderExists() {
-            JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-                .judgeLastName("Byrne")
-                .judgeTitle(DEPUTY_DISTRICT_JUDGE)
-                .judgeEmailAddress("judge@gmail.com")
-                .build();
+    @Test
+    void shouldReturnMostRecentUploadedOrderDocumentUrl() {
+        DocumentReference lastOrderDocumentReference = DocumentReference.builder()
+            .filename("C21 3.pdf")
+            .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
+            .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
+            .build();
+        final DocumentReference mostRecentDocument = service.getMostRecentUploadedOrderDocument(createOrders(
+            lastOrderDocumentReference));
 
-            CaseData caseData = CaseData.builder()
-                .orderCollection(getGeneratedOrdersList())
-                .build();
+        assertThat(mostRecentDocument.getFilename()).isEqualTo(lastOrderDocumentReference.getFilename());
+        assertThat(mostRecentDocument.getUrl()).isEqualTo(lastOrderDocumentReference.getUrl());
+        assertThat(mostRecentDocument.getBinaryUrl()).isEqualTo(lastOrderDocumentReference.getBinaryUrl());
+    }
 
-            JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(caseData);
+    @Test
+    void shouldRemovePropertiesOnCaseDetailsUsedForOrderCapture() {
+        Map<String, Object> data = stream(GeneratedOrderKey.values())
+            .collect(toMap(GeneratedOrderKey::getKey, value -> ""));
+        data.putAll(stream(GeneratedEPOKey.values()).collect(toMap(GeneratedEPOKey::getKey, value -> "")));
+        data.putAll(stream(InterimOrderKey.values()).collect(toMap(InterimOrderKey::getKey, value -> "")));
 
-            assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(judgeAndLegalAdvisor);
-        }
+        data.put("DO NOT REMOVE", "");
+        service.removeOrderProperties(data);
 
-        private List<Element<GeneratedOrder>> getGeneratedOrdersList() {
-            JudgeAndLegalAdvisor firstJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-                .judgeLastName("Moley")
-                .judgeTitle(DEPUTY_DISTRICT_JUDGE)
-                .judgeEmailAddress("judge@gmail.com")
-                .build();
-
-            JudgeAndLegalAdvisor secondJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-                .judgeLastName("Byrne")
-                .judgeTitle(DEPUTY_DISTRICT_JUDGE)
-                .judgeEmailAddress("judge@gmail.com")
-                .build();
-
-            List<Element<GeneratedOrder>> generatedOrders = new ArrayList<>();
-
-            GeneratedOrder firstGeneratedOrder = GeneratedOrder.builder()
-                .judgeAndLegalAdvisor(firstJudgeAndLegalAdvisor)
-                .build();
-
-            GeneratedOrder secondGeneratedOrder = GeneratedOrder.builder()
-                .judgeAndLegalAdvisor(secondJudgeAndLegalAdvisor)
-                .build();
-
-            generatedOrders.add(element(firstGeneratedOrder));
-            generatedOrders.add(element(secondGeneratedOrder));
-
-            return generatedOrders;
-        }
-
-        @Test
-        void shouldGetEmptyAllocatedJudgeFromMostRecentOrderWhenNoOrderExists() {
-            JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = service.getAllocatedJudgeFromMostRecentOrder(CaseData
-                .builder().build());
-
-            assertThat(expectedJudgeAndLegalAdvisor).isEqualTo(JudgeAndLegalAdvisor.builder().build());
-        }
-
-        private void assertCommonC21Fields(GeneratedOrder order) {
-            assertThat(order.getType()).isEqualTo(BLANK_ORDER.getLabel());
-            assertThat(order.getDocument()).isEqualTo(DocumentReference.builder().build());
-            assertThat(order.getDetails()).isEqualTo("Some details");
-            assertThat(order.getDate()).isNotNull();
-            assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
-        }
+        assertThat(data).containsOnlyKeys("DO NOT REMOVE");
     }
 
     private static Stream<Arguments> fileNameSource() {

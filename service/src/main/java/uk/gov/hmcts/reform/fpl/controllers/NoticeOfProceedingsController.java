@@ -27,8 +27,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
@@ -63,7 +61,6 @@ public class NoticeOfProceedingsController {
     private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
     private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
-    private final RequestData requestData;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FeatureToggleService featureToggleService;
 

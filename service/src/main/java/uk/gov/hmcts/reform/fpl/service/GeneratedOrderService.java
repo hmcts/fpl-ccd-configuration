@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,6 +219,16 @@ public class GeneratedOrderService {
             && orderType.isClosable()
             && childrenService.allChildrenHaveFinalOrder(children)
             && closeCaseFromOrder == null;
+    }
+
+    public JudgeAndLegalAdvisor getAllocatedJudgeFromMostRecentOrder(CaseData caseData) {
+        Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
+            .stream().reduce((first, last) -> last);
+
+        return generatedOrder
+            .map(Element::getValue)
+            .map(GeneratedOrder::getJudgeAndLegalAdvisor)
+            .orElse(JudgeAndLegalAdvisor.builder().build());
     }
 
     private String getSupervisionOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,
