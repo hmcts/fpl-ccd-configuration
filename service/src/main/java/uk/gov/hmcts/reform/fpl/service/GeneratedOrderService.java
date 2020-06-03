@@ -407,21 +407,17 @@ public class GeneratedOrderService {
      *     <li>close case is enabled</li>
      *     <li>the order type is final or epo</li>
      *     <li>all children will be marked to have a final order issued against them</li>
-     *     <li>the flag hasn't already been set</li>
      * </ul>
      *
-     * @param orderType          type of order
-     * @param closeCaseFromOrder YesOrNo field for close case from order
-     * @param children           list of children in the case
-     * @param closeCaseEnabled   feature toggle flag for close case
+     * @param orderType        type of order
+     * @param children         list of children in the case
+     * @param closeCaseEnabled feature toggle flag for close case
      */
     public boolean showCloseCase(OrderTypeAndDocument orderType,
-                                 String closeCaseFromOrder,
                                  List<Element<Child>> children,
                                  boolean closeCaseEnabled) {
         return closeCaseEnabled
             && orderType.isClosable()
-            && childrenService.allChildrenHaveFinalOrder(children)
-            && closeCaseFromOrder == null;
+            && childrenService.allChildrenHaveFinalOrder(children);
     }
 }

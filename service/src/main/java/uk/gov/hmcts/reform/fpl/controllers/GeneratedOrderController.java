@@ -142,7 +142,6 @@ public class GeneratedOrderController {
 
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
-        String closeCaseFromOrder = caseData.getCloseCaseFromOrder();
         List<Element<Child>> children;
 
         if (orderTypeAndDocument.isClosable()) {
@@ -152,8 +151,7 @@ public class GeneratedOrderController {
         }
 
         // If can display close case, set the flag in order to show the close case page
-        if (service.showCloseCase(orderTypeAndDocument, closeCaseFromOrder, children,
-            featureToggleService.isCloseCaseEnabled())) {
+        if (service.showCloseCase(orderTypeAndDocument, children, featureToggleService.isCloseCaseEnabled())) {
 
             data.put("showCloseCaseFromOrderPage", YES);
             data.put("close_case_label", CloseCaseController.LABEL);

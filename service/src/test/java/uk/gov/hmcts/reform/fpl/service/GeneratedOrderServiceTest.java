@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -530,7 +529,7 @@ class GeneratedOrderServiceTest {
         void shouldReturnFalseWhenNotAllChildrenHaveFinalOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, someChildren, true);
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, someChildren, true);
 
             assertThat(showCloseCase).isFalse();
         }
@@ -539,16 +538,7 @@ class GeneratedOrderServiceTest {
         void shouldReturnFalseWhenCloseCaseIsNotEnabled() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, false);
-
-            assertThat(showCloseCase).isFalse();
-        }
-
-        @Test
-        void shouldReturnFalseWhenCloseCaseFromFinalOrderIsSet() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, "Yes", allChildren, true);
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, false);
 
             assertThat(showCloseCase).isFalse();
         }
@@ -557,7 +547,7 @@ class GeneratedOrderServiceTest {
         void shouldReturnFalseWhenTheOrderTypeIsABlankOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, true);
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, true);
 
             assertThat(showCloseCase).isFalse();
         }
@@ -566,7 +556,7 @@ class GeneratedOrderServiceTest {
         void shouldReturnFalseWhenTheOrderTypeIsInterim() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(INTERIM).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, true);
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, true);
 
             assertThat(showCloseCase).isFalse();
         }
@@ -575,7 +565,7 @@ class GeneratedOrderServiceTest {
         void shouldReturnTrueWhenOrderIsEmergencyProtectionOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, true);
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, true);
 
             assertThat(showCloseCase).isTrue();
         }
@@ -584,7 +574,7 @@ class GeneratedOrderServiceTest {
         void shouldReturnTrueWhenOrderIsAFinalOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, null, allChildren, true);
+            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, true);
 
             assertThat(showCloseCase).isTrue();
         }
@@ -594,7 +584,6 @@ class GeneratedOrderServiceTest {
     @Nested
     class ShouldGenerateDocument {
         @Test
-        @DisplayName("Should generate a document when generating a C21")
         void shouldReturnTrueWhenOrderIsBlankOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
 
@@ -604,8 +593,7 @@ class GeneratedOrderServiceTest {
         }
 
         @Test
-        @DisplayName("Should generate a document when generating any other type of order")
-        void shouldReturnTrueWhenOrderIsNotBlankOrder() {
+        void shouldReturnTrueWhenOrderIsNotBlankOrderAndFurtherDirectionPresent() {
             typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).build();
 
             boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
