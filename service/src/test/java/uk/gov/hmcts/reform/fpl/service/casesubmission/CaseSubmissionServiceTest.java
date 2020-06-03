@@ -14,8 +14,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +40,7 @@ public class CaseSubmissionServiceTest {
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
     @MockBean
-    private CaseSubmissionTemplateDataGenerationService templateDataGenerationService;
+    private CaseSubmissionGenerationService templateDataGenerationService;
 
     @Captor
     private ArgumentCaptor<DocmosisCaseSubmission> caseSubmissionDataCaptor;
