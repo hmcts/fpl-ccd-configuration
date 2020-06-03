@@ -33,7 +33,7 @@ public class StandardDirectionOrderGenerationService extends
 
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
-    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData)  {
+    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         HearingBooking firstHearing = hearingBookingService.getFirstHearing(caseData.getHearingDetails())

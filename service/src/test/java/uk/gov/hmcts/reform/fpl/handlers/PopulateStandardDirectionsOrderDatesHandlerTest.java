@@ -12,12 +12,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -51,22 +50,19 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     private static final HearingBooking FIRST_HEARING = HearingBooking.builder()
         .startDate(LocalDateTime.of(2050, 10, 6, 13, 0))
         .build();
-    private static final Map<DirectionAssignee, List<Element<Direction>>> DIRECTIONS_SORTED_BY_ASSIGNEE
-        = Map.of(
-        ALL_PARTIES, wrapElements(
-            Direction.builder().dateToBeCompletedBy(LocalDateTime.of(2050, 6, 10, 16, 0)).build()),
-        LOCAL_AUTHORITY, wrapElements(
-            Direction.builder().dateToBeCompletedBy(LocalDateTime.of(2050, 6, 9, 15, 0)).build(),
-            Direction.builder().dateToBeCompletedBy(LocalDateTime.of(2050, 6, 8, 14, 0)).build()),
-        PARENTS_AND_RESPONDENTS, wrapElements(
-            Direction.builder().dateToBeCompletedBy(LocalDateTime.of(2050, 6, 7, 13, 0)).build(),
-            Direction.builder().dateToBeCompletedBy(LocalDateTime.of(2050, 6, 6, 12, 0)).build(),
-            Direction.builder().dateToBeCompletedBy(LocalDateTime.of(2050, 6, 5, 11, 0)).build()));
-
     private static final List<Element<Direction>> STANDARD_DIRECTIONS = wrapElements(
-        Direction.builder().assignee(ALL_PARTIES).build(),
-        Direction.builder().assignee(LOCAL_AUTHORITY).build(),
-        Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()
+        Direction.builder()
+            .assignee(ALL_PARTIES)
+            .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 10, 16, 0))
+            .build(),
+        Direction.builder()
+            .assignee(LOCAL_AUTHORITY)
+            .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 8, 14, 0))
+            .build(),
+        Direction.builder()
+            .assignee(PARENTS_AND_RESPONDENTS)
+            .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 5, 11, 0))
+            .build()
     );
 
     @Autowired
@@ -79,10 +75,10 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     private StandardDirectionsService standardDirectionsService;
 
     @MockBean
-    private CommonDirectionService commonDirectionService;
+    private HearingBookingService hearingBookingService;
 
     @MockBean
-    private HearingBookingService hearingBookingService;
+    private RequestData requestData;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> data;
@@ -92,7 +88,6 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     @BeforeEach
     void setup() {
         given(standardDirectionsService.getDirections(any())).willReturn(STANDARD_DIRECTIONS);
-        given(commonDirectionService.sortDirectionsByAssignee(any())).willReturn(DIRECTIONS_SORTED_BY_ASSIGNEE);
         given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.of(FIRST_HEARING));
 
         callbackRequest = getCallbackRequest();
@@ -101,16 +96,15 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     @Test
     void shouldTriggerEventWithCaseDataFilledWithDates() {
         handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(FIRST_HEARING);
-        verify(commonDirectionService).sortDirectionsByAssignee(STANDARD_DIRECTIONS);
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
             eq(CASE_ID),
             eq(CASE_EVENT),
             data.capture());
+
         assertThat(data.getValue()).isEqualTo(getExpectedData());
     }
 
@@ -118,16 +112,15 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     void shouldFillCaseDataWithMissingDatesOnly() {
         callbackRequest.getCaseDetails().setData(getDataWithSomeDatesFilled());
         handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(FIRST_HEARING);
-        verify(commonDirectionService).sortDirectionsByAssignee(STANDARD_DIRECTIONS);
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
             eq(CASE_ID),
             eq(CASE_EVENT),
             data.capture());
+
         assertThat(data.getValue()).isEqualTo(getExpectedDataWithUnchangedPreexistingDates());
     }
 
@@ -142,11 +135,8 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
                     ALL_PARTIES.getValue(), wrapElements(
                         Direction.builder().directionText("allParties1").build()),
                     LOCAL_AUTHORITY.getValue(), wrapElements(
-                        Direction.builder().directionText("LA1").build(),
                         Direction.builder().directionText("LA2").build()),
                     PARENTS_AND_RESPONDENTS.getValue(), wrapElements(
-                        Direction.builder().directionText("P&R1").build(),
-                        Direction.builder().directionText("P&R2").build(),
                         Direction.builder().directionText("P&R3").build()))))
                 .build())
             .build();
@@ -162,22 +152,10 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
                     .build()),
             LOCAL_AUTHORITY.getValue(), wrapElements(
                 Direction.builder()
-                    .directionText("LA1")
-                    .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 9, 15, 0))
-                    .build(),
-                Direction.builder()
                     .directionText("LA2")
                     .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 8, 14, 0))
                     .build()),
             PARENTS_AND_RESPONDENTS.getValue(), wrapElements(
-                Direction.builder()
-                    .directionText("P&R1")
-                    .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 7, 13, 0))
-                    .build(),
-                Direction.builder()
-                    .directionText("P&R2")
-                    .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 6, 12, 0))
-                    .build(),
                 Direction.builder()
                     .directionText("P&R3")
                     .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 5, 11, 0))
@@ -193,14 +171,11 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
                     .dateToBeCompletedBy(LocalDateTime.of(2066, 1, 1, 11, 0))
                     .build()),
             LOCAL_AUTHORITY.getValue(), wrapElements(
-                Direction.builder().directionText("LA1").build(),
                 Direction.builder()
                     .directionText("LA2")
                     .dateToBeCompletedBy(LocalDateTime.of(2066, 2, 2, 12, 0))
                     .build()),
             PARENTS_AND_RESPONDENTS.getValue(), wrapElements(
-                Direction.builder().directionText("P&R1").build(),
-                Direction.builder().directionText("P&R2").build(),
                 Direction.builder()
                     .directionText("P&R3")
                     .dateToBeCompletedBy(LocalDateTime.of(2066, 3, 3, 13, 0))
@@ -217,22 +192,10 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
                     .build()),
             LOCAL_AUTHORITY.getValue(), wrapElements(
                 Direction.builder()
-                    .directionText("LA1")
-                    .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 9, 15, 0))
-                    .build(),
-                Direction.builder()
                     .directionText("LA2")
                     .dateToBeCompletedBy(LocalDateTime.of(2066, 2, 2, 12, 0))
                     .build()),
             PARENTS_AND_RESPONDENTS.getValue(), wrapElements(
-                Direction.builder()
-                    .directionText("P&R1")
-                    .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 7, 13, 0))
-                    .build(),
-                Direction.builder()
-                    .directionText("P&R2")
-                    .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 6, 12, 0))
-                    .build(),
                 Direction.builder()
                     .directionText("P&R3")
                     .dateToBeCompletedBy(LocalDateTime.of(2066, 3, 3, 13, 0))

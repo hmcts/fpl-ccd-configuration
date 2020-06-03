@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +36,10 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -48,16 +52,20 @@ class PopulateStandardDirectionsHandlerTest {
         .type("testHearing")
         .build()));
     private static final HearingBooking FIRST_HEARING = HearingBooking.builder().type("firstHearing").build();
+    private static final Element<Direction> ALL_PARTIES_DIRECTION =
+        element(Direction.builder().assignee(ALL_PARTIES).build());
+    private static final Element<Direction> LOCAL_AUTHORITY_DIRECTION =
+        element(Direction.builder().assignee(LOCAL_AUTHORITY).build());
+    private static final Element<Direction> RESPONDENT_DIRECTION =
+        element(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build());
+
     private static final Map<DirectionAssignee, List<Element<Direction>>> DIRECTIONS_SORTED_BY_ASSIGNEE = Map.of(
-        ALL_PARTIES, List.of(element(Direction.builder().directionText("All Parties text").build())),
-        LOCAL_AUTHORITY, List.of(element(Direction.builder().directionText("LA text").build())),
-        PARENTS_AND_RESPONDENTS, List.of(element(Direction.builder().directionText("P&R text").build()))
+        ALL_PARTIES, List.of(ALL_PARTIES_DIRECTION),
+        LOCAL_AUTHORITY, List.of(LOCAL_AUTHORITY_DIRECTION),
+        PARENTS_AND_RESPONDENTS, List.of(RESPONDENT_DIRECTION)
     );
     private static final List<Element<Direction>> STANDARD_DIRECTIONS = List.of(
-        element(Direction.builder().assignee(ALL_PARTIES).build()),
-        element(Direction.builder().assignee(LOCAL_AUTHORITY).build()),
-        element(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build())
-    );
+        ALL_PARTIES_DIRECTION, LOCAL_AUTHORITY_DIRECTION, RESPONDENT_DIRECTION);
 
     @Autowired
     private PopulateStandardDirectionsHandler handler;
@@ -66,13 +74,13 @@ class PopulateStandardDirectionsHandlerTest {
     private HearingBookingService hearingBookingService;
 
     @MockBean
-    private CommonDirectionService commonDirectionService;
-
-    @MockBean
     private CoreCaseDataService coreCaseDataService;
 
     @MockBean
     private StandardDirectionsService standardDirectionsService;
+
+    @MockBean
+    private RequestData requestData;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> data;
@@ -83,7 +91,6 @@ class PopulateStandardDirectionsHandlerTest {
     void setup() {
         given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.of(FIRST_HEARING));
         given(standardDirectionsService.getDirections(any())).willReturn(STANDARD_DIRECTIONS);
-        given(commonDirectionService.sortDirectionsByAssignee(any())).willReturn(DIRECTIONS_SORTED_BY_ASSIGNEE);
 
         callbackRequest = getCallbackRequest();
     }
@@ -100,7 +107,6 @@ class PopulateStandardDirectionsHandlerTest {
             data.capture());
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(FIRST_HEARING);
-        verify(commonDirectionService).sortDirectionsByAssignee(STANDARD_DIRECTIONS);
         assertThat(data.getValue()).isEqualTo(getExpectedData());
     }
 
@@ -118,7 +124,6 @@ class PopulateStandardDirectionsHandlerTest {
             data.capture());
         verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(null);
-        verify(commonDirectionService).sortDirectionsByAssignee(STANDARD_DIRECTIONS);
         assertThat(data.getValue()).isEqualTo(getExpectedData());
     }
 
@@ -138,6 +143,9 @@ class PopulateStandardDirectionsHandlerTest {
             "hearingDetails", HEARING_DETAILS,
             ALL_PARTIES.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(ALL_PARTIES),
             LOCAL_AUTHORITY.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(LOCAL_AUTHORITY),
-            PARENTS_AND_RESPONDENTS.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(PARENTS_AND_RESPONDENTS));
+            PARENTS_AND_RESPONDENTS.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(PARENTS_AND_RESPONDENTS),
+            CAFCASS.getValue(), emptyList(),
+            COURT.getValue(), emptyList(),
+            OTHERS.getValue(), emptyList());
     }
 }
