@@ -297,7 +297,7 @@ public class GeneratedOrderController {
         DocmosisGeneratedOrder orderTemplateData = service.getOrderTemplateData(caseData);
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            orderTemplateData, templateType);
+            orderTemplateData, typeAndDoc.getDocmosisTemplate());
 
 
         Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),

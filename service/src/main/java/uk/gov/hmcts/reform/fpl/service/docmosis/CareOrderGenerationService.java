@@ -19,7 +19,7 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
 
     @Autowired
     public CareOrderGenerationService(CaseDataExtractionService caseDataExtractionService,
-        LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
+                                      LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
         super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
     }
 
@@ -49,9 +49,9 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
     }
 
     private String getFormattedCareOrderDetails(int numOfChildren,
-        String caseLocalAuthority,
-        boolean isInterim,
-        InterimEndDate interimEndDate) {
+                                                String caseLocalAuthority,
+                                                boolean isInterim,
+                                                InterimEndDate interimEndDate) {
         String childOrChildren = (numOfChildren == 1 ? "child is" : "children are");
         return String.format("It is ordered that the %s placed in the care of %s%s.",
             childOrChildren, getLocalAuthorityName(caseLocalAuthority),

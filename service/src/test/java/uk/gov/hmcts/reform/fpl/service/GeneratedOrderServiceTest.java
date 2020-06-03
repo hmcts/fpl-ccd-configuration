@@ -95,6 +95,225 @@ class GeneratedOrderServiceTest {
     @InjectMocks
     private GeneratedOrderService service;
 
+    private static Stream<Arguments> fileNameSource() {
+        return Stream.of(
+            Arguments.of(BLANK_ORDER, null, "blank_order_c21.pdf"),
+            Arguments.of(CARE_ORDER, INTERIM, "interim_care_order.pdf"),
+            Arguments.of(CARE_ORDER, FINAL, "final_care_order.pdf"),
+            Arguments.of(SUPERVISION_ORDER, INTERIM, "interim_supervision_order.pdf"),
+            Arguments.of(SUPERVISION_ORDER, FINAL, "final_supervision_order.pdf"),
+            Arguments.of(EMERGENCY_PROTECTION_ORDER, null, "emergency_protection_order.pdf"),
+            Arguments.of(SUPERVISION_ORDER, null, "supervision_order.pdf"),
+            Arguments.of(CARE_ORDER, null, "care_order.pdf")
+        );
+    }
+
+    private static Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
+        return element(Child.builder()
+            .finalOrderIssued(finalOrderIssued)
+            .party(ChildParty.builder()
+                .firstName(randomAlphanumeric(10))
+                .lastName(randomAlphanumeric(10))
+                .build())
+            .build());
+    }
+
+    @Test
+    void shouldReturnExpectedOrderWhenJudgeAndLegalAdvisorFullyPopulated() {
+        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                .type(CARE_ORDER)
+                .subtype(FINAL)
+                .document(DocumentReference.builder().build())
+                .build(),
+            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .legalAdvisorName("Peter Parker")
+                .build(), time.now().toLocalDate(), null, null).getValue();
+
+        assertThat(builtOrder.getType()).isEqualTo("Final care order");
+        assertThat(builtOrder.getTitle()).isNull();
+        assertThat(builtOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
+        assertThat(builtOrder.getDate()).isNotNull();
+        assertThat(builtOrder.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HER_HONOUR_JUDGE)
+            .judgeLastName("Judy")
+            .legalAdvisorName("Peter Parker")
+            .build());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = GeneratedOrderType.class, names = {"CARE_ORDER", "SUPERVISION_ORDER"})
+    void shouldReturnEndOfProceedingsExpiryDateWhenInterimSubtypeAndEndOfProceedingsSelected(GeneratedOrderType type) {
+        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                .type(type)
+                .subtype(INTERIM)
+                .document(DocumentReference.builder().build())
+                .build(),
+            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .legalAdvisorName("Peter Parker")
+                .build(), time.now().toLocalDate(), null,
+            InterimEndDate.builder().type(END_OF_PROCEEDINGS).build()).getValue();
+
+        assertThat(builtOrder.getExpiryDate()).isEqualTo("End of the proceedings");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = GeneratedOrderType.class, names = {"CARE_ORDER", "SUPERVISION_ORDER"})
+    void shouldReturnFormattedExpiryDateWhenInterimSubtypeAndNamedDateSelected(GeneratedOrderType type) {
+        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                .type(type)
+                .subtype(INTERIM)
+                .document(DocumentReference.builder().build())
+                .build(),
+            GeneratedOrder.builder().build(),
+            JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .legalAdvisorName("Peter Parker")
+                .build(),
+            time.now().toLocalDate(),
+            null,
+            InterimEndDate.builder()
+                .type(NAMED_DATE)
+                .endDate(time.now().toLocalDate())
+                .build())
+            .getValue();
+
+        assertThat(builtOrder.getExpiryDate())
+            .isEqualTo(formatLocalDateToString(time.now().toLocalDate(), "'11:59pm', d MMMM y"));
+    }
+
+    @Test
+    void shouldReturnExpectedSupervisionOrderWhenFinalSubtypeSelected() {
+        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
+                .type(SUPERVISION_ORDER)
+                .subtype(FINAL)
+                .document(DocumentReference.builder().build())
+                .build(),
+            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Dredd")
+                .legalAdvisorName("Frank N. Stein")
+                .build(), time.now().toLocalDate(), 5, null).getValue();
+
+        final LocalDateTime orderExpiration = time.now().plusMonths(5);
+        final String expectedExpiryDate = formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y");
+
+        assertThat(builtOrder.getType()).isEqualTo("Final supervision order");
+        assertThat(builtOrder.getExpiryDate()).isEqualTo(expectedExpiryDate);
+    }
+
+    @Test
+    void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() {
+        Document document = document();
+
+        OrderTypeAndDocument returnedTypeAndDoc = service.buildOrderTypeAndDocument(OrderTypeAndDocument.builder()
+            .type(BLANK_ORDER).build(), document);
+
+        assertThat(returnedTypeAndDoc.getDocument()).isEqualTo(DocumentReference.builder()
+            .binaryUrl(document.links.binary.href)
+            .filename(document.originalDocumentName)
+            .url(document.links.self.href)
+            .build());
+    }
+
+    @ParameterizedTest
+    @MethodSource("fileNameSource")
+    void shouldGenerateCorrectFileNameGivenOrderType(GeneratedOrderType type,
+                                                     GeneratedOrderSubtype subtype,
+                                                     String expected) {
+        final String fileName = service.generateOrderDocumentFileName(type, subtype);
+        assertThat(fileName).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @MethodSource("fileNameSource")
+    void shouldGetOrderTemplateDataForBlankOrderType() {
+        CaseData caseData = CaseData.builder().orderTypeAndDocument(
+            OrderTypeAndDocument.builder().type(BLANK_ORDER).build())
+            .build();
+
+        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
+        given(blankOrderGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
+
+        DocmosisGeneratedOrder result = service.getOrderTemplateData(caseData);
+
+        assertThat(result).isEqualTo(docmosisGeneratedOrder);
+    }
+
+    @Test
+    void shouldGetOrderTemplateDataForCareOrderType() {
+        CaseData caseData = CaseData.builder().orderTypeAndDocument(
+            OrderTypeAndDocument.builder().type(CARE_ORDER).build())
+            .build();
+
+        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
+        given(careOrderGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
+
+        DocmosisGeneratedOrder result = service.getOrderTemplateData(caseData);
+
+        assertThat(result).isEqualTo(docmosisGeneratedOrder);
+    }
+
+    @Test
+    void shouldGetOrderTemplateDataForEPOType() {
+        CaseData caseData = CaseData.builder().orderTypeAndDocument(
+            OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
+            .build();
+
+        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
+        given(epoGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
+
+        DocmosisGeneratedOrder result = service.getOrderTemplateData(caseData);
+
+        assertThat(result).isEqualTo(docmosisGeneratedOrder);
+    }
+
+    @Test
+    void shouldGetOrderTemplateDataForSupervisionOrderType() {
+        CaseData caseData = CaseData.builder().orderTypeAndDocument(
+            OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build())
+            .build();
+
+        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
+        given(supervisionOrderGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
+
+        DocmosisGeneratedOrder result = service.getOrderTemplateData(caseData);
+
+        assertThat(result).isEqualTo(docmosisGeneratedOrder);
+    }
+
+    @Test
+    void shouldReturnMostRecentUploadedOrderDocumentUrl() {
+        DocumentReference lastOrderDocumentReference = DocumentReference.builder()
+            .filename("C21 3.pdf")
+            .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
+            .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
+            .build();
+        final DocumentReference mostRecentDocument = service.getMostRecentUploadedOrderDocument(createOrders(
+            lastOrderDocumentReference));
+
+        assertThat(mostRecentDocument.getFilename()).isEqualTo(lastOrderDocumentReference.getFilename());
+        assertThat(mostRecentDocument.getUrl()).isEqualTo(lastOrderDocumentReference.getUrl());
+        assertThat(mostRecentDocument.getBinaryUrl()).isEqualTo(lastOrderDocumentReference.getBinaryUrl());
+    }
+
+    @Test
+    void shouldRemovePropertiesOnCaseDetailsUsedForOrderCapture() {
+        Map<String, Object> data = stream(GeneratedOrderKey.values())
+            .collect(toMap(GeneratedOrderKey::getKey, value -> ""));
+        data.putAll(stream(GeneratedEPOKey.values()).collect(toMap(GeneratedEPOKey::getKey, value -> "")));
+        data.putAll(stream(InterimOrderKey.values()).collect(toMap(InterimOrderKey::getKey, value -> "")));
+
+        data.put("DO NOT REMOVE", "");
+        service.removeOrderProperties(data);
+
+        assertThat(data).containsOnlyKeys("DO NOT REMOVE");
+    }
+
     @Nested
     class C21Tests {
 
@@ -405,224 +624,4 @@ class GeneratedOrderServiceTest {
             assertThat(notAllowFinalOrder).isFalse();
         }
     }
-
-    @Test
-    void shouldReturnExpectedOrderWhenJudgeAndLegalAdvisorFullyPopulated() {
-        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                .type(CARE_ORDER)
-                .subtype(FINAL)
-                .document(DocumentReference.builder().build())
-                .build(),
-            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .legalAdvisorName("Peter Parker")
-                .build(), time.now().toLocalDate(), null, null).getValue();
-
-        assertThat(builtOrder.getType()).isEqualTo("Final care order");
-        assertThat(builtOrder.getTitle()).isNull();
-        assertThat(builtOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(builtOrder.getDate()).isNotNull();
-        assertThat(builtOrder.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
-            .judgeTitle(HER_HONOUR_JUDGE)
-            .judgeLastName("Judy")
-            .legalAdvisorName("Peter Parker")
-            .build());
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = GeneratedOrderType.class, names = {"CARE_ORDER", "SUPERVISION_ORDER"})
-    void shouldReturnEndOfProceedingsExpiryDateWhenInterimSubtypeAndEndOfProceedingsSelected(GeneratedOrderType type) {
-        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                .type(type)
-                .subtype(INTERIM)
-                .document(DocumentReference.builder().build())
-                .build(),
-            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .legalAdvisorName("Peter Parker")
-                .build(), time.now().toLocalDate(), null,
-            InterimEndDate.builder().type(END_OF_PROCEEDINGS).build()).getValue();
-
-        assertThat(builtOrder.getExpiryDate()).isEqualTo("End of the proceedings");
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = GeneratedOrderType.class, names = {"CARE_ORDER", "SUPERVISION_ORDER"})
-    void shouldReturnFormattedExpiryDateWhenInterimSubtypeAndNamedDateSelected(GeneratedOrderType type) {
-        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                .type(type)
-                .subtype(INTERIM)
-                .document(DocumentReference.builder().build())
-                .build(),
-            GeneratedOrder.builder().build(),
-            JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .legalAdvisorName("Peter Parker")
-                .build(),
-            time.now().toLocalDate(),
-            null,
-            InterimEndDate.builder()
-                .type(NAMED_DATE)
-                .endDate(time.now().toLocalDate())
-                .build())
-            .getValue();
-
-        assertThat(builtOrder.getExpiryDate())
-            .isEqualTo(formatLocalDateToString(time.now().toLocalDate(), "'11:59pm', d MMMM y"));
-    }
-
-    @Test
-    void shouldReturnExpectedSupervisionOrderWhenFinalSubtypeSelected() {
-        GeneratedOrder builtOrder = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                .type(SUPERVISION_ORDER)
-                .subtype(FINAL)
-                .document(DocumentReference.builder().build())
-                .build(),
-            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HIS_HONOUR_JUDGE)
-                .judgeLastName("Dredd")
-                .legalAdvisorName("Frank N. Stein")
-                .build(), time.now().toLocalDate(), 5, null).getValue();
-
-        final LocalDateTime orderExpiration = time.now().plusMonths(5);
-        final String expectedExpiryDate = formatLocalDateTimeBaseUsingFormat(orderExpiration, "h:mma, d MMMM y");
-
-        assertThat(builtOrder.getType()).isEqualTo("Final supervision order");
-        assertThat(builtOrder.getExpiryDate()).isEqualTo(expectedExpiryDate);
-    }
-
-    @Test
-    void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() {
-        Document document = document();
-
-        OrderTypeAndDocument returnedTypeAndDoc = service.buildOrderTypeAndDocument(OrderTypeAndDocument.builder()
-            .type(BLANK_ORDER).build(), document);
-
-        assertThat(returnedTypeAndDoc.getDocument()).isEqualTo(DocumentReference.builder()
-            .binaryUrl(document.links.binary.href)
-            .filename(document.originalDocumentName)
-            .url(document.links.self.href)
-            .build());
-    }
-
-    @ParameterizedTest
-    @MethodSource("fileNameSource")
-    void shouldGenerateCorrectFileNameGivenOrderType(GeneratedOrderType type,
-        GeneratedOrderSubtype subtype,
-        String expected) {
-        final String fileName = service.generateOrderDocumentFileName(type, subtype);
-        assertThat(fileName).isEqualTo(expected);
-    }
-
-    @ParameterizedTest
-    @MethodSource("fileNameSource")
-    void shouldGetOrderTemplateDataForBlankOrderType() {
-        CaseData caseData = CaseData.builder().orderTypeAndDocument(
-            OrderTypeAndDocument.builder().type(BLANK_ORDER).build())
-            .build();
-
-        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
-        given(blankOrderGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
-
-        DocmosisGeneratedOrder result = service.getOrderTemplateData(caseData);
-
-        assertThat(result).isEqualTo(docmosisGeneratedOrder);
-    }
-
-    @Test
-    void shouldGetOrderTemplateDataForCareOrderType() {
-        CaseData caseData = CaseData.builder().orderTypeAndDocument(
-            OrderTypeAndDocument.builder().type(CARE_ORDER).build())
-            .build();
-
-        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
-        given(careOrderGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
-
-        DocmosisGeneratedOrder result = service.getOrderTemplateData(caseData);
-
-        assertThat(result).isEqualTo(docmosisGeneratedOrder);
-    }
-
-    @Test
-    void shouldGetOrderTemplateDataForEPOType() {
-        CaseData caseData = CaseData.builder().orderTypeAndDocument(
-            OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
-            .build();
-
-        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
-        given(epoGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
-
-        DocmosisGeneratedOrder result = service.getOrderTemplateData(caseData);
-
-        assertThat(result).isEqualTo(docmosisGeneratedOrder);
-    }
-
-    @Test
-    void shouldGetOrderTemplateDataForSupervisionOrderType() {
-        CaseData caseData = CaseData.builder().orderTypeAndDocument(
-            OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build())
-            .build();
-
-        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
-        given(supervisionOrderGenerationService.getTemplateData(caseData)).willReturn(docmosisGeneratedOrder);
-
-        DocmosisGeneratedOrder result = service.getOrderTemplateData(caseData);
-
-        assertThat(result).isEqualTo(docmosisGeneratedOrder);
-    }
-
-    @Test
-    void shouldReturnMostRecentUploadedOrderDocumentUrl() {
-        DocumentReference lastOrderDocumentReference = DocumentReference.builder()
-            .filename("C21 3.pdf")
-            .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
-            .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
-            .build();
-        final DocumentReference mostRecentDocument = service.getMostRecentUploadedOrderDocument(createOrders(
-            lastOrderDocumentReference));
-
-        assertThat(mostRecentDocument.getFilename()).isEqualTo(lastOrderDocumentReference.getFilename());
-        assertThat(mostRecentDocument.getUrl()).isEqualTo(lastOrderDocumentReference.getUrl());
-        assertThat(mostRecentDocument.getBinaryUrl()).isEqualTo(lastOrderDocumentReference.getBinaryUrl());
-    }
-
-    @Test
-    void shouldRemovePropertiesOnCaseDetailsUsedForOrderCapture() {
-        Map<String, Object> data = stream(GeneratedOrderKey.values())
-            .collect(toMap(GeneratedOrderKey::getKey, value -> ""));
-        data.putAll(stream(GeneratedEPOKey.values()).collect(toMap(GeneratedEPOKey::getKey, value -> "")));
-        data.putAll(stream(InterimOrderKey.values()).collect(toMap(InterimOrderKey::getKey, value -> "")));
-
-        data.put("DO NOT REMOVE", "");
-        service.removeOrderProperties(data);
-
-        assertThat(data).containsOnlyKeys("DO NOT REMOVE");
-    }
-
-    private static Stream<Arguments> fileNameSource() {
-        return Stream.of(
-            Arguments.of(BLANK_ORDER, null, "blank_order_c21.pdf"),
-            Arguments.of(CARE_ORDER, INTERIM, "interim_care_order.pdf"),
-            Arguments.of(CARE_ORDER, FINAL, "final_care_order.pdf"),
-            Arguments.of(SUPERVISION_ORDER, INTERIM, "interim_supervision_order.pdf"),
-            Arguments.of(SUPERVISION_ORDER, FINAL, "final_supervision_order.pdf"),
-            Arguments.of(EMERGENCY_PROTECTION_ORDER, null, "emergency_protection_order.pdf"),
-            Arguments.of(SUPERVISION_ORDER, null, "supervision_order.pdf"),
-            Arguments.of(CARE_ORDER, null, "care_order.pdf")
-        );
-    }
-
-    private static Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
-        return element(Child.builder()
-            .finalOrderIssued(finalOrderIssued)
-            .party(ChildParty.builder()
-                .firstName(randomAlphanumeric(10))
-                .lastName(randomAlphanumeric(10))
-                .build())
-            .build());
-    }
-
 }
