@@ -170,7 +170,6 @@ public class GeneratedOrderController {
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
                 orderTypeAndDocument, document));
-
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

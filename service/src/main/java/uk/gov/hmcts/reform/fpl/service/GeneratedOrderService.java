@@ -382,7 +382,6 @@ public class GeneratedOrderService {
             .map(address -> address.getAddressAsString(", ")).orElse("");
     }
 
-
     /**
      * Determine if the draft order document should be generated. This ensures the document is only generated once
      *
@@ -392,14 +391,13 @@ public class GeneratedOrderService {
      *     <li>further directions have been considered (i.e it is not a blank order)</li>
      * </ul>
      *
-     * @param orderType          type of order
-     * @param furtherDirections  further directions for the order
+     * @param orderType         type of order
+     * @param furtherDirections further directions for the order
      */
     public boolean shouldGenerateDocument(OrderTypeAndDocument orderType,
                                           FurtherDirections furtherDirections) {
         return BLANK_ORDER == orderType.getType() || furtherDirections != null;
     }
-
 
     /**
      * Determine if the user should see the close case page.
