@@ -112,15 +112,23 @@ public class GeneratedOrderController {
 
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
+        List<Element<Child>> children = caseData.getAllChildren();
+
+        if (caseData.getOrderTypeAndDocument().isClosable() && childrenService.allChildrenHaveFinalOrder(children)) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(data)
+                .errors(List.of("Final orders have already been issued for these children"))
+                .build();
+        }
 
         if (caseData.getOrderTypeAndDocument().isClosable()) {
-            Optional<Integer> remainingChildIndex = childrenService.getRemainingChildIndex(caseData.getAllChildren());
+            Optional<Integer> remainingChildIndex = childrenService.getRemainingChildIndex(children);
             if (remainingChildIndex.isPresent()) {
                 data.put("remainingChildIndex", String.valueOf(remainingChildIndex.get()));
                 data.put("remainingChild",
-                    childrenService.getRemainingChildrenNames(caseData.getAllChildren()));
+                    childrenService.getRemainingChildrenNames(children));
                 data.put("otherFinalOrderChildren",
-                    childrenService.getFinalOrderIssuedChildrenNames(caseData.getAllChildren()));
+                    childrenService.getFinalOrderIssuedChildrenNames(children));
                 data.put("showFinalOrderSingleChildPage", "Yes");
             }
         }

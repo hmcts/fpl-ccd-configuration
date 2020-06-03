@@ -225,16 +225,16 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 createChild("Paul", true),
                 createChild("Bill", true));
 
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
                 buildCaseDetails(children), "add-final-order-flags");
 
-            assertThat(callbackResponse.getData().get("remainingChildIndex"))
+            assertThat(response.getData().get("remainingChildIndex"))
                 .isEqualTo("1");
 
-            assertThat(callbackResponse.getData().get("remainingChild"))
+            assertThat(response.getData().get("remainingChild"))
                 .isEqualTo("Jane");
 
-            assertThat(callbackResponse.getData().get("otherFinalOrderChildren"))
+            assertThat(response.getData().get("otherFinalOrderChildren"))
                 .isEqualTo("Fred - Care order issued\nPaul - Care order issued\nBill - Care order issued");
         }
 
@@ -245,10 +245,10 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 createChild("Paul", true),
                 createChild("Bill", true));
 
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
                 buildCaseDetails(children), "add-final-order-flags");
 
-            assertThat(callbackResponse.getData())
+            assertThat(response.getData())
                 .extracting("remainingChildIndex", "remainingChild", "otherFinalOrderChildren")
                 .containsOnlyNulls();
         }
@@ -260,12 +260,34 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 createChild("Paul", true),
                 createChild("Bill", true));
 
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
                 buildCaseDetails(null, children, SUPERVISION_ORDER, INTERIM), "add-final-order-flags");
 
-            assertThat(callbackResponse.getData())
+            assertThat(response.getData())
                 .extracting("remainingChildIndex", "remainingChild", "otherFinalOrderChildren")
                 .containsOnlyNulls();
+        }
+
+        @Test
+        void shouldReturnAnErrorWhenAllChildrenHaveAFinalOrderIssuedAndTryToIssueAnother() {
+            List<Element<Child>> chuckleBrothers = wrapElements(createChild("Paul", true),
+                createChild("Barry", true));
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+                buildCaseDetails(chuckleBrothers), "add-final-order-flags");
+
+            assertThat(response.getErrors()).containsOnly("Final orders have already been issued for these children");
+        }
+
+        @Test
+        void shouldNotReturnAnErrorWhenAllChildrenHaveAFinalOrderIssuedButIssuingANonFinalOrder() {
+            List<Element<Child>> chuckleBrothers = wrapElements(createChild("Paul", true),
+                createChild("Barry", true));
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+                buildCaseDetails(null, chuckleBrothers, BLANK_ORDER, null), "add-final-order-flags");
+
+            assertThat(response.getErrors()).isNull();
         }
     }
 
