@@ -28,10 +28,10 @@ import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
-import uk.gov.hmcts.reform.fpl.service.StandardDirectionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 

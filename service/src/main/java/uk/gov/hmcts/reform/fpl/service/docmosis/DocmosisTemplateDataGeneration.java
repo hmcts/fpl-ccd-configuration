@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
