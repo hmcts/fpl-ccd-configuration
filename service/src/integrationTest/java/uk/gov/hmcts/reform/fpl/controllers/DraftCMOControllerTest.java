@@ -34,9 +34,9 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentedBy;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;

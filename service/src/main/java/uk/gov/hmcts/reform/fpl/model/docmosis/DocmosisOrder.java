@@ -20,12 +20,7 @@ public class DocmosisOrder implements DocmosisData {
     private final String courtName;
     private final String familyManCaseNumber;
     private final String dateOfIssue;
-    private final String complianceDeadline;
-    private final List<DocmosisRespondent> respondents;
     private final List<DocmosisChild> children;
-    private final boolean respondentsProvided;
-    private final String applicantName;
-    private final DocmosisHearingBooking hearingBooking;
     private final List<DocmosisDirection> directions;
     private final String draftbackground;
     private final String courtseal;
@@ -35,8 +30,8 @@ public class DocmosisOrder implements DocmosisData {
     public Map<String, Object> toMap(ObjectMapper mapper) {
         Map<String, Object> map = mapper.convertValue(this, new TypeReference<>() {});
 
-        if (isNotEmpty(this.directions)) {
-            map.putAll(this.directions.stream().collect(groupingBy(direction -> direction.assignee.getValue())));
+        if (isNotEmpty(directions)) {
+            map.putAll(directions.stream().collect(groupingBy(direction -> direction.assignee.getValue())));
         }
 
         map.remove("directions");

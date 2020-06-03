@@ -11,6 +11,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -237,6 +238,8 @@ public class CaseData {
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
+    @JsonIgnore
+    private OrderStatus generatedOrderStatus;
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
     private final ChildSelector childSelector;

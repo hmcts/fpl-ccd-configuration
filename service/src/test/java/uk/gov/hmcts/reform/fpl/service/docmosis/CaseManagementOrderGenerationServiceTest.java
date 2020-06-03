@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -31,6 +31,9 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentedBy;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
