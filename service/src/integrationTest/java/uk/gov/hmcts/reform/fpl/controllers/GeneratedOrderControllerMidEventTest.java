@@ -276,7 +276,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(
                 buildCaseDetails(chuckleBrothers), "add-final-order-flags");
 
-            assertThat(response.getErrors()).containsOnly("Final orders have already been issued for these children");
+            assertThat(response.getErrors()).containsOnly("All children in the case already have final orders");
         }
 
         @Test

@@ -444,4 +444,8 @@ public class GeneratedOrderService {
             && childrenService.allChildrenHaveFinalOrder(children)
             && closeCaseFromOrder == null;
     }
+
+    public boolean shouldNotAllowFinalOrder(OrderTypeAndDocument orderType, List<Element<Child>> children) {
+        return orderType.isClosable() && childrenService.allChildrenHaveFinalOrder(children);
+    }
 }

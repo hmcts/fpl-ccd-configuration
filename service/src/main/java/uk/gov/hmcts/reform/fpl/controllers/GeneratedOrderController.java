@@ -114,10 +114,10 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         List<Element<Child>> children = caseData.getAllChildren();
 
-        if (caseData.getOrderTypeAndDocument().isClosable() && childrenService.allChildrenHaveFinalOrder(children)) {
+        if (service.shouldNotAllowFinalOrder(caseData.getOrderTypeAndDocument(), children)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(data)
-                .errors(List.of("Final orders have already been issued for these children"))
+                .errors(List.of("All children in the case already have final orders"))
                 .build();
         }
 
