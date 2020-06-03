@@ -107,7 +107,7 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
     }
 
     @Override
-    DocmosisGeneratedOrderBuilder populateCustomOrderFields(GeneratedOrderSubtype subtype) {
+    DocmosisGeneratedOrderBuilder<?, ?> populateCustomOrderFields(GeneratedOrderSubtype subtype) {
         String formattedDate = formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG);
 
         ImmutableList<DocmosisChild> children = ImmutableList.of(

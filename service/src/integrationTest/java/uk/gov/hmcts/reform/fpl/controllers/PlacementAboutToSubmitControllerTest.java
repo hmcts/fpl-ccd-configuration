@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -112,8 +113,8 @@ class PlacementAboutToSubmitControllerTest extends AbstractControllerTest {
             .isEqualTo(expectedPlacementWithoutConfidentialDocuments(childPlacement, childApplication));
     }
 
-    private List convertToList(Map<String, Object> updatedCaseDetails, String string) {
-        return mapper.convertValue(updatedCaseDetails.get(string), List.class);
+    private List<?> convertToList(Map<String, Object> updatedCaseDetails, String string) {
+        return mapper.convertValue(updatedCaseDetails.get(string), new TypeReference<>() {});
     }
 
     private Placement placement(Element<Child> child, DocumentReference application) {

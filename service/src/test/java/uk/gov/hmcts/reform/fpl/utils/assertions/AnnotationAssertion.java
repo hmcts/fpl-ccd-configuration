@@ -11,13 +11,13 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 import static org.junit.platform.commons.util.ReflectionUtils.findMethods;
 
-public class AnnotationAssertion extends AbstractAssert<AnnotationAssertion, Class> {
+public class AnnotationAssertion extends AbstractAssert<AnnotationAssertion, Class<?>> {
 
-    AnnotationAssertion(Class actual) {
+    AnnotationAssertion(Class<?> actual) {
         super(actual, AnnotationAssertion.class);
     }
 
-    public static AnnotationAssertion assertClass(Class actual) {
+    public static AnnotationAssertion assertClass(Class<?> actual) {
         return new AnnotationAssertion(actual);
     }
 

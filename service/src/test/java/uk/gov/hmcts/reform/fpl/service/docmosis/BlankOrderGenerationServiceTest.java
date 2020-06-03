@@ -71,7 +71,7 @@ class BlankOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest
     }
 
     @Override
-    DocmosisGeneratedOrderBuilder populateCustomOrderFields(GeneratedOrderSubtype subtype) {
+    DocmosisGeneratedOrderBuilder<?, ?> populateCustomOrderFields(GeneratedOrderSubtype subtype) {
         return createOrderBuilder("Example Title", "Children Act 1989",
             "Example details", getChildren()).orderType(BLANK_ORDER);
     }

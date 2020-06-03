@@ -24,7 +24,7 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
     }
 
     @Override
-    DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
+    DocmosisGeneratedOrderBuilder<?, ?> populateCustomOrderFields(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
         InterimEndDate interimEndDate = caseData.getInterimEndDate();

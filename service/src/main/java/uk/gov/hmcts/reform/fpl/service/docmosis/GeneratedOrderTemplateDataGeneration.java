@@ -41,7 +41,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }
 
-    abstract DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData);
+    abstract DocmosisGeneratedOrderBuilder<?, ?> populateCustomOrderFields(CaseData caseData);
 
     @Override
     public DocmosisGeneratedOrder getTemplateData(CaseData caseData) {
