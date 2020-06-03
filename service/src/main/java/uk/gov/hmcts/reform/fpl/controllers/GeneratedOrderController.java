@@ -28,17 +28,18 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
@@ -166,10 +167,7 @@ public class GeneratedOrderController {
 
         if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections, children,
             closeCaseFromOrder, featureToggleService.isCloseCaseEnabled())) {
-
-            JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
-                caseData.getAllocatedJudge());
-            Document document = getDocument(caseData, DRAFT, judgeAndLegalAdvisor);
+            Document document = getDocument(caseData, DRAFT);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
@@ -189,7 +187,7 @@ public class GeneratedOrderController {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
             caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
 
-        Document document = getDocument(caseData, SEALED, judgeAndLegalAdvisor);
+        Document document = getDocument(caseData, SEALED);
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
@@ -255,13 +253,15 @@ public class GeneratedOrderController {
     }
 
     private Document getDocument(CaseData caseData,
-                                 OrderStatus orderStatus,
-                                 JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+                                 OrderStatus orderStatus) {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
+        caseData.setGeneratedOrderStatus(orderStatus);
+        DocmosisGeneratedOrder orderTemplateData = service.getOrderTemplateData(caseData);
+
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            service.getOrderTemplateData(caseData, orderStatus, judgeAndLegalAdvisor), templateType);
+            orderTemplateData, templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 
