@@ -37,7 +37,7 @@ module "fpl-exceptions-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-exceptions-alert"
   alert_desc                 = "All exceptions within FPL"
-  app_insights_query         = "exceptions | where operation_Name !contains "health" | project timestamp, operation_Id, outerMessage, operation_Name"
+  app_insights_query         = "exceptions | where operation_Name !contains 'health' | project timestamp, operation_Id, outerMessage, operation_Name"
   custom_email_subject       = "Alert: FPL all exceptions"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5
@@ -55,7 +55,7 @@ module "fpl-health-failure-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-health-failure-alert"
   alert_desc                 = "Failed health requests"
-  app_insights_query         = "requests | where url contains "health" | where resultCode != "200" | project timestamp, operation_Id, resultCode"
+  app_insights_query         = "requests | where url contains 'health' | where resultCode != 200 | project timestamp, operation_Id, resultCode"
   custom_email_subject       = "Alert: Health failure"
   frequency_in_minutes       = 5
   time_window_in_minutes     = 5

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.casesubmission;
+package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +47,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -76,7 +75,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
-public class CaseSubmissionTemplateDataGenerationService
+public class CaseSubmissionGenerationService
     extends DocmosisTemplateDataGeneration<DocmosisCaseSubmission> {
     private static final String NEW_LINE = "\n";
     private static final String SPACE_DELIMITER = " ";
