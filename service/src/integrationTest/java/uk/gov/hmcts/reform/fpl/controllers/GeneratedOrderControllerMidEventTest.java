@@ -29,15 +29,16 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -94,7 +95,8 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         document = document();
         DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
 
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(anyMap(), any())).willReturn(docmosisDocument);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class),
+            any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
     }
 
@@ -332,7 +334,8 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
             final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
                 caseDetails, "generate-document");
 
-            verify(docmosisDocumentGeneratorService).generateDocmosisDocument(anyMap(), eq(templateName));
+            verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(DocmosisData.class),
+                eq(templateName));
             verify(uploadDocumentService).uploadPDF(pdf, fileName);
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -344,7 +347,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         void shouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
             postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), "generate-document");
 
-            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
+            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(DocmosisData.class), any());
             verify(uploadDocumentService, never()).uploadPDF(any(), any());
         }
 
