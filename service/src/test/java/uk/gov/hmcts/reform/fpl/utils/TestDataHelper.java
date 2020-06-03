@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import java.time.LocalDate;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
