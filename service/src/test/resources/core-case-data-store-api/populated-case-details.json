@@ -489,6 +489,45 @@
       }
     }],
     "familyManCaseNumber": "12345",
-    "amountToPay": "2055.0"
+    "amountToPay": "2055.0",
+    "standardDirectionOrder": {
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "otherTitle": null,
+        "judgeFullName": null,
+        "judgeLastName": "Byrne",
+        "legalAdvisorName": "Maria McDonnell",
+        "judgeEmailAddress": "judge@gmail.com",
+        "useAllocatedJudge": null,
+        "allocatedJudgeLabel": null
+      }
+    },
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    },
+    "noticeOfProceedings": {
+      "proceedingTypes": [
+        "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
+      ],
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "otherTitle": null,
+        "judgeFullName": null,
+        "judgeLastName": "Moley",
+        "legalAdvisorName": null,
+        "judgeEmailAddress": "judge@gmail.com",
+        "useAllocatedJudge": null,
+        "allocatedJudgeLabel": null
+      }
+    },
+    "amountToPay": "2055.0",
+    "returnApplication": {
+      "note": "Missing children details",
+      "reason": [
+        "INCOMPLETE", "CLARIFICATION_NEEDED"
+      ]
+    }
   }
 }

@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ public class NotificationEventHandlerTestData {
     static final String CAFCASS_NAME = "cafcass";
     static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
     static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "judge@gmail.com";
     static final String COURT_CODE = "11";
     static final String CTSC_INBOX = "Ctsc+test@gmail.com";
     static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "barney@rubble.com";
@@ -51,10 +54,30 @@ public class NotificationEventHandlerTestData {
         return callbackRequest;
     }
 
-    public static ImmutableMap<String, Object> getCMOReadyForJudgeNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(expectedCommonCMONotificationParameters())
-            .build();
+    public static AllocatedJudgeTemplateForCMO getCMOReadyForJudgeNotificationParameters() {
+        Map<String, Object> commonCMONotificationParameters = expectedCommonCMONotificationParameters();
+
+        AllocatedJudgeTemplateForCMO allocatedJudgeTemplate = new AllocatedJudgeTemplateForCMO();
+        allocatedJudgeTemplate.setSubjectLineWithHearingDate(commonCMONotificationParameters
+            .get("subjectLineWithHearingDate")
+            .toString());
+        allocatedJudgeTemplate.setCaseUrl(commonCMONotificationParameters.get("caseUrl").toString());
+        allocatedJudgeTemplate.setReference(commonCMONotificationParameters.get("reference").toString());
+        allocatedJudgeTemplate.setRespondentLastName("Smith");
+        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
+        allocatedJudgeTemplate.setJudgeName("Moley");
+
+        return allocatedJudgeTemplate;
+    }
+
+    public static AllocatedJudgeTemplate getExpectedAllocatedJudgeNotificationParameters() {
+        AllocatedJudgeTemplate allocatedJudgeTemplate = new AllocatedJudgeTemplate();
+        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
+        allocatedJudgeTemplate.setJudgeName("Moley");
+        allocatedJudgeTemplate.setCaseName("test");
+        allocatedJudgeTemplate.setCaseUrl("http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
+
+        return allocatedJudgeTemplate;
     }
 
     public static Map<String, Object> expectedCommonCMONotificationParameters() {

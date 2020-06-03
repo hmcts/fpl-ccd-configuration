@@ -16,10 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
-import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,10 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
@@ -109,75 +104,6 @@ class CommonDirectionServiceTest {
     }
 
     @Test
-    void numberDirections_shouldNumberDirectionsStartingAtTwo() {
-        CaseData caseData = populateCaseDataWithFixedDirections().build();
-
-        List<Element<Direction>> directions = service.combineAllDirections(caseData);
-
-        List<String> numberedDirectionTypes = service.numberDirections(directions).stream()
-            .map(direction -> direction.getValue().getDirectionType())
-            .collect(toList());
-
-        List<String> expectedDirectionsTypes = IntStream.range(0, numberedDirectionTypes.size())
-            .mapToObj(x -> (x + 2) + ". direction")
-            .collect(toList());
-
-        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionsTypes);
-    }
-
-    @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsRealDate() {
-        LocalDateTime today = LocalDateTime.now();
-
-        DirectionConfiguration directionConfig = getDirectionConfig();
-
-        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, today);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(today)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
-    }
-
-    @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsNull() {
-        DirectionConfiguration directionConfig = getDirectionConfig();
-
-        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, null);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(null)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
-    }
-
-    //TODO FPLA-1481 will probably remove that test, but now it counts even if the directions as
-    // marked as not needed due to CMO issue
-    @Test
-    void numberDirections_shouldApplyCorrectNumberingWhenDirectionsAreMarkedAsNotNeeded() {
-        List<Element<Direction>> directions = directionsMarkedAsRemoved();
-
-        List<String> numberedDirectionTypes = service.numberDirections(directions).stream()
-            .map(direction -> direction.getValue().getDirectionType())
-            .collect(toList());
-
-        List<String> expectedDirectionTypes = asList("2. direction", "3. direction", "4. direction", "5. direction",
-            "6. direction", "7. direction");
-
-        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionTypes);
-    }
-
-    @Test
     void removeUnnecessaryDirections_shouldRemoveDirectionsWhenDirectionsAreMarkedAsNotNeeded() {
         List<Direction> directions = unwrapElements(service.removeUnnecessaryDirections(directionsMarkedAsRemoved()));
 
@@ -197,20 +123,6 @@ class CommonDirectionServiceTest {
         List<Direction> expectedDirections = unwrapElements(buildCustomDirections());
 
         assertThat(directions).isEqualTo(expectedDirections);
-    }
-
-    private DirectionConfiguration getDirectionConfig() {
-        return DirectionConfiguration.builder()
-            .assignee(LOCAL_AUTHORITY)
-            .title("direction title")
-            .text("direction text")
-            .display(Display.builder()
-                .due(Display.Due.BY)
-                .templateDateFormat("h:mma, d MMMM yyyy")
-                .directionRemovable(false)
-                .showDateOnly(false)
-                .build())
-            .build();
     }
 
     @Nested
@@ -323,8 +235,10 @@ class CommonDirectionServiceTest {
             service.addEmptyDirectionsForAssigneeNotInMap(map);
 
             assertThat(map).containsOnlyKeys(DirectionAssignee.values());
-            assertThat(map).extracting(ALL_PARTIES, PARENTS_AND_RESPONDENTS, COURT, OTHERS).containsOnly(emptyList());
-            assertThat(map).extracting(LOCAL_AUTHORITY, CAFCASS).containsOnly(emptyListOfElement());
+            assertThat(map).extractingByKeys(ALL_PARTIES, PARENTS_AND_RESPONDENTS, COURT, OTHERS)
+                .allMatch(List::isEmpty);
+            assertThat(map).extractingByKeys(LOCAL_AUTHORITY, CAFCASS)
+                .allMatch(list -> list.equals(emptyListOfElement()));
         }
 
         private List<Element<Direction>> emptyListOfElement() {

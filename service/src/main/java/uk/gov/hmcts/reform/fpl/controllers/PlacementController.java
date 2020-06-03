@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -47,7 +46,6 @@ public class PlacementController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ObjectMapper mapper;
     private final PlacementService placementService;
-    private final RequestData requestData;
     private final CoreCaseDataService coreCaseDataService;
     private final DocumentDownloadService documentDownloadService;
 
@@ -153,8 +151,7 @@ public class PlacementController {
             .stream()
             .map(DocumentReference::getBinaryUrl)
             .map(documentDownloadService::downloadDocument)
-            .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
-            callbackRequest, requestData, documentContents))
+            .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(callbackRequest, documentContents))
             .forEach(applicationEventPublisher::publishEvent);
     }
 
@@ -185,7 +182,7 @@ public class PlacementController {
 
     private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
         applicationEventPublisher.publishEvent(
-            new PlacementApplicationEvent(callbackRequest, requestData));
+            new PlacementApplicationEvent(callbackRequest));
     }
 
     private boolean isUpdatedPlacement(Placement previousPlacement, Placement newPlacement) {

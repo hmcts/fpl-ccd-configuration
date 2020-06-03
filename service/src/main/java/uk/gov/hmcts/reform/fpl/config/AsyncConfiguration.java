@@ -1,13 +1,20 @@
 package uk.gov.hmcts.reform.fpl.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.Executor;
+import javax.annotation.Nonnull;
 
+@Slf4j
 @Configuration
 public class AsyncConfiguration implements AsyncConfigurer {
 
@@ -18,12 +25,32 @@ public class AsyncConfiguration implements AsyncConfigurer {
 
     public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 
-        private final Logger logger = LoggerFactory.getLogger(getClass());
-
         @Override
         public void handleUncaughtException(Throwable throwable, Method method, Object... obj) {
-            logger.error("Unexpected error occurred during async execution", throwable);
+            log.error("Unexpected error occurred during async execution", throwable);
         }
     }
 
+    @Override
+    @Bean
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setTaskDecorator(new AsyncTaskDecorator());
+        return taskExecutor;
+    }
+
+    static class AsyncTaskDecorator implements TaskDecorator {
+        @Override
+        public Runnable decorate(@Nonnull Runnable task) {
+            RequestAttributes context = RequestContextHolder.currentRequestAttributes();
+            return () -> {
+                try {
+                    RequestContextHolder.setRequestAttributes(context);
+                    task.run();
+                } finally {
+                    RequestContextHolder.resetRequestAttributes();
+                }
+            };
+        }
+    }
 }

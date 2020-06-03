@@ -8,10 +8,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -32,7 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -46,26 +45,30 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
-    private static final Long CASE_ID = 1L;
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-    private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder().build();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final Document DOCUMENT = document();
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2020, 1, 20, 11, 11, 11);
     private static final LocalDateTime HEARING_END_DATE = LocalDateTime.of(2020, 2, 20, 11, 11, 11);
+    private static final String DIRECTION_TYPE = "Identify alternative carers";
+    private static final String DIRECTION_TEXT = "Contact the parents to make sure there is a complete family tree "
+        + "showing family members who could be alternative carers.";
 
     @MockBean
-    private DocmosisDocumentGeneratorService documentGeneratorService;
+    private DocmosisDocumentGeneratorService docmosisService;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -78,35 +81,25 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     void setup() {
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
 
-        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(docmosisDocument);
+        given(docmosisService.generateDocmosisDocument(any(DocmosisData.class), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME)).willReturn(DOCUMENT);
     }
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-        UUID directionId = UUID.randomUUID();
+        JudgeAndLegalAdvisor legalAdvisorWithAllocatedJudge = JudgeAndLegalAdvisor.builder()
+            .useAllocatedJudge("Yes")
+            .legalAdvisorName("Chris Newport")
+            .build();
 
-        List<Element<Direction>> fullyPopulatedDirection = List.of(
-            element(directionId, Direction.builder()
-                .directionType("Identify alternative carers")
-                .directionText("Contact the parents to make sure there is a complete family tree showing family"
-                    + " members who could be alternative carers.")
-                .assignee(LOCAL_AUTHORITY)
-                .directionRemovable("Yes")
-                .directionNeeded("Yes")
-                .readOnly("Yes")
-                .build()));
-
-        List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(
-            directionId);
+        Judge allocatedJudge = Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build();
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(createCaseDataMap(directionWithShowHideValuesRemoved)
+            .data(directionsWithShowHideValuesRemoved()
                 .put("dateOfIssue", dateNow())
                 .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
-                .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                .put("allocatedJudge", Judge.builder().build())
+                .put("judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge)
+                .put("allocatedJudge", allocatedJudge)
                 .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
                     .startDate(HEARING_START_DATE)
                     .endDate(HEARING_END_DATE)
@@ -122,31 +115,20 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        List<Element<Direction>> localAuthorityDirections =
-            caseData.getStandardDirectionOrder().getDirections().stream()
-                .filter(direction -> direction.getValue().getAssignee() == LOCAL_AUTHORITY)
-                .collect(toList());
-
-        assertThat(localAuthorityDirections).isEqualTo(fullyPopulatedDirection);
-        assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
-        assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isNotNull();
+        assertThat(caseData.getStandardDirectionOrder()).isEqualToComparingFieldByField(expectedOrder());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
+        assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
     }
 
     @Test
     void shouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
-        UUID directionId = UUID.randomUUID();
-
-        List<Element<Direction>> directionWithShowHideValuesRemoved = buildDirectionWithShowHideValuesRemoved(
-            directionId);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createCaseDataMap(directionWithShowHideValuesRemoved)
-                .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
-                .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                .put("allocatedJudge", Judge.builder().build())
-                .build())
+        ImmutableMap<String, Object> build = mapWithDirections()
+            .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
+            .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+            .put("allocatedJudge", Judge.builder().build())
             .build();
+
+        CaseDetails caseDetails = CaseDetails.builder().data(build).build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
@@ -155,31 +137,86 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
-        CallbackRequest request = buildCallbackRequest();
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails());
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
-
-        assertThat(response.getErrors())
-            .containsOnly("You need to enter the allocated judge.");
+        assertThat(response.getErrors()).containsOnly("You need to enter the allocated judge.");
     }
 
-    private List<Element<Direction>> buildDirectionWithShowHideValuesRemoved(UUID uuid) {
-        return List.of(element(uuid, Direction.builder()
-            .directionType("Identify alternative carers")
-            .directionText("Contact the parents to make sure there is a complete family tree showing family"
-                + " members who could be alternative carers.")
-            .assignee(LOCAL_AUTHORITY)
+    private ImmutableMap.Builder<String, Object> directionsWithShowHideValuesRemoved() {
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
+
+        Stream.of(DirectionAssignee.values())
+            .forEach(assignee -> builder.put(assignee.getValue(), buildDirection(assignee)));
+
+        return builder;
+    }
+
+    private List<Element<Direction>> buildDirection(DirectionAssignee assignee) {
+        return wrapElements(Direction.builder()
+            .directionType(DIRECTION_TYPE)
+            .directionText(DIRECTION_TEXT)
+            .assignee(assignee)
             .readOnly("Yes")
             .directionRemovable("Yes")
             .directionNeeded("Yes")
-            .build()));
+            .build());
     }
 
-    private ImmutableMap.Builder<String, Object> createCaseDataMap(List<Element<Direction>> directions) {
+    private Order expectedOrder() {
+        return Order.builder()
+            .directions(fullyPopulatedDirections())
+            .orderStatus(SEALED)
+            .orderDoc(DocumentReference.builder()
+                .url(DOCUMENT.links.self.href)
+                .binaryUrl(DOCUMENT.links.binary.href)
+                .filename("standard-directions-order.pdf")
+                .build())
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(MAGISTRATES)
+                .judgeFullName("John Walker")
+                .legalAdvisorName("Chris Newport")
+                .build())
+            .dateOfIssue(formatLocalDateToString(dateNow(), "d MMMM yyyy"))
+            .build();
+    }
+
+    private void assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(CaseData caseData) {
+        assertThat(unwrapElements(caseData.getAllParties())).containsOnly(fullyPopulatedDirection(ALL_PARTIES));
+
+        List<Element<Direction>> localAuthorityDirections = caseData.getLocalAuthorityDirections();
+        assertThat(unwrapElements(localAuthorityDirections)).containsOnly(fullyPopulatedDirection(LOCAL_AUTHORITY));
+
+        List<Element<Direction>> respondentDirections = caseData.getRespondentDirections();
+        assertThat(unwrapElements(respondentDirections)).containsOnly(fullyPopulatedDirection(PARENTS_AND_RESPONDENTS));
+
+        assertThat(unwrapElements(caseData.getCafcassDirections())).containsOnly(fullyPopulatedDirection(CAFCASS));
+        assertThat(unwrapElements(caseData.getOtherPartiesDirections())).containsOnly(fullyPopulatedDirection(OTHERS));
+        assertThat(unwrapElements(caseData.getCourtDirections())).containsOnly(fullyPopulatedDirection(COURT));
+    }
+
+    private Direction fullyPopulatedDirection(DirectionAssignee assignee) {
+        return Direction.builder()
+            .directionType(DIRECTION_TYPE)
+            .directionText(DIRECTION_TEXT)
+            .assignee(assignee)
+            .directionRemovable("Yes")
+            .directionNeeded("Yes")
+            .readOnly("Yes")
+            .dateToBeCompletedBy(HEARING_START_DATE.toLocalDate().atStartOfDay())
+            .build();
+    }
+
+    private List<Element<Direction>> fullyPopulatedDirections() {
+        return Stream.of(DirectionAssignee.values())
+            .map(assignee -> element(null, fullyPopulatedDirection(assignee)))
+            .collect(toList());
+    }
+
+    private ImmutableMap.Builder<String, Object> mapWithDirections() {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
         return builder
-            .put(LOCAL_AUTHORITY.getValue(), directions)
+            .put(LOCAL_AUTHORITY.getValue(), buildDirections(Direction.builder().assignee(LOCAL_AUTHORITY).build()))
             .put(ALL_PARTIES.getValue(), buildDirections(Direction.builder().assignee(ALL_PARTIES).build()))
             .put(PARENTS_AND_RESPONDENTS.getValue(),
                 buildDirections(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
@@ -188,38 +225,30 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
             .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()));
     }
 
-    private CallbackRequest buildCallbackRequest() {
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(CASE_ID)
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .data(Map.of(
-                    HEARING_DETAILS_KEY, List.of(
-                        Element.builder()
-                            .value(HearingBooking.builder()
-                                .startDate(HEARING_START_DATE)
-                                .endDate(HEARING_END_DATE)
-                                .build())
-                            .build()),
-                    "respondents1", List.of(
-                        Map.of(
-                            "id", "",
-                            "value", Respondent.builder()
-                                .party(RespondentParty.builder()
-                                    .dateOfBirth(dateNow().plusDays(1))
-                                    .lastName("Moley")
-                                    .relationshipToChild("Uncle")
-                                    .build())
-                                .build()
-                        )
-                    ),
-                    "standardDirectionOrder", Order.builder()
-                        .orderStatus(OrderStatus.SEALED)
-                        .orderDoc(DOCUMENT_REFERENCE)
-                        .build(),
-                    "caseLocalAuthority", "example"))
-                .build())
+    private CaseDetails caseDetails() {
+        Map<String, Object> data = Map.of(
+            HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
+                .startDate(HEARING_START_DATE)
+                .endDate(HEARING_END_DATE)
+                .build()),
+            "respondents1", wrapElements(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .dateOfBirth(dateNow().plusDays(1))
+                    .lastName("Moley")
+                    .relationshipToChild("Uncle")
+                    .build())
+                .build()),
+            "standardDirectionOrder", Order.builder()
+                .orderStatus(SEALED)
+                .orderDoc(DocumentReference.builder().build())
+                .build(),
+            "caseLocalAuthority", "example");
+
+        return CaseDetails.builder()
+            .id(1L)
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .data(data)
             .build();
     }
 
@@ -228,10 +257,6 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     private List<Element<Applicant>> getApplicant() {
-        return wrapElements(Applicant.builder()
-            .party(ApplicantParty.builder()
-                .organisationName("")
-                .build())
-            .build());
+        return wrapElements(Applicant.builder().party(ApplicantParty.builder().organisationName("").build()).build());
     }
 }

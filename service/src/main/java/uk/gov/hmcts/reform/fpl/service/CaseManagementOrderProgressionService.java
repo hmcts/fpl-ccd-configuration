@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.util.List;
 
@@ -37,7 +36,6 @@ public class CaseManagementOrderProgressionService {
 
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final RequestData requestData;
     private final DocumentDownloadService documentDownloadService;
 
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
@@ -55,12 +53,12 @@ public class CaseManagementOrderProgressionService {
             case SEND_TO_JUDGE:
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
-                publishReadyForJudgeReviewEvent(caseDetails, requestData);
+                publishReadyForJudgeReviewEvent(caseDetails);
                 caseDetails.getData().remove(NEXT_HEARING_DATE_LIST.getKey());
                 break;
             case PARTIES_REVIEW:
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_SHARED.getKey(), order.getOrderDoc());
-                publishReadyForPartyReviewEvent(caseDetails, requestData);
+                publishReadyForPartyReviewEvent(caseDetails);
                 break;
             case SELF_REVIEW:
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_SHARED.getKey());
@@ -101,25 +99,22 @@ public class CaseManagementOrderProgressionService {
         return orders;
     }
 
-    private void publishReadyForJudgeReviewEvent(CaseDetails caseDetails, RequestData requestData) {
+    private void publishReadyForJudgeReviewEvent(CaseDetails caseDetails) {
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
-        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest,
-            requestData));
+        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
     }
 
-    private void publishReadyForPartyReviewEvent(CaseDetails caseDetails, RequestData requestData) {
+    private void publishReadyForPartyReviewEvent(CaseDetails caseDetails) {
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest,
-            requestData,
             documentDownloadService.downloadDocument(caseData.getSharedDraftCMODocument().getBinaryUrl())));
     }
 
     private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {
         applicationEventPublisher.publishEvent(
-            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build(),
-                requestData));
+            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build()));
     }
 }

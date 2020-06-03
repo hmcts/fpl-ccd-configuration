@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
@@ -20,11 +22,11 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,6 +39,9 @@ import static java.util.Locale.UK;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.emptyList;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -61,23 +66,32 @@ class StandardDirectionOrderGenerationServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Family Court";
 
+    @MockBean
+    private CalendarService calendarService;
+
     @Autowired
     private Time time;
 
     @Autowired
     private StandardDirectionOrderGenerationService service;
 
+    @BeforeEach
+    void setup() {
+        given(calendarService.getWorkingDayFrom(any(LocalDate.class), anyInt())).willReturn(LocalDate.now());
+
+    }
+
     @Test
-    void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
+    void shouldMapEmptyCaseDataForDraftSDO() {
         Order order = Order.builder().dateOfIssue("29 November 2019").build();
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(getCaseData(order));
 
-        assertThat(template).isEqualToComparingFieldByField(emptyDocmosisOrder(order, template));
+        assertThat(template).isEqualToComparingFieldByField(emptyDocmosisOrder(order));
     }
 
     @Test
-    void shouldMapDirectionsForDraftSDOWhenAllAssignees() throws IOException {
+    void shouldMapDirectionsForDraftSDOWhenAllAssignees() {
         Order order = Order.builder().directions(getDirections()).build();
         DocmosisStandardDirectionOrder templateData = service.getTemplateData(getCaseData(order));
 
@@ -85,7 +99,7 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() throws IOException {
+    void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() {
         Direction notNeededDirection = Direction.builder().directionNeeded("No").build();
         Order order = Order.builder().directions(wrapElements(notNeededDirection)).build();
 
@@ -95,7 +109,7 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapCaseDataWhenEmptyListValues() throws IOException {
+    void shouldMapCaseDataWhenEmptyListValues() {
         CaseData caseData = caseDataWithEmptyListValues();
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(caseData);
@@ -110,7 +124,7 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapCompleteCaseDataForSDOTemplate() throws IOException {
+    void shouldMapCompleteCaseDataForSDOTemplate() {
         DocmosisStandardDirectionOrder template = service.getTemplateData(fullCaseData());
 
         assertThat(template).isEqualToComparingFieldByField(fullDocmosisOrder());
@@ -133,7 +147,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .build());
     }
 
-    private DocmosisStandardDirectionOrder emptyDocmosisOrder(Order order, DocmosisStandardDirectionOrder template) {
+    private DocmosisStandardDirectionOrder emptyDocmosisOrder(Order order) {
         return docmosisOrder("", "", null, order.getDateOfIssue(), emptyList());
     }
 

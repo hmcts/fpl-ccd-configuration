@@ -35,7 +35,7 @@ class CafcassEmailContentProviderSDOIssuedTest extends AbstractEmailContentProvi
         return ImmutableMap.<String, Object>builder()
             .put("title", CAFCASS_NAME)
             .put("familyManCaseNumber", "12345,")
-            .put("leadRespondentsName", "Smith,")
+            .put("leadRespondentsName", "Smith")
             .put("hearingDate", "1 January 2020")
             .put("reference", CASE_REFERENCE)
             .put("caseUrl", caseUrl(CASE_REFERENCE))

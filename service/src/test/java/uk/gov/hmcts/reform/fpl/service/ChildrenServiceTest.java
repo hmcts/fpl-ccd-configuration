@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -12,18 +11,15 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
-@ExtendWith(SpringExtension.class)
 class ChildrenServiceTest {
 
     private final ChildrenService service = new ChildrenService();
@@ -40,51 +36,43 @@ class ChildrenServiceTest {
         assertThat(label).isEqualTo("Child 1: James\n");
     }
 
-    @Test
-    void shouldPopulateCaseDataMapWithYesWhenThereAre2OrMoreChildren() {
-        List<Element<Child>> children = new ArrayList<>();
-        children.add(childWithConfidentialFields(randomUUID()));
-        children.add(childWithConfidentialFields(randomUUID()));
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnFalseWhenListEmptyOrNull(List<Element<Child>> list) {
+        boolean result = service.allChildrenHaveFinalOrder(list);
 
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.addPageShowToCaseDetails(caseDetails, children);
-
-        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("Yes");
+        assertThat(result).isFalse();
     }
 
     @Test
-    void shouldPopulateCaseDataMapWithNoWhenThereIsOneChild() {
-        List<Element<Child>> children = new ArrayList<>();
-        children.add(childWithConfidentialFields(randomUUID()));
+    void shouldReturnFalseWhenAtLeastOneChildDoesNotHaveFinalOrder() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Yes"), childWithFinalOrderIssued("No"));
 
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.addPageShowToCaseDetails(caseDetails, children);
+        boolean result = service.allChildrenHaveFinalOrder(children);
 
-        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
+        assertThat(result).isFalse();
     }
 
     @Test
-    void shouldPopulateCaseDataMapWithNoWhenThereIsEmptyList() {
-        List<Element<Child>> children = new ArrayList<>();
+    void shouldReturnTrueWhenAllChildrenHaveFinalOrder() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Yes"), childWithFinalOrderIssued("Yes"));
 
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.addPageShowToCaseDetails(caseDetails, children);
+        boolean result = service.allChildrenHaveFinalOrder(children);
 
-        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
+        assertThat(result).isTrue();
     }
 
     @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
-        List<Element<Child>> result = service.updateFinalOrderIssued(List.of(testChild(), testChild()),
-            "Yes", null);
+        List<Element<Child>> result = service.updateFinalOrderIssued(testChildren(), "Yes", null);
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsExactly("Yes", "Yes");
+            .containsExactly("Yes", "Yes", "Yes");
     }
 
     @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildren() {
-        List<Element<Child>> children = List.of(testChild(), testChild(), testChild());
+        List<Element<Child>> children = testChildren();
 
         ChildSelector childSelector = ChildSelector.builder()
             .childCount("1")
@@ -104,7 +92,7 @@ class ChildrenServiceTest {
 
         ChildSelector childSelector = ChildSelector.builder()
             .childCount("4")
-            .selected(List.of(0,2))
+            .selected(List.of(0, 2))
             .build();
 
         List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
@@ -112,7 +100,6 @@ class ChildrenServiceTest {
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("Yes", "Yes", "Yes", "No");
     }
-
 
     private Element<Child> childWithConfidentialFields(UUID id) {
         return element(id, Child.builder()
@@ -127,12 +114,8 @@ class ChildrenServiceTest {
     }
 
     private Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
-        return element(Child.builder()
-            .finalOrderIssued(finalOrderIssued)
-            .party(ChildParty.builder()
-                .firstName(randomAlphanumeric(10))
-                .lastName(randomAlphanumeric(10))
-                .build())
-            .build());
+        Element<Child> childElement = testChild();
+        childElement.getValue().setFinalOrderIssued(finalOrderIssued);
+        return childElement;
     }
 }

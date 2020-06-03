@@ -55,6 +55,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, FixedTimeConfiguration.class})
@@ -218,6 +220,18 @@ class CaseDataTest {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(caseData.findApplicant(0)).isEqualTo(Optional.empty());
+    }
+
+    @Test
+    void shouldGetOrderAppliesToAllChildrenWithValueAsYesWhenOnlyOneChildOnCase() {
+        CaseData caseData = CaseData.builder().children1(List.of(testChild())).build();
+        assertThat(caseData.getOrderAppliesToAllChildren()).isEqualTo("Yes");
+    }
+
+    @Test
+    void shouldGetOrderAppliesToAllChildrenWithCustomValueWhenMultipleChildrenOnCase() {
+        CaseData caseData = CaseData.builder().children1(testChildren()).orderAppliesToAllChildren("No").build();
+        assertThat(caseData.getOrderAppliesToAllChildren()).isEqualTo("No");
     }
 
     private CaseData caseData(Others.OthersBuilder othersBuilder) {
@@ -424,6 +438,22 @@ class CaseDataTest {
 
         Stream.of(DirectionAssignee.values())
             .forEach(assignee -> JSONAssert.assertEquals(getExpectedString(assignee, id), serialised, false));
+    }
+
+    @Test
+    void shouldReturnTrueWhenAllocatedJudgeExists() {
+        CaseData caseData = CaseData.builder().allocatedJudge(Judge.builder()
+            .judgeFullName("Test Judge")
+            .build()).build();
+
+        assertThat(caseData.allocatedJudgeExists()).isEqualTo(true);
+    }
+
+    @Test
+    void shouldReturnFalseWhenAllocatedJudgeDoesNotExist() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(caseData.allocatedJudgeExists()).isEqualTo(false);
     }
 
     private String buildJsonDirections(UUID id) throws JsonProcessingException {

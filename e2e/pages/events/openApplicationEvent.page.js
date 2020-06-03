@@ -13,14 +13,14 @@ module.exports = {
   startButton: 'Start',
   continueButton: 'Continue',
 
-  async populateForm() {
+  async populateForm(caseName) {
     await I.retryUntilExists(() => {
       I.selectOption(this.fields.jurisdiction, 'Public Law');
       I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
       I.selectOption(this.fields.event, 'Start application');
       I.click(this.startButton);
     }, this.enterCaseNamePage.caseName);
-    this.enterCaseName();
+    this.enterCaseName(caseName);
   },
 
   enterCaseName(caseName = 'Barnet Council v Smith') {
