@@ -134,7 +134,6 @@ public class GeneratedOrderController {
      This mid event is called after:
       • Inputting Judge + LA
       • Adding further directions
-      • Close case page
     */
     @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -152,20 +151,17 @@ public class GeneratedOrderController {
             children = caseData.getAllChildren();
         }
 
-        // If can display close case, set the flag and return
+        // If can display close case, set the flag in order to show the close case page
         if (service.showCloseCase(orderTypeAndDocument, closeCaseFromOrder, children,
             featureToggleService.isCloseCaseEnabled())) {
 
             data.put("showCloseCaseFromOrderPage", YES);
             data.put("close_case_label", CloseCaseController.LABEL);
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
+        } else {
+            data.put("showCloseCaseFromOrderPage", NO);
         }
 
-        if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections, children,
-            closeCaseFromOrder, featureToggleService.isCloseCaseEnabled())) {
+        if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections)) {
 
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
                 caseData.getAllocatedJudge());
@@ -174,6 +170,7 @@ public class GeneratedOrderController {
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
                 orderTypeAndDocument, document));
+
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

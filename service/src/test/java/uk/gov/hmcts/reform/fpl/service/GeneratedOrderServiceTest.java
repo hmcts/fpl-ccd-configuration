@@ -598,114 +598,18 @@ class GeneratedOrderServiceTest {
         void shouldReturnTrueWhenOrderIsBlankOrder() {
             typeAndDocument = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
 
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
-                null,
-                someChildren,
-                null,
-                true);
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument, null);
 
             assertThat(shouldGenerateDocument).isTrue();
         }
 
         @Test
-        @DisplayName("Should generate if the order is case closeable and after the close case page")
-        void shouldReturnTrueWhenFurtherDirectionsIsPopulatedAndCloseCaseFromOrderIsPopulated() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
-                .directions("I see a ship in the harbor")
-                .build();
+        @DisplayName("Should generate a document when generating any other type of order")
+        void shouldReturnTrueWhenOrderIsNotBlankOrder() {
+            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).build();
 
             boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
-                directions,
-                allChildren,
-                "Yes",
-                true);
-
-            assertThat(shouldGenerateDocument).isTrue();
-        }
-
-        @Test
-        @DisplayName("Should generate if the order is case closable but not all children have a final "
-            + "order ")
-        void shouldReturnTrueWhenFurtherDirectionsIsPopulatedAndNotAllChildrenHaveFinalOrder() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
-                .directions("I can and shall obey")
-                .build();
-
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
-                directions,
-                someChildren,
-                null,
-                true);
-
-            assertThat(shouldGenerateDocument).isTrue();
-        }
-
-        @Test
-        @DisplayName("Should not generate if all children have final order but case has not been selected to be "
-            + "closed or not")
-        void shouldReturnFalseWhenAllChildrenHaveFinalOrderButCloseCaseFromFinalOrderIsNull() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
-                .directions("But if it wasn't for your misfortune")
-                .build();
-
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
-                directions,
-                allChildren,
-                null,
-                true);
-
-            assertThat(shouldGenerateDocument).isFalse();
-        }
-
-        @Test
-        @DisplayName("Should not generate if C21 is not selected and haven't progressed past further directions")
-        void shouldReturnFalseWhenOrderTypeIsNotBlankOrderAndFurtherDirectionsIsNull() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
-                null,
-                someChildren,
-                null,
-                true);
-
-            assertThat(shouldGenerateDocument).isFalse();
-        }
-
-        @Test
-        @DisplayName("Should generate if close case is disabled and all children don't have final order")
-        void shouldReturnTrueWhenCloseCaseIsDisabledAndNotAllChildrenHaveFinalOrder() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
-                .directions("I'd be a heavenly person today")
-                .build();
-
-
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
-                directions,
-                someChildren,
-                null,
-                false);
-
-            assertThat(shouldGenerateDocument).isTrue();
-        }
-
-        @Test
-        @DisplayName("Should generate if close case is disabled and all children have final order")
-        void shouldReturnTrueWhenCloseCaseIsDisabledAndAllChildrenHaveFinalOrder() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
-            FurtherDirections directions = FurtherDirections.builder()
-                .directions("And I thought I was mistaken")
-                .build();
-
-
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
-                directions,
-                allChildren,
-                null,
-                false);
+                FurtherDirections.builder().build());
 
             assertThat(shouldGenerateDocument).isTrue();
         }

@@ -384,33 +384,20 @@ public class GeneratedOrderService {
 
 
     /**
-     * Determine if the service should generate the draft order document.
+     * Determine if the draft order document should be generated. This ensures the document is only generated once
      *
-     * <p>Will return {@code true} if one of the following is met:
+     * <p>Will return {@code true} if:
      * <ul>
      *     <li>the order is a blank order</li>
-     *     <li>further directions is not null and one of the following is met:<ul>
-     *         <li>not all children have a final order (can't close the case)</li>
-     *         <li>closeCaseFromOrder is not null (close case decision has been made)</li>
-     *         <li>close case is not enabled</li>
-     *     </ul></li>
+     *     <li>further directions have been considered (i.e it is not a blank order)</li>
      * </ul>
      *
      * @param orderType          type of order
      * @param furtherDirections  further directions for the order
-     * @param children           children in the case
-     * @param closeCaseFromOrder YesOrNo field for close case from order
-     * @param closeCaseEnabled   feature toggle flag for close case
      */
     public boolean shouldGenerateDocument(OrderTypeAndDocument orderType,
-                                          FurtherDirections furtherDirections,
-                                          List<Element<Child>> children,
-                                          String closeCaseFromOrder,
-                                          boolean closeCaseEnabled) {
-        return BLANK_ORDER == orderType.getType()
-            || furtherDirections != null
-            && (!childrenService.allChildrenHaveFinalOrder(children) || closeCaseFromOrder != null
-            || !closeCaseEnabled);
+                                          FurtherDirections furtherDirections) {
+        return BLANK_ORDER == orderType.getType() || furtherDirections != null;
     }
 
 
