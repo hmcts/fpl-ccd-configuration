@@ -192,4 +192,12 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
   }
+
+  //enableMutationTest()
+
+  after('mutationTest') {
+    withSonarQubeEnv('SonarQube') {
+      sh './gradlew --info sonarqube'
+    }
+  }
 }
