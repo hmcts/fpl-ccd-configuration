@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +22,10 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
+import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -101,7 +105,9 @@ class StandardDirectionOrderGenerationServiceTest {
     @Test
     void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() {
         Direction notNeededDirection = Direction.builder().directionNeeded("No").build();
-        Order order = Order.builder().directions(wrapElements(notNeededDirection)).build();
+        Order order = Order.builder()
+            .directions(wrapElements(notNeededDirection))
+            .build();
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(getCaseData(order));
 

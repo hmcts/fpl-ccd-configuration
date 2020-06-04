@@ -34,9 +34,9 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRecital;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentative;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRepresentedBy;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -47,6 +47,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -152,8 +153,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
         assertThat(caseData.getSchedule()).isEqualTo(schedule);
         assertThat(caseData.getRecitals()).isEqualTo(recitals);
         assertThat(caseData.getOrderAction()).isEqualTo(action);
-        assertThat(caseData.getDirectionsForCaseManagementOrder())
-            .isEqualTo(Directions.builder().allPartiesCustomCMO(directions).build());
+        assertThat(caseData.getDirectionsForCaseManagementOrder()).isEqualTo(directionsForAllParties(directions));
     }
 
     @Test
@@ -406,5 +406,16 @@ class DraftCMOControllerTest extends AbstractControllerTest {
 
     private String formatLocalDateToMediumStyle(int i) {
         return formatLocalDateToString(dateNow().plusDays(i), FormatStyle.MEDIUM);
+    }
+
+    private Directions directionsForAllParties(List<Element<Direction>> directions) {
+        return Directions.builder()
+            .allPartiesCustomCMO(directions)
+            .localAuthorityDirectionsCustomCMO(emptyList())
+            .cafcassDirectionsCustomCMO(emptyList())
+            .courtDirectionsCustomCMO(emptyList())
+            .otherPartiesDirectionsCustomCMO(emptyList())
+            .respondentDirectionsCustomCMO(emptyList())
+            .build();
     }
 }

@@ -9,12 +9,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparingInt;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -47,11 +45,6 @@ public class Directions {
         ofNullable(getCourtDirectionsCustomCMO()).ifPresent(directions::addAll);
 
         return directions;
-    }
-
-    @JsonIgnore
-    public static Map<DirectionAssignee, List<Element<Direction>>> getMapping(List<Element<Direction>> directions) {
-        return directions.stream().collect(groupingBy(element -> element.getValue().getAssignee()));
     }
 
     boolean containsDirections() {

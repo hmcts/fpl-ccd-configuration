@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDocument;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.COVER_DOCS;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.getHmctsLogoLarge;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.getHmctsLogoSmall;
+import static uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration.getHmctsLogoLarge;
+import static uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration.getHmctsLogoSmall;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 
 @Service
@@ -27,7 +27,7 @@ public class DocmosisCoverDocumentsService {
         return docmosisDocumentGeneratorService.generateDocmosisDocument(coverDocumentData, COVER_DOCS);
     }
 
-    DocmosisCoverDocument buildCoverDocumentsData(String familyManCaseNumber,
+    public DocmosisCoverDocument buildCoverDocumentsData(String familyManCaseNumber,
                                                 Long caseNumber,
                                                 Representative representative) {
         return DocmosisCoverDocument.builder()

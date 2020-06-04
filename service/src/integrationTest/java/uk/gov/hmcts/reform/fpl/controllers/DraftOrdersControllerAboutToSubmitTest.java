@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,8 +27,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,6 +38,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -73,6 +76,9 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
+    @Captor
+    private ArgumentCaptor<String> fileName;
+
     DraftOrdersControllerAboutToSubmitTest() {
         super("draft-standard-directions");
     }
@@ -82,7 +88,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
 
         given(docmosisService.generateDocmosisDocument(any(DocmosisData.class), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME)).willReturn(DOCUMENT);
+        given(uploadDocumentService.uploadPDF(eq(PDF), fileName.capture())).willReturn(DOCUMENT);
     }
 
     @Test
@@ -118,6 +124,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(caseData.getStandardDirectionOrder()).isEqualToComparingFieldByField(expectedOrder());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
+        assertThat(fileName.getValue()).isEqualTo(SEALED_ORDER_FILE_NAME);
     }
 
     @Test
@@ -169,7 +176,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
             .orderDoc(DocumentReference.builder()
                 .url(DOCUMENT.links.self.href)
                 .binaryUrl(DOCUMENT.links.binary.href)
-                .filename("standard-directions-order.pdf")
+                .filename("file.pdf")
                 .build())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(MAGISTRATES)

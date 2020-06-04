@@ -306,7 +306,8 @@ class CaseDataTest {
 
         @Test
         void shouldReturnCaseManagementOrderWhenFullDetailsButNoPreviousOrder() {
-            assertThat(getCaseData().getCaseManagementOrder()).isEqualTo(orderWithDirections(createCmoDirections()));
+            assertThat(getCaseData().getCaseManagementOrder())
+                .isEqualToComparingFieldByField(orderWithDirections(createCmoDirections()));
         }
 
         @Test

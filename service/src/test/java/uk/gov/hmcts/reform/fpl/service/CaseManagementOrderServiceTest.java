@@ -26,6 +26,9 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
+import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
+import uk.gov.hmcts.reform.fpl.service.DocumentService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.CaseManagementOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -228,7 +231,8 @@ class CaseManagementOrderServiceTest {
         service.prepareCustomDirections(caseDetails, order);
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Map<DirectionAssignee, List<Element<Direction>>> map = Directions.getMapping(createCmoDirections());
+        Map<DirectionAssignee, List<Element<Direction>>> map = Directions
+            .getAssigneeToDirectionMapping(createCmoDirections());
 
         assertThat(data).containsKeys("allPartiesCustomCMO", "localAuthorityDirectionsCustomCMO",
             "cafcassDirectionsCustomCMO", "courtDirectionsCustomCMO", "otherPartiesDirectionsCustomCMO",
