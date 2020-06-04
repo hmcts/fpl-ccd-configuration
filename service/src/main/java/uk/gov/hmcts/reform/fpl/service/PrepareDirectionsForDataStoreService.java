@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
+
 import uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -140,7 +141,6 @@ public class PrepareDirectionsForDataStoreService {
         });
     }
 
-    //TODO: refactor of addCourtAssigneeAndDirectionId would remove dependency on eventId. FPLA-1485
     private List<Element<DirectionResponse>> addValuesToListResponses(List<Element<Direction>> directions,
                                                                       ComplyOnBehalfEvent eventId,
                                                                       DirectionAssignee assignee) {
@@ -161,25 +161,8 @@ public class PrepareDirectionsForDataStoreService {
                                                             UUID id,
                                                             Element<DirectionResponse> response,
                                                             DirectionAssignee assignee) {
-        if (event == COMPLY_ON_BEHALF_COURT) {
-            return addCourtAssigneeAndDirectionId(id, response);
-        }
-        return addResponderAssigneeAndDirectionId(response, assignee, id);
-    }
-
-    //TODO: if name of user complying for court is added then this can be merged with logic from method below. FPLA-1485
-    private Element<DirectionResponse> addCourtAssigneeAndDirectionId(UUID id, Element<DirectionResponse> element) {
-        return element(element.getId(), element.getValue().toBuilder()
-            .assignee(COURT)
-            .directionId(id)
-            .build());
-    }
-
-    private Element<DirectionResponse> addResponderAssigneeAndDirectionId(Element<DirectionResponse> response,
-                                                                          DirectionAssignee assignee,
-                                                                          UUID id) {
         return element(response.getId(), response.getValue().toBuilder()
-            .assignee(assignee)
+            .assignee(event == COMPLY_ON_BEHALF_COURT ? COURT : assignee)
             .responder(getUsername(response))
             .directionId(id)
             .build());
