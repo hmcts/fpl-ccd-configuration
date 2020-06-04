@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.launchdarkly.client.LDClient;
-import com.launchdarkly.client.LDUser;
+import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
