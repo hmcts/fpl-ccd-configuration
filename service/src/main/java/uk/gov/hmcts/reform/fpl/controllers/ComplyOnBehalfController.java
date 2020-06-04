@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForUsersService;
@@ -36,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMap
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ComplyOnBehalfController {
     private final ObjectMapper mapper;
-    private final CommonDirectionService commonDirectionService;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
     private final RespondentService respondentService;
@@ -50,13 +48,11 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
-
-        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections
-            = getAssigneeToDirectionMapping(directionsToComplyWith);
+        Map<DirectionAssignee, List<Element<Direction>>> assigneeMap
+            = getAssigneeToDirectionMapping(caseData.getDirectionsToComplyWith());
 
         prepareDirectionsForUsersService.addDirectionsToCaseDetails(
-            caseDetails, sortedDirections, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
+            caseDetails, assigneeMap, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));

@@ -346,7 +346,7 @@ class PrepareDirectionsForUsersServiceTest {
                 .data(new HashMap<>())
                 .build();
 
-            service.addAssigneeDirectionKeyValuePairsToCaseData(
+            service.addAssigneeDirectionsToCaseDetails(
                 LOCAL_AUTHORITY, buildDirections(LOCAL_AUTHORITY), caseDetails);
 
             assertThat(caseDetails.getData().get(LOCAL_AUTHORITY.getValue())).isEqualTo(expectedDirection());
@@ -361,7 +361,7 @@ class PrepareDirectionsForUsersServiceTest {
                 .data(data)
                 .build();
 
-            service.addAssigneeDirectionKeyValuePairsToCaseData(
+            service.addAssigneeDirectionsToCaseDetails(
                 LOCAL_AUTHORITY, buildDirections(LOCAL_AUTHORITY), caseDetails);
 
             assertThat(caseDetails.getData().get(LOCAL_AUTHORITY.getValue())).isEqualTo(expectedDirection());
@@ -376,7 +376,7 @@ class PrepareDirectionsForUsersServiceTest {
                 .data(data)
                 .build();
 
-            service.addAssigneeDirectionKeyValuePairsToCaseData(
+            service.addAssigneeDirectionsToCaseDetails(
                 LOCAL_AUTHORITY, buildDirections(LOCAL_AUTHORITY), caseDetails);
 
             assertThat(caseDetails.getData()).hasSize(2)
@@ -394,7 +394,7 @@ class PrepareDirectionsForUsersServiceTest {
             directions.addAll(buildDirections(LOCAL_AUTHORITY));
             directions.addAll(buildDirections(ALL_PARTIES));
 
-            service.addAssigneeDirectionKeyValuePairsToCaseData(LOCAL_AUTHORITY, directions, caseDetails);
+            service.addAssigneeDirectionsToCaseDetails(LOCAL_AUTHORITY, directions, caseDetails);
 
             assertThat(caseDetails.getData()).hasSize(1)
                 .extracting(LOCAL_AUTHORITY.getValue())
@@ -409,7 +409,7 @@ class PrepareDirectionsForUsersServiceTest {
 
             List<Element<Direction>> directions = new ArrayList<>(buildDirections(COURT));
 
-            service.addAssigneeDirectionKeyValuePairsToCaseData(COURT, directions, caseDetails);
+            service.addAssigneeDirectionsToCaseDetails(COURT, directions, caseDetails);
 
             assertThat(caseDetails.getData()).hasSize(1)
                 .extracting("courtDirectionsCustom")
