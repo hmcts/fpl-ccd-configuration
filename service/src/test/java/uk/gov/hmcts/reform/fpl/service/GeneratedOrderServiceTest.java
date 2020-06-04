@@ -76,7 +76,7 @@ class GeneratedOrderServiceTest {
         childWithFinalOrderIssued("Yes"),
         childWithFinalOrderIssued("Yes")
     );
-    private OrderTypeAndDocument typeAndDocument;
+    private OrderTypeAndDocument orderType;
 
     @Autowired
     private Time time;
@@ -183,54 +183,54 @@ class GeneratedOrderServiceTest {
 
         @Test
         void shouldReturnFalseWhenNotAllChildrenHaveFinalOrder() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            orderType = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, someChildren, true);
+            boolean showCloseCase = service.showCloseCase(orderType, someChildren, true);
 
             assertThat(showCloseCase).isFalse();
         }
 
         @Test
         void shouldReturnFalseWhenCloseCaseIsNotEnabled() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            orderType = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, false);
+            boolean showCloseCase = service.showCloseCase(orderType, allChildren, false);
 
             assertThat(showCloseCase).isFalse();
         }
 
         @Test
         void shouldReturnFalseWhenTheOrderTypeIsABlankOrder() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
+            orderType = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, true);
+            boolean showCloseCase = service.showCloseCase(orderType, allChildren, true);
 
             assertThat(showCloseCase).isFalse();
         }
 
         @Test
         void shouldReturnFalseWhenTheOrderTypeIsInterim() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(INTERIM).build();
+            orderType = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(INTERIM).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, true);
+            boolean showCloseCase = service.showCloseCase(orderType, allChildren, true);
 
             assertThat(showCloseCase).isFalse();
         }
 
         @Test
         void shouldReturnTrueWhenOrderIsEmergencyProtectionOrder() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build();
+            orderType = OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, true);
+            boolean showCloseCase = service.showCloseCase(orderType, allChildren, true);
 
             assertThat(showCloseCase).isTrue();
         }
 
         @Test
         void shouldReturnTrueWhenOrderIsAFinalOrder() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
+            orderType = OrderTypeAndDocument.builder().type(CARE_ORDER).subtype(FINAL).build();
 
-            boolean showCloseCase = service.showCloseCase(typeAndDocument, allChildren, true);
+            boolean showCloseCase = service.showCloseCase(orderType, allChildren, true);
 
             assertThat(showCloseCase).isTrue();
         }
@@ -241,21 +241,60 @@ class GeneratedOrderServiceTest {
     class ShouldGenerateDocument {
         @Test
         void shouldReturnTrueWhenOrderIsBlankOrder() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
+            orderType = OrderTypeAndDocument.builder().type(BLANK_ORDER).build();
 
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument, null);
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(orderType, null);
 
             assertThat(shouldGenerateDocument).isTrue();
         }
 
         @Test
         void shouldReturnTrueWhenOrderIsNotBlankOrderAndFurtherDirectionPresent() {
-            typeAndDocument = OrderTypeAndDocument.builder().type(CARE_ORDER).build();
+            orderType = OrderTypeAndDocument.builder().type(CARE_ORDER).build();
 
-            boolean shouldGenerateDocument = service.shouldGenerateDocument(typeAndDocument,
+            boolean shouldGenerateDocument = service.shouldGenerateDocument(orderType,
                 FurtherDirections.builder().build());
 
             assertThat(shouldGenerateDocument).isTrue();
+        }
+    }
+
+    @Nested
+    class ShouldNotAllowFinalOrder {
+        @Test
+        void shouldReturnTrueWhenAllChildrenHaveFinalOrderIssuedAndOrderSubTypeIsFinal() {
+            orderType = OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).subtype(FINAL).build();
+
+            boolean notAllowFinalOrder = service.shouldNotAllowFinalOrder(orderType, allChildren);
+
+            assertThat(notAllowFinalOrder).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseWhenAllChildrenHaveFinalOrderIssuedAndOrderSubTypeIsNotFinal() {
+            orderType = OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).subtype(INTERIM).build();
+
+            boolean notAllowFinalOrder = service.shouldNotAllowFinalOrder(orderType, allChildren);
+
+            assertThat(notAllowFinalOrder).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseWhenNotAllChildrenHaveFinalOrderAndOrderSubTypeIsFinal() {
+            orderType = OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).subtype(FINAL).build();
+
+            boolean notAllowFinalOrder = service.shouldNotAllowFinalOrder(orderType, someChildren);
+
+            assertThat(notAllowFinalOrder).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseWhenNotAllChildrenHaveFinalOrderAndOrderSubTypeIsNotFinal() {
+            orderType = OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).subtype(INTERIM).build();
+
+            boolean notAllowFinalOrder = service.shouldNotAllowFinalOrder(orderType, someChildren);
+
+            assertThat(notAllowFinalOrder).isFalse();
         }
     }
 
