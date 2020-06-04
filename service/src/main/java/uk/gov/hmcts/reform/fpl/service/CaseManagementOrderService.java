@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.docmosis.CaseManagementOrderGenerationService;
 
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -29,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
-import static uk.gov.hmcts.reform.fpl.model.Directions.getMapping;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -75,7 +76,7 @@ public class CaseManagementOrderService {
     }
 
     private void addDirections(CaseDetails caseDetails, List<Element<Direction>> directions) {
-        getMapping(directions)
+        getAssigneeToDirectionMapping(directions)
             .forEach((key, value) -> caseDetails.getData().put(key.toCaseManagementOrderDirectionField(), value));
     }
 

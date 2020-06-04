@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.casesubmission;
+package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
@@ -67,9 +68,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CaseSubmissionTemplateDataGenerationService.class, JacksonAutoConfiguration.class,
+@ContextConfiguration(classes = {CaseSubmissionGenerationService.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, FixedTimeConfiguration.class})
-public class CaseSubmissionTemplateDataGenerationServiceTest {
+class CaseSubmissionGenerationServiceTest {
     private static final LocalDate NOW = now();
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
@@ -81,7 +82,7 @@ public class CaseSubmissionTemplateDataGenerationServiceTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CaseSubmissionTemplateDataGenerationService templateDataGenerationService;
+    private CaseSubmissionGenerationService templateDataGenerationService;
 
     private CaseData givenCaseData;
 

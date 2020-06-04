@@ -28,17 +28,18 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
@@ -134,7 +135,6 @@ public class GeneratedOrderController {
      This mid event is called after:
       • Inputting Judge + LA
       • Adding further directions
-      • Close case page
     */
     @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -143,7 +143,6 @@ public class GeneratedOrderController {
 
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
-        String closeCaseFromOrder = caseData.getCloseCaseFromOrder();
         List<Element<Child>> children;
 
         if (orderTypeAndDocument.isClosable()) {
@@ -152,24 +151,17 @@ public class GeneratedOrderController {
             children = caseData.getAllChildren();
         }
 
-        // If can display close case, set the flag and return
-        if (service.showCloseCase(orderTypeAndDocument, closeCaseFromOrder, children,
-            featureToggleService.isCloseCaseEnabled())) {
+        // If can display close case, set the flag in order to show the close case page
+        if (service.showCloseCase(orderTypeAndDocument, children, featureToggleService.isCloseCaseEnabled())) {
 
             data.put("showCloseCaseFromOrderPage", YES);
             data.put("close_case_label", CloseCaseController.LABEL);
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
+        } else {
+            data.put("showCloseCaseFromOrderPage", NO);
         }
 
-        if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections, children,
-            closeCaseFromOrder, featureToggleService.isCloseCaseEnabled())) {
-
-            JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
-                caseData.getAllocatedJudge());
-            Document document = getDocument(caseData, DRAFT, judgeAndLegalAdvisor);
+        if (service.shouldGenerateDocument(orderTypeAndDocument, orderFurtherDirections)) {
+            Document document = getDocument(caseData, DRAFT);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
@@ -189,7 +181,7 @@ public class GeneratedOrderController {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
             caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
 
-        Document document = getDocument(caseData, SEALED, judgeAndLegalAdvisor);
+        Document document = getDocument(caseData, SEALED);
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
@@ -255,13 +247,15 @@ public class GeneratedOrderController {
     }
 
     private Document getDocument(CaseData caseData,
-                                 OrderStatus orderStatus,
-                                 JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+                                 OrderStatus orderStatus) {
 
         DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
 
+        caseData.setGeneratedOrderStatus(orderStatus);
+        DocmosisGeneratedOrder orderTemplateData = service.getOrderTemplateData(caseData);
+
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            service.getOrderTemplateData(caseData, orderStatus, judgeAndLegalAdvisor), templateType);
+            orderTemplateData, templateType);
 
         OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 

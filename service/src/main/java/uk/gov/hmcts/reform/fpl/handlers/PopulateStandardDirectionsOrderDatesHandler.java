@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -24,13 +22,13 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
+
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Slf4j
 public class PopulateStandardDirectionsOrderDatesHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final StandardDirectionsService standardDirectionsService;
-    private final CommonDirectionService commonDirectionService;
     private final ObjectMapper mapper;
     private final HearingBookingService hearingBookingService;
 
@@ -52,22 +50,26 @@ public class PopulateStandardDirectionsOrderDatesHandler {
     }
 
     private Map<String, Object> getDataWithDates(HearingBooking hearingBooking, Map<String, Object> data) {
-        List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(hearingBooking);
-
-        commonDirectionService.sortDirectionsByAssignee(standardDirections).forEach(
-            (assignee, directionsConfigForAssignee) -> populateEmptyDates(data, assignee, directionsConfigForAssignee));
+        List<Element<Direction>> directions = standardDirectionsService.getDirections(hearingBooking);
+        getAssigneeToDirectionMapping(directions).forEach((assignee, directionElements) -> {
+            if (!directionElements.isEmpty()) {
+                populateEmptyDates(data, assignee, directionElements);
+            }
+        });
 
         return data;
     }
 
     private void populateEmptyDates(Map<String, Object> data, DirectionAssignee assignee,
-                                    List<Element<Direction>> directionsConfigForAssignee) {
+                                    List<Element<Direction>> configDirectionsForAssignee) {
         List<Element<Direction>> directionsForAssignee = mapper.convertValue(data.get(assignee.getValue()),
-            new TypeReference<>() {});
+            new TypeReference<>() {
+            });
+
         for (int i = 0; i < directionsForAssignee.size(); i++) {
             var direction = directionsForAssignee.get(i).getValue();
             if (direction.getDateToBeCompletedBy() == null) {
-                direction.setDateToBeCompletedBy(directionsConfigForAssignee.get(i)
+                direction.setDateToBeCompletedBy(configDirectionsForAssignee.get(i)
                     .getValue()
                     .getDateToBeCompletedBy());
             }
