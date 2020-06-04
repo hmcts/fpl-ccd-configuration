@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.enums.ActionType;
+git import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -74,11 +74,7 @@ class CaseDataTest {
         @Test
         void shouldReturnStandardDirectionOrderDirectionsWhenServedCaseManagementOrdersIsEmpty() {
             List<Element<Direction>> sdoDirections = wrapElements(directionForParty(LOCAL_AUTHORITY));
-
-            CaseData caseData = CaseData.builder()
-                .standardDirectionOrder(Order.builder().directions(sdoDirections).build())
-                .servedCaseManagementOrders(emptyList())
-                .build();
+            CaseData caseData = buildCaseData(sdoDirections, emptyList());
 
             assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(sdoDirections);
         }
@@ -87,11 +83,7 @@ class CaseDataTest {
         void shouldReturnCaseManagementOrderDirectionsWhenServedCaseManagementOrdersIsNotEmpty() {
             List<Element<Direction>> cmoDirections = wrapElements(directionForParty(LOCAL_AUTHORITY));
             List<Element<Direction>> sdoDirections = wrapElements(directionForParty(CAFCASS));
-
-            CaseData caseData = CaseData.builder()
-                .standardDirectionOrder(Order.builder().directions(sdoDirections).build())
-                .servedCaseManagementOrders(servedCaseManagementOrder(cmoDirections))
-                .build();
+            CaseData caseData = buildCaseData(sdoDirections, servedCaseManagementOrder(cmoDirections));
 
             assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(cmoDirections);
         }
@@ -101,6 +93,14 @@ class CaseDataTest {
             CaseData caseData = CaseData.builder().build();
 
             assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(emptyList());
+        }
+
+        private CaseData buildCaseData(List<Element<Direction>> sdoDirections,
+                                       List<Element<CaseManagementOrder>> cmoDirections) {
+            return CaseData.builder()
+                .standardDirectionOrder(Order.builder().directions(sdoDirections).build())
+                .servedCaseManagementOrders(cmoDirections)
+                .build();
         }
 
         private List<Element<CaseManagementOrder>> servedCaseManagementOrder(List<Element<Direction>> cmoDirections) {
