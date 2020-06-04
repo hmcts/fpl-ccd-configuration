@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -181,68 +180,6 @@ class CommonDirectionServiceTest {
 
                 assertThat(directionsFromMap.get()).isEqualTo(expectedDirections.get());
             });
-        }
-    }
-
-    @Nested
-    class SortDirectionsByAssignee {
-
-        @Test
-        void shouldSortDirectionsIntoSeparateEntriesInMapWhenSingleAssignee() {
-            List<Element<Direction>> directions = ImmutableList.<Element<Direction>>builder()
-                .addAll(buildDirections(LOCAL_AUTHORITY))
-                .build();
-
-            Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(
-                directions);
-
-            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY);
-        }
-
-        @Test
-        void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
-            List<Element<Direction>> directions = ImmutableList.<Element<Direction>>builder()
-                .addAll(buildDirections(LOCAL_AUTHORITY))
-                .addAll(buildDirections(COURT))
-                .build();
-
-            Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(
-                directions);
-
-            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY, COURT);
-        }
-    }
-
-    @Nested
-    class AddEmptyDirectionsForAssigneeNotInMap {
-
-        @Test
-        void shouldAddEmptyListValueWhenKeyNotPresentInMap() {
-            Map<DirectionAssignee, List<Element<Direction>>> map = new HashMap<>();
-
-            service.addEmptyDirectionsForAssigneeNotInMap(map);
-
-            Stream.of(DirectionAssignee.values())
-                .forEach(assignee -> assertThat(map.get(assignee)).isEqualTo(emptyList()));
-        }
-
-        @Test
-        void shouldAddEmptyListValueToNewKeysWhenSomeKeysAreAlreadyPresent() {
-            Map<DirectionAssignee, List<Element<Direction>>> map = new HashMap<>();
-            map.put(LOCAL_AUTHORITY, emptyListOfElement());
-            map.put(CAFCASS, emptyListOfElement());
-
-            service.addEmptyDirectionsForAssigneeNotInMap(map);
-
-            assertThat(map).containsOnlyKeys(DirectionAssignee.values());
-            assertThat(map).extractingByKeys(ALL_PARTIES, PARENTS_AND_RESPONDENTS, COURT, OTHERS)
-                .allMatch(List::isEmpty);
-            assertThat(map).extractingByKeys(LOCAL_AUTHORITY, CAFCASS)
-                .allMatch(list -> list.equals(emptyListOfElement()));
-        }
-
-        private List<Element<Direction>> emptyListOfElement() {
-            return List.of(Element.<Direction>builder().build());
         }
     }
 

@@ -81,7 +81,7 @@ public class ElementUtilsTest {
         void shouldReturnPreselectedDynamicListOfAllElements() {
             UUID selectedElementId = element2.getId();
 
-            DynamicList elementsList = asDynamicList(List.of(element1, element2), selectedElementId, 
+            DynamicList elementsList = asDynamicList(List.of(element1, element2), selectedElementId,
                 labelProducer);
 
             DynamicList expectedElementsList = DynamicList.builder()
