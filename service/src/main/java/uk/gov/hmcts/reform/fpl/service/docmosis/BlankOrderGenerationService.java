@@ -19,8 +19,9 @@ public class BlankOrderGenerationService extends GeneratedOrderTemplateDataGener
         super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
-    DocmosisGeneratedOrderBuilder<?, ?> populateCustomOrderFields(CaseData caseData) {
+    DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
         return DocmosisGeneratedOrder.builder()
             .orderTitle(defaultIfNull(caseData.getOrder().getTitle(), "Order"))
             .childrenAct("Children Act 1989")

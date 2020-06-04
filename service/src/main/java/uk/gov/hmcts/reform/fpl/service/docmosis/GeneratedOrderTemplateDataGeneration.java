@@ -41,7 +41,9 @@ public abstract class GeneratedOrderTemplateDataGeneration
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }
 
-    abstract DocmosisGeneratedOrderBuilder<?, ?> populateCustomOrderFields(CaseData caseData);
+    // If we use <?, ?> there is then an issue with sonar complaining about not using wildcard types as return types
+    @SuppressWarnings("rawtypes")
+    abstract DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData);
 
     @Override
     public DocmosisGeneratedOrder getTemplateData(CaseData caseData) {
@@ -88,7 +90,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
     }
 
     List<Element<Child>> getSelectedChildren(List<Element<Child>> allChildren, ChildSelector selector,
-        String choice) {
+                                             String choice) {
         if (useAllChildren(choice)) {
             return allChildren;
         }

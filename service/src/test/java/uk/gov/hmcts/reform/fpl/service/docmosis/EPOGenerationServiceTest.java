@@ -91,8 +91,9 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
             .orderAppliesToAllChildren(YES.getValue());
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
-    DocmosisGeneratedOrderBuilder<?, ?> populateCustomOrderFields(GeneratedOrderSubtype subtype) {
+    DocmosisGeneratedOrderBuilder populateCustomOrderFields(GeneratedOrderSubtype subtype) {
         return DocmosisGeneratedOrder.builder()
             .orderType(EMERGENCY_PROTECTION_ORDER)
             .localAuthorityName(LOCAL_AUTHORITY_NAME)
