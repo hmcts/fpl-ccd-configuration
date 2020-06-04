@@ -160,7 +160,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
     class GenerateDocumentMidEvent {
 
         @Test
-        void shouldAddCloseCaseLabelAndSetFlagWhenCloseCasePageCanBeShown() {
+        void shouldAddCloseCaseLabelAndSetFlagToYesWhenCloseCasePageCanBeShown() {
             given(toggleService.isCloseCaseEnabled()).willReturn(true);
 
             CaseDetails caseDetails = generateFinalCareOrderWithChildren("Yes");
@@ -174,7 +174,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         }
 
         @Test
-        void shouldNotAddCloseCaseLabelAndFlagWhenCloseCasePageCanNotBeShown() {
+        void shouldNotAddCloseCaseLabelAndSetFlagToNoWhenCloseCasePageCanNotBeShown() {
             given(toggleService.isCloseCaseEnabled()).willReturn(true);
 
             CaseDetails caseDetails = generateFinalCareOrderWithChildren("No");
@@ -184,7 +184,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
 
             assertThat(response.getData()).extracting("showCloseCaseFromOrderPage", "close_case_label")
-                .containsOnlyNulls();
+                .containsOnly("NO", null);
 
         }
 
