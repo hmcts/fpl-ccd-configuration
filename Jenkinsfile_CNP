@@ -193,7 +193,9 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions('aat')
   }
 
-  //enableMutationTest()
+  onPR {
+    enableMutationTest()
+  }
 
   after('mutationTest') {
     withSonarQubeEnv('SonarQube') {
