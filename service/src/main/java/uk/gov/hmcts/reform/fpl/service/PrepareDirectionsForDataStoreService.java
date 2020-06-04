@@ -96,12 +96,11 @@ public class PrepareDirectionsForDataStoreService {
     }
 
     /**
-     * Adds responses to directions in standard direction order {@link uk.gov.hmcts.reform.fpl.model.Order}.
+     * Adds responses to directions.
      *
      * @param caseData caseData containing custom role collections and standard directions order.
      */
-    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData,
-                                                              ComplyOnBehalfEvent eventId) {
+    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData, ComplyOnBehalfEvent eventId) {
         Map<DirectionAssignee, List<Element<Direction>>> customDirectionsMap =
             directionService.collectCustomDirectionsToMap(caseData);
 

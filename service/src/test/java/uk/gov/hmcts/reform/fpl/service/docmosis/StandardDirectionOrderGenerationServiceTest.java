@@ -105,7 +105,9 @@ class StandardDirectionOrderGenerationServiceTest {
     @Test
     void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() {
         Direction notNeededDirection = Direction.builder().directionNeeded("No").build();
-        Order order = Order.builder().directions(wrapElements(notNeededDirection)).build();
+        Order order = Order.builder()
+            .directions(wrapElements(notNeededDirection))
+            .build();
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(getCaseData(order));
 
