@@ -42,6 +42,8 @@ public abstract class GeneratedOrderTemplateDataGeneration
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }
 
+    // If we use <?, ?> there is then an issue with sonar complaining about not using wildcard types as return types
+    @SuppressWarnings("rawtypes")
     abstract DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData);
 
     @Override

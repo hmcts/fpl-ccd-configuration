@@ -130,7 +130,7 @@ public class CaseDataExtractionService {
     }
 
     public DocmosisDirection.Builder baseDirection(Direction direction, int index,
-        List<DirectionConfiguration> config) {
+                                                   List<DirectionConfiguration> config) {
         return DocmosisDirection.builder()
             .assignee(direction.getAssignee())
             .title(formatTitle(index, direction, config))
@@ -199,7 +199,9 @@ public class CaseDataExtractionService {
         return DocmosisChild.builder()
             .name(child.getFullName())
             .gender(child.getGender())
-            .dateOfBirth(formatLocalDateToString(child.getDateOfBirth(), LONG))
+            .dateOfBirth(ofNullable(child.getDateOfBirth())
+                .map(dob -> formatLocalDateToString(child.getDateOfBirth(), LONG))
+                .orElse(null))
             .build();
     }
 

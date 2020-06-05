@@ -106,6 +106,7 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
         return caseDataBuilder;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     DocmosisGeneratedOrderBuilder populateCustomOrderFields(GeneratedOrderSubtype subtype) {
         String formattedDate = formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG);

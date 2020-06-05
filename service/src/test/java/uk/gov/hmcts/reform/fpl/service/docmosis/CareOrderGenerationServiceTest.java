@@ -98,6 +98,7 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
         return caseDataBuilder;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     DocmosisGeneratedOrderBuilder populateCustomOrderFields(GeneratedOrderSubtype subtype) {
         List<DocmosisChild> children = getChildren();

@@ -37,6 +37,8 @@ public abstract class AbstractOrderGenerationServiceTest {
 
     abstract CaseData.CaseDataBuilder populateCustomCaseData(GeneratedOrderSubtype subtype);
 
+    // See comment in GeneratedOrderTemplateDataGeneration
+    @SuppressWarnings("rawtypes")
     abstract DocmosisGeneratedOrderBuilder populateCustomOrderFields(GeneratedOrderSubtype subtype);
 
     CaseData createPopulatedCaseData(OrderStatus orderStatus) {

@@ -55,18 +55,6 @@ public class CommonDirectionService {
                 .collect(toList());
     }
 
-    /**
-     * Iterates over a list of directions and sets properties assignee, custom and readOnly.
-     *
-     * @param directions a list of directions.
-     * @param assignee   the assignee of the directions to be returned.
-     * @return A list of custom directions.
-     */
-    List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
-                                                    DirectionAssignee assignee) {
-        return getElements(directions, assignee);
-    }
-
     private List<Element<Direction>> getElements(List<Element<Direction>> directions, DirectionAssignee assignee) {
         return ofNullable(directions)
             .map(values -> values.stream()
@@ -88,7 +76,7 @@ public class CommonDirectionService {
      * @param caseData data from case.
      * @return Map of roles and directions.
      */
-    public Map<DirectionAssignee, List<Element<Direction>>> collectDirectionsToMap(CaseData caseData) {
+    public Map<DirectionAssignee, List<Element<Direction>>> directionsToMap(CaseData caseData) {
         return Map.of(
             ALL_PARTIES, defaultIfNull(caseData.getAllParties(), emptyList()),
             LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirections(), emptyList()),
@@ -105,7 +93,7 @@ public class CommonDirectionService {
      * @param caseData data from case.
      * @return Map of roles and directions.
      */
-    public Map<DirectionAssignee, List<Element<Direction>>> collectCustomDirectionsToMap(CaseData caseData) {
+    public Map<DirectionAssignee, List<Element<Direction>>> customDirectionsToMap(CaseData caseData) {
         return Map.of(
             ALL_PARTIES, defaultIfNull(caseData.getAllPartiesCustom(), emptyList()),
             LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirectionsCustom(), emptyList()),
@@ -139,19 +127,6 @@ public class CommonDirectionService {
         return directions.stream()
             .filter(element -> element.getValue().getAssignee().equals(assignee))
             .collect(toList());
-    }
-
-    /**
-     * Returns a list of directions to comply with.
-     *
-     * @param caseData case data with standard directions and case management order directions.
-     * @return most recent directions that need to be complied with.
-     */
-    public List<Element<Direction>> getDirectionsToComplyWith(CaseData caseData) {
-        if (caseData.getServedCaseManagementOrders().isEmpty()) {
-            return caseData.getStandardDirectionOrder().getDirections();
-        }
-        return caseData.getServedCaseManagementOrders().get(0).getValue().getDirections();
     }
 
     /**

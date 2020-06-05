@@ -19,6 +19,7 @@ public class BlankOrderGenerationService extends GeneratedOrderTemplateDataGener
         super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
         return DocmosisGeneratedOrder.builder()

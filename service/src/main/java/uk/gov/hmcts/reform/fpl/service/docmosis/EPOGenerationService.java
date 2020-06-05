@@ -28,6 +28,7 @@ public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
         this.time = time;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
         return DocmosisGeneratedOrder.builder()

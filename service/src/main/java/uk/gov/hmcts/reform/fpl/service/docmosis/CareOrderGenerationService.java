@@ -23,6 +23,7 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
         super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();

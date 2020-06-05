@@ -91,6 +91,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
             .orderAppliesToAllChildren(YES.getValue());
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     DocmosisGeneratedOrderBuilder populateCustomOrderFields(GeneratedOrderSubtype subtype) {
         return DocmosisGeneratedOrder.builder()
