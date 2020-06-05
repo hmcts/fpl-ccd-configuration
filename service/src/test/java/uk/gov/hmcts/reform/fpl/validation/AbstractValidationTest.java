@@ -19,7 +19,7 @@ public abstract class AbstractValidationTest {
     @Autowired
     private Validator validator;
 
-    public <T> List<String> validate(T object, Class... groups) {
+    public <T> List<String> validate(T object, Class<?>... groups) {
         return validator.validate(object, groups).stream().map(ConstraintViolation::getMessage).collect(toList());
     }
 

@@ -33,6 +33,7 @@ public class SupervisionOrderGenerationService extends GeneratedOrderTemplateDat
         this.time = time;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
