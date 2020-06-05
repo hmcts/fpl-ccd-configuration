@@ -68,6 +68,46 @@ class CaseDataTest {
     @Autowired
     private Time time;
 
+    @Nested
+    class GetDirectionsToComplyWith {
+
+        @Test
+        void shouldReturnStandardDirectionOrderDirectionsWhenServedCaseManagementOrdersIsEmpty() {
+            List<Element<Direction>> sdoDirections = wrapElements(directionForParty(LOCAL_AUTHORITY));
+            CaseData caseData = buildCaseData(sdoDirections, emptyList());
+
+            assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(sdoDirections);
+        }
+
+        @Test
+        void shouldReturnCaseManagementOrderDirectionsWhenServedCaseManagementOrdersIsNotEmpty() {
+            List<Element<Direction>> cmoDirections = wrapElements(directionForParty(LOCAL_AUTHORITY));
+            List<Element<Direction>> sdoDirections = wrapElements(directionForParty(CAFCASS));
+            CaseData caseData = buildCaseData(sdoDirections, servedCaseManagementOrder(cmoDirections));
+
+            assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(cmoDirections);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoDirections() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(emptyList());
+        }
+
+        private CaseData buildCaseData(List<Element<Direction>> sdoDirections,
+                                       List<Element<CaseManagementOrder>> cmoDirections) {
+            return CaseData.builder()
+                .standardDirectionOrder(Order.builder().directions(sdoDirections).build())
+                .servedCaseManagementOrders(cmoDirections)
+                .build();
+        }
+
+        private List<Element<CaseManagementOrder>> servedCaseManagementOrder(List<Element<Direction>> cmoDirections) {
+            return wrapElements(CaseManagementOrder.builder().directions(cmoDirections).build());
+        }
+    }
+
     @Test
     void shouldSerialiseCaseManagementOrderToCorrectStringValueWhenInSelfReview() throws JsonProcessingException {
         String serialised = mapper.writeValueAsString(CaseData.builder()
@@ -306,7 +346,8 @@ class CaseDataTest {
 
         @Test
         void shouldReturnCaseManagementOrderWhenFullDetailsButNoPreviousOrder() {
-            assertThat(getCaseData().getCaseManagementOrder()).isEqualTo(orderWithDirections(createCmoDirections()));
+            assertThat(getCaseData().getCaseManagementOrder())
+                .isEqualToComparingFieldByField(orderWithDirections(createCmoDirections()));
         }
 
         @Test

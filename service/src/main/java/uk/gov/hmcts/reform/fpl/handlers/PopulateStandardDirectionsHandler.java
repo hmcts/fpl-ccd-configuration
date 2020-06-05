@@ -9,25 +9,22 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PopulateStandardDirectionsHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final StandardDirectionsService standardDirectionsService;
-    private final CommonDirectionService commonDirectionService;
     private final ObjectMapper mapper;
-    private final HearingBookingService hearingBookingService;
+    private final HearingBookingService hearingService;
 
     @Async
     @EventListener
@@ -43,13 +40,10 @@ public class PopulateStandardDirectionsHandler {
 
     private Map<String, Object> populateStandardDirections(Map<String, Object> data) {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        HearingBooking hearingBooking = hearingBookingService.getFirstHearing(caseData.getHearingDetails())
-            .orElse(null);
+        HearingBooking hearingBooking = hearingService.getFirstHearing(caseData.getHearingDetails()).orElse(null);
 
-        List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(hearingBooking);
-        commonDirectionService.sortDirectionsByAssignee(standardDirections)
-            .forEach((directionAssignee, directionsElements) -> data.put(directionAssignee.getValue(),
-                directionsElements));
+        getAssigneeToDirectionMapping(standardDirectionsService.getDirections(hearingBooking))
+            .forEach((assignee, directionsElements) -> data.put(assignee.getValue(), directionsElements));
 
         return data;
     }

@@ -11,6 +11,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -126,6 +127,19 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
 
+    @JsonIgnore
+    public List<Element<Direction>> getDirectionsToComplyWith() {
+        if (getServedCaseManagementOrders().isEmpty() && standardDirectionOrder == null) {
+            return emptyList();
+        }
+
+        if (getServedCaseManagementOrders().isEmpty()) {
+            return standardDirectionOrder.getDirections();
+        }
+
+        return servedCaseManagementOrders.get(0).getValue().getDirections();
+    }
+
     @JsonUnwrapped
     private Directions directionsForCaseManagementOrder;
 
@@ -224,6 +238,8 @@ public class CaseData {
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
+    @JsonIgnore
+    private OrderStatus generatedOrderStatus;
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
     private final ChildSelector childSelector;

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,9 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +33,13 @@ public class StandardDirectionOrderGenerationService extends
 
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
-    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData)  {
+    public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         HearingBooking firstHearing = hearingBookingService.getFirstHearing(caseData.getHearingDetails())
             .orElse(null);
 
-        @SuppressWarnings("rawtypes")
-        DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder orderBuilder =
+        DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?,?> orderBuilder =
             DocmosisStandardDirectionOrder.builder()
                 .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder.getJudgeAndLegalAdvisor()))
                 .courtName(dataService.getCourtName(caseData.getCaseLocalAuthority()))

@@ -11,15 +11,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
-import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -27,7 +24,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static java.util.Collections.EMPTY_LIST;
-import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -126,36 +122,12 @@ class CommonDirectionServiceTest {
     }
 
     @Nested
-    class AssignCustomDirections {
-
-        @Test
-        void shouldAddCorrectPropertiesToDirectionWhenDirectionExists() {
-            List<Element<Direction>> directions = wrapElements(Direction.builder().build());
-
-            List<Element<Direction>> updatedDirections = service.assignCustomDirections(directions, LOCAL_AUTHORITY);
-
-            assertThat(unwrapElements(updatedDirections)).containsOnly(Direction.builder()
-                .assignee(LOCAL_AUTHORITY)
-                .custom("Yes")
-                .readOnly("No")
-                .build());
-        }
-
-        @Test
-        void shouldReturnEmptyListDirectionsWhenNoDirectionExists() {
-            List<Element<Direction>> updatedDirections = service.assignCustomDirections(emptyList(), LOCAL_AUTHORITY);
-
-            assertThat(updatedDirections).isEmpty();
-        }
-    }
-
-    @Nested
     class CollectDirectionsToMap {
 
         @Test
         void shouldReturnMapWithEmptyListWhenNoDirectionsForAssignee() {
             Map<DirectionAssignee, List<Element<Direction>>> map =
-                service.collectDirectionsToMap(CaseData.builder().build());
+                service.directionsToMap(CaseData.builder().build());
 
             assertThat(new ArrayList<>(map.values()))
                 .isEqualTo(ImmutableList.of(EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST));
@@ -164,7 +136,7 @@ class CommonDirectionServiceTest {
         @Test
         void shouldReturnMapWithDirectionListWhenDirectionsForAssignees() {
             Map<DirectionAssignee, List<Element<Direction>>> map =
-                service.collectDirectionsToMap(populateCaseDataWithFixedDirections()
+                service.directionsToMap(populateCaseDataWithFixedDirections()
                     .courtDirectionsCustom(buildDirections(COURT))
                     .build());
 
@@ -181,68 +153,6 @@ class CommonDirectionServiceTest {
 
                 assertThat(directionsFromMap.get()).isEqualTo(expectedDirections.get());
             });
-        }
-    }
-
-    @Nested
-    class SortDirectionsByAssignee {
-
-        @Test
-        void shouldSortDirectionsIntoSeparateEntriesInMapWhenSingleAssignee() {
-            List<Element<Direction>> directions = ImmutableList.<Element<Direction>>builder()
-                .addAll(buildDirections(LOCAL_AUTHORITY))
-                .build();
-
-            Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(
-                directions);
-
-            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY);
-        }
-
-        @Test
-        void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
-            List<Element<Direction>> directions = ImmutableList.<Element<Direction>>builder()
-                .addAll(buildDirections(LOCAL_AUTHORITY))
-                .addAll(buildDirections(COURT))
-                .build();
-
-            Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(
-                directions);
-
-            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY, COURT);
-        }
-    }
-
-    @Nested
-    class AddEmptyDirectionsForAssigneeNotInMap {
-
-        @Test
-        void shouldAddEmptyListValueWhenKeyNotPresentInMap() {
-            Map<DirectionAssignee, List<Element<Direction>>> map = new HashMap<>();
-
-            service.addEmptyDirectionsForAssigneeNotInMap(map);
-
-            Stream.of(DirectionAssignee.values())
-                .forEach(assignee -> assertThat(map.get(assignee)).isEqualTo(emptyList()));
-        }
-
-        @Test
-        void shouldAddEmptyListValueToNewKeysWhenSomeKeysAreAlreadyPresent() {
-            Map<DirectionAssignee, List<Element<Direction>>> map = new HashMap<>();
-            map.put(LOCAL_AUTHORITY, emptyListOfElement());
-            map.put(CAFCASS, emptyListOfElement());
-
-            service.addEmptyDirectionsForAssigneeNotInMap(map);
-
-            assertThat(map).containsOnlyKeys(DirectionAssignee.values());
-            assertThat(map).extractingByKeys(ALL_PARTIES, PARENTS_AND_RESPONDENTS, COURT, OTHERS)
-                .allMatch(List::isEmpty);
-            assertThat(map).extractingByKeys(LOCAL_AUTHORITY, CAFCASS)
-                .allMatch(list -> list.equals(emptyListOfElement()));
-        }
-
-        private List<Element<Direction>> emptyListOfElement() {
-            return List.of(Element.<Direction>builder().build());
         }
     }
 
@@ -302,48 +212,6 @@ class CommonDirectionServiceTest {
             List<Element<Direction>> returnedDirections = service.getDirectionsForAssignee(directions, LOCAL_AUTHORITY);
 
             assertThat(returnedDirections).isEmpty();
-        }
-    }
-
-    @Nested
-    class GetDirectionsToComplyWith {
-
-        @Test
-        void shouldReturnStandardDirectionOrderDirectionsWhenServedCaseManagementOrdersIsEmpty() {
-            List<Element<Direction>> sdoDirections = buildDirections(LOCAL_AUTHORITY);
-            CaseData caseData = caseDataWithSdo(sdoDirections)
-                .servedCaseManagementOrders(emptyList())
-                .build();
-
-            List<Element<Direction>> directions = service.getDirectionsToComplyWith(caseData);
-
-            assertThat(directions).isEqualTo(sdoDirections);
-        }
-
-        @Test
-        void shouldReturnCaseManagementOrderDirectionsWhenServedCaseManagementOrdersIsNotEmpty() {
-            List<Element<Direction>> cmoDirections = buildDirections(LOCAL_AUTHORITY);
-            CaseData caseData = caseDataWithSdo(buildDirections(CAFCASS))
-                .servedCaseManagementOrders(servedCaseManagementOrder(cmoDirections))
-                .build();
-
-            List<Element<Direction>> directions = service.getDirectionsToComplyWith(caseData);
-
-            assertThat(directions).isEqualTo(cmoDirections);
-        }
-
-        private CaseData.CaseDataBuilder caseDataWithSdo(List<Element<Direction>> sdoDirections) {
-            return CaseData.builder()
-                .standardDirectionOrder(
-                    Order.builder()
-                        .directions(sdoDirections)
-                        .build());
-        }
-
-        private List<Element<CaseManagementOrder>> servedCaseManagementOrder(List<Element<Direction>> cmoDirections) {
-            return List.of(element(CaseManagementOrder.builder()
-                .directions(cmoDirections)
-                .build()));
         }
     }
 

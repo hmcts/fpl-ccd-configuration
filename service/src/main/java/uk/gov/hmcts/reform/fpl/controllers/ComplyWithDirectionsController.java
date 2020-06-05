@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Api
 @RestController
@@ -31,28 +31,22 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ComplyWithDirectionsController {
     private final ObjectMapper mapper;
-    private final CommonDirectionService commonDirectionService;
-    private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
-    private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
+    private final CommonDirectionService directionService;
+    private final PrepareDirectionsForUsersService directionsForUsersService;
+    private final PrepareDirectionsForDataStoreService directionsForDataStoreService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //TODO: could exist in sdo vs cmo service. FPLA-1470
-        List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
+        Map<DirectionAssignee, List<Element<Direction>>> assigneeMap
+            = getAssigneeToDirectionMapping(caseData.getDirectionsToComplyWith());
 
-        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
-            commonDirectionService.sortDirectionsByAssignee(directionsToComplyWith);
-
-        commonDirectionService.addEmptyDirectionsForAssigneeNotInMap(sortedDirections);
-
-        sortedDirections.forEach((assignee, directions) -> {
+        assigneeMap.forEach((assignee, directions) -> {
             if (!assignee.equals(ALL_PARTIES)) {
-                directions.addAll(sortedDirections.get(ALL_PARTIES));
-                prepareDirectionsForUsersService.addAssigneeDirectionKeyValuePairsToCaseData(
-                    assignee, directions, caseDetails);
+                directions.addAll(assigneeMap.get(ALL_PARTIES));
+                directionsForUsersService.addAssigneeDirectionsToCaseDetails(assignee, directions, caseDetails);
             }
         });
 
@@ -66,17 +60,9 @@ public class ComplyWithDirectionsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<DirectionAssignee, List<Element<Direction>>> directionsMap =
-            commonDirectionService.collectDirectionsToMap(caseData);
+        Map<DirectionAssignee, List<Element<Direction>>> assigneeMap = directionService.directionsToMap(caseData);
+        directionsForDataStoreService.addResponsesToDirections(assigneeMap, caseData.getDirectionsToComplyWith());
 
-        directionsMap.forEach(prepareDirectionsForDataStoreService::addHiddenValuesToResponseForAssignee);
-
-        List<DirectionResponse> responses = commonDirectionService.getResponses(directionsMap);
-        List<Element<Direction>> directionsToComplyWith = commonDirectionService.getDirectionsToComplyWith(caseData);
-
-        prepareDirectionsForDataStoreService.addResponsesToDirections(responses, directionsToComplyWith);
-
-        //TODO: new service for sdo vs cmo in placing directions FPLA-1470
         if (caseData.getServedCaseManagementOrders().isEmpty()) {
             caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
         } else {

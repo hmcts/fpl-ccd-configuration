@@ -86,6 +86,20 @@ public class PrepareDirectionsForDataStoreService {
             }));
     }
 
+    /**
+     * Adds responses from a map of directions to their assignees to a list of directions.
+     *
+     * @param directionsMap a map of assignees and their directions containing responses.
+     * @param directions    a list of directions to add responses to.
+     */
+    public void addResponsesToDirections(Map<DirectionAssignee, List<Element<Direction>>> directionsMap,
+                                         List<Element<Direction>> directions) {
+        directionsMap.forEach(this::addHiddenValuesToResponseForAssignee);
+        List<DirectionResponse> responses = directionService.getResponses(directionsMap);
+
+        addResponsesToDirections(responses, directions);
+    }
+
     private boolean responseExists(DirectionResponse response, Element<DirectionResponse> element) {
         return isNotEmpty(element.getValue()) && element.getValue().getAssignee().equals(response.getAssignee())
             && respondingOnBehalfIsEqual(response, element);
@@ -97,16 +111,15 @@ public class PrepareDirectionsForDataStoreService {
     }
 
     /**
-     * Adds responses to directions in standard direction order {@link uk.gov.hmcts.reform.fpl.model.Order}.
+     * Adds responses to directions.
      *
      * @param caseData caseData containing custom role collections and standard directions order.
      */
-    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData,
-                                                              ComplyOnBehalfEvent eventId) {
+    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData, ComplyOnBehalfEvent eventId) {
         Map<DirectionAssignee, List<Element<Direction>>> customDirectionsMap =
-            directionService.collectCustomDirectionsToMap(caseData);
+            directionService.customDirectionsToMap(caseData);
 
-        List<Element<Direction>> directionsToComplyWith = directionService.getDirectionsToComplyWith(caseData);
+        List<Element<Direction>> directionsToComplyWith = caseData.getDirectionsToComplyWith();
 
         customDirectionsMap.forEach((assignee, directions) -> {
             switch (assignee) {
@@ -136,7 +149,8 @@ public class PrepareDirectionsForDataStoreService {
                     addResponseElementsToDirections(otherResponses, directionsToComplyWith);
 
                     break;
-                default: break;
+                default:
+                    break;
             }
         });
     }
