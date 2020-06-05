@@ -132,6 +132,23 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
+    void shouldReturnChildrenDetailsWhenPopulatedChildrenDoesNotHaveDob() {
+        List<Element<Child>> listChildren = wrapElements(Child.builder()
+            .party(ChildParty.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .build())
+            .build());
+
+        DocmosisChild expectedChild = DocmosisChild.builder()
+            .name("John Smith")
+            .dateOfBirth(null)
+            .build();
+
+        assertThat(service.getChildrenDetails(listChildren)).containsOnly(expectedChild);
+    }
+
+    @Test
     void shouldReturnApplicantNameWhenListOfApplicants() {
         String localAuthorityName = "Example Local Authority";
 
