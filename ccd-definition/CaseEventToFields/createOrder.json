@@ -45,7 +45,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "createOrder",
     "CaseFieldID": "remainingChildIndex",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "PageID": "OrderTypeAndDocument",
     "PageLabel": " ",
