@@ -1,3 +1,4 @@
 {
-  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/mid-event_POST": "ignore"
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/mid-event_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/mid-event_POST": "ignore"
 }
