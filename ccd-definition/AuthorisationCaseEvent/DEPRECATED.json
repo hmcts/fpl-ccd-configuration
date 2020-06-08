@@ -339,13 +339,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendChildren",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendChildrenGatekeeping",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
@@ -355,13 +348,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendChildren-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendChildren",
-    "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
