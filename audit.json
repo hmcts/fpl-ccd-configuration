@@ -9,7 +9,7 @@
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/comply-on-behalf/about-to-start_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/notice-of-proceedings/about-to-submit_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-c2/about-to-submit_POST": "ignore",
-  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/close-case/mid-event_POST", "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/close-case/mid-event_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/generate-document/mid-event_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/allocated-judge/submitted_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/return-application/about-to-submit_POST": "ignore",
