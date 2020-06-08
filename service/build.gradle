@@ -239,7 +239,7 @@ dependencies {
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.20'
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
