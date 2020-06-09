@@ -264,7 +264,7 @@ public class GeneratedOrderController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
-            "internal-change:SEND_DOCUMENT",
+            "internal-change-SEND_DOCUMENT",
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
