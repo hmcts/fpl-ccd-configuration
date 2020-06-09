@@ -224,7 +224,7 @@ public class DraftOrdersController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
-            "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
+            "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING"
         );
 
         if (standardDirectionOrder.getOrderStatus() == SEALED) {

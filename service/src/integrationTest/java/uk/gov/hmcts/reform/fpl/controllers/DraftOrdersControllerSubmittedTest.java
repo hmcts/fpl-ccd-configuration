@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETA
 @OverrideAutoConfiguration(enabled = true)
 public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
-    private static final String PREPARE_FOR_HEARING_EVENT = "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING";
+    private static final String PREPARE_FOR_HEARING_EVENT = "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING";
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder().build();
 

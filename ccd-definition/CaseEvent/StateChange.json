@@ -69,7 +69,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING",
+    "ID": "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING",
     "Name": "-",
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "PREPARE_FOR_HEARING",
