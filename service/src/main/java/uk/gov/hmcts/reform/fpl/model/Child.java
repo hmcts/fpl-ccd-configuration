@@ -22,6 +22,7 @@ public class Child implements ConfidentialParty<Child> {
     private final ChildParty party;
 
     private String finalOrderIssued;
+    private String finalOrderIssuedType;
 
     public boolean containsConfidentialDetails() {
         String hiddenValue = defaultIfNull(party.getDetailsHidden(), "");
@@ -78,5 +79,9 @@ public class Child implements ConfidentialParty<Child> {
                 .partyId(randomUUID().toString())
                 .build())
             .build();
+    }
+
+    public String asLabel() {
+        return this.getParty().getFullName();
     }
 }

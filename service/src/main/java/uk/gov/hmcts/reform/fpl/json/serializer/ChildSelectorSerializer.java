@@ -29,6 +29,13 @@ public class ChildSelectorSerializer extends JsonSerializer<ChildSelector> {
             generateChild(gen, i, selected.contains(i));
         }
 
+        List<Integer> hidden = defaultIfNull(value.getHidden(), new ArrayList<>());
+        max = hidden.stream().mapToInt(i -> i + 1).max().orElse(0);
+
+        for (int i = 0; i < max; i++) {
+            gen.writeObjectField("child" + i +  "Hidden", hidden.contains(i) ? "Yes" : "No");
+        }
+
         gen.writeEndObject();
     }
 

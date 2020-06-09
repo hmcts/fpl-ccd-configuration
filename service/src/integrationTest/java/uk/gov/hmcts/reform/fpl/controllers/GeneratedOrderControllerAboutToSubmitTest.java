@@ -292,6 +292,9 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
 
         assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsOnly("Yes");
+
+        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsOnly("Care order");
     }
 
     @Test
@@ -310,6 +313,9 @@ public class GeneratedOrderControllerAboutToSubmitTest extends AbstractControlle
         final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsOnlyNulls();
+
+        assertThat(caseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssuedType())
             .containsOnlyNulls();
     }
 
