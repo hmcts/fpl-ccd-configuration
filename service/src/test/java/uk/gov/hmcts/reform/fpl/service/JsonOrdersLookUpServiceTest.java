@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +17,11 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class})
 class JsonOrdersLookUpServiceTest {
 
-    private JsonOrdersLookupService jsonOrdersLookupService;
-
     @Autowired
-    private ObjectMapper mapper;
-
-    @BeforeEach
-    void before() {
-        jsonOrdersLookupService = new JsonOrdersLookupService(mapper);
-    }
+    private JsonOrdersLookupService jsonOrdersLookupService;
 
     @Test
     void shouldPopulateOrderDefinitionForStandardDirectionOrder() {
