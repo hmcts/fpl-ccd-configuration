@@ -21,7 +21,8 @@ public enum GeneratedOrderKey {
     SHOW_CLOSE_CASE_PAGE("showCloseCaseFromOrderPage"),
     REMAINING_CHILD_INDEX("remainingChildIndex"),
     REMAINING_CHILD("remainingChild"),
-    OTHER_FINAL_ORDER_CHILDREN("otherFinalOrderChildren");
+    OTHER_FINAL_ORDER_CHILDREN("otherFinalOrderChildren"),
+    SHOW_FINAL_ORDER_SINGLE_CHILD("showFinalOrderSingleChildPage");
 
     private final String key;
 }

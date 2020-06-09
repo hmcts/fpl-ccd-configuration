@@ -96,8 +96,7 @@ public class GeneratedOrderController {
             }
 
             if (CLOSED.getValue().equals(caseDetails.getState())) {
-                data
-                    .put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
+                data.put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
             }
         }
 
