@@ -389,7 +389,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
     @Nested
     class SendDocumentEvent {
-        private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
+        private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
 
         @Test
         void shouldSendDocumentForEachUpdatedPlacementOrder() {
