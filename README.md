@@ -97,6 +97,10 @@ PARALLEL_CHUNKS=1 yarn test --grep '@create-case-with-mandatory-sections-only'
 
 Note: Case number will be printed to the console while tests run e.g. `Application draft #1571-7550-7484-8512 has been created`.
 
+## Running E2E against remote environment
+```$bash
+proxy="http://proxyout.reform.hmcts.net:8080" URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" yarn test
+```
 ## Service:
 See [fpl-service](service/README.md) for more information.
 
