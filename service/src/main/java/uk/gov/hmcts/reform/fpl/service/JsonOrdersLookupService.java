@@ -21,7 +21,6 @@ public class JsonOrdersLookupService implements OrdersLookupService {
     }
 
     public OrderDefinition getStandardDirectionOrder() {
-        System.out.println(ordersConfigFilename);
         String content = readString(ordersConfigFilename);
 
         try {
