@@ -800,5 +800,12 @@
     "CaseFieldID": "returnApplication",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderCollection",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
   }
 ]
