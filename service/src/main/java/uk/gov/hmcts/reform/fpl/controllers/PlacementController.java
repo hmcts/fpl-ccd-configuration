@@ -162,7 +162,7 @@ public class PlacementController {
                 caseDetails.getJurisdiction(),
                 caseDetails.getCaseTypeId(),
                 caseDetails.getId(),
-                "internal-change:SEND_DOCUMENT",
+                "internal-change-SEND_DOCUMENT",
                 Map.of("documentToBeSent", documentReference)));
     }
 

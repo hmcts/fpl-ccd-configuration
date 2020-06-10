@@ -51,7 +51,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String CASE_ID = "12345";
-    private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
+    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
 
     private final DocumentReference lastOrderDocumentReference = DocumentReference.builder()
