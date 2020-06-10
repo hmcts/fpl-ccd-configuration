@@ -24,6 +24,8 @@ module.exports = {
   },
 
   searchForCasesWithHandledEvidences(submittedAt) {
+    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
+    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.waitForElement(this.fields.evidenceHandled);
     I.fillDate(submittedAt);
     I.click(this.fields.evidenceHandled);
