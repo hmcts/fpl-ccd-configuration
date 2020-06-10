@@ -190,7 +190,7 @@ class DraftCMOControllerTest extends AbstractControllerTest {
     void submittedShouldTriggerCMOProgressionEvent() {
         postSubmittedEvent(buildSubmittedRequest());
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, "internal-change:CMO_PROGRESSION");
+        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, "internal-change-CMO_PROGRESSION");
     }
 
     private List<String> getHearingDates(List<DynamicListElement> dynamicListElements) {

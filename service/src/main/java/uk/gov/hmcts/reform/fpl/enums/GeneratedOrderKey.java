@@ -18,7 +18,11 @@ public enum GeneratedOrderKey {
     ORDER_APPLIES_TO_ALL_CHILDREN("orderAppliesToAllChildren"),
     CLOSE_CASE_LABEL("close_case_label"),
     CLOSE_CASE_FROM_ORDER("closeCaseFromOrder"),
-    SHOW_CLOSE_CASE_PAGE("showCloseCaseFromOrderPage");
+    SHOW_CLOSE_CASE_PAGE("showCloseCaseFromOrderPage"),
+    REMAINING_CHILD_INDEX("remainingChildIndex"),
+    REMAINING_CHILD("remainingChild"),
+    OTHER_FINAL_ORDER_CHILDREN("otherFinalOrderChildren"),
+    SHOW_FINAL_ORDER_SINGLE_CHILD("showFinalOrderSingleChildPage");
 
     private final String key;
 }

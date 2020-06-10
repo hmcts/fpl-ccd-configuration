@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -47,11 +45,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
@@ -85,29 +81,60 @@ public class GeneratedOrderController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        final List<String> errors = validateGroupService.validateGroup(caseData,
-            ValidateFamilyManCaseNumberGroup.class);
+        List<String> errors = validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class);
 
         if (errors.isEmpty()) {
-            caseDetails.getData().put("pageShow", caseData.getAllChildren().size() <= 1 ? "No" : "Yes");
+            data.put("pageShow", caseData.getAllChildren().size() <= 1 ? "No" : "Yes");
 
-            caseDetails.getData().put("dateOfIssue", time.now().toLocalDate());
+            data.put("dateOfIssue", time.now().toLocalDate());
 
             if (caseData.getAllocatedJudge() != null) {
-                caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+                data.put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
             }
 
             if (CLOSED.getValue().equals(caseDetails.getState())) {
-                caseDetails.getData()
-                    .put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
+                data.put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
             }
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(data)
             .errors(errors)
+            .build();
+    }
+
+    @PostMapping("/add-final-order-flags/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleFinalOrderFlagsMidEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        List<Element<Child>> children = caseData.getAllChildren();
+
+        if (service.shouldNotAllowFinalOrder(caseData.getOrderTypeAndDocument(), children)) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(data)
+                .errors(List.of("All children in the case already have final orders"))
+                .build();
+        }
+
+        if (caseData.getOrderTypeAndDocument().isClosable()) {
+            Optional<Integer> remainingChildIndex = childrenService.getRemainingChildIndex(children);
+            if (remainingChildIndex.isPresent()) {
+                data.put("remainingChildIndex", String.valueOf(remainingChildIndex.get()));
+                data.put("remainingChild",
+                    childrenService.getRemainingChildrenNames(children));
+                data.put("otherFinalOrderChildren",
+                    childrenService.getFinalOrderIssuedChildrenNames(children));
+                data.put("showFinalOrderSingleChildPage", "Yes");
+            }
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
             .build();
     }
 
@@ -120,10 +147,14 @@ public class GeneratedOrderController {
 
         if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
             ChildSelector childSelector = ChildSelector.builder().build();
-            childSelector.generateChildCount(caseData.getAllChildren().size());
-
+            childSelector.setChildCountFromInt(caseData.getAllChildren().size());
+            boolean closable = caseData.getOrderTypeAndDocument().isClosable();
+            if (closable) {
+                childSelector.setHiddenFromChildList(caseData.getAllChildren());
+            }
             caseDetails.getData().put("childSelector", childSelector);
-            caseDetails.getData().put("children_label", childrenService.getChildrenLabel(caseData.getAllChildren()));
+            caseDetails.getData().put("children_label",
+                childrenService.getChildrenLabel(caseData.getAllChildren(), closable));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -198,8 +229,12 @@ public class GeneratedOrderController {
         data.put("orderCollection", orders);
 
         if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().isClosable()) {
-            List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
-                caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
+            List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(
+                caseData.getOrderTypeAndDocument().getType(),
+                caseData.getAllChildren(),
+                caseData.getOrderAppliesToAllChildren(),
+                caseData.getChildSelector(),
+                caseData.getRemainingChildIndex());
             data.put("children1", updatedChildren);
         }
 
@@ -229,7 +264,7 @@ public class GeneratedOrderController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
-            "internal-change:SEND_DOCUMENT",
+            "internal-change-SEND_DOCUMENT",
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
@@ -249,15 +284,14 @@ public class GeneratedOrderController {
     private Document getDocument(CaseData caseData,
                                  OrderStatus orderStatus) {
 
-        DocmosisTemplates templateType = getDocmosisTemplateType(caseData.getOrderTypeAndDocument().getType());
+        OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 
         caseData.setGeneratedOrderStatus(orderStatus);
         DocmosisGeneratedOrder orderTemplateData = service.getOrderTemplateData(caseData);
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            orderTemplateData, templateType);
+            orderTemplateData, typeAndDoc.getDocmosisTemplate());
 
-        OrderTypeAndDocument typeAndDoc = caseData.getOrderTypeAndDocument();
 
         Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
@@ -282,12 +316,9 @@ public class GeneratedOrderController {
         return "";
     }
 
-    private DocmosisTemplates getDocmosisTemplateType(GeneratedOrderType type) {
-        return type == EMERGENCY_PROTECTION_ORDER ? EPO : ORDER;
-    }
-
     private List<Element<Child>> getUpdatedChildren(CaseData caseData) {
-        return childrenService.updateFinalOrderIssued(caseData.getAllChildren(),
-            caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector());
+        return childrenService.updateFinalOrderIssued(caseData.getOrderTypeAndDocument().getType(),
+            caseData.getAllChildren(), caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector(),
+            caseData.getRemainingChildIndex());
     }
 }

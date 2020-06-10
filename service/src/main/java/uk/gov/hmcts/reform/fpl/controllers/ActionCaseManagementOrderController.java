@@ -134,14 +134,14 @@ public class ActionCaseManagementOrderController {
                 callbackRequest.getCaseDetails().getJurisdiction(),
                 callbackRequest.getCaseDetails().getCaseTypeId(),
                 callbackRequest.getCaseDetails().getId(),
-                "internal-change:CMO_PROGRESSION"
+                "internal-change-CMO_PROGRESSION"
             );
 
             coreCaseDataService.triggerEvent(
                 callbackRequest.getCaseDetails().getJurisdiction(),
                 callbackRequest.getCaseDetails().getCaseTypeId(),
                 callbackRequest.getCaseDetails().getId(),
-                "internal-change:SEND_DOCUMENT",
+                "internal-change-SEND_DOCUMENT",
                 Map.of("documentToBeSent", caseManagementOrder.getOrderDoc())
             );
             publishEventOnApprovedCMO(callbackRequest);

@@ -44,4 +44,17 @@ class ChildSelectorSerializerTest extends SerializerTest {
         String expected = "{\"childCount\":\"\"}";
         assertEquals(expected, actual, true);
     }
+
+    @Test
+    void shouldCreateStringWithPopulatedArraysWhenThereAreHiddenValues() throws JsonProcessingException {
+        ChildSelector childSelector = ChildSelector.builder().hidden(List.of(2, 5, 7)).build();
+        String actual = mapper.writeValueAsString(childSelector);
+        String expected = "{"
+            + "\"childCount\":\"\","
+            + "\"child0Hidden\":\"No\",\"child1Hidden\":\"No\","
+            + "\"child2Hidden\":\"Yes\",\"child3Hidden\":\"No\","
+            + "\"child4Hidden\":\"No\",\"child5Hidden\":\"Yes\","
+            + "\"child6Hidden\":\"No\",\"child7Hidden\":\"Yes\"}";
+        assertEquals(expected, actual, true);
+    }
 }

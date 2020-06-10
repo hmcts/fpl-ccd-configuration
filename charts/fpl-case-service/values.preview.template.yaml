@@ -47,6 +47,7 @@ idam-pr:
 xui-webapp:
   enabled: true
   nodejs:
+    imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
@@ -57,6 +58,7 @@ xui-webapp:
       SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
+      JURISDICTIONS: PUBLICLAW
 
 ccd:
   ccd:
@@ -84,6 +86,7 @@ ccd:
 
   ccd-api-gateway-web:
     nodejs:
+      imagePullPolicy: Always
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
         IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
@@ -101,6 +104,7 @@ ccd:
       memoryRequests: 8Mi
       releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     nodejs:
+      imagePullPolicy: Always
       environment:
         CCD_ACTIVITY_URL: null
         DM_URL: https://gateway-${SERVICE_FQDN}/documents
@@ -110,6 +114,7 @@ ccd:
       ingressIP: ${INGRESS_IP}
   ccd-data-store-api:
     java:
+      imagePullPolicy: Always
       environment:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
@@ -117,6 +122,7 @@ ccd:
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-definition-store-api:
     java:
+      imagePullPolicy: Always
       environment:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
@@ -125,6 +131,7 @@ ccd:
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
   ccd-user-profile-api:
     java:
+      imagePullPolicy: Always
       enviroment:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults:
