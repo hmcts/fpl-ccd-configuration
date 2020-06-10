@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -85,12 +86,16 @@ public abstract class GeneratedOrderTemplateDataGeneration
 
     List<DocmosisChild> getChildrenDetails(CaseData caseData) {
         List<Element<Child>> selectedChildren = getSelectedChildren(caseData.getAllChildren(),
-            caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren());
+            caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren(), caseData.getRemainingChildIndex());
         return caseDataExtractionService.getChildrenDetails(selectedChildren);
     }
 
     List<Element<Child>> getSelectedChildren(List<Element<Child>> allChildren, ChildSelector selector,
-                                             String choice) {
+                                             String choice, String remainingChildIndex) {
+        if (isNotBlank(remainingChildIndex)) {
+            return List.of(allChildren.get(Integer.parseInt(remainingChildIndex)));
+        }
+
         if (useAllChildren(choice)) {
             return allChildren;
         }
