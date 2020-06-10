@@ -20,20 +20,21 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildSelectorType.SEL
 @JsonComponent
 public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
 
+    // Cannot deserialise child1Hidden etc as they are hidden fields and therefore aren't sent back to use by CCD
     @Override
     public ChildSelector deserialize(JsonParser parser,
                                      DeserializationContext ctxt) throws IOException {
 
-        TreeNode treeNode = parser.getCodec().readTree(parser);
-        ChildSelector.ChildSelectorBuilder builder = ChildSelector.builder();
+        TreeNode rootNode = parser.getCodec().readTree(parser);
 
+        ChildSelector.ChildSelectorBuilder builder = ChildSelector.builder();
         List<Integer> selected = new ArrayList<>();
-        Iterator<String> fieldNames = treeNode.fieldNames();
+        Iterator<String> fieldNames = rootNode.fieldNames();
 
         fieldNames.forEachRemaining(fieldName -> {
             if ("childCount".equals(fieldName)) {
-                builder.childCount(getChildCountContainer(treeNode));
-            } else if (isChildNode(fieldName) && isSelected(treeNode.get(fieldName))) {
+                builder.childCount(getChildCountContainer(rootNode));
+            } else if (isChildNode(fieldName) && isSelected(rootNode.get(fieldName))) {
                 int i = Integer.parseInt(fieldName.replace("child", ""));
                 selected.add(i);
             }
@@ -47,8 +48,8 @@ public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
         return isNodeNull(node) ? "" : ((TextNode) node).asText();
     }
 
-    private boolean isChildNode(String s) {
-        return s.matches("child\\d+");
+    private boolean isChildNode(String fieldName) {
+        return fieldName.matches("child\\d+$");
     }
 
     private boolean isSelected(TreeNode node) {
@@ -56,7 +57,7 @@ public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
     }
 
     private boolean containsSelected(ArrayNode node) {
-        return node.size() == 1 && node.get(0).asText().equals(SELECTED.name());
+        return node.size() == 1 && SELECTED.name().equals(node.get(0).asText());
     }
 
     private boolean isNodeNull(TreeNode node) {

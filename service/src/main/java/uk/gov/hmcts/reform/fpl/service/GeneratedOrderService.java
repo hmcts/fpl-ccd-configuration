@@ -204,6 +204,10 @@ public class GeneratedOrderService {
             && childrenService.allChildrenHaveFinalOrder(children);
     }
 
+    public boolean shouldNotAllowFinalOrder(OrderTypeAndDocument orderType, List<Element<Child>> children) {
+        return orderType.isClosable() && childrenService.allChildrenHaveFinalOrder(children);
+    }
+
     public JudgeAndLegalAdvisor getAllocatedJudgeFromMostRecentOrder(CaseData caseData) {
         Optional<Element<GeneratedOrder>> generatedOrder = caseData.getOrderCollection()
             .stream().reduce((first, last) -> last);

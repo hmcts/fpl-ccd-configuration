@@ -104,7 +104,7 @@ public class DraftCMOController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
-            "internal-change:CMO_PROGRESSION"
+            "internal-change-CMO_PROGRESSION"
         );
     }
 

@@ -16,46 +16,6 @@ module.exports = [
     children: 'All',
   },
   {
-    type: 'Care order',
-    subtype: 'Interim',
-    fullType: 'Interim care order',
-    document: 'interim_care_order.pdf',
-    dateOfIssue: {
-      day: '01',
-      month: '01',
-      year: '2020',
-    },
-    interimEndDate: {
-      isNamedDate: false,
-    },
-    judgeAndLegalAdvisor: {
-      judgeTitle: 'Her Honour Judge',
-      judgeLastName: 'Judy',
-      judgeEmailAddress: 'test@test.com',
-      legalAdvisorName: 'Fred Frederickson',
-    },
-    children: 'All',
-  },
-  {
-    type: 'Care order',
-    subtype: 'Final',
-    fullType: 'Final care order',
-    document: 'final_care_order.pdf',
-    dateOfIssue: {
-      day: '01',
-      month: '01',
-      year: '2020',
-    },
-    judgeAndLegalAdvisor: {
-      judgeTitle: 'Her Honour Judge',
-      judgeLastName: 'Judy',
-      judgeEmailAddress: 'test@test.com',
-      legalAdvisorName: 'Fred Frederickson',
-    },
-    children: 'All',
-    closeCase: false,
-  },
-  {
     type: 'Supervision order',
     subtype: 'Interim',
     fullType: 'Interim supervision order',
@@ -101,7 +61,6 @@ module.exports = [
     },
     directionText: 'Example direction',
     children: [1],
-    closeCase: false,
   },
   {
     type: 'Emergency protection order',
@@ -133,7 +92,45 @@ module.exports = [
     },
     directionText: 'Example direction',
     includePhrase: 'Yes',
-    children: [0,1],
+    children: [2,3],
+  },
+  {
+    type: 'Care order',
+    subtype: 'Interim',
+    fullType: 'Interim care order',
+    document: 'interim_care_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
+    interimEndDate: {
+      isNamedDate: false,
+    },
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Judy',
+      judgeEmailAddress: 'test@test.com',
+      legalAdvisorName: 'Fred Frederickson',
+    },
+    children: 'All',
+  },
+  {
+    type: 'Care order',
+    subtype: 'Final',
+    fullType: 'Final care order',
+    document: 'final_care_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Judy',
+      judgeEmailAddress: 'test@test.com',
+      legalAdvisorName: 'Fred Frederickson',
+    },
     closeCase: false,
   },
 ];
