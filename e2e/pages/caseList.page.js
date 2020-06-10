@@ -1,8 +1,11 @@
 const {I} = inject();
+const config = require('../config');
 
 module.exports = {
 
   fields: {
+    jurisdiction: '#wb-jurisdiction',
+    caseType: '#wb-case-type',
     caseState: '#wb-case-state',
     evidenceHandled: '#evidenceHandled-Yes',
     evidenceNotHandled: '#evidenceHandled-No',
@@ -33,6 +36,8 @@ module.exports = {
   },
 
   searchForCasesWithName(caseName, state='Any') {
+    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
+    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.selectOption(this.fields.caseState, state);
     I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
