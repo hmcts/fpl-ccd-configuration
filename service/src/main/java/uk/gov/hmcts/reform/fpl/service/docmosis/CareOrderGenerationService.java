@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -27,11 +28,11 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
         DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = DocmosisGeneratedOrder.builder();
         if (subtype == INTERIM) {
             orderBuilder
-                .orderTitle(orderTypeAndDocument.getFullType(INTERIM))
+                .orderTitle(getFullOrderType(orderTypeAndDocument))
                 .childrenAct("Section 38 Children Act 1989");
         } else if (subtype == FINAL) {
             orderBuilder
-                .orderTitle(orderTypeAndDocument.getFullType())
+                .orderTitle(getFullOrderType(orderTypeAndDocument.getType()))
                 .childrenAct("Section 31 Children Act 1989");
         }
 

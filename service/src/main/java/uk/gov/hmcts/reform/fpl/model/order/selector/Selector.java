@@ -1,29 +1,35 @@
 package uk.gov.hmcts.reform.fpl.model.order.selector;
 
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
-public interface Selector {
+import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
-    default Selector setCount(int max) {
-        StringBuilder builder = new StringBuilder();
+@Data
+@Builder
+public class Selector {
+    @Builder.Default
+    private String count = "";
 
-        for (int i = 1; i <= max; i++) {
-            builder.append(i);
-        }
+    @Builder.Default
+    protected List<Integer> selected = new ArrayList<>();
 
-        setCount(builder.toString());
+    @Builder.Default
+    protected List<Integer> hidden = new ArrayList<>();
+
+    public Selector setNumberOfOptions(Integer max) {
+        setCount(IntStream.rangeClosed(1, defaultIfNull(max, 0))
+            .mapToObj(Integer::toString)
+            .collect(joining()));
         return this;
     }
 
-    void setCount(String count);
-
-    String getCount();
-
-    List<Integer> getSelected();
-
-    void setSelected(List<Integer> selected);
-
-    List<Integer> getHidden();
-
-    void setHidden(List<Integer> hidden);
+    public static Selector newSelector(Integer size) {
+        return Selector.builder().build().setNumberOfOptions(size);
+    }
 }

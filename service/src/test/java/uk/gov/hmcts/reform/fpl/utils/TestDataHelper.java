@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import org.apache.commons.lang3.RandomUtils;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -27,6 +28,7 @@ import static java.time.LocalDate.now;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -80,13 +82,25 @@ public class TestDataHelper {
 
     public static Element<Child> testChild(String firstName, String lastName, ChildGender gender, LocalDate dob) {
         return element(Child.builder()
-            .party(ChildParty.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .gender(ofNullable(gender).map(ChildGender::getLabel).orElse(null))
-                .dateOfBirth(dob)
-                .build())
+            .party(testChildParty(firstName, lastName, gender, dob))
             .build());
+    }
+
+    public static ChildParty testChildParty(String firstName, String lastName, ChildGender gender, LocalDate dob) {
+        return ChildParty.builder()
+            .firstName(firstName)
+            .lastName(lastName)
+            .gender(ofNullable(gender).map(ChildGender::getLabel).orElse(null))
+            .dateOfBirth(dob)
+            .build();
+    }
+
+    public static ChildParty testChildParty() {
+        return testChildParty(
+            randomAlphanumeric(10),
+            randomAlphanumeric(10),
+            BOY,
+            LocalDate.now().minusDays(RandomUtils.nextInt(1, 1000)));
     }
 
     public static List<Element<Child>> testChildren() {

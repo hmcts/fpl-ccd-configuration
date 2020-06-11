@@ -35,14 +35,14 @@ module.exports = {
     childSelector: {
       id: '#childSelector_childSelector',
       selector: function (index) {
-        return `#childSelector_child${index}`;
+        return `#childSelector_option${index}`;
       },
       selectorText: 'Yes',
     },
     careOrderSelector: {
       id: '#careOrderSelector_careOrderSelector',
       selector: function (index) {
-        return `#careOrderSelector_careOrder${index}`;
+        return `#careOrderSelector_option${index}`;
       },
       selectorText: 'Discharge order',
     },

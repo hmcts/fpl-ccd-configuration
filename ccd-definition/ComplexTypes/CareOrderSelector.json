@@ -2,159 +2,160 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrderCount",
+    "ListElementCode": "optionCount",
     "FieldType": "Text",
     "ElementLabel": "placeholder",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"DON NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder0",
+    "ListElementCode": "option0",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 1",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"1*\""
+    "FieldShowCondition": "optionCount=\"1*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder1",
+    "ListElementCode": "option1",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 2",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"12*\""
+    "FieldShowCondition": "optionCount=\"12*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder2",
+    "ListElementCode": "option2",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 3",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"123*\""
+    "FieldShowCondition": "optionCount=\"123*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder3",
+    "ListElementCode": "option3",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 4",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"1234*\""
+    "FieldShowCondition": "optionCount=\"1234*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder4",
+    "ListElementCode": "option4",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 5",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"12345*\""
+    "FieldShowCondition": "optionCount=\"12345*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder5",
+    "ListElementCode": "option5",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 6",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"123456*\""
+    "FieldShowCondition": "optionCount=\"123456*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder6",
+    "ListElementCode": "option6",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 7",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"1234567*\""
+    "FieldShowCondition": "optionCount=\"1234567*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder7",
+    "ListElementCode": "option7",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 8",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"12345678*\""
+    "FieldShowCondition": "optionCount=\"12345678*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder8",
+    "ListElementCode": "option8",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 9",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"123456789*\""
+    "FieldShowCondition": "optionCount=\"123456789*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder9",
+    "ListElementCode": "option9",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 10",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"12345678910*\""
+    "FieldShowCondition": "optionCount=\"12345678910*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder10",
+    "ListElementCode": "option10",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 11",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"1234567891011*\""
+    "FieldShowCondition": "optionCount=\"1234567891011*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder11",
+    "ListElementCode": "option11",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 12",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"123456789101112*\""
+    "FieldShowCondition": "optionCount=\"123456789101112*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder12",
+    "ListElementCode": "option12",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 13",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"12345678910111213*\""
+    "FieldShowCondition": "optionCount=\"12345678910111213*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder13",
+    "ListElementCode": "option13",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 14",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"1234567891011121314*\""
+    "FieldShowCondition": "optionCount=\"1234567891011121314*\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CareOrderSelector",
-    "ListElementCode": "careOrder14",
+    "ListElementCode": "option14",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CareOrderSelector",
     "ElementLabel": "Order 15",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "careOrderCount=\"123456789101112131415\""
+    "FieldShowCondition": "optionCount=\"123456789101112131415\""
   }
 ]

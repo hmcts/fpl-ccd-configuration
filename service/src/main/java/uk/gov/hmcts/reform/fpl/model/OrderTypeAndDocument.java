@@ -24,16 +24,6 @@ public class OrderTypeAndDocument {
     private final DocumentReference document;
 
     @JsonIgnore
-    public String getFullType() {
-        return getFullType(null);
-    }
-
-    @JsonIgnore
-    public String getFullType(GeneratedOrderSubtype subtype) {
-        return (subtype != null) ? subtype.getLabel() + " " + this.type.getLabel().toLowerCase() : this.type.getLabel();
-    }
-
-    @JsonIgnore
     public boolean isFinal() {
         return FINAL == subtype;
     }

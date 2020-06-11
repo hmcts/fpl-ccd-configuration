@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
@@ -88,7 +88,7 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
                 .build())
             .orderMonths(5)
             .orderAppliesToAllChildren(NO.getValue())
-            .childSelector(ChildSelector.builder()
+            .childSelector(Selector.builder()
                 .selected(List.of(0))
                 .build());
 

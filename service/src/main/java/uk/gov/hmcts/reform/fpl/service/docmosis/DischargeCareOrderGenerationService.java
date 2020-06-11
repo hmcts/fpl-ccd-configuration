@@ -19,6 +19,7 @@ import static java.lang.String.format;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -33,14 +34,14 @@ public class DischargeCareOrderGenerationService extends GeneratedOrderTemplateD
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
 
         return DocmosisGeneratedOrder.builder()
-            .orderTitle(orderTypeAndDocument.getFullType())
+            .orderTitle(getFullOrderType(orderTypeAndDocument))
             .childrenAct("Section 39(1) Children Act 1989")
             .orderDetails(formatOrderDetails(caseData));
     }
 
     @Override
     List<Element<Child>> getSelectedChildren(CaseData caseData) {
-        return dischargeCareOrder.getSelectedChildren(caseData);
+        return dischargeCareOrder.getChildrenInSelectedCareOrders(caseData);
     }
 
     private String formatOrderDetails(CaseData caseData) {

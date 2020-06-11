@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -40,9 +42,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.fpl.utils.providers.CloseableGeneratedCareOrderProvider;
-import uk.gov.hmcts.reform.fpl.utils.providers.GeneratedCareOrderProvider;
-import uk.gov.hmcts.reform.fpl.utils.providers.NotCloseableGeneratedCareOrderProvider;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -202,7 +201,7 @@ class GeneratedOrderServiceTest {
     }
 
     @Nested
-    class ShouldNotAllowFinalOrder {
+    class IsFinalOrderAllowed {
 
         @ParameterizedTest
         @ArgumentsSource(CloseableGeneratedCareOrderProvider.class)
@@ -493,4 +492,33 @@ class GeneratedOrderServiceTest {
             .document(testDocumentReference);
     }
 
+    private static class NotCloseableGeneratedCareOrderProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(BLANK_ORDER, null),
+                Arguments.of(CARE_ORDER, INTERIM),
+                Arguments.of(SUPERVISION_ORDER, INTERIM));
+        }
+    }
+
+    private static class CloseableGeneratedCareOrderProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(CARE_ORDER, FINAL),
+                Arguments.of(SUPERVISION_ORDER, FINAL),
+                Arguments.of(EMERGENCY_PROTECTION_ORDER, null),
+                Arguments.of(DISCHARGE_OF_CARE_ORDER, null));
+        }
+    }
+
+    private static class GeneratedCareOrderProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.concat(
+                new NotCloseableGeneratedCareOrderProvider().provideArguments(context),
+                new CloseableGeneratedCareOrderProvider().provideArguments(context));
+        }
+    }
 }

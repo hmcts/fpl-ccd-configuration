@@ -91,7 +91,7 @@
     "ID": "GeneratedOrder",
     "ListElementCode": "children",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ChildrenNew",
+    "FieldTypeParameter": "BasicChild",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type = \"DO NOT SHOW\""

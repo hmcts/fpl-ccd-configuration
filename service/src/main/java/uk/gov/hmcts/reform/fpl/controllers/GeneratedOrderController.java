@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -60,7 +60,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.CareOrderSelector.newCareOrderSelector;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -132,7 +132,7 @@ public class GeneratedOrderController {
             } else if (careOrders.size() == 1) {
                 data.put(SINGLE_CARE_ORDER_LABEL.getKey(), dischargeCareOrder.getOrdersLabel(careOrders));
             } else {
-                data.put(CARE_ORDER_SELECTOR.getKey(), newCareOrderSelector(careOrders.size()));
+                data.put(CARE_ORDER_SELECTOR.getKey(), newSelector(careOrders.size()));
                 data.put(MULTIPLE_CARE_ORDER_LABEL.getKey(), dischargeCareOrder.getOrdersLabel(careOrders));
             }
 
@@ -176,11 +176,11 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
-            ChildSelector childSelector = ChildSelector.newChildSelector(caseData.getAllChildren());
+            final Selector childSelector = newSelector(caseData.getAllChildren().size());
             boolean closable = caseData.getOrderTypeAndDocument().isClosable();
 
             if (closable) {
-                childSelector.updateHidden(caseData.getAllChildren());
+                childSelector.setHidden(childrenService.getIndexesOfChildrenWithFinalOrderIssued(caseData));
             }
             caseDetails.getData().put("childSelector", childSelector);
             caseDetails.getData().put("children_label",

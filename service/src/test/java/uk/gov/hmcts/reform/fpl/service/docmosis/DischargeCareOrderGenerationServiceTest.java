@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.order.selector.CareOrderSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
@@ -52,7 +52,7 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
     private DischargeCareOrderGenerationService service;
 
     private GeneratedOrder orderWithMultipleChildren = GeneratedOrder.builder()
-        .dateOfIssue("1 Jun 2020")
+        .dateOfIssue("1 June 2020")
         .children(List.of(
             testChild("John", "Smith", BOY, LocalDate.of(2018, 1, 1)),
             testChild("Eva", "Smith", GIRL, LocalDate.of(2016, 1, 1))
@@ -62,7 +62,7 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
         .build();
 
     private GeneratedOrder orderWithSingleChild = GeneratedOrder.builder()
-        .dateOfIssue("2 Jun 2020")
+        .dateOfIssue("2 June 2020")
         .children(List.of(
             testChild("George", "West", BOY, LocalDate.of(2019, 1, 1))
         ))
@@ -71,7 +71,7 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
         .build();
 
     private GeneratedOrder legacyOrder = GeneratedOrder.builder()
-        .dateOfIssue("2 Jun 2020")
+        .dateOfIssue("2 June 2020")
         .type("Final care order")
         .build();
 
@@ -83,7 +83,7 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
 
         DocmosisGeneratedOrder actualOrderData = service.getTemplateData(caseData);
 
-        String expectedDetails = "The court discharges the care order made by the Newcastle Court on 1 Jun 2020";
+        String expectedDetails = "The court discharges the care order made by the Newcastle Court on 1 June 2020";
         List<DocmosisChild> expectedChildren = docmosisChild(orderWithMultipleChildren.getChildren());
         DocmosisGeneratedOrder expectedOrderData = getExpectedDocument(orderStatus, expectedDetails, expectedChildren);
 
@@ -99,8 +99,8 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
         DocmosisGeneratedOrder actualOrderData = service.getTemplateData(caseData);
 
         String expectedDetails = "The court discharges:\n"
-            + "The care order made by the Newcastle Court on 1 Jun 2020\n"
-            + "The care order made by the Reading Court on 2 Jun 2020";
+            + "The care order made by the Newcastle Court on 1 June 2020\n"
+            + "The care order made by the Reading Court on 2 June 2020";
         List<DocmosisChild> expectedChildren = docmosisChild(orderWithMultipleChildren.getChildren(),
             orderWithSingleChild.getChildren());
         DocmosisGeneratedOrder expectedOrderData = getExpectedDocument(orderStatus, expectedDetails, expectedChildren);
@@ -116,7 +116,7 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
 
         DocmosisGeneratedOrder actualOrderData = service.getTemplateData(caseData);
 
-        String expectedDetails = "The court discharges the care order made by the Newcastle Court on 1 Jun 2020";
+        String expectedDetails = "The court discharges the care order made by the Newcastle Court on 1 June 2020";
         List<DocmosisChild> expectedChildren = docmosisChild(orderWithMultipleChildren.getChildren());
         DocmosisGeneratedOrder expectedOrder = getExpectedDocument(orderStatus, expectedDetails, expectedChildren);
 
@@ -131,7 +131,7 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
 
         DocmosisGeneratedOrder actualOrderData = service.getTemplateData(caseData);
 
-        String expectedDetails = "The court discharges the care order made by the Family Court on 2 Jun 2020";
+        String expectedDetails = "The court discharges the care order made by the Family Court on 2 June 2020";
         List<DocmosisChild> expectedChildren = docmosisChild(caseData.getAllChildren());
         DocmosisGeneratedOrder expectedOrderData = getExpectedDocument(orderStatus, expectedDetails, expectedChildren);
 
@@ -151,7 +151,7 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
                 .build())
             .orderMonths(5)
             .careOrderSelector(ofNullable(selectedOrders)
-                .map(selected -> CareOrderSelector.builder().selected(selected).build()).orElse(null))
+                .map(selected -> Selector.builder().selected(selected).build()).orElse(null))
             .orderCollection(wrapElements(orders));
 
         return caseDataBuilder.build();

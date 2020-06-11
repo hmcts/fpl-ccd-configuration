@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
@@ -36,10 +37,12 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
@@ -63,9 +66,12 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildParty;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testEmail;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdviser;
 
 @ActiveProfiles("integration-test")
@@ -340,6 +346,11 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     private CaseData.CaseDataBuilder commonCaseData(GeneratedOrderType orderType,
                                                     GeneratedOrderSubtype subtype,
                                                     boolean allocatedJudge) {
+
+        ChildParty child1 = testChildParty().toBuilder().fathersName("Smith").build();
+        ChildParty child2 = testChildParty().toBuilder().email(testEmail()).build();
+        ChildParty child3 = testChildParty();
+
         return CaseData.builder().orderTypeAndDocument(
             OrderTypeAndDocument.builder()
                 .type(orderType)
@@ -348,7 +359,10 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
                 .build())
             .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor(YesNo.from(allocatedJudge)))
             .familyManCaseNumber("12345L")
-            .children1(testChildren())
+            .children1(Stream.of(child1, child2, child3)
+                .map(party -> Child.builder().party(party).build())
+                .map(ElementUtils::element)
+                .collect(toList()))
             .caseLocalAuthority(DEFAULT_LA)
             .dateOfIssue(dateNow());
     }
@@ -394,14 +408,15 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
         final OrderTypeAndDocument currentOrder = caseData.getOrderTypeAndDocument();
         final List<Element<Child>> children = caseData.getAllChildren();
 
-        if (currentOrder.isFinal()) {
-            children.stream()
-                .map(Element::getValue)
-                .forEach(child -> {
-                    child.setFinalOrderIssued("Yes");
-                    child.setFinalOrderIssuedType(currentOrder.getType().getLabel());
-                });
-        }
-        return children;
+        return children.stream().map(child -> element(child.getId(), Child.builder()
+            .finalOrderIssued(currentOrder.isFinal() ? "Yes" : null)
+            .party(ChildParty.builder()
+                .firstName(child.getValue().getParty().getFirstName())
+                .lastName(child.getValue().getParty().getLastName())
+                .dateOfBirth(child.getValue().getParty().getDateOfBirth())
+                .gender(child.getValue().getParty().getGender())
+                .build())
+            .build()))
+            .collect(toList());
     }
 }

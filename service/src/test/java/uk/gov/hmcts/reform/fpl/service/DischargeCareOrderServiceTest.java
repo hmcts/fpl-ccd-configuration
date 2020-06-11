@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.order.selector.CareOrderSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.Arrays;
@@ -125,7 +125,7 @@ class DischargeCareOrderServiceTest {
 
             CaseData caseData = caseWithOrders(List.of(order1, order2, order3), selected);
 
-            List<Element<Child>> actualChildren = dischargeCareOrderService.getSelectedChildren(caseData);
+            List<Element<Child>> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
 
             assertThat(actualChildren).containsExactly(child1);
         }
@@ -145,7 +145,7 @@ class DischargeCareOrderServiceTest {
 
             CaseData caseData = caseWithOrders(List.of(order1, order2, order3), selected);
 
-            List<Element<Child>> actualChildren = dischargeCareOrderService.getSelectedChildren(caseData);
+            List<Element<Child>> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
 
             assertThat(actualChildren).containsExactly(child1, child3, child4);
         }
@@ -156,7 +156,7 @@ class DischargeCareOrderServiceTest {
 
             CaseData caseData = caseWithOrders(List.of(order), null);
 
-            List<Element<Child>> actualChildren = dischargeCareOrderService.getSelectedChildren(caseData);
+            List<Element<Child>> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
 
             assertThat(actualChildren).isEqualTo(caseData.getAllChildren());
         }
@@ -216,7 +216,7 @@ class DischargeCareOrderServiceTest {
             .orderCollection(orders.stream().map(ElementUtils::element).collect(Collectors.toList()))
             .children1(testChildren())
             .careOrderSelector(ofNullable(selectedCareOrders)
-                .map(selected -> CareOrderSelector.builder().selected(selected).build()).orElse(null))
+                .map(selected -> Selector.builder().selected(selected).build()).orElse(null))
             .build();
     }
 }

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.json.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 
@@ -11,37 +11,49 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 class SelectorSerializerTest extends SerializerTest {
 
     SelectorSerializerTest() {
-        super(ChildSelector.class, new ChildSelectorSerializer());
+        super(Selector.class, new SelectorSerializer());
     }
 
     @Test
-    void shouldOnlyCreateChildCountWhenThereAreNoSelectedValues() throws JsonProcessingException {
-        ChildSelector childSelector = ChildSelector.builder().build();
-        String actual = mapper.writeValueAsString(childSelector);
-        String expected = "{\"childCount\":\"\"}";
+    void shouldCreateEmptyCountWhenNumberOfOptionsIsZero() throws JsonProcessingException {
+        Selector selector = Selector.newSelector(0);
+
+        String actual = mapper.writeValueAsString(selector);
+        String expected = "{\"optionCount\":\"\"}";
+        assertEquals(expected, actual, true);
+    }
+
+    @Test
+    void shouldCreateEmptyCountWhenNumberOfOptionsIsNotSpecified() throws JsonProcessingException {
+        Selector selector = Selector.newSelector(null);
+        String actual = mapper.writeValueAsString(selector);
+        String expected = "{\"optionCount\":\"\"}";
+        assertEquals(expected, actual, true);
+    }
+
+    @Test
+    void shouldCreateCountWhenNumberOfOptionsIsPositive() throws JsonProcessingException {
+        Selector selector = Selector.newSelector(5);
+
+        String actual = mapper.writeValueAsString(selector);
+        String expected = "{\"optionCount\":\"12345\"}";
         assertEquals(expected, actual, true);
     }
 
     @Test
     void shouldCreateStringWithPopulatedArraysWhenThereAreSelectedValues() throws JsonProcessingException {
-        ChildSelector childSelector = ChildSelector.builder().selected(List.of(0, 4, 9)).build();
-        String actual = mapper.writeValueAsString(childSelector);
-        String expected = "{"
-            + "\"childCount\":\"\","
-            + "\"child0\":[\"SELECTED\"],\"child1\":[],"
-            + "\"child2\":[],\"child3\":[],"
-            + "\"child4\":[\"SELECTED\"],\"child5\":[],"
-            + "\"child6\":[],\"child7\":[],"
-            + "\"child8\":[],\"child9\":[\"SELECTED\"]"
-            + "}";
-        assertEquals(expected, actual, true);
-    }
+        Selector optionSelector = Selector.newSelector(10);
+        optionSelector.setSelected(List.of(0, 4, 9));
 
-    @Test
-    void shouldCreateAStringWithNullAssignedToChildCountWhenValueIsNull() throws JsonProcessingException {
-        ChildSelector childSelector = ChildSelector.builder().childCount(null).build();
-        String actual = mapper.writeValueAsString(childSelector);
-        String expected = "{\"childCount\":\"\"}";
+        String actual = mapper.writeValueAsString(optionSelector);
+        String expected = "{"
+            + "\"optionCount\":\"12345678910\","
+            + "\"option0\":[\"SELECTED\"],\"option1\":[],"
+            + "\"option2\":[],\"option3\":[],"
+            + "\"option4\":[\"SELECTED\"],\"option5\":[],"
+            + "\"option6\":[],\"option7\":[],"
+            + "\"option8\":[],\"option9\":[\"SELECTED\"]"
+            + "}";
         assertEquals(expected, actual, true);
     }
 }

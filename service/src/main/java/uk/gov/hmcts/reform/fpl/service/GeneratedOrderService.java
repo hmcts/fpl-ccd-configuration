@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DischargeCareOrderGenerationServ
 import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -105,7 +106,7 @@ public class GeneratedOrderService {
 
         orderBuilder.expiryDate(expiryDate)
             .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
-            .type(typeAndDocument.getFullType(typeAndDocument.getSubtype()))
+            .type(OrderHelper.getFullOrderType(typeAndDocument))
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
@@ -117,7 +118,7 @@ public class GeneratedOrderService {
 
     private List<Element<Child>> getChildren(GeneratedOrderType orderType, CaseData caseData) {
         if (orderType == DISCHARGE_OF_CARE_ORDER) {
-            return dischargeCareOrder.getSelectedChildren(caseData);
+            return dischargeCareOrder.getChildrenInSelectedCareOrders(caseData);
         } else {
             return childrenService.getSelectedChildren(caseData);
         }

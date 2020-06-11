@@ -89,7 +89,7 @@
     "CaseEventID": "createOrder",
     "CaseFieldID": "careOrderSelector",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "COMPLEX",
+    "DisplayContext": "OPTIONAL",
     "PageID": "MultipleCareOrders",
     "PageLabel": " ",
     "PageDisplayOrder": 2,

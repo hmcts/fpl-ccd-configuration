@@ -35,10 +35,11 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -66,8 +67,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.CareOrderSelector.newCareOrderSelector;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector.newChildSelector;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
@@ -172,7 +172,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             assertThat(callbackResponse.getData().get("children_label"))
                 .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
 
-            assertThat(caseData.getChildSelector()).isEqualTo(newChildSelector(caseData.getAllChildren()));
+            assertThat(caseData.getChildSelector()).isEqualTo(newSelector(2));
         }
 
         @Test
@@ -185,7 +185,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             assertThat(response.getData().get("children_label"))
                 .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
 
-            assertThat(caseData.getChildSelector()).isEqualTo(getExpectedChildSelector());
+            assertThat(caseData.getChildSelector()).isEqualTo(newSelector(2));
         }
 
         @Test
@@ -213,16 +213,8 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .isEqualTo("Child 1: Fred\nChild 2: Jane - Care order issued\nChild 3: Paul - Care order issued\n"
                     + "Child 4: Bill\n");
 
-            ChildSelector expected = ChildSelector.builder()
-                .childCount("1234")
-                .build();
+            Selector expected = newSelector(4);
             assertThat(caseData.getChildSelector()).isEqualTo(expected);
-        }
-
-        private ChildSelector getExpectedChildSelector() {
-            return ChildSelector.builder()
-                .childCount("12")
-                .build();
         }
     }
 
@@ -311,7 +303,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
         @Test
         void shouldReturnErrorWhenCurrentOrderIsDischargeOfCareOrderAndNoExistingCareOrders() {
-            GeneratedOrder order = order("Supervision order", "1 May 2020");
+            GeneratedOrder order = order(SUPERVISION_ORDER, "1 May 2020");
             CaseDetails caseDetails = caseWithOrders(DISCHARGE_OF_CARE_ORDER, order);
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, callbackType);
@@ -324,7 +316,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
         @Test
         void shouldPopulateLabelForSingleCareOrder() {
-            GeneratedOrder order = order("Interim care order", "1 May 2020", child("John", "Smith"));
+            GeneratedOrder order = order(CARE_ORDER, INTERIM, "1 May 2020", child("John", "Smith"));
 
             CaseDetails caseDetails = caseWithOrders(DISCHARGE_OF_CARE_ORDER, order);
 
@@ -339,8 +331,8 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
         @Test
         void shouldPopulateLabelAndSelectorForMultipleCareOrders() {
-            GeneratedOrder order1 = order("Interim care order", "1 June 2019", child("John", "Smith"));
-            GeneratedOrder order2 = order("Final care order", "12 June 2019",
+            GeneratedOrder order1 = order(CARE_ORDER, INTERIM, "1 June 2019", child("John", "Smith"));
+            GeneratedOrder order2 = order(CARE_ORDER, FINAL, "12 June 2019",
                 child("John", "Smith"),
                 child("Alex", "White"));
 
@@ -353,16 +345,21 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             assertThat(callbackResponse.getData().get("multipleCareOrder_label"))
                 .isEqualTo("Order 1: John Smith, 1 June 2019\nOrder 2: John Smith and Alex White, 12 June 2019");
             assertThat(callbackResponse.getData().get("singleCareOrder_label")).isNull();
-            assertThat(updatedCaseData.getCareOrderSelector()).isEqualTo(newCareOrderSelector(2));
+            assertThat(updatedCaseData.getCareOrderSelector()).isEqualTo(newSelector(2));
             assertThat(callbackResponse.getErrors()).isEmpty();
         }
 
-        private GeneratedOrder order(String type, String issueDate, Element<Child>... children) {
+        private GeneratedOrder order(GeneratedOrderType type, GeneratedOrderSubtype subType, String issueDate,
+                                     Element<Child>... children) {
             return GeneratedOrder.builder()
-                .type(type)
+                .type(OrderHelper.getFullOrderType(type, subType))
                 .dateOfIssue(issueDate)
                 .children(Arrays.asList(children))
                 .build();
+        }
+
+        private GeneratedOrder order(GeneratedOrderType type, String issueDate, Element<Child>... children) {
+            return order(type, null, issueDate, children);
         }
 
         private Element<Child> child(String firstName, String lastName) {
@@ -525,8 +522,8 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             return InterimEndDate.builder().type(END_OF_PROCEEDINGS).build();
         }
 
-        private CaseData.CaseDataBuilder generateEpoValues(CaseData.CaseDataBuilder builder) {
-            return builder
+        private void generateEpoValues(CaseData.CaseDataBuilder builder) {
+            builder
                 .epoChildren(EPOChildren.builder()
                     .description("Description")
                     .descriptionNeeded("Yes")
@@ -571,5 +568,4 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             return childElement;
         }
     }
-
 }

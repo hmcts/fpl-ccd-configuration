@@ -10,14 +10,16 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 
 @Slf4j
 @Service
@@ -27,7 +29,7 @@ public class DischargeCareOrderService {
     public List<GeneratedOrder> getCareOrders(CaseData caseData) {
         return caseData.getOrderCollection().stream()
             .map(Element::getValue)
-            .filter(go -> ("Final care order".equals(go.getType()) || "Interim care order".equals(go.getType())))
+            .filter(order -> OrderHelper.isOfType(order, CARE_ORDER))
             .collect(toList());
     }
 
@@ -44,10 +46,9 @@ public class DischargeCareOrderService {
         }
     }
 
-    public List<Element<Child>> getSelectedChildren(CaseData caseData) {
+    public List<Element<Child>> getChildrenInSelectedCareOrders(CaseData caseData) {
         return getSelectedCareOrders(caseData).stream()
-            .flatMap(order ->
-                order.getChildren().isEmpty() ? caseData.getAllChildren().stream() : order.getChildren().stream())
+            .flatMap(order -> (isEmpty(order.getChildren()) ? caseData.getAllChildren() : order.getChildren()).stream())
             .distinct()
             .collect(toList());
     }
@@ -59,7 +60,7 @@ public class DischargeCareOrderService {
             return range(0, careOrders.size())
                 .mapToObj(index -> format("Order %d: %s, %s", index + 1, getOrderLabel(careOrders.get(index)),
                     careOrders.get(index).getDateOfIssue()))
-                .collect(joining(lineSeparator()));
+                .collect(joining("\n"));
         }
     }
 

@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -37,13 +38,13 @@ public class SupervisionOrderGenerationService extends GeneratedOrderTemplateDat
         DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = DocmosisGeneratedOrder.builder();
         if (subtype == INTERIM) {
             return orderBuilder
-                .orderTitle(orderTypeAndDocument.getFullType(INTERIM))
+                .orderTitle(getFullOrderType(orderTypeAndDocument))
                 .childrenAct("Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                 .orderDetails(getFormattedInterimSupervisionOrderDetails(childrenCount,
                     caseData.getCaseLocalAuthority(), interimEndDate));
         } else {
             return orderBuilder
-                .orderTitle(orderTypeAndDocument.getFullType())
+                .orderTitle(getFullOrderType(orderTypeAndDocument.getType()))
                 .childrenAct("Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                 .orderDetails(getFormattedFinalSupervisionOrderDetails(childrenCount,
                     caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
