@@ -355,6 +355,7 @@ class PrepareDirectionsForDataStoreServiceTest {
             List<Element<DirectionResponse>> expectedResponses = List.of(element(responseId,
                 response.directionId(directionId)
                     .assignee(COURT)
+                    .responder("Emma Taylor")
                     .build()));
 
             service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_COURT);
