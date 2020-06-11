@@ -51,7 +51,9 @@ module.exports = {
   dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
   definition: {
     jurisdiction: 'PUBLICLAW',
+    jurisdictionFullDesc: 'Public Law',
     caseType: 'CARE_SUPERVISION_EPO',
+    caseTypeFullDesc: 'Care, supervision and EPOs',
   },
   // actions
   applicationActions: {
