@@ -41,7 +41,7 @@ const createSupervisionOrder = async (I, createOrderEventPage, order, hasAllocat
 
   if (order.subtype === 'Final') {
     await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.months);
-    await createOrderEventPage.enterNumberOfMonths(order.months);
+    createOrderEventPage.enterNumberOfMonths(order.months);
   } else {
     await fillInterimEndDate(I, createOrderEventPage, order);
   }
@@ -102,8 +102,8 @@ const fillDateOfIssue = async (I, createOrderEventPage, order) => {
 };
 
 const selectChildren = async (I, createOrderEventPage, order) => {
-  if (order.children === undefined) {
-    return;
+  if (order.children === 'Single') {
+    return I.click('Continue');
   }
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.allChildren.id);
   if (order.children === 'All') {
