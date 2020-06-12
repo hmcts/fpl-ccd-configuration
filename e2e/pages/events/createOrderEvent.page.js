@@ -162,7 +162,7 @@ module.exports = {
   },
 
   async selectAndEnterNamedDate(date) {
-    within(this.fields.interimEndDate.id, () => {
+    await within(this.fields.interimEndDate.id, () => {
       I.click(locate('label').withText(this.fields.interimEndDate.options.namedDate));
     });
     I.click(this.fields.interimEndDate.options.namedDate);

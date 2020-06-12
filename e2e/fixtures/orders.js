@@ -132,5 +132,6 @@ module.exports = [
       legalAdvisorName: 'Fred Frederickson',
     },
     closeCase: false,
+    children: 'Single',
   },
 ];
