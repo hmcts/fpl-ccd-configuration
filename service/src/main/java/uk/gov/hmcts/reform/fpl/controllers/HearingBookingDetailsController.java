@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
@@ -103,7 +104,7 @@ public class HearingBookingDetailsController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        if (standardDirectionsService.hasEmptyDates(caseData)) {
+        if (caseData.getState() == GATEKEEPING && standardDirectionsService.hasEmptyDates(caseData)) {
             applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
     }

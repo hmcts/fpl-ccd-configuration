@@ -57,6 +57,22 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
 
     @Test
     void shouldNotTriggerPopulateDatesEventWhenThereAreNoEmptyDates() {
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .data(Map.of("state", "Submitted"))
+                .build())
+            .build();
+
+        postSubmittedEvent(callbackRequest);
+
+        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void shouldNotTriggerPopulateDatesEventWhenCaseIsNotInGatekeepingState() {
         postSubmittedEvent(callbackRequestWithNoEmptyDates());
 
         verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
@@ -68,7 +84,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
                 .id(12345L)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
-                .data(Map.of(
+                .data(Map.of("state", "Gatekeeping",
                     "hearingDetails", wrapElements(Map.of("startDate", "2050-05-20T13:00")),
                     ALL_PARTIES.getValue(),
                     wrapElements(
@@ -143,7 +159,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
         hearingDetails.put("id", null);
         hearingDetails.put("value", Map.of("startDate", "2050-05-20T13:00"));
 
-        return Map.of(
+        return Map.of("state", "Gatekeeping",
             "hearingDetails", List.of(hearingDetails),
             ALL_PARTIES.getValue(),
             wrapElements(
