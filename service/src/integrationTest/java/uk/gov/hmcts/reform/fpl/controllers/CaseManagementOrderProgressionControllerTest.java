@@ -289,6 +289,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                 .type(actionType)
                 .build())
             .directions(emptyList())
+            .recitals(emptyList())
             .build();
     }
 
