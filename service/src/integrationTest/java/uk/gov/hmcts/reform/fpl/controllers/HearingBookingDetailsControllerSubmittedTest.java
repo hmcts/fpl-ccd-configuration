@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -68,14 +69,14 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
 
         postSubmittedEvent(callbackRequest);
 
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+        checkThat(() -> verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any()));
     }
 
     @Test
     void shouldNotTriggerPopulateDatesEventWhenCaseIsNotInGatekeepingState() {
         postSubmittedEvent(callbackRequestWithNoEmptyDates());
 
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+        checkThat(() -> verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any()));
     }
 
     private CallbackRequest callbackRequestWithEmptyDates() {
