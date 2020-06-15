@@ -273,7 +273,7 @@ class StandardDirectionOrderGenerationServiceTest {
 
         return getDirections().stream()
             .map(direction -> DocmosisDirection.builder()
-                .title(at.getAndIncrement() + ". " + direction.getValue().getDirectionType() + " by unknown")
+                .title(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
                 .assignee(direction.getValue().getAssignee())
                 .build())
             .collect(toList());
