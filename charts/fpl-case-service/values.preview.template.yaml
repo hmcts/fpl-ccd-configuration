@@ -118,6 +118,8 @@ ccd:
       environment:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
+        #workaround for https://tools.hmcts.net/jira/browse/RDM-8742
+        CCD_DM_DOMAIN: ^http://(?:gateway-${SERVICE_FQDN}|xui-${SERVICE_FQDN}|dm-store.*)
       keyVaults:
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-definition-store-api:
