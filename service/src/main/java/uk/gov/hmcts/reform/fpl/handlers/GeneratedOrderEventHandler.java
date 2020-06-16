@@ -68,7 +68,7 @@ public class GeneratedOrderEventHandler {
             = generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
 
         if (featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER)
-            && isNotEmpty(mostRecentOrderJudge)) {
+            && isNotEmpty(mostRecentOrderJudge.getJudgeEmailAddress())) {
             AllocatedJudgeTemplateForGeneratedOrder parameters = orderIssuedEmailContentProvider
                 .buildAllocatedJudgeOrderIssuedNotification(eventData.getCaseDetails());
 

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.CMO;
@@ -46,7 +47,7 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandler {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        if (featureToggleService.isAllocatedJudgeNotificationEnabled(CMO) && caseData.allocatedJudgeExists()) {
+        if (featureToggleService.isAllocatedJudgeNotificationEnabled(CMO) && hasAllocatedJudgeEmail(caseData)) {
             AllocatedJudgeTemplateForCMO parameters = caseManagementOrderEmailContentProvider
                 .buildCMOReadyForJudgeReviewNotificationParameters(eventData.getCaseDetails());
 
@@ -55,5 +56,9 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandler {
             notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
                 eventData.getReference());
         }
+    }
+
+    private boolean hasAllocatedJudgeEmail(CaseData caseData) {
+        return caseData.allocatedJudgeExists() && isNotEmpty(caseData.getAllocatedJudge().getJudgeEmailAddress());
     }
 }

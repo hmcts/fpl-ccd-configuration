@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.C2_APPLICATION;
@@ -55,7 +56,7 @@ public class C2UploadedEventHandler {
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
         if (featureToggleService.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)
-            && caseData.allocatedJudgeExists()) {
+            && hasAllocatedJudgeEmail(caseData)) {
             AllocatedJudgeTemplateForC2 parameters = c2UploadedEmailContentProvider
                 .buildC2UploadNotificationForAllocatedJudge(eventData.getCaseDetails());
 
@@ -64,5 +65,10 @@ public class C2UploadedEventHandler {
             notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
                 eventData.getReference());
         }
+    }
+
+    private boolean hasAllocatedJudgeEmail(CaseData caseData) {
+        return isNotEmpty(caseData.getAllocatedJudge())
+            && isNotEmpty(caseData.getAllocatedJudge().getJudgeEmailAddress());
     }
 }

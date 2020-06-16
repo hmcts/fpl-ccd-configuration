@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -23,7 +23,6 @@ import java.util.Map;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -66,16 +65,20 @@ public class StandardDirectionsOrderIssuedEventHandler {
     public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
-        JudgeAndLegalAdvisor sdoJudge = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
 
-        if (featureToggleService.isAllocatedJudgeNotificationEnabled(SDO) && isNotEmpty(sdoJudge)) {
+        if (hasAllocatedJudgeEmail(caseData.getStandardDirectionOrder())) {
             AllocatedJudgeTemplateForSDO parameters = standardDirectionOrderIssuedEmailContentProvider
                 .buildNotificationParametersForAllocatedJudge(eventData.getCaseDetails());
 
-            String email = sdoJudge.getJudgeEmailAddress();
+            String email =  caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
 
             notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, email, parameters,
                 eventData.getReference());
         }
+    }
+
+    private boolean hasAllocatedJudgeEmail(Order standardDirectionOrder) {
+        return isNotEmpty(standardDirectionOrder.getJudgeAndLegalAdvisor())
+            && isNotEmpty(standardDirectionOrder.getJudgeAndLegalAdvisor().getJudgeEmailAddress());
     }
 }
