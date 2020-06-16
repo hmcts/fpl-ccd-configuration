@@ -156,12 +156,12 @@ public class CaseDataExtractionService {
             }
         }
 
-        // create direction display title for docmosis in format "index. directionTitle (by / on) date"
+        // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
         return format("%d. %s %s", index, direction.getDirectionType(),
-            buildDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
+            formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
     }
 
-    private String buildDate(LocalDateTime date, String pattern, Display.Due due) {
+    private String formatTitleDate(LocalDateTime date, String pattern, Display.Due due) {
         if (date == null) {
             return "";
         }
