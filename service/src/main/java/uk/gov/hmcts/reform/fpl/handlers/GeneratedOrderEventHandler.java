@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -62,19 +64,19 @@ public class GeneratedOrderEventHandler {
         final EventData eventData = new EventData(orderEvent);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        if (featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER)) {
+        JudgeAndLegalAdvisor mostRecentOrderJudge
+            = generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
+
+        if (featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER)
+            && isNotEmpty(mostRecentOrderJudge)) {
             AllocatedJudgeTemplateForGeneratedOrder parameters = orderIssuedEmailContentProvider
                 .buildAllocatedJudgeOrderIssuedNotification(eventData.getCaseDetails());
 
-            String email = getAllocatedJudgeEmail(caseData);
+            String email = mostRecentOrderJudge.getJudgeEmailAddress();
 
             notificationService.sendEmail(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE, email, parameters,
                 eventData.getReference());
         }
-    }
-
-    private String getAllocatedJudgeEmail(CaseData caseData) {
-        return generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData).getJudgeEmailAddress();
     }
 
     private void sendNotificationToEmailServedRepresentatives(final EventData eventData,

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssue
 
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
@@ -62,13 +64,15 @@ public class StandardDirectionsOrderIssuedEventHandler {
 
     @EventListener
     public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
-        if (featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)) {
-            EventData eventData = new EventData(event);
-            CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        EventData eventData = new EventData(event);
+        CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        JudgeAndLegalAdvisor sdoJudge = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
+
+        if (featureToggleService.isAllocatedJudgeNotificationEnabled(SDO) && isNotEmpty(sdoJudge)) {
             AllocatedJudgeTemplateForSDO parameters = standardDirectionOrderIssuedEmailContentProvider
                 .buildNotificationParametersForAllocatedJudge(eventData.getCaseDetails());
 
-            String email = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+            String email = sdoJudge.getJudgeEmailAddress();
 
             notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, email, parameters,
                 eventData.getReference());
