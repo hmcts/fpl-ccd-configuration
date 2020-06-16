@@ -69,26 +69,6 @@ public class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForFees(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(featureToggleService.isFeesEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("FNP"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForPayments(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(featureToggleService.isPaymentsEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("payments"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     public void shouldMakeCorrectCallForExpertUI(Boolean toggleState) {
         givenToggle(toggleState);
 

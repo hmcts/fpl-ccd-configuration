@@ -45,15 +45,6 @@ public class FeatureToggleService {
             false);
     }
 
-    public boolean isFeesEnabled() {
-        return ldClient.boolVariation("FNP", ldUser, false);
-    }
-
-    //TODO: use FNP flag once PaymentsApi is deployed to AAT
-    public boolean isPaymentsEnabled() {
-        return ldClient.boolVariation("payments", ldUser, false);
-    }
-
     public boolean isExpertUIEnabled() {
         return ldClient.boolVariation("expert-ui", ldUser, false);
     }

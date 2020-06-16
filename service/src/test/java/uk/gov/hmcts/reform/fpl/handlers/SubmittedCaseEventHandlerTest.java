@@ -131,26 +131,11 @@ class SubmittedCaseEventHandlerTest {
             when(mapper.convertValue(any(), eq(CaseData.class))).thenReturn(caseData);
         }
 
-        @Test
-        void shouldNotPayIfPaymentIsToggledOff() {
-            final CallbackRequest request = callbackRequest(OPEN);
-
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
-
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(false);
-
-            submittedCaseEventHandler.makePayment(submittedCaseEvent);
-
-            verifyNoMoreInteractions(paymentService, applicationEventPublisher);
-        }
-
         @ParameterizedTest
         @EnumSource(value = State.class, mode = EXCLUDE, names = {"OPEN"})
         void shouldNotPayIfCaseStateIsDifferentThanOpen(State state) {
             final CallbackRequest request = callbackRequest(state);
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
-
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
@@ -162,8 +147,6 @@ class SubmittedCaseEventHandlerTest {
             final CallbackRequest request = callbackRequest(OPEN, emptyMap());
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
-
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
             verifyNoMoreInteractions(paymentService, applicationEventPublisher);
@@ -173,8 +156,6 @@ class SubmittedCaseEventHandlerTest {
         void shouldNotPayAndEmitFailureEventIfPaymentDecisionsIsNo() {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "No"));
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
-
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
@@ -188,7 +169,7 @@ class SubmittedCaseEventHandlerTest {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "Yes"));
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
             final Exception exception = new PaymentsApiException("", new RuntimeException());
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
+
             doThrow(exception).when(paymentService).makePaymentForCaseOrders(1L, caseData);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
@@ -201,8 +182,6 @@ class SubmittedCaseEventHandlerTest {
         void shouldPayWhenPaymentIsToggledOnAndCaseIsOpenedAndPaymentDesicionIsYes() {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "Yes"));
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
-
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
