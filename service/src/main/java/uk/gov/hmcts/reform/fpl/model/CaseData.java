@@ -279,7 +279,7 @@ public class CaseData {
         Schedule scheduleFromOrder = oldOrder.map(CaseManagementOrder::getSchedule).orElse(null);
 
         //recital
-        List<Element<Recital>> recitalsFromOrder = oldOrder.map(CaseManagementOrder::getRecitals).orElse(null);
+        List<Element<Recital>> recitalsFromOrder = oldOrder.map(CaseManagementOrder::getRecitals).orElse(emptyList());
 
         //directions
         Optional<Directions> directions = ofNullable(getDirectionsForCaseManagementOrder());
