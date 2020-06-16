@@ -4,6 +4,15 @@
     "ID": "EnterChildren",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
+    "ListElementCode": "party",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterChildren",
+    "CaseEventID": "enterChildren",
+    "CaseFieldID": "children1",
     "ListElementCode": "party.firstName",
     "FieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL"
