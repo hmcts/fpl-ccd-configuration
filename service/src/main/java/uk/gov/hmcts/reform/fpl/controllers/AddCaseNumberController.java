@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
@@ -51,6 +52,7 @@ public class AddCaseNumberController {
         } else {
             log.info("Robotics notification not sent on familyManCaseNumber update");
         }
+        applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
     }
 
     private List<String> validationErrors(final CaseDetails caseDetails) {

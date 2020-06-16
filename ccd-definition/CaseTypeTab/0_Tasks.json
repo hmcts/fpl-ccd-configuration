@@ -1,0 +1,24 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Tasks",
+    "TabLabel": "Your tasks",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "xxx",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Tasks",
+    "TabLabel": "Your tasks",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseStateInfo",
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "caseStateInfo = \"DO_NOT_SHOW\"",
+    "Comment": "A field should be loaded in case tab first to show it in the case title"
+  }
+]

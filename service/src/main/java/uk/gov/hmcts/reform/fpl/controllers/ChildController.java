@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -19,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,6 +37,7 @@ public class ChildController {
     private final ObjectMapper mapper;
     private final ConfidentialDetailsService confidentialDetailsService;
     private final Time time;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -64,9 +69,31 @@ public class ChildController {
 
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllChildren(), CHILD);
 
+
+        List<String> warnings = new ArrayList<>();
+
+        caseData.getAllChildren().forEach(c->{
+            if(StringUtils.isBlank(c.getValue().getParty().getFirstName())){
+                warnings.add("First name is required");
+            }
+            if(StringUtils.isBlank(c.getValue().getParty().getLastName())){
+                warnings.add("Last name is required");
+            }
+            if(c.getValue().getParty().getDateOfBirth()==null){
+                warnings.add("Date of birth is required");
+            }
+        });
+
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .warnings(warnings)
             .build();
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
     }
 
     private List<String> validate(CaseDetails caseDetails) {

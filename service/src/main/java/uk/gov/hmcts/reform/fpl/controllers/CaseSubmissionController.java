@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -159,6 +160,8 @@ public class CaseSubmissionController {
         if (isInReturnedState(callbackRequest.getCaseDetailsBefore())) {
             applicationEventPublisher.publishEvent(new AmendedReturnedCaseEvent(callbackRequest));
         }
+
+        applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
     }
 
     private YesNo setSendToCtsc(String caseLocalAuthority) {
