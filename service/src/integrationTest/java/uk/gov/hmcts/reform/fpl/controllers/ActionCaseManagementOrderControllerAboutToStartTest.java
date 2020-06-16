@@ -98,7 +98,10 @@ class ActionCaseManagementOrderControllerAboutToStartTest extends AbstractContro
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(caseData.getCaseManagementOrder())
-            .isEqualTo(CaseManagementOrder.builder().directions(emptyList()).build());
+            .isEqualTo(CaseManagementOrder.builder()
+                .directions(emptyList())
+                .recitals(emptyList())
+                .build());
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> data) {
