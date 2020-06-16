@@ -39,16 +39,6 @@ public class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForXeroxPrinting(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(featureToggleService.isXeroxPrintingEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("xerox-printing"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     public void shouldMakeCorrectCallForCtsc(Boolean toggleState) {
         givenToggle(toggleState);
 

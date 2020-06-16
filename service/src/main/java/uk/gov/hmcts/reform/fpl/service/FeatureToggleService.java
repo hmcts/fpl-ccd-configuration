@@ -23,10 +23,6 @@ public class FeatureToggleService {
 
     }
 
-    public boolean isXeroxPrintingEnabled() {
-        return ldClient.boolVariation("xerox-printing", ldUser, false);
-    }
-
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
             ldUserBuilder.custom("localAuthorityName", localAuthorityName).build(),
