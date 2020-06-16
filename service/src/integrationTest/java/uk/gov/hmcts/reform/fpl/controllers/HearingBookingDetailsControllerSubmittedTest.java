@@ -57,13 +57,13 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     }
 
     @Test
-    void shouldNotTriggerPopulateDatesEventWhenThereAreNoEmptyDates() {
+    void shouldNotTriggerPopulateDatesEventWhenCaseIsNotInGatekeepingState() {
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
-                .data(Map.of("state", "Submitted"))
+                .state("Submitted")
                 .build())
             .build();
 
@@ -73,7 +73,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     }
 
     @Test
-    void shouldNotTriggerPopulateDatesEventWhenCaseIsNotInGatekeepingState() {
+    void shouldNotTriggerPopulateDatesEventWhenThereAreNoEmptyDates() {
         postSubmittedEvent(callbackRequestWithNoEmptyDates());
 
         checkThat(() -> verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any()));
@@ -85,8 +85,8 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
                 .id(12345L)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
-                .data(Map.of("state", "Gatekeeping",
-                    "hearingDetails", wrapElements(Map.of("startDate", "2050-05-20T13:00")),
+                .state("Gatekeeping")
+                .data(Map.of("hearingDetails", wrapElements(Map.of("startDate", "2050-05-20T13:00")),
                     ALL_PARTIES.getValue(),
                     wrapElements(
                         buildDirection("allParties1"),
@@ -123,6 +123,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
                 .id(12345L)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
+                .state("Submitted")
                 .data(Map.of(
                     "hearingDetails", wrapElements(Map.of("startDate", "2050-05-20T13:00")),
                     ALL_PARTIES.getValue(),
@@ -160,8 +161,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
         hearingDetails.put("id", null);
         hearingDetails.put("value", Map.of("startDate", "2050-05-20T13:00"));
 
-        return Map.of("state", "Gatekeeping",
-            "hearingDetails", List.of(hearingDetails),
+        return Map.of("hearingDetails", List.of(hearingDetails),
             ALL_PARTIES.getValue(),
             wrapElements(
                 buildDirection("allParties1", LocalDateTime.of(2050, 5, 17, 12, 0, 0)),
