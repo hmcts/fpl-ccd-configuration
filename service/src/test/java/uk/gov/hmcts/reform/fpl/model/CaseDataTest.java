@@ -366,6 +366,7 @@ class CaseDataTest {
 
             assertThat(caseData.getCaseManagementOrder()).isEqualTo(CaseManagementOrder.builder()
                 .directions(emptyList())
+                .recitals(emptyList())
                 .build());
         }
 

@@ -15,6 +15,8 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -67,21 +69,28 @@ class DirectionsTest {
 
     @Test
     void shouldGetListOfDirectionsWithPopulatedCCDFieldsFromIndividualDirectionFields() {
-        CaseData caseData = CaseData.builder()
-            .directionsForCaseManagementOrder(Directions.builder()
-                .allPartiesCustomCMO(wrapElements(Direction.builder().build()))
-                .localAuthorityDirectionsCustomCMO(wrapElements(Direction.builder().build()))
-                .respondentDirectionsCustomCMO(wrapElements(Direction.builder().build()))
-                .cafcassDirectionsCustomCMO(wrapElements(Direction.builder().build()))
-                .otherPartiesDirectionsCustomCMO(wrapElements(Direction.builder().build()))
-                .courtDirectionsCustomCMO(wrapElements(Direction.builder().build()))
-                .build())
+        Directions directions = Directions.builder()
+            .allPartiesCustomCMO(wrapElements(Direction.builder().build()))
+            .localAuthorityDirectionsCustomCMO(wrapElements(Direction.builder().build()))
+            .respondentDirectionsCustomCMO(wrapElements(Direction.builder().build()))
+            .cafcassDirectionsCustomCMO(wrapElements(Direction.builder().build()))
+            .otherPartiesDirectionsCustomCMO(wrapElements(Direction.builder().build()))
+            .courtDirectionsCustomCMO(wrapElements(Direction.builder().build()))
             .build();
 
         List<Element<Direction>> expected = wrapElements(getDirection(ALL_PARTIES), getDirection(LOCAL_AUTHORITY),
             getDirection(PARENTS_AND_RESPONDENTS), getDirection(CAFCASS), getDirection(OTHERS), getDirection(COURT));
 
-        assertThat(caseData.getDirectionsForCaseManagementOrder().getDirectionsList()).isEqualTo(expected);
+        assertThat(directions.getDirectionsList()).isEqualTo(expected);
+        assertTrue(directions.containsDirections());
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoDirections() {
+        Directions directions = Directions.builder().build();
+
+        assertThat(directions.getDirectionsList()).isEmpty();
+        assertFalse(directions.containsDirections());
     }
 
     @Test
@@ -90,13 +99,11 @@ class DirectionsTest {
         Direction third = directionFor(OTHER_3);
         Direction fifth = directionFor(OTHER_5);
 
-        CaseData caseData = CaseData.builder()
-            .directionsForCaseManagementOrder(Directions.builder()
-                .otherPartiesDirectionsCustomCMO(wrapElements(fifth, first, third))
-                .build())
+        Directions directions = Directions.builder()
+            .otherPartiesDirectionsCustomCMO(wrapElements(fifth, first, third))
             .build();
 
-        assertThat(unwrapElements(caseData.getDirectionsForCaseManagementOrder().getDirectionsList()))
+        assertThat(unwrapElements(directions.getDirectionsList()))
             .containsExactly(getDirection(OTHER_1), getDirection(OTHER_3), getDirection(OTHER_5));
     }
 
@@ -106,13 +113,11 @@ class DirectionsTest {
         Direction third = directionFor(RESPONDENT_3);
         Direction fifth = directionFor(RESPONDENT_5);
 
-        CaseData caseData = CaseData.builder()
-            .directionsForCaseManagementOrder(Directions.builder()
-                .respondentDirectionsCustomCMO(wrapElements(fifth, first, third))
-                .build())
+        Directions directions = Directions.builder()
+            .respondentDirectionsCustomCMO(wrapElements(fifth, first, third))
             .build();
 
-        assertThat(unwrapElements(caseData.getDirectionsForCaseManagementOrder().getDirectionsList()))
+        assertThat(unwrapElements(directions.getDirectionsList()))
             .containsExactly(getDirection(RESPONDENT_1), getDirection(RESPONDENT_3), getDirection(RESPONDENT_5));
     }
 
