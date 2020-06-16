@@ -334,23 +334,5 @@
     "ListElementCode": "party.litigationIssuesDetails",
     "FieldDisplayOrder": 29,
     "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "finalOrderIssued",
-    "FieldDisplayOrder": 30,
-    "DisplayContext": "READONLY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterChildren",
-    "CaseEventID": "enterChildren",
-    "CaseFieldID": "children1",
-    "ListElementCode": "finalOrderIssuedType",
-    "FieldDisplayOrder": 31,
-    "DisplayContext": "READONLY"
   }
 ]
