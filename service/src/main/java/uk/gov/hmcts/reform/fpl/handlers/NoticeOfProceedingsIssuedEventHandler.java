@@ -28,7 +28,7 @@ public class NoticeOfProceedingsIssuedEventHandler {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        if (hasAllocatedJudgeEmail(caseData.getNoticeOfProceedings())) {
+        if (hasJudgeEmail(caseData.getNoticeOfProceedings())) {
             AllocatedJudgeTemplateForNoticeOfProceedings parameters = noticeOfProceedingsEmailContentProvider
                 .buildAllocatedJudgeNotification(eventData.getCaseDetails());
 
@@ -39,7 +39,7 @@ public class NoticeOfProceedingsIssuedEventHandler {
         }
     }
 
-    private boolean hasAllocatedJudgeEmail(NoticeOfProceedings noticeOfProceedings) {
+    private boolean hasJudgeEmail(NoticeOfProceedings noticeOfProceedings) {
         return isNotEmpty(noticeOfProceedings.getJudgeAndLegalAdvisor())
             && isNotEmpty(noticeOfProceedings.getJudgeAndLegalAdvisor().getJudgeEmailAddress());
     }
