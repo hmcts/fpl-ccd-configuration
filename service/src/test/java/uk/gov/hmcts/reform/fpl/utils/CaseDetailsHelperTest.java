@@ -15,9 +15,11 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -108,6 +110,14 @@ class CaseDetailsHelperTest {
             assertThat(isInReturnedState(caseDetails)).isFalse();
         }
 
+        @ParameterizedTest
+        @EnumSource(value = State.class, mode = EXCLUDE, names = {"GATEKEEPING"})
+        void shouldReturnFalseForCasesNotInGatekeepingState(State state) {
+            CaseDetails caseDetails = CaseDetails.builder().state(state.getValue()).build();
+
+            assertThat(isInGatekeepingState(caseDetails)).isFalse();
+        }
+
         @Test
         void shouldReturnTrueForCasesInOpenState() {
             CaseDetails caseDetails = CaseDetails.builder().state(OPEN.getValue()).build();
@@ -120,6 +130,13 @@ class CaseDetailsHelperTest {
             CaseDetails caseDetails = CaseDetails.builder().state(RETURNED.getValue()).build();
 
             assertThat(isInReturnedState(caseDetails)).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueForCasesInGatekeepingState() {
+            CaseDetails caseDetails = CaseDetails.builder().state(GATEKEEPING.getValue()).build();
+
+            assertThat(isInGatekeepingState(caseDetails)).isTrue();
         }
     }
 }

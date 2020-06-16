@@ -28,7 +28,8 @@ Scenario('local authority tries to submit incomplete case', async (I, caseViewPa
 Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage, caseListPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   deleteApplicationEventPage.tickDeletionConsent();
-  await I.completeEvent('Delete application');
+  await I.retryUntilExists(() => I.click('Continue'), '.check-your-answers');
+  await I.retryUntilExists(() => I.click('Delete application'), '.search-block');
   await caseListPage.searchForCasesWithName(caseName);
   I.see('No cases found.');
 });
